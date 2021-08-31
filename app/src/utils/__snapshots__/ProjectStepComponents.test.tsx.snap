@@ -1254,132 +1254,12 @@ exports[`ProjectStepComponents renders the project funding without the codes val
 </DocumentFragment>
 `;
 
-exports[`ProjectStepComponents renders the project location with the codes values 1`] = `
+exports[`ProjectStepComponents renders the project location 1`] = `
 <DocumentFragment>
   <form>
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="regions"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
-              for="regions"
-              id="regions-label"
-            >
-              Regions
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="regions"
-                required=""
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-69 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-71"
-                >
-                  <span>
-                    Regions *
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-73"
-        >
-          <button
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-          >
-            Click here to view FLNRO map regions.
-          </button>
-        </div>
-      </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
@@ -1406,10 +1286,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-69 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-68 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-71"
+                class="PrivateNotchedOutline-legendLabelled-70"
               >
                 <span>
                   Location Description
@@ -1423,133 +1303,133 @@ exports[`ProjectStepComponents renders the project location with the codes value
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-74 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-72 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-76"
+          class="MuiBox-root MuiBox-root-74"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
             You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
           </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-75"
+        >
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
+            role="button"
+            tabindex="0"
+            title="Will only accept kml files, kmz files not accepted."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="file-upload"
+                hidden=""
+                type="file"
+              />
+              Upload KML
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem;"
+            tabindex="0"
+            title="Will only accept zipped shapefiles of a known projection."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="shp-upload"
+                hidden=""
+                type="file"
+              />
+              Upload Shapefile
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
+          <div
+            class="MuiBox-root MuiBox-root-76"
+          >
+            <div
+              class="MuiFormControl-root"
+              style="width: 100%;"
+            >
+              <label
+                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                data-shrink="false"
+                id="layer"
+              >
+                Select Layer
+              </label>
+              <div
+                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+              >
+                <div
+                  aria-haspopup="listbox"
+                  aria-label="Layer"
+                  aria-labelledby="layer layer"
+                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                  id="layer"
+                  role="button"
+                  tabindex="0"
+                >
+                  <span>
+                    ​
+                  </span>
+                </div>
+                <input
+                  aria-hidden="true"
+                  class="MuiSelect-nativeInput"
+                  name="layer"
+                  tabindex="-1"
+                  value=""
+                />
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+                <fieldset
+                  aria-hidden="true"
+                  class="PrivateNotchedOutline-root-68 MuiOutlinedInput-notchedOutline"
+                >
+                  <legend
+                    class="PrivateNotchedOutline-legendLabelled-70"
+                  >
+                    <span>
+                      Select Layer
+                    </span>
+                  </legend>
+                </fieldset>
+              </div>
+            </div>
+          </div>
         </div>
         <div
           class="MuiBox-root MuiBox-root-77"
-        >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-75 MuiButton-outlinedPrimary"
-            role="button"
-            tabindex="0"
-            title="Will only accept kml files, kmz files not accepted."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload KML
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-75 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept zipped shapefiles of a known projection."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="shp-upload"
-                hidden=""
-                type="file"
-              />
-              Upload Shapefile
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-          <div
-            class="MuiBox-root MuiBox-root-78"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                data-shrink="false"
-                id="layer"
-              >
-                Select Layer
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              >
-                <div
-                  aria-haspopup="listbox"
-                  aria-label="Layer"
-                  aria-labelledby="layer layer"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="layer"
-                  role="button"
-                  tabindex="0"
-                >
-                  <span>
-                    ​
-                  </span>
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="layer"
-                  tabindex="-1"
-                  value=""
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-69 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-71"
-                  >
-                    <span>
-                      Select Layer
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-79"
         />
         <div
-          class="MuiBox-root MuiBox-root-80"
+          class="MuiBox-root MuiBox-root-78"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1576,7 +1456,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -1773,7 +1653,7 @@ exports[`ProjectStepComponents renders the project location with the codes value
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -1785,581 +1665,10 @@ exports[`ProjectStepComponents renders the project location with the codes value
                             type="radio"
                           />
                           <span>
-                             BC Government
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                    <div
-                      class="leaflet-control-layers-separator"
-                      style="display: none;"
-                    />
-                    <div
-                      class="leaflet-control-layers-overlays"
-                    />
-                  </section>
-                </div>
-                <div
-                  class="leaflet-control-attribution leaflet-control"
-                >
-                  <a
-                    href="https://leafletjs.com"
-                    title="A JS library for interactive maps"
-                  >
-                    Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  </form>
-</DocumentFragment>
-`;
-
-exports[`ProjectStepComponents renders the project location without the codes values 1`] = `
-<DocumentFragment>
-  <form>
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-    >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="regions"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
-              for="regions"
-              id="regions-label"
-            >
-              Regions
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="regions"
-                required=""
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-82 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-84"
-                >
-                  <span>
-                    Regions *
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-86"
-        >
-          <button
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-          >
-            Click here to view FLNRO map regions.
-          </button>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-            data-shrink="false"
-            for="location_description"
-            id="location_description-label"
-          >
-            Location Description
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-          >
-            <textarea
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="location_description"
-              name="location_description"
-              rows="4"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-82 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-84"
-              >
-                <span>
-                  Location Description
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <p
-          class="MuiTypography-root makeStyles-bold-87 MuiTypography-body1"
-        >
-          Project Boundary
-        </p>
-        <div
-          class="MuiBox-root MuiBox-root-89"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body2"
-          >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
-          </p>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-90"
-        >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-88 MuiButton-outlinedPrimary"
-            role="button"
-            tabindex="0"
-            title="Will only accept kml files, kmz files not accepted."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload KML
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-88 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept zipped shapefiles of a known projection."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="shp-upload"
-                hidden=""
-                type="file"
-              />
-              Upload Shapefile
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-          <div
-            class="MuiBox-root MuiBox-root-91"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                data-shrink="false"
-                id="layer"
-              >
-                Select Layer
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              >
-                <div
-                  aria-haspopup="listbox"
-                  aria-label="Layer"
-                  aria-labelledby="layer layer"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="layer"
-                  role="button"
-                  tabindex="0"
-                >
-                  <span>
-                    ​
-                  </span>
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="layer"
-                  tabindex="-1"
-                  value=""
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-82 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-84"
-                  >
-                    <span>
-                      Select Layer
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-92"
-        />
-        <div
-          class="MuiBox-root MuiBox-root-93"
-        >
-          <div
-            class="leaflet-container leaflet-grab leaflet-touch-drag"
-            id="project_location_form_map"
-            style="height: 100%; position: relative;"
-            tabindex="0"
-          >
-            <div
-              class="leaflet-pane leaflet-map-pane"
-              style="left: 0px; top: 0px;"
-            >
-              <div
-                class="leaflet-pane leaflet-tile-pane"
-              >
-                <div
-                  class="leaflet-layer "
-                  style="z-index: 1;"
-                >
-                  <div
-                    class="leaflet-tile-container leaflet-zoom-animated"
-                    style="z-index: 18; left: 0px; top: 0px;"
-                  >
-                    <img
-                      alt=""
-                      class="leaflet-tile"
-                      role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
-                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="leaflet-pane leaflet-shadow-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-overlay-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-marker-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-tooltip-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-popup-pane"
-              />
-            </div>
-            <div
-              class="leaflet-control-container"
-            >
-              <div
-                class="leaflet-top leaflet-left"
-              >
-                <div
-                  class="leaflet-control-zoom leaflet-bar leaflet-control"
-                >
-                  <a
-                    aria-label="Zoom in"
-                    class="leaflet-control-zoom-in"
-                    href="#"
-                    role="button"
-                    title="Zoom in"
-                  >
-                    +
-                  </a>
-                  <a
-                    aria-label="Zoom out"
-                    class="leaflet-control-zoom-out"
-                    href="#"
-                    role="button"
-                    title="Zoom out"
-                  >
-                    −
-                  </a>
-                </div>
-                <div
-                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
-                >
-                  <a
-                    class="leaflet-control-fullscreen-button leaflet-bar-part"
-                    href="#"
-                    title="View Fullscreen"
-                  />
-                </div>
-              </div>
-              <div
-                class="leaflet-top leaflet-right"
-              >
-                <div
-                  class="leaflet-draw leaflet-control"
-                >
-                  <div
-                    class="leaflet-draw-section"
-                  >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
-                    >
-                      <a
-                        class="leaflet-draw-draw-polyline"
-                        href="#"
-                        title="Draw a polyline"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polyline
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-polygon"
-                        href="#"
-                        title="Draw a polygon"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polygon
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-rectangle"
-                        href="#"
-                        title="Draw a rectangle"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a rectangle
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-marker"
-                        href="#"
-                        title="Draw a marker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a marker
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-circlemarker"
-                        href="#"
-                        title="Draw a circlemarker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a circlemarker
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
-                  </div>
-                  <div
-                    class="leaflet-draw-section"
-                  >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar"
-                    >
-                      <a
-                        class="leaflet-draw-edit-edit leaflet-disabled"
-                        href="#"
-                        title="No layers to edit"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Edit layers
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-edit-remove leaflet-disabled"
-                        href="#"
-                        title="No layers to delete"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Delete layers
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
-                  </div>
-                </div>
-              </div>
-              <div
-                class="leaflet-bottom leaflet-left"
-              />
-              <div
-                class="leaflet-bottom leaflet-right"
-              >
-                <div
-                  aria-haspopup="true"
-                  class="leaflet-control-layers leaflet-control"
-                >
-                  <a
-                    class="leaflet-control-layers-toggle"
-                    href="#"
-                    title="Layers"
-                  />
-                  <section
-                    class="leaflet-control-layers-list"
-                  >
-                    <div
-                      class="leaflet-control-layers-base"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            checked="checked"
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_68"
-                            type="radio"
-                          />
-                          <span>
                              Esri Imagery
                           </span>
                         </div>
                       </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_68"
-                            type="radio"
-                          />
-                          <span>
-                             BC Government
-                          </span>
-                        </div>
-                      </label>
                     </div>
                     <div
                       class="leaflet-control-layers-separator"
@@ -2378,12 +1687,6 @@ exports[`ProjectStepComponents renders the project location without the codes va
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>

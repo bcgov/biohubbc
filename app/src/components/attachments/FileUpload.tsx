@@ -41,8 +41,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
   /**
    * Handles files which are added (via either drag/drop or browsing).
    *
-   * @param {File[]} filesToAdd files that pass the basic DropZone size/quantity checks
-   * @param {FileRejection[]} rejectedFiles files that did not pass the basic DropZone size/quantity checks
+   * @param {File[]} filesToAdd files that pass the basic DropZone size/quantity/type checks
+   * @param {FileRejection[]} rejectedFiles files that did not pass the basic DropZone size/quantity/type checks
    */
   const onFiles = (acceptedFiles: File[], rejectedFiles: FileRejection[]) => {
     const newAcceptedFiles: IUploadFile[] = [];
@@ -104,6 +104,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         return 'File size exceeds maximum';
       case 'too-many-files':
         return 'Number of files uploaded at once exceeds maximum';
+      case 'file-invalid-type':
+        return 'File type is not compatible';
       default:
         return 'Encountered an unexpected error';
     }

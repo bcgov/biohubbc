@@ -167,6 +167,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   return { value: item.id, label: item.name };
                 }) || []
               }
+              survey_types={
+                codes?.survey_types?.map((item) => {
+                  return { value: item.name, label: item.name };
+                }) || []
+              }
               permit_numbers={
                 surveyPermits?.map((item) => {
                   return { value: item.number, label: `${item.number} - ${item.type}` };
@@ -314,6 +319,14 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   No Ancilliary Species
                 </Typography>
               )}
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Survey Type
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {survey_details.survey_type}
+              </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">

@@ -1,9 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import moment from 'moment';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { ensureCustomError, HTTP400, HTTP500 } from '../../../../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
+import { PostOccurrence } from '../../../../../models/occurrence-create';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
+import { postOccurrenceSQL } from '../../../../../queries/occurrence/occurrence-create-queries';
+import xlsx from 'xlsx';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL
@@ -14,7 +18,7 @@ import { getLogger } from '../../../../../utils/logger';
 import { DWCArchive } from '../../../../../utils/media/csv/dwc/dwc-archive-file';
 import { parseUnknownMedia } from '../../../../../utils/media/media-utils';
 import { logRequest } from '../../../../../utils/path-utils';
-import { uploadDWCArchiveOccurrences } from './observations/upload';
+import { ArchiveFile } from '../../../../../utils/media/media-file';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish');
 
@@ -131,7 +135,7 @@ export function publishSurveyAndOccurrences(): RequestHandler {
     } catch (error) {
       defaultLog.debug({ label: 'publishSurveyAndOccurrences', message: 'error', error });
       await connection.rollback();
-      throw ensureCustomError(error);
+      throw error;
     } finally {
       connection.release();
     }
@@ -152,11 +156,19 @@ export const insertOccurrences = async (surveyId: number, connection: IDBConnect
 
   const s3Object = await getFileFromS3(occurrenceSubmission.key);
 
-  const mediaFiles = parseUnknownMedia(s3Object);
+  const parsedMedia = parseUnknownMedia(s3Object);
 
-  const dwcArchive = new DWCArchive(mediaFiles);
+  if (!parsedMedia) {
+    throw new HTTP400('Failed to parse submission, file was empty');
+  }
 
-  await uploadDWCArchiveOccurrences(occurrenceSubmission.occurrence_submission_id, dwcArchive, connection);
+  if (!(parsedMedia instanceof ArchiveFile)) {
+    throw new HTTP400('Failed to parse submission, not a valid DwC Archive Zip file');
+  }
+
+  const dwcArchive = new DWCArchive(parsedMedia);
+
+  await uploadDWCArchiveOccurrences(occurrenceSubmission.id, dwcArchive, connection);
 };
 
 /**
@@ -168,7 +180,7 @@ export const insertOccurrences = async (surveyId: number, connection: IDBConnect
 export const deleteOccurrences = async (surveyId: number, connection: IDBConnection) => {
   const occurrenceSubmission = await getSurveyOccurrenceSubmission(surveyId, connection);
 
-  const sqlStatement = deleteSurveyOccurrencesSQL(occurrenceSubmission.occurrence_submission_id);
+  const sqlStatement = deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build delete survey occurrences SQL statement');
@@ -218,9 +230,112 @@ export const getSurveyOccurrenceSubmission = async (surveyId: number, connection
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!response || !response.rowCount) {
+  if (!response || !response.rows.length) {
     throw new HTTP500('Failed to get survey occurrence submissions');
   }
 
   return response.rows[0];
+};
+
+// TODO needs improvement
+export const uploadDWCArchiveOccurrences = async (
+  occurrenceSubmissionId: number,
+  file: DWCArchive,
+  connection: IDBConnection
+) => {
+  defaultLog.debug({ label: 'uploadDWCArchiveOccurrences', message: 'occurrenceSubmissionId', occurrenceSubmissionId });
+
+  const eventHeaders = file.worksheets.event?.getHeaders();
+  const eventRows = file.worksheets.event?.getRows();
+
+  const eventEventIdHeader = eventHeaders?.indexOf('eventID') as number;
+  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimCoordinates') as number;
+  const eventDateHeader = eventHeaders?.indexOf('eventDate') as number;
+
+  const occurrenceHeaders = file.worksheets.occurrence?.getHeaders();
+  const occurrenceRows = file.worksheets.occurrence?.getRows();
+
+  const taxonHeaders = file.worksheets.taxon?.getHeaders();
+  const taxonRows = file.worksheets.taxon?.getRows();
+  const taxonEventIdHeader = taxonHeaders?.indexOf('eventID') as number;
+  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularName') as number;
+
+  const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventID') as number;
+  const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
+  const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
+  const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
+  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
+  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
+
+  const scrapedOccurrences = occurrenceRows?.map((row) => {
+    const occurrenceEventId = row[occurrenceEventIdHeader];
+    const associatedTaxa = row[associatedTaxaHeader];
+    const lifeStage = row[lifeStageHeader];
+    const individualCount = row[individualCountHeader];
+    const organismQuantity = row[organismQuantityHeader];
+    const organismQuantityType = row[organismQuantityTypeHeader];
+
+    const data = { headers: occurrenceHeaders, rows: row };
+
+    let verbatimCoordinates;
+    let eventDate;
+
+    eventRows?.forEach((row) => {
+      if (row[eventEventIdHeader] === occurrenceEventId) {
+        const eventMoment = convertExcelDateToMoment(row[eventDateHeader] as number);
+        eventDate = eventMoment.toISOString();
+
+        verbatimCoordinates = row[eventVerbatimCoordinatesHeader];
+      }
+    });
+
+    let vernacularName;
+
+    taxonRows?.forEach((row) => {
+      if (row[taxonEventIdHeader] === occurrenceEventId) {
+        vernacularName = row[vernacularNameHeader];
+      }
+    });
+
+    return new PostOccurrence({
+      associatedTaxa: associatedTaxa,
+      lifeStage: lifeStage,
+      individualCount: individualCount,
+      vernacularName: vernacularName,
+      data,
+      verbatimCoordinates: verbatimCoordinates,
+      organismQuantity: organismQuantity,
+      organismQuantityType: organismQuantityType,
+      eventDate: eventDate
+    });
+  });
+
+  return Promise.all(
+    scrapedOccurrences?.map(async (scrapedOccurrence) => {
+      const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
+
+      if (!sqlStatement) {
+        throw new HTTP400('Failed to build SQL post statement');
+      }
+
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      if (!response || !response.rowCount) {
+        throw new HTTP400('Failed to insert occurrence data');
+      }
+    }) || []
+  );
+};
+
+export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment => {
+  const ssfDate = xlsx.SSF.parse_date_code(excelDateNumber);
+
+  return moment({
+    year: ssfDate.y,
+    month: ssfDate.m,
+    day: ssfDate.d,
+    hour: ssfDate.H,
+    minute: ssfDate.M,
+    second: ssfDate.S
+  });
 };

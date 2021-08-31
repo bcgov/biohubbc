@@ -8,10 +8,14 @@ services:
     build:
       context: ./database/.docker/db
       dockerfile: Dockerfile
+      args:
+        - POSTGRES_VERSION=${POSTGRES_VERSION}
+        - POSTGIS_VERSION=${POSTGIS_VERSION}
+        - TZ=${DB_TZ}
     ports:
-      - ${DB_PORT}:${DB_PORT}
+      - ${DB_PORT}:5432
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      test: ["CMD-SHELL", "pg_isready -U $DB_ADMIN -p 5432 -d $DB_DATABASE"]
       interval: 30s
       timeout: 10s
       retries: 5
@@ -37,6 +41,7 @@ services:
       - ${API_PORT}:${API_PORT}
     environment:
       - NODE_ENV=${NODE_ENV}
+      - TZ=${API_TZ}
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
       - DB_HOST=${DB_HOST}
@@ -107,8 +112,8 @@ services:
 
   ## Run the database migrations and seeding
   db_setup:
-    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-img
-    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-setup-container
+    image: ${DOCKER_PROJECT_NAME}-db-setup-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-setup-${DOCKER_NAMESPACE}-container
     build:
       context: ./database
       dockerfile: ./.docker/db/Dockerfile.setup
@@ -117,7 +122,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_ADMIN=${DB_ADMIN}
       - DB_ADMIN_PASS=${DB_ADMIN_PASS}
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
       - DB_USER_API=${DB_USER_API}
@@ -134,8 +139,8 @@ services:
 
   ## Run the  database migrations
   db_migrate:
-    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-migrate-img
-    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-migrate-container
+    image: ${DOCKER_PROJECT_NAME}-db-migrate-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-migrate-${DOCKER_NAMESPACE}-container
     build:
       context: ./database
       dockerfile: ./.docker/db/Dockerfile.migrate
@@ -144,7 +149,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_ADMIN=${DB_ADMIN}
       - DB_ADMIN_PASS=${DB_ADMIN_PASS}
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
       - DB_USER_API=${DB_USER_API}
@@ -161,8 +166,8 @@ services:
 
   ## Rollback the latest database migrations
   db_rollback:
-    image: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-rollback-img
-    container_name: ${DOCKER_PROJECT_NAME}-db-${DOCKER_NAMESPACE}-rollback-container
+    image: ${DOCKER_PROJECT_NAME}-db-rollback-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-db-rollback-${DOCKER_NAMESPACE}-container
     build:
       context: ./database
       dockerfile: ./.docker/db/Dockerfile.rollback
@@ -171,7 +176,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_ADMIN=${DB_ADMIN}
       - DB_ADMIN_PASS=${DB_ADMIN_PASS}
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
       - DB_USER_API=${DB_USER_API}

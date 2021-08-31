@@ -10,7 +10,7 @@
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help
-.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug build-ionic run-ionic run-ionic-debug database app api db-setup db-migrate db-rollback install test lint lint-fix format help
+.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug database app api db-setup db-migrate db-rollback install test lint lint-fix format help
 
 ## ------------------------------------------------------------------------------
 ## Alias Commands
@@ -27,14 +27,14 @@ env: | setup ## Copies the default ./env_config/env.docker to ./.env
 all: | close build run ## Performs all commands necessary to run all projects in docker
 all-debug: | close build run-debug ## Performs all commands necessary to run all projects in docker in debug mode
 
+postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres db project in docker
+postgres-debug: | close build-postgres run-postgres-debug ## Performs all commands necessary to run the postgres db project in docker in debug mode
+
 backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects in docker
 backend-debug: | close build-backend run-backend-debug ## Performs all commands necessary to run all backend projects in docker in debug mode
 
 web: | close build-web run-web ## Performs all commands necessary to run all backend+web projects in docker
 web-debug: | close build-web run-web-debug ## Performs all commands necessary to run all backend+web projects in docker in debug mode
-
-ionic: | close build-ionic run-ionic ## Performs all commands necessary to run all backend+ionic projects in docker
-ionic-debug: | close build-ionic run-ionic-debug ## Performs all commands necessary to run all backend+ionic projects in docker in debug mode
 
 db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
 db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
@@ -64,7 +64,7 @@ clean: ## Closes and cleans (removes) all project containers
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Frontend Commands
-## - Builds all of the biohub projects (db, db_setup, api, nginx, app, app_ionic)
+## - Builds all of the biohub projects (db, db_setup, api, app)
 ## ------------------------------------------------------------------------------
 
 build: ## Builds all project containers
@@ -86,73 +86,73 @@ run-debug: ## Runs all project containers in debug mode, where all container out
 	@docker-compose -f docker-compose.yml up
 
 ## ------------------------------------------------------------------------------
+## Build/Run Postgres DB Commands
+## - Builds all of the biohub postgres db projects (db, db_setup)
+## ------------------------------------------------------------------------------
+
+build-postgres: ## Builds the postgres db containers
+	@echo "==============================================="
+	@echo "Make: build-postgres - building postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build db db_setup
+
+run-postgres: ## Runs the postgres db containers
+	@echo "==============================================="
+	@echo "Make: run-postgres - running postgres db  images"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d db db_setup
+
+run-postgres-debug: ## Runs the postgres db containers in debug mode, where all container output is printed to the console
+	@echo "==============================================="
+	@echo "Make: run-postgres-debug - running postgres db images in debug mode"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up db db_setup
+
+## ------------------------------------------------------------------------------
 ## Build/Run Backend Commands
-## - Builds all of the biohub backend projects (db, db_setup, api, nginx)
+## - Builds all of the biohub backend projects (db, db_setup, api)
 ## ------------------------------------------------------------------------------
 
 build-backend: ## Builds all backend containers
 	@echo "==============================================="
 	@echo "Make: build-backend - building backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx
+	@docker-compose -f docker-compose.yml build db db_setup api
 
 run-backend: ## Runs all backend containers
 	@echo "==============================================="
 	@echo "Make: run-backend - running backend images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx
+	@docker-compose -f docker-compose.yml up -d db db_setup api
 
 run-backend-debug: ## Runs all backend containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-backend-debug - running backend images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api nginx
+	@docker-compose -f docker-compose.yml up db db_setup api
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
-## - Builds all of the biohub backend+web projects (db, db_setup, api, nginx, app)
+## - Builds all of the biohub backend+web projects (db, db_setup, api, app)
 ## ------------------------------------------------------------------------------
 
 build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx app
+	@docker-compose -f docker-compose.yml build db db_setup api app
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app
+	@docker-compose -f docker-compose.yml up -d db db_setup api app
 
 run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
 	@echo "Make: run-web-debug - running web images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api nginx app
-
-## ------------------------------------------------------------------------------
-## Build/Run Backend+Ionic Commands (backend + ionic frontend)
-## - Builds all of the biohub backend+ionic projects (db, db_setup, api, nginx, app_ionic)
-## ------------------------------------------------------------------------------
-
-build-ionic: ## Builds all backend+web containers
-	@echo "==============================================="
-	@echo "Make: build-ionic - building ionic images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api nginx app_ionic
-
-run-ionic: ## Runs all backend+web containers
-	@echo "==============================================="
-	@echo "Make: run-ionic - running ionic images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api nginx app_ionic
-
-run-ionic-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-ionic-debug - running ionic images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api nginx app_ionic
+	@docker-compose -f docker-compose.yml up db db_setup api app
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container
@@ -163,7 +163,7 @@ database: ## Executes into database container.
 	@echo "Make: Shelling into database container"
 	@echo "==============================================="
 	@export PGPASSWORD=$(DB_ADMIN_PASS)
-	@docker-compose exec db psql -U $(DB_ADMIN) $(DB_DATABASE)
+	@docker-compose exec db psql -U $(DB_ADMIN) -d $(DB_DATABASE)
 
 app: ## Executes into the app container.
 	@echo "==============================================="
@@ -171,7 +171,7 @@ app: ## Executes into the app container.
 	@echo "==============================================="
 	@docker-compose exec app bash
 
-api: ## Executes into the workspace container.
+api: ## Executes into the api container.
 	@echo "==============================================="
 	@echo "Shelling into api container"
 	@echo "==============================================="
@@ -183,37 +183,37 @@ api: ## Executes into the workspace container.
 
 build-db-setup: ## Build the db knex setup (migrations + seeding) image
 	@echo "==============================================="
-	@echo "Make: knex-rollback - building db knex setup image"
+	@echo "Make: build-db-setup - building db knex setup image"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml build db_setup
 
 run-db-setup: ## Run the database migrations and seeding
 	@echo "==============================================="
-	@echo "Make: knex-rollback - running database migrations and seeding"
+	@echo "Make: run-db-setup - running database migrations and seeding"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db_setup
 
 build-db-migrate: ## Build the db knex migrations image
 	@echo "==============================================="
-	@echo "Make: knex-rollback - bnuilding db knex migrate image"
+	@echo "Make: build-db-migrate - bnuilding db knex migrate image"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml build db_migrate
 
 run-db-migrate: ## Run the database migrations
 	@echo "==============================================="
-	@echo "Make: knex-rollback - running database migrations"
+	@echo "Make: run-db-migrate - running database migrations"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db_migrate
 
 build-db-rollback: ## Build the db knex rollback image
 	@echo "==============================================="
-	@echo "Make: knex-rollback - building db knex rollback image"
+	@echo "Make: build-db-rollback - building db knex rollback image"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml build db_rollback
 
 run-db-rollback: ## Rollback the latest database migrations
 	@echo "==============================================="
-	@echo "Make: knex-rollback - rolling back the latest database migrations"
+	@echo "Make: run-db-rollback - rolling back the latest database migrations"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up db_rollback
 
@@ -300,6 +300,35 @@ format-fix: ## Runs `npm run format:fix` for all projects
 	@echo "Running /database format:fix"
 	@echo "==============================================="
 	@cd database && npm run format:fix && cd ..
+
+## ------------------------------------------------------------------------------
+## Run `docker logs <container> -f` commands for all projects
+## - You can include additional parameters by appaending an `args` param
+## - Ex: `make log-app args="--tail 0"`
+## ------------------------------------------------------------------------------
+log-app: ## Runs `docker logs <container> -f` for the app container
+	@echo "==============================================="
+	@echo "Running docker logs for the app container"
+	@echo "==============================================="
+	@docker logs $(DOCKER_PROJECT_NAME)-app-$(DOCKER_NAMESPACE)-container -f $(args)
+
+log-api: ## Runs `docker logs <container> -f` for the api container
+	@echo "==============================================="
+	@echo "Running docker logs for the api container"
+	@echo "==============================================="
+	@docker logs $(DOCKER_PROJECT_NAME)-api-$(DOCKER_NAMESPACE)-container -f $(args)
+
+log-db: ## Runs `docker logs <container> -f` for the database container
+	@echo "==============================================="
+	@echo "Running docker logs for the db container"
+	@echo "==============================================="
+	@docker logs $(DOCKER_PROJECT_NAME)-db-$(DOCKER_NAMESPACE)-container -f $(args)
+
+log-db-setup: ## Runs `docker logs <container> -f` for the database setup container
+	@echo "==============================================="
+	@echo "Running docker logs for the db-setup container"
+	@echo "==============================================="
+	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f $(args)
 
 ## ------------------------------------------------------------------------------
 ## Help

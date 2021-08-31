@@ -42,6 +42,7 @@ export const postProjectSQL = (
       coordinator_email_address,
       coordinator_agency_name,
       coordinator_public,
+      geojson,
       geography
     ) VALUES (
       ${project.type},
@@ -56,7 +57,8 @@ export const postProjectSQL = (
       ${project.last_name},
       ${project.email_address},
       ${project.coordinator_agency},
-      ${project.share_contact_details}
+      ${project.share_contact_details},
+      ${JSON.stringify(project.geometry)}
   `;
 
   if (project.geometry && project.geometry.length) {
@@ -87,41 +89,6 @@ export const postProjectSQL = (
 
   defaultLog.debug({
     label: 'postProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to insert a project region row.
- *
- * @param {string} region
- * @returns {SQLStatement} sql query object
- */
-export const postProjectRegionSQL = (region: string, projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postProjectRegionSQL', message: 'params', region, projectId });
-
-  if (!region || !projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-      INSERT INTO project_region (
-        project_id,
-        name
-      ) VALUES (
-        ${projectId},
-        ${region}
-      )
-      RETURNING
-        project_region_id as id;
-    `;
-
-  defaultLog.debug({
-    label: 'postProjectRegionSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

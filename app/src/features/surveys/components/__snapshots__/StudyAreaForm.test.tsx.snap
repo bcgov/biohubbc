@@ -56,221 +56,13 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="park"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="park"
-              id="park-label"
-            >
-              Park
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="park"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-3"
-                >
-                  <span>
-                    Park
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="management_unit"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-              data-shrink="false"
-              for="management_unit"
-              id="management_unit-label"
-            >
-              Management Unit
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="management_unit"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-3"
-                >
-                  <span>
-                    Management Unit
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
         <p
-          class="MuiTypography-root makeStyles-bold-6 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-5 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-7"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -279,11 +71,11 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-8"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-7 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -304,7 +96,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-7 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -325,7 +117,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
             />
           </label>
           <div
-            class="MuiBox-root MuiBox-root-10"
+            class="MuiBox-root MuiBox-root-9"
           >
             <div
               class="MuiFormControl-root"
@@ -388,10 +180,10 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-10"
         />
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-11"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -418,7 +210,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -615,7 +407,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -627,7 +419,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -649,12 +441,6 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>
@@ -707,10 +493,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
               >
                 <span>
                   Survey Area Name *
@@ -723,265 +509,13 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="park"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
-              for="park"
-              id="park-label"
-            >
-              Park
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <div
-                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
-                data-tag-index="0"
-                role="button"
-                tabindex="-1"
-              >
-                <span
-                  class="MuiChip-label"
-                >
-                  Park name 1
-                </span>
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiChip-deleteIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
-                  />
-                </svg>
-              </div>
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="park"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-                >
-                  <span>
-                    Park
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="management_unit"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-              data-shrink="true"
-              for="management_unit"
-              id="management_unit-label"
-            >
-              Management Unit
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <div
-                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
-                data-tag-index="0"
-                role="button"
-                tabindex="-1"
-              >
-                <span
-                  class="MuiChip-label"
-                >
-                  Management unit 2
-                </span>
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiChip-deleteIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
-                  />
-                </svg>
-              </div>
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="management_unit"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-                >
-                  <span>
-                    Management Unit
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
         <p
-          class="MuiTypography-root makeStyles-bold-18 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-16 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-20"
+          class="MuiBox-root MuiBox-root-18"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -990,11 +524,11 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-19"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1015,7 +549,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1036,7 +570,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             />
           </label>
           <div
-            class="MuiBox-root MuiBox-root-22"
+            class="MuiBox-root MuiBox-root-20"
           >
             <div
               class="MuiFormControl-root"
@@ -1084,10 +618,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-15"
+                    class="PrivateNotchedOutline-legendLabelled-14"
                   >
                     <span>
                       Select Layer
@@ -1099,10 +633,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-21"
         />
         <div
-          class="MuiBox-root MuiBox-root-24"
+          class="MuiBox-root MuiBox-root-22"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1129,7 +663,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -1341,7 +875,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -1353,7 +887,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -1375,12 +909,6 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>
@@ -1434,10 +962,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
               >
                 <span>
                   Survey Area Name *
@@ -1456,279 +984,13 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="park"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error"
-              data-shrink="true"
-              for="park"
-              id="park-label"
-            >
-              Park
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <div
-                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
-                data-tag-index="0"
-                role="button"
-                tabindex="-1"
-              >
-                <span
-                  class="MuiChip-label"
-                >
-                  Park name 1
-                </span>
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiChip-deleteIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
-                  />
-                </svg>
-              </div>
-              <input
-                aria-autocomplete="list"
-                aria-describedby="park-helper-text"
-                aria-invalid="true"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="park"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
-                >
-                  <span>
-                    Park
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-            <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error"
-              id="park-helper-text"
-            >
-              error on park field
-            </p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="management_unit"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error"
-              data-shrink="true"
-              for="management_unit"
-              id="management_unit-label"
-            >
-              Management Unit
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <div
-                class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
-                data-tag-index="0"
-                role="button"
-                tabindex="-1"
-              >
-                <span
-                  class="MuiChip-label"
-                >
-                  Management unit 2
-                </span>
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiChip-deleteIcon"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
-                  />
-                </svg>
-              </div>
-              <input
-                aria-autocomplete="list"
-                aria-describedby="management_unit-helper-text"
-                aria-invalid="true"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="management_unit"
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
-                >
-                  <span>
-                    Management Unit
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-            <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error"
-              id="management_unit-helper-text"
-            >
-              error on management unit field
-            </p>
-          </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
         <p
-          class="MuiTypography-root makeStyles-bold-30 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-27 MuiTypography-body1"
         >
           Study Area Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-32"
+          class="MuiBox-root MuiBox-root-29"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -1737,11 +999,11 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-33"
+          class="MuiBox-root MuiBox-root-30"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-31 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-28 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1762,7 +1024,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-31 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-28 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1783,7 +1045,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             />
           </label>
           <div
-            class="MuiBox-root MuiBox-root-34"
+            class="MuiBox-root MuiBox-root-31"
           >
             <div
               class="MuiFormControl-root"
@@ -1831,10 +1093,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-27"
+                    class="PrivateNotchedOutline-legendLabelled-25"
                   >
                     <span>
                       Select Layer
@@ -1846,10 +1108,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-35"
+          class="MuiBox-root MuiBox-root-32"
         />
         <div
-          class="MuiBox-root MuiBox-root-36"
+          class="MuiBox-root MuiBox-root-33"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1876,7 +1138,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -2088,7 +1350,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -2100,7 +1362,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -2122,12 +1384,6 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>

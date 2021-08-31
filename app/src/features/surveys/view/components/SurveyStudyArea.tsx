@@ -4,9 +4,9 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import MapContainer from 'components/map/MapContainer';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import StudyAreaForm, {
@@ -23,8 +23,8 @@ import {
   IUpdateSurveyRequest,
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
-import React, { useState } from 'react';
-import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
+import React, { useEffect, useState } from 'react';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -40,42 +40,34 @@ export interface ISurveyStudyAreaProps {
 const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const biohubApi = useBiohubApi();
 
-  const park: IMultiAutocompleteFieldOption[] = [
-    {
-      value: 'Park name 1',
-      label: 'Park name 1'
-    },
-    {
-      value: 'Park name 2',
-      label: 'Park name 2'
-    }
-  ];
-
-  const management_unit: IMultiAutocompleteFieldOption[] = [
-    {
-      value: 'Management unit 1',
-      label: 'Management unit 1'
-    },
-    {
-      value: 'Management unit 2',
-      label: 'Management unit 2'
-    }
-  ];
-
   const {
     projectForViewData,
     surveyForViewData: { survey_details },
     refresh
   } = props;
 
-  const { geometryCollection, bounds } = generateValidGeometryCollection(survey_details?.geometry);
-  const nonEditableGeometries = geometryCollection.map((geom: Feature) => {
-    return { feature: geom };
-  });
+  const surveyGeometry = survey_details?.geometry;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
+  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+    parks: [],
+    nrm: [],
+    env: [],
+    wmu: []
+  });
+  const [bounds, setBounds] = useState<any[] | undefined>([]);
+  const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
+
+  useEffect(() => {
+    const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
+      return { feature: geom };
+    });
+
+    setBounds(calculateUpdatedMapBounds(surveyGeometry));
+    setNonEditableGeometries(nonEditableGeometriesResult);
+  }, [surveyGeometry]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -118,7 +110,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       ...StudyAreaInitialValues,
       survey_area_name:
         (studyAreaResponseData.survey_details && studyAreaResponseData.survey_details.survey_area_name) || '',
-      geometry: generateValidGeometryCollection(studyAreaResponseData.survey_details?.geometry).geometryCollection
+      geometry: studyAreaResponseData.survey_details?.geometry || []
     });
 
     setOpenEditDialog(true);
@@ -154,7 +146,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         dialogTitle={EditSurveyStudyAreaI18N.editTitle}
         open={openEditDialog}
         component={{
-          element: <StudyAreaForm park={park} management_unit={management_unit} />,
+          element: <StudyAreaForm />,
           initialValues: studyAreaFormData,
           validationSchema: StudyAreaYupSchema
         }}
@@ -178,7 +170,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         </Box>
         <dl>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Survey Area Name
               </Typography>
@@ -188,14 +180,29 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             </Grid>
           </Grid>
         </dl>
-        <Box mt={4} height={500}>
+        <Box mt={4} mb={4} height={500}>
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
+            setInferredLayersInfo={setInferredLayersInfo}
           />
         </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
+          </Grid>
+        </Grid>
       </Box>
     </>
   );

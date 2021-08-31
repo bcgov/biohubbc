@@ -58,6 +58,7 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
+    tz: config.timezone.db,
     branch: branch,
     dbSetupDockerfilePath: dbSetupDockerfilePath
   },
@@ -71,6 +72,7 @@ const phases = {
     version: `${deployChangeId}-${changeId}`,
     tag: `dev-${version}-${deployChangeId}`,
     env: 'dev',
+    tz: config.timezone.db,
     dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   test: {
@@ -83,6 +85,7 @@ const phases = {
     version: `${version}`,
     tag: `test-${version}`,
     env: 'test',
+    tz: config.timezone.db,
     dbSetupDockerfilePath: dbSetupDockerfilePath
   },
   prod: {
@@ -95,6 +98,7 @@ const phases = {
     version: `${version}`,
     tag: `prod-${version}`,
     env: 'prod',
+    tz: config.timezone.db,
     dbSetupDockerfilePath: dbSetupDockerfilePath
   }
 };

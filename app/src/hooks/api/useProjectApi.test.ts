@@ -89,8 +89,7 @@ describe('useProjectApi', () => {
         coordinator_last_name: 'last',
         coordinator_email_address: 'email@example.com',
         coordinator_agency_name: 'agency',
-        focal_species_name_list: 'focal',
-        regions_name_list: 'regions'
+        focal_species_name_list: 'focal'
       }
     ];
 

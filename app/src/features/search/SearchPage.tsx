@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useCallback } from 'react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -25,28 +25,23 @@ const SearchPage: React.FC = () => {
 
   const dialogContext = useContext(DialogContext);
 
-  const showFilterErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      onClose: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      },
-      ...textDialogProps,
-      open: true
-    });
-  };
+  const showFilterErrorDialog = useCallback(
+    (textDialogProps?: Partial<IErrorDialogProps>) => {
+      dialogContext.setErrorDialog({
+        onClose: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        onOk: () => {
+          dialogContext.setErrorDialog({ open: false });
+        },
+        ...textDialogProps,
+        open: true
+      });
+    },
+    [dialogContext]
+  );
 
-  useEffect(() => {
-    const fetchResults = async () => {
-      await getSearchResults();
-    };
-
-    fetchResults();
-  }, []);
-
-  const getSearchResults = async () => {
+  const getSearchResults = useCallback(async () => {
     try {
       const response = await biohubApi.search.getSearchResults();
 
@@ -74,7 +69,13 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
-  };
+  }, [biohubApi.search, showFilterErrorDialog]);
+
+  useEffect(() => {
+    if (!geometries.length) {
+      getSearchResults();
+    }
+  }, [geometries.length, getSearchResults]);
 
   /**
    * Displays search results visualized on a map spatially.

@@ -15,7 +15,7 @@ import {
   getTaxonsSQL
 } from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
-import { coordinator_agency, region, regional_offices } from '../constants/codes';
+import { coordinator_agency, region, regional_offices, survey_types } from '../constants/codes';
 
 const defaultLog = getLogger('queries/code-queries');
 
@@ -35,6 +35,7 @@ export interface IAllCodeSets {
   iucn_conservation_action_level_3_subclassification: object;
   system_roles: object;
   regional_offices: object;
+  survey_types: object;
   administrative_activity_status_type: object;
 }
 
@@ -106,6 +107,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
     region,
-    regional_offices
+    regional_offices,
+    survey_types
   };
 }

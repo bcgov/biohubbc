@@ -33,7 +33,6 @@ import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormC
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { DialogContext } from 'contexts/dialogContext';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import yup from 'utils/YupSchema';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import moment from 'moment';
@@ -84,28 +83,6 @@ const CreateSurveyPage = () => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const history = useHistory();
-
-  const park: IMultiAutocompleteFieldOption[] = [
-    {
-      value: 'Park name 1',
-      label: 'Park name 1'
-    },
-    {
-      value: 'Park name 2',
-      label: 'Park name 2'
-    }
-  ];
-
-  const management_unit: IMultiAutocompleteFieldOption[] = [
-    {
-      value: 'Management unit 1',
-      label: 'Management unit 1'
-    },
-    {
-      value: 'Management unit 2',
-      label: 'Management unit 2'
-    }
-  ];
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -387,6 +364,11 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
+                      survey_types={
+                        codes?.survey_types?.map((item) => {
+                          return { value: item.name, label: item.name };
+                        }) || []
+                      }
                       permit_numbers={
                         surveyPermits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };
@@ -415,9 +397,7 @@ const CreateSurveyPage = () => {
                 <HorizontalSplitFormComponent
                   title="Study Area"
                   summary="Study Area Summary (to be completed)"
-                  component={
-                    <StudyAreaForm park={park} management_unit={management_unit} />
-                  }></HorizontalSplitFormComponent>
+                  component={<StudyAreaForm />}></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent

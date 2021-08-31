@@ -26,6 +26,10 @@ describe('GetViewSurveyDetailsData', () => {
       expect(data.ancillary_species).to.eql([]);
     });
 
+    it('sets survey type', () => {
+      expect(data.survey_type).to.equal('');
+    });
+
     it('sets start_date', () => {
       expect(data.start_date).to.equal('');
     });
@@ -76,6 +80,7 @@ describe('GetViewSurveyDetailsData', () => {
         revision_count: 1,
         focal_species: 'species',
         ancillary_species: 'ancillary',
+        survey_type: 'type',
         lead_first_name: 'lead',
         lead_last_name: 'last',
         location_name: 'area',
@@ -86,8 +91,18 @@ describe('GetViewSurveyDetailsData', () => {
         agency_name: 'name agency',
         funding_start_date: '2020/04/04',
         funding_end_date: '2020/05/05',
-        geometry:
-          '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}'
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [125.6, 10.1]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
+          }
+        ]
       }
     ];
 
@@ -109,6 +124,10 @@ describe('GetViewSurveyDetailsData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([surveyData[0].ancillary_species]);
+    });
+
+    it('sets survey type', () => {
+      expect(data.survey_type).to.equal(surveyData[0].survey_type);
     });
 
     it('sets start_date', () => {
@@ -136,7 +155,7 @@ describe('GetViewSurveyDetailsData', () => {
     });
 
     it('sets the geometry', () => {
-      expect(data.geometry).to.eql([JSON.parse(surveyData[0].geometry)]);
+      expect(data.geometry).to.eql(surveyData[0].geometry);
     });
 
     it('sets permit number', () => {

@@ -28,8 +28,6 @@ describe('postSurveySQL', () => {
       biologist_first_name: 'John',
       biologist_last_name: 'Smith',
       survey_area_name: 'some place',
-      park: 'a park',
-      management_unit: 'a unit',
       survey_data_proprietary: false
     };
 
@@ -49,8 +47,6 @@ describe('postSurveySQL', () => {
       biologist_first_name: 'John',
       biologist_last_name: 'Smith',
       survey_area_name: 'some place',
-      park: 'a park',
-      management_unit: 'a unit',
       survey_data_proprietary: false,
       geometry: [
         {

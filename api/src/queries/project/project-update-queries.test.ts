@@ -126,7 +126,6 @@ describe('putProjectSQL', () => {
       null,
       new PutLocationData({
         location_description: 'description',
-        regions: ['region 1', 'region 2'],
         geometry: [
           {
             type: 'Feature',

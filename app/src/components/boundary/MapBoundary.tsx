@@ -38,6 +38,25 @@ export interface IMapBoundaryProps {
   setFieldValue: (key: string, value: any) => void;
 }
 
+export const displayInferredLayersInfo = (data: any[], type: string) => {
+  if (!data.length) {
+    return;
+  }
+
+  return (
+    <Box>
+      <Typography component="dt" variant="subtitle2" color="textSecondary">
+        {type}
+      </Typography>
+      {data.map((item: string, index: number) => (
+        <Typography key={index} component="dd" variant="body1">
+          {item}
+        </Typography>
+      ))}
+    </Box>
+  );
+};
+
 /**
  * Shared component for map boundary component
  *
@@ -59,6 +78,12 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   } = props;
 
   const [selectedLayer, setSelectedLayer] = useState('');
+  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+    parks: [],
+    nrm: [],
+    env: [],
+    wmu: []
+  });
 
   return (
     <Grid item xs={12}>
@@ -152,19 +177,42 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
       <Box mt={5} height={500}>
         <MapContainer
           mapId={mapId}
-          //@ts-ignore
           geometryState={{
             geometry: values.geometry,
             setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo)
           }}
           bounds={bounds}
           selectedLayer={selectedLayer}
+          setInferredLayersInfo={setInferredLayersInfo}
         />
       </Box>
       {errors && errors.geometry && (
         <Box pt={2}>
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.geometry}</Typography>
         </Box>
+      )}
+      {!Object.values(inferredLayersInfo).every((item: any) => !item.length) && (
+        <>
+          <Box mt={4}>
+            <Typography className={classes.bold}>Boundary Information</Typography>
+          </Box>
+          <dl>
+            <Grid container spacing={2}>
+              <Grid item xs={6}>
+                {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
+              </Grid>
+              <Grid item xs={6}>
+                {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
+              </Grid>
+              <Grid item xs={6}>
+                {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
+              </Grid>
+              <Grid item xs={6}>
+                {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
+              </Grid>
+            </Grid>
+          </dl>
+        </>
       )}
     </Grid>
   );

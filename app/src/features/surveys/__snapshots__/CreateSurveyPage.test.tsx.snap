@@ -499,6 +499,78 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    style="width: 100%;"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                      data-shrink="false"
+                      id="survey_type-label"
+                    >
+                      Survey Type
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Survey Type"
+                        aria-labelledby="survey_type-label survey_type"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="survey_type"
+                        role="button"
+                        tabindex="0"
+                      >
+                        <span>
+                          ​
+                        </span>
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="survey_type"
+                        required=""
+                        tabindex="-1"
+                        value=""
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-29"
+                        >
+                          <span>
+                            Survey Type
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                >
+                  <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                   >
                     <label
@@ -1015,214 +1087,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
-                  <div
-                    aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                    data-testid="park"
-                    role="combobox"
-                  >
-                    <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                        data-shrink="false"
-                        for="park"
-                        id="park-label"
-                      >
-                        Park
-                      </label>
-                      <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-                      >
-                        <input
-                          aria-autocomplete="list"
-                          aria-invalid="false"
-                          autocapitalize="none"
-                          autocomplete="off"
-                          class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                          id="park"
-                          spellcheck="false"
-                          type="text"
-                          value=""
-                        />
-                        <div
-                          class="MuiAutocomplete-endAdornment"
-                        >
-                          <button
-                            aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                            tabindex="-1"
-                            title="Clear"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                          <button
-                            aria-label="Open"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                            tabindex="-1"
-                            title="Open"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M7 10l5 5 5-5z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                        </div>
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
-                        >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-29"
-                          >
-                            <span>
-                              Park
-                            </span>
-                          </legend>
-                        </fieldset>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
-                  <div
-                    aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                    data-testid="management_unit"
-                    role="combobox"
-                  >
-                    <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                        data-shrink="false"
-                        for="management_unit"
-                        id="management_unit-label"
-                      >
-                        Management Unit
-                      </label>
-                      <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-                      >
-                        <input
-                          aria-autocomplete="list"
-                          aria-invalid="false"
-                          autocapitalize="none"
-                          autocomplete="off"
-                          class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                          id="management_unit"
-                          spellcheck="false"
-                          type="text"
-                          value=""
-                        />
-                        <div
-                          class="MuiAutocomplete-endAdornment"
-                        >
-                          <button
-                            aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                            tabindex="-1"
-                            title="Clear"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                          <button
-                            aria-label="Open"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                            tabindex="-1"
-                            title="Open"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M7 10l5 5 5-5z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                        </div>
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
-                        >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-29"
-                          >
-                            <span>
-                              Management Unit
-                            </span>
-                          </legend>
-                        </fieldset>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
                   <p
                     class="MuiTypography-root makeStyles-bold-43 MuiTypography-body1"
                   >
@@ -1377,7 +1241,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 alt=""
                                 class="leaflet-tile"
                                 role="presentation"
-                                src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                                src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                                 style="width: 256px; height: 256px; left: -159px; top: -31px;"
                               />
                             </div>
@@ -1574,7 +1438,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                       type="radio"
                                     />
                                     <span>
-                                       Esri Imagery
+                                       BC Government
                                     </span>
                                   </div>
                                 </label>
@@ -1586,7 +1450,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                       type="radio"
                                     />
                                     <span>
-                                       BC Government
+                                       Esri Imagery
                                     </span>
                                   </div>
                                 </label>
@@ -1608,12 +1472,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               title="A JS library for interactive maps"
                             >
                               Leaflet
-                            </a>
-                             | © 
-                            <a
-                              href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                            >
-                              ESRI Basemap
                             </a>
                           </div>
                         </div>

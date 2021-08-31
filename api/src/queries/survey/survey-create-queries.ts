@@ -34,6 +34,8 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
       lead_first_name,
       lead_last_name,
       location_name,
+      geojson,
+      survey_type,
       geography
     ) VALUES (
       ${projectId},
@@ -43,7 +45,9 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
       ${survey.end_date},
       ${survey.biologist_first_name},
       ${survey.biologist_last_name},
-      ${survey.survey_area_name}
+      ${survey.survey_area_name},
+      ${JSON.stringify(survey.geometry)},
+      ${survey.survey_type}
   `;
 
   if (survey.geometry && survey.geometry.length) {

@@ -1,11 +1,9 @@
-import { AxiosInstance } from 'axios';
+import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
-  IGetObservationsListResponse,
-  ICreateUpdateObservationRequest,
-  ICreateObservationPostResponse,
-  IGetObservationResponse
+  IGetSubmissionCSVForViewResponse,
+  IGetObservationSubmissionResponse,
+  IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
-import qs from 'qs';
 
 /**
  * Returns a set of supported api methods for working with observations.
@@ -15,92 +13,122 @@ import qs from 'qs';
  */
 const useObservationApi = (axios: AxiosInstance) => {
   /**
-   * Get observations list.
+   * Upload survey observation submission.
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @return {*}  {Promise<IGetObservationsListResponse>}
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
    */
-  const getObservationsList = async (projectId: number, surveyId: number): Promise<IGetObservationsListResponse> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observations/list`);
-
-    return data;
-  };
-  /**
-   * Create a new block observation
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {ICreateUpdateObservationRequest} observation
-   * @return {*}  {Promise<ICreateBlockObservationResponse>}
-   */
-  //TODO: make the observation generic ... for now it's just for blocks
-  const createObservation = async (
+  const uploadObservationSubmission = async (
     projectId: number,
     surveyId: number,
-    observation: ICreateUpdateObservationRequest
-  ): Promise<ICreateObservationPostResponse> => {
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/observations/create`, observation);
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<IUploadObservationSubmissionResponse> => {
+    const req_message = new FormData();
 
-    return data;
-  };
+    req_message.append('media', file);
 
-  /**
-   * Get details for a single observation for update purposes.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} observationId
-   * @param {string} entity
-   * @return {*}  {Promise<IGetObservationResponse>}
-   */
-  const getObservationForUpdate = async (
-    projectId: number,
-    surveyId: number,
-    observationId: number,
-    entity: string
-  ): Promise<IGetObservationResponse> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`,
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/upload`,
+      req_message,
       {
-        params: { entity },
-        paramsSerializer: (params) => {
-          return qs.stringify(params);
-        }
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
       }
     );
 
+    if (data.submissionId) {
+      if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
+        initiateDwCSubmissionValidation(data.submissionId);
+      } else {
+        initiateXLSXSubmissionValidation(data.submissionId);
+      }
+    }
+
     return data;
   };
 
   /**
-   * Update an existing observation.
-   *
+   * Get observation submission csv data/details by submission id.
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} observationId
-   * @param {ICreateUpdateObservationRequest} observation
-   * @return {*}  {Promise<any>}
+   * @param {number} submissionId
+   * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
    */
-  const updateObservation = async (
+  const getSubmissionCSVForView = async (
     projectId: number,
     surveyId: number,
-    observationId: number,
-    observation: ICreateUpdateObservationRequest
-  ): Promise<any> => {
-    const { data } = await axios.put(
-      `/api/project/${projectId}/survey/${surveyId}/observations/${observationId}/update`,
-      observation
+    submissionId: number
+  ): Promise<IGetSubmissionCSVForViewResponse> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/view`
     );
 
     return data;
   };
 
+  /**
+   * Get observation submission based on survey ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @returns {*} {Promise<IGetObservationSubmissionResponse>}
+   */
+  const getObservationSubmission = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetObservationSubmissionResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
+
+    return data;
+  };
+
+  /**
+   * Delete observation submission based on submission ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} submissionId
+   * @returns {*} {Promise<number>}
+   */
+  const deleteObservationSubmission = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: number
+  ): Promise<number> => {
+    const { data } = await axios.delete(
+      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/delete`
+    );
+
+    return data;
+  };
+
+  /**
+   * Initiate the validation process for the submitted observations
+   * @param {number} submissionId
+   */
+  const initiateDwCSubmissionValidation = async (submissionId: number) => {
+    axios.post(`/api/dwc/validate`, {
+      occurrence_submission_id: submissionId
+    });
+  };
+
+  const initiateXLSXSubmissionValidation = async (submissionId: number) => {
+    axios.post(`/api/xlsx/validate`, {
+      occurrence_submission_id: submissionId
+    });
+  };
+
   return {
-    getObservationsList,
-    getObservationForUpdate,
-    updateObservation,
-    createObservation
+    uploadObservationSubmission,
+    getSubmissionCSVForView,
+    getObservationSubmission,
+    deleteObservationSubmission
   };
 };
 

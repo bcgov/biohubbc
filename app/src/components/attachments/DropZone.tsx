@@ -53,6 +53,8 @@ export interface IDropZoneConfigProps {
    * @memberof IDropZoneProps
    */
   maxNumFiles?: number;
+
+  acceptedFileExtensions?: string;
 }
 
 export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
@@ -60,9 +62,10 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
 
   const maxNumFiles = props.maxNumFiles || MAX_NUM_FILES;
   const maxFileSize = props.maxFileSize || MAX_FILE_SIZE_BYTES;
+  const acceptedFileExtensions = props.acceptedFileExtensions;
 
   return (
-    <Dropzone maxFiles={maxNumFiles} maxSize={maxFileSize} onDrop={props.onFiles}>
+    <Dropzone maxFiles={maxNumFiles} maxSize={maxFileSize} onDrop={props.onFiles} accept={props.acceptedFileExtensions}>
       {({ getRootProps, getInputProps }) => (
         <section>
           <Box {...getRootProps()}>
@@ -72,6 +75,11 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
               <Typography variant="h3" className={classes.textSpacing}>
                 Drag your files here, or <Link className={classes.browseLink}>Browse Files</Link>
               </Typography>
+              {!!maxFileSize && maxFileSize !== Infinity && (
+                <Typography component="span" variant="subtitle2" color="textSecondary">
+                  {`Accepted file types: ${acceptedFileExtensions}`}
+                </Typography>
+              )}
               {!!maxFileSize && maxFileSize !== Infinity && (
                 <Typography component="span" variant="subtitle2" color="textSecondary">
                   {`Maximum file size: ${Math.round(maxFileSize / BYTES_PER_MEGABYTE)} MB`}

@@ -15,13 +15,12 @@ export interface ICreateSurveyRequest {
   end_date: string;
   first_nations_id: number;
   foippa_requirements_accepted: boolean;
-  management_unit: string[];
-  park: string[];
   proprietary_data_category: string;
   proprietor_name: string;
   sedis_procedures_accepted: boolean;
   focal_species: number[];
   ancillary_species: number[];
+  survey_type: string;
   start_date: string;
   survey_area_name: string;
   survey_data_proprietary: string;
@@ -55,6 +54,7 @@ export interface IGetSurveyForViewResponseDetails {
   survey_purpose: string;
   focal_species: string[];
   ancillary_species: string[];
+  survey_type: string;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -83,6 +83,7 @@ export interface IGetSurveyForUpdateResponseDetails {
   survey_purpose: string;
   focal_species: number[];
   ancillary_species: number[];
+  survey_type: string;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -175,23 +176,6 @@ export interface IGetSurveyAttachment {
  */
 export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
-}
-
-export interface IGetTemplateObservations {
-  id: number;
-  fileName: string;
-  lastModified: string;
-  size: number;
-}
-
-/**
- * Get observation template response object.
- *
- * @export
- * @interface IGetTemplateObservationsResponse
- */
-export interface IGetTemplateObservationsResponse {
-  templateObservationsList: IGetTemplateObservations[];
 }
 
 export interface SurveyPermits {

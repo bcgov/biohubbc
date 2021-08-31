@@ -25,10 +25,6 @@ describe('PutLocationData', () => {
       data = new PutLocationData(null);
     });
 
-    it('sets regions', () => {
-      expect(data.regions).to.eql([]);
-    });
-
     it('sets location_description', () => {
       expect(data.location_description).to.equal(null);
     });
@@ -46,7 +42,6 @@ describe('PutLocationData', () => {
     let data: PutLocationData;
 
     const obj = {
-      regions: ['region 1', 'region 2'],
       location_description: 'location',
       geometry: [
         {
@@ -70,10 +65,6 @@ describe('PutLocationData', () => {
 
     before(() => {
       data = new PutLocationData(obj);
-    });
-
-    it('sets regions', () => {
-      expect(data.regions).to.eql(obj.regions);
     });
 
     it('sets location_description', () => {
@@ -588,10 +579,6 @@ describe('GetLocationData', () => {
       locationData = new GetLocationData(null);
     });
 
-    it('sets regions', function () {
-      expect(locationData.regions).to.eql([]);
-    });
-
     it('sets location_description', function () {
       expect(locationData.location_description).to.equal('');
     });
@@ -609,19 +596,27 @@ describe('GetLocationData', () => {
     let locationData: GetLocationData;
 
     const location_description = 'location description';
-    const geometry =
-      '{"type":"Polygon","coordinates":[[[-128.224277,53.338275],[-128.224277,58.201367],[-124.122791,58.201367],[-124.122791,53.338275],[-128.224277,53.338275]]]}';
+    const geometry = [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [125.6, 10.1]
+        },
+        properties: {
+          name: 'Dinagat Islands'
+        }
+      }
+    ];
     const revision_count = 1;
 
     const locationDataObj = [
       {
-        name: 'region 1',
         location_description,
         geometry,
         revision_count
       },
       {
-        name: 'region 2',
         location_description,
         geometry,
         revision_count
@@ -632,16 +627,12 @@ describe('GetLocationData', () => {
       locationData = new GetLocationData(locationDataObj);
     });
 
-    it('sets regions', function () {
-      expect(locationData.regions).to.eql(['region 1', 'region 2']);
-    });
-
     it('sets location_description', function () {
       expect(locationData.location_description).to.equal(location_description);
     });
 
     it('sets the geometry', function () {
-      expect(locationData.geometry).to.eql([JSON.parse(geometry)]);
+      expect(locationData.geometry).to.eql(geometry);
     });
 
     it('sets revision_count', () => {

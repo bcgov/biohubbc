@@ -11,7 +11,8 @@ import { Router } from 'react-router-dom';
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   external: {
-    get: jest.fn()
+    get: jest.fn(),
+    post: jest.fn()
   }
 };
 
@@ -28,6 +29,9 @@ describe('MapContainer', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().external.get.mockClear();
+    mockBiohubApi().external.post.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -65,6 +69,13 @@ describe('MapContainer', () => {
     }
   ];
   const setGeometry = jest.fn();
+
+  mockBiohubApi().external.get.mockResolvedValue({
+    features: []
+  });
+  mockBiohubApi().external.post.mockResolvedValue({
+    features: []
+  });
 
   test('matches the snapshot with geometries being passed in', () => {
     const { asFragment } = render(

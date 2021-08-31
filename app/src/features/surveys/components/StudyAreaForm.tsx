@@ -4,43 +4,29 @@ import { Feature } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import yup from 'utils/YupSchema';
 import MapBoundary from 'components/boundary/MapBoundary';
-import { updateMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IStudyAreaForm {
   survey_area_name: string;
-  park: string[];
-  management_unit: string[];
   geometry: Feature[];
 }
 
 export const StudyAreaInitialValues: IStudyAreaForm = {
   survey_area_name: '',
-  park: [],
-  management_unit: [],
   geometry: []
 };
 
 export const StudyAreaYupSchema = yup.object().shape({
-  survey_area_name: yup.string().required('Required'),
-  park: yup.array().of(yup.string()),
-  management_unit: yup.array().of(yup.string())
+  survey_area_name: yup.string().required('Required')
 });
-
-export interface IStudyAreaFormProps {
-  park: IMultiAutocompleteFieldOption[];
-  management_unit: IMultiAutocompleteFieldOption[];
-}
 
 /**
  * Create survey - study area fields
  *
  * @return {*}
  */
-const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
+const StudyAreaForm = () => {
   const { values, setFieldValue } = useFormikContext<IStudyAreaForm>();
 
   const [bounds, setBounds] = useState<any>([]);
@@ -49,7 +35,7 @@ const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
 
   useEffect(() => {
     setIsLoading(false);
-    updateMapBounds(values.geometry, setBounds);
+    setBounds(calculateUpdatedMapBounds(values.geometry));
   }, [values.geometry]);
 
   return (
@@ -62,17 +48,6 @@ const StudyAreaForm: React.FC<IStudyAreaFormProps> = (props) => {
             other={{
               required: true
             }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize id="park" label="Park" options={props.park} required={false} />
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id="management_unit"
-            label="Management Unit"
-            options={props.management_unit}
-            required={false}
           />
         </Grid>
         <MapBoundary

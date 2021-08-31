@@ -1,187 +1,394 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useState, useEffect } from 'react';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
+import {
+  mdiAlertCircleOutline,
+  mdiClockOutline,
+  mdiFileOutline,
+  mdiImport,
+  mdiTrashCanOutline,
+  mdiDownload
+} from '@mdi/js';
+import Icon from '@mdi/react';
+import FileUpload from 'components/attachments/FileUpload';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import ComponentDialog from 'components/dialog/ComponentDialog';
+import { DialogContext } from 'contexts/dialogContext';
+import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
-import TablePagination from '@material-ui/core/TablePagination';
-import { IGetBlocksListResponse } from 'interfaces/useObservationApi.interface';
-import { useHistory } from 'react-router';
-import { TIME_FORMAT } from 'constants/dateTimeFormats';
-import { getFormattedTime } from 'utils/Utils';
+import { useInterval } from 'hooks/useInterval';
+import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useParams } from 'react-router';
 
-const useStyles = makeStyles(() => ({
-  table: {
-    minWidth: 650
+const useStyles = makeStyles((theme: Theme) => ({
+  textSpacing: {
+    marginBottom: '1rem'
   },
-  heading: {
-    fontWeight: 'bold'
+  browseLink: {
+    cursor: 'pointer'
+  },
+  center: {
+    alignSelf: 'center'
+  },
+  box: {
+    width: '100%',
+    background: 'rgba(241, 243, 245, 1)',
+    alignItems: 'center',
+    display: 'flex',
+    justifyContent: 'center',
+    minHeight: '3rem'
+  },
+  infoBox: {
+    background: 'rgba(241, 243, 245, 1)'
+  },
+  tab: {
+    paddingLeft: theme.spacing(2)
+  },
+  nested: {
+    paddingLeft: theme.spacing(4)
+  },
+  alertActions: {
+    '& > *': {
+      marginLeft: theme.spacing(2)
+    }
   }
 }));
 
-export interface ISurveyObservationsProps {
-  projectForViewData: IGetProjectForViewResponse;
-  surveyForViewData: IGetSurveyForViewResponse;
-}
-
-const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
-  const classes = useStyles();
+const SurveyObservations = () => {
   const biohubApi = useBiohubApi();
-  const history = useHistory();
+  const urlParams = useParams();
 
-  const { projectForViewData, surveyForViewData } = props;
+  const projectId = urlParams['id'];
+  const surveyId = urlParams['survey_id'];
+  const [occurrenceSubmissionId, setOccurrenceSubmissionId] = useState<number | null>(null);
+  const [openImportObservations, setOpenImportObservations] = useState(false);
 
-  const [surveyType, setSurveyType] = useState<string>('');
-  const [observations, setObservations] = useState<IGetBlocksListResponse[]>([]);
+  const classes = useStyles();
+
+  const importObservations = (): IUploadHandler => {
+    return (files, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.observation.uploadObservationSubmission(
+        projectId,
+        surveyId,
+        files[0],
+        cancelToken,
+        handleFileUploadProgress
+      );
+    };
+  };
+
+  const [submissionStatus, setSubmissionStatus] = useState<IGetObservationSubmissionResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [rowsPerPage, setRowsPerPage] = useState(5);
-  const [page, setPage] = useState(0);
+  const [isValidating, setIsValidating] = useState(false);
+  const [isPolling, setIsPolling] = useState(false);
+  const [pollingTime, setPollingTime] = useState<number | null>(0);
+
+  const dialogContext = useContext(DialogContext);
+
+  const fetchObservationSubmission = useCallback(async () => {
+    const submission = await biohubApi.observation.getObservationSubmission(projectId, surveyId);
+
+    setSubmissionStatus(() => {
+      setIsLoading(false);
+      if (submission) {
+        if (
+          submission.status === 'Rejected' ||
+          submission.status === 'Darwin Core Validated' ||
+          submission.status === 'Template Validated'
+        ) {
+          setIsValidating(false);
+          setIsPolling(false);
+
+          setPollingTime(null);
+        } else {
+          setIsValidating(true);
+          setIsPolling(true);
+        }
+
+        setOccurrenceSubmissionId(submission.id);
+      }
+
+      return submission;
+    });
+  }, [biohubApi.observation, projectId, surveyId]);
+
+  useInterval(fetchObservationSubmission, pollingTime);
 
   useEffect(() => {
-    const getObservations = async () => {
-      const observationsResponse = await biohubApi.observation.getObservationsList(
-        projectForViewData.id,
-        surveyForViewData.survey_details.id
-      );
-
-      if (!observationsResponse || !observationsResponse.blocks) {
-        return;
-      }
-
-      if (observationsResponse.blocks) {
-        setSurveyType('Block');
-      }
-
-      setIsLoading(false);
-      setObservations(observationsResponse.blocks);
-    };
-
     if (isLoading) {
-      getObservations();
+      fetchObservationSubmission();
     }
-  }, [biohubApi, isLoading, projectForViewData.id, surveyForViewData.survey_details.id]);
 
-  const addNewObservation = () => {
-    if (surveyType === 'Block') {
-      history.push(
-        `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/create`
-      );
+    if (isPolling && !pollingTime) {
+      setPollingTime(2000);
+    }
+  }, [
+    biohubApi,
+    isLoading,
+    fetchObservationSubmission,
+    isPolling,
+    pollingTime,
+    isValidating,
+    submissionStatus,
+    projectId,
+    surveyId
+  ]);
+
+  const softDeleteSubmission = async () => {
+    if (!occurrenceSubmissionId) {
+      return;
+    }
+
+    await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId);
+
+    fetchObservationSubmission();
+  };
+
+  const defaultUploadYesNoDialogProps = {
+    dialogTitle: 'Upload Observation Data',
+    dialogText:
+      'Are you sure you want to import a different data set?  This will overwrite the existing data you have already imported.',
+    open: false,
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false }),
+    onYes: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const defaultDeleteYesNoDialogProps = {
+    ...defaultUploadYesNoDialogProps,
+    dialogTitle: 'Delete Observation',
+    dialogText:
+      'Are you sure you want to delete the current observation data? Your observation will be removed from this survey.'
+  };
+
+  const showUploadDialog = () => {
+    if (submissionStatus) {
+      // already have observation data, prompt user to confirm override
+      dialogContext.setYesNoDialog({
+        ...defaultUploadYesNoDialogProps,
+        open: true,
+        onYes: () => {
+          setOpenImportObservations(true);
+          dialogContext.setYesNoDialog({ open: false });
+        }
+      });
+    } else {
+      setOpenImportObservations(true);
     }
   };
 
-  const addNewTemplateObservation = () => {
-    history.push(
-      `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/template`
-    );
+  const showDeleteDialog = () => {
+    dialogContext.setYesNoDialog({
+      ...defaultDeleteYesNoDialogProps,
+      open: true,
+      onYes: () => {
+        softDeleteSubmission();
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
   };
 
-  const editObservation = async (observationId: number) => {
-    if (surveyType === 'Block') {
-      history.push(
-        `/projects/${projectForViewData.id}/surveys/${surveyForViewData.survey_details.id}/observations/${observationId}/block`
-      );
-    }
+  // Action prop for the Alert MUI component to render the delete icon and associated action
+  const submissionAlertAction = () => (
+    <Box className={classes.alertActions}>
+      <IconButton aria-label="open" color="inherit" size="small" onClick={() => viewFileContents()}>
+        <Icon path={mdiDownload} size={1} />
+      </IconButton>
+      <IconButton aria-label="delete" color="inherit" size="small" onClick={() => showDeleteDialog()}>
+        <Icon path={mdiTrashCanOutline} size={1} />
+      </IconButton>
+    </Box>
+  );
+
+  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
+
+  const messageGrouping: MessageGrouping = {
+    mandatory: {
+      type: ['Missing Required Field', 'Missing Required Header'],
+      label: 'Mandatory fields have not been filled out'
+    },
+    value_not_from_list: {
+      type: ['Invalid Value'],
+      label: "Values have not been selected from the field's dropdown list"
+    },
+    unsupported_header: {
+      type: ['Unknown Header'],
+      label: 'Column headers are not supported'
+    },
+    out_of_range: {
+      type: ['Out of Range'],
+      label: 'Values are out of range'
+    },
+    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
+
+  type SubmissionMessages = { [key: string]: string[] };
+
+  const submissionMessages: SubmissionMessages = {};
+
+  const messageList = submissionStatus?.messages;
+
+  if (messageList) {
+    Object.entries(messageGrouping).forEach(([key, value]) => {
+      messageList.forEach((message) => {
+        if (value.type.includes(message.type)) {
+          if (!submissionMessages[key]) {
+            submissionMessages[key] = [];
+          }
+
+          submissionMessages[key].push(message.message);
+        }
+      });
+    });
+  }
+
+  const viewFileContents = async () => {
+    if (!occurrenceSubmissionId) {
+      return;
+    }
+
+    let response;
+
+    try {
+      response = await biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, occurrenceSubmissionId);
+    } catch {
+      return;
+    }
+
+    if (!response) {
+      return;
+    }
+
+    window.open(response);
+  };
+
+  if (isLoading) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
-    <>
-      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2" data-testid="observations-heading">
+    <Box>
+      <Box mb={5} display="flex" justifyContent="space-between">
+        <Typography data-testid="observations-heading" variant="h2">
           Observations
         </Typography>
-        <Box>
-          <Box display="flex" justifyContent="space-between">
-            <Box mr={1}>
-              <Button variant="contained" color="primary" onClick={addNewObservation}>
-                {`New ${surveyType} Survey`}
-              </Button>
-            </Box>
-            <Box mr={1}>
-              <Button variant="contained" color="primary" onClick={addNewTemplateObservation}>
-                New Template Survey
-              </Button>
-            </Box>
-            <Button variant="contained" color="primary">
-              Add Incidental
-            </Button>
-          </Box>
-        </Box>
+        <Button
+          startIcon={<Icon path={mdiImport} size={1} />}
+          variant="outlined"
+          color="primary"
+          onClick={() => showUploadDialog()}>
+          Import
+        </Button>
       </Box>
-      <Paper>
-        <TableContainer>
-          <Table className={classes.table} aria-label="block-list-table">
-            <TableHead>
-              <TableRow>
-                <TableCell className={classes.heading}>ID</TableCell>
-                <TableCell className={classes.heading}>Location</TableCell>
-                <TableCell className={classes.heading}>Observations</TableCell>
-                <TableCell className={classes.heading}>Start Time</TableCell>
-                <TableCell className={classes.heading}>End Time</TableCell>
-                <TableCell className={classes.heading}></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {observations.length > 0 &&
-                observations.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
-                  <TableRow key={row.id}>
-                    <TableCell component="th" scope="row">
-                      {row.id}
-                    </TableCell>
-                    <TableCell className={classes.heading}>
-                      {surveyType} {surveyType === 'Block' && row.block_id}
-                    </TableCell>
-                    <TableCell>
-                      {row.number_of_observations > 0 ? row.number_of_observations : `No Observations`}
-                    </TableCell>
-                    <TableCell>{getFormattedTime(TIME_FORMAT.ShortTimeFormatAmPm, row.start_time)}</TableCell>
-                    <TableCell>{getFormattedTime(TIME_FORMAT.ShortTimeFormatAmPm, row.end_time)}</TableCell>
-                    <TableCell>
-                      <Link
-                        underline="always"
-                        component="button"
-                        variant="body2"
-                        onClick={() => editObservation(row.id)}>
-                        Edit
-                      </Link>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              {!observations.length && (
-                <TableRow>
-                  <TableCell colSpan={5} align="center">
-                    No Observations
-                  </TableCell>
-                </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {observations.length > 0 && (
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
-            component="div"
-            count={observations.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-            }
-          />
+
+      <Box component={Paper} p={4}>
+        {!submissionStatus && (
+          <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
+            No Observation Data. &nbsp;
+            <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
+              Click Here to Import
+            </Link>
+          </Typography>
         )}
-      </Paper>
-    </>
+        {!isValidating && submissionStatus?.status === 'Rejected' && (
+          <>
+            <Alert
+              icon={<Icon path={mdiAlertCircleOutline} size={1} />}
+              severity="error"
+              action={submissionAlertAction()}>
+              <Box component={AlertTitle} display="flex">
+                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+                  <strong>{submissionStatus.fileName}</strong>
+                </Link>
+              </Box>
+              Validation Failed
+            </Alert>
+
+            <Box mt={3} mb={1}>
+              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
+                What's next?
+              </Typography>
+            </Box>
+            <Box mb={3}>
+              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
+                Resolve the following errors in your local file and re-import.
+              </Typography>
+            </Box>
+            <Box>
+              {Object.entries(submissionMessages).map(([key, value], index) => {
+                return (
+                  <Box key={index}>
+                    <Box display="flex" alignItems="center">
+                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />
+                      <strong className={classes.tab}>{messageGrouping[key].label}</strong>
+                    </Box>
+                    <Box pl={2}>
+                      <ul>
+                        {value.map((message: string, index2: number) => {
+                          return <li key={`${index}-${index2}`}>{message}</li>;
+                        })}
+                      </ul>
+                    </Box>
+                  </Box>
+                );
+              })}
+            </Box>
+          </>
+        )}
+        {!isValidating &&
+          (submissionStatus?.status === 'Darwin Core Validated' ||
+            submissionStatus?.status === 'Template Validated') && (
+            <>
+              <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info" action={submissionAlertAction()}>
+                <Box component={AlertTitle} display="flex">
+                  <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+                    <strong>{submissionStatus.fileName}</strong>
+                  </Link>
+                </Box>
+              </Alert>
+
+              <Box mt={5} overflow="hidden">
+                <ObservationSubmissionCSV submissionId={submissionStatus.id} />
+              </Box>
+            </>
+          )}
+        {isValidating && (
+          <>
+            <Alert icon={<Icon path={mdiClockOutline} size={1} />} severity="info" action={submissionAlertAction()}>
+              <Box component={AlertTitle} display="flex">
+                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+                  <strong>{submissionStatus?.fileName}</strong>
+                </Link>
+              </Box>
+              Validating observation data. Please wait ...
+            </Alert>
+          </>
+        )}
+      </Box>
+
+      <ComponentDialog
+        open={openImportObservations}
+        dialogTitle="Import Observation Data"
+        onClose={() => {
+          setOpenImportObservations(false);
+          setIsPolling(true);
+          setIsLoading(true);
+        }}>
+        <FileUpload
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
+          uploadHandler={importObservations()}
+        />
+      </ComponentDialog>
+    </Box>
   );
 };
 

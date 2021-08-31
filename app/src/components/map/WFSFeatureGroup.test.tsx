@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MapContainer } from 'react-leaflet';
@@ -20,6 +20,8 @@ describe('WFSFeatureGroup', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().external.get.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -62,8 +64,11 @@ describe('WFSFeatureGroup', () => {
       <MapContainer id={'test-map'} style={{ height: '100%' }} center={[55, -128]} zoom={10} scrollWheelZoom={false}>
         <MapBounds bounds={initialBounds} />
         <WFSFeatureGroup
-          name="Wildlife Management Units"
           typeName="pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW"
+          featureKeyHandler={() => 'uniqueFeatureKey'}
+          popupContentHandler={() => {
+            return { tooltip: 'Feature Name', content: <div>myFeature</div> };
+          }}
           onSelectGeometry={onSelectGeometry}
           existingGeometry={[]}
         />

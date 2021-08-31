@@ -1,5 +1,4 @@
 import { getByTestId, render, fireEvent, waitFor, getByText, queryByText } from '@testing-library/react';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
 import ProjectLocationForm, {
@@ -13,19 +12,10 @@ jest.mock('@tmcw/togeojson', () => ({
   kml: jest.fn()
 }));
 
-const region: IMultiAutocompleteFieldOption[] = [
-  {
-    value: 1,
-    label: 'region 1'
-  },
-  {
-    value: 2,
-    label: 'region 2'
-  }
-];
+jest.spyOn(console, 'debug').mockImplementation(() => {});
 
 describe('ProjectLocationForm', () => {
-  it('renders correctly with default empty values', () => {
+  it('renders correctly with default empty values', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectLocationFormInitialValues}
@@ -33,16 +23,17 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  it('renders correctly with existing location values', () => {
+  it('renders correctly with existing location values', async () => {
     const existingFormValues: IProjectLocationForm = {
-      regions: ['region 1', 'region 2'],
       location_description: 'a location description',
       geometry: [
         {
@@ -65,16 +56,17 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  it('renders correctly with errors on fields', () => {
+  it('renders correctly with errors on fields', async () => {
     const existingFormValues: IProjectLocationForm = {
-      regions: ['region 1', 'region 2'],
       location_description: 'a location description',
       geometry: [
         {
@@ -99,11 +91,13 @@ describe('ProjectLocationForm', () => {
         initialErrors={{ location_description: 'error is here' }}
         initialTouched={{ location_description: true }}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   it('displays an error when the spatial upload is attempted with an incorrect file type', async () => {
@@ -119,7 +113,7 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 
@@ -188,7 +182,7 @@ describe('ProjectLocationForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectLocationForm region={region} />}
+        {() => <ProjectLocationForm />}
       </Formik>
     );
 

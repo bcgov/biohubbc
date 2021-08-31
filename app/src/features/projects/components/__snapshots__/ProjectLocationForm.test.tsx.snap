@@ -10,126 +10,6 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="regions"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
-              for="regions"
-              id="regions-label"
-            >
-              Regions
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="regions"
-                required=""
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-54 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-56"
-                >
-                  <span>
-                    Regions *
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-58"
-        >
-          <button
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-          >
-            Click here to view FLNRO map regions.
-          </button>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
         >
           <label
@@ -152,10 +32,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-54 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-45 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-56"
+                class="PrivateNotchedOutline-legendLabelled-47"
               >
                 <span>
                   Location Description
@@ -169,12 +49,12 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-59 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-49 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-61"
+          class="MuiBox-root MuiBox-root-51"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -183,11 +63,11 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-62"
+          class="MuiBox-root MuiBox-root-52"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-60 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-50 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -208,7 +88,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-60 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-50 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -229,7 +109,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
             />
           </label>
           <div
-            class="MuiBox-root MuiBox-root-63"
+            class="MuiBox-root MuiBox-root-53"
           >
             <div
               class="MuiFormControl-root"
@@ -277,10 +157,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-54 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-45 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-56"
+                    class="PrivateNotchedOutline-legendLabelled-47"
                   >
                     <span>
                       Select Layer
@@ -292,10 +172,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-64"
+          class="MuiBox-root MuiBox-root-54"
         />
         <div
-          class="MuiBox-root MuiBox-root-65"
+          class="MuiBox-root MuiBox-root-55"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -322,7 +202,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/0/0/0"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
                       style="width: 256px; height: 256px; left: -199px; top: -128px;"
                     />
                   </div>
@@ -542,7 +422,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -554,7 +434,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -577,12 +457,6 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                   >
                     Leaflet
                   </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
-                  </a>
                 </div>
               </div>
             </div>
@@ -600,126 +474,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="regions"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
-              for="regions"
-              id="regions-label"
-            >
-              Regions
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="regions"
-                required=""
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-4"
-                >
-                  <span>
-                    Regions *
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-6"
-        >
-          <button
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-          >
-            Click here to view FLNRO map regions.
-          </button>
-        </div>
-      </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
@@ -746,10 +500,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-4"
+                class="PrivateNotchedOutline-legendLabelled-3"
               >
                 <span>
                   Location Description
@@ -763,12 +517,12 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-7 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-5 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-7"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -777,11 +531,11 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-8"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-8 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -802,7 +556,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-8 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -823,7 +577,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             />
           </label>
           <div
-            class="MuiBox-root MuiBox-root-11"
+            class="MuiBox-root MuiBox-root-9"
           >
             <div
               class="MuiFormControl-root"
@@ -871,10 +625,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-4"
+                    class="PrivateNotchedOutline-legendLabelled-3"
                   >
                     <span>
                       Select Layer
@@ -886,10 +640,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-10"
         />
         <div
-          class="MuiBox-root MuiBox-root-13"
+          class="MuiBox-root MuiBox-root-11"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -916,7 +670,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -1113,7 +867,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -1125,7 +879,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -1148,12 +902,6 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                   >
                     Leaflet
                   </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
-                  </a>
                 </div>
               </div>
             </div>
@@ -1171,126 +919,6 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="regions"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
-              for="regions"
-              id="regions-label"
-            >
-              Regions
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="regions"
-                required=""
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-30"
-                >
-                  <span>
-                    Regions *
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-32"
-        >
-          <button
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-          >
-            Click here to view FLNRO map regions.
-          </button>
-        </div>
-      </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
@@ -1320,10 +948,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-30 PrivateNotchedOutline-legendNotched-31"
+                class="PrivateNotchedOutline-legendLabelled-25 PrivateNotchedOutline-legendNotched-26"
               >
                 <span>
                   Location Description
@@ -1343,12 +971,12 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-33 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-27 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-35"
+          class="MuiBox-root MuiBox-root-29"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -1357,11 +985,11 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-36"
+          class="MuiBox-root MuiBox-root-30"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-34 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-28 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1382,7 +1010,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-34 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-28 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1403,7 +1031,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             />
           </label>
           <div
-            class="MuiBox-root MuiBox-root-37"
+            class="MuiBox-root MuiBox-root-31"
           >
             <div
               class="MuiFormControl-root"
@@ -1451,10 +1079,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-30"
+                    class="PrivateNotchedOutline-legendLabelled-25"
                   >
                     <span>
                       Select Layer
@@ -1466,10 +1094,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-38"
+          class="MuiBox-root MuiBox-root-32"
         />
         <div
-          class="MuiBox-root MuiBox-root-39"
+          class="MuiBox-root MuiBox-root-33"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1496,7 +1124,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -1708,7 +1336,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -1720,7 +1348,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -1743,12 +1371,6 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                   >
                     Leaflet
                   </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
-                  </a>
                 </div>
               </div>
             </div>
@@ -1766,126 +1388,6 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          aria-expanded="false"
-          class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-          data-testid="regions"
-          role="combobox"
-        >
-          <div
-            class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-          >
-            <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-              data-shrink="false"
-              for="regions"
-              id="regions-label"
-            >
-              Regions
-              <span
-                aria-hidden="true"
-                class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-              >
-                 *
-              </span>
-            </label>
-            <div
-              class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-            >
-              <input
-                aria-autocomplete="list"
-                aria-invalid="false"
-                autocapitalize="none"
-                autocomplete="off"
-                class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                id="regions"
-                required=""
-                spellcheck="false"
-                type="text"
-                value=""
-              />
-              <div
-                class="MuiAutocomplete-endAdornment"
-              >
-                <button
-                  aria-label="Clear"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                  tabindex="-1"
-                  title="Clear"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-                <button
-                  aria-label="Open"
-                  class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                  tabindex="-1"
-                  title="Open"
-                  type="button"
-                >
-                  <span
-                    class="MuiIconButton-label"
-                  >
-                    <svg
-                      aria-hidden="true"
-                      class="MuiSvgIcon-root"
-                      focusable="false"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M7 10l5 5 5-5z"
-                      />
-                    </svg>
-                  </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
-              <fieldset
-                aria-hidden="true"
-                class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
-              >
-                <legend
-                  class="PrivateNotchedOutline-legendLabelled-17"
-                >
-                  <span>
-                    Regions *
-                  </span>
-                </legend>
-              </fieldset>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-19"
-        >
-          <button
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
-          >
-            Click here to view FLNRO map regions.
-          </button>
-        </div>
-      </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
@@ -1914,10 +1416,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
               >
                 <span>
                   Location Description
@@ -1931,12 +1433,12 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-20 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-16 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-22"
+          class="MuiBox-root MuiBox-root-18"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -1945,11 +1447,11 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </p>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-19"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
@@ -1970,7 +1472,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </label>
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
             tabindex="0"
@@ -1991,7 +1493,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             />
           </label>
           <div
-            class="MuiBox-root MuiBox-root-24"
+            class="MuiBox-root MuiBox-root-20"
           >
             <div
               class="MuiFormControl-root"
@@ -2039,10 +1541,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-17"
+                    class="PrivateNotchedOutline-legendLabelled-14"
                   >
                     <span>
                       Select Layer
@@ -2054,10 +1556,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-25"
+          class="MuiBox-root MuiBox-root-21"
         />
         <div
-          class="MuiBox-root MuiBox-root-26"
+          class="MuiBox-root MuiBox-root-22"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2084,7 +1586,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/5/10/4"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
                       style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
@@ -2296,7 +1798,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                             type="radio"
                           />
                           <span>
-                             Esri Imagery
+                             BC Government
                           </span>
                         </div>
                       </label>
@@ -2308,7 +1810,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                             type="radio"
                           />
                           <span>
-                             BC Government
+                             Esri Imagery
                           </span>
                         </div>
                       </label>
@@ -2330,12 +1832,6 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                     title="A JS library for interactive maps"
                   >
                     Leaflet
-                  </a>
-                   | © 
-                  <a
-                    href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps"
-                  >
-                    ESRI Basemap
                   </a>
                 </div>
               </div>

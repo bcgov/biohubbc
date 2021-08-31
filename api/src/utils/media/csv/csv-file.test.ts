@@ -215,71 +215,6 @@ describe('CSVWorksheet', () => {
   });
 });
 
-describe('XLSXCSV', () => {
-  it('constructs', () => {
-    const mediaFile: MediaFile = new MediaFile('fileName', 'mimetype', Buffer.from(''));
-
-    const xlsxCSV = new XLSXCSV(mediaFile);
-
-    expect(xlsxCSV).not.to.be.null;
-  });
-
-  describe('isValid', () => {
-    it('returns validation errors if the buffer is empty', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'application/vnd.ms-excel', Buffer.from(''));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([{ fileName: 'fileName', fileErrors: ['File is empty'], isValid: false }]);
-    });
-
-    it('returns validation errors if the mime type is invalid', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'invalidMime', Buffer.from('fileData'));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([
-        {
-          fileName: 'fileName',
-          fileErrors: [
-            'File mime type is invalid, must be one of: /application\\/vnd\\.ms-excel/, /application\\/vnd\\.openxmlformats/'
-          ],
-          isValid: false
-        }
-      ]);
-    });
-
-    it('returns validation errors if the buffer is empty and the mime type is invalid', () => {
-      const mediaFile: MediaFile = new MediaFile('fileName', 'invalidMime', Buffer.from(''));
-
-      const xlsxCSV = new XLSXCSV(mediaFile);
-
-      expect(xlsxCSV).not.to.be.null;
-
-      const isValid = xlsxCSV.isValid();
-
-      expect(isValid).to.eql([
-        {
-          fileName: 'fileName',
-          fileErrors: [
-            'File is empty',
-            'File mime type is invalid, must be one of: /application\\/vnd\\.ms-excel/, /application\\/vnd\\.openxmlformats/'
-          ],
-          isValid: false
-        }
-      ]);
-    });
-  });
-});
-
 describe('CSVValidation', () => {
   it('constructs', () => {
     const csvValidation = new CSVValidation('fileName');
@@ -313,15 +248,13 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const headerError1: IHeaderError = {
-        type: 'Invalid',
-        code: 'DuplicateHeader',
+        errorCode: 'Duplicate Header',
         message: 'a header error',
         col: 0
       };
 
       const headerError2: IHeaderError = {
-        type: 'Invalid',
-        code: 'UnknownHeader',
+        errorCode: 'Unknown Header',
         message: 'a second header error',
         col: 1
       };
@@ -343,16 +276,16 @@ describe('CSVValidation', () => {
       expect(csvValidation).not.to.be.null;
 
       const rowError1: IRowError = {
-        type: 'Invalid',
-        code: 'MissingRequiredField',
+        errorCode: 'Missing Required Field',
         message: 'a row error',
+        col: 'col1',
         row: 1
       };
 
       const rowError2: IRowError = {
-        type: 'Invalid',
-        code: 'MissingRequiredField',
+        errorCode: 'Missing Required Field',
         message: 'a second row error',
+        col: 'col1',
         row: 2
       };
 
@@ -375,16 +308,15 @@ describe('CSVValidation', () => {
       const fileError1 = 'a file error';
 
       const headerError1: IHeaderError = {
-        type: 'Invalid',
-        code: 'DuplicateHeader',
+        errorCode: 'Duplicate Header',
         message: 'a header error',
         col: 0
       };
 
       const rowError1: IRowError = {
-        type: 'Invalid',
-        code: 'MissingRequiredField',
+        errorCode: 'Missing Required Field',
         message: 'a row error',
+        col: 'col1',
         row: 1
       };
 
@@ -402,5 +334,15 @@ describe('CSVValidation', () => {
         isValid: false
       });
     });
+  });
+});
+
+describe('XLSXCSV', () => {
+  it('constructs', () => {
+    const mediaFile: MediaFile = new MediaFile('fileName', 'mimetype', Buffer.from(''));
+
+    const xlsxCSV = new XLSXCSV(mediaFile);
+
+    expect(xlsxCSV).not.to.be.null;
   });
 });

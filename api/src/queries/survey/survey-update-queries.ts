@@ -139,6 +139,8 @@ export const putSurveyDetailsSQL = (
       lead_first_name = ${data.lead_first_name},
       lead_last_name = ${data.lead_last_name},
       location_name = ${data.location_name},
+      geojson = ${JSON.stringify(data.geometry)},
+      survey_type = ${data.survey_type},
       geography =
   `;
 

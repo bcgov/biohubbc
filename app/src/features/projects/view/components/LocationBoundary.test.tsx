@@ -13,6 +13,10 @@ const mockUseBiohubApi = {
   project: {
     getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
+  },
+  external: {
+    get: jest.fn(),
+    post: jest.fn()
   }
 };
 
@@ -27,6 +31,10 @@ describe('LocationBoundary', () => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForUpdate.mockClear();
     mockBiohubApi().project.updateProject.mockClear();
+    mockBiohubApi().external.get.mockClear();
+    mockBiohubApi().external.post.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -55,7 +63,14 @@ describe('LocationBoundary', () => {
     }
   ];
 
-  test('matches the snapshot when there is no location description', () => {
+  mockBiohubApi().external.get.mockResolvedValue({
+    features: []
+  });
+  mockBiohubApi().external.post.mockResolvedValue({
+    features: []
+  });
+
+  test('matches the snapshot when there is no location description', async () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
@@ -67,10 +82,12 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  test('matches the snapshot when there is no geometry', () => {
+  test('matches the snapshot when there is no geometry', async () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
@@ -82,10 +99,12 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
-  test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', () => {
+  test('matches the snapshot when the geometry is a single polygon in valid GeoJSON format', async () => {
     const { asFragment } = render(
       <LocationBoundary
         projectForViewData={{
@@ -97,119 +116,14 @@ describe('LocationBoundary', () => {
       />
     );
 
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test('matches the snapshot when the geometry is a single polygon in invalid GeoJSON format', () => {
-    const geometry: any[] = [
-      {
-        type: 'Polygon',
-        coordinates: [
-          [
-            [-128, 55],
-            [-128, 55.5],
-            [-128, 56],
-            [-126, 58],
-            [-128, 55]
-          ]
-        ]
-      }
-    ];
-
-    const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test('matches the snapshot when the geometry is a multipolygon', () => {
-    const geometry: any[] = [
-      {
-        type: 'MultiPolygon',
-        coordinates: [
-          [
-            [
-              [-128, 55],
-              [-128, 55.5],
-              [-128, 56],
-              [-126, 58],
-              [-128, 55]
-            ]
-          ],
-          [
-            [
-              [-129, 56],
-              [-129, 56.5],
-              [-129, 57],
-              [-127, 59],
-              [-129, 56]
-            ]
-          ]
-        ]
-      }
-    ];
-
-    const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
-    );
-
-    expect(asFragment()).toMatchSnapshot();
-  });
-
-  test('matches the snapshot when the geometry is a geometry collection', () => {
-    const geometry: any[] = [
-      {
-        type: 'GeometryCollection',
-        geometries: [
-          {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [-128, 55],
-                [-128, 55.5],
-                [-128, 56],
-                [-126, 58],
-                [-128, 55]
-              ]
-            ]
-          }
-        ]
-      }
-    ];
-
-    const { asFragment } = render(
-      <LocationBoundary
-        projectForViewData={{
-          ...getProjectForViewResponse,
-          location: { ...getProjectForViewResponse.location, geometry }
-        }}
-        codes={codes}
-        refresh={mockRefresh}
-      />
-    );
-
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   test('editing the location boundary works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       location: {
-        regions: ['region 1', 'region 2'],
         location_description: 'description',
         geometry: sharedGeometry,
         revision_count: 1
@@ -254,7 +168,6 @@ describe('LocationBoundary', () => {
       expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
         location: {
-          regions: ['region 1', 'region 2'],
           location_description: 'description',
           geometry: sharedGeometry,
           revision_count: 1
@@ -322,7 +235,6 @@ describe('LocationBoundary', () => {
   it('shows error dialog with API error message when updating location data fails', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       location: {
-        regions: ['region 1', 'region 2'],
         location_description: 'description',
         geometry: sharedGeometry,
         revision_count: 1

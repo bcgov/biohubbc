@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { coordinator_agency, region, regional_offices } from './codes';
+import { coordinator_agency, region, regional_offices, survey_types } from './codes';
 
 describe('coordinator_agency', () => {
   it('has values', () => {
@@ -17,5 +17,11 @@ describe('region', () => {
 describe('regional_offices', () => {
   it('has values', () => {
     expect(regional_offices).is.not.empty;
+  });
+});
+
+describe('survey_types', () => {
+  it('has values', () => {
+    expect(survey_types).is.not.empty;
   });
 });

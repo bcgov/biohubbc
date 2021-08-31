@@ -80,7 +80,6 @@ export class GetPermitData {
  */
 export class GetLocationData {
   location_description: string;
-  regions: string[];
   geometry?: Feature[];
 
   constructor(locationData?: any) {
@@ -93,13 +92,7 @@ export class GetLocationData {
     const locationDataItem = locationData && locationData.length && locationData[0];
 
     this.location_description = locationDataItem?.location_description || '';
-    this.regions =
-      (locationData &&
-        locationData.map((item: any) => {
-          return item.name;
-        })) ||
-      [];
-    this.geometry = (locationDataItem?.geometry?.length && [JSON.parse(locationDataItem.geometry)]) || [];
+    this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
   }
 }
 

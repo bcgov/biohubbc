@@ -1,60 +1,40 @@
-import { IBlockObservationForm } from 'features/observations/components/BlockObservationForm';
-
-/**
- * Get single observation response object.
- *
- * @export
- * @interface IGetObservationResponse
- */
-export interface IGetObservationResponse {
-  id: number;
-  data: {
-    metaData: IBlockObservationForm;
-    tableData: IBlockObservationTableData;
-  };
-  revision_count: number;
+export interface IGetSubmissionCSVForViewItem {
+  name: string;
+  headers: string[];
+  rows: string[][];
 }
 
-export interface IGetBlocksListResponse {
-  id: number;
-  block_id: number;
-  number_of_observations: number;
-  start_time: string;
-  end_time: string;
+export interface IGetSubmissionCSVForViewResponse {
+  data: IGetSubmissionCSVForViewItem[];
 }
 
-export interface IGetObservationsListResponse {
-  blocks: IGetBlocksListResponse[];
+interface IGetObservationSubmissionResponseMessages {
+  id: number;
+  status: string;
+  type: string;
+  message: string;
 }
 
 /**
- * Create or update block observation object.
+ * Get observation submission response object.
  *
  * @export
- * @interface ICreateUpdateBlockObservationRequest
- *
+ * @interface IGetObservationSubmissionResponse
  */
-export interface ICreateUpdateBlockObservationRequest {
-  block_name: number;
-  start_datetime: string;
-  end_datetime: string;
-  observation_count: number;
-  observation_data: {
-    metaData: IBlockObservationForm;
-    tableData: IBlockObservationTableData;
-  };
-  revision_count?: number;
-}
-
-export interface IBlockObservationTableData {
-  data: string[][];
-}
-
-export interface ICreateObservationPostResponse {
+export interface IGetObservationSubmissionResponse {
   id: number;
+  fileName: string;
+  status: string;
+  messages: IGetObservationSubmissionResponseMessages[];
 }
 
-export interface ICreateUpdateObservationRequest {
-  observation_type: string;
-  observation_details_data: ICreateUpdateBlockObservationRequest;
+export interface IGetObservationSubmissionErrorListResponse {
+  id: number;
+  type: string;
+  status: string;
+  message: string;
+}
+
+export interface IUploadObservationSubmissionResponse {
+  submissionId: number;
 }

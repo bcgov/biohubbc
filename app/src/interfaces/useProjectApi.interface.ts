@@ -15,13 +15,6 @@ export interface IGetProjectAttachment {
   size: number;
 }
 
-export interface IGetTemplateObservations {
-  id: number;
-  fileName: string;
-  lastModified: string;
-  size: number;
-}
-
 /**
  * An interface for an instance of filter fields for project advanced filter search
  */
@@ -33,7 +26,6 @@ export interface IProjectAdvancedFilterRequest {
   end_date: string;
   keyword: string;
   project_name: string;
-  regions: string[];
   agency_id: number;
   agency_project_id: string;
   species: number[];
@@ -147,7 +139,6 @@ export interface IGetProjectForUpdateResponseObjectives {
 }
 
 export interface IGetProjectForUpdateResponseLocation {
-  regions: string[];
   location_description: string;
   geometry: Feature[];
   revision_count: number;
@@ -245,7 +236,6 @@ export interface IGetProjectForViewResponseObjectives {
 }
 
 export interface IGetProjectForViewResponseLocation {
-  regions: string[];
   location_description: string;
   geometry: Feature[];
 }
