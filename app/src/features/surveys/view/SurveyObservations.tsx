@@ -343,42 +343,38 @@ const SurveyObservations = () => {
             </Box>
 
             <Box>
-              {Object.entries(submissionErrors).map(([key, value], index) => {
-                return (
-                  <Box key={index}>
-                    <Box display="flex" alignItems="center">
-                      <Icon path={mdiAlertCircle} size={1} color="#ff5252" />
-                      <strong className={classes.tab}>{messageGrouping[key].label}</strong>
-                    </Box>
-                    <Box pl={2}>
-                      <ul>
-                        {value.map((message: string, index2: number) => {
-                          return <li key={`${index}-${index2}`}>{message}</li>;
-                        })}
-                      </ul>
-                    </Box>
+              {Object.entries(submissionErrors).map(([key, value], index) => (
+                <Box key={index}>
+                  <Box display="flex" alignItems="center">
+                    <Icon path={mdiAlertCircle} size={1} color="#ff5252" />
+                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
                   </Box>
-                );
-              })}
+                  <Box pl={2}>
+                    <ul>
+                      {value.map((message: string, index2: number) => {
+                        return <li key={`${index}-${index2}`}>{message}</li>;
+                      })}
+                    </ul>
+                  </Box>
+                </Box>
+              ))}
             </Box>
             <Box>
-              {Object.entries(submissionWarnings).map(([key, value], index) => {
-                return (
-                  <Box key={index}>
-                    <Box display="flex" alignItems="center">
-                      <Icon path={mdiInformationOutline} size={1} color="#ff5252" />
-                      <strong className={classes.tab}>{messageGrouping[key].label}</strong>
-                    </Box>
-                    <Box pl={2}>
-                      <ul>
-                        {value.map((message: string, index2: number) => {
-                          return <li key={`${index}-${index2}`}>{message}</li>;
-                        })}
-                      </ul>
-                    </Box>
+              {Object.entries(submissionWarnings).map(([key, value], index) => (
+                <Box key={index}>
+                  <Box display="flex" alignItems="center">
+                    <Icon path={mdiInformationOutline} size={1} color="#ff5252" />
+                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
                   </Box>
-                );
-              })}
+                  <Box pl={2}>
+                    <ul>
+                      {value.map((message: string, index2: number) => {
+                        return <li key={`${index}-${index2}`}>{message}</li>;
+                      })}
+                    </ul>
+                  </Box>
+                </Box>
+              ))}
             </Box>
           </>
         )}

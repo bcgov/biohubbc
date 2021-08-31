@@ -37,8 +37,7 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
       for (const requiredFieldByHeader of requiredFieldsByHeader) {
         const columnIndex = headers.indexOf(requiredFieldByHeader);
 
-        //if column does not exist, return
-
+        //if column does not exist, return csvWorksheet
         if (columnIndex < 0) {
           return csvWorksheet;
         }
@@ -198,7 +197,7 @@ export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRange
 /**
  * For each item in `requiredFormatsByHeader`, adds an error for each row cell whose value does not match the regular expression pattern.
  *
- * Note: If the cell is empty, this check will be skipped.  Use the `getRequiredFieldsValidator` validator to assert
+ * Note: If the cell is empty, this check will be skipped. Use the `getRequiredFieldsValidator` validator to assert
  * required fields.
  *
  * @param {IFormatByHeader[]} [requiredFormatsByHeader]
