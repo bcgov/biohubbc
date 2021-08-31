@@ -16,7 +16,7 @@ const AccessDenied = () => {
 
   if (!keycloakWrapper?.keycloak?.authenticated) {
     // User is not logged in
-    return <Redirect to={{ pathname: '/login' }} />;
+    return <Redirect to={{ pathname: '/' }} />;
   }
 
   if (!keycloakWrapper.hasLoadedAllUserInfo) {

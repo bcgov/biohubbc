@@ -6,7 +6,6 @@ import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
-import LogInPage from 'pages/login/LogInPage';
 import PublicPage from 'pages/public/PublicPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
@@ -26,8 +25,6 @@ const AppRouter: React.FC = (props: any) => {
     <Switch>
       <Redirect from="/:url*(/+)" to={location.pathname.slice(0, -1)} />
       <Redirect exact from="/" to="/public" />
-      <Redirect exact from="/admin" to="/login" />
-      <AppRoute path="/login" title={getTitle('Login')} component={LogInPage} layout={PublicLayout} />
       <AppRoute path="/public" title={getTitle('Public')} component={PublicPage} layout={PublicLayout} />
       <AppRoute
         path="/page-not-found"

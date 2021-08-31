@@ -110,7 +110,7 @@ export const getLogOutUrl = (config: IConfig): string | undefined => {
     return;
   }
 
-  const localRedirectURL = `${window.location.origin}/login`;
+  const localRedirectURL = `${window.location.origin}/`;
 
   const keycloakLogoutRedirectURL = `${config.KEYCLOAK_CONFIG.url}/realms/${config.KEYCLOAK_CONFIG.realm}/protocol/openid-connect/logout?redirect_uri=${localRedirectURL}`;
 
