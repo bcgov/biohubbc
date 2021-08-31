@@ -12,8 +12,10 @@ import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
   getValidRangeFieldsValidator,
+  getValidFormatFieldsValidator,
   ICodeValuesByHeader,
-  IValueRangesByHeader
+  IValueRangesByHeader,
+  IFormatByHeader
 } from '../validation/csv-row-validator';
 import { DWC_CLASS } from './dwc-archive-file';
 
@@ -143,7 +145,16 @@ const getCodeValuesByHeader = (dwcClass: DWC_CLASS): ICodeValuesByHeader[] => {
 const getValidRangesByHeader = (dwcClass: DWC_CLASS): IValueRangesByHeader[] => {
   switch (dwcClass) {
     case DWC_CLASS.OCCURRENCE:
-      return [{ header: 'count', min_value: 1, max_value: 10 }];
+      return [{ header: 'individualCount', min_value: 0, max_value: 10 }];
+    default:
+      return [];
+  }
+};
+
+const getValidFormatsByHeader = (dwcClass: DWC_CLASS): IFormatByHeader[] => {
+  switch (dwcClass) {
+    case DWC_CLASS.EVENT:
+      return [{ header: 'eventID', reg_exp: '^Kispiox.*', expected_format: 'Must start wth `Kispiox`' }];
     default:
       return [];
   }
@@ -162,7 +173,8 @@ export const getDWCCSVValidators = (dwcClass: DWC_CLASS): CSVValidator[] => {
     getValidHeadersValidator(getValidHeaders(dwcClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(dwcClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(dwcClass)),
-    getValidRangeFieldsValidator(getValidRangesByHeader(dwcClass))
+    getValidRangeFieldsValidator(getValidRangesByHeader(dwcClass)),
+    getValidFormatFieldsValidator(getValidFormatsByHeader(dwcClass))
   ];
 };
 

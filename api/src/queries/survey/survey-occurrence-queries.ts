@@ -395,6 +395,7 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       sm.submission_message_id as id,
       smt.name as type,
       sst.name as status,
+      smc.name as class,
       sm.message
     FROM
       occurrence_submission as os
@@ -414,6 +415,10 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       submission_message_type as smt
     ON
       smt.submission_message_type_id = sm.submission_message_type_id
+    LEFT OUTER JOIN
+      submission_message_class smc
+    ON
+      smc.submission_message_class_id = smt.submission_message_class_id
     WHERE
       os.occurrence_submission_id = ${occurrenceSubmissionId}
     ORDER BY sm.submission_message_id;
