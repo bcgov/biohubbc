@@ -42,14 +42,6 @@ const useObservationApi = (axios: AxiosInstance) => {
       }
     );
 
-    if (data.submissionId) {
-      if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-        initiateDwCSubmissionValidation(data.submissionId);
-      } else {
-        initiateXLSXSubmissionValidation(data.submissionId);
-      }
-    }
-
     return data;
   };
 
@@ -128,7 +120,9 @@ const useObservationApi = (axios: AxiosInstance) => {
     uploadObservationSubmission,
     getSubmissionCSVForView,
     getObservationSubmission,
-    deleteObservationSubmission
+    deleteObservationSubmission,
+    initiateDwCSubmissionValidation,
+    initiateXLSXSubmissionValidation
   };
 };
 

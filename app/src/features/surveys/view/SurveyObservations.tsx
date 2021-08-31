@@ -83,13 +83,26 @@ const SurveyObservations = () => {
 
   const importObservations = (): IUploadHandler => {
     return (files, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.observation.uploadObservationSubmission(
-        projectId,
-        surveyId,
-        files[0],
-        cancelToken,
-        handleFileUploadProgress
-      );
+      const file = files[0];
+
+      return biohubApi.observation
+        .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
+        .then((result) => {
+          if (!result || !result.submissionId) {
+            return;
+          }
+
+          if (process.env.REACT_APP_N8N_PORT) {
+            biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type);
+            return;
+          }
+
+          if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
+            biohubApi.observation.initiateDwCSubmissionValidation(result.submissionId);
+          } else {
+            biohubApi.observation.initiateXLSXSubmissionValidation(result.submissionId);
+          }
+        });
     };
   };
 
@@ -382,8 +395,8 @@ const SurveyObservations = () => {
           </>
         )}
         {!isValidating &&
-          (submissionStatus?.status === 'Darwin Core Validated' ||
-            submissionStatus?.status === 'Template Validated') && (
+          submissionStatus &&
+          (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
             <>
               <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info" action={submissionAlertAction()}>
                 <Box component={AlertTitle} display="flex">
@@ -398,7 +411,7 @@ const SurveyObservations = () => {
               </Box>
             </>
           )}
-        {isValidating && (
+        {isValidating && submissionStatus && (
           <>
             <Alert icon={<Icon path={mdiClockOutline} size={1} />} severity="info" action={submissionAlertAction()}>
               <Box component={AlertTitle} display="flex">

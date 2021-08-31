@@ -1,0 +1,195 @@
+{
+  "id": 1,
+  "name": "Submission Validation",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        250,
+        300
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/validate",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+      },
+      "name": "DWC Validate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1770,
+        665
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "validate",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS, HEAD"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Authorization, Origin, X-Requested-With, Content-Type, Accept, sessionid, responseType"
+              }
+            ]
+          },
+          "rawBody": true
+        }
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        940,
+        750
+      ],
+      "webhookId": "a346c2c5-d43e-4bc8-8dd1-dbcee88e1638"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/x-zip-compressed"
+            },
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/zip"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "name": "IF",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        750
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/xlsx/validate",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+      },
+      "name": "XLSX Validate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1770,
+        885
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_HOST}"
+      },
+      "name": "Get N8N API Host",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1120,
+        750
+      ]
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_PORT}"
+      },
+      "name": "Get N8N API Port",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        750
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get N8N API Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF": {
+      "main": [
+        [
+          {
+            "node": "DWC Validate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "XLSX Validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get N8N API Host": {
+      "main": [
+        [
+          {
+            "node": "Get N8N API Port",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get N8N API Port": {
+      "main": [
+        [
+          {
+            "node": "IF",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2021-08-26T12:19:31.100Z",
+  "updatedAt": "2021-08-27T17:21:21.156Z",
+  "settings": {},
+  "staticData": null
+}

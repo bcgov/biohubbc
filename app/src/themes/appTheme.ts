@@ -102,7 +102,7 @@ const appTheme = createMuiTheme({
     MuiFormLabel: {
       asterisk: {
         color: '#db3131',
-        '&$error': {
+        '&.Mui-error': {
           color: '#db3131'
         }
       }
@@ -135,7 +135,7 @@ const appTheme = createMuiTheme({
         color: '#999999',
         fontSize: '33px',
         borderRadius: '50%',
-        '&$error': {
+        '&.Mui-error': {
           backgroundColor: '#ffffff',
           border: '3px solid red',
           color: 'red'

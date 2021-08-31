@@ -6,8 +6,6 @@ A standard React web-app for BioHub management activities.
 
 React: https://reactjs.org/docs/getting-started.html
 
-RJSF: https://react-jsonschema-form.readthedocs.io/en/latest/
-
 # Testing
 
 ## Technologies used
