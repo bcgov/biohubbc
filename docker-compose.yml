@@ -68,20 +68,104 @@ services:
       - db
       - db_setup
 
-  # Build the nginx web-server docker image
-  nginx:
-    image: ${DOCKER_PROJECT_NAME}-nginx-${DOCKER_NAMESPACE}-img
-    container_name: ${DOCKER_PROJECT_NAME}-nginx-${DOCKER_NAMESPACE}-container
+  # Build the n8n nginx proxy docker image
+  n8n_nginx:
+    image: ${DOCKER_PROJECT_NAME}-n8n-nginx-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-n8n-nginx-${DOCKER_NAMESPACE}-container
     build:
-      context: ./.docker/nginx
+      context: ./.docker/nginx/n8n
       dockerfile: Dockerfile
     restart: always
     ports:
-      - 80:80
+      - 5100:5100
     networks:
       - local-network
     depends_on:
+      - n8n
+
+  ## Build the n8n workflow automation image
+  n8n:
+    image: n8nio/n8n
+    container_name: ${DOCKER_PROJECT_NAME}-n8n-${DOCKER_NAMESPACE}-container
+    ports:
+      - ${N8N_PORT}:${N8N_PORT}
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - N8N_HOST=${N8N_HOST}
+      - N8N_PROTOCOL=${N8N_PROTOCOL}
+      - N8N_PORT=${N8N_PORT}
+      - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL}
+      - DB_TYPE=${N8N_DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_HOST}
+      - DB_POSTGRESDB_USER=${DB_ADMIN}
+      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
+      - DB_POSTGRESDB_PORT=${DB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
+      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
+      - N8N_BASIC_AUTH_ACTIVE=${N8N_BASIC_AUTH_ACTIVE}
+      - N8N_BASIC_AUTH_USER=${N8N_BASIC_AUTH_USER}
+      - N8N_BASIC_AUTH_PASSWORD=${N8N_BASIC_AUTH_PASSWORD}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+      - N8N_API_HOST=${N8N_API_HOST}
+      - N8N_API_PORT=${API_PORT}
+    networks:
+      - local-network
+    volumes:
+      - ./.n8n:/home/node/.n8n
+    depends_on:
       - api
+      - db
+    command: ["n8n", "start"]
+
+  ## Run the n8n setup
+  n8n_setup:
+    image: ${DOCKER_PROJECT_NAME}-n8n-setup-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-n8n-setup-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./n8n
+      dockerfile: ./.docker/n8n/Dockerfile.setup
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_TYPE=${N8N_DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_HOST}
+      - DB_POSTGRESDB_USER=${DB_ADMIN}
+      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
+      - DB_POSTGRESDB_PORT=${DB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
+      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+      - ./n8n:/opt/app-root/src
+    networks:
+      - local-network
+    depends_on:
+      - n8n
+
+  ## Export the n8n credentials and workflows
+  n8n_export:
+    image: ${DOCKER_PROJECT_NAME}-n8n-export-${DOCKER_NAMESPACE}-img
+    container_name: ${DOCKER_PROJECT_NAME}-n8n-export-${DOCKER_NAMESPACE}-container
+    build:
+      context: ./n8n
+      dockerfile: ./.docker/n8n/Dockerfile.export
+    environment:
+      - NODE_ENV=${NODE_ENV}
+      - DB_TYPE=${N8N_DB_TYPE}
+      - DB_POSTGRESDB_HOST=${DB_HOST}
+      - DB_POSTGRESDB_USER=${DB_ADMIN}
+      - DB_POSTGRESDB_PASSWORD=${DB_ADMIN_PASS}
+      - DB_POSTGRESDB_PORT=${DB_PORT}
+      - DB_POSTGRESDB_DATABASE=${DB_DATABASE}
+      - DB_POSTGRESDB_SCHEMA=${N8N_DB_SCHEMA}
+      - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
+    volumes:
+      - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
+      - ./n8n:/opt/app-root/src
+    networks:
+      - local-network
+    depends_on:
+      - n8n
 
   ## Build the app docker image
   app:
@@ -102,6 +186,8 @@ services:
       - REACT_APP_MAX_UPLOAD_NUM_FILES=${MAX_UPLOAD_NUM_FILES}
       - REACT_APP_MAX_UPLOAD_FILE_SIZE=${MAX_UPLOAD_FILE_SIZE}
       - REACT_APP_SITEMINDER_LOGOUT_URL=${SITEMINDER_LOGOUT_URL}
+      - REACT_APP_N8N_HOST=${N8N_HOST}
+      - REACT_APP_N8N_PORT=${N8N_PROXY_PORT}
     volumes:
       - ./app:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
@@ -109,6 +195,7 @@ services:
       - local-network
     depends_on:
       - api
+      - n8n
 
   ## Run the database migrations and seeding
   db_setup:
@@ -137,7 +224,7 @@ services:
         condition: service_healthy
     command: ["npm", "run", "setup"]
 
-  ## Run the  database migrations
+  ## Run the database migrations
   db_migrate:
     image: ${DOCKER_PROJECT_NAME}-db-migrate-${DOCKER_NAMESPACE}-img
     container_name: ${DOCKER_PROJECT_NAME}-db-migrate-${DOCKER_NAMESPACE}-container
