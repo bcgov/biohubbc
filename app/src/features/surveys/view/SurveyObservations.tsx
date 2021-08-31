@@ -257,7 +257,7 @@ const SurveyObservations = () => {
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       messageList.forEach((message) => {
-        if (value.type.includes(message.type) && value.class === 'Error') {
+        if (value.type.includes(message.type) && message.class === 'Error') {
           if (!submissionErrors[key]) {
             submissionErrors[key] = [];
           }
@@ -265,7 +265,7 @@ const SurveyObservations = () => {
           submissionErrors[key].push(message.message);
         }
 
-        if (value.type.includes(message.type) && value.class === 'Warning') {
+        if (value.type.includes(message.type) && message.class === 'Warning') {
           if (!submissionWarnings[key]) {
             submissionWarnings[key] = [];
           }
