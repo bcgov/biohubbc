@@ -18,7 +18,7 @@ const AppRouter: React.FC = (props: any) => {
   const location = useLocation();
 
   const getTitle = (page: string) => {
-    return `BioHub - ${page}`;
+    return `SIMS - ${page}`;
   };
 
   return (

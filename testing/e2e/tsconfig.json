@@ -12,7 +12,7 @@
     "importHelpers": true,
     "target": "es5",
     "resolveJsonModule": true,
-    "types": ["cypress"],
+    "types": ["cypress", "cypress-file-upload"],
     "typeRoots": [
       "node_modules/@types",
       "./cypress/typings"

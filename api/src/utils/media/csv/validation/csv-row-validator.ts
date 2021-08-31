@@ -37,6 +37,10 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
       for (const requiredFieldByHeader of requiredFieldsByHeader) {
         const columnIndex = headers.indexOf(requiredFieldByHeader);
 
+        if (columnIndex < 0) {
+          return csvWorksheet;
+        }
+
         const rowValueForColumn = row[columnIndex];
 
         // Add an error if the cell value is empty
@@ -59,6 +63,12 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
 
 export interface ICodeValuesByHeader {
   codeValues: (string | number)[];
+  header: string;
+}
+
+export interface IValueRangesByHeader {
+  min_value: number;
+  max_value: number;
   header: string;
 }
 
@@ -98,8 +108,62 @@ export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeVa
               errorCode: 'Invalid Value',
               message: `Invalid value: ${rowValueForColumn}. Must be one of [${codeValuesByHeader.codeValues.join(
                 ', '
-              )}], for column`,
+              )}]`,
               col: codeValuesByHeader.header,
+              row: rowIndex + 2
+            }
+          ]);
+        }
+      }
+    });
+
+    return csvWorksheet;
+  };
+};
+
+/**
+ * For each item in `codeValuesByHeader`, adds an error for each row cell whose value does not match a codeValue.
+ *
+ * Note: If the cell is empty, this check will be skipped.  Use the `getRequiredFieldsValidator` validator to assert
+ * required fields.
+ *
+ * @param {ICodeValuesByHeader[]} [codeValuesByHeader]
+ * @return {*}  {CSVValidator}
+ */
+export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRangesByHeader[]): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!requiredRangeByHeader) {
+      return csvWorksheet;
+    }
+
+    const rows = csvWorksheet.getRows();
+    const headers = csvWorksheet.getHeaders();
+
+    rows.forEach((row, rowIndex) => {
+      for (const valueRangesByHeader of requiredRangeByHeader) {
+        const columnIndex = headers.indexOf(valueRangesByHeader.header);
+
+        const rowValueForColumn = Number(row[columnIndex]);
+
+        if (isNaN(rowValueForColumn)) {
+          csvWorksheet.csvValidation.addRowErrors([
+            {
+              errorCode: 'Invalid Value',
+              message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
+              col: valueRangesByHeader.header,
+              row: rowIndex + 2
+            }
+          ]);
+        }
+
+        // Add an error if the cell value is not in the correct range provided in the array
+
+        if (rowValueForColumn < valueRangesByHeader.min_value || rowValueForColumn > valueRangesByHeader.max_value) {
+          csvWorksheet.csvValidation.addRowErrors([
+            {
+              errorCode: 'Out of Range',
+              message: `Invalid value: ${rowValueForColumn}. Value range must be between ${valueRangesByHeader.min_value} and ${valueRangesByHeader.max_value} `,
+              col: valueRangesByHeader.header,
               row: rowIndex + 2
             }
           ]);
