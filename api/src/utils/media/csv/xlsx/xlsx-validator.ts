@@ -183,7 +183,7 @@ export const getRequiredHeaders = (xlsxClass: XLSX_CLASS): string[] => {
   }
 };
 
-export const getReccommendedHeaders = (xlsxClass: XLSX_CLASS): string[] => {
+export const getRecommendedHeaders = (xlsxClass: XLSX_CLASS): string[] => {
   switch (xlsxClass) {
     case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
       return ['Design Type Given'];
@@ -263,6 +263,7 @@ export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
     hasRequiredHeadersValidator(getRequiredHeaders(xlsxClass)),
+    hasRecommendedHeadersValidator(getRecommendedHeaders(xlsxClass)),
     getValidHeadersValidator(getValidHeaders(xlsxClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(xlsxClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(xlsxClass)),

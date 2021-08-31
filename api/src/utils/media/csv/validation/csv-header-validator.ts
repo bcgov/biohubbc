@@ -77,7 +77,6 @@ export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVVali
   };
 };
 
-
 /**
  * For each `recommendedHeaders`, adds an error if the header is not present in the csv.
  *
@@ -121,7 +120,6 @@ export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): C
     return csvWorksheet;
   };
 };
-
 
 /**
  * Adds an error for any header that is not found in the provided `validHeaders` array.

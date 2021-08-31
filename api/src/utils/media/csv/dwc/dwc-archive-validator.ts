@@ -102,7 +102,7 @@ const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
   }
 };
 
-const getRecomendedHeaders = (dwcClass: DWC_CLASS): string[] => {
+const getRecommendedHeaders = (dwcClass: DWC_CLASS): string[] => {
   switch (dwcClass) {
     case DWC_CLASS.EVENT:
       return ['locationRemarks'];
@@ -170,6 +170,7 @@ export const getDWCCSVValidators = (dwcClass: DWC_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
     hasRequiredHeadersValidator(getRequiredHeaders(dwcClass)),
+    hasRecommendedHeadersValidator(getRecommendedHeaders(dwcClass)),
     getValidHeadersValidator(getValidHeaders(dwcClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(dwcClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(dwcClass)),
