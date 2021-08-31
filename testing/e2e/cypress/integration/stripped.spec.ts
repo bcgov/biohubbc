@@ -56,9 +56,7 @@ it('CreateProject', function () {
   cy.get('[data-testid="file-upload"]').attachFile('BioHub.kml');
   submit_project();
 
-  cy.contains('Project Details').should('be.visible');
   navigate();
 
-  /* ==== End Cypress Studio ==== */
 }
 );
