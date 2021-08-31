@@ -1,4 +1,4 @@
---  
+--  db_setup_up.sql
 \set ON_ERROR_STOP on
 -- drop the database
 set role postgres;
@@ -86,9 +86,13 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i populate_submission_message_class.sql
 \i populate_submission_message_type.sql
 \i populate_system_metadata_constant.sql
+\i populate_common_survey_methodology.sql
+\i populate_template.sql
 
 -- temporary external interface tables
 \i populate_wldtaxonomic_units.sql
+\i populate_common_survey_methodology_species.sql
+\i populate_common_survey_methodology_species_template.sql
 \set QUIET off
 
  -- create the views
