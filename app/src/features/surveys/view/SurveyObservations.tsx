@@ -266,24 +266,22 @@ const SurveyObservations = () => {
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       messageList.forEach((message) => {
-
-        if (value.type.includes(message.type) {
-
-          if (message.class === ClassGrouping.ERROR){
+        if (value.type.includes(message.type)) {
+          if (message.class === ClassGrouping.ERROR) {
             if (!submissionErrors[key]) {
               submissionErrors[key] = [];
             }
             submissionErrors[key].push(message.message);
           }
 
-          if (message.class === ClassGrouping.WARNING){
+          if (message.class === ClassGrouping.WARNING) {
             if (!submissionWarnings[key]) {
               submissionWarnings[key] = [];
             }
 
             submissionWarnings[key].push(message.message);
           }
-        }F
+        }
       });
     });
   }
