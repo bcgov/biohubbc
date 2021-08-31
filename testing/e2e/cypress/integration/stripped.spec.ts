@@ -4,7 +4,7 @@ import {
   navigate, login, logout,
 } from '../page-functions/common/login-page'
 
-import { navigate_project, add_coordinator_info, add_permits, submit_project, next_page_project, previous_page_project, cancel_project, }
+import { navigate_project, add_coordinator_info, add_permits, submit_project, next_page_project, previous_page_project, cancel_project, add_locations, }
   from '../page-functions/project/project-create-page'
 
 beforeEach(() => {
@@ -14,7 +14,8 @@ beforeEach(() => {
 });
 
 afterEach(() => {
-
+  navigate();
+  logout();
 });
 it('CreateProject', function () {
   /* ==== Open Create Project ==== */
@@ -51,12 +52,10 @@ it('CreateProject', function () {
   next_page_project()
 
   // Locations
-  cy.get("span.MuiStepLabel-iconContainer").eq(4).click() // Click on the Navigation bar
-  cy.get('#location_description').type(faker.lorem.paragraph());
-  cy.get('[data-testid="file-upload"]').attachFile('BioHub.kml');
-  submit_project();
+  add_locations(null, null);
+  next_page_project()
 
-  navigate();
+  submit_project();
 
 }
 );

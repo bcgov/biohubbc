@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<kml xmlns="http://www.opengis.net/kml/2.2" xmlns:gx="http://www.google.com/kml/ext/2.2" xmlns:kml="http://www.opengis.net/kml/2.2" xmlns:atom="http://www.w3.org/2005/Atom">
+<Document>
+	<name>Blackwell.shp</name>
+	<open>1</open>
+	<Schema name="Blackwell" id="S_Blackwell_">
+		<SimpleField type="long" name="id_2"><displayName>&lt;b&gt;id&lt;/b&gt;</displayName>
+</SimpleField>
+	</Schema>
+	<StyleMap id="falseColor">
+		<Pair>
+			<key>normal</key>
+			<styleUrl>#falseColor0</styleUrl>
+		</Pair>
+		<Pair>
+			<key>highlight</key>
+			<styleUrl>#falseColor1</styleUrl>
+		</Pair>
+	</StyleMap>
+	<Style id="falseColor0">
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>id</b></td><td>$[Blackwell/id_2]</td></tr>
+</table>]]></text>
+		</BalloonStyle>
+		<PolyStyle>
+			<colorMode>random</colorMode>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Style id="falseColor1">
+		<BalloonStyle>
+			<text><![CDATA[<table border="0">
+  <tr><td><b>id</b></td><td>$[Blackwell/id_2]</td></tr>
+</table>]]></text>
+		</BalloonStyle>
+		<PolyStyle>
+			<colorMode>random</colorMode>
+			<fill>0</fill>
+		</PolyStyle>
+	</Style>
+	<Folder id="layer 0">
+		<name>Blackwell</name>
+		<open>1</open>
+		<Placemark>
+			<styleUrl>#falseColor</styleUrl>
+			<ExtendedData>
+				<SchemaData schemaUrl="#S_Blackwell_">
+					<SimpleData name="id_2">1</SimpleData>
+				</SchemaData>
+			</ExtendedData>
+			<Polygon>
+				<outerBoundaryIs>
+					<LinearRing>
+						<coordinates>
+							-120.0090056999846,51.2168762597274,0 -119.9968675567039,51.21005680789182,0 -119.9827798287909,51.19064025517686,0 -119.970874547639,51.19732647600394,0 -119.9522053291314,51.1914440475084,0 -119.9259087391974,51.19778318491127,0 -119.893644667225,51.22073736457953,0 -119.852847807257,51.22727960093484,0 -119.8457843889446,51.25661889855522,0 -119.9011831683942,51.2741289040399,0 -119.9350889552483,51.27624286270574,0 -119.970067635319,51.28228017725926,0 -119.9949643193683,51.2831763716492,0 -119.9972214600077,51.26994479623811,0 -120.0073283392045,51.25971441817966,0 -120.0204367021271,51.24590968091278,0 -120.0550472633196,51.23410053275376,0 -120.0395477837954,51.21131678735311,0 -120.0090056999846,51.2168762597274,0 
+						</coordinates>
+					</LinearRing>
+				</outerBoundaryIs>
+			</Polygon>
+		</Placemark>
+	</Folder>
+</Document>
+</kml>
