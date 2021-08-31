@@ -11,6 +11,7 @@ export interface IGetSubmissionCSVForViewResponse {
 interface IGetObservationSubmissionResponseMessages {
   id: number;
   status: string;
+  class: string;
   type: string;
   message: string;
 }

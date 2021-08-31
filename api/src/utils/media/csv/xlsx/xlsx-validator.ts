@@ -9,9 +9,11 @@ import {
 import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
+  getValidFormatFieldsValidator,
   getValidRangeFieldsValidator,
   ICodeValuesByHeader,
-  IValueRangesByHeader
+  IValueRangesByHeader,
+  IFormatByHeader
 } from '../validation/csv-row-validator';
 
 export const getValidHeaders = (xlsxClass: XLSX_CLASS): string[] => {
@@ -238,6 +240,15 @@ export const getValidRangeFieldsByHeader = (xlsxClass: XLSX_CLASS): IValueRanges
   }
 };
 
+const getValidFormatsByHeader = (xlsxClass: XLSX_CLASS): IFormatByHeader[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.GENERAL_SURVEY:
+      return [{ header: 'eventID', reg_exp: '^Kispiox.*', expected_format: 'Must start wth `Kispiox`' }];
+    default:
+      return [];
+  }
+};
+
 export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
@@ -245,7 +256,8 @@ export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
     getValidHeadersValidator(getValidHeaders(xlsxClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(xlsxClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(xlsxClass)),
-    getValidRangeFieldsValidator(getValidRangeFieldsByHeader(xlsxClass))
+    getValidRangeFieldsValidator(getValidRangeFieldsByHeader(xlsxClass)),
+    getValidFormatFieldsValidator(getValidFormatsByHeader(xlsxClass))
   ];
 };
 

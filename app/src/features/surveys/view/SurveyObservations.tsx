@@ -10,7 +10,8 @@ import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
-  mdiAlertCircleOutline,
+  mdiAlertCircle,
+  mdiInformationOutline,
   mdiClockOutline,
   mdiFileOutline,
   mdiImport,
@@ -62,6 +63,12 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   }
 }));
+
+export enum ClassGrouping {
+  NOTICE = 'Notice',
+  ERROR = 'Error',
+  WARNING = 'Warning'
+}
 
 const SurveyObservations = () => {
   const biohubApi = useBiohubApi();
@@ -241,12 +248,18 @@ const SurveyObservations = () => {
       type: ['Out of Range'],
       label: 'Values are out of range'
     },
+    formatting_errors: {
+      type: ['Unexpected Format'],
+      label: 'Unexpected formats in the values provided'
+    },
     miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
 
-  type SubmissionMessages = { [key: string]: string[] };
+  type SubmissionErrors = { [key: string]: string[] };
+  type SubmissionWarnings = { [key: string]: string[] };
 
-  const submissionMessages: SubmissionMessages = {};
+  const submissionErrors: SubmissionErrors = {};
+  const submissionWarnings: SubmissionWarnings = {};
 
   const messageList = submissionStatus?.messages;
 
@@ -254,11 +267,20 @@ const SurveyObservations = () => {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       messageList.forEach((message) => {
         if (value.type.includes(message.type)) {
-          if (!submissionMessages[key]) {
-            submissionMessages[key] = [];
+          if (message.class === ClassGrouping.ERROR) {
+            if (!submissionErrors[key]) {
+              submissionErrors[key] = [];
+            }
+            submissionErrors[key].push(message.message);
           }
 
-          submissionMessages[key].push(message.message);
+          if (message.class === ClassGrouping.WARNING) {
+            if (!submissionWarnings[key]) {
+              submissionWarnings[key] = [];
+            }
+
+            submissionWarnings[key].push(message.message);
+          }
         }
       });
     });
@@ -314,10 +336,7 @@ const SurveyObservations = () => {
         )}
         {!isValidating && submissionStatus?.status === 'Rejected' && (
           <>
-            <Alert
-              icon={<Icon path={mdiAlertCircleOutline} size={1} />}
-              severity="error"
-              action={submissionAlertAction()}>
+            <Alert icon={<Icon path={mdiAlertCircle} size={1} />} severity="error" action={submissionAlertAction()}>
               <Box component={AlertTitle} display="flex">
                 <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
                   <strong>{submissionStatus.fileName}</strong>
@@ -336,24 +355,40 @@ const SurveyObservations = () => {
                 Resolve the following errors in your local file and re-import.
               </Typography>
             </Box>
+
             <Box>
-              {Object.entries(submissionMessages).map(([key, value], index) => {
-                return (
-                  <Box key={index}>
-                    <Box display="flex" alignItems="center">
-                      <Icon path={mdiAlertCircleOutline} size={1} color="#ff5252" />
-                      <strong className={classes.tab}>{messageGrouping[key].label}</strong>
-                    </Box>
-                    <Box pl={2}>
-                      <ul>
-                        {value.map((message: string, index2: number) => {
-                          return <li key={`${index}-${index2}`}>{message}</li>;
-                        })}
-                      </ul>
-                    </Box>
+              {Object.entries(submissionErrors).map(([key, value], index) => (
+                <Box key={index}>
+                  <Box display="flex" alignItems="center">
+                    <Icon path={mdiAlertCircle} size={1} color="#ff5252" />
+                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
                   </Box>
-                );
-              })}
+                  <Box pl={2}>
+                    <ul>
+                      {value.map((message: string, index2: number) => {
+                        return <li key={`${index}-${index2}`}>{message}</li>;
+                      })}
+                    </ul>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            <Box>
+              {Object.entries(submissionWarnings).map(([key, value], index) => (
+                <Box key={index}>
+                  <Box display="flex" alignItems="center">
+                    <Icon path={mdiInformationOutline} size={1} color="#ff5252" />
+                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
+                  </Box>
+                  <Box pl={2}>
+                    <ul>
+                      {value.map((message: string, index2: number) => {
+                        return <li key={`${index}-${index2}`}>{message}</li>;
+                      })}
+                    </ul>
+                  </Box>
+                </Box>
+              ))}
             </Box>
           </>
         )}
