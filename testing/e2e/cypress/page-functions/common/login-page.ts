@@ -24,11 +24,12 @@ export function login(userName,passWord) {
 
   cy.get('#kc-login').click();
 
+  cy.get('h1').should('be.visible')
 }
 
 export function logout() {
   //Make sure we can see the logout button
-  // cy.get('[data-testid="menu_log_out"]').should('be.visible')
+  cy.get('[data-testid="menu_log_out"]').should('be.visible')
 
-  // cy.get('[data-testid="menu_log_out"]').click();
+  cy.get('[data-testid="menu_log_out"]').click();
 }
