@@ -303,7 +303,6 @@ export type IRowErrorCode =
   | 'Invalid Value'
   | 'Miscellaneous';
 
-export type IRowWarningCode = 'Format Warning';
 export interface IHeaderError {
   errorCode: IHeaderErrorCode;
   message: string;
