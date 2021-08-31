@@ -5,7 +5,8 @@ import { CSVValidator } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
-  hasRequiredHeadersValidator
+  hasRequiredHeadersValidator,
+  hasRecommendedHeadersValidator
 } from '../validation/csv-header-validator';
 import {
   getCodeValueFieldsValidator,
@@ -75,8 +76,7 @@ const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
         'verbatimElevation',
         'coordinateUncertaintyInMeters',
         'coordinatePrecision',
-        'verbatimLocality',
-        'locationRemarks'
+        'verbatimLocality'
       ];
     case DWC_CLASS.OCCURRENCE:
       return [
@@ -87,8 +87,7 @@ const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
         'associatedTaxa',
         'sex',
         'lifeStage',
-        'individualCount',
-        'identifiedBy'
+        'individualCount'
       ];
     case DWC_CLASS.MEASUREMENTORFACT:
       return ['measurementID', 'occurrenceID', 'measurementType', 'measurementUnit', 'measurementValue'];
@@ -96,6 +95,17 @@ const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
       return ['resourceRelationshipID', 'resourceID', 'relatedResourceID', 'relationshipOfResource'];
     case DWC_CLASS.TAXON:
       return ['eventID', 'taxonID'];
+    default:
+      return [];
+  }
+};
+
+const getRecomendedHeaders = (dwcClass: DWC_CLASS): string[] => {
+  switch (dwcClass) {
+    case DWC_CLASS.EVENT:
+      return ['locationRemarks'];
+    case DWC_CLASS.OCCURRENCE:
+      return ['identifiedBy'];
     default:
       return [];
   }

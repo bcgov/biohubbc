@@ -4,7 +4,8 @@ import { CSVValidator, XLSX_CLASS } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
-  hasRequiredHeadersValidator
+  hasRequiredHeadersValidator,
+  hasRecommendedHeadersValidator
 } from '../validation/csv-header-validator';
 import {
   getCodeValueFieldsValidator,
@@ -150,8 +151,7 @@ export const getRequiredHeaders = (xlsxClass: XLSX_CLASS): string[] => {
         'Sample Station Label',
         'UTM Zone Sample Station',
         'Easting Sample Station',
-        'Northing Sample Station',
-        'Design Type Given'
+        'Northing Sample Station'
       ];
     case XLSX_CLASS.GENERAL_SURVEY:
       return [
@@ -174,9 +174,19 @@ export const getRequiredHeaders = (xlsxClass: XLSX_CLASS): string[] => {
         'Site UTM Zone',
         'Site Easting',
         'Site Northing',
-        'Species',
-        'Date & Time'
+        'Species'
       ];
+    default:
+      return [];
+  }
+};
+
+export const getReccommendedHeaders = (xlsxClass: XLSX_CLASS): string[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+      return ['Design Type Given'];
+    case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+      return ['Date & Time'];
     default:
       return [];
   }

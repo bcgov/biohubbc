@@ -111,3 +111,4 @@ dist
 
 # n8N - ignore root level temp config folder
 .n8n
+n8n/.config/

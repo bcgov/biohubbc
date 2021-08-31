@@ -77,6 +77,52 @@ export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVVali
   };
 };
 
+
+/**
+ * For each `recommendedHeaders`, adds an error if the header is not present in the csv.
+ *
+ * @param {string[]} [recommendedHeaders]
+ * @return {*}  {CSVValidator}
+ */
+export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!recommendedHeaders?.length) {
+      return csvWorksheet;
+    }
+
+    const headers = csvWorksheet.getHeaders();
+
+    if (!headers?.length) {
+      csvWorksheet.csvValidation.addHeaderErrors(
+        recommendedHeaders.map((recommendedHeader) => {
+          return {
+            errorCode: 'Missing Recommended Header',
+            message: 'Missing recommended header',
+            col: recommendedHeader
+          };
+        })
+      );
+
+      return csvWorksheet;
+    }
+
+    for (const recommendedHeader of recommendedHeaders) {
+      if (!headers.includes(recommendedHeader)) {
+        csvWorksheet.csvValidation.addHeaderErrors([
+          {
+            errorCode: 'Missing Recommended Header',
+            message: 'Missing recommended header',
+            col: recommendedHeader
+          }
+        ]);
+      }
+    }
+
+    return csvWorksheet;
+  };
+};
+
+
 /**
  * Adds an error for any header that is not found in the provided `validHeaders` array.
  *
