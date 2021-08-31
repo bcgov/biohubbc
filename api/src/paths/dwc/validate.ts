@@ -10,7 +10,7 @@ import {
 } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
-import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
+import { ICsvState, IHeaderError, IRowError, IRowWarning } from '../../utils/media/csv/csv-file';
 import { DWCArchive, DWC_ARCHIVE, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
 import {
   getDWCArchiveValidators,
@@ -305,6 +305,10 @@ function generateRowErrorMessage(fileName: string, rowError: IRowError): string 
   return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
 }
 
+function generateRowWarningMessage(fileName: string, rowWarning: IRowWarning): string {
+  return `${fileName} - ${rowWarning.message} - Column: ${rowWarning.col} - Row: ${rowWarning.row}`;
+}
+
 export function persistValidationResults(statusTypeObject: any): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
@@ -359,6 +363,18 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
               'Error',
               generateRowErrorMessage(csvStateItem.fileName, rowError),
               rowError.errorCode,
+              connection
+            )
+          );
+        });
+
+        csvStateItem.rowWarnings?.forEach((rowWarning) => {
+          promises.push(
+            insertSubmissionMessage(
+              submissionStatusId,
+              'Warning',
+              generateRowWarningMessage(csvStateItem.fileName, rowWarning),
+              rowWarning.warningCode,
               connection
             )
           );

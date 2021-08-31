@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
 import { MediaFile } from '../media-file';
-import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError, XLSXCSV } from './csv-file';
+import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError, XLSXCSV, IRowWarning } from './csv-file';
 
 describe('CSVWorkBook', () => {
   it('constructs with no rawWorkbook param', () => {
@@ -320,9 +320,17 @@ describe('CSVValidation', () => {
         row: 1
       };
 
+      const rowWarning1: IRowWarning = {
+        warningCode: 'Format Warning',
+        message: 'a row warning',
+        col: 'col1',
+        row: 1
+      };
+
       csvValidation.addFileErrors([fileError1]);
       csvValidation.addHeaderErrors([headerError1]);
       csvValidation.addRowErrors([rowError1]);
+      csvValidation.addRowWarnings([rowWarning1]);
 
       const validationState = csvValidation.getState();
 
@@ -331,6 +339,7 @@ describe('CSVValidation', () => {
         fileErrors: [fileError1],
         headerErrors: [headerError1],
         rowErrors: [rowError1],
+        rowWarnings: [rowWarning1],
         isValid: false
       });
     });

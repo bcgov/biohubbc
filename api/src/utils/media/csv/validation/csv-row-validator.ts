@@ -227,12 +227,6 @@ export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatB
         const regex = new RegExp(formatByHeader.reg_exp);
 
         // Add an error if the cell value is not in the correct range provided in the array
-
-        console.log('rowValueForColumn', rowValueForColumn);
-        console.log('regex', regex);
-
-        console.log('regex test', regex.test(rowValueForColumn));
-
         if (!regex.test(rowValueForColumn)) {
           csvWorksheet.csvValidation.addRowErrors([
             {
@@ -242,6 +236,17 @@ export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatB
               row: rowIndex + 2
             }
           ]);
+          console.log('csvWorksheet after error', csvWorksheet);
+
+          csvWorksheet.csvValidation.addRowWarnings([
+            {
+              warningCode: 'Format Warning',
+              message: `Unexpected Format: ${rowValueForColumn}. ${formatByHeader.expected_format}`,
+              col: formatByHeader.header,
+              row: rowIndex + 2
+            }
+          ]);
+          console.log('csvWorksheet after warning', csvWorksheet);
         }
       }
     });
