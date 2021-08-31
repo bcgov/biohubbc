@@ -138,7 +138,6 @@ export function uploadMedia(): RequestHandler {
       });
 
       //query to update the record with the key before uploading the file
-
       await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
 
       await connection.commit();

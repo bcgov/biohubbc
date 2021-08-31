@@ -5,7 +5,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiDoorOpen, mdiDoorClosedLock, mdiArrowRight } from '@mdi/js';
 import Icon from '@mdi/react';
 import { ConfigContext } from 'contexts/configContext';
-import React, { useContext } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { getLogOutUrl } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -19,7 +19,7 @@ const LogOutPage = () => {
 
   const config = useContext(ConfigContext);
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!config) {
       return;
     }
