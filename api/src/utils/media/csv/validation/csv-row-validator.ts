@@ -76,6 +76,7 @@ export interface IValueRangesByHeader {
 
 export interface IFormatByHeader {
   reg_exp: string;
+  expected_format: string;
   header: string;
 }
 
@@ -227,11 +228,16 @@ export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatB
 
         // Add an error if the cell value is not in the correct range provided in the array
 
+        console.log('rowValueForColumn', rowValueForColumn);
+        console.log('regex', regex);
+
+        console.log('regex test', regex.test(rowValueForColumn));
+
         if (!regex.test(rowValueForColumn)) {
           csvWorksheet.csvValidation.addRowErrors([
             {
               errorCode: 'Unexpected Format',
-              message: `Date: ${rowValueForColumn}. Date must be formatted as between YYYY-MM-DD`,
+              message: `Unexpected Format: ${rowValueForColumn}. ${formatByHeader.expected_format}`,
               col: formatByHeader.header,
               row: rowIndex + 2
             }

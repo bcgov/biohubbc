@@ -145,7 +145,7 @@ const getValidRangesByHeader = (dwcClass: DWC_CLASS): IValueRangesByHeader[] => 
 const getValidFormatsByHeader = (dwcClass: DWC_CLASS): IFormatByHeader[] => {
   switch (dwcClass) {
     case DWC_CLASS.EVENT:
-      return [{ header: 'eventDate', reg_exp: '/^d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/' }];
+      return [{ header: 'eventID', reg_exp: '^Kispiox.*', expected_format: 'Must start wth `Kispiox`' }];
     default:
       return [];
   }

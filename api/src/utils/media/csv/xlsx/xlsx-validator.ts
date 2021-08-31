@@ -243,7 +243,13 @@ export const getValidRangeFieldsByHeader = (xlsxClass: XLSX_CLASS): IValueRanges
 const getValidFormatsByHeader = (xlsxClass: XLSX_CLASS): IFormatByHeader[] => {
   switch (xlsxClass) {
     case XLSX_CLASS.GENERAL_SURVEY:
-      return [{ header: 'date', reg_exp: '/^d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/' }];
+      return [
+        {
+          header: 'date',
+          reg_exp: '/^d{4}-(0[1-9]|1[012])-(0[1-9]|[12][0-9]|3[01])$/',
+          expected_format: 'Must start with `Kispiox`'
+        }
+      ];
     default:
       return [];
   }
