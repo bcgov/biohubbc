@@ -236,17 +236,6 @@ export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatB
               row: rowIndex + 2
             }
           ]);
-          console.log('csvWorksheet after error', csvWorksheet);
-
-          csvWorksheet.csvValidation.addRowWarnings([
-            {
-              warningCode: 'Format Warning',
-              message: `Unexpected Format: ${rowValueForColumn}. ${formatByHeader.expected_format}`,
-              col: formatByHeader.header,
-              row: rowIndex + 2
-            }
-          ]);
-          console.log('csvWorksheet after warning', csvWorksheet);
         }
       }
     });

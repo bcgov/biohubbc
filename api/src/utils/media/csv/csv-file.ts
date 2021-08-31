@@ -310,13 +310,6 @@ export interface IHeaderError {
   col: string | number;
 }
 
-export interface IRowWarning {
-  warningCode: IRowWarningCode;
-  message: string;
-  col: string;
-  row: number;
-}
-
 export interface IRowError {
   errorCode: IRowErrorCode;
   message: string;
@@ -327,7 +320,6 @@ export interface IRowError {
 export interface ICsvState extends IMediaState {
   headerErrors?: IHeaderError[];
   rowErrors?: IRowError[];
-  rowWarnings?: IRowWarning[];
 }
 
 export type CSVValidator = (csvWorksheet: CSVWorksheet, ...rest: any) => CSVWorksheet;
@@ -337,7 +329,6 @@ export class CSVValidation {
   fileErrors: string[];
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
-  rowWarnings: IRowWarning[];
   isValid: boolean;
 
   constructor(fileName: string) {
@@ -345,7 +336,6 @@ export class CSVValidation {
     this.fileErrors = [];
     this.headerErrors = [];
     this.rowErrors = [];
-    this.rowWarnings = [];
     this.isValid = true;
   }
 
@@ -373,22 +363,13 @@ export class CSVValidation {
     }
   }
 
-  addRowWarnings(warnings: IRowWarning[]) {
-    this.rowWarnings = this.rowWarnings.concat(warnings);
-
-    if (warnings?.length) {
-      this.isValid = false;
-    }
-  }
-
   getState(): ICsvState {
     return {
       fileName: this.fileName,
       fileErrors: this.fileErrors,
       headerErrors: this.headerErrors,
       rowErrors: this.rowErrors,
-      isValid: this.isValid,
-      rowWarnings: this.rowWarnings
+      isValid: this.isValid
     };
   }
 }

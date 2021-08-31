@@ -51,8 +51,7 @@ const getValidHeaders = (dwcClass: DWC_CLASS): string[] => {
         'occurrenceRemarks',
         'identifiedBy',
         'organismQuantity',
-        'organismQuantityType',
-        'date'
+        'organismQuantityType'
       ];
     case DWC_CLASS.MEASUREMENTORFACT:
       return ['measurementID', 'occurrenceID', 'measurementType', 'measurementUnit', 'measurementValue'];

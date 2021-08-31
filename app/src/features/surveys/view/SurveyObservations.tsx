@@ -64,6 +64,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+export enum ClassGrouping {
+  NOTICE = 'Notice',
+  ERROR = 'Error',
+  WARNING = 'Warning'
+}
+
 const SurveyObservations = () => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
@@ -210,40 +216,30 @@ const SurveyObservations = () => {
     </Box>
   );
 
-  type MessageGrouping = { [key: string]: { class: string; type: string[]; label: string } };
+  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
 
   const messageGrouping: MessageGrouping = {
     mandatory: {
       type: ['Missing Required Field', 'Missing Required Header'],
-      class: 'Error',
       label: 'Mandatory fields have not been filled out'
     },
     value_not_from_list: {
       type: ['Invalid Value'],
-      class: 'Error',
       label: "Values have not been selected from the field's dropdown list"
     },
     unsupported_header: {
       type: ['Unknown Header'],
-      class: 'Error',
       label: 'Column headers are not supported'
     },
     out_of_range: {
       type: ['Out of Range'],
-      class: 'Error',
       label: 'Values are out of range'
     },
     formatting_errors: {
       type: ['Unexpected Format'],
-      class: 'Error',
       label: 'Unexpected formats in the values provided'
     },
-    miscellaneous: { type: ['Miscellaneous'], class: 'Error', label: 'Miscellaneous errors exist in your file' },
-    formatting_warnings: {
-      type: ['Format Warning'],
-      class: 'Warning',
-      label: 'Format warnings in the values provided'
-    }
+    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
   };
 
   type SubmissionErrors = { [key: string]: string[] };
@@ -257,7 +253,7 @@ const SurveyObservations = () => {
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       messageList.forEach((message) => {
-        if (value.type.includes(message.type) && message.class === 'Error') {
+        if (value.type.includes(message.type) && message.class === ClassGrouping.ERROR) {
           if (!submissionErrors[key]) {
             submissionErrors[key] = [];
           }
@@ -265,7 +261,7 @@ const SurveyObservations = () => {
           submissionErrors[key].push(message.message);
         }
 
-        if (value.type.includes(message.type) && message.class === 'Warning') {
+        if (value.type.includes(message.type) && message.class === ClassGrouping.WARNING) {
           if (!submissionWarnings[key]) {
             submissionWarnings[key] = [];
           }
