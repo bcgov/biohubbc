@@ -22,7 +22,7 @@ exports[`PublicLayout renders correctly 1`] = `
               class="MuiBox-root MuiBox-root-11"
             >
               <a
-                aria-label="Go to BioHub Home"
+                aria-label="Go to SIMS Home"
                 class="makeStyles-brand-5"
                 href="/projects"
               >
@@ -40,7 +40,7 @@ exports[`PublicLayout renders correctly 1`] = `
                     src="gov-bc-logo-vert.png"
                   />
                 </picture>
-                BioHub
+                Species Inventory Management System
               </a>
             </div>
           </div>

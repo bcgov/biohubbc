@@ -136,13 +136,13 @@ const Header: React.FC = () => {
         <Container maxWidth="xl" className={classes.govHeaderContainer}>
           <Toolbar className={classes.govHeaderToolbar}>
             <Box display="flex" justifyContent="space-between" width="100%">
-              <Link to="/projects" className={classes.brand} aria-label="Go to BioHub Home">
+              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
                 <picture>
                   <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
                   <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
                   <img src={headerImageSmall} alt={'Government of British Columbia'} />
                 </picture>
-                BioHub
+                Species Inventory Management System
               </Link>
               <LoggedInUser />
             </Box>
