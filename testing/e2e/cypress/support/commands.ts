@@ -25,6 +25,7 @@
 // Cypress.Commands.overwrite("visit", (originalFn, url, options) => { ... })
 // Cypress.Commands.add("guiLogin", (user: string) => {
 import createUUID from './createUUID';
+import 'cypress-file-upload';
 
 Cypress.Commands.add(
   'login',

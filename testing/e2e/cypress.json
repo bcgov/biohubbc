@@ -9,5 +9,6 @@
   "taskTimeout": 10000,
   "experimentalStudio": true,
   "viewportHeight": 900,
-  "viewportWidth": 1440
+  "viewportWidth": 1440,
+  "baseUrl": "http://localhost:7100"
 }

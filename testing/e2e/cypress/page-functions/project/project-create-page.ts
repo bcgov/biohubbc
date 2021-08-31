@@ -3,11 +3,9 @@ import * as faker from 'faker';
 
 export function navigate_project() {
   // Create project
-  cy.contains('Projects').should('be.visible')
   cy.visit('/projects/create')
-
-  // Main Projects Page
-  cy.contains('Create Project').should('be.visible')
+  cy.wait(5000);
+  cy.get('h1').contains('Create Project').should('be.visible')
 }
 
 // Add Coordinator takes variables or when omitted (NULL), it will use fake data)
@@ -35,32 +33,37 @@ export function add_coordinator_info(navloc, fname, lname, email, agency, share)
 
 export function add_permits(navloc, permit_nr, permit_type, sampling) {
   // Permits Info
-  // Permits Info
   cy.get("span.MuiStepLabel-iconContainer").eq(navloc || 1).click() // Click on the Navigation bar
   cy.contains('Permits').should('be.visible')
-  cy.contains('Add Permit').click()
+  cy.get("button").contains('Add New Permit').click()
   cy.get('#permits\\.\\[0\\]\\.permit_number').clear()
   cy.get('#permits\\.\\[0\\]\\.permit_number').type(permit_nr || faker.random.number())
-  cy.get('body').click()
   cy.get('#permits\\.\\[0\\]\\.permit_type').focus().type('{enter}')
-  cy.get('[data-value="Wildlife Permit - General"]').click()
+  cy.get('li[data-value="Wildlife Permit - General"]').click()
 }
 
-
+export function add_locations(description, kml_file) {
+  // Locations
+  cy.get("span.MuiStepLabel-iconContainer").eq(4).click() // Click on the Navigation bar
+  cy.get('#location_description').type(description || faker.lorem.paragraph());
+  cy.get('[data-testid="file-upload"]').attachFile(kml_file || faker.random.number({ 'min': 1, 'max': 6 })+'.kml');
+  cy.wait(5000);
+}
 
 export function submit_project() {
-  cy.get('[data-testid="stepper_submit"]').click()
+  cy.get('button[data-testid="stepper_submit"]').click()
+  cy.wait(5000);
 }
 
 export function next_page_project() {
-  cy.get('[data-testid="stepper_next"]').click()
+  cy.get('button[data-testid="stepper_next"]').click()
 }
 
 export function previous_page_project() {
-  cy.get('[data-testid="stepper_previous"]').click()
+  cy.get('button[data-testid="stepper_previous"]').click()
 }
 
 export function cancel_project() {
-  cy.get('[data-testid="stepper_cancel"]').click()
+  cy.get('button[data-testid="stepper_cancel"]').click()
 }
 
