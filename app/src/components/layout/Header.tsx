@@ -172,12 +172,17 @@ const Header: React.FC = () => {
       <Box className={classes.mainNav}>
         <Container maxWidth="xl" className={classes.mainNavContainer}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <SecureLink
-              to="/projects"
-              label="Projects"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_projects"
-            />
+            {keycloakWrapper?.keycloak?.authenticated && keycloakWrapper?.hasLoadedAllUserInfo && (
+              <SecureLink
+                to="/projects"
+                label="Projects"
+                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                id="menu_projects"
+              />
+            )}
+            {(!keycloakWrapper?.keycloak?.authenticated || !keycloakWrapper?.hasLoadedAllUserInfo) && (
+              <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+            )}
             <SecureLink
               to="/permits"
               label="Permits"
