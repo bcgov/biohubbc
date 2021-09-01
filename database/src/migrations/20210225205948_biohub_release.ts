@@ -5,7 +5,7 @@ import path from 'path';
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
-const DB_RELEASE = 'release.0.23';
+const DB_RELEASE = 'release.0.24';
 
 /**
  * Apply biohub release changes.
@@ -91,9 +91,16 @@ export async function up(knex: Knex): Promise<void> {
   const populate_system_metadata_constant = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_system_metadata_constant.sql')
   );
+  const populate_common_survey_methodology = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_common_survey_methodology.sql')
+  );
+  const populate_template = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_template.sql'));
 
   const populate_wldtaxonomic_units = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
+  );
+  const populate_template_methodology_species = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_template_methodology_species.sql')
   );
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_dapi_views.sql'));
@@ -173,9 +180,12 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_submission_message_class}
     ${populate_submission_message_type}
     ${populate_system_metadata_constant}
+    ${populate_common_survey_methodology}
+    ${populate_template}
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}
+    ${populate_template_methodology_species}
 
     -- create the views
     set search_path = biohub_dapi_v1;

@@ -189,10 +189,10 @@ begin
 
   -- delete project
   raise notice 'deleting data.';
-  --call api_delete_project(_project_id);
+  call api_delete_project(_project_id);
 
   raise notice 'smoketest_release(2): PASS';
 end
 $$;
 
---delete from permit;
+delete from permit;
