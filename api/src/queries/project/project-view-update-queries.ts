@@ -89,7 +89,7 @@ export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | nul
 
   const sqlStatement = SQL`
     SELECT
-      project_activity_id as a_id
+      activity_id
     from
       project_activity
     where project_id = ${projectId};

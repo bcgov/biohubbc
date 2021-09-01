@@ -25,7 +25,7 @@ export class GetProjectData {
 
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.type || '';
-    this.project_activities = (activityData?.length && activityData.map((item) => item.a_id)) || [];
+    this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';
     this.comments = projectData?.comments || '';
