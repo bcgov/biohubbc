@@ -5,6 +5,7 @@ import { ensureProtocol } from 'utils/Utils';
 
 export interface IConfig {
   API_HOST: string;
+  N8N_HOST: string;
   CHANGE_VERSION: string;
   NODE_ENV: string;
   VERSION: string;
@@ -14,6 +15,7 @@ export interface IConfig {
 
 export const ConfigContext = React.createContext<IConfig | undefined>({
   API_HOST: '',
+  N8N_HOST: '',
   CHANGE_VERSION: '',
   NODE_ENV: '',
   VERSION: '',
@@ -33,11 +35,15 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
 const getLocalConfig = (): IConfig => {
   const API_HOST = process.env.REACT_APP_API_HOST;
   const API_PORT = process.env.REACT_APP_API_PORT;
+  const N8N_HOST = process.env.REACT_APP_N8N_HOST;
+  const N8N_PORT = process.env.REACT_APP_N8N_PORT;
 
   const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'localhost';
+  const N8N_URL = (N8N_PORT && `${N8N_HOST}:${N8N_PORT}`) || N8N_HOST || 'localhost';
 
   return {
     API_HOST: ensureProtocol(API_URL, 'http://'),
+    N8N_HOST: ensureProtocol(N8N_URL, 'http://'),
     CHANGE_VERSION: process.env.CHANGE_VERSION || 'NA',
     NODE_ENV: process.env.NODE_ENV,
     VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,

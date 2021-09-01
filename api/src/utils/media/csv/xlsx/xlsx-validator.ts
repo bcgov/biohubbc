@@ -4,14 +4,17 @@ import { CSVValidator, XLSX_CLASS } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
-  hasRequiredHeadersValidator
+  hasRequiredHeadersValidator,
+  hasRecommendedHeadersValidator
 } from '../validation/csv-header-validator';
 import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
+  getValidFormatFieldsValidator,
   getValidRangeFieldsValidator,
   ICodeValuesByHeader,
-  IValueRangesByHeader
+  IValueRangesByHeader,
+  IFormatByHeader
 } from '../validation/csv-row-validator';
 
 export const getValidHeaders = (xlsxClass: XLSX_CLASS): string[] => {
@@ -150,8 +153,7 @@ export const getRequiredHeaders = (xlsxClass: XLSX_CLASS): string[] => {
         'Sample Station Label',
         'UTM Zone Sample Station',
         'Easting Sample Station',
-        'Northing Sample Station',
-        'Design Type Given'
+        'Northing Sample Station'
       ];
     case XLSX_CLASS.GENERAL_SURVEY:
       return [
@@ -174,9 +176,19 @@ export const getRequiredHeaders = (xlsxClass: XLSX_CLASS): string[] => {
         'Site UTM Zone',
         'Site Easting',
         'Site Northing',
-        'Species',
-        'Date & Time'
+        'Species'
       ];
+    default:
+      return [];
+  }
+};
+
+export const getRecommendedHeaders = (xlsxClass: XLSX_CLASS): string[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
+      return ['Design Type Given'];
+    case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
+      return ['Date & Time'];
     default:
       return [];
   }
@@ -238,14 +250,25 @@ export const getValidRangeFieldsByHeader = (xlsxClass: XLSX_CLASS): IValueRanges
   }
 };
 
+const getValidFormatsByHeader = (xlsxClass: XLSX_CLASS): IFormatByHeader[] => {
+  switch (xlsxClass) {
+    case XLSX_CLASS.GENERAL_SURVEY:
+      return [{ header: 'eventID', reg_exp: '^Kispiox.*', expected_format: 'Must start wth `Kispiox`' }];
+    default:
+      return [];
+  }
+};
+
 export const getXLSXCSVValidators = (xlsxClass: XLSX_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
     hasRequiredHeadersValidator(getRequiredHeaders(xlsxClass)),
+    hasRecommendedHeadersValidator(getRecommendedHeaders(xlsxClass)),
     getValidHeadersValidator(getValidHeaders(xlsxClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(xlsxClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(xlsxClass)),
-    getValidRangeFieldsValidator(getValidRangeFieldsByHeader(xlsxClass))
+    getValidRangeFieldsValidator(getValidRangeFieldsByHeader(xlsxClass)),
+    getValidFormatFieldsValidator(getValidFormatsByHeader(xlsxClass))
   ];
 };
 
