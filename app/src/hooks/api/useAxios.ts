@@ -1,7 +1,6 @@
 import { useKeycloak } from '@react-keycloak/web';
 import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
-import { ConfigContext } from 'contexts/configContext';
-import { useContext, useMemo } from 'react';
+import { useMemo } from 'react';
 import { ensureProtocol } from 'utils/Utils';
 
 export class APIError {
@@ -28,17 +27,15 @@ export class APIError {
  *
  * @return {*} {AxiosInstance} an instance of axios
  */
-const useAxios = (): AxiosInstance => {
+const useAxios = (baseUrl?: string): AxiosInstance => {
   const { keycloak } = useKeycloak();
-
-  const config = useContext(ConfigContext);
 
   return useMemo(() => {
     const instance = axios.create({
       headers: {
         Authorization: `Bearer ${keycloak?.token}`
       },
-      baseURL: config?.API_HOST && ensureProtocol(config.API_HOST)
+      baseURL: baseUrl && ensureProtocol(baseUrl)
     });
 
     instance.interceptors.response.use(
@@ -52,7 +49,7 @@ const useAxios = (): AxiosInstance => {
 
     return instance;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [config, keycloak, keycloak?.token]);
+  }, [keycloak, keycloak?.token]);
 };
 
 export default useAxios;

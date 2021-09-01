@@ -108,3 +108,7 @@ dist
 
 # Apple macOS folder attributes file
 **/.DS_Store
+
+# n8N - ignore root level temp config folder
+.n8n
+n8n/.config/

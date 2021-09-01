@@ -154,7 +154,7 @@ describe('LogInPage', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(getByText('Welcome to BioHub')).toBeVisible();
+    expect(getByText('Welcome to Species Inventory Management System')).toBeVisible();
     expect(getByText('You must log in to access this application.')).toBeVisible();
     expect(getByTestId('login')).toBeVisible();
   });
