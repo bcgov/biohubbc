@@ -236,6 +236,10 @@ const SurveyObservations = () => {
       type: ['Missing Required Field', 'Missing Required Header'],
       label: 'Mandatory fields have not been filled out'
     },
+    recommended: {
+      type: ['Missing Recommended Header'],
+      label: 'Recommended fields have not been filled out'
+    },
     value_not_from_list: {
       type: ['Invalid Value'],
       label: "Values have not been selected from the field's dropdown list"
