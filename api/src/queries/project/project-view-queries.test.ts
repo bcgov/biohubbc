@@ -5,7 +5,8 @@ import {
   getIUCNActionClassificationByProjectSQL,
   getProjectListSQL,
   getProjectPermitsSQL,
-  getProjectSQL
+  getProjectSQL,
+  getPublicProjectListSQL
 } from './project-view-queries';
 
 describe('getProjectSQL', () => {
@@ -110,6 +111,14 @@ describe('getIUCNActionClassificationByProjectSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = getIUCNActionClassificationByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getPublicProjectListSQL', () => {
+  it('returns non null response when called', () => {
+    const response = getPublicProjectListSQL();
 
     expect(response).to.not.be.null;
   });
