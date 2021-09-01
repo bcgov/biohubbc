@@ -107,7 +107,7 @@ export function _extractProjects(rows: any[]): any[] {
       name: row.name,
       start_date: row.start_date,
       end_date: row.end_date,
-      coordinator_agency: row.coordinator_public ? row.coordinator_agency_name : 'Not Shared',
+      coordinator_agency: row.coordinator_agency_name,
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && 'Completed') || 'Active',
       project_type: row.project_type,
