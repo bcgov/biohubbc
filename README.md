@@ -210,7 +210,9 @@ _Note: Not all formatting issues can be auto-fixed._
 make format-fix
 ```
 
-## Shell Into a Docker Container (database, api, app)
+## Shell Into a Docker Container (database, api, app, n8n, etc)
+
+See `./Makefile` for all available commands.
 
 ### Database
 
@@ -218,19 +220,7 @@ This is useful if you want to access the PSQL database through the CLI.
 See [DBeaver](#dbeaver) for a GUI-centric way of accessing the PSQL database.
 
 ```
-make database
-```
-
-### Api
-
-```
-make api
-```
-
-### App
-
-```
-make app
+make db-container
 ```
 
 # Helpful Docker Commands
