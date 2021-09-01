@@ -25,7 +25,7 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
       render={(props) => {
         if (!keycloakWrapper?.keycloak?.authenticated) {
           // User is not logged in
-          return <Redirect to="/login" />;
+          return <Redirect to="/" />;
         }
 
         if (!keycloakWrapper?.hasLoadedAllUserInfo) {

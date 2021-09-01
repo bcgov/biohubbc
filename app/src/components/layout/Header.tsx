@@ -1,11 +1,12 @@
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
-import { mdiAccountCircle } from '@mdi/js';
+import { mdiAccountCircle, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
@@ -16,7 +17,7 @@ import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
   govHeader: {
-    borderBottom: '2px solid #fade81'
+    borderBottom: '2px solid #fcba19'
   },
   govHeaderContainer: {
     paddingLeft: 0,
@@ -31,8 +32,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     color: 'inherit',
     textDecoration: 'none',
-    fontSize: '1.75rem',
-    fontWeight: 700,
+    fontSize: '1.5rem',
+    fontWeight: 400,
     '& img': {
       verticalAlign: 'middle'
     },
@@ -55,7 +56,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   usernameAndLogout: {
     color: theme.palette.primary.contrastText,
-    fontSize: '1rem',
+    fontSize: '0.9375rem',
     '& hr': {
       backgroundColor: theme.palette.primary.contrastText,
       height: '1rem'
@@ -97,11 +98,8 @@ const Header: React.FC = () => {
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
-  const LoggedInUser: React.FC = () => {
-    if (!keycloakWrapper?.keycloak?.authenticated || !keycloakWrapper?.hasLoadedAllUserInfo) {
-      return <></>;
-    }
-
+  // Authenticated view
+  const LoggedInUser = () => {
     const loggedInUserDisplayName = `${keycloakWrapper?.getIdentitySource()} / ${keycloakWrapper?.getUserIdentifier()}`.toUpperCase();
 
     return (
@@ -114,6 +112,25 @@ const Header: React.FC = () => {
         <Link to="/logout" data-testid="menu_log_out">
           Log Out
         </Link>
+      </Box>
+    );
+  };
+
+  // Unauthenticated public view
+  const PublicViewUser = () => {
+    return (
+      <Box display="flex" alignItems="center" my="auto">
+        <Button
+          onClick={() => keycloakWrapper?.keycloak?.login()}
+          size="large"
+          type="submit"
+          variant="contained"
+          color="primary"
+          disableElevation
+          startIcon={<Icon path={mdiLoginVariant} size={1} />}
+          data-testid="login">
+          Log In
+        </Button>
       </Box>
     );
   };
@@ -144,7 +161,10 @@ const Header: React.FC = () => {
                 </picture>
                 Species Inventory Management System
               </Link>
-              <LoggedInUser />
+              {(!keycloakWrapper?.keycloak?.authenticated || !keycloakWrapper?.hasLoadedAllUserInfo) && (
+                <PublicViewUser />
+              )}
+              {keycloakWrapper?.keycloak?.authenticated && keycloakWrapper?.hasLoadedAllUserInfo && <LoggedInUser />}
             </Box>
           </Toolbar>
         </Container>
@@ -152,12 +172,17 @@ const Header: React.FC = () => {
       <Box className={classes.mainNav}>
         <Container maxWidth="xl" className={classes.mainNavContainer}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <SecureLink
-              to="/projects"
-              label="Projects"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_projects"
-            />
+            {keycloakWrapper?.keycloak?.authenticated && keycloakWrapper?.hasLoadedAllUserInfo && (
+              <SecureLink
+                to="/projects"
+                label="Projects"
+                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                id="menu_projects"
+              />
+            )}
+            {(!keycloakWrapper?.keycloak?.authenticated || !keycloakWrapper?.hasLoadedAllUserInfo) && (
+              <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+            )}
             <SecureLink
               to="/permits"
               label="Permits"
