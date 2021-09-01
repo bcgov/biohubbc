@@ -163,3 +163,11 @@ export const DeleteProjectI18N = {
   deleteErrorText:
     'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const PublishProjectI18N = {
+  publishTitle: 'Publish Project',
+  publishText: 'Are you sure you want to publish this project?',
+  publishErrorTitle: 'Error Publishing Project',
+  publishErrorText:
+    'An error has occurred while attempting to publish this project, please try again. If the error persists, please contact your system administrator.'
+};

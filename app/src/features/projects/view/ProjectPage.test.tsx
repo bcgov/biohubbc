@@ -437,4 +437,88 @@ describe('ProjectPage', () => {
     const publishButtonText2 = await findByText('Publish Project');
     expect(publishButtonText2).toBeVisible();
   });
+
+  it('shows API error when fails to publish project', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '' }
+    });
+    mockBiohubApi().project.publishProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+
+    const { getByTestId, findByText, queryByText, getAllByRole } = render(
+      <DialogContextProvider>
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      </DialogContextProvider>
+    );
+
+    const publishButtonText1 = await findByText('Publish Project');
+    expect(publishButtonText1).toBeVisible();
+
+    //re-mock response to return the project with a non-null publish date
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '2021-10-10' }
+    });
+
+    fireEvent.click(getByTestId('publish-project-button'));
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('API Error is Here')).toBeNull();
+    });
+  });
+
+  it('shows basic error dialog when publish project returns null response', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '' }
+    });
+    mockBiohubApi().project.publishProject.mockResolvedValue(null);
+
+    const { getByTestId, findByText, queryByText, getAllByRole } = render(
+      <DialogContextProvider>
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      </DialogContextProvider>
+    );
+
+    const publishButtonText1 = await findByText('Publish Project');
+    expect(publishButtonText1).toBeVisible();
+
+    //re-mock response to return the project with a non-null publish date
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, publish_date: '2021-10-10' }
+    });
+
+    fireEvent.click(getByTestId('publish-project-button'));
+
+    await waitFor(() => {
+      expect(queryByText('Error Publishing Project')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('Error Publishing Project')).toBeNull();
+    });
+  });
 });
