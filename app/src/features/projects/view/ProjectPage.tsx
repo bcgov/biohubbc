@@ -33,7 +33,7 @@ import Button from '@material-ui/core/Button';
 import { DialogContext } from 'contexts/dialogContext';
 import { useHistory } from 'react-router';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { DeleteProjectI18N } from 'constants/i18n';
+import { DeleteProjectI18N, PublishProjectI18N } from 'constants/i18n';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { SYSTEM_ROLE } from 'constants/roles';
@@ -149,7 +149,7 @@ const ProjectPage: React.FC = () => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
-  const defaultErrorDialogProps = {
+  const deleteErrorDialogProps = {
     dialogTitle: DeleteProjectI18N.deleteErrorTitle,
     dialogText: DeleteProjectI18N.deleteErrorText,
     open: false,
@@ -161,6 +161,12 @@ const ProjectPage: React.FC = () => {
     }
   };
 
+  const publishErrorDialogProps = {
+    ...deleteErrorDialogProps,
+    dialogTitle: PublishProjectI18N.publishErrorTitle,
+    dialogText: PublishProjectI18N.publishErrorText
+  };
+
   const publishProject = async (publish: boolean) => {
     if (!projectWithDetails) {
       return;
@@ -170,11 +176,14 @@ const ProjectPage: React.FC = () => {
       const response = await biohubApi.project.publishProject(projectWithDetails.id, publish);
 
       if (!response) {
+        showPublishErrorDialog({ open: true });
         return;
       }
 
       await getProject();
     } catch (error) {
+      const apiError = error as APIError;
+      showPublishErrorDialog({ dialogText: apiError.message, open: true });
       return error;
     }
   };
@@ -190,8 +199,12 @@ const ProjectPage: React.FC = () => {
     });
   };
 
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
+  };
+
+  const showPublishErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...publishErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const deleteProject = async () => {
@@ -203,14 +216,14 @@ const ProjectPage: React.FC = () => {
       const response = await biohubApi.project.deleteProject(projectWithDetails.id);
 
       if (!response) {
-        showErrorDialog({ open: true });
+        showDeleteErrorDialog({ open: true });
         return;
       }
 
       history.push(`/projects`);
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, open: true });
+      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
       return error;
     }
   };
