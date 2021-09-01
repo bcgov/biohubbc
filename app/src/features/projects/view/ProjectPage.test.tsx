@@ -168,6 +168,57 @@ describe('ProjectPage', () => {
     });
   });
 
+  it('shows basic error dialog when deleting project call has no response', async () => {
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+    mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().project.deleteProject.mockResolvedValue(null);
+
+    const authState = {
+      keycloakWrapper: {
+        ...defaultAuthState.keycloakWrapper,
+        systemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN] as string[],
+        hasSystemRole: () => true
+      }
+    };
+
+    const { getAllByRole, queryByText, getByText, findByText, getByTestId } = render(
+      <AuthStateContext.Provider value={(authState as unknown) as IAuthState}>
+        <DialogContextProvider>
+          <Router history={history}>
+            <ProjectPage />
+          </Router>
+        </DialogContextProvider>
+      </AuthStateContext.Provider>
+    );
+
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    expect(projectHeaderText).toBeVisible();
+
+    fireEvent.click(getByTestId('delete-project-button'));
+
+    await waitFor(() => {
+      expect(
+        getByText('Are you sure you want to delete this project, its attachments and associated surveys/observations?')
+      ).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId('yes-button'));
+
+    await waitFor(() => {
+      expect(queryByText('Error Deleting Project')).toBeInTheDocument();
+    });
+
+    // Get the backdrop, then get the firstChild because this is where the event listener is attached
+    //@ts-ignore
+    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+
+    await waitFor(() => {
+      expect(queryByText('Error Deleting Project')).toBeNull();
+    });
+  });
+
   it('shows error dialog with API error message when deleting project fails', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
