@@ -91,8 +91,7 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 
 -- temporary external interface tables
 \i populate_wldtaxonomic_units.sql
-\i populate_common_survey_methodology_species.sql
-\i populate_common_survey_methodology_species_template.sql
+\i populate_template_methodology_species.sql
 \set QUIET off
 
  -- create the views

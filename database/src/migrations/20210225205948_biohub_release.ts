@@ -99,11 +99,8 @@ export async function up(knex: Knex): Promise<void> {
   const populate_wldtaxonomic_units = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
   );
-  const populate_common_survey_methodology_species = fs.readFileSync(
-    path.join(__dirname, DB_RELEASE, 'populate_common_survey_methodology_species.sql')
-  );
-  const populate_common_survey_methodology_species_template = fs.readFileSync(
-    path.join(__dirname, DB_RELEASE, 'populate_common_survey_methodology_species_template.sql')
+  const populate_template_methodology_species = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_template_methodology_species.sql')
   );
 
   const project_dapi_views = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'project_dapi_views.sql'));
@@ -188,8 +185,7 @@ export async function up(knex: Knex): Promise<void> {
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}
-    ${populate_common_survey_methodology_species}
-    ${populate_common_survey_methodology_species_template}
+    ${populate_template_methodology_species}
 
     -- create the views
     set search_path = biohub_dapi_v1;

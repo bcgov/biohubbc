@@ -4,8 +4,6 @@
  create or replace view administrative_activity_type as select * from biohub.administrative_activity_type;
  create or replace view climate_change_initiative as select * from biohub.climate_change_initiative;
  create or replace view common_survey_methodology as select * from biohub.common_survey_methodology;
- create or replace view common_survey_methodology_species as select * from biohub.common_survey_methodology_species;
- create or replace view common_survey_methodology_species_template as select * from biohub.common_survey_methodology_species_template;
  create or replace view data_package as select * from biohub.data_package;
  create or replace view first_nations as select * from biohub.first_nations;
  create or replace view funding_source as select * from biohub.funding_source;
@@ -48,6 +46,7 @@
  create or replace view system_user as select * from biohub.system_user;
  create or replace view system_user_role as select * from biohub.system_user_role;
  create or replace view template as select * from biohub.template;
+ create or replace view template_methodology_species as select * from biohub.template_methodology_species;
  create or replace view user_identity_source as select * from biohub.user_identity_source;
  create or replace view webform_draft as select * from biohub.webform_draft;
  create or replace view wldtaxonomic_units as select * from biohub.wldtaxonomic_units;

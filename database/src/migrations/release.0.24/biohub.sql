@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, August 31, 2021 14:27:14
+-- Date Created : Tuesday, August 31, 2021 21:56:07
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -318,82 +318,6 @@ COMMENT ON COLUMN common_survey_methodology.update_user IS 'The id of the user w
 COMMENT ON COLUMN common_survey_methodology.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE common_survey_methodology IS 'A common methodology is a specific species inventory protocol that may be implemented across various species and strata. Examples include Stratified Random Block.'
-;
-
--- 
--- TABLE: common_survey_methodology_species 
---
-
-CREATE TABLE common_survey_methodology_species(
-    common_survey_methodology_species_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    common_survey_methodology_id            integer           NOT NULL,
-    wldtaxonomic_units_id                   integer           NOT NULL,
-    create_date                             timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                             integer           NOT NULL,
-    update_date                             timestamptz(6),
-    update_user                             integer,
-    revision_count                          integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK192" PRIMARY KEY (common_survey_methodology_species_id)
-)
-;
-
-
-
-COMMENT ON COLUMN common_survey_methodology_species.common_survey_methodology_species_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN common_survey_methodology_species.common_survey_methodology_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN common_survey_methodology_species.wldtaxonomic_units_id IS 'System generated UID for a taxon.'
-;
-COMMENT ON COLUMN common_survey_methodology_species.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN common_survey_methodology_species.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN common_survey_methodology_species.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN common_survey_methodology_species.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN common_survey_methodology_species.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE common_survey_methodology_species IS 'Intersection table associating common survey methodologies with taxonomic units.'
-;
-
--- 
--- TABLE: common_survey_methodology_species_template 
---
-
-CREATE TABLE common_survey_methodology_species_template(
-    common_survey_methodology_species_template_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    common_survey_methodology_species_id             integer           NOT NULL,
-    template_id                                      integer           NOT NULL,
-    create_date                                      timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                                      integer           NOT NULL,
-    update_date                                      timestamptz(6),
-    update_user                                      integer,
-    revision_count                                   integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK194" PRIMARY KEY (common_survey_methodology_species_template_id)
-)
-;
-
-
-
-COMMENT ON COLUMN common_survey_methodology_species_template.common_survey_methodology_species_template_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN common_survey_methodology_species_template.common_survey_methodology_species_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN common_survey_methodology_species_template.template_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN common_survey_methodology_species_template.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN common_survey_methodology_species_template.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN common_survey_methodology_species_template.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN common_survey_methodology_species_template.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN common_survey_methodology_species_template.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE common_survey_methodology_species_template IS 'Intersection table associating common survey methodologies species with templates.'
 ;
 
 -- 
@@ -860,19 +784,19 @@ COMMENT ON TABLE occurrence_data_package IS 'An associative entity that joins da
 --
 
 CREATE TABLE occurrence_submission(
-    occurrence_submission_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    survey_id                   integer,
-    template_id                 integer,
-    source                      varchar(300)      NOT NULL,
-    event_timestamp             TIMESTAMPTZ       NOT NULL,
-    delete_timestamp            TIMESTAMPTZ,
-    key                         varchar(1000),
-    file_name                   varchar(300),
-    create_date                 timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                 integer           NOT NULL,
-    update_date                 timestamptz(6),
-    update_user                 integer,
-    revision_count              integer           DEFAULT 0 NOT NULL,
+    occurrence_submission_id           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    survey_id                          integer,
+    template_methodology_species_id    integer,
+    source                             varchar(300)      NOT NULL,
+    event_timestamp                    TIMESTAMPTZ       NOT NULL,
+    delete_timestamp                   TIMESTAMPTZ,
+    key                                varchar(1000),
+    file_name                          varchar(300),
+    create_date                        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                        integer           NOT NULL,
+    update_date                        timestamptz(6),
+    update_user                        integer,
+    revision_count                     integer           DEFAULT 0 NOT NULL,
     CONSTRAINT occurrence_submission_pk PRIMARY KEY (occurrence_submission_id)
 )
 ;
@@ -883,7 +807,7 @@ COMMENT ON COLUMN occurrence_submission.occurrence_submission_id IS 'System gene
 ;
 COMMENT ON COLUMN occurrence_submission.survey_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN occurrence_submission.template_id IS 'System generated surrogate primary key identifier.'
+COMMENT ON COLUMN occurrence_submission.template_methodology_species_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN occurrence_submission.source IS 'The name of the source system that is supplying the data.'
 ;
@@ -2358,6 +2282,47 @@ COMMENT ON TABLE template IS 'A template describes a data submission format that
 ;
 
 -- 
+-- TABLE: template_methodology_species 
+--
+
+CREATE TABLE template_methodology_species(
+    template_methodology_species_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    common_survey_methodology_id       integer           NOT NULL,
+    wldtaxonomic_units_id              integer           NOT NULL,
+    template_id                        integer           NOT NULL,
+    create_date                        timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                        integer           NOT NULL,
+    update_date                        timestamptz(6),
+    update_user                        integer,
+    revision_count                     integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT "PK192" PRIMARY KEY (template_methodology_species_id)
+)
+;
+
+
+
+COMMENT ON COLUMN template_methodology_species.template_methodology_species_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN template_methodology_species.common_survey_methodology_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN template_methodology_species.wldtaxonomic_units_id IS 'System generated UID for a taxon.'
+;
+COMMENT ON COLUMN template_methodology_species.template_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN template_methodology_species.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN template_methodology_species.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN template_methodology_species.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN template_methodology_species.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN template_methodology_species.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE template_methodology_species IS 'Intersection table associating templates, common survey methodologies with taxonomic units.'
+;
+
+-- 
 -- TABLE: user_identity_source 
 --
 
@@ -2574,42 +2539,6 @@ CREATE UNIQUE INDEX climate_change_initiative_nuk1 ON climate_change_initiative(
 CREATE UNIQUE INDEX common_survey_methodology_nuk1 ON common_survey_methodology(name, version, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
--- INDEX: common_survey_methodology_species_uk1 
---
-
-CREATE UNIQUE INDEX common_survey_methodology_species_uk1 ON common_survey_methodology_species(common_survey_methodology_id, wldtaxonomic_units_id)
-;
--- 
--- INDEX: "Ref190183" 
---
-
-CREATE INDEX "Ref190183" ON common_survey_methodology_species(common_survey_methodology_id)
-;
--- 
--- INDEX: "Ref160184" 
---
-
-CREATE INDEX "Ref160184" ON common_survey_methodology_species(wldtaxonomic_units_id)
-;
--- 
--- INDEX: common_survey_methodology_species_template_uk1 
---
-
-CREATE UNIQUE INDEX common_survey_methodology_species_template_uk1 ON common_survey_methodology_species_template(common_survey_methodology_species_id, template_id)
-;
--- 
--- INDEX: "Ref192185" 
---
-
-CREATE INDEX "Ref192185" ON common_survey_methodology_species_template(common_survey_methodology_species_id)
-;
--- 
--- INDEX: "Ref191186" 
---
-
-CREATE INDEX "Ref191186" ON common_survey_methodology_species_template(template_id)
-;
--- 
 -- INDEX: first_nations_nuk1 
 --
 
@@ -2694,10 +2623,10 @@ CREATE INDEX "Ref169174" ON occurrence_data_package(occurrence_id)
 CREATE INDEX "Ref153160" ON occurrence_submission(survey_id)
 ;
 -- 
--- INDEX: "Ref191182" 
+-- INDEX: "Ref192188" 
 --
 
-CREATE INDEX "Ref191182" ON occurrence_submission(template_id)
+CREATE INDEX "Ref192188" ON occurrence_submission(template_methodology_species_id)
 ;
 -- 
 -- INDEX: occurrence_submission_data_package_uk1 
@@ -3090,6 +3019,30 @@ CREATE INDEX "Ref79140" ON system_user_role(system_role_id)
 CREATE UNIQUE INDEX template_nuk1 ON template(name, version, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
+-- INDEX: template_methodology_species_uk1 
+--
+
+CREATE UNIQUE INDEX template_methodology_species_uk1 ON template_methodology_species(common_survey_methodology_id, wldtaxonomic_units_id, template_id)
+;
+-- 
+-- INDEX: "Ref190183" 
+--
+
+CREATE INDEX "Ref190183" ON template_methodology_species(common_survey_methodology_id)
+;
+-- 
+-- INDEX: "Ref160184" 
+--
+
+CREATE INDEX "Ref160184" ON template_methodology_species(wldtaxonomic_units_id)
+;
+-- 
+-- INDEX: "Ref191187" 
+--
+
+CREATE INDEX "Ref191187" ON template_methodology_species(template_id)
+;
+-- 
 -- INDEX: user_identity_source_nuk1 
 --
 
@@ -3123,36 +3076,6 @@ ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_t
 ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type146" 
     FOREIGN KEY (administrative_activity_status_type_id)
     REFERENCES administrative_activity_status_type(administrative_activity_status_type_id)
-;
-
-
--- 
--- TABLE: common_survey_methodology_species 
---
-
-ALTER TABLE common_survey_methodology_species ADD CONSTRAINT "Refcommon_survey_methodology183" 
-    FOREIGN KEY (common_survey_methodology_id)
-    REFERENCES common_survey_methodology(common_survey_methodology_id)
-;
-
-ALTER TABLE common_survey_methodology_species ADD CONSTRAINT "Refwldtaxonomic_units184" 
-    FOREIGN KEY (wldtaxonomic_units_id)
-    REFERENCES wldtaxonomic_units(wldtaxonomic_units_id)
-;
-
-
--- 
--- TABLE: common_survey_methodology_species_template 
---
-
-ALTER TABLE common_survey_methodology_species_template ADD CONSTRAINT "Refcommon_survey_methodology_species185" 
-    FOREIGN KEY (common_survey_methodology_species_id)
-    REFERENCES common_survey_methodology_species(common_survey_methodology_species_id)
-;
-
-ALTER TABLE common_survey_methodology_species_template ADD CONSTRAINT "Reftemplate186" 
-    FOREIGN KEY (template_id)
-    REFERENCES template(template_id)
 ;
 
 
@@ -3220,9 +3143,9 @@ ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey160"
     REFERENCES survey(survey_id)
 ;
 
-ALTER TABLE occurrence_submission ADD CONSTRAINT "Reftemplate182" 
-    FOREIGN KEY (template_id)
-    REFERENCES template(template_id)
+ALTER TABLE occurrence_submission ADD CONSTRAINT "Reftemplate_methodology_species188" 
+    FOREIGN KEY (template_methodology_species_id)
+    REFERENCES template_methodology_species(template_methodology_species_id)
 ;
 
 
@@ -3533,6 +3456,26 @@ ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_user139"
 ALTER TABLE system_user_role ADD CONSTRAINT "Refsystem_role140" 
     FOREIGN KEY (system_role_id)
     REFERENCES system_role(system_role_id)
+;
+
+
+-- 
+-- TABLE: template_methodology_species 
+--
+
+ALTER TABLE template_methodology_species ADD CONSTRAINT "Refcommon_survey_methodology183" 
+    FOREIGN KEY (common_survey_methodology_id)
+    REFERENCES common_survey_methodology(common_survey_methodology_id)
+;
+
+ALTER TABLE template_methodology_species ADD CONSTRAINT "Refwldtaxonomic_units184" 
+    FOREIGN KEY (wldtaxonomic_units_id)
+    REFERENCES wldtaxonomic_units(wldtaxonomic_units_id)
+;
+
+ALTER TABLE template_methodology_species ADD CONSTRAINT "Reftemplate187" 
+    FOREIGN KEY (template_id)
+    REFERENCES template(template_id)
 ;
 
 
