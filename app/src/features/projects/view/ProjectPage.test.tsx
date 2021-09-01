@@ -78,8 +78,33 @@ describe('ProjectPage', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders project page when project is loaded', async () => {
+  it('renders project page when project is loaded (project is active)', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      activity: [{ id: 1, name: 'activity 1' }]
+    } as any);
+
+    const { asFragment, findByText } = render(
+      <DialogContextProvider>
+        <Router history={history}>
+          <ProjectPage />
+        </Router>
+      </DialogContextProvider>
+    );
+
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    expect(projectHeaderText).toBeVisible();
+
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
+  });
+
+  it('renders project page when project is loaded (project is completed)', async () => {
+    mockBiohubApi().project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, completion_status: 'Completed' }
+    });
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       activity: [{ id: 1, name: 'activity 1' }]
     } as any);
