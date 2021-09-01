@@ -375,7 +375,7 @@ describe('GetProjectData', () => {
       revision_count: 1
     };
 
-    const activityData = [{ a_id: 1 }, { a_id: 2 }];
+    const activityData = [{ activity_id: 1 }, { activity_id: 2 }];
 
     let data: GetProjectData;
 
