@@ -298,10 +298,11 @@ export type IHeaderErrorCode =
 
 export type IRowErrorCode =
   | 'Missing Required Field'
-  | 'Unexpected Formats'
+  | 'Unexpected Format'
   | 'Out of Range'
   | 'Invalid Value'
   | 'Miscellaneous';
+
 export interface IHeaderError {
   errorCode: IHeaderErrorCode;
   message: string;

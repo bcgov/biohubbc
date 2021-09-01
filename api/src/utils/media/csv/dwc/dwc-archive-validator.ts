@@ -5,14 +5,17 @@ import { CSVValidator } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
-  hasRequiredHeadersValidator
+  hasRequiredHeadersValidator,
+  hasRecommendedHeadersValidator
 } from '../validation/csv-header-validator';
 import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
   getValidRangeFieldsValidator,
+  getValidFormatFieldsValidator,
   ICodeValuesByHeader,
-  IValueRangesByHeader
+  IValueRangesByHeader,
+  IFormatByHeader
 } from '../validation/csv-row-validator';
 import { DWC_CLASS } from './dwc-archive-file';
 
@@ -75,8 +78,7 @@ const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
         'verbatimElevation',
         'coordinateUncertaintyInMeters',
         'coordinatePrecision',
-        'verbatimLocality',
-        'locationRemarks'
+        'verbatimLocality'
       ];
     case DWC_CLASS.OCCURRENCE:
       return [
@@ -87,8 +89,7 @@ const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
         'associatedTaxa',
         'sex',
         'lifeStage',
-        'individualCount',
-        'identifiedBy'
+        'individualCount'
       ];
     case DWC_CLASS.MEASUREMENTORFACT:
       return ['measurementID', 'occurrenceID', 'measurementType', 'measurementUnit', 'measurementValue'];
@@ -96,6 +97,17 @@ const getRequiredHeaders = (dwcClass: DWC_CLASS): string[] => {
       return ['resourceRelationshipID', 'resourceID', 'relatedResourceID', 'relationshipOfResource'];
     case DWC_CLASS.TAXON:
       return ['eventID', 'taxonID'];
+    default:
+      return [];
+  }
+};
+
+const getRecommendedHeaders = (dwcClass: DWC_CLASS): string[] => {
+  switch (dwcClass) {
+    case DWC_CLASS.EVENT:
+      return ['locationRemarks'];
+    case DWC_CLASS.OCCURRENCE:
+      return ['identifiedBy'];
     default:
       return [];
   }
@@ -133,7 +145,16 @@ const getCodeValuesByHeader = (dwcClass: DWC_CLASS): ICodeValuesByHeader[] => {
 const getValidRangesByHeader = (dwcClass: DWC_CLASS): IValueRangesByHeader[] => {
   switch (dwcClass) {
     case DWC_CLASS.OCCURRENCE:
-      return [{ header: 'count', min_value: 1, max_value: 10 }];
+      return [{ header: 'individualCount', min_value: 0, max_value: 10 }];
+    default:
+      return [];
+  }
+};
+
+const getValidFormatsByHeader = (dwcClass: DWC_CLASS): IFormatByHeader[] => {
+  switch (dwcClass) {
+    case DWC_CLASS.EVENT:
+      return [{ header: 'eventID', reg_exp: '^Kispiox.*', expected_format: 'Must start wth `Kispiox`' }];
     default:
       return [];
   }
@@ -149,10 +170,12 @@ export const getDWCCSVValidators = (dwcClass: DWC_CLASS): CSVValidator[] => {
   return [
     getDuplicateHeadersValidator(),
     hasRequiredHeadersValidator(getRequiredHeaders(dwcClass)),
+    hasRecommendedHeadersValidator(getRecommendedHeaders(dwcClass)),
     getValidHeadersValidator(getValidHeaders(dwcClass)),
     getRequiredFieldsValidator(getRequiredFieldsByHeader(dwcClass)),
     getCodeValueFieldsValidator(getCodeValuesByHeader(dwcClass)),
-    getValidRangeFieldsValidator(getValidRangesByHeader(dwcClass))
+    getValidRangeFieldsValidator(getValidRangesByHeader(dwcClass)),
+    getValidFormatFieldsValidator(getValidFormatsByHeader(dwcClass))
   ];
 };
 
