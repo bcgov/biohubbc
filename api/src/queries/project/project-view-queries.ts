@@ -61,11 +61,10 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 /**
  * SQL query to get all public facing (published) projects.
  *
- * @param {any} filterFields
  * @returns {SQLStatement} sql query object
  */
-export const getPublicProjectListSQL = (filterFields?: any): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPublicProjectListSQL', message: 'params', filterFields });
+export const getPublicProjectListSQL = (): SQLStatement | null => {
+  defaultLog.debug({ label: 'getPublicProjectListSQL', message: 'params' });
 
   const sqlStatement = SQL`
     SELECT
