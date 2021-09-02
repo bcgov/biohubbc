@@ -16,7 +16,6 @@ export class GetViewSurveyDetailsData {
   survey_purpose: string;
   focal_species: (string | number)[];
   ancillary_species: (string | number)[];
-  survey_type: string;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -76,7 +75,6 @@ export class GetViewSurveyDetailsData {
       (ancillarySpeciesList.length && ancillarySpeciesList.filter((item: string | number) => !!item)) || [];
     this.start_date = surveyDataItem?.start_date || '';
     this.end_date = surveyDataItem?.end_date || '';
-    this.survey_type = surveyDataItem?.survey_type || '';
     this.biologist_first_name = surveyDataItem?.lead_first_name || '';
     this.biologist_last_name = surveyDataItem?.lead_last_name || '';
     this.survey_area_name = surveyDataItem?.location_name || '';

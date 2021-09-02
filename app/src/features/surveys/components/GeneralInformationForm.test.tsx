@@ -17,8 +17,7 @@ const generalInformationFilledValues = {
   species: [1],
   survey_purpose: 'purpose',
   biologist_first_name: 'first',
-  biologist_last_name: 'last',
-  survey_type: 'Type 1'
+  biologist_last_name: 'last'
 };
 
 describe('General Information Form', () => {
@@ -37,11 +36,6 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
-              }) || []
-            }
-            survey_types={
-              codes?.survey_types?.map((item) => {
-                return { value: item.name, label: item.name };
               }) || []
             }
             permit_numbers={[
@@ -79,11 +73,6 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
-              }) || []
-            }
-            survey_types={
-              codes?.survey_types?.map((item) => {
-                return { value: item.name, label: item.name };
               }) || []
             }
             permit_numbers={[
@@ -139,11 +128,6 @@ describe('General Information Form', () => {
             species={
               codes?.species?.map((item) => {
                 return { value: item.id, label: item.name };
-              }) || []
-            }
-            survey_types={
-              codes?.survey_types?.map((item) => {
-                return { value: item.name, label: item.name };
               }) || []
             }
             permit_numbers={[

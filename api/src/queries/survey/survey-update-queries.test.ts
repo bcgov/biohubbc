@@ -16,7 +16,6 @@ describe('putSurveyDetailsSQL', () => {
     objectives: 'objectives',
     focal_species: [1, 2],
     ancillary_species: [3, 4],
-    survey_type: 'type',
     start_date: '2020/04/04',
     end_date: '2020/05/05',
     lead_first_name: 'first',

@@ -16,7 +16,6 @@ export class PostSurveyObject {
   foippa_requirements_accepted: boolean;
   focal_species: number[];
   ancillary_species: number[];
-  survey_type: string;
   start_date: string;
   end_date: string;
   survey_area_name: string;
@@ -37,7 +36,6 @@ export class PostSurveyObject {
     this.foippa_requirements_accepted = obj?.foippa_requirements_accepted === 'true' || false;
     this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
     this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
-    this.survey_type = obj?.survey_type || null;
     this.start_date = obj?.start_date || null;
     this.survey_area_name = obj?.survey_area_name || null;
     this.permit_number = obj?.permit_number || null;

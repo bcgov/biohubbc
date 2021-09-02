@@ -124,20 +124,6 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Survey Type
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Type 1
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
             Permit
           </dt>
           <dd
@@ -311,20 +297,6 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
             class="MuiTypography-root MuiTypography-body1"
           >
             ancillary species
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Survey Type
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Type 1
           </dd>
         </div>
         <div

@@ -43,7 +43,6 @@ export interface IGeneralInformationForm {
   end_date: string;
   focal_species: number[];
   ancillary_species: number[];
-  survey_type: string;
   survey_purpose: string;
   biologist_first_name: string;
   biologist_last_name: string;
@@ -58,7 +57,6 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   end_date: '',
   focal_species: [],
   ancillary_species: [],
-  survey_type: '',
   survey_purpose: '',
   biologist_first_name: '',
   biologist_last_name: '',
@@ -76,7 +74,6 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
       .required('You must provide a purpose for the survey'),
     focal_species: yup.array().required('Required'),
     ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique'),
-    survey_type: yup.string().required('Required'),
     biologist_first_name: yup.string().required('Required'),
     biologist_last_name: yup.string().required('Required'),
     start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
@@ -87,7 +84,6 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 
 export interface IGeneralInformationFormProps {
   species: IMultiAutocompleteFieldOption[];
-  survey_types: IMultiAutocompleteFieldOption[];
   permit_numbers: IAutocompleteFieldOption<string>[];
   funding_sources: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
@@ -168,29 +164,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             options={props.species}
             required={false}
           />
-        </Grid>
-        <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-            <InputLabel id="survey_type-label">Survey Type</InputLabel>
-            <Select
-              id="survey_type"
-              name="survey_type"
-              labelId="survey_type-label"
-              label="Survey Type"
-              value={formikProps.values.survey_type}
-              labelWidth={300}
-              onChange={formikProps.handleChange}
-              error={formikProps.touched.survey_type && Boolean(formikProps.errors.survey_type)}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Survey Type' }}>
-              {props.survey_types.map((item: any) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{formikProps.touched.survey_type && formikProps.errors.survey_type}</FormHelperText>
-          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <CustomTextField

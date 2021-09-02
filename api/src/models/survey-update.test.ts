@@ -26,10 +26,6 @@ describe('GetUpdateSurveyDetailsData', () => {
       expect(data.ancillary_species).to.eql([]);
     });
 
-    it('sets survey type', () => {
-      expect(data.survey_type).to.equal('');
-    });
-
     it('sets start_date', () => {
       expect(data.start_date).to.equal('');
     });
@@ -80,7 +76,6 @@ describe('GetUpdateSurveyDetailsData', () => {
         revision_count: 1,
         focal_species: 'species',
         ancillary_species: 'ancillary',
-        survey_type: 'type',
         lead_first_name: 'lead',
         lead_last_name: 'last',
         location_name: 'area',
@@ -120,10 +115,6 @@ describe('GetUpdateSurveyDetailsData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([surveyData[0].ancillary_species]);
-    });
-
-    it('sets survey type', () => {
-      expect(data.survey_type).to.equal(surveyData[0].survey_type);
     });
 
     it('sets start_date', () => {
@@ -180,7 +171,6 @@ describe('GetUpdateSurveyDetailsData', () => {
         revision_count: 1,
         focal_species: 1,
         ancillary_species: 2,
-        survey_type: 'type',
         lead_first_name: 'lead',
         lead_last_name: 'last',
         location_name: 'area',
@@ -220,10 +210,6 @@ describe('GetUpdateSurveyDetailsData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([surveyData[0].ancillary_species]);
-    });
-
-    it('sets survey type', () => {
-      expect(data.survey_type).to.equal(surveyData[0].survey_type);
     });
 
     it('sets start_date', () => {
@@ -292,10 +278,6 @@ describe('PutSurveyData', () => {
       expect(data.ancillary_species).to.eql([]);
     });
 
-    it('sets survey type', () => {
-      expect(data.survey_type).to.equal(null);
-    });
-
     it('sets geometry', () => {
       expect(data.geometry).to.equal(null);
     });
@@ -334,7 +316,6 @@ describe('PutSurveyData', () => {
         survey_purpose: 'survey purpose',
         focal_species: [1, 2],
         ancillary_species: [3, 4],
-        survey_type: 'type',
         start_date: '2020/04/04',
         end_date: '2020/05/05',
         biologist_first_name: 'first',
@@ -379,10 +360,6 @@ describe('PutSurveyData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyData.survey_details.ancillary_species);
-    });
-
-    it('sets survey type', () => {
-      expect(data.survey_type).to.equal(surveyData.survey_details.survey_type);
     });
 
     it('sets start_date', () => {

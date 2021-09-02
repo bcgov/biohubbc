@@ -364,11 +364,6 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      survey_types={
-                        codes?.survey_types?.map((item) => {
-                          return { value: item.name, label: item.name };
-                        }) || []
-                      }
                       permit_numbers={
                         surveyPermits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };
