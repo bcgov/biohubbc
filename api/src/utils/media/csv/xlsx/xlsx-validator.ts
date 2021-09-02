@@ -250,7 +250,7 @@ export const getValidRangeFieldsByHeader = (xlsxClass: XLSX_CLASS): IValueRanges
   }
 };
 
-const getValidFormatsByHeader = (xlsxClass: XLSX_CLASS): IFormatByHeader[] => {
+export const getValidFormatsByHeader = (xlsxClass: XLSX_CLASS): IFormatByHeader[] => {
   switch (xlsxClass) {
     case XLSX_CLASS.GENERAL_SURVEY:
       return [{ header: 'eventID', reg_exp: '^Kispiox.*', expected_format: 'Must start wth `Kispiox`' }];
