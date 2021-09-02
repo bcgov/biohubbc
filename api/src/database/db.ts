@@ -16,7 +16,7 @@ const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
 const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
 const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 
-const poolConfig: pg.PoolConfig = {
+export const defaultPoolConfig: pg.PoolConfig = {
   user: DB_USERNAME,
   password: DB_PASSWORD,
   database: DB_DATABASE,
@@ -27,8 +27,6 @@ const poolConfig: pg.PoolConfig = {
   idleTimeoutMillis: DB_IDLE_TIMEOUT
 };
 
-defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
-
 // Custom type handler for psq `DATE` type to prevent local time/zone information from being added.
 // Why? By default, node-postgres assumes local time/zone for any psql `DATE` or `TIME` types that don't have timezone information.
 // This Can lead to unexpected behaviour when the original psql `DATE` value was intentionally omitting time/zone information.
@@ -38,20 +36,50 @@ pg.types.setTypeParser(pg.types.builtins.DATE, (stringValue: string) => {
   return stringValue; // 1082 for `DATE` type
 });
 
-let pool: pg.Pool;
+// singleton pg pool instance used by the api
+let DBPool: pg.Pool | undefined;
 
-try {
-  pool = new pg.Pool(poolConfig);
-} catch (error) {
-  defaultLog.error({ label: 'create db pool', message: 'failed to create pool', error, poolConfig });
-  process.exit(1);
-}
+/**
+ * Initializes the singleton pg pool instance used by the api.
+ *
+ * If the pool cannot be created successfully, `process.exit(1)` is called to terminate the API.
+ * Why? The API is of no use if the database can't be reached.
+ *
+ * @param {pg.PoolConfig} [poolConfig]
+ */
+export const initDBPool = function (poolConfig?: pg.PoolConfig): void {
+  if (DBPool) {
+    // the pool has already been initialized, do nothing
+    return;
+  }
+
+  defaultLog.debug({ label: 'create db pool', message: 'pool config', poolConfig });
+
+  try {
+    DBPool = new pg.Pool(poolConfig);
+  } catch (error) {
+    defaultLog.error({ label: 'create db pool', message: 'failed to create db pool', error });
+    process.exit(1);
+  }
+};
+
+/**
+ * Get the singleton pg pool instance used by the api.
+ *
+ * Note: pool will be undefined if `initDBPool` has not been called.
+ *
+ * @return {*}  {(pg.Pool | undefined)}
+ */
+export const getDBPool = function (): pg.Pool | undefined {
+  return DBPool;
+};
 
 export interface IDBConnection {
   /**
    * Opens a new connection, begins a transaction, and sets the user context.
    *
    * Note: Does nothing if the connection is already open.
+   *
    * @memberof IDBConnection
    */
   open: () => Promise<void>;
@@ -59,7 +87,7 @@ export interface IDBConnection {
    * Releases (closes) the connection.
    *
    * Note: Does nothing if the connection is already released.
-   * @throws If the connection is not open.
+   *
    * @memberof IDBConnection
    */
   release: () => void;
@@ -71,7 +99,7 @@ export interface IDBConnection {
    */
   commit: () => Promise<void>;
   /**
-   * Rollsback the transaction, undoing any queries performed by this connection.
+   * Rolls back the transaction, undoing any queries performed by this connection.
    *
    * @throws If the connection is not open.
    * @memberof IDBConnection
@@ -79,8 +107,6 @@ export interface IDBConnection {
   rollback: () => Promise<void>;
   /**
    * Performs a query against this connection, returning the results.
-   *
-   * Note: Does nothing if the connection is not open, or was released.
    *
    * @param {string} text SQL text
    * @param {any[]} [values] SQL values array (optional)
@@ -93,6 +119,7 @@ export interface IDBConnection {
    * Get the ID of the system user in context.
    *
    * Note: will always return `null` if the connection is not open.
+   *
    * @memberof IDBConnection
    */
   systemUserId: () => number | null;
@@ -133,10 +160,18 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * Opens a new connection, begins a transaction, and sets the user context.
    *
    * Note: Does nothing if the connection is already open.
+   *
+   * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
   const _open = async () => {
     if (_client || _isOpen) {
       return;
+    }
+
+    const pool = getDBPool();
+
+    if (!pool) {
+      throw Error('DBPool is not initialized');
     }
 
     _client = await pool.connect();
@@ -160,7 +195,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     }
 
     if (!_client || !_isOpen) {
-      throw Error('DBConnection is not open');
+      return;
     }
 
     _client.release();
@@ -171,6 +206,8 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
 
   /**
    * Commits the transaction that was opened by calling `.open()`.
+   *
+   * @throws {Error} if the connection is not open
    */
   const _commit = async () => {
     if (!_client || !_isOpen) {
@@ -181,7 +218,9 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
   };
 
   /**
-   * Rollsback the transaction, undoing any queries performed by this connection.
+   * Rolls back the transaction, undoing any queries performed by this connection.
+   *
+   * @throws {Error} if the connection is not open
    */
   const _rollback = async () => {
     if (!_client || !_isOpen) {
@@ -196,6 +235,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    *
    * @param {string} text SQL text
    * @param {any[]} [values] SQL values array (optional)
+   * @throws {Error} if the connection is not open
    * @return {*}  {(Promise<QueryResult<any> | void>)}
    */
   const _query = async (text: string, values?: any[]): Promise<pg.QueryResult<any> | void> => {
