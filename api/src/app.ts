@@ -2,6 +2,7 @@ import express from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
 import { OpenAPI } from 'openapi-types';
+import { initDBPool, poolConfig } from './database/db';
 import { ensureCustomError } from './errors/CustomError';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { applyApiDocSecurityFilters } from './security/api-doc-security-filter';
@@ -80,6 +81,8 @@ initialize({
 
 // Start api
 try {
+  initDBPool(poolConfig);
+
   app.listen(PORT, () => {
     defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });
   });
