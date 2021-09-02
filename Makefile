@@ -150,6 +150,8 @@ run-web: ## Runs all backend+web containers
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup
+  ## Restart n8n as a workaround to resolve this known issue: https://github.com/n8n-io/n8n/issues/2155
+	@docker-compose restart n8n
 
 run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
 	@echo "==============================================="
@@ -161,30 +163,30 @@ run-web-debug: ## Runs all backend+web containers in debug mode, where all conta
 ## Commands to shell into the target container
 ## ------------------------------------------------------------------------------
 
-database: ## Executes into database container.
+db-container: ## Executes into database container.
 	@echo "==============================================="
 	@echo "Make: Shelling into database container"
 	@echo "==============================================="
 	@export PGPASSWORD=$(DB_ADMIN_PASS)
 	@docker-compose exec db psql -U $(DB_ADMIN) -d $(DB_DATABASE)
 
-app: ## Executes into the app container.
+app-container: ## Executes into the app container.
 	@echo "==============================================="
 	@echo "Shelling into app container"
 	@echo "==============================================="
 	@docker-compose exec app bash
 
-api: ## Executes into the api container.
+api-container: ## Executes into the api container.
 	@echo "==============================================="
 	@echo "Shelling into api container"
 	@echo "==============================================="
 	@docker-compose exec api bash
 
-n8n: ## Executes into the n8n container.
+n8n-container: ## Executes into the n8n container.
 	@echo "==============================================="
 	@echo "Shelling into n8n container"
 	@echo "==============================================="
-	@docker-compose exec n8n bash
+	@docker-compose exec n8n sh
 
 ## ------------------------------------------------------------------------------
 ## Database migration commands
@@ -366,6 +368,24 @@ log-db-setup: ## Runs `docker logs <container> -f` for the database setup contai
 	@echo "Running docker logs for the db-setup container"
 	@echo "==============================================="
 	@docker logs $(DOCKER_PROJECT_NAME)-db-setup-$(DOCKER_NAMESPACE)-container -f $(args)
+
+log-n8n: ## Runs `docker logs <container> -f` for the n8n container
+	@echo "==============================================="
+	@echo "Running docker logs for the n8n container"
+	@echo "==============================================="
+	@docker logs $(DOCKER_PROJECT_NAME)-n8n-$(DOCKER_NAMESPACE)-container -f $(args)
+
+log-n8n-setup: ## Runs `docker logs <container> -f` for the n8n setup container
+	@echo "==============================================="
+	@echo "Running docker logs for the n8n-setup container"
+	@echo "==============================================="
+	@docker logs $(DOCKER_PROJECT_NAME)-n8n-setup-$(DOCKER_NAMESPACE)-container -f $(args)
+
+log-n8n-nginx: ## Runs `docker logs <container> -f` for the n8n nginx container
+	@echo "==============================================="
+	@echo "Running docker logs for the n8n-nginx container"
+	@echo "==============================================="
+	@docker logs $(DOCKER_PROJECT_NAME)-n8n-nginx-$(DOCKER_NAMESPACE)-container -f $(args)
 
 ## ------------------------------------------------------------------------------
 ## Help

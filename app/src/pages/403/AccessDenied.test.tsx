@@ -9,7 +9,7 @@ import AccessDenied from './AccessDenied';
 const history = createMemoryHistory();
 
 describe('AccessDenied', () => {
-  it('redirects to `/login` when user is not authenticated', () => {
+  it('redirects to `/` when user is not authenticated', () => {
     const authState = {
       keycloakWrapper: {
         keycloak: {
@@ -43,7 +43,7 @@ describe('AccessDenied', () => {
       </AuthStateContext.Provider>
     );
 
-    expect(history.location.pathname).toEqual('/login');
+    expect(history.location.pathname).toEqual('/');
   });
 
   it('renders a spinner when user is authenticated and `hasLoadedAllUserInfo` is false', () => {
