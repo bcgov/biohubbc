@@ -12,7 +12,8 @@ import {
   getSystemRolesSQL,
   getProprietorTypeSQL,
   getAdministrativeActivityStatusTypeSQL,
-  getTaxonsSQL
+  getTaxonsSQL,
+  getCommonSurveyMethodologiesSQL
 } from '../queries/codes/code-queries';
 import { getLogger } from '../utils/logger';
 import { coordinator_agency, region, regional_offices } from '../constants/codes';
@@ -36,6 +37,7 @@ export interface IAllCodeSets {
   system_roles: object;
   regional_offices: object;
   administrative_activity_status_type: object;
+  common_survey_methodologies: object;
 }
 
 /**
@@ -62,7 +64,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     project_type,
     system_roles,
     administrative_activity_status_type,
-    species
+    species,
+    common_survey_methodologies
   ] = await Promise.all([
     await connection.query(getManagementActionTypeSQL().text),
     await connection.query(getFirstNationsSQL().text),
@@ -76,7 +79,8 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(getProjectTypeSQL().text),
     await connection.query(getSystemRolesSQL().text),
     await connection.query(getAdministrativeActivityStatusTypeSQL().text),
-    await connection.query(getTaxonsSQL().text)
+    await connection.query(getTaxonsSQL().text),
+    await connection.query(getCommonSurveyMethodologiesSQL().text)
   ]);
 
   await connection.commit();
@@ -103,6 +107,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     administrative_activity_status_type:
       (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
     species: (species && species.rows) || [],
+    common_survey_methodologies: (common_survey_methodologies && common_survey_methodologies.rows) || [],
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
     region,

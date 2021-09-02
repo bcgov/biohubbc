@@ -53,6 +53,7 @@ export interface IGetSurveyForViewResponseDetails {
   survey_purpose: string;
   focal_species: string[];
   ancillary_species: string[];
+  common_survey_methodology: string;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -81,6 +82,7 @@ export interface IGetSurveyForUpdateResponseDetails {
   survey_purpose: string;
   focal_species: number[];
   ancillary_species: number[];
+  common_survey_methodology_id: number;
   start_date: string;
   end_date: string;
   biologist_first_name: string;

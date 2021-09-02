@@ -44,6 +44,7 @@ export interface IGeneralInformationForm {
   focal_species: number[];
   ancillary_species: number[];
   survey_purpose: string;
+  common_survey_methodology_id: number;
   biologist_first_name: string;
   biologist_last_name: string;
   permit_number: string;
@@ -58,6 +59,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   focal_species: [],
   ancillary_species: [],
   survey_purpose: '',
+  common_survey_methodology_id: ('' as unknown) as number,
   biologist_first_name: '',
   biologist_last_name: '',
   permit_number: '',
@@ -86,6 +88,7 @@ export interface IGeneralInformationFormProps {
   species: IMultiAutocompleteFieldOption[];
   permit_numbers: IAutocompleteFieldOption<string>[];
   funding_sources: IMultiAutocompleteFieldOption[];
+  common_survey_methodologies: IAutocompleteFieldOption<number>[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -164,6 +167,34 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             options={props.species}
             required={false}
           />
+        </Grid>
+        <Grid item xs={12}>
+          <FormControl fullWidth variant="outlined" style={{ width: '100%' }}>
+            <InputLabel id="common_survey_methodology_id-label">Survey Methodology</InputLabel>
+            <Select
+              id="common_survey_methodology_id"
+              name="common_survey_methodology_id"
+              labelId="common_survey_methodology_id-label"
+              label="Survey Methodology"
+              value={formikProps.values.common_survey_methodology_id}
+              labelWidth={300}
+              onChange={formikProps.handleChange}
+              error={
+                formikProps.touched.common_survey_methodology_id &&
+                Boolean(formikProps.errors.common_survey_methodology_id)
+              }
+              displayEmpty
+              inputProps={{ 'aria-label': 'Survey Methodology' }}>
+              {props.common_survey_methodologies.map((item) => (
+                <MenuItem key={item.value} value={item.value}>
+                  {item.label}
+                </MenuItem>
+              ))}
+            </Select>
+            <FormHelperText>
+              {formikProps.touched.common_survey_methodology_id && formikProps.errors.common_survey_methodology_id}
+            </FormHelperText>
+          </FormControl>
         </Grid>
         <Grid item xs={12}>
           <CustomTextField

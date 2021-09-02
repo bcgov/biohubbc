@@ -26,5 +26,9 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Pending' },
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
+  ],
+  common_survey_methodologies: [
+    { id: 1, name: 'Recruitment' },
+    { id: 2, name: 'SRB' }
   ]
 };

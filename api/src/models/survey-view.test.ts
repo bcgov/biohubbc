@@ -26,6 +26,10 @@ describe('GetViewSurveyDetailsData', () => {
       expect(data.ancillary_species).to.eql([]);
     });
 
+    it('sets common survey methodology', () => {
+      expect(data.common_survey_methodology).to.equal('');
+    });
+
     it('sets start_date', () => {
       expect(data.start_date).to.equal('');
     });
@@ -76,6 +80,7 @@ describe('GetViewSurveyDetailsData', () => {
         revision_count: 1,
         focal_species: 'species',
         ancillary_species: 'ancillary',
+        common_survey_methodology: 'method',
         lead_first_name: 'lead',
         lead_last_name: 'last',
         location_name: 'area',
@@ -119,6 +124,10 @@ describe('GetViewSurveyDetailsData', () => {
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([surveyData[0].ancillary_species]);
+    });
+
+    it('sets common survey methodology', () => {
+      expect(data.common_survey_methodology).to.equal(surveyData[0].common_survey_methodology);
     });
 
     it('sets start_date', () => {

@@ -32,6 +32,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson as geometry,
       s.revision_count,
+      s.common_survey_methodology_id,
       per.number,
       per.type,
       sfs.project_funding_source_id as pfs_id,

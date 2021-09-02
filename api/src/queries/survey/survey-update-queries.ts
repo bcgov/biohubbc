@@ -140,6 +140,7 @@ export const putSurveyDetailsSQL = (
       lead_last_name = ${data.lead_last_name},
       location_name = ${data.location_name},
       geojson = ${JSON.stringify(data.geometry)},
+      common_survey_methodology_id = ${data.common_survey_methodology_id},
       geography =
   `;
 

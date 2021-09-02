@@ -499,6 +499,71 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                    style="width: 100%;"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                      data-shrink="false"
+                      id="common_survey_methodology_id-label"
+                    >
+                      Survey Methodology
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Survey Methodology"
+                        aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="common_survey_methodology_id"
+                        role="button"
+                        tabindex="0"
+                      >
+                        <span>
+                          ​
+                        </span>
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="common_survey_methodology_id"
+                        tabindex="-1"
+                        value=""
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-29"
+                        >
+                          <span>
+                            Survey Methodology
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained"
+                    />
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                >
+                  <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                   >
                     <label
