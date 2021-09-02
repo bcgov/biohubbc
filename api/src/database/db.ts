@@ -16,7 +16,7 @@ const DB_POOL_SIZE: number = Number(process.env.DB_POOL_SIZE) || 20;
 const DB_CONNECTION_TIMEOUT: number = Number(process.env.DB_CONNECTION_TIMEOUT) || 0;
 const DB_IDLE_TIMEOUT: number = Number(process.env.DB_IDLE_TIMEOUT) || 10000;
 
-export const poolConfig: pg.PoolConfig = {
+export const defaultPoolConfig: pg.PoolConfig = {
   user: DB_USERNAME,
   password: DB_PASSWORD,
   database: DB_DATABASE,
