@@ -161,7 +161,7 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    *
    * Note: Does nothing if the connection is already open.
    *
-   * @throws {Error} if the called when the DBPool has not been initialized via `initDBPool`
+   * @throws {Error} if called when the DBPool has not been initialized via `initDBPool`
    */
   const _open = async () => {
     if (_client || _isOpen) {
