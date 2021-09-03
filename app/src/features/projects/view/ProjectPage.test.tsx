@@ -11,7 +11,7 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 
-const history = createMemoryHistory({ initialEntries: ['/projects/1'] });
+const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -164,7 +164,7 @@ describe('ProjectPage', () => {
     fireEvent.click(getByTestId('yes-button'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual(`/projects`);
+      expect(history.location.pathname).toEqual(`/admin/projects`);
     });
   });
 

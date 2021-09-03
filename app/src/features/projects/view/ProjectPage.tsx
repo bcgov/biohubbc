@@ -220,7 +220,7 @@ const ProjectPage: React.FC = () => {
         return;
       }
 
-      history.push(`/projects`);
+      history.push(`/admin/projects`);
     } catch (error) {
       const apiError = error as APIError;
       showDeleteErrorDialog({ dialogText: apiError.message, open: true });

@@ -158,7 +158,7 @@ const CreatePermitPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/permits`);
+      history.push(`/admin/permits`);
     }
   };
 
@@ -179,7 +179,7 @@ const CreatePermitPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/permits`);
+    history.push(`/admin/permits`);
   };
 
   /**
@@ -235,7 +235,7 @@ const CreatePermitPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push('/permits');
+      history.push('/admin/permits');
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({

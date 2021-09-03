@@ -154,7 +154,7 @@ const CreateProjectPage: React.FC = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push('/projects');
+      history.push('/admin/projects');
     }
   };
 
@@ -451,7 +451,7 @@ const CreateProjectPage: React.FC = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push('/projects');
+    history.push('/admin/projects');
   };
 
   const handleSubmitDraft = async (values: IProjectDraftForm) => {
@@ -493,7 +493,7 @@ const CreateProjectPage: React.FC = () => {
       setDraft({ id: response.id, date: response.date });
       setEnableCancelCheck(false);
 
-      history.push(`/projects`);
+      history.push(`/admin/projects`);
     } catch (error) {
       setOpenDraftDialog(false);
 
@@ -583,7 +583,7 @@ const CreateProjectPage: React.FC = () => {
 
     setEnableCancelCheck(false);
 
-    history.push(`/projects/${response.id}`);
+    history.push(`/admin/projects/${response.id}`);
   };
 
   const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {

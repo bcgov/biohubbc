@@ -19,16 +19,16 @@ interface IPermitsRouterProps {
 const PermitsRouter: React.FC<IPermitsRouterProps> = (props) => {
   return (
     <Switch>
-      <PrivateRoute exact layout={PermitsLayout} path="/permits" component={PermitsPage} componentProps={props} />
+      <PrivateRoute exact layout={PermitsLayout} path="/admin/permits" component={PermitsPage} componentProps={props} />
       <PrivateRoute
         exact
         layout={PermitsLayout}
-        path="/permits/create"
+        path="/admin/permits/create"
         component={CreatePermitPage}
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}
-      <AppRoute title="*" path="/permits/*" component={() => <Redirect to="/page-not-found" />} />
+      <AppRoute title="*" path="/admin/permits/*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );
 };
