@@ -17,6 +17,7 @@ const systemUsers = [
   { identifier: 'rstens', type: 'IDIR', roleId: 1 }, //13
   { identifier: 'tadekens', type: 'IDIR', roleId: 1 },
   { identifier: 'sdevalap', type: 'IDIR', roleId: 1 },
+  { identifier: 'claudiak', type: 'IDIR', roleId: 1 },
   { identifier: 'test1', type: 'BCEID', roleId: 1 }, //16
   { identifier: 'test2', type: 'BCEID', roleId: 4 }, //17
   { identifier: 'test3', type: 'IDIR', roleId: 1 }, //18
