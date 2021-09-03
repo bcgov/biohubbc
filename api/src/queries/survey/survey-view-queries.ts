@@ -163,7 +163,10 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       s.geojson as geometry,
       per.number,
       per.type,
-      csm.name as common_survey_methodology,
+      CASE
+        WHEN s.common_survey_methodology_id IS NOT NULL THEN CONCAT(csm.name, ' - ', csm.version)
+        WHEN s.common_survey_methodology_id IS NULL THEN null
+      END as common_survey_methodology,
       sfs.project_funding_source_id as pfs_id,
       pfs.funding_amount::numeric::int,
       pfs.funding_start_date,
