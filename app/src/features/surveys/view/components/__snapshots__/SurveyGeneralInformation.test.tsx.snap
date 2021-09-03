@@ -124,12 +124,12 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Survey Type
+            Survey Methodology
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            Type 1
+            method
           </dd>
         </div>
         <div
@@ -319,12 +319,12 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Survey Type
+            Survey Methodology
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            Type 1
+            method
           </dd>
         </div>
         <div

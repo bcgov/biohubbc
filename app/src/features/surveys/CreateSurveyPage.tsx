@@ -364,9 +364,9 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      survey_types={
-                        codes?.survey_types?.map((item) => {
-                          return { value: item.name, label: item.name };
+                      common_survey_methodologies={
+                        codes?.common_survey_methodologies?.map((item) => {
+                          return { value: item.id, label: item.name };
                         }) || []
                       }
                       permit_numbers={

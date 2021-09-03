@@ -155,7 +155,6 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       s.survey_id as id,
       s.name,
       s.objectives,
-      s.survey_type,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -164,6 +163,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       s.geojson as geometry,
       per.number,
       per.type,
+      csm.name as common_survey_methodology,
       sfs.project_funding_source_id as pfs_id,
       pfs.funding_amount::numeric::int,
       pfs.funding_start_date,
@@ -209,6 +209,10 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       funding_source as fs
     ON
       iac.funding_source_id = fs.funding_source_id
+    LEFT OUTER JOIN
+      common_survey_methodology as csm
+    ON
+      csm.common_survey_methodology_id = s.common_survey_methodology_id
     WHERE
       s.survey_id = ${surveyId};
   `;
