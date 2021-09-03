@@ -14,6 +14,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import { isAuthenticated } from 'utils/authUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   govHeader: {
@@ -161,10 +162,8 @@ const Header: React.FC = () => {
                 </picture>
                 Species Inventory Management System
               </Link>
-              {(!keycloakWrapper?.keycloak?.authenticated || !keycloakWrapper?.hasLoadedAllUserInfo) && (
-                <PublicViewUser />
-              )}
-              {keycloakWrapper?.keycloak?.authenticated && keycloakWrapper?.hasLoadedAllUserInfo && <LoggedInUser />}
+              {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
+              {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
             </Box>
           </Toolbar>
         </Container>
@@ -172,7 +171,7 @@ const Header: React.FC = () => {
       <Box className={classes.mainNav}>
         <Container maxWidth="xl" className={classes.mainNavContainer}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            {keycloakWrapper?.keycloak?.authenticated && keycloakWrapper?.hasLoadedAllUserInfo && (
+            {isAuthenticated(keycloakWrapper) && (
               <SecureLink
                 to="/admin/projects"
                 label="Projects"
@@ -180,7 +179,7 @@ const Header: React.FC = () => {
                 id="menu_projects"
               />
             )}
-            {(!keycloakWrapper?.keycloak?.authenticated || !keycloakWrapper?.hasLoadedAllUserInfo) && (
+            {!isAuthenticated(keycloakWrapper) && (
               <>
                 <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
                 <SecureLink to="/search" label="Search" validRoles={[]} id="menu_search" />
