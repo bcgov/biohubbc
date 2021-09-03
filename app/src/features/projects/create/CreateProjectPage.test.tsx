@@ -145,7 +145,7 @@ describe('CreateProjectPage', () => {
       mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
       history.push('/home');
-      history.push('/projects/create');
+      history.push('/admin/projects/create');
 
       const { findByText, getByRole } = renderContainer();
       const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
@@ -167,7 +167,7 @@ describe('CreateProjectPage', () => {
       mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
       history.push('/home');
-      history.push('/projects/create');
+      history.push('/admin/projects/create');
 
       const { findByText, getByRole } = renderContainer();
       const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
@@ -175,9 +175,9 @@ describe('CreateProjectPage', () => {
       fireEvent.click(BackToProjectsButton);
       const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
 
-      expect(history.location.pathname).toEqual('/projects/create');
+      expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureYesButton);
-      expect(history.location.pathname).toEqual('/projects');
+      expect(history.location.pathname).toEqual('/admin/projects');
     });
 
     it('does nothing if the user clicks `No`', async () => {
@@ -187,7 +187,7 @@ describe('CreateProjectPage', () => {
       mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
       history.push('/home');
-      history.push('/projects/create');
+      history.push('/admin/projects/create');
 
       const { findByText, getByRole } = renderContainer();
       const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
@@ -195,9 +195,9 @@ describe('CreateProjectPage', () => {
       fireEvent.click(BackToProjectsButton);
       const AreYouSureNoButton = await rawFindByText(getByRole('dialog'), 'No', { exact: false });
 
-      expect(history.location.pathname).toEqual('/projects/create');
+      expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureNoButton);
-      expect(history.location.pathname).toEqual('/projects/create');
+      expect(history.location.pathname).toEqual('/admin/projects/create');
     });
   });
 

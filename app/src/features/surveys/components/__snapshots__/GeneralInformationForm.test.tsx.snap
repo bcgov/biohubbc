@@ -1267,8 +1267,8 @@ exports[`General Information Form renders correctly the filled component correct
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-            data-shrink="false"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+            data-shrink="true"
             id="common_survey_methodology_id-label"
           >
             Survey Methodology
@@ -1285,16 +1285,14 @@ exports[`General Information Form renders correctly the filled component correct
               role="button"
               tabindex="0"
             >
-              <span>
-                ​
-              </span>
+              Recruitment
             </div>
             <input
               aria-hidden="true"
               class="MuiSelect-nativeInput"
               name="common_survey_methodology_id"
               tabindex="-1"
-              value=""
+              value="1"
             />
             <svg
               aria-hidden="true"
@@ -1311,7 +1309,7 @@ exports[`General Information Form renders correctly the filled component correct
               class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-22"
+                class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
               >
                 <span>
                   Survey Methodology
@@ -1320,7 +1318,7 @@ exports[`General Information Form renders correctly the filled component correct
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained"
+            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
           />
         </div>
       </div>
@@ -2156,8 +2154,8 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-            data-shrink="false"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+            data-shrink="true"
             id="common_survey_methodology_id-label"
           >
             Survey Methodology
@@ -2174,16 +2172,14 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               role="button"
               tabindex="0"
             >
-              <span>
-                ​
-              </span>
+              Recruitment
             </div>
             <input
               aria-hidden="true"
               class="MuiSelect-nativeInput"
               name="common_survey_methodology_id"
               tabindex="-1"
-              value=""
+              value="1"
             />
             <svg
               aria-hidden="true"
@@ -2200,7 +2196,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               class="PrivateNotchedOutline-root-35 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-37"
+                class="PrivateNotchedOutline-legendLabelled-37 PrivateNotchedOutline-legendNotched-38"
               >
                 <span>
                   Survey Methodology
@@ -2209,7 +2205,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained"
+            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
           />
         </div>
       </div>

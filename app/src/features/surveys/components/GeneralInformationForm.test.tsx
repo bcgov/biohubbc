@@ -17,7 +17,8 @@ const generalInformationFilledValues = {
   species: [1],
   survey_purpose: 'purpose',
   biologist_first_name: 'first',
-  biologist_last_name: 'last'
+  biologist_last_name: 'last',
+  common_survey_methodology_id: 1
 };
 
 describe('General Information Form', () => {
