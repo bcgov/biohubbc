@@ -95,7 +95,7 @@ describe('ProjectsListPage', () => {
     fireEvent.click(getByText('Create Non-Sampling Permits'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual('/permits/create');
+      expect(history.location.pathname).toEqual('/admin/permits/create');
       expect(history.location.search).toEqual('');
     });
   });

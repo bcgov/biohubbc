@@ -71,7 +71,7 @@ describe('CreatePermitPage', () => {
       } as any);
 
       history.push('/home');
-      history.push('/permits/create');
+      history.push('/admin/permits/create');
 
       const { getByText, getAllByText, getByTestId } = render(
         <DialogContextProvider>
@@ -95,7 +95,7 @@ describe('CreatePermitPage', () => {
       fireEvent.click(getByTestId('yes-button'));
 
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/permits');
+        expect(history.location.pathname).toEqual('/admin/permits');
       });
     });
 

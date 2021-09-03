@@ -503,27 +503,21 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     style="width: 100%;"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
                       data-shrink="false"
-                      id="survey_type-label"
+                      id="common_survey_methodology_id-label"
                     >
-                      Survey Type
-                      <span
-                        aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                      >
-                         *
-                      </span>
+                      Survey Methodology
                     </label>
                     <div
                       class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
                     >
                       <div
                         aria-haspopup="listbox"
-                        aria-label="Survey Type"
-                        aria-labelledby="survey_type-label survey_type"
+                        aria-label="Survey Methodology"
+                        aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
                         class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                        id="survey_type"
+                        id="common_survey_methodology_id"
                         role="button"
                         tabindex="0"
                       >
@@ -534,8 +528,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       <input
                         aria-hidden="true"
                         class="MuiSelect-nativeInput"
-                        name="survey_type"
-                        required=""
+                        name="common_survey_methodology_id"
                         tabindex="-1"
                         value=""
                       />
@@ -557,13 +550,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           class="PrivateNotchedOutline-legendLabelled-29"
                         >
                           <span>
-                            Survey Type
+                            Survey Methodology
                           </span>
                         </legend>
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+                      class="MuiFormHelperText-root MuiFormHelperText-contained"
                     />
                   </div>
                 </div>

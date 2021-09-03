@@ -387,27 +387,21 @@ exports[`General Information Form renders correctly the empty component correctl
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
             data-shrink="false"
-            id="survey_type-label"
+            id="common_survey_methodology_id-label"
           >
-            Survey Type
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
+            Survey Methodology
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
           >
             <div
               aria-haspopup="listbox"
-              aria-label="Survey Type"
-              aria-labelledby="survey_type-label survey_type"
+              aria-label="Survey Methodology"
+              aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
               class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-              id="survey_type"
+              id="common_survey_methodology_id"
               role="button"
               tabindex="0"
             >
@@ -418,8 +412,7 @@ exports[`General Information Form renders correctly the empty component correctl
             <input
               aria-hidden="true"
               class="MuiSelect-nativeInput"
-              name="survey_type"
-              required=""
+              name="common_survey_methodology_id"
               tabindex="-1"
               value=""
             />
@@ -441,13 +434,13 @@ exports[`General Information Form renders correctly the empty component correctl
                 class="PrivateNotchedOutline-legendLabelled-7"
               >
                 <span>
-                  Survey Type
+                  Survey Methodology
                 </span>
               </legend>
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+            class="MuiFormHelperText-root MuiFormHelperText-contained"
           />
         </div>
       </div>
@@ -1274,39 +1267,32 @@ exports[`General Information Form renders correctly the filled component correct
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
             data-shrink="true"
-            id="survey_type-label"
+            id="common_survey_methodology_id-label"
           >
-            Survey Type
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
+            Survey Methodology
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
           >
             <div
               aria-haspopup="listbox"
-              aria-label="Survey Type"
-              aria-labelledby="survey_type-label survey_type"
+              aria-label="Survey Methodology"
+              aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
               class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-              id="survey_type"
+              id="common_survey_methodology_id"
               role="button"
               tabindex="0"
             >
-              Type 1
+              Recruitment
             </div>
             <input
               aria-hidden="true"
               class="MuiSelect-nativeInput"
-              name="survey_type"
-              required=""
+              name="common_survey_methodology_id"
               tabindex="-1"
-              value="Type 1"
+              value="1"
             />
             <svg
               aria-hidden="true"
@@ -1326,13 +1312,13 @@ exports[`General Information Form renders correctly the filled component correct
                 class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
               >
                 <span>
-                  Survey Type
+                  Survey Methodology
                 </span>
               </legend>
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
           />
         </div>
       </div>
@@ -2168,39 +2154,32 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
             data-shrink="true"
-            id="survey_type-label"
+            id="common_survey_methodology_id-label"
           >
-            Survey Type
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
+            Survey Methodology
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
           >
             <div
               aria-haspopup="listbox"
-              aria-label="Survey Type"
-              aria-labelledby="survey_type-label survey_type"
+              aria-label="Survey Methodology"
+              aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
               class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-              id="survey_type"
+              id="common_survey_methodology_id"
               role="button"
               tabindex="0"
             >
-              Type 1
+              Recruitment
             </div>
             <input
               aria-hidden="true"
               class="MuiSelect-nativeInput"
-              name="survey_type"
-              required=""
+              name="common_survey_methodology_id"
               tabindex="-1"
-              value="Type 1"
+              value="1"
             />
             <svg
               aria-hidden="true"
@@ -2220,13 +2199,13 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                 class="PrivateNotchedOutline-legendLabelled-37 PrivateNotchedOutline-legendNotched-38"
               >
                 <span>
-                  Survey Type
+                  Survey Methodology
                 </span>
               </legend>
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
           />
         </div>
       </div>

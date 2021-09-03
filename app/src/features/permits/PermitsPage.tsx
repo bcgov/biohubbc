@@ -32,7 +32,7 @@ const PermitsPage: React.FC = () => {
   const permitCount = permits.length;
 
   const navigateToCreatePermitsPage = () => {
-    history.push('/permits/create');
+    history.push('/admin/permits/create');
   };
 
   useEffect(() => {

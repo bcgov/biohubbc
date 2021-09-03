@@ -16,7 +16,7 @@ export class GetUpdateSurveyDetailsData {
   survey_purpose: string;
   focal_species: (string | number)[];
   ancillary_species: (string | number)[];
-  survey_type: string;
+  common_survey_methodology_id: number;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -70,8 +70,8 @@ export class GetUpdateSurveyDetailsData {
       (ancillarySpeciesList.length && ancillarySpeciesList.filter((item: string | number) => !!item)) || [];
     this.start_date = surveyDataItem?.start_date || '';
     this.end_date = surveyDataItem?.end_date || '';
+    this.common_survey_methodology_id = surveyDataItem?.common_survey_methodology_id ?? null;
     this.biologist_first_name = surveyDataItem?.lead_first_name || '';
-    this.survey_type = surveyDataItem?.survey_type || '';
     this.biologist_last_name = surveyDataItem?.lead_last_name || '';
     this.survey_area_name = surveyDataItem?.location_name || '';
     this.geometry = (surveyDataItem?.geometry?.length && surveyDataItem.geometry) || [];
@@ -100,7 +100,7 @@ export class PutSurveyDetailsData {
   objectives: string;
   focal_species: number[];
   ancillary_species: number[];
-  survey_type: string;
+  common_survey_methodology_id: number;
   start_date: string;
   end_date: string;
   lead_first_name: string;
@@ -122,7 +122,7 @@ export class PutSurveyDetailsData {
       (obj?.survey_details?.ancillary_species?.length && obj.survey_details?.ancillary_species) || [];
     this.start_date = obj?.survey_details?.start_date || null;
     this.end_date = obj?.survey_details?.end_date || null;
-    this.survey_type = obj?.survey_details?.survey_type || null;
+    this.common_survey_methodology_id = obj?.survey_details?.common_survey_methodology_id || null;
     this.lead_first_name = obj?.survey_details?.biologist_first_name || null;
     this.lead_last_name = obj?.survey_details?.biologist_last_name || null;
     this.location_name = obj?.survey_details?.survey_area_name || null;

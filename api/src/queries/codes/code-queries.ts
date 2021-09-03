@@ -40,6 +40,14 @@ export const getProprietorTypeSQL = (): SQLStatement =>
 export const getActivitySQL = (): SQLStatement => SQL`SELECT activity_id as id, name from activity;`;
 
 /**
+ * SQL query to fetch common survey methodology codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getCommonSurveyMethodologiesSQL = (): SQLStatement =>
+  SQL`SELECT common_survey_methodology_id as id, CONCAT(name, ' - ', version) as name from common_survey_methodology;`;
+
+/**
  * SQL query to fetch project type codes.
  *
  * @returns {SQLStatement} sql query object

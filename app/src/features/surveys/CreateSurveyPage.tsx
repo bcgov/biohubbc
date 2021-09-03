@@ -109,7 +109,7 @@ const CreateSurveyPage = () => {
     },
     onYes: () => {
       dialogContext.setYesNoDialog({ open: false });
-      history.push(`/projects/${projectWithDetails?.id}/surveys`);
+      history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
     }
   };
 
@@ -205,7 +205,7 @@ const CreateSurveyPage = () => {
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
-    history.push(`/projects/${projectWithDetails?.id}/surveys`);
+    history.push(`/admin/projects/${projectWithDetails?.id}/surveys`);
   };
 
   const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -274,7 +274,7 @@ const CreateSurveyPage = () => {
 
       setEnableCancelCheck(false);
 
-      history.push(`/projects/${projectWithDetails?.id}/surveys/${response.id}/details`);
+      history.push(`/admin/projects/${projectWithDetails?.id}/surveys/${response.id}/details`);
     } catch (error) {
       const apiError = error as APIError;
       showCreateErrorDialog({
@@ -324,7 +324,7 @@ const CreateSurveyPage = () => {
             <Breadcrumbs>
               <Link
                 color="primary"
-                onClick={() => history.push('/projects')}
+                onClick={() => history.push('/admin/projects')}
                 aria-current="page"
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">Projects</Typography>
@@ -364,9 +364,9 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      survey_types={
-                        codes?.survey_types?.map((item) => {
-                          return { value: item.name, label: item.name };
+                      common_survey_methodologies={
+                        codes?.common_survey_methodologies?.map((item) => {
+                          return { value: item.id, label: item.name };
                         }) || []
                       }
                       permit_numbers={
