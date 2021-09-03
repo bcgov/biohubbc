@@ -43,8 +43,8 @@ export interface IGeneralInformationForm {
   end_date: string;
   focal_species: number[];
   ancillary_species: number[];
-  survey_type: string;
   survey_purpose: string;
+  common_survey_methodology_id: number;
   biologist_first_name: string;
   biologist_last_name: string;
   permit_number: string;
@@ -58,8 +58,8 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   end_date: '',
   focal_species: [],
   ancillary_species: [],
-  survey_type: '',
   survey_purpose: '',
+  common_survey_methodology_id: ('' as unknown) as number,
   biologist_first_name: '',
   biologist_last_name: '',
   permit_number: '',
@@ -76,7 +76,6 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
       .required('You must provide a purpose for the survey'),
     focal_species: yup.array().required('Required'),
     ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique'),
-    survey_type: yup.string().required('Required'),
     biologist_first_name: yup.string().required('Required'),
     biologist_last_name: yup.string().required('Required'),
     start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
@@ -87,9 +86,9 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 
 export interface IGeneralInformationFormProps {
   species: IMultiAutocompleteFieldOption[];
-  survey_types: IMultiAutocompleteFieldOption[];
   permit_numbers: IAutocompleteFieldOption<string>[];
   funding_sources: IMultiAutocompleteFieldOption[];
+  common_survey_methodologies: IAutocompleteFieldOption<number>[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -170,26 +169,31 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-            <InputLabel id="survey_type-label">Survey Type</InputLabel>
+          <FormControl fullWidth variant="outlined" style={{ width: '100%' }}>
+            <InputLabel id="common_survey_methodology_id-label">Survey Methodology</InputLabel>
             <Select
-              id="survey_type"
-              name="survey_type"
-              labelId="survey_type-label"
-              label="Survey Type"
-              value={formikProps.values.survey_type}
+              id="common_survey_methodology_id"
+              name="common_survey_methodology_id"
+              labelId="common_survey_methodology_id-label"
+              label="Survey Methodology"
+              value={formikProps.values.common_survey_methodology_id}
               labelWidth={300}
               onChange={formikProps.handleChange}
-              error={formikProps.touched.survey_type && Boolean(formikProps.errors.survey_type)}
+              error={
+                formikProps.touched.common_survey_methodology_id &&
+                Boolean(formikProps.errors.common_survey_methodology_id)
+              }
               displayEmpty
-              inputProps={{ 'aria-label': 'Survey Type' }}>
-              {props.survey_types.map((item: any) => (
+              inputProps={{ 'aria-label': 'Survey Methodology' }}>
+              {props.common_survey_methodologies.map((item) => (
                 <MenuItem key={item.value} value={item.value}>
                   {item.label}
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>{formikProps.touched.survey_type && formikProps.errors.survey_type}</FormHelperText>
+            <FormHelperText>
+              {formikProps.touched.common_survey_methodology_id && formikProps.errors.common_survey_methodology_id}
+            </FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12}>

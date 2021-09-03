@@ -259,7 +259,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
           >
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/details"
+              href="/admin/projects/1/surveys/details"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -287,7 +287,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/observations"
+              href="/admin/projects/1/surveys/observations"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -315,7 +315,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/attachments"
+              href="/admin/projects/1/surveys/attachments"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -539,7 +539,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
           >
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/details"
+              href="/admin/projects/1/surveys/details"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -567,7 +567,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/observations"
+              href="/admin/projects/1/surveys/observations"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -595,7 +595,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/1/surveys/attachments"
+              href="/admin/projects/1/surveys/attachments"
             >
               <div
                 class="MuiListItemIcon-root"

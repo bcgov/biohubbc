@@ -35,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const PublicPage = () => {
+const PublicProjectsPage = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
   const biohubApi = useBiohubApi();
   const classes = useStyles();
@@ -138,7 +138,7 @@ const PublicPage = () => {
 
   if (keycloakWrapper?.keycloak?.authenticated) {
     // User has a role
-    return <Redirect to={{ pathname: '/projects' }} />;
+    return <Redirect to={{ pathname: '/admin/projects' }} />;
   }
 
   return (
@@ -153,4 +153,4 @@ const PublicPage = () => {
   );
 };
 
-export default PublicPage;
+export default PublicProjectsPage;

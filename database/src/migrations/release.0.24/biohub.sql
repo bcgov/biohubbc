@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, August 31, 2021 21:56:07
+-- Date Created : Thursday, September 02, 2021 09:43:14
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -1803,25 +1803,26 @@ COMMENT ON TABLE submission_status_type IS 'The status types of submissions. Typ
 --
 
 CREATE TABLE survey(
-    survey_id               integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    project_id              integer                     NOT NULL,
-    uuid                    uuid                        DEFAULT public.gen_random_uuid(),
-    name                    varchar(300),
-    objectives              varchar(3000)               NOT NULL,
-    start_date              date                        NOT NULL,
-    lead_first_name         varchar(50)                 NOT NULL,
-    lead_last_name          varchar(50)                 NOT NULL,
-    end_date                date,
-    location_description    varchar(3000),
-    location_name           varchar(300)                NOT NULL,
-    publish_timestamp       TIMESTAMPTZ,
-    geometry                geometry(geometry, 3005),
-    geography               geography(geometry),
-    create_date             timestamptz(6)              DEFAULT now() NOT NULL,
-    create_user             integer                     NOT NULL,
-    update_date             timestamptz(6),
-    update_user             integer,
-    revision_count          integer                     DEFAULT 0 NOT NULL,
+    survey_id                       integer                     GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_id                      integer                     NOT NULL,
+    common_survey_methodology_id    integer,
+    uuid                            uuid                        DEFAULT public.gen_random_uuid(),
+    name                            varchar(300),
+    objectives                      varchar(3000)               NOT NULL,
+    start_date                      date                        NOT NULL,
+    lead_first_name                 varchar(50)                 NOT NULL,
+    lead_last_name                  varchar(50)                 NOT NULL,
+    end_date                        date,
+    location_description            varchar(3000),
+    location_name                   varchar(300)                NOT NULL,
+    publish_timestamp               TIMESTAMPTZ,
+    geometry                        geometry(geometry, 3005),
+    geography                       geography(geometry),
+    create_date                     timestamptz(6)              DEFAULT now() NOT NULL,
+    create_user                     integer                     NOT NULL,
+    update_date                     timestamptz(6),
+    update_user                     integer,
+    revision_count                  integer                     DEFAULT 0 NOT NULL,
     CONSTRAINT survey_pk PRIMARY KEY (survey_id)
 )
 ;
@@ -1831,6 +1832,8 @@ CREATE TABLE survey(
 COMMENT ON COLUMN survey.survey_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey.project_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey.common_survey_methodology_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey.uuid IS 'The universally unique identifier for the record.'
 ;
@@ -2290,6 +2293,7 @@ CREATE TABLE template_methodology_species(
     common_survey_methodology_id       integer           NOT NULL,
     wldtaxonomic_units_id              integer           NOT NULL,
     template_id                        integer           NOT NULL,
+    validation                         json,
     create_date                        timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                        integer           NOT NULL,
     update_date                        timestamptz(6),
@@ -2308,6 +2312,9 @@ COMMENT ON COLUMN template_methodology_species.common_survey_methodology_id IS '
 COMMENT ON COLUMN template_methodology_species.wldtaxonomic_units_id IS 'System generated UID for a taxon.'
 ;
 COMMENT ON COLUMN template_methodology_species.template_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN template_methodology_species.validation IS 'A JSON data structure that encapsulates all template validation descriptions suitable for consumption by validation logic.
+'
 ;
 COMMENT ON COLUMN template_methodology_species.create_date IS 'The datetime the record was created.'
 ;
@@ -2923,6 +2930,12 @@ CREATE UNIQUE INDEX submission_status_type_nuk1 ON submission_status_type(name, 
 CREATE INDEX "Ref45147" ON survey(project_id)
 ;
 -- 
+-- INDEX: "Ref190190" 
+--
+
+CREATE INDEX "Ref190190" ON survey(common_survey_methodology_id)
+;
+-- 
 -- INDEX: "Ref153168" 
 --
 
@@ -3386,6 +3399,11 @@ ALTER TABLE submission_status ADD CONSTRAINT "Refsubmission_status_type164"
 ALTER TABLE survey ADD CONSTRAINT "Refproject147" 
     FOREIGN KEY (project_id)
     REFERENCES project(project_id)
+;
+
+ALTER TABLE survey ADD CONSTRAINT "Refcommon_survey_methodology190" 
+    FOREIGN KEY (common_survey_methodology_id)
+    REFERENCES common_survey_methodology(common_survey_methodology_id)
 ;
 
 
