@@ -1,12 +1,12 @@
 import { SYSTEM_ROLE } from 'constants/roles';
-import AdminRouter from 'features/admin/AdminRouter';
+import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import PublicLayout from 'layouts/PublicLayout';
 import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
-import PublicPage from 'pages/public/PublicPage';
+import PublicProjectsPage from 'pages/public/PublicProjectsPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
@@ -24,8 +24,8 @@ const AppRouter: React.FC = (props: any) => {
   return (
     <Switch>
       <Redirect from="/:url*(/+)" to={location.pathname.slice(0, -1)} />
-      <Redirect exact from="/" to="/public" />
-      <AppRoute path="/public" title={getTitle('Public')} component={PublicPage} layout={PublicLayout} />
+      <Redirect exact from="/" to="/projects" />
+      <AppRoute path="/projects" title={getTitle('Projects')} component={PublicProjectsPage} layout={PublicLayout} />
       <AppRoute
         path="/page-not-found"
         title={getTitle('Page Not Found')}
@@ -50,7 +50,7 @@ const AppRouter: React.FC = (props: any) => {
       />
       <AppRoute
         protected
-        path="/projects"
+        path="/admin/projects"
         component={ProjectsRouter}
         layout={PublicLayout}
         title={getTitle('Projects')}
@@ -58,15 +58,15 @@ const AppRouter: React.FC = (props: any) => {
       />
       <AppRoute
         protected
-        path="/admin"
-        component={AdminRouter}
+        path="/admin/users"
+        component={AdminUsersRouter}
         layout={PublicLayout}
-        title={getTitle('Admin')}
+        title={getTitle('Users')}
         validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
       />
       <AppRoute
         protected
-        path="/permits"
+        path="/admin/permits"
         component={PermitsRouter}
         layout={PublicLayout}
         title={getTitle('Permits')}
@@ -74,7 +74,7 @@ const AppRouter: React.FC = (props: any) => {
       />
       <AppRoute
         protected
-        path="/search"
+        path="/admin/search"
         component={SearchPage}
         layout={PublicLayout}
         title={getTitle('Search')}

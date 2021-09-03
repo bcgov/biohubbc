@@ -204,7 +204,7 @@ const SurveyPage: React.FC = () => {
         return;
       }
 
-      history.push(`/projects/${projectWithDetails.id}/surveys`);
+      history.push(`/admin/projects/${projectWithDetails.id}/surveys`);
     } catch (error) {
       return error;
     }
@@ -244,14 +244,14 @@ const SurveyPage: React.FC = () => {
             <Breadcrumbs>
               <Link
                 color="primary"
-                onClick={() => history.push('/projects')}
+                onClick={() => history.push('/admin/projects')}
                 aria-current="page"
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">Projects</Typography>
               </Link>
               <Link
                 color="primary"
-                onClick={() => history.push(`/projects/${projectWithDetails.id}/surveys`)}
+                onClick={() => history.push(`/admin/projects/${projectWithDetails.id}/surveys`)}
                 aria-current="page"
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>

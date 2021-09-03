@@ -15,7 +15,7 @@ export const SearchFeaturePopup: React.FC<{ featureData: any }> = (props) => {
       <Box mb={2}>
         <Typography variant="body1">Project: {featureData.name}</Typography>
       </Box>
-      <Button variant="contained" color="primary" onClick={() => history.push(`/projects/${featureData.id}`)}>
+      <Button variant="contained" color="primary" onClick={() => history.push(`/admin/projects/${featureData.id}`)}>
         View Project Details
       </Button>
     </Popup>

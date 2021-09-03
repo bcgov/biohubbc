@@ -3,33 +3,33 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import React from 'react';
 
 const useStyles = makeStyles(() => ({
-  adminLayoutRoot: {
+  adminUsersLayoutRoot: {
     width: 'inherit',
     height: '100%',
     display: 'flex',
     flex: '1',
     flexDirection: 'column'
   },
-  adminContainer: {
+  adminUsersContainer: {
     flex: '1',
     overflow: 'auto'
   }
 }));
 
 /**
- * Layout for all admin pages.
+ * Layout for all admin/users pages.
  *
  * @param {*} props
  * @return {*}
  */
-const AdminLayout: React.FC = (props) => {
+const AdminUsersLayout: React.FC = (props) => {
   const classes = useStyles();
 
   return (
-    <Box className={classes.adminLayoutRoot}>
-      <Box className={classes.adminContainer}>{props.children}</Box>
+    <Box className={classes.adminUsersLayoutRoot}>
+      <Box className={classes.adminUsersContainer}>{props.children}</Box>
     </Box>
   );
 };
 
-export default AdminLayout;
+export default AdminUsersLayout;

@@ -43,7 +43,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
   }, [biohubApi, isLoading, projectForViewData.id]);
 
   const navigateToCreateSurveyPage = (projectId: number) => {
-    history.push(`/projects/${projectId}/survey/create`);
+    history.push(`/admin/projects/${projectId}/survey/create`);
   };
 
   return (

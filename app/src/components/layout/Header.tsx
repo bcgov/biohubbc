@@ -174,7 +174,7 @@ const Header: React.FC = () => {
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
             {keycloakWrapper?.keycloak?.authenticated && keycloakWrapper?.hasLoadedAllUserInfo && (
               <SecureLink
-                to="/projects"
+                to="/admin/projects"
                 label="Projects"
                 validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
                 id="menu_projects"
@@ -184,7 +184,7 @@ const Header: React.FC = () => {
               <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
             )}
             <SecureLink
-              to="/permits"
+              to="/admin/permits"
               label="Permits"
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
               id="menu_permits"
@@ -196,7 +196,7 @@ const Header: React.FC = () => {
               id="menu_admin_users"
             />
             <SecureLink
-              to="/search"
+              to="/admin/search"
               label="Search"
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
               id="menu_search"

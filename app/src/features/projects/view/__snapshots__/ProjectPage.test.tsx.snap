@@ -126,7 +126,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           >
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/details"
+              href="/admin/details"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -154,7 +154,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/surveys"
+              href="/admin/surveys"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -182,7 +182,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/attachments"
+              href="/admin/attachments"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -318,7 +318,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
           >
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/details"
+              href="/admin/projects/details"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -346,7 +346,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/surveys"
+              href="/admin/projects/surveys"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -374,7 +374,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/attachments"
+              href="/admin/projects/attachments"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -510,7 +510,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
           >
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/details"
+              href="/admin/projects/details"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -538,7 +538,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/surveys"
+              href="/admin/projects/surveys"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -566,7 +566,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/projects/attachments"
+              href="/admin/projects/attachments"
             >
               <div
                 class="MuiListItemIcon-root"

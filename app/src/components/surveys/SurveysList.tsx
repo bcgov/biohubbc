@@ -100,7 +100,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       underline="always"
                       component="button"
                       variant="body2"
-                      onClick={() => history.push(`/projects/${props.projectId}/surveys/${row.id}/details`)}>
+                      onClick={() => history.push(`/admin/projects/${props.projectId}/surveys/${row.id}/details`)}>
                       {row.name}
                     </Link>
                   </TableCell>

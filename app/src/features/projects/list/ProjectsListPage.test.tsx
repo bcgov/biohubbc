@@ -157,7 +157,7 @@ describe('ProjectsListPage', () => {
     fireEvent.click(getByText('Create Project'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual('/projects/create');
+      expect(history.location.pathname).toEqual('/admin/projects/create');
       expect(history.location.search).toEqual('');
     });
   });
@@ -183,7 +183,7 @@ describe('ProjectsListPage', () => {
     fireEvent.click(getByTestId('Draft 1'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual('/projects/create');
+      expect(history.location.pathname).toEqual('/admin/projects/create');
       expect(history.location.search).toEqual('?draftId=1');
     });
   });
@@ -216,7 +216,7 @@ describe('ProjectsListPage', () => {
     fireEvent.click(getByTestId('Project 1'));
 
     await waitFor(() => {
-      expect(history.location.pathname).toEqual('/projects/1');
+      expect(history.location.pathname).toEqual('/admin/projects/1');
     });
   });
 });

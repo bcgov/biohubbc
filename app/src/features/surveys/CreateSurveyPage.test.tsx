@@ -109,7 +109,7 @@ describe('CreateSurveyPage', () => {
       ]);
 
       history.push('/home');
-      history.push('/projects/1/survey/create');
+      history.push('/admin/projects/1/survey/create');
 
       const { getByText, getAllByText, getByTestId } = render(
         <DialogContextProvider>
@@ -133,7 +133,7 @@ describe('CreateSurveyPage', () => {
       fireEvent.click(getByTestId('yes-button'));
 
       await waitFor(() => {
-        expect(history.location.pathname).toEqual('/projects/1/surveys');
+        expect(history.location.pathname).toEqual('/admin/projects/1/surveys');
       });
     });
 
