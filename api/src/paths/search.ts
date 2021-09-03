@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
-import { getDBConnection } from '../database/db';
+import { getAPIUserDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { searchResponseObject } from '../openapi/schemas/search';
 import { getLogger } from '../utils/logger';
@@ -13,13 +12,8 @@ const defaultLog = getLogger('paths/searchString');
 export const GET: Operation = [logRequest('paths/search', 'GET'), getSearchResults()];
 
 GET.apiDoc = {
-  description: 'Gets a list of projects geometries',
+  description: 'Gets a list of published project geometries',
   tags: ['projects'],
-  security: [
-    {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
-    }
-  ],
   responses: {
     200: {
       description: 'Spatial search response object.',
@@ -50,7 +44,7 @@ GET.apiDoc = {
  */
 export function getSearchResults(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    const connection = getAPIUserDBConnection();
 
     try {
       const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL();
@@ -104,9 +98,6 @@ export function _extractResults(rows: any[]): any[] {
     const result: any = {
       id: row.id,
       name: row.name,
-      objectives: row.objectives,
-      lifeStage: row.lifeStage,
-      associatedTaxa: row.associatedTaxa,
       geometry: row.geometry && [JSON.parse(row.geometry)]
     };
 

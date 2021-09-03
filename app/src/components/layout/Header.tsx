@@ -181,7 +181,10 @@ const Header: React.FC = () => {
               />
             )}
             {(!keycloakWrapper?.keycloak?.authenticated || !keycloakWrapper?.hasLoadedAllUserInfo) && (
-              <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+              <>
+                <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+                <SecureLink to="/search" label="Search" validRoles={[]} id="menu_search" />
+              </>
             )}
             <SecureLink
               to="/admin/permits"
