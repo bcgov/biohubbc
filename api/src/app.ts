@@ -5,7 +5,6 @@ import { OpenAPI } from 'openapi-types';
 import { initDBPool, defaultPoolConfig } from './database/db';
 import { ensureCustomError } from './errors/CustomError';
 import { rootAPIDoc } from './openapi/root-api-doc';
-import { applyApiDocSecurityFilters } from './security/api-doc-security-filter';
 import { authenticate, authorize } from './security/auth-utils';
 import { getLogger } from './utils/logger';
 
@@ -58,11 +57,6 @@ initialize({
     Bearer: async function (req: any, scopes: string[]) {
       return (await authenticate(req)) && authorize(req, scopes);
     }
-  },
-  securityFilter: async (req, res) => {
-    // applies modifications to the api-doc before being returned via the `/api-docs` endpoint
-    const modifiedApiDoc = await applyApiDocSecurityFilters(req);
-    res.status(200).json(modifiedApiDoc);
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
     // Transform openapi-request-validator and openapi-response-validator errors
