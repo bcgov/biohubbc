@@ -30,7 +30,7 @@
  create trigger audit_proprietor_type before insert or update or delete on biohub.proprietor_type for each row execute procedure tr_audit_trigger();
  create trigger audit_submission_status before insert or update or delete on biohub.submission_status for each row execute procedure tr_audit_trigger();
  create trigger audit_survey_funding_source before insert or update or delete on biohub.survey_funding_source for each row execute procedure tr_audit_trigger();
- create trigger audit_system_role before insert or update or delete on biohub.system_role for each row execute procedure tr_audit_trigger();
+ create trigger audit_survey_spatial_component before insert or update or delete on biohub.survey_spatial_component for each row execute procedure tr_audit_trigger();
  create trigger audit_system_constant before insert or update or delete on biohub.system_constant for each row execute procedure tr_audit_trigger();
  create trigger audit_system_metadata_constant before insert or update or delete on biohub.system_metadata_constant for each row execute procedure tr_audit_trigger();
  create trigger audit_survey before insert or update or delete on biohub.survey for each row execute procedure tr_audit_trigger();
@@ -38,11 +38,12 @@
  create trigger audit_submission_status_type before insert or update or delete on biohub.submission_status_type for each row execute procedure tr_audit_trigger();
  create trigger audit_survey_attachment before insert or update or delete on biohub.survey_attachment for each row execute procedure tr_audit_trigger();
  create trigger audit_survey_proprietor before insert or update or delete on biohub.survey_proprietor for each row execute procedure tr_audit_trigger();
+ create trigger audit_template before insert or update or delete on biohub.template for each row execute procedure tr_audit_trigger();
  create trigger audit_webform_draft before insert or update or delete on biohub.webform_draft for each row execute procedure tr_audit_trigger();
  create trigger audit_system_user_role before insert or update or delete on biohub.system_user_role for each row execute procedure tr_audit_trigger();
  create trigger audit_user_identity_source before insert or update or delete on biohub.user_identity_source for each row execute procedure tr_audit_trigger();
  create trigger audit_template_methodology_species before insert or update or delete on biohub.template_methodology_species for each row execute procedure tr_audit_trigger();
- create trigger audit_template before insert or update or delete on biohub.template for each row execute procedure tr_audit_trigger();
+ create trigger audit_system_role before insert or update or delete on biohub.system_role for each row execute procedure tr_audit_trigger();
  create trigger audit_system_user before insert or update or delete on biohub.system_user for each row execute procedure tr_audit_trigger();
  create trigger audit_funding_source before insert or update or delete on biohub.funding_source for each row execute procedure tr_audit_trigger();
  create trigger audit_investment_action_category before insert or update or delete on biohub.investment_action_category for each row execute procedure tr_audit_trigger();
