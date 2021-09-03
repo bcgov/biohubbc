@@ -121,21 +121,17 @@ describe('ProjectLocationForm', () => {
       return Promise.resolve('some test file contents');
     });
 
-    //@ts-ignore
-    const inputField = getByTestId(container, 'kml-file-upload');
+    const inputField = getByTestId(container as HTMLElement, 'kml-file-upload');
 
     fireEvent.change(inputField, { target: { files: [file] } });
 
     await waitFor(() => {});
 
-    //@ts-ignore
-    expect(getByText(container, 'You must upload a KML file, please try again.')).toBeInTheDocument();
+    expect(getByText(container as HTMLElement, 'You must upload a KML file, please try again.')).toBeInTheDocument();
 
-    //@ts-ignore
-    fireEvent.click(getByText(container, 'Upload KML'));
+    fireEvent.click(getByText(container as HTMLElement, 'Upload KML'));
 
-    //@ts-ignore
-    expect(queryByText(container, 'You must upload a KML file, please try again.')).toBeNull();
+    expect(queryByText(container as HTMLElement, 'You must upload a KML file, please try again.')).toBeNull();
   });
 
   it('displays an error when the spatial gpx upload is attempted with an incorrect file type', async () => {
@@ -159,21 +155,17 @@ describe('ProjectLocationForm', () => {
       return Promise.resolve('some test file contents');
     });
 
-    //@ts-ignore
-    const inputField = getByTestId(container, 'gpx-file-upload');
+    const inputField = getByTestId(container as HTMLElement, 'gpx-file-upload');
 
     fireEvent.change(inputField, { target: { files: [file] } });
 
     await waitFor(() => {});
 
-    //@ts-ignore
-    expect(getByText(container, 'You must upload a GPX file, please try again.')).toBeInTheDocument();
+    expect(getByText(container as HTMLElement, 'You must upload a GPX file, please try again.')).toBeInTheDocument();
 
-    //@ts-ignore
-    fireEvent.click(getByText(container, 'Upload GPX'));
+    fireEvent.click(getByText(container as HTMLElement, 'Upload GPX'));
 
-    //@ts-ignore
-    expect(queryByText(container, 'You must upload a GPX file, please try again.')).toBeNull();
+    expect(queryByText(container as HTMLElement, 'You must upload a GPX file, please try again.')).toBeNull();
   });
 
   it('displays the uploaded geo on the map when the spatial kml upload succeeds', async () => {
@@ -224,15 +216,13 @@ describe('ProjectLocationForm', () => {
       </Formik>
     );
 
-    //@ts-ignore
-    const inputField = getByTestId(container, 'kml-file-upload');
+    const inputField = getByTestId(container as HTMLElement, 'kml-file-upload');
 
     fireEvent.change(inputField, { target: { files: [file] } });
 
     await waitFor(() => {});
 
-    //@ts-ignore
-    expect(queryByText(container, 'You must upload a KML file, please try again.')).toBeNull();
+    expect(queryByText(container as HTMLElement, 'You must upload a KML file, please try again.')).toBeNull();
     expect(asFragment()).toMatchSnapshot();
   });
 
@@ -284,15 +274,13 @@ describe('ProjectLocationForm', () => {
       </Formik>
     );
 
-    //@ts-ignore
-    const inputField = getByTestId(container, 'gpx-file-upload');
+    const inputField = getByTestId(container as HTMLElement, 'gpx-file-upload');
 
     fireEvent.change(inputField, { target: { files: [file] } });
 
     await waitFor(() => {});
 
-    //@ts-ignore
-    expect(queryByText(container, 'You must upload a GPX file, please try again.')).toBeNull();
+    expect(queryByText(container as HTMLElement, 'You must upload a GPX file, please try again.')).toBeNull();
     expect(asFragment()).toMatchSnapshot();
   });
 });
