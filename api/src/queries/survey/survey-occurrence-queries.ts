@@ -13,9 +13,9 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
  */
 export const insertSurveyOccurrenceSubmissionSQL = (
   surveyId: number,
-  templateMethodologyId: number,
   source: string,
-  file_name: string
+  file_name: string,
+  templateMethodologyId: number | null
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',

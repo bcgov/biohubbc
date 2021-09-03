@@ -1,5 +1,4 @@
 'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
@@ -128,13 +127,11 @@ export function uploadMedia(): RequestHandler {
         connection
       );
 
-      console.log('The template Methodology Id is: ', templateMethodologyId);
-
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),
-        templateMethodologyId,
         'BioHub',
         rawMediaFile.originalname,
+        templateMethodologyId,
         connection
       );
 
@@ -182,12 +179,12 @@ export function uploadMedia(): RequestHandler {
  */
 export const insertSurveyOccurrenceSubmission = async (
   surveyId: number,
-  templateMethodologyId: number,
   source: string,
   file_name: string,
+  templateMethodologyId: number | null,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, templateMethodologyId, source, file_name);
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name, templateMethodologyId);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -215,25 +212,46 @@ export const getTemplateMethodologySpeciesId = async (
   surveyId: number,
   file_name: string,
   connection: IDBConnection
-): Promise<any> => {
-  let templateName = 'somename';
+): Promise<number | null> => {
+  let templateName;
 
-  if (file_name === 'Moose_SRB_or_Composition_Survey_Omineca.xlsx') {
-    templateName = 'Moose SRB or Composition Survey Omineca';
+  switch (file_name) {
+    case 'Moose_SRB_or_Composition_Survey_Skeena.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Omineca.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Cariboo.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Okanagan.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Kootenay.xlsx':
+      templateName = 'Moose SRB or Composition Survey Kootenay';
+      break;
+    case 'Moose_Recruitment_Survey.xlsx':
+      templateName = 'Moose Recruitment Survey';
+      break;
   }
-  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId, templateName);
 
-  if (!getIdSqlStatement) {
-    throw new HTTP400('Failed to build SQL get Id statement');
+  if (templateName) {
+    const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId, templateName);
+
+    if (!getIdSqlStatement) {
+      throw new HTTP400('Failed to build SQL get Id statement');
+    }
+    const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
+
+    if (!getIdResponse) {
+      throw new HTTP400('Failed to query template methodology species table');
+    }
+
+    return getIdResponse?.rows?.[0]?.template_methodology_species_id || null;
+  } else {
+    return null;
   }
-
-  const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
-
-  if (!getIdResponse || !getIdResponse.rowCount) {
-    throw new HTTP400('Failed to get template methodology species id');
-  }
-
-  return getIdResponse;
 };
 
 /**
