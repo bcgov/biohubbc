@@ -56,7 +56,8 @@ export const submissionValidationSchema = {
             $ref: '#/$defs/file_validation'
           }
         }
-      }
+      },
+      additionalProperties: false
     },
     column: {
       description: 'An single column within a file/sheet',
@@ -78,9 +79,12 @@ export const submissionValidationSchema = {
             $ref: '#/$defs/column_validation'
           }
         }
-      }
+      },
+      additionalProperties: false
     },
     submission_validation: {
+      title: 'Submission File Validation',
+      description: 'The validators that can be applied against a submission file.',
       anyOf: [
         {
           $ref: '#/$defs/submission_required_files_validator'
@@ -91,6 +95,8 @@ export const submissionValidationSchema = {
       ]
     },
     file_validation: {
+      title: 'File/Sheet Validation',
+      description: 'The validators that can be applied against a file/sheet within a submission file.',
       anyOf: [
         {
           $ref: '#/$defs/file_required_columns_validator'
@@ -104,10 +110,9 @@ export const submissionValidationSchema = {
       ]
     },
     column_validation: {
+      title: 'Column Validation',
+      description: 'The validators that can be applied against a column within a file/sheet.',
       anyOf: [
-        {
-          $ref: '#/$defs/column_type_validator'
-        },
         {
           $ref: '#/$defs/column_format_validator'
         },
@@ -126,112 +131,214 @@ export const submissionValidationSchema = {
       description: 'Validates that this submission file contains required files/sheets',
       type: 'object',
       properties: {
-        required_files: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
+        submission_required_files_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            required_files: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
+      additionalProperties: false
     },
     mimetype_validator: {
       description: 'Validates that the mimetype of this submission/file is in an allowed set of values',
       type: 'object',
       properties: {
-        allowed_mimetypes: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
+        mimetype_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            allowed_mimetypes: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
+      additionalProperties: false
     },
     file_required_columns_validator: {
       description: 'Validates that this file/sheet contains required columns',
       type: 'object',
       properties: {
-        required_columns: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
+        file_required_columns_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            required_columns: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
+      additionalProperties: false
     },
     file_recommended_columns_validator: {
       description: 'Validates that this file/sheet contains recommended columns',
       type: 'object',
       properties: {
-        recommended_columns: {
-          type: 'array',
-          items: {
-            type: 'string'
-          }
+        file_recommended_columns_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            recommended_columns: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
+            }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
-    },
-    column_type_validator: {
-      description: 'Validates that this column value is of a certain type',
-      type: 'object',
-      properties: {
-        pattern: {
-          type: 'string',
-          enum: ['string', 'number', 'date']
-        }
-      },
-      additionalProperties: 'false'
+      additionalProperties: false
     },
     column_format_validator: {
       description: 'Validates that this column value matches a pattern',
       type: 'object',
       properties: {
-        pattern: {
-          type: 'string'
+        column_format_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            pattern: {
+              type: 'string'
+            }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
+      additionalProperties: false
     },
     column_code_validator: {
       description: 'Validates that this column value is in an allowed set of values',
       type: 'object',
       properties: {
-        allowed_codes: {
-          type: 'string'
+        column_code_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            allowed_code_values: {
+              type: 'array',
+              items: {
+                $ref: '#/$defs/code_value'
+              }
+            }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
+      additionalProperties: false
     },
     column_unique_validator: {
       description: 'Validates that this column value is unique within this column',
       type: 'object',
       properties: {
-        is_unique: {
-          type: 'boolean'
+        column_unique_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            is_unique: {
+              type: 'boolean'
+            }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
+      additionalProperties: false
     },
     column_key_validator: {
       description: 'Validates that this column value has a matching counterpart in the target `file` and `column`',
       type: 'object',
       properties: {
-        parent_key: {
+        column_key_validator: {
           type: 'object',
           properties: {
-            file: {
+            name: {
               type: 'string'
             },
-            column: {
+            description: {
               type: 'string'
+            },
+            parent_key: {
+              type: 'object',
+              properties: {
+                file: {
+                  type: 'string'
+                },
+                column: {
+                  type: 'string'
+                }
+              }
             }
-          }
+          },
+          additionalProperties: false
         }
       },
-      additionalProperties: 'false'
+      additionalProperties: false
+    },
+    code_value: {
+      description: 'Validates that this column value has a matching counterpart in the target `file` and `column`',
+      type: 'object',
+      properties: {
+        name: {
+          type: 'string'
+        },
+        description: {
+          type: 'string'
+        }
+      },
+      additionalProperties: false
     }
-  }
+  },
+  additionalProperties: false
 };
