@@ -7,7 +7,8 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
-  updateSurveyOccurrenceSubmissionWithKeySQL
+  updateSurveyOccurrenceSubmissionWithKeySQL,
+  getTemplateMethodologySpeciesIdSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -121,8 +122,17 @@ export function uploadMedia(): RequestHandler {
 
       await connection.open();
 
+      const templateMethodologyId = await getTemplateMethodologySpeciesId(
+        Number(req.params.surveyId),
+        rawMediaFile.originalname,
+        connection
+      );
+
+      console.log('The template Methodology Id is: ', templateMethodologyId);
+
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),
+        templateMethodologyId,
         'BioHub',
         rawMediaFile.originalname,
         connection
@@ -172,11 +182,12 @@ export function uploadMedia(): RequestHandler {
  */
 export const insertSurveyOccurrenceSubmission = async (
   surveyId: number,
+  templateMethodologyId: number,
   source: string,
   file_name: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name);
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, templateMethodologyId, source, file_name);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -189,6 +200,40 @@ export const insertSurveyOccurrenceSubmission = async (
   }
 
   return insertResponse;
+};
+
+/**
+ * Inserts a new record into the `occurrence_submission` table.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const getTemplateMethodologySpeciesId = async (
+  surveyId: number,
+  file_name: string,
+  connection: IDBConnection
+): Promise<any> => {
+  let templateName = 'somename';
+
+  if (file_name === 'Moose_SRB_or_Composition_Survey_Omineca.xlsx') {
+    templateName = 'Moose SRB or Composition Survey Omineca';
+  }
+  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId, templateName);
+
+  if (!getIdSqlStatement) {
+    throw new HTTP400('Failed to build SQL get Id statement');
+  }
+
+  const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
+
+  if (!getIdResponse || !getIdResponse.rowCount) {
+    throw new HTTP400('Failed to get template methodology species id');
+  }
+
+  return getIdResponse;
 };
 
 /**
