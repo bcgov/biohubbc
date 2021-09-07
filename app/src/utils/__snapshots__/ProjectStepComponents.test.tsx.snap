@@ -1330,11 +1330,33 @@ exports[`ProjectStepComponents renders the project location 1`] = `
               class="MuiButton-label"
             >
               <input
-                data-testid="file-upload"
+                data-testid="kml-file-upload"
                 hidden=""
                 type="file"
               />
               Upload KML
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </label>
+          <label
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-73 MuiButton-outlinedPrimary"
+            role="button"
+            style="margin-left: 1rem;"
+            tabindex="0"
+            title="Will only accept gpx files."
+          >
+            <span
+              class="MuiButton-label"
+            >
+              <input
+                data-testid="gpx-file-upload"
+                hidden=""
+                type="file"
+              />
+              Upload GPX
             </span>
             <span
               class="MuiTouchRipple-root"
