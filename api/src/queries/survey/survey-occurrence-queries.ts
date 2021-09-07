@@ -64,9 +64,12 @@ export const insertSurveyOccurrenceSubmissionSQL = (
  * @param {string} key
  * @return {*}  {(SQLStatement | null)}
  */
-export const getTemplateMethodologySpeciesIdSQL = (surveyId: number, template_name: string): SQLStatement | null => {
+export const getTemplateMethodologySpeciesIdSQLStatement = (
+  surveyId: number,
+  template_name: string
+): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesIdSQL',
+    label: 'getTemplateMethodologySpeciesIdSQLStatement',
     message: 'params',
     surveyId,
     template_name
@@ -94,7 +97,7 @@ export const getTemplateMethodologySpeciesIdSQL = (surveyId: number, template_na
     `;
 
   defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesIdSQL',
+    label: 'getTemplateMethodologySpeciesIdSQLStatement',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

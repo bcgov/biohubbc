@@ -5,7 +5,7 @@ import {
   getLatestSurveyOccurrenceSubmissionSQL,
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesIdSQL,
+  getTemplateMethodologySpeciesIdSQLStatement,
   insertSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
@@ -181,21 +181,21 @@ describe('getOccurrenceSubmissionMessagesSQL', () => {
   });
 });
 
-describe('getTemplateMethodologySpeciesIdSQL', () => {
+describe('getTemplateMethodologySpeciesIdSQLStatement', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQL((null as unknown) as number, 'sample_template');
+    const response = getTemplateMethodologySpeciesIdSQLStatement((null as unknown) as number, 'sample_template');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null sample template provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQL(1, (null as unknown) as string);
+    const response = getTemplateMethodologySpeciesIdSQLStatement(1, (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQL(1, 'sample_template');
+    const response = getTemplateMethodologySpeciesIdSQLStatement(1, 'sample_template');
 
     expect(response).to.not.be.null;
   });

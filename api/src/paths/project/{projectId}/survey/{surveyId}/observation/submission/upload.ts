@@ -7,7 +7,7 @@ import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionWithKeySQL,
-  getTemplateMethodologySpeciesIdSQL
+  getTemplateMethodologySpeciesIdSQLStatement
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -121,7 +121,7 @@ export function uploadMedia(): RequestHandler {
 
       await connection.open();
 
-      const templateMethodologyId = await getTemplateMethodologySpeciesId(
+      const templateMethodologyId = await getTemplateMethodologySpeciesIdStatement(
         Number(req.params.surveyId),
         rawMediaFile.originalname,
         connection
@@ -208,7 +208,7 @@ export const insertSurveyOccurrenceSubmission = async (
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
-export const getTemplateMethodologySpeciesId = async (
+export const getTemplateMethodologySpeciesIdStatement = async (
   surveyId: number,
   file_name: string,
   connection: IDBConnection
@@ -236,22 +236,22 @@ export const getTemplateMethodologySpeciesId = async (
       break;
   }
 
-  if (templateName) {
-    const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId, templateName);
-
-    if (!getIdSqlStatement) {
-      throw new HTTP400('Failed to build SQL get Id statement');
-    }
-    const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
-
-    if (!getIdResponse) {
-      throw new HTTP400('Failed to query template methodology species table');
-    }
-
-    return getIdResponse?.rows?.[0]?.template_methodology_species_id || null;
-  } else {
+  if (!templateName) {
     return null;
   }
+
+  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQLStatement(surveyId, templateName);
+
+  if (!getIdSqlStatement) {
+    throw new HTTP400('Failed to build SQL get template methodology species id sql statement');
+  }
+  const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
+
+  if (!getIdResponse) {
+    throw new HTTP400('Failed to query template methodology species table');
+  }
+
+  return getIdResponse?.rows?.[0]?.template_methodology_species_id || null;
 };
 
 /**

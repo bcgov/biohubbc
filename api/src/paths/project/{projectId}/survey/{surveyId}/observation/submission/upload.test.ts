@@ -128,7 +128,7 @@ describe('uploadSubmission', () => {
   it('should throw a 400 error when no sql statement returned', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(null);
 
     const result = upload.uploadMedia();
 
@@ -137,7 +137,7 @@ describe('uploadSubmission', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey occurrence submission record');
+      expect(actualError.message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -517,7 +517,7 @@ describe('uploadSubmission', () => {
     expect(actualStatus).to.equal(200);
   });
 
-  it('should throw a 400 error when no sql statement returned for getTemplateMethodologySpeciesIdSQL', async () => {
+  it('should throw a 400 error when no sql statement returned for getTemplateMethodologySpeciesIdSQLStatement', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -525,7 +525,7 @@ describe('uploadSubmission', () => {
       }
     });
 
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQLStatement').returns(null);
 
     try {
       const result = upload.uploadMedia();
@@ -550,7 +550,7 @@ describe('uploadSubmission', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get Id statement');
+      expect(actualError.message).to.equal('Failed to build SQL get template methodology species id sql statement');
     }
   });
 });
