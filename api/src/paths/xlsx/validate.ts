@@ -11,7 +11,8 @@ import {
   getSubmissionS3Key,
   getValidateAPIDoc,
   persistParseErrors,
-  persistValidationResults
+  persistValidationResults,
+  getValidationSchema
 } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xlsx/validate');
@@ -22,6 +23,7 @@ export const POST: Operation = [
   getSubmissionFileFromS3(),
   prepXLSX(),
   persistParseErrors(),
+  getValidationSchema(),
   getValidationRules(),
   validateXLSX(),
   persistValidationResults({ initialSubmissionStatusType: 'Template Validated' })

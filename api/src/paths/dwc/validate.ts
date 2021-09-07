@@ -195,10 +195,9 @@ export function persistParseErrors(): RequestHandler {
   return async (req, res, next) => {
     const parseError = req['parseError'];
 
-    console.log('request body1 is', req.body);
-
     if (!parseError) {
       // no errors to persist, skip to next step
+
       return next();
     }
 
@@ -233,34 +232,46 @@ export function persistParseErrors(): RequestHandler {
 
 export function getValidationSchema(): RequestHandler {
   return async (req, res, next) => {
-    const validationSchema = req['validationSchema'];
-
-    console.log('request body2 is', req.body);
-
-    if (!validationSchema) {
-      // no errors to persist, skip to next step
-      return next();
-    }
-
-    defaultLog.debug({ label: 'validationSchema', message: 'validationSchema', validationSchema });
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      const schema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
+      const validationSchema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
 
-      console.log('validation schema is', schema);
+      if (!validationSchema['validation']) {
+        // no schema to validate the template, generate error
 
-      //await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
+        const submissionStatusType = 'Rejected';
 
-      await connection.commit();
+        const submissionStatusId = await insertSubmissionStatus(
+          req.body.occurrence_submission_id,
+          submissionStatusType,
+          connection
+        );
 
-      // archive is not parsable, don't continue to next step and return early
-      return res.status(200).json();
+        await insertSubmissionMessage(
+          submissionStatusId,
+          'Error',
+          `Unable to fetch an appropriate validation schema for your submission`,
+          'Missing Validation Schema',
+          connection
+        );
+
+        await connection.commit();
+
+        return res.status(200).json();
+      }
+
+      req['validationSchema'] = validationSchema;
+
+      //add schema to the request and call next()
+      //if template valiadation is empty, return an error
+      //if not template .. failed to fetch validation schema
+      //leverage n8n internal tracking - also through http500
+      next();
     } catch (error) {
-      defaultLog.debug({ label: 'persistParseErrors', message: 'error', error });
+      defaultLog.debug({ label: 'getValidationSchema', message: 'error', error });
       connection.rollback();
       throw error;
     } finally {
@@ -507,9 +518,9 @@ export const getValidationSchemaJSON = async (
 
   const result = (response && response.rows && response.rows[0]) || null;
 
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to get validation schema');
-  }
+  // if (!result || !result.id) {
+  //   throw new HTTP500('Failed to get validation schema');
+  // }
 
-  return result.id;
+  return result;
 };

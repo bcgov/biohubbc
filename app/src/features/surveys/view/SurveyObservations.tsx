@@ -123,7 +123,8 @@ const SurveyObservations = () => {
         if (
           submission.status === 'Rejected' ||
           submission.status === 'Darwin Core Validated' ||
-          submission.status === 'Template Validated'
+          submission.status === 'Template Validated' ||
+          submission.status === 'Missing Validation Schema'
         ) {
           setIsValidating(false);
           setIsPolling(false);
@@ -256,7 +257,8 @@ const SurveyObservations = () => {
       type: ['Unexpected Format'],
       label: 'Unexpected formats in the values provided'
     },
-    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' }
+    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
+    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' }
   };
 
   type SubmissionErrors = { [key: string]: string[] };
