@@ -6,7 +6,8 @@ import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL
+  insertOccurrenceSubmissionStatusSQL,
+  getValidationSchemaSQL
 } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
@@ -29,6 +30,7 @@ export const POST: Operation = [
   getSubmissionFileFromS3(),
   prepDWCArchive(),
   persistParseErrors(),
+  getValidationSchema(),
   getValidationRules(),
   validateDWCArchive(),
   persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' })
@@ -193,6 +195,8 @@ export function persistParseErrors(): RequestHandler {
   return async (req, res, next) => {
     const parseError = req['parseError'];
 
+    console.log('request body1 is', req.body);
+
     if (!parseError) {
       // no errors to persist, skip to next step
       return next();
@@ -212,6 +216,44 @@ export function persistParseErrors(): RequestHandler {
       );
 
       await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
+
+      await connection.commit();
+
+      // archive is not parsable, don't continue to next step and return early
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.debug({ label: 'persistParseErrors', message: 'error', error });
+      connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export function getValidationSchema(): RequestHandler {
+  return async (req, res, next) => {
+    const validationSchema = req['validationSchema'];
+
+    console.log('request body2 is', req.body);
+
+    if (!validationSchema) {
+      // no errors to persist, skip to next step
+      return next();
+    }
+
+    defaultLog.debug({ label: 'validationSchema', message: 'validationSchema', validationSchema });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const schema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
+
+      console.log('validation schema is', schema);
+
+      //await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
 
       await connection.commit();
 
@@ -442,4 +484,32 @@ export const insertSubmissionMessage = async (
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to insert survey submission message data');
   }
+};
+
+/**
+ * Get a validation schema from the template table.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<number>}
+ */
+export const getValidationSchemaJSON = async (
+  occurrenceSubmissionId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = getValidationSchemaSQL(occurrenceSubmissionId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to get validation schema');
+  }
+
+  return result.id;
 };
