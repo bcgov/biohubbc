@@ -237,7 +237,6 @@ describe('uploadSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
-
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
     const result = upload.uploadMedia();
@@ -250,7 +249,7 @@ describe('uploadSubmission', () => {
     }
   });
 
-  it('should return 200 on success', async () => {
+  it('should return 200 on success with no methodology selected', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
@@ -276,5 +275,282 @@ describe('uploadSubmission', () => {
       mockNext
     );
     expect(actualStatus).to.equal(200);
+  });
+
+  it('should return 200 on success with the `Moose SRB or Composition Survey Skeena` methodology selected', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+
+    const result = upload.uploadMedia();
+
+    await result(
+      {
+        ...mockReq,
+        files: [
+          {
+            fieldname: 'media',
+            originalname: 'Moose_SRB_or_Composition_Survey_Skeena.xlsx',
+            encoding: '7bit',
+            mimetype: 'text/csv',
+            size: 340
+          }
+        ],
+        auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+      },
+      mockRes,
+      mockNext
+    );
+    expect(actualStatus).to.equal(200);
+  });
+
+  it('should return 200 on success with the `Moose SRB or Composition Survey Omineca` methodology selected', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+
+    const result = upload.uploadMedia();
+
+    await result(
+      {
+        ...mockReq,
+        files: [
+          {
+            fieldname: 'media',
+            originalname: 'Moose_SRB_or_Composition_Survey_Omineca.xlsx',
+            encoding: '7bit',
+            mimetype: 'text/csv',
+            size: 340
+          }
+        ],
+        auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+      },
+      mockRes,
+      mockNext
+    );
+    expect(actualStatus).to.equal(200);
+  });
+
+  it('should return 200 on success with the `Moose SRB or Composition Survey Cariboo` methodology selected', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+
+    const result = upload.uploadMedia();
+
+    await result(
+      {
+        ...mockReq,
+        files: [
+          {
+            fieldname: 'media',
+            originalname: 'Moose_SRB_or_Composition_Survey_Cariboo.xlsx',
+            encoding: '7bit',
+            mimetype: 'text/csv',
+            size: 340
+          }
+        ],
+        auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+      },
+      mockRes,
+      mockNext
+    );
+    expect(actualStatus).to.equal(200);
+  });
+
+  it('should return 200 on success with the `Moose SRB or Composition Survey Okanagan` methodology selected', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+
+    const result = upload.uploadMedia();
+
+    await result(
+      {
+        ...mockReq,
+        files: [
+          {
+            fieldname: 'media',
+            originalname: 'Moose_SRB_or_Composition_Survey_Okanagan.xlsx',
+            encoding: '7bit',
+            mimetype: 'text/csv',
+            size: 340
+          }
+        ],
+        auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+      },
+      mockRes,
+      mockNext
+    );
+    expect(actualStatus).to.equal(200);
+  });
+
+  it('should return 200 on success with the `Moose SRB or Composition Survey Kootenay` methodology selected', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+
+    const result = upload.uploadMedia();
+
+    await result(
+      {
+        ...mockReq,
+        files: [
+          {
+            fieldname: 'media',
+            originalname: 'Moose_SRB_or_Composition_Survey_Kootenay.xlsx',
+            encoding: '7bit',
+            mimetype: 'text/csv',
+            size: 340
+          }
+        ],
+        auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+      },
+      mockRes,
+      mockNext
+    );
+    expect(actualStatus).to.equal(200);
+  });
+
+  it('should return 200 on success with the `Moose Recruitment Survey` methodology selected', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+
+    const result = upload.uploadMedia();
+
+    await result(
+      {
+        ...mockReq,
+        files: [
+          {
+            fieldname: 'media',
+            originalname: 'Moose_Recruitment_Survey.xlsx',
+            encoding: '7bit',
+            mimetype: 'text/csv',
+            size: 340
+          }
+        ],
+        auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+      },
+      mockRes,
+      mockNext
+    );
+    expect(actualStatus).to.equal(200);
+  });
+
+  it('should throw a 400 error when no sql statement returned for getTemplateMethodologySpeciesIdSQLStatement', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQLStatement').returns(null);
+
+    try {
+      const result = upload.uploadMedia();
+
+      await result(
+        {
+          ...mockReq,
+          files: [
+            {
+              fieldname: 'media',
+              originalname: 'Moose_SRB_or_Composition_Survey_Skeena.xlsx',
+              encoding: '7bit',
+              mimetype: 'text/csv',
+              size: 340
+            }
+          ],
+          auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+        },
+        mockRes,
+        mockNext
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL get template methodology species id sql statement');
+    }
   });
 });
