@@ -1,5 +1,5 @@
 //@ts-ignore
-import { kml } from '@tmcw/togeojson';
+import { kml, gpx } from '@tmcw/togeojson';
 import shp from 'shpjs';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
@@ -49,6 +49,55 @@ export const handleShapefileUpload = (
 };
 
 /**
+ * Function to handle GPX file spatial boundary uploads
+ *
+ * @param e The file upload event
+ * @param setIsLoading change state of isLoading
+ * @param setUploadError change state of upload error
+ * @param values current form values
+ * @param setFieldValue change form values
+ */
+export const handleGPXUpload = async (
+  e: any,
+  setIsLoading: (isLoading: boolean) => void,
+  setUploadError: (uploadError: string) => void,
+  values: any,
+  setFieldValue: (key: string, value: any) => void
+) => {
+  setIsLoading(true);
+
+  const file = e.target.files[0];
+  const fileAsString = await file?.text().then((xmlString: string) => {
+    return xmlString;
+  });
+
+  if (!file?.type.includes('gpx') && !fileAsString?.includes('</gpx>')) {
+    setUploadError('You must upload a GPX file, please try again.');
+    setIsLoading(false);
+    return;
+  }
+
+  try {
+    const domGpx = new DOMParser().parseFromString(fileAsString, 'application/xml');
+    const geoJson = gpx(domGpx);
+
+    let sanitizedGeoJSON: Feature[] = [];
+    geoJson.features.forEach((feature: Feature) => {
+      if (feature.geometry) {
+        sanitizedGeoJSON.push(feature);
+      }
+    });
+
+    setFieldValue('geometry', [...sanitizedGeoJSON, ...values.geometry]);
+  } catch (error) {
+    setUploadError('Error uploading your GPX file, please check the file and try again.');
+    setIsLoading(false);
+    return;
+  }
+};
+
+/**
+ * Function to handle KML file spatial boundary uploads
  *
  * @param e The file upload event
  * @param setIsLoading change state of isLoading
