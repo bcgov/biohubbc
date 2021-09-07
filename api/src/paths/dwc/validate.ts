@@ -516,11 +516,5 @@ export const getValidationSchemaJSON = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  // if (!result || !result.id) {
-  //   throw new HTTP500('Failed to get validation schema');
-  // }
-
-  return result;
+  return (response && response.rows && response.rows[0]) || null;
 };
