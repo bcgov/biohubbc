@@ -289,8 +289,6 @@ export class XLSXCSV implements IWorkbook {
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 
-export type IValidationErrorCode = 'Missing Validation Schema';
-
 export type IHeaderErrorCode =
   | 'Duplicate Header'
   | 'Unknown Header'
