@@ -110,5 +110,5 @@ dist
 **/.DS_Store
 
 # n8N - ignore root level temp config folder
-.n8n
-n8n/.config/
+n8n/.n8n
+n8n/.config
