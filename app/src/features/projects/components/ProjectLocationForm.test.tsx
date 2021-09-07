@@ -100,7 +100,7 @@ describe('ProjectLocationForm', () => {
     });
   });
 
-  it('displays an error when the spatial upload is attempted with an incorrect file type', async () => {
+  it('displays an error when the spatial kml upload is attempted with an incorrect file type', async () => {
     const file = new File([''], 'testfile.json', {
       lastModified: 1614369038812,
       type: 'application/json'
@@ -121,24 +121,54 @@ describe('ProjectLocationForm', () => {
       return Promise.resolve('some test file contents');
     });
 
-    //@ts-ignore
-    const inputField = getByTestId(container, 'file-upload');
+    const inputField = getByTestId(container as HTMLElement, 'kml-file-upload');
 
     fireEvent.change(inputField, { target: { files: [file] } });
 
     await waitFor(() => {});
 
-    //@ts-ignore
-    expect(getByText(container, 'You must upload a KML file, please try again.')).toBeInTheDocument();
+    expect(getByText(container as HTMLElement, 'You must upload a KML file, please try again.')).toBeInTheDocument();
 
-    //@ts-ignore
-    fireEvent.click(getByText(container, 'Upload KML'));
+    fireEvent.click(getByText(container as HTMLElement, 'Upload KML'));
 
-    //@ts-ignore
-    expect(queryByText(container, 'You must upload a KML file, please try again.')).toBeNull();
+    expect(queryByText(container as HTMLElement, 'You must upload a KML file, please try again.')).toBeNull();
   });
 
-  it('displays the uploaded geo on the map when the spatial upload succeeds', async () => {
+  it('displays an error when the spatial gpx upload is attempted with an incorrect file type', async () => {
+    const file = new File([''], 'testfile.json', {
+      lastModified: 1614369038812,
+      type: 'application/json'
+    });
+
+    const { container } = render(
+      <Formik
+        initialValues={ProjectLocationFormInitialValues}
+        validationSchema={ProjectLocationFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => <ProjectLocationForm />}
+      </Formik>
+    );
+
+    File.prototype.text = jest.fn().mockImplementation(() => {
+      return Promise.resolve('some test file contents');
+    });
+
+    const inputField = getByTestId(container as HTMLElement, 'gpx-file-upload');
+
+    fireEvent.change(inputField, { target: { files: [file] } });
+
+    await waitFor(() => {});
+
+    expect(getByText(container as HTMLElement, 'You must upload a GPX file, please try again.')).toBeInTheDocument();
+
+    fireEvent.click(getByText(container as HTMLElement, 'Upload GPX'));
+
+    expect(queryByText(container as HTMLElement, 'You must upload a GPX file, please try again.')).toBeNull();
+  });
+
+  it('displays the uploaded geo on the map when the spatial kml upload succeeds', async () => {
     kml.mockReturnValueOnce({
       features: [
         {
@@ -186,15 +216,71 @@ describe('ProjectLocationForm', () => {
       </Formik>
     );
 
-    //@ts-ignore
-    const inputField = getByTestId(container, 'file-upload');
+    const inputField = getByTestId(container as HTMLElement, 'kml-file-upload');
 
     fireEvent.change(inputField, { target: { files: [file] } });
 
     await waitFor(() => {});
 
-    //@ts-ignore
-    expect(queryByText(container, 'You must upload a KML file, please try again.')).toBeNull();
+    expect(queryByText(container as HTMLElement, 'You must upload a KML file, please try again.')).toBeNull();
+    expect(asFragment()).toMatchSnapshot();
+  });
+
+  it('displays the uploaded geo on the map when the spatial gpx upload succeeds', async () => {
+    kml.mockReturnValueOnce({
+      features: [
+        {
+          type: 'Feature',
+          geometry: {
+            type: 'Polygon',
+            coordinates: [
+              [
+                [100.0, 0.0],
+                [101.0, 0.0],
+                [101.0, 1.0],
+                [100.0, 1.0],
+                [100.0, 0.0]
+              ]
+            ]
+          },
+          properties: {
+            name: 'Biohub island'
+          }
+        }
+      ]
+    });
+
+    File.prototype.text = jest.fn().mockImplementation(() => {
+      return Promise.resolve('<gpx>some test file contents</gpx>');
+    });
+
+    DOMParser.prototype.parseFromString = jest.fn().mockImplementation(() => {
+      return new Document();
+    });
+
+    const file = new File([''], 'testfile.gpx', {
+      lastModified: 1614369038812,
+      type: 'application.gpx'
+    });
+
+    const { container, asFragment } = render(
+      <Formik
+        initialValues={ProjectLocationFormInitialValues}
+        validationSchema={ProjectLocationFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={async () => {}}>
+        {() => <ProjectLocationForm />}
+      </Formik>
+    );
+
+    const inputField = getByTestId(container as HTMLElement, 'gpx-file-upload');
+
+    fireEvent.change(inputField, { target: { files: [file] } });
+
+    await waitFor(() => {});
+
+    expect(queryByText(container as HTMLElement, 'You must upload a GPX file, please try again.')).toBeNull();
     expect(asFragment()).toMatchSnapshot();
   });
 });
