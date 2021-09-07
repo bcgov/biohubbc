@@ -37,7 +37,11 @@ describe('getFileEmptyValidator', () => {
 
 describe('getFileMimeTypeValidator', () => {
   it('adds an error when the mime type is invalid', () => {
-    const validMimetypes = [/validMime/];
+    const validMimetypes = {
+      mimetype_validator: {
+        reg_exps: ['validMime']
+      }
+    };
 
     const validator = getFileMimeTypeValidator(validMimetypes);
 
@@ -50,11 +54,15 @@ describe('getFileMimeTypeValidator', () => {
 
     validator(mediaFile);
 
-    expect(mediaFile.mediaValidation.fileErrors).to.eql(['File mime type is invalid, must be one of: /validMime/']);
+    expect(mediaFile.mediaValidation.fileErrors).to.eql(['File mime type is invalid, must be one of: validMime']);
   });
 
   it('adds no errors when the mime type is valid', () => {
-    const validMimetypes = [/validMime/];
+    const validMimetypes = {
+      mimetype_validator: {
+        reg_exps: ['validMime']
+      }
+    };
 
     const validator = getFileMimeTypeValidator(validMimetypes);
     const mediaFile: IMediaFile = {
@@ -70,7 +78,11 @@ describe('getFileMimeTypeValidator', () => {
   });
 
   it('adds no errors when no valid mimes provided', () => {
-    const validMimetypes: RegExp[] = []; // no valid mimes provided
+    const validMimetypes = {
+      mimetype_validator: {
+        reg_exps: []
+      }
+    };
 
     const validator = getFileMimeTypeValidator(validMimetypes);
     const mediaFile: IMediaFile = {

@@ -1,13 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import moment from 'moment';
+import xlsx from 'xlsx';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
 import { PostOccurrence } from '../../../../../models/occurrence-create';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
 import { postOccurrenceSQL } from '../../../../../queries/occurrence/occurrence-create-queries';
-import xlsx from 'xlsx';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL
@@ -15,10 +15,10 @@ import {
 import { updateSurveyPublishStatusSQL } from '../../../../../queries/survey/survey-update-queries';
 import { getFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
-import { DWCArchive } from '../../../../../utils/media/csv/dwc/dwc-archive-file';
+import { DWCArchive } from '../../../../../utils/media/dwc/dwc-archive-file';
+import { ArchiveFile } from '../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../utils/media/media-utils';
 import { logRequest } from '../../../../../utils/path-utils';
-import { ArchiveFile } from '../../../../../utils/media/media-file';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish');
 

@@ -105,7 +105,7 @@ export const submissionValidationSchema = {
           $ref: '#/$defs/file_recommended_columns_validator'
         },
         {
-          $ref: '#/$defs/mimetype_validator'
+          $ref: '#/$defs/file_duplicate_columns_validator'
         }
       ]
     },
@@ -118,6 +118,9 @@ export const submissionValidationSchema = {
         },
         {
           $ref: '#/$defs/column_code_validator'
+        },
+        {
+          $ref: '#/$defs/column_range_validator'
         },
         {
           $ref: '#/$defs/column_unique_validator'
@@ -133,6 +136,7 @@ export const submissionValidationSchema = {
       properties: {
         submission_required_files_validator: {
           type: 'object',
+          required: ['required_files'],
           properties: {
             name: {
               type: 'string'
@@ -158,6 +162,7 @@ export const submissionValidationSchema = {
       properties: {
         mimetype_validator: {
           type: 'object',
+          required: ['reg_exps'],
           properties: {
             name: {
               type: 'string'
@@ -165,7 +170,7 @@ export const submissionValidationSchema = {
             description: {
               type: 'string'
             },
-            allowed_mimetypes: {
+            reg_exps: {
               type: 'array',
               items: {
                 type: 'string'
@@ -183,6 +188,7 @@ export const submissionValidationSchema = {
       properties: {
         file_required_columns_validator: {
           type: 'object',
+          required: ['required_columns'],
           properties: {
             name: {
               type: 'string'
@@ -208,6 +214,7 @@ export const submissionValidationSchema = {
       properties: {
         file_recommended_columns_validator: {
           type: 'object',
+          required: ['recommended_columns'],
           properties: {
             name: {
               type: 'string'
@@ -227,11 +234,56 @@ export const submissionValidationSchema = {
       },
       additionalProperties: false
     },
+    file_duplicate_columns_validator: {
+      description: 'Validates that this file/sheet contains recommended columns',
+      type: 'object',
+      properties: {
+        file_duplicate_columns_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            }
+          },
+          additionalProperties: false
+        }
+      },
+      additionalProperties: false
+    },
     column_format_validator: {
-      description: 'Validates that this column value matches a pattern',
+      description: 'Validates that this column value matches a regex',
       type: 'object',
       properties: {
         column_format_validator: {
+          type: 'object',
+          required: ['reg_exp', 'expected_format'],
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            reg_exp: {
+              type: 'string'
+            },
+            expected_format: {
+              type: 'string'
+            }
+          },
+          additionalProperties: false
+        }
+      },
+      additionalProperties: false
+    },
+    column_range_validator: {
+      description: 'Validates that this column value matches a number range',
+      type: 'object',
+      properties: {
+        column_range_validator: {
           type: 'object',
           properties: {
             name: {
@@ -240,8 +292,11 @@ export const submissionValidationSchema = {
             description: {
               type: 'string'
             },
-            pattern: {
-              type: 'string'
+            min_value: {
+              type: 'number'
+            },
+            max_value: {
+              type: 'number'
             }
           },
           additionalProperties: false
@@ -329,9 +384,10 @@ export const submissionValidationSchema = {
     code_value: {
       description: 'Validates that this column value has a matching counterpart in the target `file` and `column`',
       type: 'object',
+      required: ['name'],
       properties: {
         name: {
-          type: 'string'
+          type: ['string', 'number']
         },
         description: {
           type: 'string'

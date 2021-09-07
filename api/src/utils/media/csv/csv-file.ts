@@ -1,38 +1,7 @@
 import xlsx from 'xlsx';
-import { IMediaState, MediaFile, MediaValidator } from '../media-file';
-import { DWC_CLASS } from './dwc/dwc-archive-file';
+import { IMediaState, MediaValidation } from '../media-file';
 
-export enum XLSX_CLASS {
-  SAMPLE_STATION_INFORMATION = 'Sample Station Information',
-  GENERAL_SURVEY = 'General Survey',
-  SITE_INCIDENTAL_OBSERVATIONS = 'Site & Incidental Observations'
-}
-
-export enum XLSX_CSV {
-  STRUCTURE = 'structure'
-}
-
-const DEFAULT_XLSX_SHEET = 'Sheet1';
-
-export type XLSXCSVMediaValidationRules = { [key in XLSX_CSV]?: MediaValidator[] } &
-  { [key in XLSX_CLASS]?: MediaValidator[] };
-
-export type XLSXContentValidationRules = {
-  [key in XLSX_CLASS]?: CSVValidator[];
-};
-
-export interface IWorkbook {
-  workbook: CSVWorkBook;
-}
-
-export interface IWorksheets {
-  worksheets:
-    | { [name in DWC_CLASS]?: CSVWorksheet }
-    | { [name in XLSX_CLASS]?: CSVWorksheet }
-    | { [name: string]: CSVWorksheet };
-}
-
-export class CSVWorkBook implements IWorksheets {
+export class CSVWorkBook {
   workbook: xlsx.WorkBook;
 
   worksheets: { [name: string]: CSVWorksheet };
@@ -40,15 +9,13 @@ export class CSVWorkBook implements IWorksheets {
   constructor(rawWorkbook?: xlsx.WorkBook) {
     this.workbook = rawWorkbook || xlsx.utils.book_new();
 
-    this.worksheets = {};
+    const worksheets = {};
 
-    for (const [key, value] of Object.entries(this.workbook.Sheets)) {
-      this.worksheets[key] = new CSVWorksheet(key, value);
-    }
-  }
+    Object.entries(this.workbook.Sheets).forEach(([key, value]) => {
+      worksheets[key] = new CSVWorksheet(key, value);
+    });
 
-  setWorksheet(name: string, worksheet: CSVWorksheet) {
-    this.worksheets[name] = worksheet;
+    this.worksheets = worksheets;
   }
 }
 
@@ -182,110 +149,7 @@ export class CSVWorksheet {
   }
 }
 
-/**
- * Supports XLSX CSV files.
- *
- * Expects a known named file
- *
- * @export
- * @class XLSXCSV
- * @implements {IWorkbook}
- */
-export class XLSXCSV implements IWorkbook {
-  rawFile: MediaFile;
-
-  workbook: CSVWorkBook;
-
-  constructor(file: MediaFile, options?: xlsx.ParsingOptions) {
-    this.rawFile = file;
-
-    const rawWorkbook = xlsx.read(this.rawFile.buffer, { ...options });
-
-    this.workbook = new CSVWorkBook(rawWorkbook);
-
-    this._init();
-  }
-
-  _init() {
-    switch (this.rawFile.name) {
-      case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
-        this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION] = new CSVWorksheet(
-          this.rawFile.fileName,
-          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
-        );
-        break;
-      case XLSX_CLASS.GENERAL_SURVEY:
-        this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY] = new CSVWorksheet(
-          this.rawFile.fileName,
-          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
-        );
-        break;
-      case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
-        this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] = new CSVWorksheet(
-          this.rawFile.fileName,
-          xlsx.read(this.rawFile.buffer).Sheets[DEFAULT_XLSX_SHEET]
-        );
-    }
-  }
-
-  /**
-   * Runs validation against the raw MediaFile and its properties (does not validate the content).
-   *
-   * @return {*}  {IMediaState[]}
-   * @memberof XLSXCSV
-   */
-  isMediaValid(validationRules: XLSXCSVMediaValidationRules): IMediaState[] {
-    const mediaState: IMediaState[] = [];
-
-    // Validate the xlsx file itself
-    mediaState.push(this.rawFile.validate(validationRules[XLSX_CSV.STRUCTURE] || []).getState());
-
-    switch (this.rawFile.name) {
-      case XLSX_CLASS.SAMPLE_STATION_INFORMATION:
-        mediaState.push(this.rawFile.validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || []).getState());
-        break;
-      case XLSX_CLASS.GENERAL_SURVEY:
-        mediaState.push(this.rawFile.validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || []).getState());
-        break;
-      case XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS:
-        mediaState.push(
-          this.rawFile.validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || []).getState()
-        );
-    }
-
-    return mediaState;
-  }
-
-  isContentValid(validationRules: XLSXContentValidationRules): ICsvState[] {
-    const csvState: ICsvState[] = [];
-
-    if (this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION]) {
-      csvState.push(
-        this.workbook.worksheets[XLSX_CLASS.SAMPLE_STATION_INFORMATION]
-          .validate(validationRules[XLSX_CLASS.SAMPLE_STATION_INFORMATION] || [])
-          .getState()
-      );
-    }
-
-    if (this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY]) {
-      csvState.push(
-        this.workbook.worksheets[XLSX_CLASS.GENERAL_SURVEY]
-          .validate(validationRules[XLSX_CLASS.GENERAL_SURVEY] || [])
-          .getState()
-      );
-    }
-
-    if (this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]) {
-      csvState.push(
-        this.workbook.worksheets[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]
-          .validate(validationRules[XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS] || [])
-          .getState()
-      );
-    }
-
-    return csvState;
-  }
-}
+export type CSVValidator = (csvWorksheet: CSVWorksheet, ...rest: any) => CSVWorksheet;
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 
@@ -315,35 +179,27 @@ export interface IRowError {
   col: string;
   row: number;
 }
-
 export interface ICsvState extends IMediaState {
-  headerErrors?: IHeaderError[];
-  rowErrors?: IRowError[];
-}
-
-export type CSVValidator = (csvWorksheet: CSVWorksheet, ...rest: any) => CSVWorksheet;
-
-export class CSVValidation {
-  fileName: string;
-  fileErrors: string[];
   headerErrors: IHeaderError[];
   rowErrors: IRowError[];
-  isValid: boolean;
+}
+
+/**
+ * Supports getting/setting validation errors for any csv file.
+ *
+ * @export
+ * @class CSVValidation
+ * @extends {MediaValidation}
+ */
+export class CSVValidation extends MediaValidation {
+  headerErrors: IHeaderError[];
+  rowErrors: IRowError[];
 
   constructor(fileName: string) {
-    this.fileName = fileName;
-    this.fileErrors = [];
+    super(fileName);
+
     this.headerErrors = [];
     this.rowErrors = [];
-    this.isValid = true;
-  }
-
-  addFileErrors(errors: string[]) {
-    this.fileErrors = this.fileErrors.concat(errors);
-
-    if (errors?.length) {
-      this.isValid = false;
-    }
   }
 
   addHeaderErrors(errors: IHeaderError[]) {

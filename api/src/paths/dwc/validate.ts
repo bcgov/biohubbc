@@ -5,21 +5,17 @@ import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
+  getValidationSchemaSQL,
   insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL,
-  getValidationSchemaSQL
+  insertOccurrenceSubmissionStatusSQL
 } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
-import { DWCArchive, DWC_ARCHIVE, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
-import {
-  getDWCArchiveValidators,
-  getDWCCSVValidators,
-  getDWCMediaValidators
-} from '../../utils/media/csv/dwc/dwc-archive-validator';
+import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
+import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
 import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/dwc/validate');
@@ -238,9 +234,7 @@ export function getValidationSchema(): RequestHandler {
 
       const validationSchema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
 
-      //TODO: change the if statement to look for !validationSchema once validation column in the table template_methodologies_species is populated
-
-      if (validationSchema) {
+      if (!validationSchema) {
         // no schema to validate the template, generate error
 
         const submissionStatusId = await insertSubmissionStatus(
@@ -275,35 +269,16 @@ export function getValidationSchema(): RequestHandler {
   };
 }
 
-function getValidationRules(): RequestHandler {
+export function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
 
     try {
-      // TODO fetch/generate validation rules from reference data service
-      const mediaValidationRules = {
-        [DWC_ARCHIVE.STRUCTURE]: getDWCArchiveValidators(),
-        [DWC_CLASS.EVENT]: getDWCMediaValidators(DWC_CLASS.EVENT),
-        [DWC_CLASS.OCCURRENCE]: getDWCMediaValidators(DWC_CLASS.OCCURRENCE),
-        [DWC_CLASS.MEASUREMENTORFACT]: getDWCMediaValidators(DWC_CLASS.MEASUREMENTORFACT),
-        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCMediaValidators(DWC_CLASS.RESOURCERELATIONSHIP),
-        [DWC_CLASS.TAXON]: getDWCMediaValidators(DWC_CLASS.TAXON),
-        [DWC_CLASS.META]: getDWCMediaValidators(DWC_CLASS.META)
-      };
+      const validationSchema: JSON = req['validationSchema'];
 
-      req['mediaValidationRules'] = mediaValidationRules;
+      const validationSchemaParser = new ValidationSchemaParser(validationSchema);
 
-      // TODO fetch/generate validation rules from reference data service
-      const contentValidationRules = {
-        [DWC_CLASS.EVENT]: getDWCCSVValidators(DWC_CLASS.EVENT),
-        [DWC_CLASS.OCCURRENCE]: getDWCCSVValidators(DWC_CLASS.OCCURRENCE),
-        [DWC_CLASS.MEASUREMENTORFACT]: getDWCCSVValidators(DWC_CLASS.MEASUREMENTORFACT),
-        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCCSVValidators(DWC_CLASS.RESOURCERELATIONSHIP),
-        [DWC_CLASS.TAXON]: getDWCCSVValidators(DWC_CLASS.TAXON),
-        [DWC_CLASS.META]: getDWCCSVValidators(DWC_CLASS.META)
-      };
-
-      req['contentValidationRules'] = contentValidationRules;
+      req['validationSchemaParser'] = validationSchemaParser;
 
       next();
     } catch (error) {
@@ -320,20 +295,18 @@ function validateDWCArchive(): RequestHandler {
     try {
       const dwcArchive: DWCArchive = req['dwcArchive'];
 
-      const mediaValidationRules = req['mediaValidationRules'];
+      const validationSchemaParser: ValidationSchemaParser = req['validationSchemaParser'];
 
-      const mediaState: IMediaState[] = dwcArchive.isMediaValid(mediaValidationRules);
+      const mediaState: IMediaState = dwcArchive.isMediaValid(validationSchemaParser);
 
-      if (mediaState.some((item) => !item.isValid)) {
+      if (!mediaState.isValid) {
         req['mediaState'] = mediaState;
 
-        // The file itself is invalid, skip content validation
+        // The file itself is invalid, skip remaining validation
         return next();
       }
 
-      const contentValidationRules = req['contentValidationRules'];
-
-      const csvState: ICsvState[] = dwcArchive.isContentValid(contentValidationRules);
+      const csvState: ICsvState[] = dwcArchive.isContentValid(validationSchemaParser);
 
       req['csvState'] = csvState;
 

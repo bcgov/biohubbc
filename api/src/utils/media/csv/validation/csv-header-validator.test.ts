@@ -1,6 +1,6 @@
-import xlsx from 'xlsx';
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import xlsx from 'xlsx';
 import { CSVWorksheet } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
@@ -59,7 +59,7 @@ describe('getDuplicateHeadersValidator', () => {
 
 describe('hasRequiredHeadersValidator', () => {
   it('adds no errors when there are no required headers', () => {
-    const requiredHeaders: string[] = [];
+    const requiredHeaders = { file_required_columns_validator: { required_columns: [] } };
 
     const validator = hasRequiredHeadersValidator(requiredHeaders);
 
@@ -73,7 +73,9 @@ describe('hasRequiredHeadersValidator', () => {
   });
 
   it('adds errors for all headers if there are required headers but no header row', () => {
-    const requiredHeaders: string[] = ['Header1', 'Header2', 'Header3'];
+    const requiredHeaders = {
+      file_required_columns_validator: { required_columns: ['Header1', 'Header2', 'Header3'] }
+    };
 
     const validator = hasRequiredHeadersValidator(requiredHeaders);
 
@@ -103,7 +105,9 @@ describe('hasRequiredHeadersValidator', () => {
   });
 
   it('adds errors for each missing header that is required', () => {
-    const requiredHeaders: string[] = ['Header1', 'Header3', 'Header4', 'Header5'];
+    const requiredHeaders = {
+      file_required_columns_validator: { required_columns: ['Header1', 'Header3', 'Header4', 'Header5'] }
+    };
 
     const validator = hasRequiredHeadersValidator(requiredHeaders);
 
@@ -130,7 +134,7 @@ describe('hasRequiredHeadersValidator', () => {
 
 describe('getValidHeadersValidator', () => {
   it('adds no errors when no valid headers provided', () => {
-    const validHeaders: string[] = [];
+    const validHeaders = { file_valid_columns_validator: { valid_columns: [] } };
 
     const validator = getValidHeadersValidator(validHeaders);
 
@@ -144,7 +148,7 @@ describe('getValidHeadersValidator', () => {
   });
 
   it('adds no errors if there are no invalid headers', () => {
-    const validHeaders: string[] = ['Header1', 'Header2', 'Header3'];
+    const validHeaders = { file_valid_columns_validator: { valid_columns: ['Header1', 'Header2', 'Header3'] } };
 
     const validator = getValidHeadersValidator(validHeaders);
 
@@ -158,7 +162,7 @@ describe('getValidHeadersValidator', () => {
   });
 
   it('adds errors for all headers that are not valid ', () => {
-    const validHeaders: string[] = ['Header1', 'Header2', 'Header3'];
+    const validHeaders = { file_valid_columns_validator: { valid_columns: ['Header1', 'Header2', 'Header3'] } };
 
     const validator = getValidHeadersValidator(validHeaders);
 

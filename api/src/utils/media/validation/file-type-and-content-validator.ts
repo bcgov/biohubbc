@@ -1,4 +1,6 @@
+import { DWCArchive, DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { MediaValidator } from '../media-file';
+import { XLSXCSV, XLSXCSVValidator } from '../xlsx/xlsx-file';
 
 export const getFileEmptyValidator = (): MediaValidator => {
   return (mediaFile) => {
@@ -10,18 +12,110 @@ export const getFileEmptyValidator = (): MediaValidator => {
   };
 };
 
-export const getFileMimeTypeValidator = (validMimeTypes: RegExp[]): MediaValidator => {
+export type MimetypeValidatorConfig = {
+  mimetype_validator: {
+    name?: string;
+    description?: string;
+    reg_exps: string[];
+  };
+};
+
+export const getFileMimeTypeValidator = (config?: MimetypeValidatorConfig): MediaValidator => {
   return (mediaFile) => {
-    if (!validMimeTypes.length) {
+    if (!config) {
       return mediaFile;
     }
 
-    if (!validMimeTypes.some((regex) => regex.test(mediaFile.mimetype))) {
+    if (!config.mimetype_validator.reg_exps.length) {
+      return mediaFile;
+    }
+
+    if (
+      !config.mimetype_validator.reg_exps.some((regexString) => {
+        const regex = new RegExp(regexString);
+
+        return regex.test(mediaFile.mimetype);
+      })
+    ) {
       mediaFile.mediaValidation.addFileErrors([
-        `File mime type is invalid, must be one of: ${validMimeTypes.join(', ')}`
+        `File mime type is invalid, must be one of: ${config.mimetype_validator.reg_exps.join(', ')}`
       ]);
     }
 
     return mediaFile;
   };
+};
+
+export type SubmissionRequiredFilesValidatorConfig = {
+  submission_required_files_validator: {
+    name?: string;
+    description?: string;
+    required_files: string[];
+  };
+};
+
+export const getRequiredFilesValidator = (
+  config?: SubmissionRequiredFilesValidatorConfig
+): DWCArchiveValidator | XLSXCSVValidator => {
+  return (file: any) => {
+    if (!config) {
+      // No required files specified
+      return file;
+    }
+
+    if (!config.submission_required_files_validator.required_files.length) {
+      // No required files specified
+      return file;
+    }
+
+    if (file instanceof DWCArchive) {
+      checkRequiedFieldsInDWCArchive(file, config);
+    } else if (file instanceof XLSXCSV) {
+      checkRequiedFieldsInXLSXCSV(file, config);
+    }
+
+    return file;
+  };
+};
+
+const checkRequiedFieldsInDWCArchive = (dwcArchive: DWCArchive, config: SubmissionRequiredFilesValidatorConfig) => {
+  // If there are no files in the archive, then add errors for all required files
+  if (!dwcArchive.rawFile.mediaFiles || !dwcArchive.rawFile.mediaFiles.length) {
+    dwcArchive.mediaValidation.addFileErrors(
+      config.submission_required_files_validator.required_files.map((requiredFile) => {
+        return `Missing required file: ${requiredFile}`;
+      })
+    );
+
+    return dwcArchive;
+  }
+
+  const fileNames = dwcArchive.rawFile.mediaFiles.map((mediaFile) => mediaFile.name);
+
+  config.submission_required_files_validator.required_files.forEach((requiredFile) => {
+    if (!fileNames.includes(requiredFile.toLowerCase())) {
+      dwcArchive.mediaValidation.addFileErrors([`Missing required file: ${requiredFile}`]);
+    }
+  });
+};
+
+const checkRequiedFieldsInXLSXCSV = (dwcArchive: XLSXCSV, config: SubmissionRequiredFilesValidatorConfig) => {
+  // If there are no sheets in the excel file, then add errors for all required sheets
+  if (!dwcArchive.workbook || !dwcArchive.workbook.worksheets.length) {
+    dwcArchive.mediaValidation.addFileErrors(
+      config.submission_required_files_validator.required_files.map((requiredFile) => {
+        return `Missing required sheet: ${requiredFile}`;
+      })
+    );
+
+    return dwcArchive;
+  }
+
+  const worksheetNames = Object.keys(dwcArchive.workbook.worksheets);
+
+  config.submission_required_files_validator.required_files.forEach((requiredFile) => {
+    if (!worksheetNames.includes(requiredFile.toLowerCase())) {
+      dwcArchive.mediaValidation.addFileErrors([`Missing required sheet: ${requiredFile}`]);
+    }
+  });
 };
