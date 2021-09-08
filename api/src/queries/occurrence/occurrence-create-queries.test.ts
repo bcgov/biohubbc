@@ -1,21 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PostOccurrence } from '../../models/occurrence-create';
-import { postOccurrenceSQL, postOccurrenceSubmissionSQL } from './occurrence-create-queries';
-
-describe('postOccurrenceSubmissionSQL', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = postOccurrenceSubmissionSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid surveyId provided', () => {
-    const response = postOccurrenceSubmissionSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
+import { postOccurrenceSQL } from './occurrence-create-queries';
 
 describe('postOccurrenceSQL', () => {
   it('returns null response when null occurrenceSubmissionId provided', () => {

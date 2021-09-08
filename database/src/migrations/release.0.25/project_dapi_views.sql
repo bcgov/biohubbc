@@ -40,6 +40,7 @@
  create or replace view survey_attachment as select * from biohub.survey_attachment;
  create or replace view survey_funding_source as select * from biohub.survey_funding_source;
  create or replace view survey_proprietor as select * from biohub.survey_proprietor;
+ create or replace view survey_spatial_component as select * from biohub.survey_spatial_component;
  create or replace view system_constant as select * from biohub.system_constant;
  create or replace view system_metadata_constant as select * from biohub.system_metadata_constant;
  create or replace view system_role as select * from biohub.system_role;
