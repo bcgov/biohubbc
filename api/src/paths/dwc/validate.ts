@@ -197,7 +197,6 @@ export function persistParseErrors(): RequestHandler {
 
     if (!parseError) {
       // no errors to persist, skip to next step
-
       return next();
     }
 
