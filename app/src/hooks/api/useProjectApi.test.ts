@@ -167,11 +167,11 @@ describe('useProjectApi', () => {
       type: 'text/plain'
     });
 
-    mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, ['result 1', 'result 2']);
+    mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, [file]);
+    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file);
 
-    expect(result).toEqual(['result 1', 'result 2']);
+    expect(result).toEqual('result 1');
   });
 
   it('createProject works as expected', async () => {

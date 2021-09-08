@@ -129,6 +129,7 @@ describe('uploadSubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(null);
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const result = upload.uploadMedia();
 
@@ -138,6 +139,27 @@ describe('uploadSubmission', () => {
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Failed to build SQL insert statement');
+    }
+  });
+
+  it('should throw a 400 error when file contains virus', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
+
+    const result = upload.uploadMedia();
+
+    try {
+      await result(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('File contains virus');
     }
   });
 
@@ -154,6 +176,7 @@ describe('uploadSubmission', () => {
       query: mockQuery
     });
 
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     const result = upload.uploadMedia();
@@ -180,6 +203,7 @@ describe('uploadSubmission', () => {
       query: mockQuery
     });
 
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(null);
 
@@ -208,6 +232,7 @@ describe('uploadSubmission', () => {
       query: mockQuery
     });
 
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
 
@@ -235,6 +260,7 @@ describe('uploadSubmission', () => {
       query: mockQuery
     });
 
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
 
@@ -263,6 +289,7 @@ describe('uploadSubmission', () => {
       query: mockQuery
     });
 
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
 

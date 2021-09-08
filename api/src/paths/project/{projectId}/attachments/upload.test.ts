@@ -104,6 +104,8 @@ describe('uploadMedia', () => {
       }
     });
 
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
+
     try {
       const result = upload.uploadMedia();
 
@@ -115,7 +117,7 @@ describe('uploadMedia', () => {
     }
   });
 
-  it('should return a list of file keys on success (with username and email)', async () => {
+  it('should throw a 400 error when file contains virus', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -125,11 +127,35 @@ describe('uploadMedia', () => {
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
     sinon.stub(project, 'upsertProjectAttachment').resolves(1);
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
+
+    try {
+      const result = upload.uploadMedia();
+
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('File contains virus');
+    }
+  });
+
+  it('should return file key on success (with username and email)', async () => {
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      }
+    });
+
+    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
+    sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
+    sinon.stub(project, 'upsertProjectAttachment').resolves(1);
 
     const result = upload.uploadMedia();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql(['1/1/test.txt']);
+    expect(actualResult).to.eql('1/1/test.txt');
   });
 });

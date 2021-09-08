@@ -109,7 +109,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string[]> => {
+  ): Promise<string> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
