@@ -238,7 +238,9 @@ export function getValidationSchema(): RequestHandler {
 
       const validationSchema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
 
-      if (!validationSchema) {
+      //TODO: change the if statement to look for !validationSchema once validation column in the table template_methodologies_species is populated
+
+      if (validationSchema) {
         // no schema to validate the template, generate error
 
         const submissionStatusId = await insertSubmissionStatus(
