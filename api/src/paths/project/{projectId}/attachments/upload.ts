@@ -87,7 +87,7 @@ export function uploadMedia(): RequestHandler {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
     if (!rawMediaArray || !rawMediaArray.length) {
-      // no media object included, skipping media upload step
+      // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
     }
 

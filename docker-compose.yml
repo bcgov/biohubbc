@@ -59,6 +59,9 @@ services:
       - MAX_UPLOAD_NUM_FILES=${MAX_UPLOAD_NUM_FILES}
       - MAX_UPLOAD_FILE_SIZE=${MAX_UPLOAD_FILE_SIZE}
       - LOG_LEVEL=${LOG_LEVEL}
+      - CLAMAV_PORT=${CLAMAV_PORT}
+      - CLAMAV_HOST=${CLAMAV_HOST}
+      - SHOULD_CLAMAV_SCAN=${SHOULD_CLAMAV_SCAN}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
@@ -72,10 +75,8 @@ services:
   clamav:
     image: mkodockx/docker-clamav:latest
     container_name: clamav
-    environment:
-      - DatabaseMirror=https://clamav-mirror.apps.silver.devops.gov.bc.ca/
     ports:
-      - 3310:3310
+      - ${CLAMAV_PORT}:${CLAMAV_PORT}
     networks:
       - local-network
     depends_on:

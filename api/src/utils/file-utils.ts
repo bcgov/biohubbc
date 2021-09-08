@@ -3,7 +3,10 @@ import { DeleteObjectOutput, GetObjectOutput, ManagedUpload, Metadata } from 'aw
 import { S3_ROLE } from '../constants/roles';
 import clamd from 'clamdjs';
 
-const scanner = clamd.createScanner('clamav', 3310); // use env variables later
+const scanner =
+  process.env.SHOULD_CLAMAV_SCAN && process.env.CLAMAV_HOST && process.env.CLAMAV_PORT
+    ? clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT))
+    : null;
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);
@@ -132,6 +135,11 @@ export function generateS3FileKey(options: IS3FileKey): string {
 }
 
 export async function scanFileForVirus(file: Express.Multer.File): Promise<boolean> {
+  // if virus scan is not to be performed/cannot be performed
+  if (!scanner) {
+    return true;
+  }
+
   const clamavScanResult = await scanner.scanBuffer(file.buffer, 3000, 1024 * 1024);
 
   // if virus found in file
