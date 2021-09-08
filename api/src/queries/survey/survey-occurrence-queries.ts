@@ -14,7 +14,8 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 export const insertSurveyOccurrenceSubmissionSQL = (
   surveyId: number,
   source: string,
-  file_name: string
+  file_name: string,
+  templateMethodologyId: number | null
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
@@ -31,11 +32,13 @@ export const insertSurveyOccurrenceSubmissionSQL = (
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO occurrence_submission (
       survey_id,
+      template_methodology_species_id,
       source,
       file_name,
       event_timestamp
     ) VALUES (
       ${surveyId},
+      ${templateMethodologyId},
       ${source},
       ${file_name},
       now()
@@ -45,6 +48,56 @@ export const insertSurveyOccurrenceSubmissionSQL = (
 
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get a template methodology species id.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getTemplateMethodologySpeciesIdSQLStatement = (
+  surveyId: number,
+  template_name: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getTemplateMethodologySpeciesIdSQLStatement',
+    message: 'params',
+    surveyId,
+    template_name
+  });
+
+  if (!surveyId || !template_name) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      tms.template_methodology_species_id
+    FROM
+      template_methodology_species tms
+    LEFT OUTER JOIN
+      template t on tms.template_id = t.template_id
+    LEFT OUTER JOIN
+      common_survey_methodology csm  on tms.common_survey_methodology_id = csm.common_survey_methodology_id
+    LEFT OUTER JOIN
+      survey s on csm.common_survey_methodology_id = s.common_survey_methodology_id
+    WHERE
+      s.survey_id = ${surveyId}
+    AND
+      t.name = ${template_name} ;
+    `;
+
+  defaultLog.debug({
+    label: 'getTemplateMethodologySpeciesIdSQLStatement',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
