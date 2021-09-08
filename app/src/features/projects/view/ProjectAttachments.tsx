@@ -74,7 +74,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           uploadHandler={uploadAttachments()}
           dropZoneProps={{
             acceptedFileExtensions:
-              'doc, docx, pdf, xls, xlsx, xlsm, xlsb, accdb, mdb, ods, shp (dbf,shx), gdb, kml, kmz, json'
+              '.doc, .docx, .pdf, .xls, .xlsx, .xlsm, .xlsb, .accdb, .mdb, .ods, .shp, .gdb, .kml, .json'
           }}
         />
       </ComponentDialog>

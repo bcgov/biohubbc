@@ -272,7 +272,7 @@ run-clamav: ## Run clamav
 	@echo "==============================================="
 	@echo "Make: run-clamav - running clamav"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up clamav
+	@docker-compose -f docker-compose.yml up -d clamav
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects
