@@ -3,9 +3,7 @@ import { DeleteObjectOutput, GetObjectOutput, ManagedUpload, Metadata } from 'aw
 import { S3_ROLE } from '../constants/roles';
 import clamd from 'clamdjs';
 
-const scanner = process.env.SHOULD_CLAMAV_SCAN
-  ? clamd.createScanner(process.env.CLAMAV_HOST || 'clamav', Number(process.env.CLAMAV_PORT) || 3310)
-  : null;
+const scanner = clamd.createScanner(process.env.CLAMAV_HOST || 'clamav', Number(process.env.CLAMAV_PORT) || 3310);
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';
 const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
 const AWS_ENDPOINT = new AWS.Endpoint(OBJECT_STORE_URL);

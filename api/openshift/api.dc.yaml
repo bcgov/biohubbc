@@ -5,8 +5,6 @@ metadata:
   selfLink: ''
   name: biohubbc-api-dc
 parameters:
-  - name: SHOULD_CLAMAV_SCAN
-    value: true
   - name: NAME
     value: biohubbc-api
   - name: SUFFIX
@@ -116,8 +114,6 @@ objects:
                   value: ${HOST}
                 - name: API_PORT
                   value: ${API_PORT_DEFAULT}
-                - name: SHOULD_CLAMAV_SCAN
-                  value: ${SHOULD_CLAMAV_SCAN}
                 - name: DB_HOST
                   value: ${DB_SERVICE_NAME}
                 - name: DB_USER_API
