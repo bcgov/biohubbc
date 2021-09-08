@@ -70,6 +70,8 @@ export enum ClassGrouping {
   WARNING = 'Warning'
 }
 
+const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'System Error'];
+
 const SurveyObservations = () => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
@@ -120,12 +122,7 @@ const SurveyObservations = () => {
     setSubmissionStatus(() => {
       setIsLoading(false);
       if (submission) {
-        if (
-          submission.status === 'Rejected' ||
-          submission.status === 'Darwin Core Validated' ||
-          submission.status === 'Template Validated' ||
-          submission.status === 'System Error'
-        ) {
+        if (finalStatus.includes(submission.status)) {
           setIsValidating(false);
           setIsPolling(false);
 
@@ -269,8 +266,6 @@ const SurveyObservations = () => {
 
   const messageList = submissionStatus?.messages;
 
-  console.dir(messageList);
-
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       messageList.forEach((message) => {
@@ -318,6 +313,43 @@ const SurveyObservations = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
+
+  function alertBoxDisplay(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
+    return (
+      <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
+        <Box component={AlertTitle} display="flex">
+          <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+            <strong>{fileName}</strong>
+          </Link>
+        </Box>
+        {message}
+      </Alert>
+    );
+  }
+
+  function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
+    return (
+      <Box>
+        {Object.entries(list).map(([key, value], index) => (
+          <Box key={index}>
+            <Box display="flex" alignItems="center">
+              <Icon path={iconName} size={1} color="#ff5252" />
+              <strong className={classes.tab}>{msgGroup[key].label}</strong>
+            </Box>
+            <Box pl={2}>
+              <ul>
+                {value.map((message: string, index2: number) => {
+                  return <li key={`${index}-${index2}`}>{message}</li>;
+                })}
+              </ul>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Box mb={5} display="flex" justifyContent="space-between">
@@ -345,14 +377,7 @@ const SurveyObservations = () => {
 
         {!isValidating && submissionStatus?.status === 'System Error' && (
           <>
-            <Alert icon={<Icon path={mdiAlertCircle} size={1} />} severity="error" action={submissionAlertAction()}>
-              <Box component={AlertTitle} display="flex">
-                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
-                  <strong>{submissionStatus.fileName}</strong>
-                </Link>
-              </Box>
-              Validation Failed To Start
-            </Alert>
+            {alertBoxDisplay('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed to Start')}
 
             <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
@@ -365,54 +390,15 @@ const SurveyObservations = () => {
               </Typography>
             </Box>
 
-            <Box>
-              {Object.entries(submissionErrors).map(([key, value], index) => (
-                <Box key={index}>
-                  <Box display="flex" alignItems="center">
-                    <Icon path={mdiAlertCircle} size={1} color="#ff5252" />
-                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
-                  </Box>
-                  <Box pl={2}>
-                    <ul>
-                      {value.map((message: string, index2: number) => {
-                        return <li key={`${index}-${index2}`}>{message}</li>;
-                      })}
-                    </ul>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-            <Box>
-              {Object.entries(submissionWarnings).map(([key, value], index) => (
-                <Box key={index}>
-                  <Box display="flex" alignItems="center">
-                    <Icon path={mdiInformationOutline} size={1} color="#ff5252" />
-                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
-                  </Box>
-                  <Box pl={2}>
-                    <ul>
-                      {value.map((message: string, index2: number) => {
-                        return <li key={`${index}-${index2}`}>{message}</li>;
-                      })}
-                    </ul>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
+            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
+
+            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
           </>
         )}
 
         {!isValidating && submissionStatus?.status === 'Rejected' && (
           <>
-            <Alert icon={<Icon path={mdiAlertCircle} size={1} />} severity="error" action={submissionAlertAction()}>
-              <Box component={AlertTitle} display="flex">
-                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
-                  <strong>{submissionStatus.fileName}</strong>
-                </Link>
-              </Box>
-              Validation Failed
-            </Alert>
-
+            {alertBoxDisplay('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed')}
             <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
                 What's next?
@@ -424,53 +410,16 @@ const SurveyObservations = () => {
               </Typography>
             </Box>
 
-            <Box>
-              {Object.entries(submissionErrors).map(([key, value], index) => (
-                <Box key={index}>
-                  <Box display="flex" alignItems="center">
-                    <Icon path={mdiAlertCircle} size={1} color="#ff5252" />
-                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
-                  </Box>
-                  <Box pl={2}>
-                    <ul>
-                      {value.map((message: string, index2: number) => {
-                        return <li key={`${index}-${index2}`}>{message}</li>;
-                      })}
-                    </ul>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
-            <Box>
-              {Object.entries(submissionWarnings).map(([key, value], index) => (
-                <Box key={index}>
-                  <Box display="flex" alignItems="center">
-                    <Icon path={mdiInformationOutline} size={1} color="#ff5252" />
-                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
-                  </Box>
-                  <Box pl={2}>
-                    <ul>
-                      {value.map((message: string, index2: number) => {
-                        return <li key={`${index}-${index2}`}>{message}</li>;
-                      })}
-                    </ul>
-                  </Box>
-                </Box>
-              ))}
-            </Box>
+            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
+
+            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
           </>
         )}
         {!isValidating &&
           submissionStatus &&
           (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
             <>
-              <Alert icon={<Icon path={mdiFileOutline} size={1} />} severity="info" action={submissionAlertAction()}>
-                <Box component={AlertTitle} display="flex">
-                  <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
-                    <strong>{submissionStatus.fileName}</strong>
-                  </Link>
-                </Box>
-              </Alert>
+              {alertBoxDisplay('info', mdiFileOutline, submissionStatus.fileName, '')}
 
               <Box mt={5} overflow="hidden">
                 <ObservationSubmissionCSV submissionId={submissionStatus.id} />
@@ -479,14 +428,12 @@ const SurveyObservations = () => {
           )}
         {isValidating && submissionStatus && (
           <>
-            <Alert icon={<Icon path={mdiClockOutline} size={1} />} severity="info" action={submissionAlertAction()}>
-              <Box component={AlertTitle} display="flex">
-                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
-                  <strong>{submissionStatus?.fileName}</strong>
-                </Link>
-              </Box>
-              Validating observation data. Please wait ...
-            </Alert>
+            {alertBoxDisplay(
+              'info',
+              mdiClockOutline,
+              submissionStatus?.fileName,
+              'Validating observation data. Please wait ...'
+            )}
           </>
         )}
       </Box>
