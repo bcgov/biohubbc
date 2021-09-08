@@ -315,7 +315,7 @@ const SurveyObservations = () => {
 
   type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
 
-  function alertBoxDisplay(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
+  function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
     return (
       <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
         <Box component={AlertTitle} display="flex">
@@ -377,7 +377,7 @@ const SurveyObservations = () => {
 
         {!isValidating && submissionStatus?.status === 'System Error' && (
           <>
-            {alertBoxDisplay('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed to Start')}
+            {displayAlertBox('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed to Start')}
 
             <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
@@ -398,7 +398,7 @@ const SurveyObservations = () => {
 
         {!isValidating && submissionStatus?.status === 'Rejected' && (
           <>
-            {alertBoxDisplay('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed')}
+            {displayAlertBox('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed')}
             <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
                 What's next?
@@ -419,7 +419,7 @@ const SurveyObservations = () => {
           submissionStatus &&
           (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
             <>
-              {alertBoxDisplay('info', mdiFileOutline, submissionStatus.fileName, '')}
+              {displayAlertBox('info', mdiFileOutline, submissionStatus.fileName, '')}
 
               <Box mt={5} overflow="hidden">
                 <ObservationSubmissionCSV submissionId={submissionStatus.id} />
@@ -428,7 +428,7 @@ const SurveyObservations = () => {
           )}
         {isValidating && submissionStatus && (
           <>
-            {alertBoxDisplay(
+            {displayAlertBox(
               'info',
               mdiClockOutline,
               submissionStatus?.fileName,
