@@ -55,13 +55,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   const uploadAttachments = (): IUploadHandler => {
     return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadSurveyAttachments(
-        projectId,
-        surveyId,
-        file,
-        cancelToken,
-        handleFileUploadProgress
-      );
+      return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
     };
   };
 

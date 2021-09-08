@@ -116,7 +116,7 @@ export function uploadMedia(): RequestHandler {
       }
 
       // Insert file metadata into project_attachment table
-      await upsertProjectAttachment(rawMediaFile, Number(req.params.projectId), connection)
+      await upsertProjectAttachment(rawMediaFile, Number(req.params.projectId), connection);
 
       // Upload file to S3
       const key = generateS3FileKey({
