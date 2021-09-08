@@ -6,7 +6,7 @@ metadata:
   name: biohubbc-api-dc
 parameters:
   - name: SHOULD_CLAMAV_SCAN
-    value: 1
+    value: '1'
   - name: NAME
     value: biohubbc-api
   - name: SUFFIX
