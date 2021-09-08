@@ -30,7 +30,7 @@ describe('FileUploadItem', () => {
     });
 
     await waitFor(() => {
-      expect(mockUploadHandler).toHaveBeenCalledWith([testFile], expect.any(Object), expect.any(Function));
+      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -76,7 +76,7 @@ describe('FileUploadItem', () => {
     });
 
     await waitFor(() => {
-      expect(mockUploadHandler).toHaveBeenCalledWith([testFile], expect.any(Object), expect.any(Function));
+      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -118,7 +118,7 @@ describe('FileUploadItem', () => {
     });
 
     await waitFor(() => {
-      expect(mockUploadHandler).toHaveBeenCalledWith([testFile], expect.any(Object), expect.any(Function));
+      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
