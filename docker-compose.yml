@@ -74,7 +74,7 @@ services:
   # Build the clamav docker image
   clamav:
     image: mkodockx/docker-clamav:latest
-    container_name: clamav
+    container_name: ${DOCKER_PROJECT_NAME}-clamav-${DOCKER_NAMESPACE}-container
     ports:
       - ${CLAMAV_PORT}:${CLAMAV_PORT}
     networks:
