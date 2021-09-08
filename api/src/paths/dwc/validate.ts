@@ -239,7 +239,7 @@ export function getValidationSchema(): RequestHandler {
 
       const validationSchema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
 
-      if (!validationSchema['validation']) {
+      if (!validationSchema) {
         // no schema to validate the template, generate error
 
         const submissionStatusType = 'Rejected';
@@ -265,10 +265,6 @@ export function getValidationSchema(): RequestHandler {
 
       req['validationSchema'] = validationSchema;
 
-      //add schema to the request and call next()
-      //if template valiadation is empty, return an error
-      //if not template .. failed to fetch validation schema
-      //leverage n8n internal tracking - also through http500
       next();
     } catch (error) {
       defaultLog.debug({ label: 'getValidationSchema', message: 'error', error });
@@ -502,12 +498,12 @@ export const insertSubmissionMessage = async (
  *
  * @param {number} occurrenceSubmissionId
  * @param {IDBConnection} connection
- * @return {*}  {Promise<number>}
+ * @return {*}  {Promise<any>}
  */
 export const getValidationSchemaJSON = async (
   occurrenceSubmissionId: number,
   connection: IDBConnection
-): Promise<number> => {
+): Promise<any> => {
   const sqlStatement = getValidationSchemaSQL(occurrenceSubmissionId);
 
   if (!sqlStatement) {
@@ -516,5 +512,5 @@ export const getValidationSchemaJSON = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return (response && response.rows && response.rows[0]) || null;
+  return (response && response.rows && response.rows[0]).validation || null;
 };

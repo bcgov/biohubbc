@@ -488,78 +488,9 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
 };
 
 /**
- * SQL query to get latest occurrence submission for a survey.
+ * SQL query to get validation schema for a submission based on the occurrence_submission_id.
  *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const getTemplateValidationSchemaSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getTemplateValidationSchemaSQL',
-    message: 'params',
-    surveyId
-  });
-
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    SELECT
-      os.occurrence_submission_id as id,
-      os.survey_id,
-      os.source,
-      os.delete_timestamp,
-      os.event_timestamp,
-      os.key,
-      os.file_name,
-      ss.submission_status_id,
-      ss.submission_status_type_id,
-      sst.name as submission_status_type_name,
-      sm.submission_message_id,
-      sm.submission_message_type_id,
-      sm.message,
-      smt.name as submission_message_type_name
-    FROM
-      occurrence_submission as os
-    LEFT OUTER JOIN
-      submission_status as ss
-    ON
-      os.occurrence_submission_id = ss.occurrence_submission_id
-    LEFT OUTER JOIN
-      submission_status_type as sst
-    ON
-      sst.submission_status_type_id = ss.submission_status_type_id
-    LEFT OUTER JOIN
-      submission_message as sm
-    ON
-      sm.submission_status_id = ss.submission_status_id
-    LEFT OUTER JOIN
-      submission_message_type as smt
-    ON
-      smt.submission_message_type_id = sm.submission_message_type_id
-    WHERE
-      os.survey_id = ${surveyId}
-    ORDER BY
-      os.event_timestamp DESC
-    LIMIT 1
-    ;
-  `;
-
-  defaultLog.debug({
-    label: 'getLatestSurveyOccurrenceSubmission',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get latest occurrence submission for a survey.
- *
- * @param {number} surveyId
+ * @param {number} occurrenceId
  * @returns {SQLStatement} sql query object
  */
 export const getValidationSchemaSQL = (occurrenceId: number): SQLStatement | null => {
