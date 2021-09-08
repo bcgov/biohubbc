@@ -51,8 +51,8 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   );
 
   const uploadAttachments = (): IUploadHandler => {
-    return (files, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.project.uploadProjectAttachments(projectId, files, cancelToken, handleFileUploadProgress);
+    return (file, cancelToken, handleFileUploadProgress) => {
+      return biohubApi.project.uploadProjectAttachments(projectId, file, cancelToken, handleFileUploadProgress);
     };
   };
 
@@ -70,7 +70,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}>
-        <FileUpload uploadHandler={uploadAttachments()} />
+        <FileUpload
+          uploadHandler={uploadAttachments()}
+          dropZoneProps={{
+            acceptedFileExtensions:
+              'doc, docx, pdf, xls, xlsx, xlsm, xlsb, accdb, mdb, ods, shp (dbf,shx), gdb, kml, kmz, json'
+          }}
+        />
       </ComponentDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">

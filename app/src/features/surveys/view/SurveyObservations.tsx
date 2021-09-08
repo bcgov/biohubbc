@@ -82,9 +82,7 @@ const SurveyObservations = () => {
   const classes = useStyles();
 
   const importObservations = (): IUploadHandler => {
-    return (files, cancelToken, handleFileUploadProgress) => {
-      const file = files[0];
-
+    return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.observation
         .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .then((result) => {

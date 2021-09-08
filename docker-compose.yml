@@ -68,6 +68,19 @@ services:
       - db
       - db_setup
 
+  # Build the clamav docker image
+  clamav:
+    image: mkodockx/docker-clamav:latest
+    container_name: clamav
+    environment:
+      - DatabaseMirror=https://clamav-mirror.apps.silver.devops.gov.bc.ca/
+    ports:
+      - 3310:3310
+    networks:
+      - local-network
+    depends_on:
+      - api
+
   # Build the n8n nginx proxy docker image
   n8n_nginx:
     image: ${DOCKER_PROJECT_NAME}-n8n-nginx-${DOCKER_NAMESPACE}-img
