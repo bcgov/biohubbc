@@ -127,7 +127,9 @@ export function getOccurrenceSubmission(): RequestHandler {
 
       let messageList: any[] = [];
 
-      if (occurrenceSubmissionData.rows[0].submission_status_type_name === 'Rejected') {
+      const errorStatus = occurrenceSubmissionData.rows[0].submission_status_type_name;
+
+      if (errorStatus === 'Rejected' || errorStatus === 'System Error') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
 
         const getSubmissionErrorListSQLStatement = getOccurrenceSubmissionMessagesSQL(Number(occurrence_submission_id));
