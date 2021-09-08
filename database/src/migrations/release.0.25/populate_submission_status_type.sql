@@ -10,4 +10,4 @@ insert into submission_status_type (name, record_effective_date, description) va
 insert into submission_status_type (name, record_effective_date, description) values ('Published', now(), 'The submission has been publised.');
 insert into submission_status_type (name, record_effective_date, description) values ('Rejected', now(), 'The submission has been rejected.');
 insert into submission_status_type (name, record_effective_date, description) values ('On Hold', now(), 'Submission processing has been placed on hold.');
-insert into submission_status_type (name, record_effective_date, description) values ('Missing Validation Schema', now(), 'The template is missing a validation schema.');
+insert into submission_status_type (name, record_effective_date, description) values ('System Error', now(), 'The validation process has not started.');

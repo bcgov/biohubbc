@@ -124,7 +124,7 @@ const SurveyObservations = () => {
           submission.status === 'Rejected' ||
           submission.status === 'Darwin Core Validated' ||
           submission.status === 'Template Validated' ||
-          submission.status === 'Missing Validation Schema'
+          submission.status === 'System Error'
         ) {
           setIsValidating(false);
           setIsPolling(false);
@@ -269,6 +269,8 @@ const SurveyObservations = () => {
 
   const messageList = submissionStatus?.messages;
 
+  console.dir(messageList);
+
   if (messageList) {
     Object.entries(messageGrouping).forEach(([key, value]) => {
       messageList.forEach((message) => {
@@ -340,6 +342,66 @@ const SurveyObservations = () => {
             </Link>
           </Typography>
         )}
+
+        {!isValidating && submissionStatus?.status === 'System Error' && (
+          <>
+            <Alert icon={<Icon path={mdiAlertCircle} size={1} />} severity="error" action={submissionAlertAction()}>
+              <Box component={AlertTitle} display="flex">
+                <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+                  <strong>{submissionStatus.fileName}</strong>
+                </Link>
+              </Box>
+              Validation Failed To Start
+            </Alert>
+
+            <Box mt={3} mb={1}>
+              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
+                What's next?
+              </Typography>
+            </Box>
+            <Box mb={3}>
+              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
+                Resolve the following errors in your local file and re-import.
+              </Typography>
+            </Box>
+
+            <Box>
+              {Object.entries(submissionErrors).map(([key, value], index) => (
+                <Box key={index}>
+                  <Box display="flex" alignItems="center">
+                    <Icon path={mdiAlertCircle} size={1} color="#ff5252" />
+                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
+                  </Box>
+                  <Box pl={2}>
+                    <ul>
+                      {value.map((message: string, index2: number) => {
+                        return <li key={`${index}-${index2}`}>{message}</li>;
+                      })}
+                    </ul>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+            <Box>
+              {Object.entries(submissionWarnings).map(([key, value], index) => (
+                <Box key={index}>
+                  <Box display="flex" alignItems="center">
+                    <Icon path={mdiInformationOutline} size={1} color="#ff5252" />
+                    <strong className={classes.tab}>{messageGrouping[key].label}</strong>
+                  </Box>
+                  <Box pl={2}>
+                    <ul>
+                      {value.map((message: string, index2: number) => {
+                        return <li key={`${index}-${index2}`}>{message}</li>;
+                      })}
+                    </ul>
+                  </Box>
+                </Box>
+              ))}
+            </Box>
+          </>
+        )}
+
         {!isValidating && submissionStatus?.status === 'Rejected' && (
           <>
             <Alert icon={<Icon path={mdiAlertCircle} size={1} />} severity="error" action={submissionAlertAction()}>

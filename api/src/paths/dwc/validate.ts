@@ -242,11 +242,9 @@ export function getValidationSchema(): RequestHandler {
       if (!validationSchema) {
         // no schema to validate the template, generate error
 
-        const submissionStatusType = 'Rejected';
-
         const submissionStatusId = await insertSubmissionStatus(
           req.body.occurrence_submission_id,
-          submissionStatusType,
+          'System Error',
           connection
         );
 

@@ -506,7 +506,7 @@ export const getValidationSchemaSQL = (occurrenceId: number): SQLStatement | nul
 
   const sqlStatement = SQL`
     SELECT
-      t.validation
+      tms.validation
     FROM
       occurrence_submission os
     LEFT OUTER JOIN
