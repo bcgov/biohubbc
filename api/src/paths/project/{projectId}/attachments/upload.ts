@@ -49,17 +49,8 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'object',
-            properties: {
-              mediaKey: {
-                type: 'string',
-                description: 'The S3 unique key for this file.'
-              },
-              lastModified: {
-                type: 'string',
-                description: 'The date the object was last modified'
-              }
-            }
+            type: 'string',
+            description: 'The S3 unique key for this file.'
           }
         }
       }
