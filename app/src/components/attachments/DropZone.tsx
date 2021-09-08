@@ -75,7 +75,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
               <Typography variant="h3" className={classes.textSpacing}>
                 Drag your files here, or <Link className={classes.browseLink}>Browse Files</Link>
               </Typography>
-              {!!maxFileSize && maxFileSize !== Infinity && acceptedFileExtensions && (
+              {acceptedFileExtensions && (
                 <Typography component="span" variant="subtitle2" color="textSecondary">
                   {`Accepted file types: ${acceptedFileExtensions}`}
                 </Typography>
