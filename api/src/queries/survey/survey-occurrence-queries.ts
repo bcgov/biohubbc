@@ -486,3 +486,43 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get validation schema for a submission based on the occurrence_submission_id.
+ *
+ * @param {number} occurrenceId
+ * @returns {SQLStatement} sql query object
+ */
+export const getValidationSchemaSQL = (occurrenceId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getValidationSchemaSQL',
+    message: 'params',
+    occurrenceId
+  });
+
+  if (!occurrenceId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      tms.validation
+    FROM
+      occurrence_submission os
+    LEFT OUTER JOIN
+      template_methodology_species tms on os.template_methodology_species_id = tms.template_methodology_species_id
+    LEFT OUTER JOIN
+      template t on tms.template_id = t.template_id
+    WHERE
+      os.occurrence_submission_id = ${occurrenceId};
+  `;
+
+  defaultLog.debug({
+    label: 'getValidationSchemaSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
