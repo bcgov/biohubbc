@@ -14,17 +14,33 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
  * @return {*}  {Promise<void>}
  */
 export async function up(knex: Knex): Promise<void> {
-  const row1 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row1.json'));
+  enum COMMON_SURVEY_METHODOLOGY {
+    STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block',
+    COMPOSITION = 'Composition',
+    RECRUITMENT = 'Recruitment'
+  }
+
+  enum SPECIES_NAME {
+    MOOSE = 'Moose'
+  }
+
+  enum TEMPLATE_NAME {
+    Moose_SRB_or_Composition_Survey_Skeena = 'Moose_SRB_or_Composition_Survey_Skeena',
+    Moose_SRB_or_Composition_Survey_Omineca = 'Moose SRB or Composition Survey Omineca',
+    Moose_SRB_or_Composition_Survey_Cariboo = 'Moose SRB or Composition Survey Cariboo'
+  }
+
+  const csm1_wld_4147_t1 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm1_wld_4147_t1.json'));
   const row2 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row2.json'));
-  const row3 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row3.json'));
-  const row4 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row4.json'));
-  const row5 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row5.json'));
-  const row6 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row6.json'));
-  const row7 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row7.json'));
-  const row8 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row8.json'));
-  const row9 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row9.json'));
-  const row10 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row10.json'));
-  const row11 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row11.json'));
+  // const row3 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row3.json'));
+  // const row4 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row4.json'));
+  // const row5 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row5.json'));
+  // const row6 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row6.json'));
+  // const row7 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row7.json'));
+  // const row8 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row8.json'));
+  // const row9 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row9.json'));
+  // const row10 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row10.json'));
+  // const row11 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'row11.json'));
 
   await knex.raw(`
 
@@ -33,17 +49,66 @@ export async function up(knex: Knex): Promise<void> {
     set search_path = ${DB_SCHEMA},public;
 
 
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row1}' where tms.template_methodology_species_id = 1;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row2}' where tms.template_methodology_species_id = 2;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row3}' where tms.template_methodology_species_id = 3;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row4}' where tms.template_methodology_species_id = 4;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row5}' where tms.template_methodology_species_id = 5;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row6}' where tms.template_methodology_species_id = 6;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row7}' where tms.template_methodology_species_id = 7;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row8}' where tms.template_methodology_species_id = 8;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row9}' where tms.template_methodology_species_id = 9;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row10}' where tms.template_methodology_species_id = 10;
-    update ${DB_SCHEMA}.template_methodology_species tms set validation= '${row11}' where tms.template_methodology_species_id = 11;
+    update
+	    biohub.template_methodology_species tms
+    set
+	    validation='${csm1_wld_4147_t1}'
+    where
+	    tms.template_methodology_species_id =
+      (select
+        template_methodology_species_id
+      from
+	      template_methodology_species tms
+      left join
+        common_survey_methodology csm
+      ON
+	      tms.common_survey_methodology_id = csm.common_survey_methodology_id
+      left join
+	      wldtaxonomic_units wu
+      on
+	      tms.wldtaxonomic_units_id = wu.wldtaxonomic_units_id
+      left join
+	      template t
+      on
+        tms.template_id = t.template_id
+      where
+        csm.name = '${COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK}'
+      and
+        wu.english_name = '${SPECIES_NAME.MOOSE}'
+      and
+        t.name= '${TEMPLATE_NAME.Moose_SRB_or_Composition_Survey_Skeena}'
+);
+
+
+    update
+      biohub.template_methodology_species tms
+    set
+      validation='${row2}'
+    where
+      tms.template_methodology_species_id =
+      (select
+        template_methodology_species_id
+      from
+        template_methodology_species tms
+      left join
+        common_survey_methodology csm
+      ON
+        tms.common_survey_methodology_id = csm.common_survey_methodology_id
+      left join
+        wldtaxonomic_units wu
+      on
+        tms.wldtaxonomic_units_id = wu.wldtaxonomic_units_id
+      left join
+        template t
+      on
+        tms.template_id = t.template_id
+      where
+        csm.name = '${COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK}'
+      and
+        wu.english_name = '${SPECIES_NAME.MOOSE}'
+      and
+        t.name= '${TEMPLATE_NAME.Moose_SRB_or_Composition_Survey_Omineca}'
+);
 
 
 
