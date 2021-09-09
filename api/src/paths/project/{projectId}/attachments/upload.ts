@@ -1,12 +1,11 @@
 'use strict';
 
-import { ManagedUpload } from 'aws-sdk/clients/s3';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { generateS3FileKey, uploadFileToS3 } from '../../../../utils/file-utils';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
 import { upsertProjectAttachment } from '../../../project';
 
@@ -14,8 +13,8 @@ const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
 
 export const POST: Operation = [uploadMedia()];
 POST.apiDoc = {
-  description: 'Upload project-specific attachments.',
-  tags: ['attachments'],
+  description: 'Upload a project-specific attachment.',
+  tags: ['attachment'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -29,19 +28,15 @@ POST.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Attachments upload post request object.',
+    description: 'Attachment upload post request object.',
     content: {
       'multipart/form-data': {
         schema: {
           type: 'object',
           properties: {
             media: {
-              type: 'array',
-              description: 'An array of attachments to upload',
-              items: {
-                type: 'string',
-                format: 'binary'
-              }
+              type: 'string',
+              format: 'binary'
             }
           }
         }
@@ -50,24 +45,12 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Attachments upload response.',
+      description: 'Attachment upload response.',
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                mediaKey: {
-                  type: 'string',
-                  description: 'The S3 unique key for this file.'
-                },
-                lastModified: {
-                  type: 'string',
-                  description: 'The date the object was last modified'
-                }
-              }
-            }
+            type: 'string',
+            description: 'The S3 unique key for this file.'
           }
         }
       }
@@ -99,12 +82,12 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
+    const rawMediaFile: Express.Multer.File = rawMediaArray[0];
+
     defaultLog.debug({
       label: 'uploadMedia',
-      message: 'files',
-      files: rawMediaArray.map((item) => {
-        return { ...item, buffer: 'Too big to print' };
-      })
+      message: 'file',
+      file: { ...rawMediaFile, buffer: 'Too big to print' }
     });
 
     if (!req.params.projectId) {
@@ -113,41 +96,38 @@ export function uploadMedia(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
 
-    // Insert file metadata into project_attachment table
     try {
       await connection.open();
 
-      const insertProjectAttachmentsPromises =
-        rawMediaArray.map((file: Express.Multer.File) =>
-          upsertProjectAttachment(file, Number(req.params.projectId), connection)
-        ) || [];
+      // Scan file for viruses using ClamAV
+      const virusScanResult = await scanFileForVirus(rawMediaFile);
 
-      await Promise.all([...insertProjectAttachmentsPromises]);
+      if (!virusScanResult) {
+        throw new HTTP400('Malicious content detected, upload cancelled');
+      }
 
-      // Upload files to S3
-      const s3UploadPromises: Promise<ManagedUpload.SendData>[] = [];
+      // Insert file metadata into project_attachment table
+      await upsertProjectAttachment(rawMediaFile, Number(req.params.projectId), connection);
 
-      rawMediaArray.forEach((file: Express.Multer.File) => {
-        const key = generateS3FileKey({
-          projectId: Number(req.params.projectId),
-          fileName: file.originalname
-        });
-
-        const metadata = {
-          filename: file.originalname,
-          username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
-          email: (req['auth_payload'] && req['auth_payload'].email) || ''
-        };
-
-        s3UploadPromises.push(uploadFileToS3(file, key, metadata));
+      // Upload file to S3
+      const key = generateS3FileKey({
+        projectId: Number(req.params.projectId),
+        fileName: rawMediaFile.originalname
       });
 
-      const results = await Promise.all(s3UploadPromises);
-      defaultLog.debug({ label: 'uploadMedia', message: 'results', results });
+      const metadata = {
+        filename: rawMediaFile.originalname,
+        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
+        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+      };
+
+      const result = await uploadFileToS3(rawMediaFile, key, metadata);
+
+      defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
 
       await connection.commit();
 
-      return res.status(200).json(results.map((result) => result.Key));
+      return res.status(200).json(result.Key);
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();

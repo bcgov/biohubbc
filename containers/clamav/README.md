@@ -12,7 +12,3 @@ Freshclam can be run within the container at any time to update the existing sig
 # Deployment
 
 The templates in the [openshift/templates](./openshift/templates) will build and deploy the app.  Modify to suit your own environment.  [openshift/templates/clamav-bc.yaml](./openshift/templates/clamav-bc.yaml) will create your builder image (ideally in your tools project), and [openshift/templates/clamav-dc.yaml](./openshift/templates/clamav-dc.yaml) will create the pod deployment.  Modify the environment variables defined in both the build config and deployment config appropriately.
-
-# Client
-
-Sample client files can be found [here](./client) they are based on [clamav.js](https://github.com/yongtang/clamav.js).

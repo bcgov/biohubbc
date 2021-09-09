@@ -10,7 +10,7 @@
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help
-.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug database app api db-setup db-migrate db-rollback install test lint lint-fix format help
+.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav install test lint lint-fix format help
 
 ## ------------------------------------------------------------------------------
 ## Alias Commands
@@ -42,6 +42,8 @@ db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necess
 
 n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to run the n8n setup
 n8n-export: | build-n8n-export run-n8n-export ## Performs all commands necessary to export the latest n8n credentials and workflows
+
+clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
 
 ## ------------------------------------------------------------------------------
 ## Setup/Cleanup Commands
@@ -255,6 +257,22 @@ run-n8n-export: ## Run the n8n export
 	@echo "Make: run-n8n-export - exporting the n8n credentials and workflows"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up n8n_export
+
+## ------------------------------------------------------------------------------
+## clamav commands
+## ------------------------------------------------------------------------------
+
+build-clamav: ## Build the clamav image
+	@echo "==============================================="
+	@echo "Make: build-clamav - building clamav image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build clamav
+
+run-clamav: ## Run clamav
+	@echo "==============================================="
+	@echo "Make: run-clamav - running clamav"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d clamav
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects

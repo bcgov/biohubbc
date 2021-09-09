@@ -65,7 +65,7 @@ export interface IUploadFile {
 }
 
 export type IUploadHandler = (
-  files: File[],
+  file: File,
   cancelToken: CancelTokenSource,
   handleFileUploadProgress: (progressEvent: ProgressEvent) => void
 ) => Promise<any>;
@@ -139,8 +139,10 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       onSuccess?.(response);
     };
 
-    uploadHandler([file], cancelToken, handleFileUploadProgress)
-      .then(handleFileUploadSuccess, (error: APIError) => setError(error?.message))
+    uploadHandler(file, cancelToken, handleFileUploadProgress)
+      .then(handleFileUploadSuccess, (error: APIError) => {
+        setError(error?.message);
+      })
       .catch();
 
     setStatus(UploadFileStatus.UPLOADING);

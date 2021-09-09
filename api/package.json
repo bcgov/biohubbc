@@ -35,6 +35,7 @@
     "db-migrate": "~0.11.11",
     "db-migrate-pg": "~1.2.2",
     "xlsx": "~0.17.0",
+    "clamdjs": "~1.0.2",
     "express": "~4.17.1",
     "express-openapi": "~7.0.1",
     "fast-json-patch": "~3.0.0-1",
