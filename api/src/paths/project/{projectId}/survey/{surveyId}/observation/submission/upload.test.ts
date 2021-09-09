@@ -142,7 +142,7 @@ describe('uploadSubmission', () => {
     }
   });
 
-  it('should throw a 400 error when file contains virus', async () => {
+  it('should throw a 400 error when file contains malicious content', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -159,7 +159,7 @@ describe('uploadSubmission', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('File contains virus');
+      expect(actualError.message).to.equal('Malicious content detected, upload cancelled');
     }
   });
 

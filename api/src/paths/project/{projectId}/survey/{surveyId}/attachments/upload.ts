@@ -112,7 +112,7 @@ export function uploadMedia(): RequestHandler {
       const virusScanResult = await scanFileForVirus(rawMediaFile);
 
       if (!virusScanResult) {
-        throw new HTTP400('File contains virus');
+        throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
       // Insert file metadata into survey_attachment table
