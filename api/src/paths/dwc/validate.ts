@@ -240,7 +240,7 @@ export function getValidationSchema(): RequestHandler {
 
       //TODO: change the if statement to look for !validationSchema once validation column in the table template_methodologies_species is populated
 
-      if (validationSchema) {
+      if (!validationSchema) {
         // no schema to validate the template, generate error
 
         const submissionStatusId = await insertSubmissionStatus(
