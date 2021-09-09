@@ -354,6 +354,10 @@ export class CSVValidation {
     }
   }
 
+  addHeaderWarnings(errors: IHeaderError[]) {
+    this.headerErrors = this.headerErrors.concat(errors);
+  }
+
   addRowErrors(errors: IRowError[]) {
     this.rowErrors = this.rowErrors.concat(errors);
 

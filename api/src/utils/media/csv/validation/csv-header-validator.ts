@@ -92,7 +92,7 @@ export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): C
     const headers = csvWorksheet.getHeaders();
 
     if (!headers?.length) {
-      csvWorksheet.csvValidation.addHeaderErrors(
+      csvWorksheet.csvValidation.addHeaderWarnings(
         recommendedHeaders.map((recommendedHeader) => {
           return {
             errorCode: 'Missing Recommended Header',
@@ -107,7 +107,7 @@ export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): C
 
     for (const recommendedHeader of recommendedHeaders) {
       if (!headers.includes(recommendedHeader)) {
-        csvWorksheet.csvValidation.addHeaderErrors([
+        csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: 'Missing Recommended Header',
             message: 'Missing recommended header',
@@ -137,7 +137,7 @@ export const getValidHeadersValidator = (validHeaders?: string[]): CSVValidator 
 
     for (const header of headers) {
       if (!validHeaders.includes(header)) {
-        csvWorksheet.csvValidation.addHeaderErrors([
+        csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: 'Unknown Header',
             message: 'Unsupported header',
