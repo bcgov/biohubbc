@@ -138,20 +138,20 @@ run-backend-debug: ## Runs all backend containers in debug mode, where all conta
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
-## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n, n8n_nginx, n8n_setup clamav)
+## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n, n8n_nginx, n8n_setup)
 ## ------------------------------------------------------------------------------
 
 build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx n8n_setup clamav
+	@docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx n8n_setup
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup clamav
+	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup
   ## Restart n8n as a workaround to resolve this known issue: https://github.com/n8n-io/n8n/issues/2155
 	@docker-compose restart n8n
 
@@ -159,7 +159,7 @@ run-web-debug: ## Runs all backend+web containers in debug mode, where all conta
 	@echo "==============================================="
 	@echo "Make: run-web-debug - running web images in debug mode"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api app n8n n8n_nginx n8n_setup clamav
+	@docker-compose -f docker-compose.yml up db db_setup api app n8n n8n_nginx n8n_setup
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container

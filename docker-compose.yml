@@ -61,7 +61,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL}
       - CLAMAV_PORT=${CLAMAV_PORT}
       - CLAMAV_HOST=${CLAMAV_HOST}
-      - SHOULD_CLAMAV_SCAN=${SHOULD_CLAMAV_SCAN}
+      - ENABLE_FILE_VIRUS_SCAN=${ENABLE_FILE_VIRUS_SCAN}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
