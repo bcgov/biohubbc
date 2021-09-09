@@ -25,69 +25,69 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects"
+        path="/admin/projects"
         component={ProjectsListPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/create"
+        path="/admin/projects/create"
         component={CreateProjectPage}
         componentProps={props}
       />
-      <Redirect exact from="/projects/:id?" to="/projects/:id?/details" />
+      <Redirect exact from="/admin/projects/:id?" to="/admin/projects/:id?/details" />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/details"
+        path="/admin/projects/:id?/details"
         component={ProjectPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys"
+        path="/admin/projects/:id?/surveys"
         component={ProjectPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/details"
+        path="/admin/projects/:id?/surveys/:survey_id?/details"
         component={SurveyPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/attachments"
+        path="/admin/projects/:id?/surveys/:survey_id?/attachments"
         component={SurveyPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/surveys/:survey_id?/observations"
+        path="/admin/projects/:id?/surveys/:survey_id?/observations"
         component={SurveyPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/survey/create"
+        path="/admin/projects/:id?/survey/create"
         component={CreateSurveyPage}
         componentProps={props}
       />
       <PrivateRoute
         exact
         layout={ProjectsLayout}
-        path="/projects/:id?/attachments"
+        path="/admin/projects/:id?/attachments"
         component={ProjectPage}
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}
-      <AppRoute title="*" path="/projects/*" component={() => <Redirect to="/page-not-found" />} />
+      <AppRoute title="*" path="/admin/projects/*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>
   );
 };

@@ -5,41 +5,6 @@ import { parseUTMString } from '../../utils/spatial-utils';
 
 const defaultLog = getLogger('queries/occurrence/occurrence-create-queries');
 
-export const postOccurrenceSubmissionSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postOccurrenceSubmissionSQL',
-    message: 'params',
-    surveyId
-  });
-
-  if (!surveyId) {
-    return null;
-  }
-
-  const source = 'biohub_batch';
-
-  const sqlStatement: SQLStatement = SQL`
-    INSERT INTO occurrence_submission (
-      survey_id,
-      source,
-      event_timestamp
-    ) VALUES (
-      ${surveyId},
-      ${source},
-      now()
-    ) returning occurrence_submission_id as id;
-  `;
-
-  defaultLog.debug({
-    label: 'postOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
 export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: PostOccurrence): SQLStatement | null => {
   defaultLog.debug({
     label: 'postOccurrenceSQL',

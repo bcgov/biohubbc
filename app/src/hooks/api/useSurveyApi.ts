@@ -98,7 +98,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {File[]} files
+   * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
@@ -106,13 +106,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const uploadSurveyAttachments = async (
     projectId: number,
     surveyId: number,
-    files: File[],
+    file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string[]> => {
+  ): Promise<string> => {
     const req_message = new FormData();
 
-    files.forEach((file) => req_message.append('media', file));
+    req_message.append('media', file);
 
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,

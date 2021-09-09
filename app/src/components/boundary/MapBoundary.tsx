@@ -8,7 +8,7 @@ import Button from '@material-ui/core/Button';
 import { v4 as uuidv4 } from 'uuid';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
-import { handleKMLUpload, handleShapefileUpload } from 'utils/mapBoundaryUploadHelpers';
+import { handleGPXUpload, handleKMLUpload, handleShapefileUpload } from 'utils/mapBoundaryUploadHelpers';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -108,12 +108,32 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             className={classes.uploadButton}>
             <input
               key={uuidv4()}
-              data-testid="file-upload"
+              data-testid="kml-file-upload"
               type="file"
               hidden
               onChange={(e) => handleKMLUpload(e, setIsLoading, setUploadError, values, setFieldValue)}
             />
             Upload KML
+          </Button>
+        </Tooltip>
+        <Tooltip arrow color="secondary" title="Will only accept gpx files.">
+          <Button
+            variant="outlined"
+            component="label"
+            size="medium"
+            color="primary"
+            disabled={isLoading}
+            onClick={() => setUploadError('')}
+            className={classes.uploadButton}
+            style={{ marginLeft: '1rem' }}>
+            <input
+              key={uuidv4()}
+              data-testid="gpx-file-upload"
+              type="file"
+              hidden
+              onChange={(e) => handleGPXUpload(e, setIsLoading, setUploadError, values, setFieldValue)}
+            />
+            Upload GPX
           </Button>
         </Tooltip>
         <Tooltip arrow color="secondary" title="Will only accept zipped shapefiles of a known projection.">

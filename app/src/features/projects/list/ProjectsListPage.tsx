@@ -113,15 +113,15 @@ const ProjectsListPage: React.FC = () => {
 
   const navigateToCreateProjectPage = (draftId?: number) => {
     if (draftId) {
-      history.push(`/projects/create?draftId=${draftId}`);
+      history.push(`/admin/projects/create?draftId=${draftId}`);
       return;
     }
 
-    history.push('/projects/create');
+    history.push('/admin/projects/create');
   };
 
   const navigateToProjectPage = (id: number) => {
-    history.push(`/projects/${id}`);
+    history.push(`/admin/projects/${id}`);
   };
 
   useEffect(() => {

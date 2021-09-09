@@ -1,5 +1,4 @@
 'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
@@ -7,9 +6,10 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
-  updateSurveyOccurrenceSubmissionWithKeySQL
+  updateSurveyOccurrenceSubmissionWithKeySQL,
+  getTemplateMethodologySpeciesIdSQLStatement
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
-import { generateS3FileKey, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { logRequest } from '../../../../../../../utils/path-utils';
 
@@ -121,10 +121,24 @@ export function uploadMedia(): RequestHandler {
 
       await connection.open();
 
+      // Scan file for viruses using ClamAV
+      const virusScanResult = await scanFileForVirus(rawMediaFile);
+
+      if (!virusScanResult) {
+        throw new HTTP400('Malicious content detected, upload cancelled');
+      }
+
+      const templateMethodologyId = await getTemplateMethodologySpeciesIdStatement(
+        Number(req.params.surveyId),
+        rawMediaFile.originalname,
+        connection
+      );
+
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),
         'BioHub',
         rawMediaFile.originalname,
+        templateMethodologyId,
         connection
       );
 
@@ -137,7 +151,7 @@ export function uploadMedia(): RequestHandler {
         fileName: rawMediaFile.originalname
       });
 
-      //query to update the record with the key before uploading the file
+      // Query to update the record with the key before uploading the file
       await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
 
       await connection.commit();
@@ -174,9 +188,10 @@ export const insertSurveyOccurrenceSubmission = async (
   surveyId: number,
   source: string,
   file_name: string,
+  templateMethodologyId: number | null,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name);
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name, templateMethodologyId);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -189,6 +204,61 @@ export const insertSurveyOccurrenceSubmission = async (
   }
 
   return insertResponse;
+};
+
+/**
+ * Inserts a new record into the `occurrence_submission` table.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const getTemplateMethodologySpeciesIdStatement = async (
+  surveyId: number,
+  file_name: string,
+  connection: IDBConnection
+): Promise<number | null> => {
+  let templateName;
+
+  switch (file_name) {
+    case 'Moose_SRB_or_Composition_Survey_Skeena.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Omineca.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Cariboo.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Okanagan.xlsx':
+      templateName = 'Moose SRB or Composition Survey Skeena';
+      break;
+    case 'Moose_SRB_or_Composition_Survey_Kootenay.xlsx':
+      templateName = 'Moose SRB or Composition Survey Kootenay';
+      break;
+    case 'Moose_Recruitment_Survey.xlsx':
+      templateName = 'Moose Recruitment Survey';
+      break;
+  }
+
+  if (!templateName) {
+    return null;
+  }
+
+  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQLStatement(surveyId, templateName);
+
+  if (!getIdSqlStatement) {
+    throw new HTTP400('Failed to build SQL get template methodology species id sql statement');
+  }
+  const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
+
+  if (!getIdResponse) {
+    throw new HTTP400('Failed to query template methodology species table');
+  }
+
+  return getIdResponse?.rows?.[0]?.template_methodology_species_id || null;
 };
 
 /**

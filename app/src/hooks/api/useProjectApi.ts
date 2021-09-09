@@ -154,20 +154,20 @@ const useProjectApi = (axios: AxiosInstance) => {
    * Upload project attachments.
    *
    * @param {number} projectId
-   * @param {File[]} files
+   * @param {File} file
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
   const uploadProjectAttachments = async (
     projectId: number,
-    files: File[],
+    file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string[]> => {
+  ): Promise<string> => {
     const req_message = new FormData();
 
-    files.forEach((file) => req_message.append('media', file));
+    req_message.append('media', file);
 
     const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
