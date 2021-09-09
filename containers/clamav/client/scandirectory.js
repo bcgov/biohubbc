@@ -1,6 +1,6 @@
 var clamav=require('clamav.js');
 
-clamav.createScanner(3310, '127.0.0.1').scan('sample_files'
+clamav.createScanner(443, 'clamav-af2668-dev.apps.silver.devops.gov.bc.ca').scan('sample_files'
     , function(err, object, malicious) {
   if (err) {
     console.log(object+': '+err);

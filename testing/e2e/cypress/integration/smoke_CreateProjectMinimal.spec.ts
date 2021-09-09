@@ -11,6 +11,11 @@ import {
   previous_page_project,
   cancel_project,
   add_locations,
+  add_project_info,
+  add_objectives,
+  add_classification,
+  add_funding,
+  add_partnerships,
 } from "../page-functions/project/project-create-page";
 
 beforeEach(() => {
@@ -24,7 +29,8 @@ afterEach(() => {
 });
 
 var n = 0;
-while (n < 1) { /* for future iterations */
+while (n < 1) {
+  /* for future iterations */
   it("CreateProject", function () {
     /* ==== Open Create Project ==== */
     navigate_project();
@@ -35,37 +41,22 @@ while (n < 1) { /* for future iterations */
     add_permits(null, null, null, "true"); //navloc, permit_nr, permit_type, sampling
     next_page_project();
 
-    // Project Info
-    cy.get("span.MuiStepLabel-iconContainer").eq(2).click(); // Click on the Navigation bar
-    cy.contains("General Information").should("be.visible");
-    cy.get("#project_name").clear();
-    cy.get("#project_name").type(
-      (faker.company.catchPhrase() + " " + faker.company.bs()).substring(0, 50)
-    );
-    cy.get("body").click();
-    cy.get("#project_type").focus().type("{enter}");
-    cy.get(
-      '[data-value="' + faker.random.number({ min: 1, max: 4 }) + '"]'
-    ).click();
-    cy.get("#project_activities").click();
-    cy.get("#project_activities-option-1").click();
-    cy.get("#project_activities-option-2").click();
-    cy.get("#project_activities-option-3").click();
-    cy.get("#start_date").type("2010-01-01");
-    cy.get("#end_date").type("2022-01-01");
+    add_project_info(null, null, null, null); //project_name, project_type, start_date, end_date
     next_page_project();
 
-    // Objectives
-    cy.get("span.MuiStepLabel-iconContainer").eq(3).click(); // Click on the Navigation bar
-    cy.get("#objectives").click();
-    cy.get("#objectives").type(faker.lorem.paragraph());
-    cy.get("#caveats").click();
-    cy.get("#caveats").type(faker.lorem.paragraph());
+    add_objectives(null, null); //objectives, caveats
     next_page_project();
 
-    // Locations
-    add_locations(null, null);
+    add_locations(null, null); //description, kml_file
     next_page_project();
+
+    add_classification(null, null, null); //classification, sub_classification1, sub_classification2
+    next_page_project();
+
+    add_funding();
+    next_page_project();
+
+    add_partnerships();
 
     submit_project();
   });
