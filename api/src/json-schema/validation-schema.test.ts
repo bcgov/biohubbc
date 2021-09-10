@@ -179,7 +179,6 @@ describe('example submission validation schema', () => {
                 'sex',
                 'lifeStage',
                 'individualCount',
-                'occurrenceRemarks',
                 'identifiedBy',
                 'organismQuantity',
                 'organismQuantityType'
