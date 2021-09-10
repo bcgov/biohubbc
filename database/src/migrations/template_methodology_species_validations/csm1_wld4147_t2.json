@@ -1,1 +1,19 @@
-{}
+{
+  "name": "",
+  "description": "",
+  "files": [
+    {
+      "name": "",
+      "description": "",
+      "columns": [
+        {
+          "name": "",
+          "description": "",
+          "validations": []
+        }
+      ],
+      "validations": []
+    }
+  ],
+  "validations": []
+}
