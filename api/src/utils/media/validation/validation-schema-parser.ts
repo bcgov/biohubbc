@@ -200,10 +200,6 @@ export class ValidationSchemaParser {
     return '$.validations';
   }
 
-  // getFileNamesJsonPath(): string {
-  //   return '$.files[*].name';
-  // }
-
   getFileValidationsJsonPath(fileName: string): string {
     return `$.files[?(@.name == '${fileName}')].validations`;
   }
