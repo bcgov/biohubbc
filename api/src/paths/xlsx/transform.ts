@@ -1,0 +1,369 @@
+import { RequestHandler } from 'express';
+import { Operation } from 'express-openapi';
+import { getSubmissionFileFromS3, getSubmissionS3Key } from '../dwc/validate';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/CustomError';
+import {
+  insertOccurrenceSubmissionMessageSQL,
+  insertOccurrenceSubmissionStatusSQL,
+  getValidationSchemaSQL
+} from '../../queries/survey/survey-occurrence-queries';
+import { getLogger } from '../../utils/logger';
+import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
+import { DWCArchive, DWC_ARCHIVE, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
+import {
+  getDWCArchiveValidators,
+  getDWCCSVValidators,
+  getDWCMediaValidators
+} from '../../utils/media/csv/dwc/dwc-archive-validator';
+import { IMediaState } from '../../utils/media/media-file';
+import { logRequest } from '../../utils/path-utils';
+import { prepXLSX } from './validate';
+
+const defaultLog = getLogger('paths/xlsx/transform');
+
+export const POST: Operation = [
+  logRequest('paths/xlsx/transform', 'POST'),
+  getSubmissionS3Key(),
+  getSubmissionFileFromS3(),
+  prepXLSX(),
+  persistParseErrors(),
+  getTransformationSchema(),
+  getTransformationRules(),
+  transformXLSX(),
+  persistTransformationResults()
+];
+
+POST.apiDoc = {
+  description: 'Transforms an XLSX survey observation submission file into a Darwin Core Archive file',
+  tags: ['survey', 'observation', 'xlsx'],
+  security: [
+    {
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+    }
+  ],
+  requestBody: {
+    description: 'Request body',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['occurrence_submission_id'],
+          properties: {
+            occurrence_submission_id: {
+              description: 'A survey occurrence submission ID',
+              type: 'number',
+              example: 1
+            }
+          }
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Transform XLSX survey observation submission OK'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/401'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};
+
+export function persistParseErrors(): RequestHandler {
+  return async (req, res, next) => {
+    const parseError = req['parseError'];
+
+    if (!parseError) {
+      // no errors to persist, skip to next step
+      return next();
+    }
+
+    defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const submissionStatusId = await insertSubmissionStatus(
+        req.body.occurrence_submission_id,
+        'Rejected',
+        connection
+      );
+
+      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
+
+      await connection.commit();
+
+      // archive is not parsable, don't continue to next step and return early
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.debug({ label: 'persistParseErrors', message: 'error', error });
+      connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export function getTransformationSchema(): RequestHandler {
+  return async (req, res, next) => {
+    req['transformationSchema'] = {};
+
+    next();
+  };
+}
+
+function getTransformationRules(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'getTransformationRules', message: 's3File' });
+
+    try {
+      // TODO fetch/generate validation rules from reference data service
+      const mediaValidationRules = {
+        [DWC_ARCHIVE.STRUCTURE]: getDWCArchiveValidators(),
+        [DWC_CLASS.EVENT]: getDWCMediaValidators(DWC_CLASS.EVENT),
+        [DWC_CLASS.OCCURRENCE]: getDWCMediaValidators(DWC_CLASS.OCCURRENCE),
+        [DWC_CLASS.MEASUREMENTORFACT]: getDWCMediaValidators(DWC_CLASS.MEASUREMENTORFACT),
+        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCMediaValidators(DWC_CLASS.RESOURCERELATIONSHIP),
+        [DWC_CLASS.TAXON]: getDWCMediaValidators(DWC_CLASS.TAXON),
+        [DWC_CLASS.META]: getDWCMediaValidators(DWC_CLASS.META)
+      };
+
+      req['mediaValidationRules'] = mediaValidationRules;
+
+      // TODO fetch/generate validation rules from reference data service
+      const contentValidationRules = {
+        [DWC_CLASS.EVENT]: getDWCCSVValidators(DWC_CLASS.EVENT),
+        [DWC_CLASS.OCCURRENCE]: getDWCCSVValidators(DWC_CLASS.OCCURRENCE),
+        [DWC_CLASS.MEASUREMENTORFACT]: getDWCCSVValidators(DWC_CLASS.MEASUREMENTORFACT),
+        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCCSVValidators(DWC_CLASS.RESOURCERELATIONSHIP),
+        [DWC_CLASS.TAXON]: getDWCCSVValidators(DWC_CLASS.TAXON),
+        [DWC_CLASS.META]: getDWCCSVValidators(DWC_CLASS.META)
+      };
+
+      req['contentValidationRules'] = contentValidationRules;
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'getTransformationRules', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
+function transformXLSX(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
+
+    try {
+      const dwcArchive: DWCArchive = req['dwcArchive'];
+
+      const mediaValidationRules = req['mediaValidationRules'];
+
+      const mediaState: IMediaState[] = dwcArchive.isMediaValid(mediaValidationRules);
+
+      if (mediaState.some((item) => !item.isValid)) {
+        req['mediaState'] = mediaState;
+
+        // The file itself is invalid, skip content validation
+        return next();
+      }
+
+      const contentValidationRules = req['contentValidationRules'];
+
+      const csvState: ICsvState[] = dwcArchive.isContentValid(contentValidationRules);
+
+      req['csvState'] = csvState;
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'validateDWCArchive', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
+function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
+}
+
+function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+  return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
+}
+
+export function persistTransformationResults(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'persistTransformationResults', message: 'validationResults' });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      const mediaState: IMediaState[] = req['mediaState'];
+      const csvState: ICsvState[] = req['csvState'];
+
+      await connection.open();
+
+      let submissionStatusType = 'Template Transformed';
+      if (mediaState?.some((item) => !item.isValid) || csvState?.some((item) => !item.isValid)) {
+        // At least 1 error exists
+        submissionStatusType = 'Rejected';
+      }
+
+      const submissionStatusId = await insertSubmissionStatus(
+        req.body.occurrence_submission_id,
+        submissionStatusType,
+        connection
+      );
+
+      const promises: Promise<any>[] = [];
+
+      mediaState?.forEach((mediaStateItem) => {
+        mediaStateItem.fileErrors?.forEach((fileError) => {
+          promises.push(
+            insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous', connection)
+          );
+        });
+      });
+
+      csvState?.forEach((csvStateItem) => {
+        csvStateItem.headerErrors?.forEach((headerError) => {
+          promises.push(
+            insertSubmissionMessage(
+              submissionStatusId,
+              'Error',
+              generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+              headerError.errorCode,
+              connection
+            )
+          );
+        });
+
+        csvStateItem.rowErrors?.forEach((rowError) => {
+          promises.push(
+            insertSubmissionMessage(
+              submissionStatusId,
+              'Error',
+              generateRowErrorMessage(csvStateItem.fileName, rowError),
+              rowError.errorCode,
+              connection
+            )
+          );
+        });
+      });
+
+      await Promise.all(promises);
+
+      await connection.commit();
+
+      // TODO return something to indicate if any errors had been found, or not?
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.debug({ label: 'persistTransformationResults', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+/**
+ * Insert a record into the submission_status table.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<number>}
+ */
+export const insertSubmissionStatus = async (
+  occurrenceSubmissionId: number,
+  submissionStatusType: string,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert survey submission status data');
+  }
+
+  return result.id;
+};
+
+/**
+ * Insert a record into the submission_message table.
+ *
+ * @param {number} submissionStatusId
+ * @param {string} submissionMessageType
+ * @param {string} message
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const insertSubmissionMessage = async (
+  submissionStatusId: number,
+  submissionMessageType: string,
+  message: string,
+  errorCode: string,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = insertOccurrenceSubmissionMessageSQL(
+    submissionStatusId,
+    submissionMessageType,
+    message,
+    errorCode
+  );
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert survey submission message data');
+  }
+};
+
+/**
+ * Get a validation schema from the template table.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<any>}
+ */
+export const getValidationSchemaJSON = async (
+  occurrenceSubmissionId: number,
+  connection: IDBConnection
+): Promise<any> => {
+  const sqlStatement = getValidationSchemaSQL(occurrenceSubmissionId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (response && response.rows && response.rows[0]).validation || null;
+};
