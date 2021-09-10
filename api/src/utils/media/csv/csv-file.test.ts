@@ -28,29 +28,6 @@ describe('CSVWorkBook', () => {
     expect(csvWorkBook.workbook).not.to.be.null;
     expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
   });
-
-  // describe('setWorksheet', () => {
-  //   it('sets a worksheet, overwriting any existing worksheet with the same name', () => {
-  //     const xlsxWorkSheet1 = xlsx.utils.aoa_to_sheet([['Header1', 'Header2']]);
-  //     const xlsxWorkSheet2 = xlsx.utils.aoa_to_sheet([['Header3', 'Header4']]);
-
-  //     const csvWorkBook = new CSVWorkBook();
-
-  //     expect(csvWorkBook).not.to.be.null;
-  //     expect(csvWorkBook.workbook).not.to.be.null;
-  //     expect(csvWorkBook.worksheets).to.eql({});
-
-  //     csvWorkBook.setWorksheet('Sheet1', new CSVWorksheet('Sheet1', xlsxWorkSheet1));
-
-  //     expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
-  //     expect(csvWorkBook.worksheets['Sheet1'].getHeaders()).to.eql(['Header1', 'Header2']);
-
-  //     csvWorkBook.setWorksheet('Sheet1', new CSVWorksheet('Sheet1', xlsxWorkSheet2));
-
-  //     expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
-  //     expect(csvWorkBook.worksheets['Sheet1'].getHeaders()).to.eql(['Header3', 'Header4']);
-  //   });
-  // });
 });
 
 describe('CSVWorksheet', () => {
