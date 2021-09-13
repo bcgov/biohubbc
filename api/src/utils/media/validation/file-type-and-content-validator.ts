@@ -70,10 +70,8 @@ export const getRequiredFilesValidator = (
     }
 
     if (file instanceof DWCArchive) {
-      console.log(" .... we're in the DwC");
       checkRequiredFieldsInDWCArchive(file, config);
     } else if (file instanceof XLSXCSV) {
-      console.log(" .... we're in the XLXS");
       checkRequiredFieldsInXLSXCSV(file, config);
     }
 

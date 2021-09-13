@@ -24,8 +24,6 @@ export class XLSXCSV {
     this.workbook = new CSVWorkBook(xlsx.read(this.rawFile.buffer, { ...options }));
   }
 
-  //problem is here somewhere
-
   isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
     const validators = validationSchemaParser.getSubmissionValidations();
 
