@@ -1,10 +1,12 @@
 import xlsx from 'xlsx';
 import { IMediaState, MediaValidation } from '../media-file';
 
+export type CSVWorksheets = { [name: string]: CSVWorksheet };
+
 export class CSVWorkBook {
   workbook: xlsx.WorkBook;
 
-  worksheets: { [name: string]: CSVWorksheet };
+  worksheets: CSVWorksheets;
 
   constructor(rawWorkbook?: xlsx.WorkBook) {
     this.workbook = rawWorkbook || xlsx.utils.book_new();

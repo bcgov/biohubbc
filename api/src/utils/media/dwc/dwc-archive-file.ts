@@ -14,6 +14,8 @@ export enum DWC_CLASS {
 
 const DEFAULT_XLSX_SHEET = 'Sheet1';
 
+export type DWCWorksheets = { [name in DWC_CLASS]?: CSVWorksheet };
+
 /**
  * Supports Darwin Core Archive CSV files.
  *
@@ -27,7 +29,7 @@ export class DWCArchive {
 
   mediaValidation: MediaValidation;
 
-  worksheets: { [name in DWC_CLASS]?: CSVWorksheet };
+  worksheets: DWCWorksheets;
 
   extra: { [name: string]: any };
 
@@ -131,4 +133,4 @@ export class DWCArchive {
   }
 }
 
-export type DWCArchiveValidator = (archiveFile: DWCArchive, ...rest: any) => DWCArchive;
+export type DWCArchiveValidator = (dwcArchive: DWCArchive, ...rest: any) => DWCArchive;

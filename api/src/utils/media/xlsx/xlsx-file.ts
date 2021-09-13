@@ -1,5 +1,6 @@
 import xlsx from 'xlsx';
 import { CSVWorkBook, CSVWorksheet, ICsvState } from '../csv/csv-file';
+import { DWCWorksheets, DWC_CLASS } from '../dwc/dwc-archive-file';
 import { IMediaState, MediaFile, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
 
@@ -69,6 +70,13 @@ export class XLSXCSV {
 
     return this.mediaValidation;
   }
+
+  transform(transformers: XLSXCSVTransformer[]) {
+    const dwcWorksheets: { [name in DWC_CLASS]?: CSVWorksheet } = {};
+  }
 }
 
 export type XLSXCSVValidator = (xlsxCsv: XLSXCSV, ...rest: any) => XLSXCSV;
+
+export type XLSXCSVTransformer = (xlsxCSV: XLSXCSV, dwcWorksheets: DWCWorksheets, ...rest: any) => void;
+

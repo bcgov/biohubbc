@@ -92,32 +92,8 @@ export function persistParseErrors(): RequestHandler {
       return next();
     }
 
-    defaultLog.debug({ label: 'persistParseErrors', message: 'parseError', parseError });
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      await connection.open();
-
-      const submissionStatusId = await insertSubmissionStatus(
-        req.body.occurrence_submission_id,
-        'Rejected',
-        connection
-      );
-
-      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
-
-      await connection.commit();
-
-      // archive is not parsable, don't continue to next step and return early
-      return res.status(200).json();
-    } catch (error) {
-      defaultLog.debug({ label: 'persistParseErrors', message: 'error', error });
-      connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
+    // file is not parsable, don't continue to next step and return early
+    return res.status(200).json();
   };
 }
 
@@ -129,35 +105,16 @@ export function getTransformationSchema(): RequestHandler {
   };
 }
 
-function getTransformationRules(): RequestHandler {
+export function getTransformationRules(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getTransformationRules', message: 's3File' });
 
     try {
-      // TODO fetch/generate validation rules from reference data service
-      const mediaValidationRules = {
-        [DWC_ARCHIVE.STRUCTURE]: getDWCArchiveValidators(),
-        [DWC_CLASS.EVENT]: getDWCMediaValidators(DWC_CLASS.EVENT),
-        [DWC_CLASS.OCCURRENCE]: getDWCMediaValidators(DWC_CLASS.OCCURRENCE),
-        [DWC_CLASS.MEASUREMENTORFACT]: getDWCMediaValidators(DWC_CLASS.MEASUREMENTORFACT),
-        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCMediaValidators(DWC_CLASS.RESOURCERELATIONSHIP),
-        [DWC_CLASS.TAXON]: getDWCMediaValidators(DWC_CLASS.TAXON),
-        [DWC_CLASS.META]: getDWCMediaValidators(DWC_CLASS.META)
-      };
+      const transformationSchema: JSON = req['transformationSchema'];
 
-      req['mediaValidationRules'] = mediaValidationRules;
+      const transformationSchemaParser = new TransformationSchemaParser(transformationSchema);
 
-      // TODO fetch/generate validation rules from reference data service
-      const contentValidationRules = {
-        [DWC_CLASS.EVENT]: getDWCCSVValidators(DWC_CLASS.EVENT),
-        [DWC_CLASS.OCCURRENCE]: getDWCCSVValidators(DWC_CLASS.OCCURRENCE),
-        [DWC_CLASS.MEASUREMENTORFACT]: getDWCCSVValidators(DWC_CLASS.MEASUREMENTORFACT),
-        [DWC_CLASS.RESOURCERELATIONSHIP]: getDWCCSVValidators(DWC_CLASS.RESOURCERELATIONSHIP),
-        [DWC_CLASS.TAXON]: getDWCCSVValidators(DWC_CLASS.TAXON),
-        [DWC_CLASS.META]: getDWCCSVValidators(DWC_CLASS.META)
-      };
-
-      req['contentValidationRules'] = contentValidationRules;
+      req['transformationSchemaParser'] = transformationSchemaParser;
 
       next();
     } catch (error) {
