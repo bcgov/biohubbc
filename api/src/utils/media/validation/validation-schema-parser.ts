@@ -20,7 +20,7 @@ import {
   getRequiredFilesValidator
 } from './file-type-and-content-validator';
 
-const ValidationRulesRegistry = {
+export const ValidationRulesRegistry = {
   registry: [
     {
       name: '',
