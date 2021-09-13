@@ -333,13 +333,13 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const mediaState: IMediaState[] = req['mediaState'];
+      const mediaState: IMediaState = req['mediaState'];
       const csvState: ICsvState[] = req['csvState'];
 
       await connection.open();
 
       let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
-      if (mediaState?.some((item) => !item.isValid) || csvState?.some((item) => !item.isValid)) {
+      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
         // At least 1 error exists
         submissionStatusType = 'Rejected';
       }
@@ -352,12 +352,10 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
 
       const promises: Promise<any>[] = [];
 
-      mediaState?.forEach((mediaStateItem) => {
-        mediaStateItem.fileErrors?.forEach((fileError) => {
-          promises.push(
-            insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous', connection)
-          );
-        });
+      mediaState.fileErrors?.forEach((fileError) => {
+        promises.push(
+          insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous', connection)
+        );
       });
 
       csvState?.forEach((csvStateItem) => {

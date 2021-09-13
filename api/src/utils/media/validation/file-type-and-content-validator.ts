@@ -20,29 +20,29 @@ export type MimetypeValidatorConfig = {
   };
 };
 
-export const getFileMimeTypeValidator = (config?: MimetypeValidatorConfig): MediaValidator => {
-  return (mediaFile) => {
+export const getFileMimeTypeValidator = (config?: MimetypeValidatorConfig): DWCArchiveValidator | XLSXCSVValidator => {
+  return (file: any) => {
     if (!config) {
-      return mediaFile;
+      return file;
     }
 
     if (!config.mimetype_validator.reg_exps.length) {
-      return mediaFile;
+      return file;
     }
 
     if (
       !config.mimetype_validator.reg_exps.some((regexString) => {
         const regex = new RegExp(regexString);
 
-        return regex.test(mediaFile.mimetype);
+        return regex.test(file.rawFile.mimetype);
       })
     ) {
-      mediaFile.mediaValidation.addFileErrors([
+      file.mediaValidation.addFileErrors([
         `File mime type is invalid, must be one of: ${config.mimetype_validator.reg_exps.join(', ')}`
       ]);
     }
 
-    return mediaFile;
+    return file;
   };
 };
 
@@ -60,6 +60,7 @@ export const getRequiredFilesValidator = (
   return (file: any) => {
     if (!config) {
       // No required files specified
+
       return file;
     }
 
@@ -69,16 +70,18 @@ export const getRequiredFilesValidator = (
     }
 
     if (file instanceof DWCArchive) {
-      checkRequiedFieldsInDWCArchive(file, config);
+      console.log(" .... we're in the DwC");
+      checkRequiredFieldsInDWCArchive(file, config);
     } else if (file instanceof XLSXCSV) {
-      checkRequiedFieldsInXLSXCSV(file, config);
+      console.log(" .... we're in the XLXS");
+      checkRequiredFieldsInXLSXCSV(file, config);
     }
 
     return file;
   };
 };
 
-const checkRequiedFieldsInDWCArchive = (dwcArchive: DWCArchive, config: SubmissionRequiredFilesValidatorConfig) => {
+const checkRequiredFieldsInDWCArchive = (dwcArchive: DWCArchive, config: SubmissionRequiredFilesValidatorConfig) => {
   // If there are no files in the archive, then add errors for all required files
   if (!dwcArchive.rawFile.mediaFiles || !dwcArchive.rawFile.mediaFiles.length) {
     dwcArchive.mediaValidation.addFileErrors(
@@ -99,9 +102,10 @@ const checkRequiedFieldsInDWCArchive = (dwcArchive: DWCArchive, config: Submissi
   });
 };
 
-const checkRequiedFieldsInXLSXCSV = (dwcArchive: XLSXCSV, config: SubmissionRequiredFilesValidatorConfig) => {
+const checkRequiredFieldsInXLSXCSV = (dwcArchive: XLSXCSV, config: SubmissionRequiredFilesValidatorConfig) => {
   // If there are no sheets in the excel file, then add errors for all required sheets
-  if (!dwcArchive.workbook || !dwcArchive.workbook.worksheets.length) {
+
+  if (!dwcArchive.workbook || !dwcArchive.workbook.worksheets || !Object.keys(dwcArchive.workbook.worksheets).length) {
     dwcArchive.mediaValidation.addFileErrors(
       config.submission_required_files_validator.required_files.map((requiredFile) => {
         return `Missing required sheet: ${requiredFile}`;
@@ -111,7 +115,7 @@ const checkRequiedFieldsInXLSXCSV = (dwcArchive: XLSXCSV, config: SubmissionRequ
     return dwcArchive;
   }
 
-  const worksheetNames = Object.keys(dwcArchive.workbook.worksheets);
+  const worksheetNames = Object.keys(dwcArchive.workbook.worksheets).map((item) => item.toLowerCase());
 
   config.submission_required_files_validator.required_files.forEach((requiredFile) => {
     if (!worksheetNames.includes(requiredFile.toLowerCase())) {

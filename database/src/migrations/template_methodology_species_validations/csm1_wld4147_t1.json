@@ -230,7 +230,7 @@
     {
       "submission_required_files_validator": {
         "required_files": [
-          "Stata Metadata",
+          "Strata Metadata",
           "Sampling Unit Summary",
           "Effort & Site Conditions",
           "Observations - Skeena",
