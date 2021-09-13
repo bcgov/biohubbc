@@ -131,4 +131,4 @@ export class DWCArchive {
   }
 }
 
-export type DWCArchiveValidator = (archiveFile: DWCArchive, ...rest: any) => MediaValidation;
+export type DWCArchiveValidator = (archiveFile: DWCArchive, ...rest: any) => DWCArchive;

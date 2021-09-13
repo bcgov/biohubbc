@@ -73,4 +73,4 @@ export class XLSXCSV {
   }
 }
 
-export type XLSXCSVValidator = (archiveFile: XLSXCSV, ...rest: any) => MediaValidation;
+export type XLSXCSVValidator = (archiveFile: XLSXCSV, ...rest: any) => XLSXCSV;
