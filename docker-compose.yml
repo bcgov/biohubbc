@@ -129,6 +129,8 @@ services:
     depends_on:
       - api
       - db
+      - db_setup
+    restart: always # n8n doesnt always start after db_setup is done, and can fail. Always restart to help resolve this.
     command: ["n8n", "start"]
 
   ## Run the n8n setup
