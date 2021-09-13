@@ -203,6 +203,12 @@ const Header: React.FC = () => {
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
               id="menu_search"
             />
+            <SecureLink
+              to="/admin/resources"
+              label="Resources"
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+              id="menu_resources"
+            />
           </Toolbar>
         </Container>
       </Box>
