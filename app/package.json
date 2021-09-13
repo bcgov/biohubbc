@@ -42,7 +42,7 @@
     "@turf/boolean-equal": "~6.3.0",
     "reproj-helper": "~1.2.8",
     "@turf/centroid": "~6.4.0",
-    "axios": "~0.21.1",
+    "axios": "~0.21.4",
     "clsx": "~1.1.1",
     "express": "~4.17.1",
     "formik": "~2.2.6",

@@ -32,7 +32,7 @@ export const submissionValidationSchema = {
     file: {
       description: 'A single file/sheet within a submission file',
       type: 'object',
-      required: ['columns'],
+      required: ['name', 'columns'],
       properties: {
         name: {
           description: 'The name of the file/sheet',
