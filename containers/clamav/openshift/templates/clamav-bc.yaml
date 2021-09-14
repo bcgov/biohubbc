@@ -2,6 +2,21 @@ kind: Template
 apiVersion: template.openshift.io/v1
 metadata:
   name: clamav-build
+  namespace: af2668-tools
+  selfLink: >-
+    /apis/template.openshift.io/v1/namespaces/af2668-tools/templates/clamav-build
+  uid: 4f945b52-0a11-490f-8859-689a21d0ecd4
+  resourceVersion: '1643081480'
+  creationTimestamp: '2021-09-08T18:47:11Z'
+  managedFields:
+    - manager: Mozilla
+      operation: Update
+      apiVersion: template.openshift.io/v1
+      time: '2021-09-08T18:52:17Z'
+      fieldsType: FieldsV1
+      fieldsV1:
+        'f:objects': {}
+        'f:parameters': {}
 objects:
   - kind: ImageStream
     apiVersion: v1
@@ -26,9 +41,9 @@ objects:
       source:
         type: Git
         git:
-          ref: ${GIT_REF}
-          uri: ${GIT_SOURCE_URL}
-        contextDir: ${SOURCE_CONTEXT_DIR}
+          ref: '${GIT_REF}'
+          uri: '${GIT_SOURCE_URL}'
+        contextDir: '${SOURCE_CONTEXT_DIR}'
         secrets:
           - secret:
               name: etc-pki-entitlement
@@ -45,8 +60,8 @@ objects:
         dockerStrategy:
           from:
             kind: ImageStreamTag
-            name: 'rhel:latest'
-            namespace: ${NAME_SPACE}
+            name: 'ubi:latest'
+            namespace: '${NAME_SPACE}'
       output:
         to:
           kind: ImageStreamTag
@@ -74,14 +89,13 @@ parameters:
   - name: GIT_REF
     displayName: Git Reference
     description: The git reference or branch.
-    required: true
     value: dev
+    required: true
   - name: SOURCE_CONTEXT_DIR
     displayName: Source Context Directory
     description: The source context directory.
-    required: false
     value: containers/clamav
   - name: NAME_SPACE
     displayName: Namespace for source image
     value: af2668-tools
-    required: true    
+    required: true
