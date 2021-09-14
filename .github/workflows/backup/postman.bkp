@@ -8,7 +8,7 @@ on:
 
 jobs:
   test:
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.base_ref == 'dev' }}
 
     strategy:

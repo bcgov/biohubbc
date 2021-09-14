@@ -27,8 +27,8 @@ export async function up(knex: Knex): Promise<void> {
     v_record_id integer;
     v_identity_column character varying;
   begin
-      execute format('select security_rule_id from ${DB_SCHEMA}.security_rule where rule_definition ->> ''target'' = ''%1$s'' and system_rule=true', TG_TABLE_NAME) into v_security_rule_id;
-    execute format('select ${DB_SCHEMA}.api_secure_record( %3$s, ''%1$s'', %2$s, ${DB_SCHEMA}.api_get_context_user_id())',TG_TABLE_NAME, v_security_rule_id,NEW.project_attachment_id);
+    execute format('select security_rule_id from ${DB_SCHEMA}.security_rule where rule_definition ->> ''target'' = lower(''%1$s'') and system_rule=true', TG_TABLE_NAME) into v_security_rule_id;
+    execute format('select ${DB_SCHEMA}.api_secure_record( %3$s, lower(''%1$s''), %2$s, ${DB_SCHEMA}.api_get_context_user_id())',TG_TABLE_NAME, v_security_rule_id,NEW.project_attachment_id);
     update ${DB_SCHEMA}.security set project_id = NEW.project_id where security_token = NEW.security_token;
     return NEW;
   end;
