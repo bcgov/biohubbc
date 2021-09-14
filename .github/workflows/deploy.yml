@@ -10,7 +10,7 @@ jobs:
   # Print variables for logging and debugging purposes
   checkEnv:
     name: Check Env variables
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false }}
     steps:
       - name: Print Env Vars
@@ -26,7 +26,7 @@ jobs:
 
   scaleDownPods:
     name: Scale down the pods for this PR
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     env:
       BUILD_ID: ${{ github.event.number }}
     needs:
@@ -46,7 +46,7 @@ jobs:
   # Build the Database image
   buildDatabase:
     name: Build Database Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -94,7 +94,7 @@ jobs:
   # Build the Database Setup image
   buildDatabaseSetup:
     name: Build Database Setup Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -142,7 +142,7 @@ jobs:
   # Build the API image
   buildAPI:
     name: Build API Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -190,7 +190,7 @@ jobs:
   # Build the web frontend app image
   buildAPP:
     name: Build App Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -238,7 +238,7 @@ jobs:
   # Deploy Database image
   deployDatabase:
     name: Deploy Database Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -286,7 +286,7 @@ jobs:
   # Deploy Database image
   deployDatabaseSetup:
     name: Deploy Database Setup Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -336,7 +336,7 @@ jobs:
   # Deploy API image
   deployAPI:
     name: Deploy API Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
@@ -386,7 +386,7 @@ jobs:
   # Deploy App image
   deployAPP:
     name: Deploy App Image
-    runs-on: ubuntu-16.04
+    runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == false && github.event.pull_request.draft == false }}
     env:
       BUILD_ID: ${{ github.event.number }}
