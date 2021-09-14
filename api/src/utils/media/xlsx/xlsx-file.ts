@@ -71,4 +71,4 @@ export class XLSXCSV {
   }
 }
 
-export type XLSXCSVValidator = (archiveFile: XLSXCSV, ...rest: any) => XLSXCSV;
+export type XLSXCSVValidator = (xlsxCsv: XLSXCSV, ...rest: any) => XLSXCSV;

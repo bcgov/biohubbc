@@ -60,7 +60,6 @@ export const getRequiredFilesValidator = (
   return (file: any) => {
     if (!config) {
       // No required files specified
-
       return file;
     }
 
