@@ -122,7 +122,7 @@ export function getValidationSchema(): RequestHandler {
 
 function validateXLSX(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'validateXLSX', message: 'dwcArchive' });
+    defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
 
     try {
       const xlsxCsv: XLSXCSV = req['xlsx'];

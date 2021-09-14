@@ -1,8 +1,8 @@
 import xlsx from 'xlsx';
 import { CSVWorkBook, CSVWorksheet, ICsvState } from '../csv/csv-file';
-import { DWCWorksheets, DWC_CLASS } from '../dwc/dwc-archive-file';
 import { IMediaState, MediaFile, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
+import { XLSXTransformation } from './transformation/XLSXTransformation';
 
 /**
  * Supports XLSX CSV files.
@@ -17,12 +17,16 @@ export class XLSXCSV {
 
   workbook: CSVWorkBook;
 
+  xlsxTransformation: XLSXTransformation;
+
   constructor(file: MediaFile, options?: xlsx.ParsingOptions) {
     this.rawFile = file;
 
     this.mediaValidation = new MediaValidation(this.rawFile.fileName);
 
     this.workbook = new CSVWorkBook(xlsx.read(this.rawFile.buffer, { ...options }));
+
+    this.xlsxTransformation = new XLSXTransformation();
   }
 
   isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
@@ -71,12 +75,13 @@ export class XLSXCSV {
     return this.mediaValidation;
   }
 
-  transform(transformers: XLSXCSVTransformer[]) {
-    const dwcWorksheets: { [name in DWC_CLASS]?: CSVWorksheet } = {};
+  transform(transformers: XLSXCSVTransformer[]): XLSXTransformation {
+    transformers.forEach((transformer) => transformer(this));
+
+    return this.xlsxTransformation;
   }
 }
 
 export type XLSXCSVValidator = (xlsxCsv: XLSXCSV, ...rest: any) => XLSXCSV;
 
-export type XLSXCSVTransformer = (xlsxCSV: XLSXCSV, dwcWorksheets: DWCWorksheets, ...rest: any) => void;
-
+export type XLSXCSVTransformer = (xlsxCsv: XLSXCSV, ...rest: any) => XLSXCSV;

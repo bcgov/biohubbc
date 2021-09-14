@@ -1,10 +1,12 @@
 import jsonpath from 'jsonpath';
+import { XLSXCSVTransformer } from '../xlsx-file';
+import { getBasicTransformer } from './csv-header-transformer';
 
-const TransformationRulesRegistry = {
+export const TransformationRulesRegistry = {
   registry: [
     {
-      name: '',
-      generator: null
+      name: 'basic_transformer',
+      generator: getBasicTransformer
     }
   ],
   findMatchingRule(name: string): any {
@@ -23,17 +25,39 @@ export class TransformationSchemaParser {
     }
   }
 
-  getTransformations(): Transformer[] {
-    const rules: Transformer[] = [];
+  getTransformations(): XLSXCSVTransformer[] {
+    const transformationSchemas = this.getTransformationSchemas();
+
+    const rules: XLSXCSVTransformer[] = [];
+
+    transformationSchemas.forEach((validationSchema) => {
+      const keys = Object.keys(validationSchema);
+
+      if (keys.length !== 1) {
+        return;
+      }
+
+      const key = keys[0];
+
+      const generatorFunction = TransformationRulesRegistry.findMatchingRule(key);
+
+      if (!generatorFunction) {
+        return;
+      }
+
+      const rule = generatorFunction(validationSchema);
+
+      rules.push(rule);
+    });
 
     return rules;
   }
 
-  getSubmissionTransformationSChemas(): object[] {
-    return jsonpath.query(this.transformationSchema, this.getSubmissionTransformationsJsonPath())?.[0] || [];
+  getTransformationSchemas(): object[] {
+    return jsonpath.query(this.transformationSchema, this.getTransformationsJsonPath())?.[0] || [];
   }
 
-  getSubmissionTransformationsJsonPath(): string {
+  getTransformationsJsonPath(): string {
     return '$.transformations';
   }
 

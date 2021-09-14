@@ -1,24 +1,25 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getSubmissionFileFromS3, getSubmissionS3Key } from '../dwc/validate';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
 import {
+  getValidationSchemaSQL,
   insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL,
-  getValidationSchemaSQL
+  insertOccurrenceSubmissionStatusSQL
 } from '../../queries/survey/survey-occurrence-queries';
 import { getLogger } from '../../utils/logger';
-import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
-import { DWCArchive, DWC_ARCHIVE, DWC_CLASS } from '../../utils/media/csv/dwc/dwc-archive-file';
-import {
-  getDWCArchiveValidators,
-  getDWCCSVValidators,
-  getDWCMediaValidators
-} from '../../utils/media/csv/dwc/dwc-archive-validator';
+import { ICsvState } from '../../utils/media/csv/csv-file';
 import { IMediaState } from '../../utils/media/media-file';
+import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
+import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
+import {
+  generateHeaderErrorMessage,
+  generateRowErrorMessage,
+  getSubmissionFileFromS3,
+  getSubmissionS3Key
+} from '../dwc/validate';
 import { prepXLSX } from './validate';
 
 const defaultLog = getLogger('paths/xlsx/transform');
@@ -126,16 +127,16 @@ export function getTransformationRules(): RequestHandler {
 
 function transformXLSX(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'validateDWCArchive', message: 'dwcArchive' });
+    defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
 
     try {
-      const dwcArchive: DWCArchive = req['dwcArchive'];
+      const xlsxCsv: XLSXCSV = req['xlsx'];
 
       const mediaValidationRules = req['mediaValidationRules'];
 
-      const mediaState: IMediaState[] = dwcArchive.isMediaValid(mediaValidationRules);
+      const mediaState: IMediaState = xlsxCsv.isMediaValid(mediaValidationRules);
 
-      if (mediaState.some((item) => !item.isValid)) {
+      if (!mediaState.isValid) {
         req['mediaState'] = mediaState;
 
         // The file itself is invalid, skip content validation
@@ -144,7 +145,7 @@ function transformXLSX(): RequestHandler {
 
       const contentValidationRules = req['contentValidationRules'];
 
-      const csvState: ICsvState[] = dwcArchive.isContentValid(contentValidationRules);
+      const csvState: ICsvState[] = xlsxCsv.isContentValid(contentValidationRules);
 
       req['csvState'] = csvState;
 
@@ -154,14 +155,6 @@ function transformXLSX(): RequestHandler {
       throw error;
     }
   };
-}
-
-function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
-  return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
-}
-
-function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
-  return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
 }
 
 export function persistTransformationResults(): RequestHandler {

@@ -19,6 +19,16 @@ export class CSVWorkBook {
 
     this.worksheets = worksheets;
   }
+
+  getWorksheet(fileName: string): CSVWorksheet | null {
+    const worksheetKey = Object.keys(this.worksheets).find((key) => key.toLowerCase() === fileName.toLowerCase());
+
+    if (!worksheetKey) {
+      return null;
+    }
+
+    return this.worksheets[worksheetKey];
+  }
 }
 
 export class CSVWorksheet {
