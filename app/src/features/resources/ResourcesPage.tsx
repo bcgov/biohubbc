@@ -77,7 +77,7 @@ const ResourcesPage: React.FC = () => {
             <TableRow>
               <TableCell colSpan={6}>
                 <Box display="flex" justifyContent="center">
-                  No Results
+                  No Resources
                 </Box>
               </TableCell>
             </TableRow>
@@ -115,7 +115,7 @@ const ResourcesPage: React.FC = () => {
   };
 
   /**
-   * Displays permits list.
+   * Displays resources list.
    */
   return (
     <Box my={4}>

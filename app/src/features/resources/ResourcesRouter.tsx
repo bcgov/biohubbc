@@ -1,4 +1,3 @@
-//import CreatePermitPage from 'features/permits/CreatePermitPage';
 import ResourcesLayout from 'features/resources/ResourcesLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
@@ -11,7 +10,7 @@ interface IResourcesRouterProps {
 }
 
 /**
- * Router for all `/resources/*` pages.
+ * Router for all `/admin/resources/*` pages.
  *
  * @param {*} props
  * @return {*}
