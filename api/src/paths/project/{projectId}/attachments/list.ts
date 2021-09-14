@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getAPIUserDBConnection } from '../../../../database/db';
+import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import { getProjectAttachmentsSQL } from '../../../../queries/project/project-attachments-queries';
@@ -72,8 +72,7 @@ export function getAttachments(): RequestHandler {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    // const connection = getDBConnection(req['keycloak_token']);
-    const connection = getAPIUserDBConnection();
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       const getProjectAttachmentsSQLStatement = getProjectAttachmentsSQL(Number(req.params.projectId));

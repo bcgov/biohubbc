@@ -2,7 +2,7 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { addProjectAttachmentSecurityRuleSQL, applyProjectAttachmentSecurityRuleSQL, getProjectAttachmentSecurityRuleSQL } from '../../../../queries/project/project-attachments-queries';
+// import { addProjectAttachmentSecurityRuleSQL, applyProjectAttachmentSecurityRuleSQL, getProjectAttachmentSecurityRuleSQL } from '../../../../queries/project/project-attachments-queries';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
@@ -107,70 +107,70 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      let securityRuleId: number | null = null;
+      // let securityRuleId: number | null = null;
 
-      // Check if security rule already exists
-      const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
+      // // Check if security rule already exists
+      // const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
 
-      if (!getSecurityRuleSQLStatement) {
-        throw new HTTP400('Failed to build SQL get project attachment security rule statement');
-      }
+      // if (!getSecurityRuleSQLStatement) {
+      //   throw new HTTP400('Failed to build SQL get project attachment security rule statement');
+      // }
 
-      const getSecurityRuleSQLResponse = await connection.query(
-        getSecurityRuleSQLStatement.text,
-        getSecurityRuleSQLStatement.values
-      );
+      // const getSecurityRuleSQLResponse = await connection.query(
+      //   getSecurityRuleSQLStatement.text,
+      //   getSecurityRuleSQLStatement.values
+      // );
 
-      securityRuleId =
-        (getSecurityRuleSQLResponse &&
-          getSecurityRuleSQLResponse.rows &&
-          getSecurityRuleSQLResponse.rows[0] &&
-          getSecurityRuleSQLResponse.rows[0].id) ||
-        null;
+      // const securityRuleId =
+      //   (getSecurityRuleSQLResponse &&
+      //     getSecurityRuleSQLResponse.rows &&
+      //     getSecurityRuleSQLResponse.rows[0] &&
+      //     getSecurityRuleSQLResponse.rows[0].id) ||
+      //   null;
 
-      // Create security rule if it does not exist
-      if (!securityRuleId) {
-        const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
+      // // Create security rule if it does not exist
+      // if (!securityRuleId) {
+      //   const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
 
-        if (!createSecurityRuleSQLStatement) {
-          throw new HTTP400('Failed to build SQL insert project attachment security rule statement');
-        }
+      //   if (!createSecurityRuleSQLStatement) {
+      //     throw new HTTP400('Failed to build SQL insert project attachment security rule statement');
+      //   }
 
-        const createSecurityRuleSQLResponse = await connection.query(
-          createSecurityRuleSQLStatement.text,
-          createSecurityRuleSQLStatement.values
-        );
+      //   const createSecurityRuleSQLResponse = await connection.query(
+      //     createSecurityRuleSQLStatement.text,
+      //     createSecurityRuleSQLStatement.values
+      //   );
 
-        securityRuleId =
-          (createSecurityRuleSQLResponse &&
-            createSecurityRuleSQLResponse.rows &&
-            createSecurityRuleSQLResponse.rows[0] &&
-            createSecurityRuleSQLResponse.rows[0].id) ||
-          null;
+      //   securityRuleId =
+      //     (createSecurityRuleSQLResponse &&
+      //       createSecurityRuleSQLResponse.rows &&
+      //       createSecurityRuleSQLResponse.rows[0] &&
+      //       createSecurityRuleSQLResponse.rows[0].id) ||
+      //     null;
 
-        if (!securityRuleId) {
-          throw new HTTP400('Failed to insert project attachment security rule');
-        }
-      }
+      //   if (!securityRuleId) {
+      //     throw new HTTP400('Failed to insert project attachment security rule');
+      //   }
+      // }
 
       // Insert file metadata into project_attachment table
       await upsertProjectAttachment(rawMediaFile, Number(req.params.projectId), connection);
 
-      // Apply the security rule that was fetched or created
-      const applySecurityRuleSQLStatement = applyProjectAttachmentSecurityRuleSQL(securityRuleId);
+      // // Apply the security rule that was fetched or created
+      // const applySecurityRuleSQLStatement = applyProjectAttachmentSecurityRuleSQL(securityRuleId);
 
-      if (!applySecurityRuleSQLStatement) {
-        throw new HTTP400('Failed to build SQL apply project attachment security rule statement');
-      }
+      // if (!applySecurityRuleSQLStatement) {
+      //   throw new HTTP400('Failed to build SQL apply project attachment security rule statement');
+      // }
 
-      const applySecurityRuleSQLResponse = await connection.query(
-        applySecurityRuleSQLStatement.text,
-        applySecurityRuleSQLStatement.values
-      );
+      // const applySecurityRuleSQLResponse = await connection.query(
+      //   applySecurityRuleSQLStatement.text,
+      //   applySecurityRuleSQLStatement.values
+      // );
 
-      if (!applySecurityRuleSQLResponse) {
-        throw new HTTP400('Failed to apply project attachment security rule');
-      }
+      // if (!applySecurityRuleSQLResponse) {
+      //   throw new HTTP400('Failed to apply project attachment security rule');
+      // }
 
       // Upload file to S3
       const key = generateS3FileKey({
