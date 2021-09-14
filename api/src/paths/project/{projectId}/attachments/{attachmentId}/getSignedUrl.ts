@@ -48,21 +48,18 @@ export function getSingleAttachmentURL(): RequestHandler {
         getProjectAttachmentS3KeySQLStatement.text,
         getProjectAttachmentS3KeySQLStatement.values
       );
-      console.log(result);
 
       await connection.commit();
 
-      //const s3Key = result && result.rows.length && result.rows[0].key;
-      const tests3Key = 'templates/Moose_Recruitment_Survey.xlsx';
+      const s3Key = result && result.rows.length && result.rows[0].key;
 
-      //const s3SignedUrl = await getS3SignedURL(s3Key);
-      const tests3SignedUrl = await getS3SignedURL(tests3Key);
+      const s3SignedUrl = await getS3SignedURL(s3Key);
 
-      if (!tests3SignedUrl) {
+      if (!s3SignedUrl) {
         return res.status(200).json(null);
       }
 
-      return res.status(200).json(tests3SignedUrl);
+      return res.status(200).json(s3SignedUrl);
     } catch (error) {
       defaultLog.debug({ label: 'getSingleAttachmentURL', message: 'error', error });
       await connection.rollback();
