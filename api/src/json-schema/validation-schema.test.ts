@@ -126,7 +126,7 @@ describe('example submission validation schema', () => {
           },
           {
             name: 'lifeStage',
-            desciption: 'A description of the location.',
+            desciption: 'The life stage of the observed taxon.',
             validations: [
               {
                 column_code_validator: {
@@ -196,19 +196,21 @@ describe('example submission validation schema', () => {
       },
       {
         name: 'measurementorfact',
-        description: 'The Event file for this submission. Should contain information about events.',
+        description:
+          'The Measurement Or Fact file for this submission. Should contain information about measurements and facts.',
         columns: [],
         validations: []
       },
       {
         name: 'resourcerelationship',
-        description: 'The Event file for this submission. Should contain information about events.',
+        description:
+          'The Resource Relationship file for this submission. Should contain information about resource relationships.',
         columns: [],
         validations: []
       },
       {
         name: 'taxon',
-        description: 'The Event file for this submission. Should contain information about events.',
+        description: 'The Taxon file for this submission. Should contain information about taxonomy.',
         columns: [],
         validations: []
       }

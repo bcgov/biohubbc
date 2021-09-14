@@ -47,7 +47,7 @@ export const ValidationRulesRegistry = {
       generator: hasRecommendedHeadersValidator
     },
     {
-      name: '',
+      name: 'file_valid_columns_validator',
       generator: getValidHeadersValidator
     },
     {
@@ -188,7 +188,7 @@ export class ValidationSchemaParser {
     return jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
   }
 
-  getColumnValidationSchemas(fileName: string, columnName: string): { name: string; validations: [] }[] {
+  getColumnValidationSchemas(fileName: string, columnName: string): object[] {
     return jsonpath.query(this.validationSchema, this.getColumnValidationsJsonpath(fileName, columnName))?.[0] || [];
   }
 
@@ -213,14 +213,10 @@ export class ValidationSchemaParser {
   }
 
   parseJson(json: any): object {
-    let parsedJson;
-
     try {
-      parsedJson = JSON.parse(json);
+      return JSON.parse(json);
     } catch {
-      throw Error('ValidationSchemaParser - provided validatioNSchema was not valid JSON');
+      throw Error('ValidationSchemaParser - provided json was not valid JSON');
     }
-
-    return parsedJson;
   }
 }

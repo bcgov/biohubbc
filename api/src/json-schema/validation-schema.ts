@@ -106,6 +106,9 @@ export const submissionValidationSchema = {
         },
         {
           $ref: '#/$defs/file_duplicate_columns_validator'
+        },
+        {
+          $ref: '#/$defs/file_valid_columns_validator'
         }
       ]
     },
@@ -246,6 +249,31 @@ export const submissionValidationSchema = {
             },
             description: {
               type: 'string'
+            }
+          },
+          additionalProperties: false
+        }
+      },
+      additionalProperties: false
+    },
+    file_valid_columns_validator: {
+      description: 'Validates that this file/sheet contains only valid (known) columns',
+      type: 'object',
+      properties: {
+        file_valid_columns_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
+              type: 'string'
+            },
+            valid_columns: {
+              type: 'array',
+              items: {
+                type: 'string'
+              }
             }
           },
           additionalProperties: false

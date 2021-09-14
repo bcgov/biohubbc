@@ -1,6 +1,8 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { IMediaFile, MediaValidation } from '../media-file';
+import { DWCArchive, DWCArchiveValidator } from '../dwc/dwc-archive-file';
+import { ArchiveFile, IMediaFile, MediaFile, MediaValidation } from '../media-file';
+import { XLSXCSV, XLSXCSVValidator } from '../xlsx/xlsx-file';
 import { getFileEmptyValidator, getFileMimeTypeValidator } from './file-type-and-content-validator';
 
 describe('getFileEmptyValidator', () => {
@@ -43,18 +45,15 @@ describe('getFileMimeTypeValidator', () => {
       }
     };
 
-    const validator = getFileMimeTypeValidator(validMimetypes);
+    const validator = getFileMimeTypeValidator(validMimetypes) as XLSXCSVValidator;
 
-    const mediaFile: IMediaFile = {
-      fileName: 'testName',
-      mimetype: 'badMime', // invalid mime
-      buffer: Buffer.from(''),
-      mediaValidation: new MediaValidation('testName')
-    };
+    const mediaFile = new MediaFile('testName', 'badMime', Buffer.from(''));
 
-    validator(mediaFile);
+    const xlsxCSV = new XLSXCSV(mediaFile);
 
-    expect(mediaFile.mediaValidation.fileErrors).to.eql(['File mime type is invalid, must be one of: validMime']);
+    validator(xlsxCSV);
+
+    expect(xlsxCSV.mediaValidation.fileErrors).to.eql(['File mime type is invalid, must be one of: validMime']);
   });
 
   it('adds no errors when the mime type is valid', () => {
@@ -64,17 +63,17 @@ describe('getFileMimeTypeValidator', () => {
       }
     };
 
-    const validator = getFileMimeTypeValidator(validMimetypes);
-    const mediaFile: IMediaFile = {
-      fileName: 'testName',
-      mimetype: 'validMime', // valid mime
-      buffer: Buffer.from(''),
-      mediaValidation: new MediaValidation('testName')
-    };
+    const validator = getFileMimeTypeValidator(validMimetypes) as DWCArchiveValidator;
 
-    validator(mediaFile);
+    const mediaFile = new MediaFile('otherName', 'otherMime', Buffer.from(''));
 
-    expect(mediaFile.mediaValidation.fileErrors).to.eql([]);
+    const archiveFile = new ArchiveFile('testName', 'validMime', Buffer.from(''), [mediaFile]);
+
+    const dwcArchive = new DWCArchive(archiveFile);
+
+    validator(dwcArchive);
+
+    expect(dwcArchive.mediaValidation.fileErrors).to.eql([]);
   });
 
   it('adds no errors when no valid mimes provided', () => {
@@ -84,16 +83,14 @@ describe('getFileMimeTypeValidator', () => {
       }
     };
 
-    const validator = getFileMimeTypeValidator(validMimetypes);
-    const mediaFile: IMediaFile = {
-      fileName: 'testName',
-      mimetype: 'validMime',
-      buffer: Buffer.from(''),
-      mediaValidation: new MediaValidation('testName')
-    };
+    const validator = getFileMimeTypeValidator(validMimetypes) as XLSXCSVValidator;
 
-    validator(mediaFile);
+    const mediaFile = new MediaFile('testName', 'validMime', Buffer.from(''));
 
-    expect(mediaFile.mediaValidation.fileErrors).to.eql([]);
+    const xlsxCSV = new XLSXCSV(mediaFile);
+
+    validator(xlsxCSV);
+
+    expect(xlsxCSV.mediaValidation.fileErrors).to.eql([]);
   });
 });
