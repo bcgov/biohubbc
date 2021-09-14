@@ -10,7 +10,6 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 
 /**
@@ -19,8 +18,6 @@ import React from 'react';
  * @return {*}
  */
 const ResourcesPage: React.FC = () => {
-  const biohubApi = useBiohubApi();
-
   const resources = [
     {
       id: '1',
@@ -49,36 +46,22 @@ const ResourcesPage: React.FC = () => {
     {
       id: '5',
       name: 'Moose SRB or Composition Survey Kootenay',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Koot.xlsx',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Kootenay.xlsx',
       description: 'some lorem ipsum'
     },
     {
       id: '6',
       name: 'Moose Recruitment Survey',
-      webkitURL: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Survey.xlsx',
+      url:
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Survey.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=nr-biohubbc-dlv%2F20210914%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210914T212011Z&X-Amz-Expires=300000&X-Amz-Signature=6645f28fe7f569f3d473090d07d735a32219556a1a3b79a6d466d017a7b8a157&X-Amz-SignedHeaders=host',
       description: 'some lorem ipsum'
     }
   ];
 
   const resourcesCount = resources.length;
 
-  const viewFileContents = async (resource: any) => {
-    try {
-      const { data } = await biohubApi.external.get(resource.url);
-
-      if (!data) {
-        return;
-      }
-
-      window.open(data);
-    } catch (error) {
-      return error;
-    }
-  };
-
   const getResourcesList = () => {
     const hasResources = resources.length > 0;
-    console.log(resources.length);
 
     if (!hasResources) {
       return (
@@ -117,8 +100,8 @@ const ResourcesPage: React.FC = () => {
                 <TableRow key={row.id}>
                   <TableCell component="th" scope="row"></TableCell>
                   <TableCell>
-                    <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
-                      {row.name}
+                    <Link underline="always" component="button" variant="body2">
+                      <a href={row.url}>{row.name}</a>
                     </Link>
                   </TableCell>
                   <TableCell>{row.description}</TableCell>

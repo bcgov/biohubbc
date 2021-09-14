@@ -18,7 +18,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe('ProjectsListPage', () => {
+describe('PermitsPage', () => {
   beforeEach(() => {
     mockBiohubApi().permit.getPermitsList.mockClear();
   });
