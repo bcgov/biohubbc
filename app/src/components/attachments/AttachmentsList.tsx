@@ -9,7 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiEyeOffOutline, mdiEyeOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -68,6 +68,19 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
+  const showToggleVisibilityAttachmentDialog = (attachment: IGetProjectAttachment) => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      dialogTitle: 'Toggle Attachment Visibility',
+      dialogText: 'Are you sure you want to toggle the visibility of the selected attachment?',
+      open: true,
+      onYes: () => {
+        toggleAttachmentVisibility(attachment);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
   const deleteAttachment = async (attachment: IGetProjectAttachment) => {
     if (!attachment?.id) {
       return;
@@ -112,6 +125,28 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
+  const toggleAttachmentVisibility = async (attachment: IGetProjectAttachment) => {
+    if (!attachment || !attachment.id) {
+      return;
+    }
+
+    try {
+      let response;
+
+      if (!props.surveyId) {
+        response = await biohubApi.project.toggleProjectAttachmentVisibility(props.projectId, attachment.id, attachment.securityToken);
+      }
+
+      if (!response) {
+        return;
+      }
+
+      props.getAttachments(true);
+    } catch (error) {
+      return error;
+    }
+  };
+
   return (
     <>
       <Paper>
@@ -122,6 +157,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 <TableCell className={classes.heading}>Name</TableCell>
                 <TableCell className={classes.heading}>Last Modified</TableCell>
                 <TableCell className={classes.heading}>File Size</TableCell>
+                <TableCell className={classes.heading}>Visibility</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -136,6 +172,16 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                     </TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
+                    <TableCell>
+                      <IconButton
+                        color="primary"
+                        aria-label="toggle-attachment-visibility"
+                        data-testid="toggle-attachment-visibility"
+                        onClick={() => showToggleVisibilityAttachmentDialog(row)}>
+                        <Icon path={row.securityToken ? mdiEyeOffOutline : mdiEyeOutline } size={1} />
+                      </IconButton>
+                      {row.securityToken ? 'Private' : 'Public'}
+                    </TableCell>
                     <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
                       <IconButton
                         color="primary"
@@ -149,7 +195,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 ))}
               {!props.attachmentsList.length && (
                 <TableRow>
-                  <TableCell colSpan={3} align="center">
+                  <TableCell colSpan={4} align="center">
                     No Attachments
                   </TableCell>
                 </TableRow>

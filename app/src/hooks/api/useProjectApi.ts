@@ -178,6 +178,20 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Toggle visibility state of project attachments.
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {any} securityToken
+   * @return {*}  {Promise<any>}
+   */
+  const toggleProjectAttachmentVisibility = async (projectId: number, attachmentId: number, securityToken: any): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/toggleVisibility`, { securityToken });
+
+    return data;
+  };
+
+  /**
    * Delete funding source based on project and funding source ID
    *
    * @param {number} projectId
@@ -228,7 +242,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     addFundingSource,
     deleteProject,
     publishProject,
-    getPublicProjectsList
+    getPublicProjectsList,
+    toggleProjectAttachmentVisibility
   };
 };
 
