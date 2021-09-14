@@ -13,6 +13,7 @@ import { Redirect, Switch, useLocation } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
 import SearchPage from 'features/search/SearchPage';
 import PermitsRouter from 'features/permits/PermitsRouter';
+import ResourcesRouter from 'features/resources/ResourcesRouter';
 
 const AppRouter: React.FC = (props: any) => {
   const location = useLocation();
@@ -79,6 +80,14 @@ const AppRouter: React.FC = (props: any) => {
         component={SearchPage}
         layout={PublicLayout}
         title={getTitle('Search')}
+        validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+      />
+      <AppRoute
+        protected
+        path="/admin/resources"
+        component={ResourcesRouter}
+        layout={PublicLayout}
+        title={getTitle('Resources')}
         validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
       />
       <AppRoute protected path="/logout" component={LogOutPage} layout={PublicLayout} title={getTitle('Logout')} />

@@ -17,7 +17,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 /**
- * Layout for all permit pages.
+ * Layout for all resources pages.
  *
  * @param {*} props
  * @return {*}
