@@ -154,11 +154,11 @@ describe('useSurveyApi', () => {
       type: 'text/plain'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`).reply(200, ['result 1', 'result 2']);
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, [file]);
+    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file);
 
-    expect(result).toEqual(['result 1', 'result 2']);
+    expect(result).toEqual('result 1');
   });
 
   it('updateSurvey works as expected', async () => {

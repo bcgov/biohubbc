@@ -59,6 +59,9 @@ services:
       - MAX_UPLOAD_NUM_FILES=${MAX_UPLOAD_NUM_FILES}
       - MAX_UPLOAD_FILE_SIZE=${MAX_UPLOAD_FILE_SIZE}
       - LOG_LEVEL=${LOG_LEVEL}
+      - CLAMAV_PORT=${CLAMAV_PORT}
+      - CLAMAV_HOST=${CLAMAV_HOST}
+      - ENABLE_FILE_VIRUS_SCAN=${ENABLE_FILE_VIRUS_SCAN}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
@@ -67,6 +70,17 @@ services:
     depends_on:
       - db
       - db_setup
+
+  # Build the clamav docker image
+  clamav:
+    image: mkodockx/docker-clamav:latest
+    container_name: ${DOCKER_PROJECT_NAME}-clamav-${DOCKER_NAMESPACE}-container
+    ports:
+      - ${CLAMAV_PORT}:${CLAMAV_PORT}
+    networks:
+      - local-network
+    depends_on:
+      - api
 
   # Build the n8n nginx proxy docker image
   n8n_nginx:
@@ -115,6 +129,8 @@ services:
     depends_on:
       - api
       - db
+      - db_setup
+    restart: always # n8n doesnt always start after db_setup is done, and can fail. Always restart to help resolve this.
     command: ["n8n", "start"]
 
   ## Run the n8n setup

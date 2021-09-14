@@ -9,7 +9,7 @@ import {
   updateSurveyOccurrenceSubmissionWithKeySQL,
   getTemplateMethodologySpeciesIdSQLStatement
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
-import { generateS3FileKey, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { logRequest } from '../../../../../../../utils/path-utils';
 
@@ -121,6 +121,13 @@ export function uploadMedia(): RequestHandler {
 
       await connection.open();
 
+      // Scan file for viruses using ClamAV
+      const virusScanResult = await scanFileForVirus(rawMediaFile);
+
+      if (!virusScanResult) {
+        throw new HTTP400('Malicious content detected, upload cancelled');
+      }
+
       const templateMethodologyId = await getTemplateMethodologySpeciesIdStatement(
         Number(req.params.surveyId),
         rawMediaFile.originalname,
@@ -144,7 +151,7 @@ export function uploadMedia(): RequestHandler {
         fileName: rawMediaFile.originalname
       });
 
-      //query to update the record with the key before uploading the file
+      // Query to update the record with the key before uploading the file
       await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
 
       await connection.commit();
