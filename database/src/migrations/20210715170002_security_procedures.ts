@@ -39,10 +39,12 @@ begin
     where name = p_user_identity_source_name
     and record_end_date is null;
 
-  select b.system_user_id, c.system_role_id into _system_user_id, _system_role_id from system_user b, system_user_role c
+  select b.system_user_id into _system_user_id from system_user b
     where b.user_identity_source_id = _user_identity_source_id
-    and b.user_identifier = p_system_user_identifier 
-    and c.system_user_id = b.system_user_id;
+    and b.user_identifier = p_system_user_identifier;
+
+  select c.system_role_id into _system_role_id from system_user_role c
+    where c.system_user_id = _system_user_id;
 
   create temp table if not exists biohub_context_temp (tag varchar(200), value varchar(200));
   delete from biohub_context_temp where tag in ('user_id','system_user_role_id');
@@ -85,9 +87,9 @@ $$;
             return true;
         end if;
 
-      -- Is the user a sys admin$2
+      -- Is the user a sys admin or a system user$2
         select ${DB_SCHEMA}.api_get_context_system_user_role_id()::integer into v_admin;
-        if (v_admin = 1) then
+        if (v_admin = 1 or v_admin = null) then
             return true;
         end if;
 
