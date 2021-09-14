@@ -387,11 +387,17 @@ exports[`General Information Form renders correctly the empty component correctl
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
             data-shrink="false"
             id="common_survey_methodology_id-label"
           >
             Survey Methodology
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            >
+               *
+            </span>
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
@@ -413,6 +419,7 @@ exports[`General Information Form renders correctly the empty component correctl
               aria-hidden="true"
               class="MuiSelect-nativeInput"
               name="common_survey_methodology_id"
+              required=""
               tabindex="-1"
               value=""
             />
@@ -440,7 +447,7 @@ exports[`General Information Form renders correctly the empty component correctl
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained"
+            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
           />
         </div>
       </div>
@@ -1267,11 +1274,17 @@ exports[`General Information Form renders correctly the filled component correct
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
             data-shrink="true"
             id="common_survey_methodology_id-label"
           >
             Survey Methodology
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            >
+               *
+            </span>
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
@@ -1291,6 +1304,7 @@ exports[`General Information Form renders correctly the filled component correct
               aria-hidden="true"
               class="MuiSelect-nativeInput"
               name="common_survey_methodology_id"
+              required=""
               tabindex="-1"
               value="1"
             />
@@ -1318,7 +1332,7 @@ exports[`General Information Form renders correctly the filled component correct
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
           />
         </div>
       </div>
@@ -2154,11 +2168,17 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
           style="width: 100%;"
         >
           <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
+            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
             data-shrink="true"
             id="common_survey_methodology_id-label"
           >
             Survey Methodology
+            <span
+              aria-hidden="true"
+              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+            >
+               *
+            </span>
           </label>
           <div
             class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
@@ -2178,6 +2198,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               aria-hidden="true"
               class="MuiSelect-nativeInput"
               name="common_survey_methodology_id"
+              required=""
               tabindex="-1"
               value="1"
             />
@@ -2205,7 +2226,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             </fieldset>
           </div>
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
+            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
           />
         </div>
       </div>

@@ -503,11 +503,17 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     style="width: 100%;"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                       data-shrink="false"
                       id="common_survey_methodology_id-label"
                     >
                       Survey Methodology
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
                     </label>
                     <div
                       class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
@@ -529,6 +535,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         aria-hidden="true"
                         class="MuiSelect-nativeInput"
                         name="common_survey_methodology_id"
+                        required=""
                         tabindex="-1"
                         value=""
                       />
@@ -556,7 +563,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </fieldset>
                     </div>
                     <p
-                      class="MuiFormHelperText-root MuiFormHelperText-contained"
+                      class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
                     />
                   </div>
                 </div>
