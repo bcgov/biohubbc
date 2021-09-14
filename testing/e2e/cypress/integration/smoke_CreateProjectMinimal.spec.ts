@@ -50,13 +50,13 @@ while (n < 1) {
     add_locations(null, null); //description, kml_file
     next_page_project();
 
-    add_classification(null, null, null); //classification, sub_classification1, sub_classification2
+/*     add_classification(null, null, null); //classification, sub_classification1, sub_classification2
     next_page_project();
 
     add_funding();
     next_page_project();
 
-    add_partnerships();
+    add_partnerships(); */
 
     submit_project();
   });

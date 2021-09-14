@@ -3,7 +3,7 @@ import * as faker from "faker";
 
 export function navigate_project() {
   // Create project
-  cy.visit("/projects/create");
+  cy.visit("/admin/projects/create");
   cy.wait(5000);
   cy.get("h1").contains("Create Project").should("be.visible");
 }
@@ -65,7 +65,7 @@ export function add_locations(description, kml_file) {
   cy.get("span.MuiStepLabel-iconContainer").eq(4).click(); // Click on the Navigation bar
   cy.contains("Locations").should("be.visible");
   cy.get("#location_description").type(description || faker.lorem.paragraph());
-  cy.get('[data-testid="file-upload"]').attachFile(
+  cy.get('[data-testid="kml-file-upload"]').attachFile(
     kml_file || faker.random.number({ min: 1, max: 6 }) + ".kml"
   );
   cy.wait(5000);
