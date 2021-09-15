@@ -2,8 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import xlsx from 'xlsx';
-import { MediaFile } from '../media-file';
-import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError, XLSXCSV } from './csv-file';
+import { CSVValidation, CSVWorkBook, CSVWorksheet, IHeaderError, IRowError } from './csv-file';
 
 describe('CSVWorkBook', () => {
   it('constructs with no rawWorkbook param', () => {
@@ -28,29 +27,6 @@ describe('CSVWorkBook', () => {
     expect(csvWorkBook).not.to.be.null;
     expect(csvWorkBook.workbook).not.to.be.null;
     expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
-  });
-
-  describe('setWorksheet', () => {
-    it('sets a worksheet, overwriting any existing worksheet with the same name', () => {
-      const xlsxWorkSheet1 = xlsx.utils.aoa_to_sheet([['Header1', 'Header2']]);
-      const xlsxWorkSheet2 = xlsx.utils.aoa_to_sheet([['Header3', 'Header4']]);
-
-      const csvWorkBook = new CSVWorkBook();
-
-      expect(csvWorkBook).not.to.be.null;
-      expect(csvWorkBook.workbook).not.to.be.null;
-      expect(csvWorkBook.worksheets).to.eql({});
-
-      csvWorkBook.setWorksheet('Sheet1', new CSVWorksheet('Sheet1', xlsxWorkSheet1));
-
-      expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
-      expect(csvWorkBook.worksheets['Sheet1'].getHeaders()).to.eql(['Header1', 'Header2']);
-
-      csvWorkBook.setWorksheet('Sheet1', new CSVWorksheet('Sheet1', xlsxWorkSheet2));
-
-      expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
-      expect(csvWorkBook.worksheets['Sheet1'].getHeaders()).to.eql(['Header3', 'Header4']);
-    });
   });
 });
 
@@ -334,15 +310,5 @@ describe('CSVValidation', () => {
         isValid: false
       });
     });
-  });
-});
-
-describe('XLSXCSV', () => {
-  it('constructs', () => {
-    const mediaFile: MediaFile = new MediaFile('fileName', 'mimetype', Buffer.from(''));
-
-    const xlsxCSV = new XLSXCSV(mediaFile);
-
-    expect(xlsxCSV).not.to.be.null;
   });
 });

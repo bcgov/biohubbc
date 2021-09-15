@@ -1,15 +1,17 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getLogger } from '../../utils/logger';
-import { ICsvState, XLSX_CSV, XLSXCSV, XLSX_CLASS } from '../../utils/media/csv/csv-file';
-import { getXLSXCSVValidators, getXLSXMediaValidators } from '../../utils/media/csv/xlsx/xlsx-validator';
+import { ICsvState } from '../../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
+import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
+import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
 import {
   getSubmissionFileFromS3,
   getSubmissionS3Key,
   getValidateAPIDoc,
+  getValidationRules,
   persistParseErrors,
   persistValidationResults,
   getValidationSchema
@@ -70,38 +72,6 @@ function prepXLSX(): RequestHandler {
   };
 }
 
-function getValidationRules(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
-
-    try {
-      // TODO fetch/generate validation rules from reference data service
-      const mediaValidationRules = {
-        [XLSX_CSV.STRUCTURE]: getXLSXMediaValidators(),
-        [XLSX_CLASS.SAMPLE_STATION_INFORMATION]: getXLSXMediaValidators(),
-        [XLSX_CLASS.GENERAL_SURVEY]: getXLSXMediaValidators(),
-        [XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]: getXLSXMediaValidators()
-      };
-
-      req['mediaValidationRules'] = mediaValidationRules;
-
-      // TODO fetch/generate validation rules from reference data service
-      const contentValidationRules = {
-        [XLSX_CLASS.SAMPLE_STATION_INFORMATION]: getXLSXCSVValidators(XLSX_CLASS.SAMPLE_STATION_INFORMATION),
-        [XLSX_CLASS.GENERAL_SURVEY]: getXLSXCSVValidators(XLSX_CLASS.GENERAL_SURVEY),
-        [XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS]: getXLSXCSVValidators(XLSX_CLASS.SITE_INCIDENTAL_OBSERVATIONS)
-      };
-
-      req['contentValidationRules'] = contentValidationRules;
-
-      next();
-    } catch (error) {
-      defaultLog.debug({ label: 'getValidationRules', message: 'error', error });
-      throw error;
-    }
-  };
-}
-
 function validateXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'validateXLSX', message: 'dwcArchive' });
@@ -109,20 +79,18 @@ function validateXLSX(): RequestHandler {
     try {
       const xlsxCsv: XLSXCSV = req['xlsx'];
 
-      const mediaValidationRules = req['mediaValidationRules'];
+      const validationSchemaParser: ValidationSchemaParser = req['validationSchemaParser'];
 
-      const mediaState: IMediaState[] = xlsxCsv.isMediaValid(mediaValidationRules);
+      const mediaState: IMediaState = xlsxCsv.isMediaValid(validationSchemaParser);
 
-      if (mediaState.some((item) => !item.isValid)) {
+      if (!mediaState.isValid) {
         req['mediaState'] = mediaState;
 
-        // The file itself is invalid, skip content validation
+        // The file itself is invalid, skip remaining validation
         return next();
       }
 
-      const contentValidationRules = req['contentValidationRules'];
-
-      const csvState: ICsvState[] = xlsxCsv.isContentValid(contentValidationRules);
+      const csvState: ICsvState[] = xlsxCsv.isContentValid(validationSchemaParser);
 
       req['csvState'] = csvState;
 

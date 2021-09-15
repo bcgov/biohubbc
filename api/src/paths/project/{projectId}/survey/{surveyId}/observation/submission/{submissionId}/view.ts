@@ -8,10 +8,10 @@ import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
 import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { DWCArchive } from '../../../../../../../../utils/media/csv/dwc/dwc-archive-file';
-import { XLSXCSV } from '../../../../../../../../utils/media/csv/csv-file';
+import { DWCArchive } from '../../../../../../../../utils/media/dwc/dwc-archive-file';
 import { MediaFile } from '../../../../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../../../../utils/media/media-utils';
+import { XLSXCSV } from '../../../../../../../../utils/media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/view');
 
