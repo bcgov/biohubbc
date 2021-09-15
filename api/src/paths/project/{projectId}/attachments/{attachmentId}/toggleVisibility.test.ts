@@ -46,17 +46,17 @@ describe('toggleProjectAttachmentVisibility', () => {
     }
   } as any;
 
-  // let actualResult: any = null;
+  let actualResult: any = null;
 
-  // const sampleRes = {
-  //   status: () => {
-  //     return {
-  //       json: (result: any) => {
-  //         actualResult = result;
-  //       }
-  //     };
-  //   }
-  // };
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
 
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -226,6 +226,30 @@ describe('toggleProjectAttachmentVisibility', () => {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Failed to remove project attachment security token');
       }
+    });
+
+    it('should work on success', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery
+        .onFirstCall()
+        .resolves({
+          rowCount: 1
+        })
+        .onSecondCall()
+        .resolves({
+          rowCount: 1
+        });
+
+      sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
+      sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
+      sinon.stub(project_attachments_queries, 'removeProjectAttachmentSecurityTokenSQL').returns(SQL`something`);
+
+      const result = toggleVisibility.toggleProjectAttachmentVisibility();
+
+      await result({ ...sampleReq, body: { securityToken: 'token123' } }, sampleRes as any, (null as unknown) as any);
+
+      expect(actualResult).to.equal(1);
     });
   });
 });
