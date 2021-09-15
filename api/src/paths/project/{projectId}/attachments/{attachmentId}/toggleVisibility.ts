@@ -80,7 +80,7 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
     defaultLog.debug({ label: 'Toggle visibility of project attachment', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
-      throw new HTTP400('Missing required path param `surveyId`');
+      throw new HTTP400('Missing required path param `projectId`');
     }
 
     if (!req.params.attachmentId) {
