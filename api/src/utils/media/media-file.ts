@@ -8,7 +8,6 @@ export interface IMediaFile {
 /**
  * A generic wrapper for any media file.
  *
- *
  * @export
  * @class MediaFile
  * @implements {IMediaFile}
@@ -20,7 +19,7 @@ export class MediaFile implements IMediaFile {
   mediaValidation: MediaValidation;
 
   constructor(fileName: string, mimetype: string, buffer: Buffer) {
-    this.fileName = fileName;
+    this.fileName = fileName.toLowerCase();
     this.mimetype = mimetype;
     this.buffer = buffer;
     this.mediaValidation = new MediaValidation(this.fileName);
@@ -37,6 +36,14 @@ export class MediaFile implements IMediaFile {
     return this.fileName.split('.')[0];
   }
 
+  /**
+   * Executes each validator function in the provided `validators` against this instance, returning
+   * `this.mediaValidation`
+   *
+   * @param {MediaValidator[]} validators
+   * @return {*}  {MediaValidation}
+   * @memberof MediaFile
+   */
   validate(validators: MediaValidator[]): MediaValidation {
     validators.forEach((validator) => validator(this));
 
@@ -61,7 +68,7 @@ export class ArchiveFile implements IMediaFile {
   mediaFiles: MediaFile[];
 
   constructor(fileName: string, mimetype: string, buffer: Buffer, mediaFiles: MediaFile[]) {
-    this.fileName = fileName;
+    this.fileName = fileName.toLowerCase();
     this.mimetype = mimetype;
     this.buffer = buffer;
     this.mediaValidation = new MediaValidation(this.fileName);
@@ -80,6 +87,14 @@ export class ArchiveFile implements IMediaFile {
     return this.fileName.split('.')[0];
   }
 
+  /**
+   * Executes each validator function in the provided `validators` against this instance, returning
+   * `this.mediaValidation`
+   *
+   * @param {ArchiveValidator[]} validators
+   * @return {*}  {MediaValidation}
+   * @memberof ArchiveFile
+   */
   validate(validators: ArchiveValidator[]): MediaValidation {
     validators.forEach((validator) => validator(this));
 

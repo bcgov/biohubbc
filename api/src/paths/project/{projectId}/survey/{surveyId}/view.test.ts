@@ -2,11 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as view from './view';
+import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
 import * as survey_view_queries from '../../../../../queries/survey/survey-view-queries';
 import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
-import SQL from 'sql-template-strings';
+import * as view from './view';
 
 chai.use(sinonChai);
 

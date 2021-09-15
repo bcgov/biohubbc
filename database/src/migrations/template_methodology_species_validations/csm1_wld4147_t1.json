@@ -3,7 +3,33 @@
   "description": "",
   "files": [
     {
-      "name": "",
+      "name": "Strata Metadata",
+      "description": "",
+      "columns": [
+        {
+          "name": "Stratum",
+          "description": "",
+          "validations": [
+            {
+              "column_format_validator": {
+                "reg_exp": "^[0-9]*$",
+                "expected_format": "Must be a positive integer."
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": ["Stratum", "Stratum Definition"]
+        }
+      ]
+    },
+    {
+      "name": "Sampling Unit Summary",
       "description": "",
       "columns": [
         {
@@ -12,8 +38,212 @@
           "validations": []
         }
       ],
-      "validations": []
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": ["Survey Area", "Sampling Unit ID", "Stratum", "Area (km2)", "Comments"]
+        }
+      ]
+    },
+    {
+      "name": "Effort & Site Conditions",
+      "description": "",
+      "columns": [
+        {
+          "name": "",
+          "description": "",
+          "validations": []
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": [
+            "Survey Area",
+            "Sampling Unit ID",
+            "Stratum",
+            "Area (km2)",
+            "Date",
+            "Start Time 1",
+            "End Time 1",
+            "Start Time 2",
+            "End Time 2",
+            "CalculatedTotal Block Time (hrs)",
+            "Aircraft Company",
+            "Aircraft Type",
+            "Aircraft Call Sign",
+            "GPS Model",
+            "GPS Datum",
+            "GPS Units",
+            "Pilot",
+            "Navigator",
+            "Rear Left Observer",
+            "Rear Right Observer",
+            "Temperature (oC)",
+            "Visibility",
+            "Cloud Cover (%)",
+            "Wind Speed (MPH)",
+            "Precipitation",
+            "Light",
+            "Snow cover (%)",
+            "Snow Depth",
+            "Days Since Snowfall",
+            "Weather Description",
+            "Habitat Description"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Observations - Skeena",
+      "description": "",
+      "columns": [
+        {
+          "name": "Activity",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "allowed_code_values": ["Standing", "Bedding"]
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": [
+            "Survey Area",
+            "Sampling Unit ID",
+            "Stratum",
+            "Waypoint",
+            "Species",
+            "Total Count",
+            "Yearlings Bulls",
+            "Mature Bulls",
+            "Unclassified Bulls",
+            "Lone Cows",
+            "Cow W/1 calf",
+            "Cow W/2 calves",
+            "Lone calf",
+            "Unclassified",
+            "Activity",
+            "% Veg Cover",
+            "% Snow Cover",
+            "Comments"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "NonTargetted Observations",
+      "description": "",
+      "columns": [
+        {
+          "name": "",
+          "description": "",
+          "validations": []
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": [
+            "Study Area Name",
+            "Sampling Unit ID",
+            "Stratum",
+            "Waypoint",
+            "Species",
+            "Total Count",
+            "Adult Males",
+            "Adult Females",
+            "Adults - Unclassified Sex",
+            "Juvenile Males",
+            "Juvenile Females",
+            "Juveniles - Unclassified Sex",
+            "Unknown Age/Sex",
+            "Activity",
+            "% Veg Cover",
+            "% Snow Cover",
+            "Comments"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "UTM_LatLong",
+      "description": "",
+      "columns": [
+        {
+          "name": "",
+          "description": "",
+          "validations": []
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": [
+            "Waypoint",
+            "Site UTM Zone",
+            "Site Easting",
+            "Site Northing",
+            "Lat (DD)",
+            "Long (DD)",
+            "Comments"
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Photos",
+      "description": "",
+      "columns": [
+        {
+          "name": "",
+          "description": "",
+          "validations": []
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": ["ID", "Photo File Name", "Comments"]
+        }
+      ]
     }
   ],
-  "validations": []
+  "validations": [
+    {
+      "submission_required_files_validator": {
+        "required_files": [
+          "Strata Metadata",
+          "Sampling Unit Summary",
+          "Effort & Site Conditions",
+          "Observations - Skeena",
+          "NonTargetted Observations",
+          "UTM_LatLong",
+          "Photos"
+        ]
+      }
+    },
+    {
+      "mimetype_validator": {
+        "reg_exps": ["application\\/vnd.*"]
+      }
+    }
+  ]
 }

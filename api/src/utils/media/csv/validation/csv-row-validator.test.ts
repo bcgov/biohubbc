@@ -1,8 +1,8 @@
-import xlsx from 'xlsx';
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import xlsx from 'xlsx';
 import { CSVWorksheet } from '../csv-file';
-import { getCodeValueFieldsValidator, getRequiredFieldsValidator, ICodeValuesByHeader } from './csv-row-validator';
+import { getCodeValueFieldsValidator, getRequiredFieldsValidator } from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {
   it('adds no errors when required fields are not provided', () => {
@@ -93,7 +93,10 @@ describe('getRequiredFieldsValidator', () => {
 
 describe('getCodeValueFieldsValidator', () => {
   it('adds no errors when no required code values are not provided', () => {
-    const requiredCodeValuesByHeader: ICodeValuesByHeader[] = [];
+    const requiredCodeValuesByHeader = {
+      columnName: 'Header1',
+      column_code_validator: { allowed_code_values: [] }
+    };
 
     const validator = getCodeValueFieldsValidator(requiredCodeValuesByHeader);
 
@@ -110,7 +113,10 @@ describe('getCodeValueFieldsValidator', () => {
   });
 
   it('adds errors for non-empty fields whose value is not part of a specified code set', () => {
-    const requiredCodeValuesByHeader: ICodeValuesByHeader[] = [{ codeValues: ['Code1', 'Code2'], header: 'Header1' }];
+    const requiredCodeValuesByHeader = {
+      columnName: 'Header1',
+      column_code_validator: { allowed_code_values: [{ name: 'Code1' }, { name: 'Code2' }] }
+    };
 
     const validator = getCodeValueFieldsValidator(requiredCodeValuesByHeader);
 
@@ -134,7 +140,10 @@ describe('getCodeValueFieldsValidator', () => {
   });
 
   it('adds no errors for empty fields whose value is not part of a specified code set', () => {
-    const requiredCodeValuesByHeader: ICodeValuesByHeader[] = [{ codeValues: ['Code1', 'Code2'], header: 'Header1' }];
+    const requiredCodeValuesByHeader = {
+      columnName: 'Header1',
+      column_code_validator: { allowed_code_values: [{ name: 'Code1' }, { name: 'Code2' }] }
+    };
 
     const validator = getCodeValueFieldsValidator(requiredCodeValuesByHeader);
 
@@ -151,10 +160,10 @@ describe('getCodeValueFieldsValidator', () => {
   });
 
   it('adds no errors for fields whose value is part of a specified code set', () => {
-    const requiredCodeValuesByHeader: ICodeValuesByHeader[] = [
-      { codeValues: ['Code1', 'Code2'], header: 'Header1' },
-      { codeValues: ['Code3', 'Code4'], header: 'Header2' }
-    ];
+    const requiredCodeValuesByHeader = {
+      columnName: 'Header1',
+      column_code_validator: { allowed_code_values: [{ name: 'Code1' }, { name: 'Code2' }] }
+    };
 
     const validator = getCodeValueFieldsValidator(requiredCodeValuesByHeader);
 

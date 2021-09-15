@@ -169,7 +169,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           />
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" style={{ width: '100%' }}>
+          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
             <InputLabel id="common_survey_methodology_id-label">Survey Methodology</InputLabel>
             <Select
               id="common_survey_methodology_id"

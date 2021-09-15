@@ -33,15 +33,28 @@ export const getDuplicateHeadersValidator = (): CSVValidator => {
   };
 };
 
+export type FileRequiredHeaderValidatorConfig = {
+  file_required_columns_validator: {
+    name?: string;
+    description?: string;
+    required_columns: string[];
+  };
+};
+
 /**
- * For each `requiredHeaders`, adds an error if the header is not present in the csv.
+ * For a specified set of required columns, adds an error if the column is not present in the csv.
  *
- * @param {string[]} [requiredHeaders]
+ * @param {FileRequiredHeaderValidatorConfig} [config]
  * @return {*}  {CSVValidator}
  */
-export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVValidator => {
+export const hasRequiredHeadersValidator = (config?: FileRequiredHeaderValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
-    if (!requiredHeaders?.length) {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    if (!config.file_required_columns_validator.required_columns.length) {
+      // No required columns
       return csvWorksheet;
     }
 
@@ -49,7 +62,7 @@ export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVVali
 
     if (!headers?.length) {
       csvWorksheet.csvValidation.addHeaderErrors(
-        requiredHeaders.map((requiredHeader) => {
+        config.file_required_columns_validator.required_columns.map((requiredHeader) => {
           return {
             errorCode: 'Missing Required Header',
             message: 'Missing required header',
@@ -61,7 +74,7 @@ export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVVali
       return csvWorksheet;
     }
 
-    for (const requiredHeader of requiredHeaders) {
+    for (const requiredHeader of config.file_required_columns_validator.required_columns) {
       if (!headers.includes(requiredHeader)) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
@@ -77,15 +90,27 @@ export const hasRequiredHeadersValidator = (requiredHeaders?: string[]): CSVVali
   };
 };
 
+export type FileRecommendedHeaderValidatorConfig = {
+  file_recommended_columns_validator: {
+    name?: string;
+    description?: string;
+    recommended_columns: string[];
+  };
+};
+
 /**
- * For each `recommendedHeaders`, adds an error if the header is not present in the csv.
+ * For a specified set of recommended columns, adds a warning if the column is not present in the csv.
  *
- * @param {string[]} [recommendedHeaders]
+ * @param {FileRecommendedHeaderValidatorConfig} [config]
  * @return {*}  {CSVValidator}
  */
-export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): CSVValidator => {
+export const hasRecommendedHeadersValidator = (config?: FileRecommendedHeaderValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
-    if (!recommendedHeaders?.length) {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    if (!config.file_recommended_columns_validator.recommended_columns.length) {
       return csvWorksheet;
     }
 
@@ -93,7 +118,7 @@ export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): C
 
     if (!headers?.length) {
       csvWorksheet.csvValidation.addHeaderWarnings(
-        recommendedHeaders.map((recommendedHeader) => {
+        config.file_recommended_columns_validator.recommended_columns.map((recommendedHeader) => {
           return {
             errorCode: 'Missing Recommended Header',
             message: 'Missing recommended header',
@@ -105,7 +130,7 @@ export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): C
       return csvWorksheet;
     }
 
-    for (const recommendedHeader of recommendedHeaders) {
+    for (const recommendedHeader of config.file_recommended_columns_validator.recommended_columns) {
       if (!headers.includes(recommendedHeader)) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
@@ -121,22 +146,34 @@ export const hasRecommendedHeadersValidator = (recommendedHeaders?: string[]): C
   };
 };
 
+export type FileValidHeadersValidatorConfig = {
+  file_valid_columns_validator: {
+    name?: string;
+    description?: string;
+    valid_columns: string[];
+  };
+};
+
 /**
- * Adds an error for any header that is not found in the provided `validHeaders` array.
+ * Adds a warning if a column in the csv does not match a value in a specified set of valid columns.
  *
- * @param {string[]} [validHeaders]
+ * @param {FileValidHeadersValidatorConfig} [config]
  * @return {*}  {CSVValidator}
  */
-export const getValidHeadersValidator = (validHeaders?: string[]): CSVValidator => {
+export const getValidHeadersValidator = (config?: FileValidHeadersValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
-    if (!validHeaders?.length) {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    if (!config.file_valid_columns_validator.valid_columns.length) {
       return csvWorksheet;
     }
 
     const headers = csvWorksheet.getHeaders();
 
     for (const header of headers) {
-      if (!validHeaders.includes(header)) {
+      if (!config.file_valid_columns_validator.valid_columns.includes(header)) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: 'Unknown Header',
