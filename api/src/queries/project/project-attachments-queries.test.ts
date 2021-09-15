@@ -6,7 +6,12 @@ import {
   getProjectAttachmentS3KeySQL,
   postProjectAttachmentSQL,
   getProjectAttachmentByFileNameSQL,
-  putProjectAttachmentSQL
+  putProjectAttachmentSQL,
+  applyProjectAttachmentSecurityRuleSQL,
+  addProjectAttachmentSecurityRuleSQL,
+  getProjectAttachmentSecurityRuleSQL,
+  removeProjectAttachmentSecurityTokenSQL,
+  removeSecurityRecordSQL
 } from './project-attachments-queries';
 
 describe('getProjectAttachmentsSQL', () => {
@@ -18,6 +23,76 @@ describe('getProjectAttachmentsSQL', () => {
 
   it('returns non null response when valid projectId provided', () => {
     const response = getProjectAttachmentsSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('applyProjectAttachmentSecurityRuleSQL', () => {
+  it('returns null response when null securityRuleId provided', () => {
+    const response = applyProjectAttachmentSecurityRuleSQL(null);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid securityRuleId provided', () => {
+    const response = applyProjectAttachmentSecurityRuleSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('addProjectAttachmentSecurityRuleSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = addProjectAttachmentSecurityRuleSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = addProjectAttachmentSecurityRuleSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getProjectAttachmentSecurityRuleSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = getProjectAttachmentSecurityRuleSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId provided', () => {
+    const response = getProjectAttachmentSecurityRuleSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('removeProjectAttachmentSecurityTokenSQL', () => {
+  it('returns null response when null attachmentId provided', () => {
+    const response = removeProjectAttachmentSecurityTokenSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid attachmentId provided', () => {
+    const response = removeProjectAttachmentSecurityTokenSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('removeSecurityRecordSQL', () => {
+  it('returns null response when null securityToken provided', () => {
+    const response = removeSecurityRecordSQL(null);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid securityToken provided', () => {
+    const response = removeSecurityRecordSQL('token123');
 
     expect(response).to.not.be.null;
   });
