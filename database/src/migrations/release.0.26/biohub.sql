@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Wednesday, September 15, 2021 13:48:44
+-- Date Created : Wednesday, September 15, 2021 17:09:07
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -2067,11 +2067,10 @@ COMMENT ON TABLE survey_spatial_component IS 'Survey spatial component persists 
 
 CREATE TABLE survey_summary_detail(
     survey_summary_detail_id       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    id                             integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     survey_summary_general_id      integer           NOT NULL,
     parameter                      varchar(100)      NOT NULL,
     parameter_value                character(10)     NOT NULL,
-    parameter_methodv              varchar(25),
+    parameter_method               varchar(25),
     parameter_denominator_value    numeric(14, 2),
     confidence_limit_lower         numeric(10, 3),
     confidence_limit_upper         numeric(10, 3),
@@ -2085,7 +2084,7 @@ CREATE TABLE survey_summary_detail(
     update_date                    timestamptz(6),
     update_user                    integer,
     revision_count                 integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT "PK202" PRIMARY KEY (survey_summary_detail_id, id)
+    CONSTRAINT "PK202" PRIMARY KEY (survey_summary_detail_id)
 )
 ;
 
@@ -2093,15 +2092,13 @@ CREATE TABLE survey_summary_detail(
 
 COMMENT ON COLUMN survey_summary_detail.survey_summary_detail_id IS 'System generated surrogate primary key identifier.'
 ;
-COMMENT ON COLUMN survey_summary_detail.id IS 'System generated surrogate primary key identifier.'
-;
 COMMENT ON COLUMN survey_summary_detail.survey_summary_general_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_summary_detail.parameter IS 'The population metric that is quantified in the parameter value column. e.g. "All Individuals" mean the total number of individuals/animals observed in a study area or block.'
 ;
 COMMENT ON COLUMN survey_summary_detail.parameter_value IS 'A numerical value of the parameter. e.g. number of individuals, or population ratio, or relative abundance index, or density.'
 ;
-COMMENT ON COLUMN survey_summary_detail.parameter_methodv IS 'The method used to derive the value in column parmeter. e.g. "Observed - Total Count".'
+COMMENT ON COLUMN survey_summary_detail.parameter_method IS 'The method used to derive the value in column parmeter. e.g. "Observed - Total Count".'
 ;
 COMMENT ON COLUMN survey_summary_detail.parameter_denominator_value IS 'The numeric value used as the divisor (denominator) when the parameter is given as a quotient (e.g. Individuals/km2, Detections/km, Detections/100 days). For example, the area value used to calculate a density would be the parameter denominator value. The parameter denominator value unit can be derived from the parameter field.'
 ;
