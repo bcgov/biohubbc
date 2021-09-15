@@ -3,9 +3,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import {
-  updateProjectAttachmentVisibilitySQL,
+  removeProjectAttachmentSecurityTokenSQL,
   getProjectAttachmentSecurityRuleSQL,
-  applyProjectAttachmentSecurityRuleSQL
+  applyProjectAttachmentSecurityRuleSQL,
+  removeSecurityRecordSQL,
+  addProjectAttachmentSecurityRuleSQL
 } from '../../../../../queries/project/project-attachments-queries';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
@@ -94,7 +96,11 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
     try {
       await connection.open();
 
+      // Making attachment public to private
       if (!req.body.securityToken) {
+        let securityRuleId: number | null = null;
+
+        // Step 1: Check if security rule already exists
         const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
 
         if (!getSecurityRuleSQLStatement) {
@@ -106,14 +112,39 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
           getSecurityRuleSQLStatement.values
         );
 
-        const securityRuleId =
+        securityRuleId =
           (getSecurityRuleSQLResponse &&
             getSecurityRuleSQLResponse.rows &&
             getSecurityRuleSQLResponse.rows[0] &&
             getSecurityRuleSQLResponse.rows[0].id) ||
           null;
 
-        // Apply the security rule that was fetched or created
+        // Step 2: Create security rule if it does not exist
+        if (!securityRuleId) {
+          const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
+
+          if (!createSecurityRuleSQLStatement) {
+            throw new HTTP400('Failed to build SQL insert project attachment security rule statement');
+          }
+
+          const createSecurityRuleSQLResponse = await connection.query(
+            createSecurityRuleSQLStatement.text,
+            createSecurityRuleSQLStatement.values
+          );
+
+          securityRuleId =
+            (createSecurityRuleSQLResponse &&
+              createSecurityRuleSQLResponse.rows &&
+              createSecurityRuleSQLResponse.rows[0] &&
+              createSecurityRuleSQLResponse.rows[0].id) ||
+            null;
+
+          if (!securityRuleId) {
+            throw new HTTP400('Failed to insert project attachment security rule');
+          }
+        }
+
+        // Step 3: Apply the security rule that was fetched or created
         const applySecurityRuleSQLStatement = applyProjectAttachmentSecurityRuleSQL(securityRuleId);
 
         if (!applySecurityRuleSQLStatement) {
@@ -129,20 +160,41 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
           throw new HTTP400('Failed to apply project attachment security rule');
         }
       } else {
-        const updateProjectAttachmentVisibilitySQLStatement = updateProjectAttachmentVisibilitySQL(
+        // Making attachment private to public
+        // Step 1: Remove associated row from the security table
+        const removeSecurityRecordSQLStatement = removeSecurityRecordSQL(req.body.securityToken);
+
+        if (!removeSecurityRecordSQLStatement) {
+          throw new HTTP400('Failed to build SQL remove security record statement');
+        }
+
+        const removeSecurityRecordSQLResponse = await connection.query(
+          removeSecurityRecordSQLStatement.text,
+          removeSecurityRecordSQLStatement.values
+        );
+
+        if (!removeSecurityRecordSQLResponse || !removeSecurityRecordSQLResponse.rowCount) {
+          throw new HTTP400('Failed to remove security record');
+        }
+
+        // Step 2: Remove security token from project attachment row
+        const removeProjectAttachmentSecurityTokenSQLStatement = removeProjectAttachmentSecurityTokenSQL(
           Number(req.params.attachmentId)
         );
 
-        if (!updateProjectAttachmentVisibilitySQLStatement) {
+        if (!removeProjectAttachmentSecurityTokenSQLStatement) {
           throw new HTTP400('Failed to build SQL update project attachment visibility statement');
         }
 
-        const updateProjectAttachmentVisibilitySQLResponse = await connection.query(
-          updateProjectAttachmentVisibilitySQLStatement.text,
-          updateProjectAttachmentVisibilitySQLStatement.values
+        const removeProjectAttachmentSecurityTokenSQLResponse = await connection.query(
+          removeProjectAttachmentSecurityTokenSQLStatement.text,
+          removeProjectAttachmentSecurityTokenSQLStatement.values
         );
 
-        if (!updateProjectAttachmentVisibilitySQLResponse || !updateProjectAttachmentVisibilitySQLResponse.rowCount) {
+        if (
+          !removeProjectAttachmentSecurityTokenSQLResponse ||
+          !removeProjectAttachmentSecurityTokenSQLResponse.rowCount
+        ) {
           throw new HTTP400('Failed to update project attachment visibility');
         }
 

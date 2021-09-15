@@ -9,7 +9,7 @@ const defaultLog = getLogger('queries/project/project-attachments-queries');
  * @param {number | null} securityRuleId
  * @returns {SQLStatement} sql query object
  */
- export const applyProjectAttachmentSecurityRuleSQL = (securityRuleId: number | null): SQLStatement | null => {
+export const applyProjectAttachmentSecurityRuleSQL = (securityRuleId: number | null): SQLStatement | null => {
   defaultLog.debug({ label: 'applyProjectAttachmentSecurityRuleSQL', message: 'params', securityRuleId });
 
   if (!securityRuleId) {
@@ -41,7 +41,7 @@ export const addProjectAttachmentSecurityRuleSQL = (projectId: number): SQLState
     return null;
   }
 
-  const ruleDefinition = [{"target": "project_attachment","rule": `project_id=${projectId}`}];
+  const ruleDefinition = [{ target: 'project_attachment', rule: `project_id=${projectId}` }];
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO security_rule (
@@ -73,7 +73,7 @@ export const addProjectAttachmentSecurityRuleSQL = (projectId: number): SQLState
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
- export const getProjectAttachmentSecurityRuleSQL = (projectId: number): SQLStatement | null => {
+export const getProjectAttachmentSecurityRuleSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getProjectAttachmentSecurityRuleSQL', message: 'params', projectId });
 
   if (!projectId) {
@@ -97,13 +97,13 @@ export const addProjectAttachmentSecurityRuleSQL = (projectId: number): SQLState
 };
 
 /**
- * SQL query to update visibility state for a project attachment.
+ * SQL query to set security token to null for a project attachment row.
  *
  * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
-export const updateProjectAttachmentVisibilitySQL = (attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'updateProjectAttachmentVisibilitySQL', message: 'params', attachmentId });
+export const removeProjectAttachmentSecurityTokenSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'removeProjectAttachmentSecurityTokenSQL', message: 'params', attachmentId });
 
   if (!attachmentId) {
     return null;
@@ -116,7 +116,38 @@ export const updateProjectAttachmentVisibilitySQL = (attachmentId: number): SQLS
   `;
 
   defaultLog.debug({
-    label: 'updateProjectAttachmentVisibilitySQL',
+    label: 'removeProjectAttachmentSecurityTokenSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to remove row from security table.
+ *
+ * @param {any} securityToken
+ * @returns {SQLStatement} sql query object
+ */
+export const removeSecurityRecordSQL = (securityToken: any): SQLStatement | null => {
+  defaultLog.debug({ label: 'removeSecurityRecordSQL', message: 'params', securityToken });
+
+  console.log('**************************************');
+  console.log(securityToken);
+
+  if (!securityToken) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE from security
+    WHERE security_token = ${securityToken};
+  `;
+
+  defaultLog.debug({
+    label: 'removeSecurityRecordSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
