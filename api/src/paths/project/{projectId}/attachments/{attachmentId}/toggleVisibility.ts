@@ -161,6 +161,7 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
         }
       } else {
         // Making attachment private to public
+
         // Step 1: Remove associated row from the security table
         const removeSecurityRecordSQLStatement = removeSecurityRecordSQL(req.body.securityToken);
 
@@ -183,7 +184,7 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
         );
 
         if (!removeProjectAttachmentSecurityTokenSQLStatement) {
-          throw new HTTP400('Failed to build SQL update project attachment visibility statement');
+          throw new HTTP400('Failed to build SQL remove project attachment security token statement');
         }
 
         const removeProjectAttachmentSecurityTokenSQLResponse = await connection.query(
@@ -195,7 +196,7 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
           !removeProjectAttachmentSecurityTokenSQLResponse ||
           !removeProjectAttachmentSecurityTokenSQLResponse.rowCount
         ) {
-          throw new HTTP400('Failed to update project attachment visibility');
+          throw new HTTP400('Failed to remove project attachment security token');
         }
 
         await connection.commit();
