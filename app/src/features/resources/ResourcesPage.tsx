@@ -114,7 +114,7 @@ const ResourcesPage: React.FC = () => {
     <Box my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" justifyContent="space-between">
-          <Typography variant="h1">Resources</Typography>
+          <Typography variant="h1">Survey Forms</Typography>
         </Box>
         <Paper>
           <Box display="flex" alignItems="center" justifyContent="space-between" p={2}></Box>
