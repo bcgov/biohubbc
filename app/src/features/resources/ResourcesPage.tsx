@@ -105,7 +105,6 @@ const ResourcesPage: React.FC = () => {
       </TableContainer>
     );
   };
-  //};
 
   /**
    * Displays resources list.
