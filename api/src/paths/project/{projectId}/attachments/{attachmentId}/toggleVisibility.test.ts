@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as toggleVisibility from './toggleVisibility';
 import * as db from '../../../../../database/db';
+import * as project_attachments_queries from '../../../../../queries/project/project-attachments-queries';
 
 chai.use(sinonChai);
 
@@ -40,7 +41,7 @@ describe('toggleProjectAttachmentVisibility', () => {
       attachmentId: 2
     },
     body: {
-      securityToken: 'token123'
+      securityToken: null
     }
   } as any;
 
@@ -98,15 +99,26 @@ describe('toggleProjectAttachmentVisibility', () => {
     try {
       const result = toggleVisibility.toggleProjectAttachmentVisibility();
 
-      await result(
-        { ...sampleReq, body: null },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
+      await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Missing required request body');
+    }
+  });
+
+  it('should throw an error when no security token and fails to build getProjectAttachmentSecurityRuleSQL statement', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+    sinon.stub(project_attachments_queries, 'getProjectAttachmentSecurityRuleSQL').returns(null);
+
+    try {
+      const result = toggleVisibility.toggleProjectAttachmentVisibility();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL get project attachment security rule statement');
     }
   });
 });
