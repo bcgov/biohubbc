@@ -71,8 +71,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const showToggleVisibilityAttachmentDialog = (attachment: IGetProjectAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
-      dialogTitle: 'Toggle Attachment Visibility',
-      dialogText: 'Are you sure you want to toggle the visibility of the selected attachment?',
+      dialogTitle: 'Change Visibility',
+      dialogText: attachment.securityToken
+        ? `Changing this attachment's visibility to public will make it visible to all users. Are you sure you want to continue?`
+        : `Changing this attachment's visibility to private will restrict it to yourself and other authorized users. Are you sure you want to continue?`,
       open: true,
       onYes: () => {
         toggleAttachmentVisibility(attachment);
