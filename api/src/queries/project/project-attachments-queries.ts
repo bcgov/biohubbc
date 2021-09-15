@@ -134,9 +134,6 @@ export const removeProjectAttachmentSecurityTokenSQL = (attachmentId: number): S
 export const removeSecurityRecordSQL = (securityToken: any): SQLStatement | null => {
   defaultLog.debug({ label: 'removeSecurityRecordSQL', message: 'params', securityToken });
 
-  console.log('**************************************');
-  console.log(securityToken);
-
   if (!securityToken) {
     return null;
   }

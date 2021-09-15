@@ -134,7 +134,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (!props.surveyId) {
-        response = await biohubApi.project.toggleProjectAttachmentVisibility(props.projectId, attachment.id, attachment.securityToken);
+        response = await biohubApi.project.toggleProjectAttachmentVisibility(
+          props.projectId,
+          attachment.id,
+          attachment.securityToken
+        );
       }
 
       if (!response) {
@@ -178,7 +182,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         aria-label="toggle-attachment-visibility"
                         data-testid="toggle-attachment-visibility"
                         onClick={() => showToggleVisibilityAttachmentDialog(row)}>
-                        <Icon path={row.securityToken ? mdiEyeOffOutline : mdiEyeOutline } size={1} />
+                        <Icon path={row.securityToken ? mdiEyeOffOutline : mdiEyeOutline} size={1} />
                       </IconButton>
                       {row.securityToken ? 'Private' : 'Public'}
                     </TableCell>

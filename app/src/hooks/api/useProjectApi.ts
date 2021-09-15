@@ -185,8 +185,14 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {any} securityToken
    * @return {*}  {Promise<any>}
    */
-  const toggleProjectAttachmentVisibility = async (projectId: number, attachmentId: number, securityToken: any): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/toggleVisibility`, { securityToken });
+  const toggleProjectAttachmentVisibility = async (
+    projectId: number,
+    attachmentId: number,
+    securityToken: any
+  ): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/toggleVisibility`, {
+      securityToken
+    });
 
     return data;
   };
