@@ -162,6 +162,14 @@ describe('useProjectApi', () => {
     expect(result).toEqual(true);
   });
 
+  it('toggleProjectAttachmentVisibility works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/toggleVisibility`).reply(200, 1);
+
+    const result = await useProjectApi(axios).toggleProjectAttachmentVisibility(projectId, attachmentId, 'token123');
+
+    expect(result).toEqual(1);
+  });
+
   it('uploadProjectAttachments works as expected', async () => {
     const file = new File(['foo'], 'foo.txt', {
       type: 'text/plain'
