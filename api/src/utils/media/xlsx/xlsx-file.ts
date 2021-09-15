@@ -2,6 +2,7 @@ import xlsx from 'xlsx';
 import { CSVWorkBook, CSVWorksheet, ICsvState } from '../csv/csv-file';
 import { IMediaState, MediaFile, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
+import { TransformationSchemaParser } from './transformation/transformation-schema-parser';
 import { XLSXTransformation } from './transformation/XLSXTransformation';
 
 /**
@@ -61,6 +62,14 @@ export class XLSXCSV {
     return csvStates;
   }
 
+  transform(transformationSchemaParser: TransformationSchemaParser): XLSXTransformation {
+    const transformations = transformationSchemaParser.getTransformations();
+
+    const xlsxTransformation = this._transform(transformations);
+
+    return xlsxTransformation;
+  }
+
   /**
    * Executes each validator function in the provided `validators` against this instance, returning
    * `this.mediaValidation`
@@ -75,7 +84,7 @@ export class XLSXCSV {
     return this.mediaValidation;
   }
 
-  transform(transformers: XLSXCSVTransformer[]): XLSXTransformation {
+  _transform(transformers: XLSXCSVTransformer[]): XLSXTransformation {
     transformers.forEach((transformer) => transformer(this));
 
     return this.xlsxTransformation;
