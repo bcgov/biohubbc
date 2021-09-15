@@ -12,6 +12,62 @@ import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
 const defaultLog = getLogger('queries/project/project-update-queries');
 
 /**
+ * SQL query to get IUCN action classifications for a public (published) project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getIUCNActionClassificationByPublicProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getIUCNActionClassificationByPublicProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      ical1c.iucn_conservation_action_level_1_classification_id as classification,
+      ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
+      ical3s.iucn_conservation_action_level_3_subclassification_id as subClassification2
+    FROM
+      project_iucn_action_classification as piac
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_3_subclassification as ical3s
+    ON
+      piac.iucn_conservation_action_level_3_subclassification_id = ical3s.iucn_conservation_action_level_3_subclassification_id
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_2_subclassification as ical2s
+    ON
+      ical3s.iucn_conservation_action_level_2_subclassification_id = ical2s.iucn_conservation_action_level_2_subclassification_id
+    LEFT OUTER JOIN
+      iucn_conservation_action_level_1_classification as ical1c
+    ON
+      ical2s.iucn_conservation_action_level_1_classification_id = ical1c.iucn_conservation_action_level_1_classification_id
+    LEFT OUTER JOIN
+      project as p
+    ON
+      piac.project_id = p.project_id
+    WHERE
+      piac.project_id = ${projectId}
+    AND
+      p.publish_timestamp is not null
+    GROUP BY
+      ical1c.iucn_conservation_action_level_1_classification_id,
+      ical2s.iucn_conservation_action_level_2_subclassification_id,
+      ical3s.iucn_conservation_action_level_3_subclassification_id;
+  `;
+
+  defaultLog.debug({
+    label: 'getIUCNActionClassificationByPublicProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get IUCN action classifications.
  *
  * @param {number} projectId

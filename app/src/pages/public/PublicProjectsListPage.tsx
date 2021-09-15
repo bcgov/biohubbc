@@ -4,6 +4,7 @@ import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
+import Link from '@material-ui/core/Link';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
@@ -13,6 +14,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect } from 'react-router';
+import { useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
 import { ProjectStatusType } from 'constants/misc';
 import clsx from 'clsx';
@@ -35,10 +37,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const PublicProjectsPage = () => {
+const PublicProjectsListPage = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
   const biohubApi = useBiohubApi();
   const classes = useStyles();
+  const history = useHistory();
 
   const [isLoading, setIsLoading] = useState(true);
   const [projects, setProjects] = useState<IGetProjectsListResponse[]>([]);
@@ -71,6 +74,10 @@ const PublicProjectsPage = () => {
     }
 
     return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+  };
+
+  const navigateToPublicProjectPage = (id: number) => {
+    history.push(`/projects/${id}`);
   };
 
   const getProjectsTableData = () => {
@@ -119,7 +126,14 @@ const PublicProjectsPage = () => {
               {projects?.map((row) => (
                 <TableRow key={row.id}>
                   <TableCell component="th" scope="row">
-                    {row.name}
+                    <Link
+                      data-testid={row.name}
+                      underline="always"
+                      component="button"
+                      variant="body2"
+                      onClick={() => navigateToPublicProjectPage(row.id)}>
+                      {row.name}
+                    </Link>
                   </TableCell>
                   <TableCell>{row.project_type}</TableCell>
                   <TableCell>{row.permits_list}</TableCell>
@@ -153,4 +167,4 @@ const PublicProjectsPage = () => {
   );
 };
 
-export default PublicProjectsPage;
+export default PublicProjectsListPage;

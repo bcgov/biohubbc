@@ -106,6 +106,18 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get public (published) project details based on its ID for viewing purposes.
+   *
+   * @param {number} projectId
+   * @return {*} {Promise<IGetProjectForViewResponse>}
+   */
+  const getPublicProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/view`);
+
+    return data;
+  };
+
+  /**
    * Get project details based on its ID for updating purposes.
    *
    * @param {number} projectId
@@ -249,6 +261,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProject,
     publishProject,
     getPublicProjectsList,
+    getPublicProjectForView,
     toggleProjectAttachmentVisibility
   };
 };

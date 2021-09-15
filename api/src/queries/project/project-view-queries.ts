@@ -4,6 +4,62 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-view-queries');
 
 /**
+ * SQL query to get a single public (published) project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getPublicProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      project.project_id as id,
+      project_type.name as type,
+      project.name,
+      project.objectives,
+      project.location_description,
+      project.start_date,
+      project.end_date,
+      project.caveats,
+      project.comments,
+      project.coordinator_first_name,
+      project.coordinator_last_name,
+      project.coordinator_email_address,
+      project.coordinator_agency_name,
+      project.coordinator_public,
+      project.geojson as geometry,
+      project.create_date,
+      project.create_user,
+      project.update_date,
+      project.update_user,
+      project.revision_count,
+      project.publish_timestamp as publish_date
+    from
+      project
+    left outer join
+      project_type
+        on project.project_type_id = project_type.project_type_id
+    where
+      project.project_id = ${projectId}
+    and project.publish_timestamp is not null;
+  `;
+
+  defaultLog.debug({
+    label: 'getPublicProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get a single project.
  *
  * @param {number} projectId
@@ -269,6 +325,49 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
 };
 
 /**
+ * SQL query to get project indigenous partnerships for a public (published) project.
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getIndigenousPartnershipsByPublicProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getIndigenousPartnershipsByPublicProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      fn.name as fn_name
+    FROM
+      project_first_nation as pfn
+    LEFT OUTER JOIN
+      first_nations as fn
+    ON
+      pfn.first_nations_id = fn.first_nations_id
+    LEFT OUTER JOIN
+      project as p
+    ON
+      p.project_id = pfn.project_id
+    WHERE
+      pfn.project_id = ${projectId}
+    AND
+      p.publish_timestamp is not null
+    GROUP BY
+      fn.name;
+  `;
+
+  defaultLog.debug({
+    label: 'getIndigenousPartnershipsByPublicProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get project indigenous partnerships.
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -297,6 +396,44 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   defaultLog.debug({
     label: 'getIndigenousPartnershipsByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get permits associated to a public (published) project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getPublicProjectPermitsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getPublicProjectPermitsSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      number,
+      type
+    FROM
+      permit as per
+    LEFT OUTER JOIN
+      project as p
+    ON
+      per.project_id = p.project_id
+    WHERE
+      per.project_id = ${projectId}
+    AND p.publish_timestamp is not null;
+  `;
+
+  defaultLog.debug({
+    label: 'getPublicProjectPermitsSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

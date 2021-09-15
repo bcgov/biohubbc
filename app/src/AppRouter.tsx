@@ -6,7 +6,6 @@ import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
-import PublicProjectsPage from 'pages/public/PublicProjectsPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
@@ -14,6 +13,7 @@ import AppRoute from 'utils/AppRoute';
 import SearchPage from 'features/search/SearchPage';
 import PermitsRouter from 'features/permits/PermitsRouter';
 import ResourcesRouter from 'features/resources/ResourcesRouter';
+import PublicProjectsRouter from 'features/projects/PublicProjectsRouter';
 
 const AppRouter: React.FC = (props: any) => {
   const location = useLocation();
@@ -26,7 +26,7 @@ const AppRouter: React.FC = (props: any) => {
     <Switch>
       <Redirect from="/:url*(/+)" to={location.pathname.slice(0, -1)} />
       <Redirect exact from="/" to="/projects" />
-      <AppRoute path="/projects" title={getTitle('Projects')} component={PublicProjectsPage} layout={PublicLayout} />
+      <AppRoute path="/projects" title={getTitle('Projects')} component={PublicProjectsRouter} layout={PublicLayout} />
       <AppRoute path="/search" title={getTitle('Search')} component={SearchPage} layout={PublicLayout} />
       <AppRoute
         path="/page-not-found"
