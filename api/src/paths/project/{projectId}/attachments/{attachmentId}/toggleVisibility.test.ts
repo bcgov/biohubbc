@@ -199,11 +199,15 @@ describe('toggleProjectAttachmentVisibility', () => {
     it('should throw an error when fails to remove project attachment security token', async () => {
       const mockQuery = sinon.stub();
 
-      mockQuery.onFirstCall().resolves({
-        rowCount: 1
-      }).onSecondCall().resolves({
-        rowCount: null
-      });
+      mockQuery
+        .onFirstCall()
+        .resolves({
+          rowCount: 1
+        })
+        .onSecondCall()
+        .resolves({
+          rowCount: null
+        });
 
       sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
       sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
