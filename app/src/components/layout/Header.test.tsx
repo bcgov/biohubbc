@@ -16,7 +16,8 @@ describe('Header', () => {
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(false) // Return false when the `Manage Users` secure link is parsed
-      .mockReturnValueOnce(true); // Return true when the `Search` secure link is parsed
+      .mockReturnValueOnce(true) // Return true when the `Search` secure link is parsed
+      .mockReturnValueOnce(true); // Return true when the `Resources` secure link is parsed
 
     const authState = {
       keycloakWrapper: {
@@ -50,6 +51,7 @@ describe('Header', () => {
     expect(getByText('Permits')).toBeVisible();
     expect(getByText('Search')).toBeVisible();
     expect(queryByText('Manage Users')).not.toBeInTheDocument();
+    expect(queryByText('Resources')).toBeInTheDocument();
   });
 
   it('renders correctly with system admin role', () => {
@@ -59,7 +61,8 @@ describe('Header', () => {
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
-      .mockReturnValueOnce(true); // Return true when the `Search` secure link is parsed
+      .mockReturnValueOnce(true) // Return true when the `Search` secure link is parsed
+      .mockReturnValueOnce(true); // Return true when the `Resources` secure link is parsed
 
     const authState = {
       keycloakWrapper: {
@@ -93,6 +96,7 @@ describe('Header', () => {
     expect(getByText('Permits')).toBeVisible();
     expect(getByText('Search')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
+    expect(getByText('Resources')).toBeVisible();
   });
 
   it('renders the username and logout button', () => {

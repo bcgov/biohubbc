@@ -1,10 +1,7 @@
 import { CSVValidator } from '../csv-file';
 
 /**
- * For each header in `requiredFieldsByHeader`, adds an error for each row cell that is empty.
- *
- * @param {string[]} [requiredFieldsByHeader]
- * @return {*}  {CSVValidator}
+ * TODO needs updating to use new config style, etc.
  */
 export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): CSVValidator => {
   return (csvWorksheet) => {
@@ -62,150 +59,32 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
   };
 };
 
-export interface ICodeValuesByHeader {
-  codeValues: (string | number)[];
-  header: string;
-}
-
-export interface IValueRangesByHeader {
-  min_value: number;
-  max_value: number;
-  header: string;
-}
-
-export interface IFormatByHeader {
-  reg_exp: string;
-  expected_format: string;
-  header: string;
-}
-
-/**
- * For each item in `codeValuesByHeader`, adds an error for each row cell whose value does not match a codeValue.
- *
- * Note: If the cell is empty, this check will be skipped.  Use the `getRequiredFieldsValidator` validator to assert
- * required fields.
- *
- * @param {ICodeValuesByHeader[]} [codeValuesByHeader]
- * @return {*}  {CSVValidator}
- */
-export const getCodeValueFieldsValidator = (requiredCodeValuesByHeader?: ICodeValuesByHeader[]): CSVValidator => {
-  return (csvWorksheet) => {
-    if (!requiredCodeValuesByHeader?.length) {
-      return csvWorksheet;
-    }
-
-    const rows = csvWorksheet.getRows();
-    const headers = csvWorksheet.getHeaders();
-
-    rows.forEach((row, rowIndex) => {
-      for (const codeValuesByHeader of requiredCodeValuesByHeader) {
-        const columnIndex = headers.indexOf(codeValuesByHeader.header);
-
-        //if column does not exist, return
-
-        if (columnIndex < 0) {
-          return csvWorksheet;
-        }
-
-        const rowValueForColumn = row[columnIndex];
-
-        if (!rowValueForColumn) {
-          // cell is empty, use the getRequiredFieldsValidator to assert required fields
-          return;
-        }
-
-        // Add an error if the cell value is not one of the elements in the codeValues array
-        if (!codeValuesByHeader.codeValues.includes(rowValueForColumn)) {
-          csvWorksheet.csvValidation.addRowErrors([
-            {
-              errorCode: 'Invalid Value',
-              message: `Invalid value: ${rowValueForColumn}. Must be one of [${codeValuesByHeader.codeValues.join(
-                ', '
-              )}]`,
-              col: codeValuesByHeader.header,
-              row: rowIndex + 2
-            }
-          ]);
-        }
-      }
-    });
-
-    return csvWorksheet;
+export type ColumnCodeValidatorConfig = {
+  columnName: string;
+  column_code_validator: {
+    name?: string;
+    description?: string;
+    allowed_code_values: { name: string | number; description?: string }[];
   };
 };
 
 /**
- * For each item in `codeValuesByHeader`, adds an error for each row cell whose value does not match a codeValue.
- *
- * Note: If the cell is empty, this check will be skipped.  Use the `getRequiredFieldsValidator` validator to assert
- * required fields.
- *
- * @param {ICodeValuesByHeader[]} [codeValuesByHeader]
- * @return {*}  {CSVValidator}
- */
-export const getValidRangeFieldsValidator = (requiredRangeByHeader?: IValueRangesByHeader[]): CSVValidator => {
-  return (csvWorksheet) => {
-    if (!requiredRangeByHeader) {
-      return csvWorksheet;
-    }
-
-    const rows = csvWorksheet.getRows();
-    const headers = csvWorksheet.getHeaders();
-
-    rows.forEach((row, rowIndex) => {
-      for (const valueRangesByHeader of requiredRangeByHeader) {
-        const columnIndex = headers.indexOf(valueRangesByHeader.header);
-
-        //if column does not exist, return
-
-        if (columnIndex < 0) {
-          return csvWorksheet;
-        }
-
-        const rowValueForColumn = Number(row[columnIndex]);
-
-        if (isNaN(rowValueForColumn)) {
-          csvWorksheet.csvValidation.addRowErrors([
-            {
-              errorCode: 'Invalid Value',
-              message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
-              col: valueRangesByHeader.header,
-              row: rowIndex + 2
-            }
-          ]);
-        }
-
-        // Add an error if the cell value is not in the correct range provided in the array
-
-        if (rowValueForColumn < valueRangesByHeader.min_value || rowValueForColumn > valueRangesByHeader.max_value) {
-          csvWorksheet.csvValidation.addRowErrors([
-            {
-              errorCode: 'Out of Range',
-              message: `Invalid value: ${rowValueForColumn}. Value range must be between ${valueRangesByHeader.min_value} and ${valueRangesByHeader.max_value} `,
-              col: valueRangesByHeader.header,
-              row: rowIndex + 2
-            }
-          ]);
-        }
-      }
-    });
-
-    return csvWorksheet;
-  };
-};
-
-/**
- * For each item in `requiredFormatsByHeader`, adds an error for each row cell whose value does not match the regular expression pattern.
+ * For a specified column, adds an error for each row whose column value does not match a value in a specified set of
+ * allowed values (codes).
  *
  * Note: If the cell is empty, this check will be skipped. Use the `getRequiredFieldsValidator` validator to assert
  * required fields.
  *
- * @param {IFormatByHeader[]} [requiredFormatsByHeader]
+ * @param {ColumnCodeValidatorConfig} [config]
  * @return {*}  {CSVValidator}
  */
-export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatByHeader[]): CSVValidator => {
+export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig): CSVValidator => {
   return (csvWorksheet) => {
-    if (!requiredFormatsByHeader) {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    if (!config.column_code_validator.allowed_code_values.length) {
       return csvWorksheet;
     }
 
@@ -213,29 +92,190 @@ export const getValidFormatFieldsValidator = (requiredFormatsByHeader?: IFormatB
     const headers = csvWorksheet.getHeaders();
 
     rows.forEach((row, rowIndex) => {
-      for (const formatByHeader of requiredFormatsByHeader) {
-        const columnIndex = headers.indexOf(formatByHeader.header);
+      const columnIndex = headers.indexOf(config.columnName);
 
-        //if column does not exist, return
+      // if column does not exist, return
+      if (columnIndex < 0) {
+        return csvWorksheet;
+      }
 
-        if (columnIndex < 0) {
-          return csvWorksheet;
-        }
+      const rowValueForColumn = row[columnIndex];
 
-        const rowValueForColumn = String(row[columnIndex]);
-        const regex = new RegExp(formatByHeader.reg_exp);
+      if (!rowValueForColumn) {
+        // cell is empty, use the getRequiredFieldsValidator to assert required fields
+        return csvWorksheet;
+      }
 
-        // Add an error if the cell value is not in the correct range provided in the array
-        if (!regex.test(rowValueForColumn)) {
+      const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => allowedCode.name);
+
+      // Add an error if the cell value is not one of the elements in the codeValues array
+      if (!allowedCodeValues.includes(rowValueForColumn)) {
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: 'Invalid Value',
+            message: `Invalid value: ${rowValueForColumn}. Must be one of [${allowedCodeValues.join(', ')}]`,
+            col: config.columnName,
+            row: rowIndex + 2
+          }
+        ]);
+      }
+    });
+
+    return csvWorksheet;
+  };
+};
+
+export type ColumnRangeValidatorConfig = {
+  columnName: string;
+  column_range_validator: {
+    name?: string;
+    description?: string;
+    min_value?: number;
+    max_value?: number;
+  };
+};
+
+/**
+ * For a specified column, adds an error for each row whose column value does not match a specified range.
+ *
+ * Note: If the cell is empty, this check will be skipped.  Use the `getRequiredFieldsValidator` validator to assert
+ * required fields.
+ *
+ * @param {ColumnRangeValidatorConfig} [config]
+ * @return {*}  {CSVValidator}
+ */
+export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    const rows = csvWorksheet.getRows();
+    const headers = csvWorksheet.getHeaders();
+
+    rows.forEach((row, rowIndex) => {
+      const columnIndex = headers.indexOf(config.columnName);
+
+      // if column does not exist, return
+      if (columnIndex < 0) {
+        return csvWorksheet;
+      }
+
+      const rowValueForColumn = Number(row[columnIndex]);
+
+      if (isNaN(rowValueForColumn)) {
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: 'Invalid Value',
+            message: `Invalid value: ${row[columnIndex]}. Value must be a number `,
+            col: config.columnName,
+            row: rowIndex + 2
+          }
+        ]);
+      }
+
+      if (config.column_range_validator.min_value && config.column_range_validator.max_value) {
+        // Value must be between min value and max value
+        if (
+          rowValueForColumn < config.column_range_validator.min_value ||
+          rowValueForColumn > config.column_range_validator.max_value
+        ) {
+          // Add an error if the cell value is not in the correct range provided in the array
           csvWorksheet.csvValidation.addRowErrors([
             {
-              errorCode: 'Unexpected Format',
-              message: `Unexpected Format: ${rowValueForColumn}. ${formatByHeader.expected_format}`,
-              col: formatByHeader.header,
+              errorCode: 'Out of Range',
+              message: `Invalid value: ${rowValueForColumn}. Value must be between ${config.column_range_validator.min_value} and ${config.column_range_validator.max_value} `,
+              col: config.columnName,
               row: rowIndex + 2
             }
           ]);
         }
+      } else if (!config.column_range_validator.min_value && config.column_range_validator.max_value) {
+        // Value must be less than max value
+        if (rowValueForColumn > config.column_range_validator.max_value) {
+          // Add an error if the cell value is not in the correct range provided in the array
+          csvWorksheet.csvValidation.addRowErrors([
+            {
+              errorCode: 'Out of Range',
+              message: `Invalid value: ${rowValueForColumn}. Value must be less than ${config.column_range_validator.max_value} `,
+              col: config.columnName,
+              row: rowIndex + 2
+            }
+          ]);
+        }
+      } else if (config.column_range_validator.min_value && !config.column_range_validator.max_value) {
+        // Value must be greater than min value
+        if (rowValueForColumn < config.column_range_validator.min_value) {
+          // Add an error if the cell value is not in the correct range provided in the array
+          csvWorksheet.csvValidation.addRowErrors([
+            {
+              errorCode: 'Out of Range',
+              message: `Invalid value: ${rowValueForColumn}. Value must be greater than ${config.column_range_validator.min_value} `,
+              col: config.columnName,
+              row: rowIndex + 2
+            }
+          ]);
+        }
+      }
+    });
+
+    return csvWorksheet;
+  };
+};
+
+export type ColumnFormatValidatorConfig = {
+  columnName: string;
+  column_format_validator: {
+    name?: string;
+    description?: string;
+    reg_exp: string;
+    expected_format: string;
+  };
+};
+
+/**
+ * For a specified column, adds an error for each row whose column value does not match a specified regex format.
+ *
+ * Note: If the cell is empty, this check will be skipped. Use the `getRequiredFieldsValidator` validator to assert
+ * required fields.
+ *
+ * @param {ColumnFormatValidatorConfig} [config]
+ * @return {*}  {CSVValidator}
+ */
+export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConfig): CSVValidator => {
+  return (csvWorksheet) => {
+    if (!config) {
+      return csvWorksheet;
+    }
+
+    if (!config.column_format_validator.reg_exp) {
+      return csvWorksheet;
+    }
+
+    const rows = csvWorksheet.getRows();
+    const headers = csvWorksheet.getHeaders();
+
+    rows.forEach((row, rowIndex) => {
+      const columnIndex = headers.indexOf(config.columnName);
+
+      // if column does not exist, return
+      if (columnIndex < 0) {
+        return csvWorksheet;
+      }
+
+      const rowValueForColumn = String(row[columnIndex]);
+      const regex = new RegExp(config.column_format_validator.reg_exp);
+
+      // Add an error if the cell value is not in the correct range provided in the array
+      if (!regex.test(rowValueForColumn)) {
+        csvWorksheet.csvValidation.addRowErrors([
+          {
+            errorCode: 'Unexpected Format',
+            message: `Unexpected Format: ${rowValueForColumn}. ${config.column_format_validator.expected_format}`,
+            col: config.columnName,
+            row: rowIndex + 2
+          }
+        ]);
       }
     });
 
