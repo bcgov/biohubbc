@@ -149,6 +149,42 @@ describe('toggleProjectAttachmentVisibility', () => {
         expect(actualError.message).to.equal('Failed to build SQL insert project attachment security rule statement');
       }
     });
+
+    it('should throw an error when fails to add project attachment security rule when no project attachment security rule id exists', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery
+        .onFirstCall()
+        .resolves({
+          rows: [
+            {
+              id: null
+            }
+          ]
+        })
+        .onSecondCall()
+        .resolves({
+          rows: [
+            {
+              id: null
+            }
+          ]
+        });
+
+      sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
+      sinon.stub(project_attachments_queries, 'getProjectAttachmentSecurityRuleSQL').returns(SQL`something`);
+      sinon.stub(project_attachments_queries, 'addProjectAttachmentSecurityRuleSQL').returns(SQL`something`);
+
+      try {
+        const result = toggleVisibility.toggleProjectAttachmentVisibility();
+
+        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+        expect.fail();
+      } catch (actualError) {
+        expect(actualError.status).to.equal(400);
+        expect(actualError.message).to.equal('Failed to insert project attachment security rule');
+      }
+    });
   });
 
   describe('security token present in request body', () => {
