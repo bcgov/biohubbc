@@ -101,7 +101,7 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
         let securityRuleId: number | null = null;
 
         // Step 1: Check if security rule already exists
-        const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
+        const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(Number(req.params.attachmentId));
 
         if (!getSecurityRuleSQLStatement) {
           throw new HTTP400('Failed to build SQL get project attachment security rule statement');
@@ -121,7 +121,10 @@ export function toggleProjectAttachmentVisibility(): RequestHandler {
 
         // Step 2: Create security rule if it does not exist
         if (!securityRuleId) {
-          const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(Number(req.params.projectId));
+          const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(
+            Number(req.params.projectId),
+            Number(req.params.attachmentId)
+          );
 
           if (!createSecurityRuleSQLStatement) {
             throw new HTTP400('Failed to build SQL insert project attachment security rule statement');

@@ -32,16 +32,17 @@ export const applyProjectAttachmentSecurityRuleSQL = (securityRuleId: number | n
  * SQL query to add security rule for project attachments table
  *
  * @param {number} projectId
+ * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
-export const addProjectAttachmentSecurityRuleSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'addProjectAttachmentSecurityRuleSQL', message: 'params', projectId });
+export const addProjectAttachmentSecurityRuleSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'addProjectAttachmentSecurityRuleSQL', message: 'params', projectId, attachmentId });
 
-  if (!projectId) {
+  if (!projectId || !attachmentId) {
     return null;
   }
 
-  const ruleDefinition = [{ target: 'project_attachment', rule: `project_id=${projectId}` }];
+  const ruleDefinition = [{ target: 'project_attachment', rule: `project_attachment_id=${attachmentId}` }];
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO security_rule (
@@ -70,20 +71,22 @@ export const addProjectAttachmentSecurityRuleSQL = (projectId: number): SQLState
 /**
  * SQL query to get security rule for project attachments table
  *
- * @param {number} projectId
+ * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
-export const getProjectAttachmentSecurityRuleSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectAttachmentSecurityRuleSQL', message: 'params', projectId });
+export const getProjectAttachmentSecurityRuleSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectAttachmentSecurityRuleSQL', message: 'params', attachmentId });
 
-  if (!projectId) {
+  if (!attachmentId) {
     return null;
   }
 
+  const query = `project_attachment_id=${attachmentId}`;
+
   const sqlStatement: SQLStatement = SQL`
-    SELECT security_rule_id as id
-    FROM security_rule
-    WHERE project_id = ${projectId};
+    select security_rule_id as id
+    from security_rule sr
+    where sr.rule_definition->0 ->> 'rule' = ${query};
   `;
 
   defaultLog.debug({
