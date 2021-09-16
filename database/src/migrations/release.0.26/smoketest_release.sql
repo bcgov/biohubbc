@@ -158,6 +158,11 @@ begin
   select count(1) into _count from submission_message;
   assert _count = 1, 'FAIL submission_message';  
 
+  -- survey summary
+  insert into survey_summary_general (survey_id, study_area_id, stratum, summary_year, summary_month, summary_day) values (_survey_id, 'MU65', '1', '2021', '6', '26');
+  select count(1) into _count from survey_summary_general;
+  assert _count = 1, 'FAIL survey_summary_general';  
+
 --  raise notice 'survey status (project_id, survey_id, survey_status):';
 --  for _survey_status_rec in execute _survey_status_query loop
 --    raise notice 'survey status results are % % % %', _survey_status_rec.project_id, _survey_status_rec.survey_id,  _survey_status_rec.occurrence_id, _survey_status_rec.survey_status;

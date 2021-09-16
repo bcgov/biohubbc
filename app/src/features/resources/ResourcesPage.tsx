@@ -11,6 +11,8 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
+import { mdiFileExcelOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 
 /**
  * Page to display a list of resources.
@@ -23,95 +25,85 @@ const ResourcesPage: React.FC = () => {
       id: '1',
       name: 'Moose SRB or Composition Survey Skeena',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Skeena.xlsx',
-      description: 'some lorem ipsum'
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '82 KB'
     },
     {
       id: '2',
       name: 'Moose SRB or Composition Survey Omineca',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Omineca.xlsx',
-      description: 'some lorem ipsum'
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '64 KB'
     },
     {
       id: '3',
       name: 'Moose SRB or Composition Survey Cariboo',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Cariboo.xlsx',
-      description: 'some lorem ipsum'
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '60 KB'
     },
     {
       id: '4',
       name: 'Moose SRB or Composition Survey Okanagan',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Okanagan.xlsx',
-      description: 'some lorem ipsum'
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '63 KB'
     },
     {
       id: '5',
       name: 'Moose SRB or Composition Survey Kootenay',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Kootenay.xlsx',
-      description: 'some lorem ipsum'
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '63 KB'
     },
     {
       id: '6',
       name: 'Moose Recruitment Survey',
-      url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Survey.xlsx?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=nr-biohubbc-dlv%2F20210914%2Fca-central-1%2Fs3%2Faws4_request&X-Amz-Date=20210914T212011Z&X-Amz-Expires=300000&X-Amz-Signature=6645f28fe7f569f3d473090d07d735a32219556a1a3b79a6d466d017a7b8a157&X-Amz-SignedHeaders=host',
-      description: 'some lorem ipsum'
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Survey.xlsx',
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '36 KB'
     }
   ];
 
-  const resourcesCount = resources.length;
-
   const getResourcesList = () => {
-    const hasResources = resources.length > 0;
-
-    if (!hasResources) {
-      return (
+    return (
+      <TableContainer>
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell>Id</TableCell>
               <TableCell>Name</TableCell>
-              <TableCell>Link</TableCell>
+              <TableCell>Last Modified</TableCell>
+              <TableCell>File Size</TableCell>
+              <TableCell>Type</TableCell>
             </TableRow>
           </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell colSpan={6}>
-                <Box display="flex" justifyContent="center">
-                  No Resources
-                </Box>
-              </TableCell>
-            </TableRow>
+          <TableBody data-testid="resources-table">
+            {resources?.map((row) => (
+              <TableRow key={row.id}>
+                <TableCell>
+                  <Link underline="always" component="button" variant="body2">
+                    <a href={row.url}>{row.name}</a>
+                  </Link>
+                </TableCell>
+
+                <TableCell>{row.lastModified}</TableCell>
+                <TableCell>{row.fileSize}</TableCell>
+                <TableCell>
+                  {' '}
+                  <Icon path={row.type} size={1} />
+                </TableCell>
+              </TableRow>
+            ))}
           </TableBody>
         </Table>
-      );
-    } else {
-      return (
-        <TableContainer>
-          <Table>
-            <TableHead>
-              <TableRow>
-                <TableCell></TableCell>
-                <TableCell>Name</TableCell>
-                <TableCell>Description</TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody data-testid="resources-table">
-              {resources?.map((row) => (
-                <TableRow key={row.id}>
-                  <TableCell component="th" scope="row"></TableCell>
-                  <TableCell>
-                    <Link underline="always" component="button" variant="body2">
-                      <a href={row.url}>{row.name}</a>
-                    </Link>
-                  </TableCell>
-                  <TableCell>{row.description}</TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      );
-    }
+      </TableContainer>
+    );
   };
 
   /**
@@ -121,14 +113,10 @@ const ResourcesPage: React.FC = () => {
     <Box my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" justifyContent="space-between">
-          <Typography variant="h1">Resources</Typography>
+          <Typography variant="h1">Survey Forms</Typography>
         </Box>
         <Paper>
-          <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>
-            <Typography variant="h4" component="h3">
-              {resourcesCount} found
-            </Typography>
-          </Box>
+          <Box display="flex" alignItems="center" justifyContent="space-between" p={2}></Box>
           <Divider></Divider>
           {getResourcesList()}
         </Paper>

@@ -287,7 +287,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/admin/projects/1/surveys/observations"
+              href="/admin/projects/1/surveys/results"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -299,6 +299,34 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                 >
                   <path
                     d="M4 7V21H18V23H4C2.9 23 2 22.1 2 21V7H4M12.8 15.35L9.5 12.05L10.9 10.65L12.8 12.55L17.1 8.25L18.5 9.65L12.8 15.35M20 3C21.1 3 22 3.9 22 5V17C22 18.1 21.1 19 20 19H8C6.9 19 6 18.1 6 17V5C6 3.9 6.9 3 8 3H11.18C11.6 1.84 12.7 1 14 1C15.3 1 16.4 1.84 16.82 3H20M14 3C13.45 3 13 3.45 13 4C13 4.55 13.45 5 14 5C14.55 5 15 4.55 15 4C15 3.45 14.55 3 14 3M10 7V5H8V17H20V5H18V7H10Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Summary Results
+                </span>
+              </div>
+            </a>
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/admin/projects/1/surveys/observations"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"
                     style="fill: currentColor;"
                   />
                 </svg>
@@ -567,7 +595,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             </a>
             <a
               class="MuiListItem-root MuiListItem-gutters"
-              href="/admin/projects/1/surveys/observations"
+              href="/admin/projects/1/surveys/results"
             >
               <div
                 class="MuiListItemIcon-root"
@@ -579,6 +607,34 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 >
                   <path
                     d="M4 7V21H18V23H4C2.9 23 2 22.1 2 21V7H4M12.8 15.35L9.5 12.05L10.9 10.65L12.8 12.55L17.1 8.25L18.5 9.65L12.8 15.35M20 3C21.1 3 22 3.9 22 5V17C22 18.1 21.1 19 20 19H8C6.9 19 6 18.1 6 17V5C6 3.9 6.9 3 8 3H11.18C11.6 1.84 12.7 1 14 1C15.3 1 16.4 1.84 16.82 3H20M14 3C13.45 3 13 3.45 13 4C13 4.55 13.45 5 14 5C14.55 5 15 4.55 15 4C15 3.45 14.55 3 14 3M10 7V5H8V17H20V5H18V7H10Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Summary Results
+                </span>
+              </div>
+            </a>
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/admin/projects/1/surveys/observations"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M12,9A3,3 0 0,0 9,12A3,3 0 0,0 12,15A3,3 0 0,0 15,12A3,3 0 0,0 12,9M12,17A5,5 0 0,1 7,12A5,5 0 0,1 12,7A5,5 0 0,1 17,12A5,5 0 0,1 12,17M12,4.5C7,4.5 2.73,7.61 1,12C2.73,16.39 7,19.5 12,19.5C17,19.5 21.27,16.39 23,12C21.27,7.61 17,4.5 12,4.5Z"
                     style="fill: currentColor;"
                   />
                 </svg>
