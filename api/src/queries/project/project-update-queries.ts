@@ -26,9 +26,9 @@ export const getIUCNActionClassificationByPublicProjectSQL = (projectId: number)
 
   const sqlStatement = SQL`
     SELECT
-      ical1c.iucn_conservation_action_level_1_classification_id as classification,
-      ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
-      ical3s.iucn_conservation_action_level_3_subclassification_id as subClassification2
+      ical1c.name as classification,
+      ical2s.name as subClassification1,
+      ical3s.name as subClassification2
     FROM
       project_iucn_action_classification as piac
     LEFT OUTER JOIN
@@ -52,9 +52,9 @@ export const getIUCNActionClassificationByPublicProjectSQL = (projectId: number)
     AND
       p.publish_timestamp is not null
     GROUP BY
-      ical1c.iucn_conservation_action_level_1_classification_id,
-      ical2s.iucn_conservation_action_level_2_subclassification_id,
-      ical3s.iucn_conservation_action_level_3_subclassification_id;
+      ical1c.name,
+      ical2s.name,
+      ical3s.name;
   `;
 
   defaultLog.debug({

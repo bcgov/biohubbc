@@ -166,13 +166,17 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
 
   const sqlStatement = SQL`
     SELECT
-      activity_id
+      a.name
     from
       project_activity as pa
     LEFT OUTER JOIN
       project as p
     ON
       p.project_id = pa.project_id
+    LEFT OUTER JOIN
+      activity as a
+    ON
+      a.activity_id = pa.activity_id
     where pa.project_id = ${projectId}
     and p.publish_timestamp is not null;
   `;

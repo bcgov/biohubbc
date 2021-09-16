@@ -26,7 +26,7 @@ const AppRouter: React.FC = (props: any) => {
     <Switch>
       <Redirect from="/:url*(/+)" to={location.pathname.slice(0, -1)} />
       <Redirect exact from="/" to="/projects" />
-      <AppRoute path="/projects" title={getTitle('Projects')} component={PublicProjectsRouter} layout={PublicLayout} />
+      <AppRoute path="/projects" title={getTitle('Projects')} component={PublicProjectsRouter} />
       <AppRoute path="/search" title={getTitle('Search')} component={SearchPage} layout={PublicLayout} />
       <AppRoute
         path="/page-not-found"

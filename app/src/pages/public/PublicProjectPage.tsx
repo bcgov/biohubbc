@@ -9,18 +9,19 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiInformationOutline, mdiPaperclip } from '@mdi/js';
+import { mdiInformationOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+import { useParams, useLocation } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { ProjectStatusType } from 'constants/misc';
 import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';
+import PublicProjectDetails from './PublicProjectDetails';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -64,6 +65,7 @@ const PublicProjectPage = () => {
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
   const classes = useStyles();
+  const location = useLocation();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -156,23 +158,14 @@ const PublicProjectPage = () => {
                   </ListItemIcon>
                   <ListItemText>Project Details</ListItemText>
                 </ListItem>
-                <ListItem component={NavLink} to="attachments">
-                  <ListItemIcon>
-                    <Icon path={mdiPaperclip} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Attachments</ListItemText>
-                </ListItem>
               </List>
             </Paper>
           </Box>
-          {/* <Box component="article" flex="1 1 auto">
+          <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
-              <ProjectDetails projectForViewData={projectWithDetails} refresh={getProject} />
+              <PublicProjectDetails projectForViewData={projectWithDetails} refresh={getProject} />
             )}
-            {location.pathname.includes('/attachments') && (
-              <ProjectAttachments projectForViewData={projectWithDetails} />
-            )}
-          </Box> */}
+          </Box>
         </Box>
       </Container>
     </>
