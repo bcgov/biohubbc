@@ -5,8 +5,7 @@ import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
-import { useEffect } from 'react';
+import React, { useState, useEffect } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface IPublicLocationBoundaryProps {
