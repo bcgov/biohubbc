@@ -56,7 +56,7 @@ export class GetPublicProjectData {
   publish_date: string;
 
   constructor(projectData?: any, activityData?: any[]) {
-    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
+    defaultLog.debug({ label: 'GetPublicProjectData', message: 'params', projectData, activityData });
 
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.type || '';
