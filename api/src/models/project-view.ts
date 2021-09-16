@@ -25,6 +25,41 @@ export class GetProjectData {
 
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.type || '';
+    this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];
+    this.start_date = projectData?.start_date || '';
+    this.end_date = projectData?.end_date || '';
+    this.comments = projectData?.comments || '';
+    this.completion_status =
+      (projectData &&
+        projectData.end_date &&
+        moment(projectData.end_date).endOf('day').isBefore(moment()) &&
+        'Completed') ||
+      'Active';
+    this.publish_date = projectData?.publish_date || '';
+  }
+}
+
+/**
+ * Pre-processes GET /projects/{id} public (published) project data
+ *
+ * @export
+ * @class GetPublicProjectData
+ */
+export class GetPublicProjectData {
+  project_name: string;
+  project_type: string;
+  project_activities: string[];
+  start_date: string;
+  end_date: string;
+  comments: string;
+  completion_status: string;
+  publish_date: string;
+
+  constructor(projectData?: any, activityData?: any[]) {
+    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
+
+    this.project_name = projectData?.name || '';
+    this.project_type = projectData?.type || '';
     this.project_activities = (activityData?.length && activityData.map((item) => item.name)) || [];
     this.start_date = projectData?.start_date || '';
     this.end_date = projectData?.end_date || '';

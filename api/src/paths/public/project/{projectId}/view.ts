@@ -19,9 +19,9 @@ import {
   GetIUCNClassificationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData,
   GetLocationData,
-  GetPermitData
+  GetPermitData,
+  GetPublicProjectData
 } from '../../../../models/project-view';
 import { GetFundingData } from '../../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../../openapi/schemas/project';
@@ -150,7 +150,7 @@ function getPublicProjectForView(): RequestHandler {
           projectData.rows &&
           activityData &&
           activityData.rows &&
-          new GetProjectData(projectData.rows[0], activityData.rows)) ||
+          new GetPublicProjectData(projectData.rows[0], activityData.rows)) ||
         null;
 
       const getPermitData = (permitData && permitData.rows && new GetPermitData(permitData.rows)) || null;
