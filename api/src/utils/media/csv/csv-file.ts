@@ -4,20 +4,24 @@ import { IMediaState, MediaValidation } from '../media-file';
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
 
 export class CSVWorkBook {
-  workbook: xlsx.WorkBook;
+  rawWorkbook: xlsx.WorkBook;
 
   worksheets: CSVWorksheets;
 
-  constructor(rawWorkbook?: xlsx.WorkBook) {
-    this.workbook = rawWorkbook || xlsx.utils.book_new();
+  constructor(workbook?: xlsx.WorkBook) {
+    this.rawWorkbook = workbook || xlsx.utils.book_new();
 
     const worksheets = {};
 
-    Object.entries(this.workbook.Sheets).forEach(([key, value]) => {
+    Object.entries(this.rawWorkbook.Sheets).forEach(([key, value]) => {
       worksheets[key] = new CSVWorksheet(key, value);
     });
 
     this.worksheets = worksheets;
+  }
+
+  hasWorksheet(fileName: string): boolean {
+    return !!this.getWorksheet(fileName);
   }
 
   getWorksheet(fileName: string): CSVWorksheet | null {
@@ -28,6 +32,28 @@ export class CSVWorkBook {
     }
 
     return this.worksheets[worksheetKey];
+  }
+
+  addWorksheet(worksheetName: string) {
+    if (this.hasWorksheet(worksheetName)) {
+      return;
+    }
+
+    this.worksheets[worksheetName] = new CSVWorksheet(worksheetName);
+  }
+
+  getRawWorkbook(): xlsx.WorkBook {
+    return this.rawWorkbook;
+  }
+
+  getWorksheetsAsWorkbook(): xlsx.WorkBook {
+    const newWorkbook = xlsx.utils.book_new();
+
+    Object.entries(this.worksheets).forEach(([key, value]) => {
+      xlsx.utils.book_append_sheet(newWorkbook, value, key);
+    });
+
+    return newWorkbook;
   }
 }
 
@@ -41,10 +67,10 @@ export class CSVWorksheet {
 
   csvValidation: CSVValidation;
 
-  constructor(name: string, worksheet: xlsx.WorkSheet) {
+  constructor(name: string, worksheet?: xlsx.WorkSheet) {
     this.name = name;
 
-    this.worksheet = worksheet;
+    this.worksheet = worksheet || xlsx.utils.aoa_to_sheet([]);
 
     this._headers = [];
     this._rows = [];
@@ -188,12 +214,14 @@ export class CSVWorksheet {
    *
    * Note: set row to `-1` to append the row to the end.
    *
-   * @param {number} row the row number (row indexes start at 1)
    * @param {((string | number)[])} data
+   * @param {number} [row] the row number (row indexes start at 1)
    * @memberof CSVWorksheet
    */
-  setRow(row: number, data: (string | number)[]) {
-    xlsx.utils.sheet_add_aoa(this.worksheet, [data], { origin: row });
+  setRow(data: (string | number)[], row?: number) {
+    const options = (row && { origin: row }) || undefined;
+
+    xlsx.utils.sheet_add_aoa(this.worksheet, [data], options);
 
     // Reset _rows so that the worksheet is re-parsed when getRows is called
     this._rows = [];

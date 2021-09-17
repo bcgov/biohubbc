@@ -62,10 +62,10 @@ export class XLSXCSV {
     return csvStates;
   }
 
-  transform(transformationSchemaParser: TransformationSchemaParser): XLSXTransformation {
+  transformToDWC(transformationSchemaParser: TransformationSchemaParser): XLSXTransformation {
     const transformations = transformationSchemaParser.getTransformations();
 
-    const xlsxTransformation = this._transform(transformations);
+    const xlsxTransformation = this.transform(transformations);
 
     return xlsxTransformation;
   }
@@ -84,7 +84,15 @@ export class XLSXCSV {
     return this.mediaValidation;
   }
 
-  _transform(transformers: XLSXCSVTransformer[]): XLSXTransformation {
+  /**
+   * Executes each transformer function in the provided `transformers` against this instance, returning
+   * `this.xlsxTransformation`
+   *
+   * @param {XLSXCSVTransformer[]} transformers
+   * @return {*}  {XLSXTransformation}
+   * @memberof XLSXCSV
+   */
+  transform(transformers: XLSXCSVTransformer[]): XLSXTransformation {
     transformers.forEach((transformer) => transformer(this));
 
     return this.xlsxTransformation;

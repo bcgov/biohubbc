@@ -2,8 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getSubmissionFileFromS3, getSubmissionS3Key } from '../../paths/dwc/validate';
+import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
+import { CSVFile } from '../../utils/media/xlsx/transformation/XLSXTransformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
 import { prepXLSX } from './validate';
@@ -86,7 +88,24 @@ export function persistParseErrors(): RequestHandler {
 
 export function getTransformationSchema(): RequestHandler {
   return async (req, res, next) => {
-    req['transformationSchema'] = {};
+    req['transformationSchema'] = {
+      name: 'test file 1',
+      transformations: [
+        {
+          basic_transformer: {
+            name: 'basic transformer 1',
+            source: {
+              file: 'Observations - Skeena',
+              column: 'Comments'
+            },
+            target: {
+              file: 'occurrence',
+              column: 'occurrenceRemarks'
+            }
+          }
+        }
+      ]
+    };
 
     next();
   };
@@ -120,15 +139,20 @@ function transformXLSX(): RequestHandler {
 
       const transformationSchemaParser: TransformationSchemaParser = req['transformationSchemaParser'];
 
-      const response = xlsxCsv.transform(transformationSchemaParser);
+      const xlsxTransformation = xlsxCsv.transformToDWC(transformationSchemaParser);
 
-      console.log('===========================================');
-      console.log(response);
-      console.log('===========================================');
+      const files: CSVFile[] = xlsxTransformation.files;
 
-      return res.status(200).json(response);
+      const fileBuffers = files.map((file) => {
+        return {
+          name: file.fileName,
+          buffer: file.toBuffer()
+        };
+      });
 
-      // next();
+      req['fileBuffers'] = fileBuffers;
+
+      next();
     } catch (error) {
       defaultLog.debug({ label: 'transformXLSX', message: 'error', error });
       throw error;
@@ -138,6 +162,14 @@ function transformXLSX(): RequestHandler {
 
 export function persistTransformationResults(): RequestHandler {
   return async (req, res) => {
-    res.status(200).json();
+    const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
+
+    const promises = fileBuffers.map((record) =>
+      uploadBufferToS3(record.buffer, 'text/csv', `testing_transformations/${record.name}.csv`)
+    );
+
+    await Promise.all(promises);
+
+    return res.sendStatus(200);
   };
 }

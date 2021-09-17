@@ -12,7 +12,7 @@ export enum DWC_CLASS {
   META = 'meta'
 }
 
-const DEFAULT_XLSX_SHEET = 'Sheet1';
+export const DEFAULT_XLSX_SHEET = 'Sheet1';
 
 export type DWCWorksheets = { [name in DWC_CLASS]?: CSVWorksheet };
 

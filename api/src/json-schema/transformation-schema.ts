@@ -1,7 +1,7 @@
 export const submissionTransformationSchema = {
   description: 'Occurrence Submission Transformation Schema',
   type: 'object',
-  required: ['files'],
+  required: ['transformations'],
   properties: {
     name: {
       description: 'The name of the submission file',

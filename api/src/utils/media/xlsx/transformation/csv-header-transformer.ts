@@ -27,15 +27,13 @@ export const getBasicTransformer = (config?: BasicTransformerConfig): XLSXCSVTra
 
     const columnValues = sourceWorksheet.getColumn(config.basic_transformer.source.column);
 
-    columnValues.forEach((columnValue, columnIndex) =>
+    columnValues.forEach((columnValue, columnIndex) => {
       xlsxCsv.xlsxTransformation.addColumn(config.basic_transformer.target.file, columnIndex, {
         name: config.basic_transformer.source.column,
         value: columnValue
-      })
-    );
+      });
+    });
 
     return xlsxCsv;
   };
 };
-
-
