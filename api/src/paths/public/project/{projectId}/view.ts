@@ -1,17 +1,15 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getIUCNActionClassificationByPublicProjectSQL } from '../../../../queries/project/project-update-queries';
-import {
-  getPublicProjectPermitsSQL,
-  getPublicProjectSQL,
-  getIndigenousPartnershipsByPublicProjectSQL
-} from '../../../../queries/project/project-view-queries';
 import {
   getActivitiesByPublicProjectSQL,
   getStakeholderPartnershipsByPublicProjectSQL,
   getFundingSourceByPublicProjectSQL,
-  getLocationByPublicProjectSQL
-} from '../../../../queries/project/project-view-update-queries';
+  getLocationByPublicProjectSQL,
+  getPublicProjectPermitsSQL,
+  getPublicProjectSQL,
+  getIndigenousPartnershipsByPublicProjectSQL,
+  getIUCNActionClassificationByPublicProjectSQL
+} from '../../../../queries/public/project-queries';
 import { getAPIUserDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import {
@@ -19,10 +17,9 @@ import {
   GetObjectivesData,
   GetPartnershipsData,
   GetLocationData,
-  GetPermitData,
-  GetPublicProjectData,
-  GetPublicCoordinatorData
+  GetPermitData
 } from '../../../../models/project-view';
+import { GetPublicProjectData, GetPublicCoordinatorData } from '../../../../models/public/project';
 import { GetFundingData } from '../../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../../openapi/schemas/project';
 import { getLogger } from '../../../../utils/logger';
