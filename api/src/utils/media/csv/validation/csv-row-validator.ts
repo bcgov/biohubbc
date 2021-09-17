@@ -272,8 +272,6 @@ export const getNumericFieldsValidator = (config?: ColumnNumericValidatorConfig)
             row: rowIndex + 2
           }
         ]);
-
-        console.log('inserting an error for an invalid number');
       }
     });
 
