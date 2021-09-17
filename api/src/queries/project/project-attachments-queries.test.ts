@@ -44,26 +44,32 @@ describe('applyProjectAttachmentSecurityRuleSQL', () => {
 
 describe('addProjectAttachmentSecurityRuleSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = addProjectAttachmentSecurityRuleSQL((null as unknown) as number);
+    const response = addProjectAttachmentSecurityRuleSQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId provided', () => {
+    const response = addProjectAttachmentSecurityRuleSQL(1, (null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectId provided', () => {
-    const response = addProjectAttachmentSecurityRuleSQL(1);
+    const response = addProjectAttachmentSecurityRuleSQL(1, 2);
 
     expect(response).to.not.be.null;
   });
 });
 
 describe('getProjectAttachmentSecurityRuleSQL', () => {
-  it('returns null response when null projectId provided', () => {
+  it('returns null response when null attachmentId provided', () => {
     const response = getProjectAttachmentSecurityRuleSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid projectId provided', () => {
+  it('returns non null response when valid attachmentId provided', () => {
     const response = getProjectAttachmentSecurityRuleSQL(1);
 
     expect(response).to.not.be.null;
