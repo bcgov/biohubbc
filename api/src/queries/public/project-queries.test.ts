@@ -8,7 +8,8 @@ import {
   getIUCNActionClassificationByPublicProjectSQL,
   getFundingSourceByPublicProjectSQL,
   getIndigenousPartnershipsByPublicProjectSQL,
-  getStakeholderPartnershipsByPublicProjectSQL
+  getStakeholderPartnershipsByPublicProjectSQL,
+  getPublicProjectListSQL
 } from './project-queries';
 
 describe('getPublicProjectSQL', () => {
@@ -118,6 +119,14 @@ describe('getStakeholderPartnershipsByPublicProjectSQL', () => {
 
   it('returns non null response when valid project id param provided', () => {
     const response = getStakeholderPartnershipsByPublicProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getPublicProjectListSQL', () => {
+  it('returns non null response when called', () => {
+    const response = getPublicProjectListSQL();
 
     expect(response).to.not.be.null;
   });

@@ -5,7 +5,7 @@ import moment from 'moment';
 import { getAPIUserDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
 import { projectIdResponseObject } from '../../openapi/schemas/project';
-import { getPublicProjectListSQL } from '../../queries/project/project-view-queries';
+import { getPublicProjectListSQL } from '../../queries/public/project-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -50,7 +50,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getPublicProjectsList(): RequestHandler {
+export function getPublicProjectsList(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 

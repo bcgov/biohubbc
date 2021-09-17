@@ -374,3 +374,50 @@ export const getStakeholderPartnershipsByPublicProjectSQL = (projectId: number):
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get all public facing (published) projects.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getPublicProjectListSQL = (): SQLStatement | null => {
+  defaultLog.debug({ label: 'getPublicProjectListSQL', message: 'params' });
+
+  const sqlStatement = SQL`
+    SELECT
+      p.project_id as id,
+      p.name,
+      p.start_date,
+      p.end_date,
+      p.coordinator_agency_name,
+      pt.name as project_type,
+      string_agg(DISTINCT pp.number, ', ') as permits_list
+    from
+      project as p
+    left outer join project_type as pt
+      on p.project_type_id = pt.project_type_id
+    left outer join permit as pp
+      on p.project_id = pp.project_id
+    where
+      p.publish_timestamp is not null
+  `;
+
+  sqlStatement.append(SQL`
+    group by
+      p.project_id,
+      p.name,
+      p.start_date,
+      p.end_date,
+      p.coordinator_agency_name,
+      pt.name;
+  `);
+
+  defaultLog.debug({
+    label: 'getPublicProjectListSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
