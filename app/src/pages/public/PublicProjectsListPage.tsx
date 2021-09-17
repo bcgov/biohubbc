@@ -47,7 +47,7 @@ const PublicProjectsListPage = () => {
 
   useEffect(() => {
     const getProjects = async () => {
-      const projectsResponse = await biohubApi.project.getPublicProjectsList();
+      const projectsResponse = await biohubApi.public.project.getProjectsList();
 
       setProjects(() => {
         setIsLoading(false);
