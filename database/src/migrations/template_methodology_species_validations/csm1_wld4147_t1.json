@@ -12,8 +12,8 @@
           "validations": [
             {
               "column_format_validator": {
-                "reg_exp": "^[0-9]*$",
-                "expected_format": "Must be a positive integer."
+                "reg_exp": "^[sS][1-3]{1}$",
+                "expected_format": "Must be between s1 and s3."
               }
             }
           ]
@@ -24,18 +24,72 @@
           "file_duplicate_columns_validator": {}
         },
         {
-          "file_required_columns_validator": ["Stratum", "Stratum Definition"]
+          "file_required_columns_validator": {
+            "required_columns": ["Stratum", "Stratum Definition"]
+          }
         }
       ]
     },
     {
-      "name": "Sampling Unit Summary",
+      "name": "Block Summary",
       "description": "",
       "columns": [
         {
-          "name": "",
+          "name": "Block ID/SU ID",
           "description": "",
-          "validations": []
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Area (km2)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stratum",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": 1, "description": "High" },
+                  { "name": 2, "description": "Medium" },
+                  { "name": 3, "description": "Low" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sampled (Y/N)",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" }
+                ]
+              }
+            }
+          ]
         }
       ],
       "validations": [
@@ -43,7 +97,9 @@
           "file_duplicate_columns_validator": {}
         },
         {
-          "file_required_columns_validator": ["Survey Area", "Sampling Unit ID", "Stratum", "Area (km2)", "Comments"]
+          "file_required_columns_validator": {
+            "required_columns": ["Survey Area","Block ID/SU ID", "Area (km2)", "Stratum", "Sampled (Y/N)", "Comments"]
+          }
         }
       ]
     },
@@ -52,63 +108,188 @@
       "description": "",
       "columns": [
         {
-          "name": "",
-          "description": "",
-          "validations": []
-        }
-      ],
-      "validations": [
-        {
-          "file_duplicate_columns_validator": {}
-        },
-        {
-          "file_required_columns_validator": [
-            "Survey Area",
-            "Sampling Unit ID",
-            "Stratum",
-            "Area (km2)",
-            "Date",
-            "Start Time 1",
-            "End Time 1",
-            "Start Time 2",
-            "End Time 2",
-            "CalculatedTotal Block Time (hrs)",
-            "Aircraft Company",
-            "Aircraft Type",
-            "Aircraft Call Sign",
-            "GPS Model",
-            "GPS Datum",
-            "GPS Units",
-            "Pilot",
-            "Navigator",
-            "Rear Left Observer",
-            "Rear Right Observer",
-            "Temperature (oC)",
-            "Visibility",
-            "Cloud Cover (%)",
-            "Wind Speed (MPH)",
-            "Precipitation",
-            "Light",
-            "Snow cover (%)",
-            "Snow Depth",
-            "Days Since Snowfall",
-            "Weather Description",
-            "Habitat Description"
-          ]
-        }
-      ]
-    },
-    {
-      "name": "Observations - Skeena",
-      "description": "",
-      "columns": [
-        {
-          "name": "Activity",
+          "name": "Aircraft Type",
           "description": "",
           "validations": [
             {
               "column_code_validator": {
-                "allowed_code_values": ["Standing", "Bedding"]
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Bell JetRanger", "description": "" },
+                  { "name": "Bell LongRanger", "description": "" },
+                  { "name": "Hiller 12E4", "description": "" },
+                  { "name": "Hughes 500D", "description": "" },
+                  { "name": "Cessna 172", "description": "" },
+                  { "name": "Cessna 180", "description": "" },
+                  { "name": "Cessna 182", "description": "" },
+                  { "name": "Cessna 185", "description": "" },
+                  { "name": "Cessna 206", "description": "" },
+                  { "name": "SuperCub", "description": "" },
+                  { "name": "Beaver", "description": "" },
+                  { "name": "Single Otter", "description": "" },
+                  { "name": "Twin Otter", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GPS Units",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "UTM", "description": "" },
+                  { "name": "Decimal Degrees", "description": "" },
+                  { "name": "Degrees Decimal Minutes", "description": "" },
+                  { "name": "Degrees Minutes Seconds", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Visibility",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Very Good", "description": "" },
+                  { "name": "Good", "description": "" },
+                  { "name": "Moderate", "description": "" },
+                  { "name": "Poor", "description": "" },
+                  { "name": "Very Poor", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Precipitation",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "None", "description": "" },
+                  { "name": "Fog", "description": "" },
+                  { "name": "Misty Drizzle", "description": "" },
+                  { "name": "Light Rain", "description": "" },
+                  { "name": "Hard Rain", "description": "" },
+                  { "name": "Snow", "description": "" },
+                  { "name": "Light Snow", "description": "" },
+                  { "name": "Heavy Snow", "description": "" },
+                  { "name": "Freezing", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Bright", "description": "" },
+                  { "name": "Flat", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Calculated Total Block Time (hrs)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Air Temperature (C)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cloud Cover (%)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Wind Speed (MPH)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Snow cover (%)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Snow Depth",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Days Since Snowfall",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
               }
             }
           ]
@@ -119,26 +300,242 @@
           "file_duplicate_columns_validator": {}
         },
         {
-          "file_required_columns_validator": [
-            "Survey Area",
-            "Sampling Unit ID",
-            "Stratum",
-            "Waypoint",
-            "Species",
-            "Total Count",
-            "Yearlings Bulls",
-            "Mature Bulls",
-            "Unclassified Bulls",
-            "Lone Cows",
-            "Cow W/1 calf",
-            "Cow W/2 calves",
-            "Lone calf",
-            "Unclassified",
-            "Activity",
-            "% Veg Cover",
-            "% Snow Cover",
-            "Comments"
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Survey Area",
+              "Block ID/SU ID",
+              "Stratum",
+              "Area (km2)",
+              "Date",
+              "Start Time 1 (24hrs)",
+              "End Time 1 (24hrs)",
+              "Start Time 2 (24hrs)",
+              "End Time 2 (24hrs)",
+              "Total Block Time",
+              "Total Time (hours)",
+              "Total Time (mins)",
+              "Time (mins)/block area (km2)",
+              "Aircraft Company",
+              "Aircraft Type",
+              "Aircraft Call Sign",
+              "GPS Model",
+              "GPS Units",
+              "Pilot",
+              "Navigator",
+              "Rear Left Observer",
+              "Rear Right Observer",
+              "Air Temperature (C)",
+              "Visibility",
+              "Cloud Cover (%)",
+              "Wind Speed (MPH)",
+              "Light",
+              "Snow cover (%)",
+              "Snow Depth",
+              "Days Since Snowfall",
+              "Weather Description",
+              "Habitat Description"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Observations - Skeena",
+      "description": "",
+      "columns": [
+        {
+          "name": "Species",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Moose" },
+                  { "name": "Alces Alces" },
+                  { "name": "Alces Americanus" },
+                  { "name": "M-ALAL" },
+                  { "name": "M-ALAM" }
+                ]
+              }
+            }
           ]
+        },
+        {
+          "name": "Activity",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [{ "name": "Standing" }, { "name": "Moving" }, { "name": "Bedding" }]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Yearlings Bulls",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Mature Bulls",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unclassified Bulls",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lone Cow",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cow with 1 calf",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cow with 2 calf",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lone Calf",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unclassified",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Total Count",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "% Veg Cover",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "% Snow Cover",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Survey Area",
+              "Block ID/SU ID",
+              "Stratum",
+              "Waypoint",
+              "Species",
+              "Total Count",
+              "Yearling Bulls",
+              "Mature Bulls",
+              "Unclassified Bulls",
+              "Lone Cow",
+              "Cow with 1 calf",
+              "Cow with 2 calf",
+              "Lone Calf",
+              "Unclassified",
+              "Total Count",
+              "Activity",
+              "% Veg Cover",
+              "% Snow Cover",
+              "Comments"
+            ]
+          }
         }
       ]
     },
@@ -147,9 +544,133 @@
       "description": "",
       "columns": [
         {
-          "name": "",
+          "name": "Activity",
           "description": "",
-          "validations": []
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Alert" },
+                  { "name": "Avoiding" },
+                  { "name": "Avoiding Pests" },
+                  { "name": "Basking" },
+                  { "name": "Bedding" },
+                  { "name": "Building" },
+                  { "name": "Casting" },
+                  { "name": "Courting" },
+                  { "name": "Denning" },
+                  { "name": "Disturbed" },
+                  { "name": "Drinking" },
+                  { "name": "Excreting" },
+                  { "name": "Feeding" },
+                  { "name": "Fleeing" },
+                  { "name": "Feeding Salmonid" },
+                  { "name": "Grooming" },
+                  { "name": "Hibernating" },
+                  { "name": "Hunting" },
+                  { "name": "Ingesting" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Adult Males",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Adult Females",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Adults - Unclassified Sex",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Juvenile Males",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Juvenile Females",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Juveniles - Unclassified Sex",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown Age/Sex",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
         }
       ],
       "validations": [
@@ -157,25 +678,23 @@
           "file_duplicate_columns_validator": {}
         },
         {
-          "file_required_columns_validator": [
-            "Study Area Name",
-            "Sampling Unit ID",
-            "Stratum",
-            "Waypoint",
-            "Species",
-            "Total Count",
-            "Adult Males",
-            "Adult Females",
-            "Adults - Unclassified Sex",
-            "Juvenile Males",
-            "Juvenile Females",
-            "Juveniles - Unclassified Sex",
-            "Unknown Age/Sex",
-            "Activity",
-            "% Veg Cover",
-            "% Snow Cover",
-            "Comments"
-          ]
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Study Area Name",
+              "Block ID/SU ID",
+              "Waypoint",
+              "Species",
+              "Adult Males",
+              "Adult Females",
+              "Adults - Unclassified Sex",
+              "Juvenile Males",
+              "Juvenile Females",
+              "Juveniles - Unclassified Sex",
+              "Unknown Age/Sex",
+              "Activity",
+              "Comments"
+            ]
+          }
         }
       ]
     },
@@ -184,9 +703,99 @@
       "description": "",
       "columns": [
         {
-          "name": "",
+          "name": "UTM Zone",
           "description": "",
-          "validations": []
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": 8 },
+                  { "name": 9 },
+                  { "name": 10},
+                  { "name": 11 }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GPS Datum",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "NAD83" },
+                  { "name": "NAD27" },
+                  { "name": "WGS84"}
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Easting",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Northing",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lat (DD)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Long (DD)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
         }
       ],
       "validations": [
@@ -194,15 +803,20 @@
           "file_duplicate_columns_validator": {}
         },
         {
-          "file_required_columns_validator": [
-            "Waypoint",
-            "Site UTM Zone",
-            "Site Easting",
-            "Site Northing",
-            "Lat (DD)",
-            "Long (DD)",
-            "Comments"
-          ]
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Waypoint",
+              "UTM Zone",
+              "Easting",
+              "Northing",
+              "GPS Datum",
+              "Lat (DD)",
+              "Long (DD)",
+              "Elevation (m)",
+              "Elevation(-65m)",
+              "Comments"
+            ]
+          }
         }
       ]
     },
@@ -221,7 +835,9 @@
           "file_duplicate_columns_validator": {}
         },
         {
-          "file_required_columns_validator": ["ID", "Photo File Name", "Comments"]
+          "file_required_columns_validator": {
+            "required_columns": ["ID", "Photo File Name", "Comments"]
+          }
         }
       ]
     }
@@ -231,7 +847,7 @@
       "submission_required_files_validator": {
         "required_files": [
           "Strata Metadata",
-          "Sampling Unit Summary",
+          "Block Summary",
           "Effort & Site Conditions",
           "Observations - Skeena",
           "NonTargetted Observations",

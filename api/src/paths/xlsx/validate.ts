@@ -83,9 +83,9 @@ function validateXLSX(): RequestHandler {
 
       const mediaState: IMediaState = xlsxCsv.isMediaValid(validationSchemaParser);
 
-      if (!mediaState.isValid) {
-        req['mediaState'] = mediaState;
+      req['mediaState'] = mediaState;
 
+      if (!mediaState.isValid) {
         // The file itself is invalid, skip remaining validation
         return next();
       }
