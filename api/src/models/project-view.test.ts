@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { COMPLETION_STATUS } from 'constants/status';
 import { describe } from 'mocha';
 import {
   GetCoordinatorData,
@@ -362,7 +363,7 @@ describe('GetProjectData', () => {
     });
 
     it('sets completion_status', () => {
-      expect(data.completion_status).to.equal('Active');
+      expect(data.completion_status).to.equal(COMPLETION_STATUS.ACTIVE);
     });
   });
 
@@ -404,7 +405,7 @@ describe('GetProjectData', () => {
     });
 
     it('sets completion_status', () => {
-      expect(data.completion_status).to.equal('Completed');
+      expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
     });
   });
 });

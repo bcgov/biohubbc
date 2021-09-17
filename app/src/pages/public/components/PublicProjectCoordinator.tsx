@@ -26,22 +26,26 @@ const PublicProjectCoordinator: React.FC<IPublicProjectCoordinatorProps> = (prop
       </Box>
       <dl>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography component="dt" variant="subtitle2" color="textSecondary">
-              Name
-            </Typography>
-            <Typography component="dd" variant="body1">
-              {coordinator.first_name} {coordinator.last_name}
-            </Typography>
-          </Grid>
-          <Grid item xs={12} sm={6} md={4}>
-            <Typography component="dt" variant="subtitle2" color="textSecondary">
-              Email Address
-            </Typography>
-            <Typography component="dd" variant="body1">
-              {coordinator.email_address}
-            </Typography>
-          </Grid>
+          {coordinator.share_contact_details === 'true' && (
+            <>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  Name
+                </Typography>
+                <Typography component="dd" variant="body1">
+                  {coordinator.first_name} {coordinator.last_name}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  Email Address
+                </Typography>
+                <Typography component="dd" variant="body1">
+                  {coordinator.email_address}
+                </Typography>
+              </Grid>
+            </>
+          )}
           <Grid item xs={12} sm={6} md={4}>
             <Typography component="dt" variant="subtitle2" color="textSecondary">
               Agency

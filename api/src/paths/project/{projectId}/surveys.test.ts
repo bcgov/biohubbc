@@ -6,6 +6,7 @@ import * as surveys from './surveys';
 import * as db from '../../../database/db';
 import * as survey_view_queries from '../../../queries/survey/survey-view-queries';
 import SQL from 'sql-template-strings';
+import { COMPLETION_STATUS } from 'constants/status';
 
 chai.use(sinonChai);
 
@@ -134,7 +135,7 @@ describe('getSurveyList', () => {
         end_date: '2099/05/05',
         species: ['species'],
         publish_status: 'Unpublished',
-        completion_status: 'Active'
+        completion_status: COMPLETION_STATUS.ACTIVE
       }
     ]);
   });
@@ -175,7 +176,7 @@ describe('getSurveyList', () => {
         end_date: '2020/05/05',
         species: ['species'],
         publish_status: 'Published',
-        completion_status: 'Completed'
+        completion_status: COMPLETION_STATUS.COMPLETED
       }
     ]);
   });

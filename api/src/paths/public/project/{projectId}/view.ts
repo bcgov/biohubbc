@@ -15,13 +15,13 @@ import {
 import { getAPIUserDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import {
-  GetCoordinatorData,
   GetIUCNClassificationData,
   GetObjectivesData,
   GetPartnershipsData,
   GetLocationData,
   GetPermitData,
-  GetPublicProjectData
+  GetPublicProjectData,
+  GetPublicCoordinatorData
 } from '../../../../models/project-view';
 import { GetFundingData } from '../../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../../openapi/schemas/project';
@@ -160,7 +160,7 @@ function getPublicProjectForView(): RequestHandler {
       const getLocationData = (locationData && locationData.rows && new GetLocationData(locationData.rows)) || null;
 
       const getCoordinatorData =
-        (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;
+        (projectData && projectData.rows && new GetPublicCoordinatorData(projectData.rows[0])) || null;
 
       const getPartnershipsData =
         (indigenousPartnerships &&
