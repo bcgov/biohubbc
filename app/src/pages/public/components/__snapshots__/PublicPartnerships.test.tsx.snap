@@ -1,0 +1,65 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PublicPartnerships renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-1"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        Partnerships
+      </h3>
+    </div>
+  </div>
+  <dl
+    class="ddInline"
+  >
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Indigenous Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 1
+        </dd>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 2
+        </dd>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+      >
+        <dt
+          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        >
+          Other Partnerships
+        </dt>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 3
+        </dd>
+        <dd
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          partner 4
+        </dd>
+      </div>
+    </div>
+  </dl>
+</DocumentFragment>
+`;
