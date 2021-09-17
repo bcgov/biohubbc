@@ -6,7 +6,7 @@ import * as surveys from './surveys';
 import * as db from '../../../database/db';
 import * as survey_view_queries from '../../../queries/survey/survey-view-queries';
 import SQL from 'sql-template-strings';
-import { COMPLETION_STATUS } from 'constants/status';
+import { COMPLETION_STATUS } from '../../../constants/status';
 
 chai.use(sinonChai);
 

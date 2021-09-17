@@ -10,7 +10,7 @@ import * as survey_create_queries from '../../../../../queries/survey/survey-cre
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
 import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
-import { COMPLETION_STATUS } from 'constants/status';
+import { COMPLETION_STATUS } from '../../../../../constants/status';
 
 chai.use(sinonChai);
 

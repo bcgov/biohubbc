@@ -1,5 +1,5 @@
 import { expect } from 'chai';
-import { COMPLETION_STATUS } from 'constants/status';
+import { COMPLETION_STATUS } from '../constants/status';
 import { describe } from 'mocha';
 import {
   GetCoordinatorData,
