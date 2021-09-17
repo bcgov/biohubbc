@@ -73,7 +73,7 @@ describe('getPublicProjectsList', () => {
     }
   });
 
-  it('should return all permits on success', async () => {
+  it('should return all public projects on success', async () => {
     const projectsList = [
       {
         id: 1,
