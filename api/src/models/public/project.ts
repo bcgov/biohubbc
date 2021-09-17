@@ -55,7 +55,7 @@ export class GetPublicCoordinatorData {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'GetPublicCoordinatorData', message: 'params', obj });
 
-    const isCoordinatorDataPublic = obj?.coordinator_public === 'true';
+    const isCoordinatorDataPublic = obj?.coordinator_public;
 
     this.first_name = (isCoordinatorDataPublic && obj?.coordinator_first_name) || '';
     this.last_name = (isCoordinatorDataPublic && obj?.coordinator_last_name) || '';
