@@ -14,7 +14,7 @@ interface IProjectsRouterProps {
 }
 
 /**
- * Router for all `/project/*` pages.
+ * Router for all `/admin/project/*` pages.
  *
  * @param {*} props
  * @return {*}

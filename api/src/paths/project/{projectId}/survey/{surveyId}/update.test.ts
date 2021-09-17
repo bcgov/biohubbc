@@ -10,6 +10,7 @@ import * as survey_create_queries from '../../../../../queries/survey/survey-cre
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
 import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
+import { COMPLETION_STATUS } from '../../../../../constants/status';
 
 chai.use(sinonChai);
 
@@ -165,7 +166,7 @@ describe('getSurveyForUpdate', () => {
         geometry: survey_details.geometry,
         permit_number: survey_details.number,
         permit_type: survey_details.type,
-        completion_status: 'Completed',
+        completion_status: COMPLETION_STATUS.COMPLETED,
         publish_date: '',
         funding_sources: [1]
       },
@@ -304,7 +305,7 @@ describe('getSurveyForUpdate', () => {
         geometry: survey_details.geometry,
         permit_number: '',
         permit_type: '',
-        completion_status: 'Completed',
+        completion_status: COMPLETION_STATUS.COMPLETED,
         publish_date: '',
         funding_sources: [10]
       },
