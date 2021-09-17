@@ -1,0 +1,70 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PublicProjectPermits renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-4"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-5"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        Project Permits
+      </h3>
+    </div>
+    <div
+      class="MuiTableContainer-root"
+    >
+      <table
+        aria-label="permits-list-table"
+        class="MuiTable-root makeStyles-table-1"
+      >
+        <thead
+          class="MuiTableHead-root"
+        >
+          <tr
+            class="MuiTableRow-root MuiTableRow-head"
+          >
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-2"
+              scope="col"
+            >
+              Permit Number
+            </th>
+            <th
+              class="MuiTableCell-root MuiTableCell-head makeStyles-heading-2"
+              scope="col"
+            >
+              Permit Type
+            </th>
+          </tr>
+        </thead>
+        <tbody
+          class="MuiTableBody-root"
+        >
+          <tr
+            class="MuiTableRow-root"
+          >
+            <th
+              class="MuiTableCell-root MuiTableCell-body"
+              role="cell"
+              scope="row"
+            >
+              123
+            </th>
+            <th
+              class="MuiTableCell-root MuiTableCell-body"
+              role="cell"
+              scope="row"
+            >
+              Permit type
+            </th>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</DocumentFragment>
+`;

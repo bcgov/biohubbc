@@ -1,4 +1,5 @@
 import chai, { expect } from 'chai';
+import { COMPLETION_STATUS } from '../../../../../constants/status';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
@@ -165,7 +166,7 @@ describe('getSurveyForView', () => {
       geometry: survey_details.geometry,
       permit_number: survey_details.number,
       permit_type: survey_details.type,
-      completion_status: 'Completed',
+      completion_status: COMPLETION_STATUS.COMPLETED,
       publish_date: '',
       funding_sources: [
         {
