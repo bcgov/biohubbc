@@ -18,11 +18,18 @@ export const SearchFeaturePopup: React.FC<{ featureData: any }> = (props) => {
       <Box mb={2}>
         <Typography variant="body1">Project: {featureData.name}</Typography>
       </Box>
-      {isAuthenticated(keycloakWrapper) && (
-        <Button variant="contained" color="primary" onClick={() => history.push(`/admin/projects/${featureData.id}`)}>
-          View Project Details
-        </Button>
-      )}
+      <Button
+        variant="contained"
+        color="primary"
+        onClick={() => {
+          if (isAuthenticated(keycloakWrapper)) {
+            history.push(`/admin/projects/${featureData.id}`);
+          } else {
+            history.push(`/projects/${featureData.id}`);
+          }
+        }}>
+        View Project Details
+      </Button>
     </Popup>
   );
 };

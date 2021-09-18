@@ -1,4 +1,5 @@
 import { expect } from 'chai';
+import { COMPLETION_STATUS } from '../constants/status';
 import { describe } from 'mocha';
 import {
   GetCoordinatorData,
@@ -46,7 +47,7 @@ describe('GetPartnershipsData', () => {
   describe('indigenous_partnerships values provided', () => {
     let data: GetPartnershipsData;
 
-    const indigenous_partnerships = [{ name: 'partner 1' }, { name: 'partner 2' }];
+    const indigenous_partnerships = [{ fn_name: 'partner 1' }, { fn_name: 'partner 2' }];
     const stakeholder_partnerships: string[] = [];
 
     before(() => {
@@ -66,7 +67,7 @@ describe('GetPartnershipsData', () => {
     let data: GetPartnershipsData;
 
     const indigenous_partnerships: string[] = [];
-    const stakeholder_partnerships = [{ name: 'partner 1' }, { name: 'partner 2' }];
+    const stakeholder_partnerships = [{ sp_name: 'partner 1' }, { sp_name: 'partner 2' }];
 
     before(() => {
       data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
@@ -84,8 +85,8 @@ describe('GetPartnershipsData', () => {
   describe('All values provided', () => {
     let data: GetPartnershipsData;
 
-    const indigenous_partnerships = [{ name: 'partner 1' }, { name: 'partner 2' }];
-    const stakeholder_partnerships = [{ name: 'partner 3' }, { name: 'partner 4' }];
+    const indigenous_partnerships = [{ fn_name: 'partner 1' }, { fn_name: 'partner 2' }];
+    const stakeholder_partnerships = [{ sp_name: 'partner 3' }, { sp_name: 'partner 4' }];
 
     before(() => {
       data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
@@ -362,7 +363,7 @@ describe('GetProjectData', () => {
     });
 
     it('sets completion_status', () => {
-      expect(data.completion_status).to.equal('Active');
+      expect(data.completion_status).to.equal(COMPLETION_STATUS.ACTIVE);
     });
   });
 
@@ -404,7 +405,7 @@ describe('GetProjectData', () => {
     });
 
     it('sets completion_status', () => {
-      expect(data.completion_status).to.equal('Completed');
+      expect(data.completion_status).to.equal(COMPLETION_STATUS.COMPLETED);
     });
   });
 });
