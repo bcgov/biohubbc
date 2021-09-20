@@ -136,11 +136,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (!props.surveyId) {
-        response = await biohubApi.project.toggleProjectAttachmentVisibility(
-          props.projectId,
-          attachment.id,
-          attachment.securityToken
-        );
+        if (!attachment.securityToken) {
+          response = await biohubApi.project.makeAttachmentPrivate(props.projectId, attachment.id);
+        } else {
+          response = await biohubApi.project.makeAttachmentPublic(
+            props.projectId,
+            attachment.id,
+            attachment.securityToken
+          );
+        }
       }
 
       if (!response) {
