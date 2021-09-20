@@ -15,8 +15,16 @@ const useN8NApi = (axios: AxiosInstance) => {
     });
   };
 
+  // Initiate the scraping process for the submitted occurrence using n8n webhook
+  const initiateScrapeOccurrences = async (submissionId: number) => {
+    await axios.post('/webhook/scrape', {
+      occurrence_submission_id: submissionId
+    });
+  };
+
   return {
-    initiateSubmissionValidation
+    initiateSubmissionValidation,
+    initiateScrapeOccurrences
   };
 };
 

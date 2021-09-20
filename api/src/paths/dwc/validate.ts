@@ -154,7 +154,7 @@ export function getSubmissionFileFromS3(): RequestHandler {
   };
 }
 
-function prepDWCArchive(): RequestHandler {
+export function prepDWCArchive(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'prepDWCArchive', message: 's3File' });
 
