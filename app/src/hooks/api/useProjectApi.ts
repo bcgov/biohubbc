@@ -83,17 +83,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public facing (published) projects list.
-   *
-   * @return {*}  {Promise<IGetProjectsListResponse[]>}
-   */
-  const getPublicProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/public/projects`);
-
-    return data;
-  };
-
-  /**
    * Get project details based on its ID for viewing purposes.
    *
    * @param {number} projectId
@@ -257,7 +246,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     addFundingSource,
     deleteProject,
     publishProject,
-    getPublicProjectsList,
     makeAttachmentPublic,
     makeAttachmentPrivate
   };
