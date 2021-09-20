@@ -1,4 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -239,6 +240,59 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+
+
+
+  /**
+   * Upload survey summary results.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+   const uploadSurveySummaryResults = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<string> => {
+    const req_message = new FormData();
+
+    req_message.append('media', file);
+
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/summary/upload`, req_message, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+
+    return data;
+  };
+
+
+
+  /**
+   * Get observation submission S3 url based on survey and submission ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+   const getSurveySummaryResults = async (
+    projectId: number,
+    surveyId: number
+  ): Promise<IGetSummaryResultsResponse> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/summary/get`
+    );
+
+    return data;
+  };
+
+
+
   return {
     createSurvey,
     getSurveyForView,
@@ -246,6 +300,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    uploadSurveySummaryResults,
+    getSurveySummaryResults,
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
