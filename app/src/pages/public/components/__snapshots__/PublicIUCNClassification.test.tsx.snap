@@ -1,0 +1,67 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PublicIUCNClassification renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-2"
+  >
+    <h3
+      class="MuiTypography-root MuiTypography-h3"
+    >
+      IUCN Conservation Actions Classification
+    </h3>
+  </div>
+  <ul
+    class="MuiBox-root MuiBox-root-3 listNoBullets"
+  >
+    <li
+      class="MuiBox-root MuiBox-root-4 makeStyles-iucnListItem-1"
+    >
+      <hr
+        class="MuiDivider-root"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-5"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          classification 
+          <span>
+            &gt;
+          </span>
+           sub classification 1 
+          <span>
+            &gt;
+          </span>
+           sub classification 2
+        </span>
+      </div>
+    </li>
+    <li
+      class="MuiBox-root MuiBox-root-6 makeStyles-iucnListItem-1"
+    >
+      <hr
+        class="MuiDivider-root"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-7"
+      >
+        <span
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          classification again 
+          <span>
+            &gt;
+          </span>
+           sub classification 1 again 
+          <span>
+            &gt;
+          </span>
+           sub classification 2 again
+        </span>
+      </div>
+    </li>
+  </ul>
+</DocumentFragment>
+`;

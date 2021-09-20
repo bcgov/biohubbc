@@ -45,12 +45,12 @@ describe('getDuplicateHeadersValidator', () => {
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
         errorCode: 'Duplicate Header',
-        col: 'Header1',
+        col: 'header1',
         message: 'Duplicate header'
       },
       {
         errorCode: 'Duplicate Header',
-        col: 'Header2',
+        col: 'header2',
         message: 'Duplicate header'
       }
     ]);
@@ -175,12 +175,12 @@ describe('getValidHeadersValidator', () => {
     expect(csvWorkSheet.csvValidation.headerErrors).to.eql([
       {
         errorCode: 'Unknown Header',
-        col: 'UnknownHeader2',
+        col: 'unknownheader2',
         message: 'Unsupported header'
       },
       {
         errorCode: 'Unknown Header',
-        col: 'UnknownHeader4',
+        col: 'unknownheader4',
         message: 'Unsupported header'
       }
     ]);
