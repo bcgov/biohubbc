@@ -7,7 +7,7 @@ import {
   removeSecurityRecordSQL
 } from '../../../../../queries/project/project-attachments-queries';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
+import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -98,41 +98,10 @@ export function makeProjectAttachmentPublic(): RequestHandler {
       await connection.open();
 
       // Step 1: Remove associated row from the security table
-      const removeSecurityRecordSQLStatement = removeSecurityRecordSQL(req.body.securityToken);
-
-      if (!removeSecurityRecordSQLStatement) {
-        throw new HTTP400('Failed to build SQL remove security record statement');
-      }
-
-      const removeSecurityRecordSQLResponse = await connection.query(
-        removeSecurityRecordSQLStatement.text,
-        removeSecurityRecordSQLStatement.values
-      );
-
-      if (!removeSecurityRecordSQLResponse || !removeSecurityRecordSQLResponse.rowCount) {
-        throw new HTTP400('Failed to remove security record');
-      }
+      await removeSecurityRecord(req.body.securityToken, connection);
 
       // Step 2: Remove security token from project attachment row
-      const removeProjectAttachmentSecurityTokenSQLStatement = removeProjectAttachmentSecurityTokenSQL(
-        Number(req.params.attachmentId)
-      );
-
-      if (!removeProjectAttachmentSecurityTokenSQLStatement) {
-        throw new HTTP400('Failed to build SQL remove project attachment security token statement');
-      }
-
-      const removeProjectAttachmentSecurityTokenSQLResponse = await connection.query(
-        removeProjectAttachmentSecurityTokenSQLStatement.text,
-        removeProjectAttachmentSecurityTokenSQLStatement.values
-      );
-
-      if (
-        !removeProjectAttachmentSecurityTokenSQLResponse ||
-        !removeProjectAttachmentSecurityTokenSQLResponse.rowCount
-      ) {
-        throw new HTTP400('Failed to remove project attachment security token');
-      }
+      await removeProjectAttachmentSecurityToken(Number(req.params.attachmentId), connection);
 
       await connection.commit();
 
@@ -146,3 +115,40 @@ export function makeProjectAttachmentPublic(): RequestHandler {
     }
   };
 }
+
+export const removeSecurityRecord = async (securityToken: any, connection: IDBConnection): Promise<void> => {
+  const removeSecurityRecordSQLStatement = removeSecurityRecordSQL(securityToken);
+
+  if (!removeSecurityRecordSQLStatement) {
+    throw new HTTP400('Failed to build SQL remove security record statement');
+  }
+
+  const removeSecurityRecordSQLResponse = await connection.query(
+    removeSecurityRecordSQLStatement.text,
+    removeSecurityRecordSQLStatement.values
+  );
+
+  if (!removeSecurityRecordSQLResponse || !removeSecurityRecordSQLResponse.rowCount) {
+    throw new HTTP400('Failed to remove security record');
+  }
+};
+
+export const removeProjectAttachmentSecurityToken = async (
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const removeProjectAttachmentSecurityTokenSQLStatement = removeProjectAttachmentSecurityTokenSQL(attachmentId);
+
+  if (!removeProjectAttachmentSecurityTokenSQLStatement) {
+    throw new HTTP400('Failed to build SQL remove project attachment security token statement');
+  }
+
+  const removeProjectAttachmentSecurityTokenSQLResponse = await connection.query(
+    removeProjectAttachmentSecurityTokenSQLStatement.text,
+    removeProjectAttachmentSecurityTokenSQLStatement.values
+  );
+
+  if (!removeProjectAttachmentSecurityTokenSQLResponse || !removeProjectAttachmentSecurityTokenSQLResponse.rowCount) {
+    throw new HTTP400('Failed to remove project attachment security token');
+  }
+};

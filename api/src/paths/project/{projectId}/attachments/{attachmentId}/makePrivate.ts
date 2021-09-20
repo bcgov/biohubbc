@@ -8,7 +8,7 @@ import {
   addProjectAttachmentSecurityRuleSQL
 } from '../../../../../queries/project/project-attachments-queries';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
+import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -84,70 +84,20 @@ export function makeProjectAttachmentPrivate(): RequestHandler {
     try {
       await connection.open();
 
-      let securityRuleId: number | null = null;
-
       // Step 1: Check if security rule already exists
-      const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(Number(req.params.attachmentId));
-
-      if (!getSecurityRuleSQLStatement) {
-        throw new HTTP400('Failed to build SQL get project attachment security rule statement');
-      }
-
-      const getSecurityRuleSQLResponse = await connection.query(
-        getSecurityRuleSQLStatement.text,
-        getSecurityRuleSQLStatement.values
-      );
-
-      securityRuleId =
-        (getSecurityRuleSQLResponse &&
-          getSecurityRuleSQLResponse.rows &&
-          getSecurityRuleSQLResponse.rows[0] &&
-          getSecurityRuleSQLResponse.rows[0].id) ||
-        null;
+      let securityRuleId = await getExistingSecurityToken(Number(req.params.attachmentId), connection);
 
       // Step 2: Create security rule if it does not exist
       if (!securityRuleId) {
-        const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(
+        securityRuleId = await createNewSecurityRule(
           Number(req.params.projectId),
-          Number(req.params.attachmentId)
+          Number(req.params.attachmentId),
+          connection
         );
-
-        if (!createSecurityRuleSQLStatement) {
-          throw new HTTP400('Failed to build SQL insert project attachment security rule statement');
-        }
-
-        const createSecurityRuleSQLResponse = await connection.query(
-          createSecurityRuleSQLStatement.text,
-          createSecurityRuleSQLStatement.values
-        );
-
-        securityRuleId =
-          (createSecurityRuleSQLResponse &&
-            createSecurityRuleSQLResponse.rows &&
-            createSecurityRuleSQLResponse.rows[0] &&
-            createSecurityRuleSQLResponse.rows[0].id) ||
-          null;
-
-        if (!securityRuleId) {
-          throw new HTTP400('Failed to insert project attachment security rule');
-        }
       }
 
       // Step 3: Apply the security rule that was fetched or created
-      const applySecurityRuleSQLStatement = applyProjectAttachmentSecurityRuleSQL(securityRuleId);
-
-      if (!applySecurityRuleSQLStatement) {
-        throw new HTTP400('Failed to build SQL apply project attachment security rule statement');
-      }
-
-      const applySecurityRuleSQLResponse = await connection.query(
-        applySecurityRuleSQLStatement.text,
-        applySecurityRuleSQLStatement.values
-      );
-
-      if (!applySecurityRuleSQLResponse) {
-        throw new HTTP400('Failed to apply project attachment security rule');
-      }
+      await applyProjectAttachmentSecurityRule(securityRuleId, connection);
 
       await connection.commit();
 
@@ -161,3 +111,78 @@ export function makeProjectAttachmentPrivate(): RequestHandler {
     }
   };
 }
+
+export const getExistingSecurityToken = async (
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<number | null> => {
+  const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(attachmentId);
+
+  if (!getSecurityRuleSQLStatement) {
+    throw new HTTP400('Failed to build SQL get project attachment security rule statement');
+  }
+
+  const getSecurityRuleSQLResponse = await connection.query(
+    getSecurityRuleSQLStatement.text,
+    getSecurityRuleSQLStatement.values
+  );
+
+  const securityRuleId =
+    (getSecurityRuleSQLResponse &&
+      getSecurityRuleSQLResponse.rows &&
+      getSecurityRuleSQLResponse.rows[0] &&
+      getSecurityRuleSQLResponse.rows[0].id) ||
+    null;
+
+  return securityRuleId;
+};
+
+export const createNewSecurityRule = async (
+  projectId: number,
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(projectId, attachmentId);
+
+  if (!createSecurityRuleSQLStatement) {
+    throw new HTTP400('Failed to build SQL insert project attachment security rule statement');
+  }
+
+  const createSecurityRuleSQLResponse = await connection.query(
+    createSecurityRuleSQLStatement.text,
+    createSecurityRuleSQLStatement.values
+  );
+
+  const securityRuleId =
+    (createSecurityRuleSQLResponse &&
+      createSecurityRuleSQLResponse.rows &&
+      createSecurityRuleSQLResponse.rows[0] &&
+      createSecurityRuleSQLResponse.rows[0].id) ||
+    null;
+
+  if (!securityRuleId) {
+    throw new HTTP400('Failed to insert project attachment security rule');
+  }
+
+  return securityRuleId;
+};
+
+export const applyProjectAttachmentSecurityRule = async (
+  securityRuleId: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const applySecurityRuleSQLStatement = applyProjectAttachmentSecurityRuleSQL(securityRuleId);
+
+  if (!applySecurityRuleSQLStatement) {
+    throw new HTTP400('Failed to build SQL apply project attachment security rule statement');
+  }
+
+  const applySecurityRuleSQLResponse = await connection.query(
+    applySecurityRuleSQLStatement.text,
+    applySecurityRuleSQLStatement.values
+  );
+
+  if (!applySecurityRuleSQLResponse) {
+    throw new HTTP400('Failed to apply project attachment security rule');
+  }
+};
