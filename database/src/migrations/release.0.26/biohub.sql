@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Wednesday, September 15, 2021 17:09:07
+-- Date Created : Thursday, September 16, 2021 15:20:33
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -277,11 +277,9 @@ COMMENT ON TABLE climate_change_initiative IS 'Identifies the climate change ini
 CREATE TABLE common_survey_methodology(
     common_survey_methodology_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     name                            varchar(300)      NOT NULL,
-    version                         varchar(50)       NOT NULL,
     record_effective_date           date              NOT NULL,
     record_end_date                 date,
     description                     varchar(3000)     NOT NULL,
-    protocol                        varchar(10000)    NOT NULL,
     create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                     integer           NOT NULL,
     update_date                     timestamptz(6),
@@ -297,15 +295,11 @@ COMMENT ON COLUMN common_survey_methodology.common_survey_methodology_id IS 'Sys
 ;
 COMMENT ON COLUMN common_survey_methodology.name IS 'The name of the record.'
 ;
-COMMENT ON COLUMN common_survey_methodology.version IS 'The version of the record.'
-;
 COMMENT ON COLUMN common_survey_methodology.record_effective_date IS 'Record level effective date.'
 ;
 COMMENT ON COLUMN common_survey_methodology.record_end_date IS 'Record level end date.'
 ;
 COMMENT ON COLUMN common_survey_methodology.description IS 'The description of the record.'
-;
-COMMENT ON COLUMN common_survey_methodology.protocol IS 'The detailed specific protocol of the methodology suitable for publishing. Examples include those protocols published by the Resources Inventory Committee (RIC) of British Columbia.'
 ;
 COMMENT ON COLUMN common_survey_methodology.create_date IS 'The datetime the record was created.'
 ;
@@ -1799,6 +1793,100 @@ COMMENT ON TABLE submission_status_type IS 'The status types of submissions. Typ
 ;
 
 -- 
+-- TABLE: summary_parameter_code 
+--
+
+CREATE TABLE summary_parameter_code(
+    summary_parameter_code_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    code                         varchar(50)       NOT NULL,
+    name                         varchar(100)      NOT NULL,
+    record_end_date              date,
+    record_effective_date        date              NOT NULL,
+    description                  varchar(3000),
+    create_date                  timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                  integer           NOT NULL,
+    update_date                  timestamptz(6),
+    update_user                  integer,
+    revision_count               integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT summary_parameter_code_pk PRIMARY KEY (summary_parameter_code_id)
+)
+;
+
+
+
+COMMENT ON COLUMN summary_parameter_code.summary_parameter_code_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_parameter_code.code IS 'The code of the record.'
+;
+COMMENT ON COLUMN summary_parameter_code.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN summary_parameter_code.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN summary_parameter_code.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN summary_parameter_code.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN summary_parameter_code.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN summary_parameter_code.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_parameter_code.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN summary_parameter_code.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_parameter_code.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE summary_parameter_code IS 'Lookup values for parameter codes used in survey summaries.'
+;
+
+-- 
+-- TABLE: summary_parameter_method_code 
+--
+
+CREATE TABLE summary_parameter_method_code(
+    summary_parameter_method_code_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    code                                varchar(50)       NOT NULL,
+    name                                varchar(100)      NOT NULL,
+    record_end_date                     date,
+    record_effective_date               date              NOT NULL,
+    description                         varchar(3000),
+    create_date                         timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                         integer           NOT NULL,
+    update_date                         timestamptz(6),
+    update_user                         integer,
+    revision_count                      integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT summary_parameter_method_code_pk PRIMARY KEY (summary_parameter_method_code_id)
+)
+;
+
+
+
+COMMENT ON COLUMN summary_parameter_method_code.summary_parameter_method_code_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.code IS 'The code of the record.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_parameter_method_code.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE summary_parameter_method_code IS 'Lookup values for parameter method codes used in survey summaries.'
+;
+
+-- 
 -- TABLE: survey 
 --
 
@@ -2723,7 +2811,7 @@ CREATE UNIQUE INDEX climate_change_initiative_nuk1 ON climate_change_initiative(
 -- INDEX: common_survey_methodology_nuk1 
 --
 
-CREATE UNIQUE INDEX common_survey_methodology_nuk1 ON common_survey_methodology(name, version, (record_end_date is NULL)) where record_end_date is null
+CREATE UNIQUE INDEX common_survey_methodology_nuk1 ON common_survey_methodology(name, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: first_nations_nuk1 
@@ -3102,6 +3190,18 @@ CREATE INDEX "Ref183164" ON submission_status(submission_status_type_id)
 --
 
 CREATE UNIQUE INDEX submission_status_type_nuk1 ON submission_status_type(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: summary_parameter_code_nuk1 
+--
+
+CREATE UNIQUE INDEX summary_parameter_code_nuk1 ON summary_parameter_code(code, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: summary_parameter_method_code_nuk1 
+--
+
+CREATE UNIQUE INDEX summary_parameter_method_code_nuk1 ON summary_parameter_method_code(code, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
 -- INDEX: "Ref45147" 

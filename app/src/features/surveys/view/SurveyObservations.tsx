@@ -229,7 +229,7 @@ const SurveyObservations = () => {
 
   const messageGrouping: MessageGrouping = {
     mandatory: {
-      type: ['Missing Required Field', 'Missing Required Header'],
+      type: ['Missing Required Field', 'Missing Required Header', 'Duplicate Header'],
       label: 'Mandatory fields have not been filled out'
     },
     recommended: {

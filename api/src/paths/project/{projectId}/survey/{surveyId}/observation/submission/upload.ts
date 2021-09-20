@@ -227,13 +227,13 @@ export const getTemplateMethodologySpeciesIdStatement = async (
       templateName = 'Moose SRB or Composition Survey Skeena';
       break;
     case 'Moose_SRB_or_Composition_Survey_Omineca.xlsx':
-      templateName = 'Moose SRB or Composition Survey Skeena';
+      templateName = 'Moose SRB or Composition Survey Omineca';
       break;
     case 'Moose_SRB_or_Composition_Survey_Cariboo.xlsx':
-      templateName = 'Moose SRB or Composition Survey Skeena';
+      templateName = 'Moose SRB or Composition Survey Cariboo';
       break;
     case 'Moose_SRB_or_Composition_Survey_Okanagan.xlsx':
-      templateName = 'Moose SRB or Composition Survey Skeena';
+      templateName = 'Moose SRB or Composition Survey Okanagan';
       break;
     case 'Moose_SRB_or_Composition_Survey_Kootenay.xlsx':
       templateName = 'Moose SRB or Composition Survey Kootenay';

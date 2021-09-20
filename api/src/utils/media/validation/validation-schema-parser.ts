@@ -10,7 +10,8 @@ import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
   getValidFormatFieldsValidator,
-  getValidRangeFieldsValidator
+  getValidRangeFieldsValidator,
+  getNumericFieldsValidator
 } from '../csv/validation/csv-row-validator';
 import { DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { XLSXCSVValidator } from '../xlsx/xlsx-file';
@@ -65,6 +66,10 @@ export const ValidationRulesRegistry = {
     {
       name: 'column_format_validator',
       generator: getValidFormatFieldsValidator
+    },
+    {
+      name: 'column_numeric_validator',
+      generator: getNumericFieldsValidator
     }
   ],
   findMatchingRule(name: string): any {

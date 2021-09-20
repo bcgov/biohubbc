@@ -56,7 +56,7 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
 
   const sqlStatement = SQL`
     SELECT
-      name
+      name as sp_name
     FROM
       stakeholder_partnership
     WHERE
