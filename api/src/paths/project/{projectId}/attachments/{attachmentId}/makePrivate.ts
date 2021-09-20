@@ -127,14 +127,13 @@ export const getExistingSecurityToken = async (
     getSecurityRuleSQLStatement.values
   );
 
-  const securityRuleId =
+  return (
     (getSecurityRuleSQLResponse &&
       getSecurityRuleSQLResponse.rows &&
       getSecurityRuleSQLResponse.rows[0] &&
       getSecurityRuleSQLResponse.rows[0].id) ||
-    null;
-
-  return securityRuleId;
+    null
+  );
 };
 
 export const createNewSecurityRule = async (
