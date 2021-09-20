@@ -61,7 +61,7 @@ describe('CSVWorksheet', () => {
       const csvWorksheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
 
       expect(csvWorksheet).not.to.be.null;
-      expect(csvWorksheet.getHeaders()).to.eql(['Header1', 'Header2']);
+      expect(csvWorksheet.getHeaders()).to.eql(['header1', 'header2']);
     });
   });
 

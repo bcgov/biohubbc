@@ -75,7 +75,7 @@ export const hasRequiredHeadersValidator = (config?: FileRequiredHeaderValidator
     }
 
     for (const requiredHeader of config.file_required_columns_validator.required_columns) {
-      if (!headers.includes(requiredHeader)) {
+      if (!headers.includes(requiredHeader.toLowerCase())) {
         csvWorksheet.csvValidation.addHeaderErrors([
           {
             errorCode: 'Missing Required Header',
@@ -131,7 +131,7 @@ export const hasRecommendedHeadersValidator = (config?: FileRecommendedHeaderVal
     }
 
     for (const recommendedHeader of config.file_recommended_columns_validator.recommended_columns) {
-      if (!headers.includes(recommendedHeader)) {
+      if (!headers.includes(recommendedHeader.toLowerCase())) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: 'Missing Recommended Header',
@@ -173,7 +173,7 @@ export const getValidHeadersValidator = (config?: FileValidHeadersValidatorConfi
     const headers = csvWorksheet.getHeaders();
 
     for (const header of headers) {
-      if (!config.file_valid_columns_validator.valid_columns.includes(header)) {
+      if (!config.file_valid_columns_validator.valid_columns.map((item) => item.toLowerCase()).includes(header)) {
         csvWorksheet.csvValidation.addHeaderWarnings([
           {
             errorCode: 'Unknown Header',

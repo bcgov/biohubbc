@@ -88,6 +88,8 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i populate_system_metadata_constant.sql
 \i populate_common_survey_methodology.sql
 \i populate_template.sql
+\i populate_summary_parameter_method_code.sql
+\i populate_summary_parameter_code.sql
 
 -- temporary external interface tables
 \i populate_wldtaxonomic_units.sql
