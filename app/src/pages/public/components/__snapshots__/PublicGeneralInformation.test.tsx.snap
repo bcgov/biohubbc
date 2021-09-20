@@ -1,0 +1,81 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PublicGeneralInformation renders correctly 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-1"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    >
+      <h3
+        class="MuiTypography-root MuiTypography-h3"
+      >
+        General Information
+      </h3>
+    </div>
+    <dl>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Project Name
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Test Project Name
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Project Type
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            1
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Timeline
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Oct 10, 1998 - Feb 26, 2021
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Activities
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            1
+          </dd>
+        </div>
+      </div>
+    </dl>
+  </div>
+</DocumentFragment>
+`;

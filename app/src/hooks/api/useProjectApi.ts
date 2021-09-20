@@ -264,3 +264,39 @@ const useProjectApi = (axios: AxiosInstance) => {
 };
 
 export default useProjectApi;
+
+/**
+ * Returns a set of supported api methods for working with public (published) project records.
+ *
+ * @param {AxiosInstance} axios
+ * @return {*} object whose properties are supported api methods.
+ */
+export const usePublicProjectApi = (axios: AxiosInstance) => {
+  /**
+   * Get public facing (published) projects list.
+   *
+   * @return {*}  {Promise<IGetProjectsListResponse[]>}
+   */
+  const getProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
+    const { data } = await axios.get(`/api/public/projects`);
+
+    return data;
+  };
+
+  /**
+   * Get public (published) project details based on its ID for viewing purposes.
+   *
+   * @param {number} projectId
+   * @return {*} {Promise<IGetProjectForViewResponse>}
+   */
+  const getProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/view`);
+
+    return data;
+  };
+
+  return {
+    getProjectsList,
+    getProjectForView
+  };
+};

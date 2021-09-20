@@ -1,3 +1,4 @@
+import { COMPLETION_STATUS } from '../constants/status';
 import { Feature } from 'geojson';
 import moment from 'moment';
 import { getLogger } from '../utils/logger';
@@ -33,8 +34,8 @@ export class GetProjectData {
       (projectData &&
         projectData.end_date &&
         moment(projectData.end_date).endOf('day').isBefore(moment()) &&
-        'Completed') ||
-      'Active';
+        COMPLETION_STATUS.COMPLETED) ||
+      COMPLETION_STATUS.ACTIVE;
     this.publish_date = projectData?.publish_date || '';
   }
 }
@@ -192,8 +193,8 @@ export class GetPartnershipsData {
     });
 
     this.indigenous_partnerships =
-      (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.name)) || [];
+      (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.fn_name)) || [];
     this.stakeholder_partnerships =
-      (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.name)) || [];
+      (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.sp_name)) || [];
   }
 }

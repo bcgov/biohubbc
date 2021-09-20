@@ -9,6 +9,7 @@ import { getSurveyListSQL } from '../../../queries/survey/survey-view-queries';
 import { getLogger } from '../../../utils/logger';
 import { logRequest } from '../../../utils/path-utils';
 import moment from 'moment';
+import { COMPLETION_STATUS } from '../../../constants/status';
 
 const defaultLog = getLogger('paths/project/{projectId}/surveys');
 
@@ -134,7 +135,8 @@ export function _extractSurveys(rows: any[]): any[] {
       end_date: row.end_date,
       publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
       completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && 'Completed') || 'Active'
+        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
+        COMPLETION_STATUS.ACTIVE
     };
 
     surveys.push(survey);

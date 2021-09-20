@@ -130,6 +130,9 @@ export const submissionValidationSchema = {
         },
         {
           $ref: '#/$defs/column_key_validator'
+        },
+        {
+          $ref: '#/$defs/column_numeric_validator'
         }
       ]
     },
@@ -299,6 +302,26 @@ export const submissionValidationSchema = {
               type: 'string'
             },
             expected_format: {
+              type: 'string'
+            }
+          },
+          additionalProperties: false
+        }
+      },
+      additionalProperties: false
+    },
+
+    column_numeric_validator: {
+      description: 'Validates that this column is a number',
+      type: 'object',
+      properties: {
+        column_numeric_validator: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            description: {
               type: 'string'
             }
           },
