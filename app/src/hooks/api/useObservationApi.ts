@@ -45,6 +45,17 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  // testing
+  const initiateScrapeOccurrences = async (submissionId: number) => {
+    const { data } = await axios.post(
+      `/api/dwc/scrape-occurrences`, {
+        occurrence_submission_id: submissionId
+      }
+    );
+
+    return data;
+  }
+
   /**
    * Get observation submission csv data/details by submission id.
    * @param {number} projectId
@@ -122,7 +133,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationSubmission,
     deleteObservationSubmission,
     initiateDwCSubmissionValidation,
-    initiateXLSXSubmissionValidation
+    initiateXLSXSubmissionValidation,
+    initiateScrapeOccurrences // test
   };
 };
 

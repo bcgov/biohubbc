@@ -93,8 +93,8 @@ const SurveyObservations = () => {
           }
 
           if (process.env.REACT_APP_N8N_PORT) {
-            biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type);
-            // biohubApi.n8n.initiateScrapeOccurrences(result.submissionId);
+            // biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type);
+            biohubApi.observation.initiateScrapeOccurrences(result.submissionId);
             return;
           }
 

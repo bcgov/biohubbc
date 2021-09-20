@@ -248,24 +248,24 @@ export const uploadDWCArchiveOccurrences = async (
   const eventHeaders = file.worksheets.event?.getHeaders();
   const eventRows = file.worksheets.event?.getRows();
 
-  const eventEventIdHeader = eventHeaders?.indexOf('eventID') as number;
-  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimCoordinates') as number;
-  const eventDateHeader = eventHeaders?.indexOf('eventDate') as number;
+  const eventEventIdHeader = eventHeaders?.indexOf('eventid') as number;
+  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimcoordinates') as number;
+  const eventDateHeader = eventHeaders?.indexOf('eventdate') as number;
 
   const occurrenceHeaders = file.worksheets.occurrence?.getHeaders();
   const occurrenceRows = file.worksheets.occurrence?.getRows();
 
   const taxonHeaders = file.worksheets.taxon?.getHeaders();
   const taxonRows = file.worksheets.taxon?.getRows();
-  const taxonEventIdHeader = taxonHeaders?.indexOf('eventID') as number;
-  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularName') as number;
+  const taxonEventIdHeader = taxonHeaders?.indexOf('eventid') as number;
+  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularname') as number;
 
-  const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventID') as number;
-  const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
-  const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
-  const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
-  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
-  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
+  const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventid') as number;
+  const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedtaxa') as number;
+  const lifeStageHeader = occurrenceHeaders?.indexOf('lifestage') as number;
+  const individualCountHeader = occurrenceHeaders?.indexOf('individualcount') as number;
+  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismquantity') as number;
+  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismquantitytype') as number;
 
   const scrapedOccurrences = occurrenceRows?.map((row) => {
     const occurrenceEventId = row[occurrenceEventIdHeader];
