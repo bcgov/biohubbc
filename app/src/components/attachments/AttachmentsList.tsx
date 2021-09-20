@@ -77,7 +77,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         : `Changing this attachment's visibility to private will restrict it to yourself and other authorized users. Are you sure you want to continue?`,
       open: true,
       onYes: () => {
-        toggleAttachmentVisibility(attachment);
+        if (attachment.securityToken) {
+          makeAttachmentPublic(attachment);
+        } else {
+          makeAttachmentPrivate(attachment);
+        }
         dialogContext.setYesNoDialog({ open: false });
       }
     });
@@ -127,7 +131,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const toggleAttachmentVisibility = async (attachment: IGetProjectAttachment) => {
+  const makeAttachmentPrivate = async (attachment: IGetProjectAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
@@ -136,15 +140,33 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (!props.surveyId) {
-        if (!attachment.securityToken) {
-          response = await biohubApi.project.makeAttachmentPrivate(props.projectId, attachment.id);
-        } else {
-          response = await biohubApi.project.makeAttachmentPublic(
-            props.projectId,
-            attachment.id,
-            attachment.securityToken
-          );
-        }
+        response = await biohubApi.project.makeAttachmentPrivate(props.projectId, attachment.id);
+      }
+
+      if (!response) {
+        return;
+      }
+
+      props.getAttachments(true);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const makeAttachmentPublic = async (attachment: IGetProjectAttachment) => {
+    if (!attachment || !attachment.id) {
+      return;
+    }
+
+    try {
+      let response;
+
+      if (!props.surveyId) {
+        response = await biohubApi.project.makeAttachmentPublic(
+          props.projectId,
+          attachment.id,
+          attachment.securityToken
+        );
       }
 
       if (!response) {
