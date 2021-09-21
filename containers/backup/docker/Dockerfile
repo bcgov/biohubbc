@@ -1,11 +1,11 @@
-# This image provides a postgres installation from which to run backups 
+# This image provides a postgres installation from which to run backups
 FROM artifacts.developer.gov.bc.ca/docker-remote/centos/postgresql-12-centos7
 
 # Change timezone to PST for convenience
 ENV TZ=PST8PDT
 
 # Set the workdir to be root
-WORKDIR / 
+WORKDIR /
 
 # Load the backup scripts into the container (must be executable).
 COPY backup.* /
@@ -14,7 +14,7 @@ COPY webhook-template.json /
 
 # ========================================================================================================
 # Install go-crond (from https://github.com/BCDevOps/go-crond)
-#  - Adds some additional logging enhancements on top of the upstream project; 
+#  - Adds some additional logging enhancements on top of the upstream project;
 #    https://github.com/webdevops/go-crond
 #
 # CRON Jobs in OpenShift:
@@ -25,6 +25,9 @@ ARG GOCROND_VERSION=0.6.3
 ADD https://github.com/$SOURCE_REPO/go-crond/releases/download/$GOCROND_VERSION/go-crond-64-linux /usr/bin/go-crond
 
 USER root
+RUN yum install -y epel-release
+RUN yum install -y python-pip
+RUN pip install s3cmd
 
 RUN chmod +x /usr/bin/go-crond
 # ========================================================================================================
@@ -39,4 +42,4 @@ RUN echo $TZ > /etc/timezone
 USER 26
 
 # Set the default CMD.
-CMD sh /backup.sh
+CMD sh envsubst < s3_config.txt > ~/s3_config.txt &&  sh /backup.sh
