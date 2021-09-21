@@ -86,18 +86,18 @@ export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string 
  * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
  */
 export const getFormattedAmount = (amount: number): string => {
+  var formatter = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD',
+    minimumFractionDigits: 0,
+    maximumFractionDigits: 0
+  });
+
   if (!amount && amount !== 0) {
     //amount was invalid
     return '';
   }
-
-  const regex = new RegExp(/\B(?=(\d{3})+(?!\d))/g);
-
-  if (!Number(amount)) {
-    return '';
-  }
-
-  return '$ ' + Math.round(amount).toString().replace(regex, ',');
+  return formatter.format(amount);
 };
 
 /**

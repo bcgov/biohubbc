@@ -44,7 +44,7 @@ describe('ensureProtocol', () => {
 describe('getFormattedAmount', () => {
   it('returns a valid amount string when amount is valid', () => {
     const amount = 10000000;
-    expect(getFormattedAmount(amount)).toEqual('$ 10,000,000');
+    expect(getFormattedAmount(amount)).toEqual('$10,000,000');
   });
 
   it('returns empty string when amount is invalid', () => {

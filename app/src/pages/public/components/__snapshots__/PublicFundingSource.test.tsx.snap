@@ -55,7 +55,7 @@ exports[`PublicFundingSource renders correctly 1`] = `
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            $ 333
+            $333
           </dd>
         </div>
         <div
