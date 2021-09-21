@@ -5,7 +5,7 @@ import { getSubmissionFileFromS3, getSubmissionS3Key } from '../../paths/dwc/val
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
-import { CSVFile } from '../../utils/media/xlsx/transformation/XLSXTransformation';
+import { TargetFile } from '../../utils/media/xlsx/transformation/XLSXTransformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
 import { prepXLSX } from './validate';
@@ -90,19 +90,179 @@ export function getTransformationSchema(): RequestHandler {
   return async (req, res, next) => {
     req['transformationSchema'] = {
       name: 'test file 1',
-      transformations: [
+      files: [
         {
-          basic_transformer: {
-            name: 'basic transformer 1',
-            source: {
-              file: 'Observations - Skeena',
-              column: 'Comments'
+          name: 'Observations - Skeena',
+          transformations: [
+            {
+              basic_transformer: {
+                coreid: {
+                  file: 'Observations - Skeena',
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
+                },
+                source: {
+                  file: 'Observations - Skeena',
+                  column: 'Yearlings Bulls'
+                },
+                target: {
+                  file: 'occurrence',
+                  column: 'individualCount'
+                },
+                extra: {
+                  additional_targets: {
+                    targets: [
+                      {
+                        file: 'occurrence',
+                        column: 'Sex',
+                        value: 'Male'
+                      },
+                      {
+                        file: 'occurrence',
+                        column: 'Lifestage',
+                        value: 'Yearling'
+                      }
+                    ]
+                  }
+                },
+                pivot: 'p1'
+              }
             },
-            target: {
-              file: 'occurrence',
-              column: 'occurrenceRemarks'
+            {
+              basic_transformer: {
+                coreid: {
+                  file: 'Observations - Skeena',
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
+                },
+                source: {
+                  file: 'Observations - Skeena',
+                  column: 'Mature Bulls'
+                },
+                target: {
+                  file: 'occurrence',
+                  column: 'individualCount'
+                },
+                extra: {
+                  additional_targets: {
+                    targets: [
+                      {
+                        file: 'occurrence',
+                        column: 'Sex',
+                        value: 'Male'
+                      },
+                      {
+                        file: 'occurrence',
+                        column: 'Lifestage',
+                        value: 'Adult'
+                      }
+                    ]
+                  }
+                },
+                pivot: 'p2'
+              }
+            },
+            {
+              basic_transformer: {
+                coreid: {
+                  file: 'Observations - Skeena',
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
+                },
+                source: {
+                  file: 'Observations - Skeena',
+                  column: 'Lone Cows'
+                },
+                target: {
+                  file: 'occurrence',
+                  column: 'individualCount'
+                },
+                extra: {
+                  additional_targets: {
+                    targets: [
+                      {
+                        file: 'occurrence',
+                        column: 'Sex',
+                        value: 'Female'
+                      },
+                      {
+                        file: 'occurrence',
+                        column: 'Lifestage',
+                        value: 'Adult'
+                      }
+                    ]
+                  }
+                },
+                pivot: 'p3'
+              }
+            },
+            {
+              basic_transformer: {
+                coreid: {
+                  file: 'Observations - Skeena',
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
+                },
+                source: {
+                  file: 'Observations - Skeena',
+                  column: 'Comments'
+                },
+                target: {
+                  file: 'occurrence',
+                  column: 'occurrenceRemarks'
+                }
+              }
+            },
+            {
+              basic_transformer: {
+                coreid: {
+                  file: 'Observations - Skeena',
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
+                },
+                source: {
+                  file: 'Observations - Skeena',
+                  column: 'Species'
+                },
+                target: {
+                  file: 'occurrence',
+                  column: 'Taxon'
+                }
+              }
             }
-          }
+          ]
+        },
+        {
+          name: 'Effort & Site Conditions',
+          transformations: [
+            {
+              basic_transformer: {
+                coreid: {
+                  file: 'Effort & Site Conditions',
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum']
+                },
+                source: {
+                  file: 'Effort & Site Conditions',
+                  column: 'Date'
+                },
+                target: {
+                  file: 'event',
+                  column: 'eventDate'
+                }
+              }
+            },
+            {
+              basic_transformer: {
+                coreid: {
+                  file: 'Effort & Site Conditions',
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum']
+                },
+                source: {
+                  file: 'Effort & Site Conditions',
+                  column: 'Start Time 1'
+                },
+                target: {
+                  file: 'event',
+                  column: 'eventTime'
+                }
+              }
+            }
+          ]
         }
       ]
     };
@@ -139,14 +299,18 @@ function transformXLSX(): RequestHandler {
 
       const transformationSchemaParser: TransformationSchemaParser = req['transformationSchemaParser'];
 
-      const xlsxTransformation = xlsxCsv.transformToDWC(transformationSchemaParser);
+      const xlsxTransformationTarget = xlsxCsv.transformToDWC(transformationSchemaParser);
 
-      const files: CSVFile[] = xlsxTransformation.files;
+      const files: TargetFile[] = xlsxTransformationTarget.files;
 
       const fileBuffers = files.map((file) => {
+        const x = file.toBuffer(); //file.toCSV();
+        console.log(file.fileName, '================================');
+        console.log(x);
+        console.log('================================');
         return {
           name: file.fileName,
-          buffer: file.toBuffer()
+          buffer: x
         };
       });
 

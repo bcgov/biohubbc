@@ -1,6 +1,6 @@
 import jsonpath from 'jsonpath';
 import { XLSXCSVTransformer } from '../xlsx-file';
-import { getBasicTransformer } from './csv-header-transformer';
+import { getBasicTransformer } from './csv-file-transformer';
 
 export const TransformationRulesRegistry = {
   registry: [
@@ -25,13 +25,13 @@ export class TransformationSchemaParser {
     }
   }
 
-  getTransformations(): XLSXCSVTransformer[] {
-    const transformationSchemas = this.getTransformationSchemas();
+  getFileTransformations(fileName: string): XLSXCSVTransformer[] {
+    const transformationSchemas = this.getFileTransformationSchemas(fileName);
 
     const rules: XLSXCSVTransformer[] = [];
 
-    transformationSchemas.forEach((validationSchema) => {
-      const keys = Object.keys(validationSchema);
+    transformationSchemas.forEach((transformationSchema) => {
+      const keys = Object.keys(transformationSchema);
 
       if (keys.length !== 1) {
         return;
@@ -45,7 +45,7 @@ export class TransformationSchemaParser {
         return;
       }
 
-      const rule = generatorFunction(validationSchema);
+      const rule = generatorFunction(transformationSchema);
 
       rules.push(rule);
     });
@@ -53,8 +53,44 @@ export class TransformationSchemaParser {
     return rules;
   }
 
+  // getTransformations(): XLSXCSVTransformer[] {
+  //   const transformationSchemas = this.getTransformationSchemas();
+
+  //   const rules: XLSXCSVTransformer[] = [];
+
+  //   transformationSchemas.forEach((transformationSchema) => {
+  //     const keys = Object.keys(transformationSchema);
+
+  //     if (keys.length !== 1) {
+  //       return;
+  //     }
+
+  //     const key = keys[0];
+
+  //     const generatorFunction = TransformationRulesRegistry.findMatchingRule(key);
+
+  //     if (!generatorFunction) {
+  //       return;
+  //     }
+
+  //     const rule = generatorFunction(transformationSchema);
+
+  //     rules.push(rule);
+  //   });
+
+  //   return rules;
+  // }
+
+  getFileTransformationSchemas(fileName: string): object[] {
+    return jsonpath.query(this.transformationSchema, this.getFileTransformationsJsonPath(fileName))?.[0] || [];
+  }
+
   getTransformationSchemas(): object[] {
     return jsonpath.query(this.transformationSchema, this.getTransformationsJsonPath())?.[0] || [];
+  }
+
+  getFileTransformationsJsonPath(fileName: string): string {
+    return `$.files[?(@.name == '${fileName}')].transformations`;
   }
 
   getTransformationsJsonPath(): string {

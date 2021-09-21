@@ -3,7 +3,7 @@ import { CSVWorkBook, CSVWorksheet, ICsvState } from '../csv/csv-file';
 import { IMediaState, MediaFile, MediaValidation } from '../media-file';
 import { ValidationSchemaParser } from '../validation/validation-schema-parser';
 import { TransformationSchemaParser } from './transformation/transformation-schema-parser';
-import { XLSXTransformation } from './transformation/XLSXTransformation';
+import { SourceFileTransformer, XLSXTransformationTarget } from './transformation/XLSXTransformation';
 
 /**
  * Supports XLSX CSV files.
@@ -18,7 +18,7 @@ export class XLSXCSV {
 
   workbook: CSVWorkBook;
 
-  xlsxTransformation: XLSXTransformation;
+  xlsxTransformationTarget: XLSXTransformationTarget;
 
   constructor(file: MediaFile, options?: xlsx.ParsingOptions) {
     this.rawFile = file;
@@ -27,7 +27,7 @@ export class XLSXCSV {
 
     this.workbook = new CSVWorkBook(xlsx.read(this.rawFile.buffer, { ...options }));
 
-    this.xlsxTransformation = new XLSXTransformation();
+    this.xlsxTransformationTarget = new XLSXTransformationTarget();
   }
 
   isMediaValid(validationSchemaParser: ValidationSchemaParser): IMediaState {
@@ -62,12 +62,16 @@ export class XLSXCSV {
     return csvStates;
   }
 
-  transformToDWC(transformationSchemaParser: TransformationSchemaParser): XLSXTransformation {
-    const transformations = transformationSchemaParser.getTransformations();
+  transformToDWC(transformationSchemaParser: TransformationSchemaParser): XLSXTransformationTarget {
+    Object.keys(this.workbook.worksheets).forEach((fileName) => {
+      const transformers = transformationSchemaParser.getFileTransformations(fileName);
 
-    const xlsxTransformation = this.transform(transformations);
+      const fileTransformer = new SourceFileTransformer(fileName, transformers);
 
-    return xlsxTransformation;
+      fileTransformer.transform(this);
+    });
+
+    return this.xlsxTransformationTarget;
   }
 
   /**
@@ -86,19 +90,14 @@ export class XLSXCSV {
 
   /**
    * Executes each transformer function in the provided `transformers` against this instance, returning
-   * `this.xlsxTransformation`
+   * `this.xlsxTransformationTarget`
    *
-   * @param {XLSXCSVTransformer[]} transformers
-   * @return {*}  {XLSXTransformation}
+   * @param {((XLSXCSVTransformer | XLSXCSVTransformer[])[])} transformers
+   * @return {*}  {XLSXTransformationTarget}
    * @memberof XLSXCSV
    */
-  transform(transformers: XLSXCSVTransformer[]): XLSXTransformation {
-    transformers.forEach((transformer) => transformer(this));
-
-    return this.xlsxTransformation;
-  }
 }
 
-export type XLSXCSVValidator = (xlsxCsv: XLSXCSV, ...rest: any) => XLSXCSV;
+export type XLSXCSVValidator = (xlsxCsv: XLSXCSV) => XLSXCSV;
 
-export type XLSXCSVTransformer = (xlsxCsv: XLSXCSV, ...rest: any) => XLSXCSV;
+export type XLSXCSVTransformer = { pivot: string; transform: (xlsxCsv: XLSXCSV, modifiers?: object) => XLSXCSV };

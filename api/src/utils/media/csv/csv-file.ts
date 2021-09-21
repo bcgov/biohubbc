@@ -1,5 +1,6 @@
 import xlsx from 'xlsx';
 import { IMediaState, MediaValidation } from '../media-file';
+import { Column } from '../xlsx/transformation/XLSXTransformation';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
 
@@ -151,6 +152,39 @@ export class CSVWorksheet {
     return this._rows;
   }
 
+  getColumnWithCoreId(coreid: { file: 'string'; columns: string[] }, headerName: string, pivot?: string): Column[] {
+    const headerIndex = this.getHeaderIndex(headerName);
+
+    if (!headerIndex || headerIndex < 0) {
+      return [];
+    }
+
+    const rows = this.getRows();
+
+    const columns: Column[] = [];
+
+    const coreidHeaderIndexes = coreid.columns.map((columnName) => this.getHeaderIndex(columnName));
+
+    rows.forEach((row) => {
+      const id = this.buildCoreID(
+        coreidHeaderIndexes.map((coreidheaderIndex) => row[coreidheaderIndex]),
+        pivot
+      );
+
+      columns.push({
+        id: id,
+        name: headerName,
+        value: row[headerIndex]
+      });
+    });
+
+    return columns;
+  }
+
+  buildCoreID(parts: (string | number)[], pivot?: string): string {
+    return parts.join(':') + (pivot && `:${pivot}`);
+  }
+
   getRowObjects(): object[] {
     if (!this.worksheet) {
       return [];
@@ -192,7 +226,7 @@ export class CSVWorksheet {
   getCell(headerName: string, rowIndex: number) {
     const headerIndex = this.getHeaderIndex(headerName);
 
-    if (headerIndex < 0) {
+    if (!headerIndex || headerIndex < 0) {
       return undefined;
     }
 
@@ -218,14 +252,14 @@ export class CSVWorksheet {
    * @param {number} [row] the row number (row indexes start at 1)
    * @memberof CSVWorksheet
    */
-  setRow(data: (string | number)[], row?: number) {
-    const options = (row && { origin: row }) || undefined;
+  // setRow(data: (string | number)[], row?: number) {
+  //   const options = (row && { origin: row }) || undefined;
 
-    xlsx.utils.sheet_add_aoa(this.worksheet, [data], options);
+  //   xlsx.utils.sheet_add_aoa(this.worksheet, [data], options);
 
-    // Reset _rows so that the worksheet is re-parsed when getRows is called
-    this._rows = [];
-  }
+  //   // Reset _rows so that the worksheet is re-parsed when getRows is called
+  //   this._rows = [];
+  // }
 
   /**
    * Set a cell.
@@ -235,12 +269,12 @@ export class CSVWorksheet {
    * @param {(string | number)} data
    * @memberof CSVWorksheet
    */
-  setCell(row: number, col: number, data: string | number) {
-    xlsx.utils.sheet_add_aoa(this.worksheet, [[data]], { origin: { r: row, c: col } });
+  // setCell(row: number, col: number, data: string | number) {
+  //   xlsx.utils.sheet_add_aoa(this.worksheet, [[data]], { origin: { r: row, c: col } });
 
-    // Reset _rows so that the worksheet is re-parsed when getRows is called
-    this._rows = [];
-  }
+  //   // Reset _rows so that the worksheet is re-parsed when getRows is called
+  //   this._rows = [];
+  // }
 
   validate(validators: CSVValidator[]): CSVValidation {
     validators.forEach((validator) => validator(this));
@@ -249,7 +283,7 @@ export class CSVWorksheet {
   }
 }
 
-export type CSVValidator = (csvWorksheet: CSVWorksheet, ...rest: any) => CSVWorksheet;
+export type CSVValidator = (csvWorksheet: CSVWorksheet) => CSVWorksheet;
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 
