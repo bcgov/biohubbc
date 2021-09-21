@@ -33,6 +33,8 @@ declare
     delete from project_funding_source where project_id = p_project_id;
     delete from project_iucn_action_classification where project_id = p_project_id;
     delete from project_attachment where project_id = p_project_id;
+    delete from author where project_report_attachment_id in (select project_report_attachment_id from project_report_attachment where project_id = p_project_id);
+    delete from project_report_attachment where project_id = p_project_id;
     delete from project_first_nation where project_id = p_project_id;
     delete from project_participation where project_id = p_project_id;
     delete from project where project_id = p_project_id;
