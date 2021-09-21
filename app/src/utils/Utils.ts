@@ -91,12 +91,13 @@ export const getFormattedAmount = (amount: number): string => {
     return '';
   }
 
-  return (
-    '$ ' +
-    Math.round(amount)
-      .toString()
-      .replace(/\B(?=(\d{3})+(?!\d))/g, ',')
-  );
+  const regex = new RegExp(/\B(?=(\d{3})+(?!\d))/g);
+
+  if (!Number(amount)) {
+    return '';
+  }
+
+  return '$ ' + Math.round(amount).toString().replace(regex, ',');
 };
 
 /**
