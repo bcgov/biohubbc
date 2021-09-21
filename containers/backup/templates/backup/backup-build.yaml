@@ -48,17 +48,18 @@ parameters:
     displayName: Git Repo URL
     description: The URL to your GIT repo.
     required: true
-    value: https://github.com/rstens/backup-container
+    value: https://github.com/bcgov/biohubbc
+
   - name: GIT_REF
     displayName: Git Reference
     description: The git reference or branch.
     required: true
-    value: master
+    value: dev
   - name: SOURCE_CONTEXT_DIR
     displayName: Source Context Directory
     description: The source context directory.
     required: false
-    value: /docker
+    value: /containers/backup/docker
   - name: DOCKER_FILE_PATH
     displayName: Docker File
     description: The path and file of the docker file defining the build.  Choose either 'Dockerfile' for Postgres builds or 'Dockerfile_Mongo' for MongoDB builds or 'Dockerfile_MSSQL' for MSSQL builds.
@@ -68,7 +69,7 @@ parameters:
     displayName: Output Image Tag
     description: The tag given to the built image.
     required: true
-    value: latest
+    value: latest-s3
   - name: BASE_IMAGE_FOR_BUILD
     displayName: FROM Image Tag
     description: Base image to build from.  Docker creds or Artificatory setup may be needed to alleviate docker rate-limiting
