@@ -21,7 +21,8 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
   IGetSurveyForViewResponse,
   IUpdateSurveyRequest,
-  UPDATE_GET_SURVEY_ENTITIES
+  UPDATE_GET_SURVEY_ENTITIES,
+  IGetOccurrenceGeometriesResponseDetails
 } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -42,11 +43,21 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details },
+    surveyForViewData: { survey_details, occurrence_geometries },
     refresh
   } = props;
 
   const surveyGeometry = survey_details?.geometry;
+  const occurrenceGeometries = occurrence_geometries.map((occurrenceGeometry: IGetOccurrenceGeometriesResponseDetails) => {
+    return {
+      type: 'Feature',
+      geometry: {
+        type: occurrenceGeometry.type,
+        coordinates: occurrenceGeometry.coordinates
+      },
+      properties: {}
+    } as Feature
+  });
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
@@ -61,9 +72,15 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
 
   useEffect(() => {
-    const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
+    const nonEditableSurveyGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
+
+    const nonEditableOccurrenceGeometriesResult = occurrenceGeometries.map((geom: Feature) => {
+      return { feature: geom };
+    });
+
+    const nonEditableGeometriesResult = [ ...nonEditableSurveyGeometriesResult, ...nonEditableOccurrenceGeometriesResult ];
 
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
     setNonEditableGeometries(nonEditableGeometriesResult);

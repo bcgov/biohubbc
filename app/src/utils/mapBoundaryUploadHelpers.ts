@@ -178,6 +178,8 @@ export const generateValidGeometryCollection = (geometry: any, id?: string) => {
   let geometryCollection: Feature[] = [];
   let bounds: any[] = [];
 
+  console.log(geometry)
+
   if (!geometry || !geometry.length) {
     return { geometryCollection, bounds };
   }

@@ -55,5 +55,9 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     category_rationale: 'rationale',
     proprietor_name: 'prop name',
     data_sharing_agreement_required: 'true'
-  }
+  },
+  occurrence_geometries: [{
+    type: 'Point',
+    coordinates: [-127.843393754, 55.168656239]
+  }]
 };
