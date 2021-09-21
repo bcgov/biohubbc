@@ -10,6 +10,7 @@ WORKDIR /
 
 # Load the backup scripts into the container (must be executable).
 COPY backup.* /
+COPY s3_config.txt /
 
 COPY webhook-template.json /
 
@@ -28,9 +29,7 @@ ADD https://github.com/$SOURCE_REPO/go-crond/releases/download/$GOCROND_VERSION/
 
 USER root
 RUN yum install -y epel-release
-RUN yum install -y python-pip
-RUN pip install s3cmd
-
+RUN yum -y install s3cmd
 
 RUN chmod +x /usr/bin/go-crond
 # ========================================================================================================
@@ -45,4 +44,4 @@ RUN echo $TZ > /etc/timezone
 USER 26
 
 # Set the default CMD.
-CMD sh envsubst < /s3_config.txt > ~/s3_config.txt &&  sh /backup.sh
+CMD sh envsubst < /s3_config.txt > ~/.s3cfg &&  sh /backup.sh
