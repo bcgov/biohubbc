@@ -44,4 +44,4 @@ RUN echo $TZ > /etc/timezone
 USER 26
 
 # Set the default CMD.
-CMD sh envsubst < /s3_config.txt > ~/.s3cfg &&  sh /backup.sh
+CMD envsubst < /s3_config.txt > ~/.s3cfg &&  sh /backup.sh
