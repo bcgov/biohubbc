@@ -107,25 +107,28 @@ export function getSurveyForView(): RequestHandler {
         )
       ]);
 
+      let occurrenceGeometries = [];
       const getOccurrenceSubmissionIdsData = (occurrenceSubmssionIdsData && occurrenceSubmssionIdsData.rows) || [];
 
-      const occurrenceGeometriesPromises: Promise<any>[] = [];
+      if (getOccurrenceSubmissionIdsData.length) {
+        const occurrenceGeometriesPromises: Promise<any>[] = [];
 
-      occurrenceGeometriesPromises.push(
-        Promise.all(
-          getOccurrenceSubmissionIdsData.map((occurrenceSubmissionIdData: any) =>
-            getOccurrenceGeometry(occurrenceSubmissionIdData.id, connection)
+        occurrenceGeometriesPromises.push(
+          Promise.all(
+            getOccurrenceSubmissionIdsData.map((occurrenceSubmissionIdData: any) =>
+              getOccurrenceGeometry(occurrenceSubmissionIdData.id, connection)
+            )
           )
-        )
-      );
+        );
 
-      const occurrenceGeometriesResult = await Promise.all(occurrenceGeometriesPromises);
+        const occurrenceGeometriesResult = await Promise.all(occurrenceGeometriesPromises);
 
-      if (!occurrenceGeometriesResult[0].length || !occurrenceGeometriesResult[0][0].length) {
-        throw new HTTP400('Failed to get occurrence geometry data');
+        if (!occurrenceGeometriesResult[0].length || !occurrenceGeometriesResult[0][0].length) {
+          throw new HTTP400('Failed to get occurrence geometry data');
+        }
+
+        occurrenceGeometries = occurrenceGeometriesResult[0][0];
       }
-
-      const occurrenceGeometries = occurrenceGeometriesResult[0][0];
 
       await connection.commit();
 
