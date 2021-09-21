@@ -17,6 +17,8 @@ $$
 --                  2021-06-18  initial release
 -- charlie.garrettjones@quartech.com
 --                  2021-06-21  added occurrence submission delete
+-- charlie.garrettjones@quartech.com
+--                  2021-09-21  added survey summary submission delete
 -- *******************************************************************
 declare
   _occurrence_submission_id occurrence_submission.occurrence_submission_id%type;
@@ -25,8 +27,8 @@ begin
     call api_delete_occurrence_submission(_occurrence_submission_id);
   end loop;
 
-  delete from survey_summary_detail where survey_summary_general_id in (select survey_summary_general_id from survey_summary_general where survey_id = p_survey_id);
-  delete from survey_summary_general where survey_id = p_survey_id;
+  delete from survey_summary_detail where survey_summary_submission_id in (select survey_summary_submission_id from survey_summary_submission where survey_id = p_survey_id);
+  delete from survey_summary_submission where survey_id = p_survey_id;
   delete from survey_proprietor where survey_id = p_survey_id;
   delete from survey_attachment where survey_id = p_survey_id;
   delete from study_species where survey_id = p_survey_id;
