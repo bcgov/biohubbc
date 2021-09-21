@@ -1,0 +1,337 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`PublicProjectPage renders a spinner if no project is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`PublicProjectPage renders correctly with no end date 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation2"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-35"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-36"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-37"
+          >
+            <h1
+              class="MuiTypography-root makeStyles-spacingRight-34 MuiTypography-h1"
+            >
+              Test Project Name
+            </h1>
+            <div
+              class="MuiChip-root makeStyles-chip-31 makeStyles-chipActive-32"
+            >
+              <span
+                class="MuiChip-label"
+              >
+                ACTIVE
+              </span>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-38"
+          >
+            <h6
+              class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
+            >
+              <span>
+                <span>
+                  Start Date:
+                </span>
+                 Oct 10, 1998
+              </span>
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-39"
+    >
+      <aside
+        class="MuiBox-root MuiBox-root-40"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+        >
+          <nav
+            aria-label="Project Navigation"
+            class="MuiList-root makeStyles-projectNav-30 MuiList-padding"
+            role="navigation"
+          >
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/admin/projects/details"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Project Details
+                </span>
+              </div>
+            </a>
+          </nav>
+        </div>
+      </aside>
+      <article
+        class="MuiBox-root MuiBox-root-41"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`PublicProjectPage renders public project page when project is loaded (project is active) 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation2"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-11"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-12"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-13"
+          >
+            <h1
+              class="MuiTypography-root makeStyles-spacingRight-10 MuiTypography-h1"
+            >
+              Test Project Name
+            </h1>
+            <div
+              class="MuiChip-root makeStyles-chip-7 makeStyles-chipActive-8"
+            >
+              <span
+                class="MuiChip-label"
+              >
+                ACTIVE
+              </span>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-14"
+          >
+            <h6
+              class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
+            >
+              <span>
+                Oct 10, 1998 - Feb 26, 2021
+              </span>
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-15"
+    >
+      <aside
+        class="MuiBox-root MuiBox-root-16"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+        >
+          <nav
+            aria-label="Project Navigation"
+            class="MuiList-root makeStyles-projectNav-6 MuiList-padding"
+            role="navigation"
+          >
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/admin/projects/details"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Project Details
+                </span>
+              </div>
+            </a>
+          </nav>
+        </div>
+      </aside>
+      <article
+        class="MuiBox-root MuiBox-root-17"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`PublicProjectPage renders public project page when project is loaded (project is completed) 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation2"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-23"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-24"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-25"
+          >
+            <h1
+              class="MuiTypography-root makeStyles-spacingRight-22 MuiTypography-h1"
+            >
+              Test Project Name
+            </h1>
+            <div
+              class="MuiChip-root makeStyles-chip-19 makeStyles-chipCompleted-21"
+            >
+              <span
+                class="MuiChip-label"
+              >
+                COMPLETED
+              </span>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-26"
+          >
+            <h6
+              class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
+            >
+              <span>
+                Oct 10, 1998 - Feb 26, 2021
+              </span>
+            </h6>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-27"
+    >
+      <aside
+        class="MuiBox-root MuiBox-root-28"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+        >
+          <nav
+            aria-label="Project Navigation"
+            class="MuiList-root makeStyles-projectNav-18 MuiList-padding"
+            role="navigation"
+          >
+            <a
+              class="MuiListItem-root MuiListItem-gutters"
+              href="/admin/projects/details"
+            >
+              <div
+                class="MuiListItemIcon-root"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M11,9H13V7H11M12,20C7.59,20 4,16.41 4,12C4,7.59 7.59,4 12,4C16.41,4 20,7.59 20,12C20,16.41 16.41,20 12,20M12,2A10,10 0 0,0 2,12A10,10 0 0,0 12,22A10,10 0 0,0 22,12A10,10 0 0,0 12,2M11,17H13V11H11V17Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </div>
+              <div
+                class="MuiListItemText-root"
+              >
+                <span
+                  class="MuiTypography-root MuiListItemText-primary MuiTypography-body1 MuiTypography-displayBlock"
+                >
+                  Project Details
+                </span>
+              </div>
+            </a>
+          </nav>
+        </div>
+      </aside>
+      <article
+        class="MuiBox-root MuiBox-root-29"
+      />
+    </div>
+  </div>
+</DocumentFragment>
+`;

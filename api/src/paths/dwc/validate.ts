@@ -299,9 +299,9 @@ function validateDWCArchive(): RequestHandler {
 
       const mediaState: IMediaState = dwcArchive.isMediaValid(validationSchemaParser);
 
-      if (!mediaState.isValid) {
-        req['mediaState'] = mediaState;
+      req['mediaState'] = mediaState;
 
+      if (!mediaState.isValid) {
         // The file itself is invalid, skip remaining validation
         return next();
       }

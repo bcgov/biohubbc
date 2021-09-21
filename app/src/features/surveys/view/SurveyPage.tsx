@@ -20,7 +20,8 @@ import {
   mdiPaperclip,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
-  mdiTrashCanOutline
+  mdiTrashCanOutline,
+  mdiEye
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
@@ -40,6 +41,7 @@ import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyObservations from './SurveyObservations';
+import SurveySummaryResults from './SurveySummaryResults';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -328,9 +330,15 @@ const SurveyPage: React.FC = () => {
                   </ListItemIcon>
                   <ListItemText>Survey Details</ListItemText>
                 </ListItem>
-                <ListItem component={NavLink} to="observations">
+                <ListItem component={NavLink} to="results">
                   <ListItemIcon>
                     <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
+                  </ListItemIcon>
+                  <ListItemText>Summary Results</ListItemText>
+                </ListItem>
+                <ListItem component={NavLink} to="observations">
+                  <ListItemIcon>
+                    <Icon path={mdiEye} size={1} />
                   </ListItemIcon>
                   <ListItemText>Observations</ListItemText>
                 </ListItem>
@@ -352,6 +360,7 @@ const SurveyPage: React.FC = () => {
                 refresh={getSurvey}
               />
             )}
+            {location.pathname.includes('/results') && <SurveySummaryResults />}
             {location.pathname.includes('/observations') && <SurveyObservations />}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />

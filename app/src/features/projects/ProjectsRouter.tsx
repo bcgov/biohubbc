@@ -14,7 +14,7 @@ interface IProjectsRouterProps {
 }
 
 /**
- * Router for all `/project/*` pages.
+ * Router for all `/admin/project/*` pages.
  *
  * @param {*} props
  * @return {*}
@@ -69,6 +69,13 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         exact
         layout={ProjectsLayout}
         path="/admin/projects/:id?/surveys/:survey_id?/observations"
+        component={SurveyPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/admin/projects/:id?/surveys/:survey_id?/results"
         component={SurveyPage}
         componentProps={props}
       />

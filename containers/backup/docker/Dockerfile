@@ -1,4 +1,5 @@
 # This image provides a postgres installation from which to run backups
+
 FROM artifacts.developer.gov.bc.ca/docker-remote/centos/postgresql-12-centos7
 
 # Change timezone to PST for convenience
@@ -15,6 +16,7 @@ COPY webhook-template.json /
 # ========================================================================================================
 # Install go-crond (from https://github.com/BCDevOps/go-crond)
 #  - Adds some additional logging enhancements on top of the upstream project;
+
 #    https://github.com/webdevops/go-crond
 #
 # CRON Jobs in OpenShift:
@@ -28,6 +30,7 @@ USER root
 RUN yum install -y epel-release
 RUN yum install -y python-pip
 RUN pip install s3cmd
+
 
 RUN chmod +x /usr/bin/go-crond
 # ========================================================================================================

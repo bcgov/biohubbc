@@ -5,7 +5,7 @@ import path from 'path';
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
-const DB_RELEASE = 'release.0.25';
+const DB_RELEASE = 'release.0.26';
 
 /**
  * Apply biohub release changes.
@@ -95,6 +95,12 @@ export async function up(knex: Knex): Promise<void> {
     path.join(__dirname, DB_RELEASE, 'populate_common_survey_methodology.sql')
   );
   const populate_template = fs.readFileSync(path.join(__dirname, DB_RELEASE, 'populate_template.sql'));
+  const populate_summary_parameter_method_code = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_summary_parameter_method_code.sql')
+  );
+  const populate_summary_parameter_code = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_summary_parameter_code.sql')
+  );
 
   const populate_wldtaxonomic_units = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
@@ -182,6 +188,8 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_system_metadata_constant}
     ${populate_common_survey_methodology}
     ${populate_template}
+    ${populate_summary_parameter_method_code}
+    ${populate_summary_parameter_code}
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}

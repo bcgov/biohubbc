@@ -106,6 +106,18 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get public (published) project details based on its ID for viewing purposes.
+   *
+   * @param {number} projectId
+   * @return {*} {Promise<IGetProjectForViewResponse>}
+   */
+  const getPublicProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/view`);
+
+    return data;
+  };
+
+  /**
    * Get project details based on its ID for updating purposes.
    *
    * @param {number} projectId
@@ -178,6 +190,26 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Toggle visibility state of project attachments.
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {any} securityToken
+   * @return {*}  {Promise<any>}
+   */
+  const toggleProjectAttachmentVisibility = async (
+    projectId: number,
+    attachmentId: number,
+    securityToken: any
+  ): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/toggleVisibility`, {
+      securityToken
+    });
+
+    return data;
+  };
+
+  /**
    * Delete funding source based on project and funding source ID
    *
    * @param {number} projectId
@@ -228,8 +260,46 @@ const useProjectApi = (axios: AxiosInstance) => {
     addFundingSource,
     deleteProject,
     publishProject,
-    getPublicProjectsList
+    getPublicProjectsList,
+    getPublicProjectForView,
+    toggleProjectAttachmentVisibility
   };
 };
 
 export default useProjectApi;
+
+/**
+ * Returns a set of supported api methods for working with public (published) project records.
+ *
+ * @param {AxiosInstance} axios
+ * @return {*} object whose properties are supported api methods.
+ */
+export const usePublicProjectApi = (axios: AxiosInstance) => {
+  /**
+   * Get public facing (published) projects list.
+   *
+   * @return {*}  {Promise<IGetProjectsListResponse[]>}
+   */
+  const getProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
+    const { data } = await axios.get(`/api/public/projects`);
+
+    return data;
+  };
+
+  /**
+   * Get public (published) project details based on its ID for viewing purposes.
+   *
+   * @param {number} projectId
+   * @return {*} {Promise<IGetProjectForViewResponse>}
+   */
+  const getProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/view`);
+
+    return data;
+  };
+
+  return {
+    getProjectsList,
+    getProjectForView
+  };
+};

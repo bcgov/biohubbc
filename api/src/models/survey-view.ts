@@ -1,3 +1,4 @@
+import { COMPLETION_STATUS } from '../constants/status';
 import { Feature } from 'geojson';
 import moment from 'moment';
 import { getLogger } from '../utils/logger';
@@ -89,8 +90,8 @@ export class GetViewSurveyDetailsData {
       (surveyDataItem &&
         surveyDataItem.end_date &&
         moment(surveyDataItem.end_date).endOf('day').isBefore(moment()) &&
-        'Completed') ||
-      'Active';
+        COMPLETION_STATUS.COMPLETED) ||
+      COMPLETION_STATUS.ACTIVE;
     this.publish_date = surveyDataItem?.publish_date || '';
   }
 }
