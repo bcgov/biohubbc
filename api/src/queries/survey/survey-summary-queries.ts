@@ -11,7 +11,7 @@ const defaultLog = getLogger('queries/survey/survey-summary-queries');
  * @param {string} key
  * @return {*}  {(SQLStatement | null)}
  */
-export const insertSurveySummaryResultsSQL = (surveyId: number): SQLStatement | null => {
+export const insertSurveySummarySubmissionSQL = (surveyId: number, source: string, file_name:string): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertSurveySummaryResultsSQL',
     message: 'params',
@@ -23,15 +23,16 @@ export const insertSurveySummaryResultsSQL = (surveyId: number): SQLStatement | 
   }
 
   const sqlStatement: SQLStatement = SQL`
-    INSERT INTO survey_summary_general (
+    INSERT INTO survey_summary_submission (
       survey_id,
-      study_area_id,
-      summary_year
+      source,
+      file_name,
+      event_timestamp
     ) VALUES (
-      ${surveyId},'surveyarea',
-      '2000'
+      ${surveyId},${source},
+      ${file_name}, now()
     )
-    RETURNING survey_summary_general_id as id;
+    RETURNING survey_summary_submission_id as id;
   `;
 
   defaultLog.debug({
@@ -62,7 +63,7 @@ export const getLatestSurveySummaryResultsSQL = (surveyId: number): SQLStatement
   }
 
   const sqlStatement = SQL`
-    SELECT *
+    SELECT ssg.survey_summary_general_id as id
     FROM
       survey_summary_general as ssg
     LEFT OUTER JOIN
@@ -72,7 +73,7 @@ export const getLatestSurveySummaryResultsSQL = (surveyId: number): SQLStatement
     WHERE
       ssg.survey_id = ${surveyId}
     ORDER BY
-      ssg.revision_count
+      ssg.survey_summary_general_id DESC
     LIMIT 1;
     `;
 

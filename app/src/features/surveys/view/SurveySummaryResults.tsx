@@ -1,22 +1,22 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import CircularProgress from '@material-ui/core/CircularProgress';
-//import IconButton from '@material-ui/core/IconButton';
+//import CircularProgress from '@material-ui/core/CircularProgress';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-//import Alert from '@material-ui/lab/Alert';
-//import AlertTitle from '@material-ui/lab/AlertTitle';
+import Alert from '@material-ui/lab/Alert';
+import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
-  //mdiAlertCircle,
-  //mdiInformationOutline,
+  // mdiAlertCircle,
+  // mdiInformationOutline,
   //mdiClockOutline,
-  //mdiFileOutline,
-  mdiImport
-  //mdiTrashCanOutline,
-  //mdiDownload
+  mdiFileOutline,
+  mdiImport,
+  mdiTrashCanOutline,
+  mdiDownload
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
@@ -29,6 +29,7 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   textSpacing: {
@@ -79,6 +80,7 @@ const SurveySummaryResults = () => {
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
 
   const [summaryResults, setSummaryResults] = useState<IGetSummaryResultsResponse | null>(null);
+  const [summaryResultsId, setSummaryResultsId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const classes = useStyles();
@@ -97,13 +99,25 @@ const SurveySummaryResults = () => {
 
   const dialogContext = useContext(DialogContext);
 
+
+
+
   useEffect(() => {
     const getSummaryResults = async () => {
       const summaryResponse = await biohubApi.survey.getSurveySummaryResults(projectId, surveyId);
 
+      if (!summaryResponse){
+
+        return null;
+      }
+
       setSummaryResults(() => {
         setIsLoading(false);
         return summaryResponse;
+      });
+
+      setSummaryResultsId(() => {
+        return summaryResponse.id;
       });
     };
 
@@ -112,15 +126,16 @@ const SurveySummaryResults = () => {
     }
   }, [biohubApi, isLoading]);
 
-  // const softDeleteSubmission = async () => {
-  //   if (!occurrenceSubmissionId) {
-  //     return;
-  //   }
 
-  //   await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, occurrenceSubmissionId);
+  const softDeleteSubmission = async () => {
+    if (!summaryResults?.id) {
+      return;
+    }
 
-  //   fetchObservationSubmission();
-  // };
+    await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, summaryResults?.id);
+
+    //fetchSummaryResults();
+  };
 
   const defaultUploadYesNoDialogProps = {
     dialogTitle: 'Upload Summary Results Data',
@@ -132,12 +147,12 @@ const SurveySummaryResults = () => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
-  // const defaultDeleteYesNoDialogProps = {
-  //   ...defaultUploadYesNoDialogProps,
-  //   dialogTitle: 'Delete Observation',
-  //   dialogText:
-  //     'Are you sure you want to delete the current observation data? Your observation will be removed from this survey.'
-  // };
+  const defaultDeleteYesNoDialogProps = {
+    ...defaultUploadYesNoDialogProps,
+    dialogTitle: 'Delete Observation',
+    dialogText:
+      'Are you sure you want to delete the current observation data? Your observation will be removed from this survey.'
+  };
 
   const showUploadDialog = () => {
     if (summaryResults) {
@@ -155,67 +170,67 @@ const SurveySummaryResults = () => {
     }
   };
 
-  // const showDeleteDialog = () => {
-  //   dialogContext.setYesNoDialog({
-  //     ...defaultDeleteYesNoDialogProps,
-  //     open: true,
-  //     onYes: () => {
-  //       softDeleteSubmission();
-  //       dialogContext.setYesNoDialog({ open: false });
-  //     }
-  //   });
-  // };
+  const showDeleteDialog = () => {
+    dialogContext.setYesNoDialog({
+      ...defaultDeleteYesNoDialogProps,
+      open: true,
+      onYes: () => {
+        softDeleteSubmission();
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
 
-  // Action prop for the Alert MUI component to render the delete icon and associated action
-  // const submissionAlertAction = () => (
-  //   <Box className={classes.alertActions}>
-  //     <IconButton aria-label="open" color="inherit" size="small" onClick={() => viewFileContents()}>
-  //       <Icon path={mdiDownload} size={1} />
-  //     </IconButton>
-  //     <IconButton aria-label="delete" color="inherit" size="small" onClick={() => showDeleteDialog()}>
-  //       <Icon path={mdiTrashCanOutline} size={1} />
-  //     </IconButton>
-  //   </Box>
-  // );
+  //Action prop for the Alert MUI component to render the delete icon and associated action
+  const submissionAlertAction = () => (
+    <Box className={classes.alertActions}>
+      <IconButton aria-label="open" color="inherit" size="small" onClick={() => viewFileContents()}>
+        <Icon path={mdiDownload} size={1} />
+      </IconButton>
+      <IconButton aria-label="delete" color="inherit" size="small" onClick={() => showDeleteDialog()}>
+        <Icon path={mdiTrashCanOutline} size={1} />
+      </IconButton>
+    </Box>
+  );
 
-  // const viewFileContents = async () => {
-  //   if (!occurrenceSubmissionId) {
-  //     return;
-  //   }
+  const viewFileContents = async () => {
+    if (!summaryResultsId) {
+      return;
+    }
 
-  //   let response;
+    let response;
 
-  //   // try {
-  //   //   response = await biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, occurrenceSubmissionId);
-  //   // } catch {
-  //   //   return;
-  //   // }
+    try {
+      response = await biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, summaryResultsId);
+    } catch {
+      return;
+    }
 
-  //   // if (!response) {
-  //   //   return;
-  //   // }
+    if (!response) {
+      return;
+    }
 
-  //   window.open(response);
-  // };
+    window.open(response);
+  };
 
-  if (isLoading) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
-  //type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
-
-  // function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
-  //   return (
-  //     <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
-  //       <Box component={AlertTitle} display="flex">
-  //         <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
-  //           <strong>{fileName}</strong>
-  //         </Link>
-  //       </Box>
-  //       {message}
-  //     </Alert>
-  //   );
+  // if (isLoading) {
+  //   return <CircularProgress className="pageProgress" size={40} />;
   // }
+
+  type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
+
+  function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
+    return (
+      <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
+        <Box component={AlertTitle} display="flex">
+          <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+            <strong>{fileName}</strong>
+          </Link>
+        </Box>
+        {message}
+      </Alert>
+    );
+  }
 
   return (
     <Box>
@@ -233,13 +248,23 @@ const SurveySummaryResults = () => {
       </Box>
 
       <Box component={Paper} p={4}>
-        {summaryResults && (
+        {!summaryResults && (
           <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
             No Summary Results. &nbsp;
             <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
               Click Here to Import
             </Link>
           </Typography>
+        )}
+        {summaryResults && (
+          <>
+            {displayAlertBox(
+              'info',
+              mdiFileOutline,
+              summaryResults?.fileName,
+              ''
+            )}
+          </>
         )}
       </Box>
 

@@ -4,7 +4,11 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
-import { insertSurveySummaryResultsSQL } from '../../../../../../queries/survey/survey-summary-queries';
+import { insertSurveySummarySubmissionSQL } from '../../../../../../queries/survey/survey-summary-queries';
+import { //generateS3FileKey,
+  scanFileForVirus
+ // , uploadFileToS3
+} from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
 import { logRequest } from '../../../../../../utils/path-utils';
 
@@ -116,7 +120,18 @@ export function uploadMedia(): RequestHandler {
 
       await connection.open();
 
-      const response = await insertSurveySummaryResults(
+      // Scan file for viruses using ClamAV
+      const virusScanResult = await scanFileForVirus(rawMediaFile);
+
+      if (!virusScanResult) {
+        throw new HTTP400('Malicious content detected, upload cancelled');
+      }
+
+
+
+
+
+      const response = await insertSurveySummarySubmissionSQL(
         Number(req.params.surveyId),
         'BioHub',
         rawMediaFile.originalname,
@@ -147,13 +162,13 @@ export function uploadMedia(): RequestHandler {
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
-export const insertSurveySummaryResults = async (
+export const insertSurveySummarySu = async (
   surveyId: number,
   source: string,
   file_name: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveySummaryResultsSQL(surveyId);
+  const insertSqlStatement = insertSurveySummarySubmissionSQL(surveyId);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

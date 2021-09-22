@@ -1,5 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
+import { IGetSummaryResultsResponse , IUploadSummaryResultsResponse} from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -10,7 +10,7 @@ import {
   UPDATE_GET_SURVEY_ENTITIES,
   IGetSurveyAttachmentsResponse,
   SurveyPermits,
-  SurveyFundingSources
+  SurveyFundingSources,
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
 
@@ -259,7 +259,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     file: File,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string> => {
+  ): Promise<IUploadSummaryResultsResponse> => {
     const req_message = new FormData();
 
     req_message.append('media', file);

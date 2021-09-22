@@ -6,10 +6,10 @@
  */
 export interface IGetSummaryResultsResponse {
   id: number;
-  // fileName: string;
+  fileName: string;
   // status: string;
 }
 
-export interface IUploadObservationSubmissionResponse {
+export interface IUploadSummaryResultsResponse {
   summaryResultsId: number;
 }

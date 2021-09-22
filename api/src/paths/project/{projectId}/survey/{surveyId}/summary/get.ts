@@ -101,6 +101,8 @@ export function getSummaryResults(): RequestHandler {
     try {
       const getSummaryResultsSQLStatement = getLatestSurveySummaryResultsSQL(Number(req.params.surveyId));
 
+
+
       if (!getSummaryResultsSQLStatement) {
         throw new HTTP400('Failed to build SQL getSummaryResultsSQLStatement statement');
       }
@@ -112,6 +114,8 @@ export function getSummaryResults(): RequestHandler {
         getSummaryResultsSQLStatement.values
       );
 
+      console.log('summaryResultsData: ', summaryResultsData);
+
       if (!summaryResultsData || !summaryResultsData.rows || !summaryResultsData.rows[0]) {
         return res.status(200).json(null);
       }
@@ -119,7 +123,15 @@ export function getSummaryResults(): RequestHandler {
       await connection.commit();
 
       const getSummaryResultsData =
-        (summaryResultsData && summaryResultsData.rows && summaryResultsData.rows[0]) || null;
+        (summaryResultsData &&
+          summaryResultsData.rows &&
+          summaryResultsData.rows[0] && {
+            id: summaryResultsData.rows[0].id,
+            fileName: 'some file'
+          }) ||
+        null;
+
+      console.log('getSummaryResultsData: ', getSummaryResultsData);
 
       return res.status(200).json(getSummaryResultsData);
     } catch (error) {
