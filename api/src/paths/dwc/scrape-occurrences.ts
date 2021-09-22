@@ -49,7 +49,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Successfully scraped occurrence information.'
+      description: 'Successfully scraped and uploaded occurrence information.'
     },
     400: {
       $ref: '#/components/responses/400'

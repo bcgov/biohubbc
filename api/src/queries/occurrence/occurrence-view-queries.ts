@@ -16,17 +16,23 @@ export const getOccurrencesForViewSQL = (occurrenceSubmissionId: number): SQLSta
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      public.ST_asGeoJSON(geography) as geometry,
-      taxonid,
-      lifestage,
-      vernacularname,
-      individualcount,
-      organismquantity,
-      organismquantitytype
+      public.ST_asGeoJSON(o.geography) as geometry,
+      o.taxonid,
+      o.lifestage,
+      o.vernacularname,
+      o.individualcount,
+      o.organismquantity,
+      o.organismquantitytype
     FROM
-      occurrence
+      occurrence as o
+    LEFT OUTER JOIN
+      occurrence_submission as os
+    ON
+      o.occurrence_submission_id = os.occurrence_submission_id
     WHERE
-      occurrence_submission_id = ${occurrenceSubmissionId};
+      o.occurrence_submission_id = ${occurrenceSubmissionId}
+    AND
+      os.delete_timestamp is null;
   `;
 
   defaultLog.debug({

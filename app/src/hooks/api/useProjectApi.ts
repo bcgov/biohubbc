@@ -298,8 +298,21 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get public (published) project attachments based on project ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
+   */
+  const getProjectAttachments = async (projectId: number): Promise<IGetProjectAttachmentsResponse> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/list`);
+
+    return data;
+  };
+
   return {
     getProjectsList,
-    getProjectForView
+    getProjectForView,
+    getProjectAttachments
   };
 };

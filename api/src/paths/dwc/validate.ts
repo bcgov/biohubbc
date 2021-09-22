@@ -5,7 +5,6 @@ import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
-  getValidationSchemaSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL
 } from '../../queries/survey/survey-occurrence-queries';
@@ -225,47 +224,11 @@ export function persistParseErrors(): RequestHandler {
   };
 }
 
-export function getValidationSchema(): RequestHandler {
+function getValidationSchema(): RequestHandler {
   return async (req, res, next) => {
-    const connection = getDBConnection(req['keycloak_token']);
+    req['validationSchema'] = {};
 
-    try {
-      await connection.open();
-
-      const validationSchema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
-
-      if (!validationSchema) {
-        // no schema to validate the template, generate error
-
-        const submissionStatusId = await insertSubmissionStatus(
-          req.body.occurrence_submission_id,
-          'System Error',
-          connection
-        );
-
-        await insertSubmissionMessage(
-          submissionStatusId,
-          'Error',
-          `Unable to fetch an appropriate validation schema for your submission`,
-          'Missing Validation Schema',
-          connection
-        );
-
-        await connection.commit();
-
-        return res.status(200).json();
-      }
-
-      req['validationSchema'] = validationSchema;
-
-      next();
-    } catch (error) {
-      defaultLog.debug({ label: 'getValidationSchema', message: 'error', error });
-      connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
+    next();
   };
 }
 
@@ -461,26 +424,4 @@ export const insertSubmissionMessage = async (
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to insert survey submission message data');
   }
-};
-
-/**
- * Get a validation schema from the template table.
- *
- * @param {number} occurrenceSubmissionId
- * @param {IDBConnection} connection
- * @return {*}  {Promise<any>}
- */
-export const getValidationSchemaJSON = async (
-  occurrenceSubmissionId: number,
-  connection: IDBConnection
-): Promise<any> => {
-  const sqlStatement = getValidationSchemaSQL(occurrenceSubmissionId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  return (response && response.rows && response.rows[0]).validation || null;
 };

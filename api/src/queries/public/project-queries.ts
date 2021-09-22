@@ -421,3 +421,45 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get attachments for a single public (published) project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getPublicProjectAttachmentsSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      pa.project_attachment_id as id,
+      pa.file_name,
+      pa.update_date,
+      pa.create_date,
+      pa.file_size
+    from
+      project_attachment as pa
+    left outer join
+      project as p
+    on
+      p.project_id = pa.project_id
+    where
+      pa.project_id = ${projectId}
+    and
+      p.publish_timestamp is not null;
+  `;
+
+  defaultLog.debug({
+    label: 'getPublicProjectAttachmentsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
