@@ -1,19 +1,28 @@
-// import { CSVWorksheet } from '../../../../utils/media/csv/csv-file';
 import { XLSXCSVTransformer } from '../xlsx-file';
 
 export type BasicTransformerConfig = {
   basic_transformer: {
     coreid: {
-      file: 'string';
+      file: string;
       columns: string[];
     };
+    uniqueid: {
+      source: {
+        file: string;
+        columns: string[];
+      };
+      target: {
+        file: string;
+        column: string;
+      };
+    };
     source: {
-      file: 'string';
-      column: 'string';
+      file: string;
+      column: string;
     };
     target: {
-      file: 'string';
-      column: 'string';
+      file: string;
+      column: string;
     };
     extra?: {
       additional_targets: {
@@ -40,6 +49,7 @@ export const getBasicTransformer = (config?: BasicTransformerConfig): XLSXCSVTra
 
       const columns = sourceWorksheet.getColumnWithCoreId(
         config.basic_transformer.coreid,
+        config.basic_transformer.uniqueid,
         config.basic_transformer.source.column,
         (modifiers && modifiers['pivot']) || ''
       );
@@ -47,16 +57,10 @@ export const getBasicTransformer = (config?: BasicTransformerConfig): XLSXCSVTra
       columns.forEach((column) => {
         xlsxCsv.xlsxTransformationTarget.ensureFile(config.basic_transformer.target.file);
         const targetFileIndex = xlsxCsv.xlsxTransformationTarget.getFileIndex(config.basic_transformer.target.file);
-        // const coreid = xlsxCsv.xlsxTransformationTarget.hasCoreId(config.basic_transformer.coreid);
-        // const coreid = getCoreId(config.basic_transformer.coreid, xlsxCsv);
-        // const targetRowIndex = xlsxCsv.xlsxTransformationTarget.getCurrentRowIndex(targetFileIndex);
-
-        // console.log('targetFileIndex', targetFileIndex);
-        // console.log('column', column);
-        // console.log('targetRowIndex', targetRowIndex);
 
         xlsxCsv.xlsxTransformationTarget.addColumn(targetFileIndex, {
-          id: column.id,
+          coreid: column.coreid,
+          uniqueid: column.uniqueid,
           name: config.basic_transformer.target.column,
           value: column.value
         });
@@ -68,7 +72,8 @@ export const getBasicTransformer = (config?: BasicTransformerConfig): XLSXCSVTra
         if (config.basic_transformer?.extra?.additional_targets) {
           config.basic_transformer?.extra?.additional_targets.targets.forEach((additionalTarget) => {
             xlsxCsv.xlsxTransformationTarget.addColumn(targetFileIndex, {
-              id: column.id,
+              coreid: column.coreid,
+              uniqueid: column.uniqueid,
               name: additionalTarget.column,
               value: additionalTarget.value
             });
@@ -80,27 +85,3 @@ export const getBasicTransformer = (config?: BasicTransformerConfig): XLSXCSVTra
     }
   };
 };
-
-// const getCoreId = (coreid: { file: 'string'; columns: string[] }, xlsxCsv: XLSXCSV): string | number | null => {
-//   const worksheet = xlsxCsv.workbook.getWorksheet(coreid.file);
-
-//   if (!worksheet) {
-//     return null;
-//   }
-
-//   const rows = worksheet.getRows();
-
-//   let filteredRows = rows;
-
-//   coreid.columns.forEach((col, index) => {
-//     console.log(`${index}: `, filteredRows);
-//     const headerIndex = worksheet.getHeaderIndex(col);
-//     filteredRows = filteredRows.filter((row) => {
-//       return row[headerIndex] === col;
-//     });
-//   });
-
-//   console.log(filteredRows);
-
-//   return null;
-// };

@@ -14,6 +14,12 @@ export const TransformationRulesRegistry = {
   }
 };
 
+export type FileStructure = {
+  name: string;
+  uniqueId: string[];
+  parent?: { name: string; key: string[] };
+};
+
 export class TransformationSchemaParser {
   transformationSchema: object;
 
@@ -53,34 +59,6 @@ export class TransformationSchemaParser {
     return rules;
   }
 
-  // getTransformations(): XLSXCSVTransformer[] {
-  //   const transformationSchemas = this.getTransformationSchemas();
-
-  //   const rules: XLSXCSVTransformer[] = [];
-
-  //   transformationSchemas.forEach((transformationSchema) => {
-  //     const keys = Object.keys(transformationSchema);
-
-  //     if (keys.length !== 1) {
-  //       return;
-  //     }
-
-  //     const key = keys[0];
-
-  //     const generatorFunction = TransformationRulesRegistry.findMatchingRule(key);
-
-  //     if (!generatorFunction) {
-  //       return;
-  //     }
-
-  //     const rule = generatorFunction(transformationSchema);
-
-  //     rules.push(rule);
-  //   });
-
-  //   return rules;
-  // }
-
   getFileTransformationSchemas(fileName: string): object[] {
     return jsonpath.query(this.transformationSchema, this.getFileTransformationsJsonPath(fileName))?.[0] || [];
   }
@@ -89,12 +67,28 @@ export class TransformationSchemaParser {
     return jsonpath.query(this.transformationSchema, this.getTransformationsJsonPath())?.[0] || [];
   }
 
+  getFileStructureSchemas(fileName: string): FileStructure | null {
+    return jsonpath.query(this.transformationSchema, this.getFileStructureJsonPath(fileName))?.[0] || null;
+  }
+
+  getParseSchemas(): { file: string; columns: string[] }[] {
+    return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || null;
+  }
+
   getFileTransformationsJsonPath(fileName: string): string {
     return `$.files[?(@.name == '${fileName}')].transformations`;
   }
 
   getTransformationsJsonPath(): string {
     return '$.transformations';
+  }
+
+  getParseJsonPath(): string {
+    return '$.parse';
+  }
+
+  getFileStructureJsonPath(fileName: string): string {
+    return `$.flatten[?(@.name == '${fileName}')]`;
   }
 
   parseJson(json: any): object {

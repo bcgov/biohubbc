@@ -5,7 +5,7 @@ import { getSubmissionFileFromS3, getSubmissionS3Key } from '../../paths/dwc/val
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
-import { TargetFile } from '../../utils/media/xlsx/transformation/XLSXTransformation';
+// import { TargetFile } from '../../utils/media/xlsx/transformation/XLSXTransformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
 import { prepXLSX } from './validate';
@@ -90,179 +90,109 @@ export function getTransformationSchema(): RequestHandler {
   return async (req, res, next) => {
     req['transformationSchema'] = {
       name: 'test file 1',
-      files: [
+      flatten: [
+        { name: 'Effort & Site Conditions', uniqueId: ['Survey Area', 'Sampling Unit ID', 'Stratum'] },
         {
           name: 'Observations - Skeena',
-          transformations: [
-            {
-              basic_transformer: {
-                coreid: {
-                  file: 'Observations - Skeena',
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
-                },
-                source: {
-                  file: 'Observations - Skeena',
-                  column: 'Yearlings Bulls'
-                },
-                target: {
-                  file: 'occurrence',
-                  column: 'individualCount'
-                },
-                extra: {
-                  additional_targets: {
-                    targets: [
-                      {
-                        file: 'occurrence',
-                        column: 'Sex',
-                        value: 'Male'
-                      },
-                      {
-                        file: 'occurrence',
-                        column: 'Lifestage',
-                        value: 'Yearling'
-                      }
-                    ]
-                  }
-                },
-                pivot: 'p1'
-              }
-            },
-            {
-              basic_transformer: {
-                coreid: {
-                  file: 'Observations - Skeena',
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
-                },
-                source: {
-                  file: 'Observations - Skeena',
-                  column: 'Mature Bulls'
-                },
-                target: {
-                  file: 'occurrence',
-                  column: 'individualCount'
-                },
-                extra: {
-                  additional_targets: {
-                    targets: [
-                      {
-                        file: 'occurrence',
-                        column: 'Sex',
-                        value: 'Male'
-                      },
-                      {
-                        file: 'occurrence',
-                        column: 'Lifestage',
-                        value: 'Adult'
-                      }
-                    ]
-                  }
-                },
-                pivot: 'p2'
-              }
-            },
-            {
-              basic_transformer: {
-                coreid: {
-                  file: 'Observations - Skeena',
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
-                },
-                source: {
-                  file: 'Observations - Skeena',
-                  column: 'Lone Cows'
-                },
-                target: {
-                  file: 'occurrence',
-                  column: 'individualCount'
-                },
-                extra: {
-                  additional_targets: {
-                    targets: [
-                      {
-                        file: 'occurrence',
-                        column: 'Sex',
-                        value: 'Female'
-                      },
-                      {
-                        file: 'occurrence',
-                        column: 'Lifestage',
-                        value: 'Adult'
-                      }
-                    ]
-                  }
-                },
-                pivot: 'p3'
-              }
-            },
-            {
-              basic_transformer: {
-                coreid: {
-                  file: 'Observations - Skeena',
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
-                },
-                source: {
-                  file: 'Observations - Skeena',
-                  column: 'Comments'
-                },
-                target: {
-                  file: 'occurrence',
-                  column: 'occurrenceRemarks'
-                }
-              }
-            },
-            {
-              basic_transformer: {
-                coreid: {
-                  file: 'Observations - Skeena',
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint']
-                },
-                source: {
-                  file: 'Observations - Skeena',
-                  column: 'Species'
-                },
-                target: {
-                  file: 'occurrence',
-                  column: 'Taxon'
-                }
-              }
-            }
-          ]
+          uniqueId: ['Waypoint'],
+          parent: { name: 'Effort & Site Conditions', key: ['Survey Area', 'Sampling Unit ID', 'Stratum'] }
         },
         {
-          name: 'Effort & Site Conditions',
-          transformations: [
-            {
-              basic_transformer: {
-                coreid: {
-                  file: 'Effort & Site Conditions',
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum']
-                },
-                source: {
-                  file: 'Effort & Site Conditions',
-                  column: 'Date'
-                },
-                target: {
-                  file: 'event',
-                  column: 'eventDate'
-                }
-              }
-            },
-            {
-              basic_transformer: {
-                coreid: {
-                  file: 'Effort & Site Conditions',
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum']
-                },
-                source: {
-                  file: 'Effort & Site Conditions',
-                  column: 'Start Time 1'
-                },
-                target: {
-                  file: 'event',
-                  column: 'eventTime'
-                }
-              }
-            }
-          ]
+          name: 'UTM_LatLong',
+          uniqueId: ['Waypoint'],
+          parent: { name: 'Observations - Skeena', key: ['Waypoint'] }
+        }
+      ],
+      // pivot: [
+      //   {
+      //     name: 'Observations - Skeena',
+      //     column: 'Mature Bulls'
+      //   },
+      //   {
+      //     name: 'Observations - Skeena',
+      //     column: 'Cow W/1 calf'
+      //   }
+      // ],
+      transformations: [
+        {
+          id: {
+            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+            separator: ':'
+          },
+          eventID: {
+            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+            separator: ':'
+          },
+          eventDate: {
+            columns: ['Date']
+          },
+          verbatimCoordinates: {
+            columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+          },
+          occurrenceID: {
+            columns: ['Waypoint'],
+            unique: 'occ'
+          },
+          individualCount: {
+            columns: ['Mature Bulls']
+          },
+          taxon: {
+            columns: ['Species']
+          },
+          lifestage: {
+            value: 'Adult'
+          },
+          sex: {
+            value: 'Male'
+          },
+          occurrenceRemarks: {
+            columns: ['Observation Comments']
+          }
+        },
+        {
+          id: {
+            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+            separator: ':'
+          },
+          eventID: {
+            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+            separator: ':'
+          },
+          eventDate: {
+            columns: ['Date']
+          },
+          verbatimCoordinates: {
+            columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+          },
+          occurrenceID: {
+            columns: ['Waypoint'],
+            unique: 'occ'
+          },
+          individualCount: {
+            columns: ['Yearlings Bulls']
+          },
+          taxon: {
+            columns: ['Species']
+          },
+          lifestage: {
+            value: 'Yearling'
+          },
+          sex: {
+            value: 'Male'
+          },
+          occurrenceRemarks: {
+            columns: ['Observation Comments']
+          }
+        }
+      ],
+      parse: [
+        {
+          file: 'event',
+          columns: ['id', 'eventID', 'eventDate', 'verbatimCoordinates']
+        },
+        {
+          file: 'occurrence',
+          columns: ['id', 'occurrenceID', 'individualCount', 'taxon', 'lifestage', 'sex', 'occurrenceRemarks']
         }
       ]
     };
@@ -299,18 +229,41 @@ function transformXLSX(): RequestHandler {
 
       const transformationSchemaParser: TransformationSchemaParser = req['transformationSchemaParser'];
 
-      const xlsxTransformationTarget = xlsxCsv.transformToDWC(transformationSchemaParser);
+      const mergedAndFlattenedData = xlsxCsv.flattenData(transformationSchemaParser);
 
-      const files: TargetFile[] = xlsxTransformationTarget.files;
+      console.log('================================');
+      // console.log(mergedHeaders);
+      console.log(mergedAndFlattenedData);
+      console.log('================================');
 
-      const fileBuffers = files.map((file) => {
-        const x = file.toBuffer(); //file.toCSV();
-        console.log(file.fileName, '================================');
-        console.log(x);
-        console.log('================================');
+      const flattenedDWCData = xlsxCsv.transformFlattenedData(mergedAndFlattenedData, transformationSchemaParser);
+
+      console.log('#################################');
+      console.log(flattenedDWCData);
+      console.log('#################################');
+
+      const parsedData = xlsxCsv.parseTransformedData(flattenedDWCData, transformationSchemaParser);
+
+      console.log('---------------------------------');
+      console.log(parsedData);
+      console.log('---------------------------------');
+
+      const mergedParsedData = xlsxCsv.margeParsedData(parsedData);
+
+      console.log('**********************************');
+      console.log(mergedParsedData);
+      console.log('**********************************');
+
+      const worksheets = xlsxCsv.dataToSheet(mergedParsedData);
+
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+      console.log(worksheets);
+      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+
+      const fileBuffers = Object.entries(worksheets).map(([fileName, worksheet]) => {
         return {
-          name: file.fileName,
-          buffer: x
+          name: fileName,
+          buffer: xlsxCsv.worksheetToBuffer(worksheet)
         };
       });
 

@@ -152,7 +152,26 @@ export class CSVWorksheet {
     return this._rows;
   }
 
-  getColumnWithCoreId(coreid: { file: 'string'; columns: string[] }, headerName: string, pivot?: string): Column[] {
+  getRowObjects(): object[] {
+    if (!this.worksheet) {
+      return [];
+    }
+
+    const ref = this.worksheet['!ref'];
+
+    if (!ref) {
+      return [];
+    }
+
+    return xlsx.utils.sheet_to_json(this.worksheet);
+  }
+
+  getColumnWithCoreId(
+    coreid: { file: string; columns: string[] },
+    uniqueid: { source: { columns: string[] }; target: { column: string } },
+    headerName: string,
+    pivot?: string
+  ): Column[] {
     const headerIndex = this.getHeaderIndex(headerName);
 
     if (!headerIndex || headerIndex < 0) {
@@ -165,14 +184,19 @@ export class CSVWorksheet {
 
     const coreidHeaderIndexes = coreid.columns.map((columnName) => this.getHeaderIndex(columnName));
 
+    const uniqueidHeaderIndexes = uniqueid.source.columns.map((columnName) => this.getHeaderIndex(columnName));
+
     rows.forEach((row) => {
-      const id = this.buildCoreID(
-        coreidHeaderIndexes.map((coreidheaderIndex) => row[coreidheaderIndex]),
+      const coreID = this.buildID(coreidHeaderIndexes.map((coreidheaderIndex) => row[coreidheaderIndex]));
+
+      const uniqueID = this.buildID(
+        uniqueidHeaderIndexes.map((uniqueidheaderIndex) => row[uniqueidheaderIndex]),
         pivot
       );
 
       columns.push({
-        id: id,
+        coreid: coreID,
+        uniqueid: { name: uniqueid.target.column, value: uniqueID },
         name: headerName,
         value: row[headerIndex]
       });
@@ -181,8 +205,8 @@ export class CSVWorksheet {
     return columns;
   }
 
-  buildCoreID(parts: (string | number)[], pivot?: string): string {
-    return parts.join(':') + (pivot && `:${pivot}`);
+  buildID(parts: (string | number)[], postfix?: string): string {
+    return parts.join(':') + (postfix && `:${postfix}`);
   }
 
   getRowObjects(): object[] {
@@ -226,7 +250,7 @@ export class CSVWorksheet {
   getCell(headerName: string, rowIndex: number) {
     const headerIndex = this.getHeaderIndex(headerName);
 
-    if (!headerIndex || headerIndex < 0) {
+    if (headerIndex < 0) {
       return undefined;
     }
 
