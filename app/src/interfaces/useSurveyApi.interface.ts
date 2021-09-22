@@ -65,7 +65,7 @@ export interface IGetSurveyForViewResponseDetails {
   geometry: Feature[];
   completion_status: string;
   publish_date: string;
-  occurrence_submission_id?: number;
+  occurrence_submission_id: number | null;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
