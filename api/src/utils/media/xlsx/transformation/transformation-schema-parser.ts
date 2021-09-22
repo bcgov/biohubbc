@@ -63,7 +63,10 @@ export class TransformationSchemaParser {
     return jsonpath.query(this.transformationSchema, this.getFileTransformationsJsonPath(fileName))?.[0] || [];
   }
 
-  getTransformationSchemas(): object[] {
+  getTransformationSchemas(): {
+    condition: string[];
+    fields: { [key: string]: { columns?: string[]; separator?: string; value?: any; unique?: string } };
+  }[] {
     return jsonpath.query(this.transformationSchema, this.getTransformationsJsonPath())?.[0] || [];
   }
 

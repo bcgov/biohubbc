@@ -115,73 +115,79 @@ export function getTransformationSchema(): RequestHandler {
       // ],
       transformations: [
         {
-          id: {
-            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-            separator: ':'
-          },
-          eventID: {
-            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-            separator: ':'
-          },
-          eventDate: {
-            columns: ['Date']
-          },
-          verbatimCoordinates: {
-            columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-          },
-          occurrenceID: {
-            columns: ['Waypoint'],
-            unique: 'occ'
-          },
-          individualCount: {
-            columns: ['Mature Bulls']
-          },
-          taxon: {
-            columns: ['Species']
-          },
-          lifestage: {
-            value: 'Adult'
-          },
-          sex: {
-            value: 'Male'
-          },
-          occurrenceRemarks: {
-            columns: ['Observation Comments']
+          condition: ['individualCount'],
+          fields: {
+            id: {
+              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+              separator: ':'
+            },
+            eventID: {
+              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+              separator: ':'
+            },
+            eventDate: {
+              columns: ['Date']
+            },
+            verbatimCoordinates: {
+              columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+            },
+            occurrenceID: {
+              columns: ['Waypoint'],
+              unique: 'occ'
+            },
+            individualCount: {
+              columns: ['Mature Bulls']
+            },
+            taxon: {
+              columns: ['Species']
+            },
+            lifestage: {
+              value: 'Adult'
+            },
+            sex: {
+              value: 'Male'
+            },
+            occurrenceRemarks: {
+              columns: ['Observation Comments']
+            }
           }
         },
         {
-          id: {
-            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-            separator: ':'
-          },
-          eventID: {
-            columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-            separator: ':'
-          },
-          eventDate: {
-            columns: ['Date']
-          },
-          verbatimCoordinates: {
-            columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-          },
-          occurrenceID: {
-            columns: ['Waypoint'],
-            unique: 'occ'
-          },
-          individualCount: {
-            columns: ['Yearlings Bulls']
-          },
-          taxon: {
-            columns: ['Species']
-          },
-          lifestage: {
-            value: 'Yearling'
-          },
-          sex: {
-            value: 'Male'
-          },
-          occurrenceRemarks: {
-            columns: ['Observation Comments']
+          condition: ['individualCount'],
+          fields: {
+            id: {
+              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+              separator: ':'
+            },
+            eventID: {
+              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+              separator: ':'
+            },
+            eventDate: {
+              columns: ['Date']
+            },
+            verbatimCoordinates: {
+              columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+            },
+            occurrenceID: {
+              columns: ['Waypoint'],
+              unique: 'occ'
+            },
+            individualCount: {
+              columns: ['Yearlings Bulls']
+            },
+            taxon: {
+              columns: ['Species']
+            },
+            lifestage: {
+              value: 'Yearling'
+            },
+            sex: {
+              value: 'Male'
+            },
+            occurrenceRemarks: {
+              columns: ['Observation Comments']
+            }
           }
         }
       ],

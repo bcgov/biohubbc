@@ -228,9 +228,12 @@ export class XLSXCSV {
 
     mergedAndFlattenedRowsArray.forEach((row, rowIndex) => {
       transformationSchemas.forEach((transformationSchema, transformationIndex) => {
+        const conditionFields = transformationSchema.condition;
+        let skipRecord = false;
+
         const newDWCRow = {};
 
-        Object.entries(transformationSchema).forEach(([key, config]) => {
+        Object.entries(transformationSchema.fields).forEach(([key, config]) => {
           let columnValue = undefined;
 
           if (config.columns) {
@@ -253,8 +256,16 @@ export class XLSXCSV {
             // columnValue = `${columnValue}:${config.unique}-${rowIndex}-${transformationIndex}`;
           }
 
+          if (conditionFields.includes(key) && (columnValue === undefined || columnValue === null)) {
+            skipRecord = true;
+          }
+
           newDWCRow[key] = columnValue;
         });
+
+        if (skipRecord) {
+          return;
+        }
 
         flattenedDWCData.push(newDWCRow);
       });
