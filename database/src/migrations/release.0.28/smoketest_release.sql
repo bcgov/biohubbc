@@ -49,6 +49,7 @@ declare
   _survey_status_rec survey_status%rowtype;
   _geography project.geography%type;
   _project_funding_source_id project_funding_source.project_funding_source_id%type;
+  _project_report_attachment_id project_report_attachment.project_report_attachment_id%type;
 begin
   -- set security context
   select api_set_context('myIDIR', 'IDIR') into _system_user_id;
@@ -88,6 +89,9 @@ begin
   --insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date) values (_project_id, 43, '$1,000.00', now(), now());
   insert into project_iucn_action_classification (project_id, iucn_conservation_action_level_3_subclassification_id) values (_project_id, (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification where name = 'Primary Education'));
   insert into project_attachment (project_id, file_name, title, key, file_size) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000);
+  insert into project_report_attachment (project_id, file_name, title, key, file_size, year, description) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000, '2021', 'example abstract') returning project_report_attachment_id into _project_report_attachment_id;
+  insert into author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'john', 'doe');
+  insert into author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'bob', 'dole');
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
   insert into permit (system_user_id, project_id, number, type, issue_date, end_date) values (_system_user_id, _project_id, '8377262', 'permit type', now(), now()+interval '1 day');
 
@@ -105,6 +109,10 @@ begin
   assert _count = 1, 'FAIL project_iucn_action_classification';
   select count(1) into _count from project_attachment;
   assert _count = 1, 'FAIL project_attachment';
+  select count(1) into _count from project_report_attachment;
+  assert _count = 1, 'FAIL project_report_attachment';
+  select count(1) into _count from author;
+  assert _count = 2, 'FAIL author';
   select count(1) into _count from project_first_nation;
   assert _count = 1, 'FAIL project_first_nation';
   select count(1) into _count from permit;
@@ -157,11 +165,6 @@ begin
   assert _count = 5, 'FAIL submission_status';
   select count(1) into _count from submission_message;
   assert _count = 1, 'FAIL submission_message';  
-
-  -- survey summary
-  insert into survey_summary_general (survey_id, study_area_id, stratum, summary_year, summary_month, summary_day) values (_survey_id, 'MU65', '1', '2021', '6', '26');
-  select count(1) into _count from survey_summary_general;
-  assert _count = 1, 'FAIL survey_summary_general';  
 
 --  raise notice 'survey status (project_id, survey_id, survey_status):';
 --  for _survey_status_rec in execute _survey_status_query loop

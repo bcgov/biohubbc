@@ -83,17 +83,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public facing (published) projects list.
-   *
-   * @return {*}  {Promise<IGetProjectsListResponse[]>}
-   */
-  const getPublicProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/public/projects`);
-
-    return data;
-  };
-
-  /**
    * Get project details based on its ID for viewing purposes.
    *
    * @param {number} projectId
@@ -101,18 +90,6 @@ const useProjectApi = (axios: AxiosInstance) => {
    */
   const getProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/view`);
-
-    return data;
-  };
-
-  /**
-   * Get public (published) project details based on its ID for viewing purposes.
-   *
-   * @param {number} projectId
-   * @return {*} {Promise<IGetProjectForViewResponse>}
-   */
-  const getPublicProjectForView = async (projectId: number): Promise<IGetProjectForViewResponse> => {
-    const { data } = await axios.get(`/api/public/project/${projectId}/view`);
 
     return data;
   };
@@ -190,19 +167,28 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Toggle visibility state of project attachments.
+   * Make visibility of project attachment private.
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @return {*}  {Promise<any>}
+   */
+  const makeAttachmentPrivate = async (projectId: number, attachmentId: number): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makePrivate`);
+
+    return data;
+  };
+
+  /**
+   * Make visibility of project attachment public.
    *
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {any} securityToken
    * @return {*}  {Promise<any>}
    */
-  const toggleProjectAttachmentVisibility = async (
-    projectId: number,
-    attachmentId: number,
-    securityToken: any
-  ): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/toggleVisibility`, {
+  const makeAttachmentPublic = async (projectId: number, attachmentId: number, securityToken: any): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makePublic`, {
       securityToken
     });
 
@@ -260,9 +246,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     addFundingSource,
     deleteProject,
     publishProject,
-    getPublicProjectsList,
-    getPublicProjectForView,
-    toggleProjectAttachmentVisibility
+    makeAttachmentPublic,
+    makeAttachmentPrivate
   };
 };
 
