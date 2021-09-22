@@ -27,7 +27,7 @@ function onBackupDatabase(){
     _password=$(getPassword ${_databaseSpec})
     echoGreen "Backing up '${_hostname}${_port:+:${_port}}${_database:+/${_database}}' to '${_backupFile}' ..."
 
-    PGPASSWORD=${_password} pg_dump -Fp -h "${_hostname}" ${_portArg} -U "${_username}" "${_database}" | gzip > ${_backupFile}
+    PGPASSWORD=${_password} pg_dump -Fp -h "${_hostname}" ${_portArg} -U "${_username}" "${_database}" | gzip > ${_backupFile} && s3cmd --recursive sync /backups/. s3://$OBJECT_STORE_BUCKET_NAME/backups/
     return ${PIPESTATUS[0]}
   )
 }
