@@ -8,6 +8,7 @@ import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
+import OccurrenceFeatureGroup from 'components/map/OccurrenceFeatureGroup';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import StudyAreaForm, {
   IStudyAreaForm,
@@ -21,8 +22,7 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
   IGetSurveyForViewResponse,
   IUpdateSurveyRequest,
-  UPDATE_GET_SURVEY_ENTITIES,
-  IGetOccurrenceGeometriesResponseDetails
+  UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
@@ -43,21 +43,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details, occurrence_geometries },
+    surveyForViewData: { survey_details },
     refresh
   } = props;
 
   const surveyGeometry = survey_details?.geometry;
-  const occurrenceGeometries = occurrence_geometries.map((occurrenceGeometry: IGetOccurrenceGeometriesResponseDetails) => {
-    return {
-      type: 'Feature',
-      geometry: {
-        type: occurrenceGeometry.type,
-        coordinates: occurrenceGeometry.coordinates
-      },
-      properties: {}
-    } as Feature
-  });
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
@@ -72,17 +62,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
 
   useEffect(() => {
-    const nonEditableSurveyGeometriesResult = surveyGeometry.map((geom: Feature) => {
+    const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    const nonEditableOccurrenceGeometriesResult = occurrenceGeometries.map((geom: Feature) => {
-      return { feature: geom };
-    });
+    if (!survey_details.occurrence_submission_id) {
+      setBounds(calculateUpdatedMapBounds(surveyGeometry));
+    }
 
-    const nonEditableGeometriesResult = [ ...nonEditableSurveyGeometriesResult, ...nonEditableOccurrenceGeometriesResult ];
-
-    setBounds(calculateUpdatedMapBounds(surveyGeometry));
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry]);
 
@@ -204,6 +191,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
+            additionalLayers={
+              survey_details.occurrence_submission_id
+                ? [<OccurrenceFeatureGroup occurrenceSubmissionId={survey_details.occurrence_submission_id} />]
+                : undefined
+            }
           />
         </Box>
         <Grid container spacing={2}>

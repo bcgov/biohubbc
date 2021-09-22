@@ -77,34 +77,24 @@ export function getLayerTypesToSkipByProjectedGeometry(projectedGeo: any) {
   const geoId = projectedGeo.id as string;
   let layerTypesToSkip: string[] = [];
 
-  if (geoId && geoId.includes('TA_PARK_ECORES_PA_SVW')) {
-    layerTypesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
-  }
-
   if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
-
-    // Skip showing parks if region chosen is from a known layer but is not a park
-    layerTypesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
   }
 
   if (geoId && geoId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
-
-    // Skip showing parks if region chosen is from a known layer but is not a park
-    layerTypesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
   }
 
   if (geoId && geoId.includes('WAA_WILDLIFE_MGMT_UNITS_SVW')) {
     layerTypesToSkip.push('pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW');
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.EADM_WLAP_REGION_BND_AREA_SVW');
-
-    // Skip showing parks if region chosen is from a known layer but is not a park
-    layerTypesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
   }
+
+  // Always skip park layer because we only want to show it if the user has explicitly selected a park as their layer
+  layerTypesToSkip.push('pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW');
 
   return layerTypesToSkip;
 }

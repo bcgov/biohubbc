@@ -65,6 +65,7 @@ export interface IGetSurveyForViewResponseDetails {
   geometry: Feature[];
   completion_status: string;
   publish_date: string;
+  occurrence_submission_id?: number;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
@@ -128,12 +129,6 @@ export interface IGetSurveyForUpdateResponse {
 export interface IGetSurveyForViewResponse {
   survey_details: IGetSurveyForViewResponseDetails;
   survey_proprietor: IGetSurveyForViewResponseProprietor;
-  occurrence_geometries: IGetOccurrenceGeometriesResponseDetails[];
-}
-
-export interface IGetOccurrenceGeometriesResponseDetails {
-  type: string;
-  coordinates: number[];
 }
 
 /**

@@ -2,7 +2,8 @@ import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   IGetSubmissionCSVForViewResponse,
   IGetObservationSubmissionResponse,
-  IUploadObservationSubmissionResponse
+  IUploadObservationSubmissionResponse,
+  IGetOccurrencesForViewResponseDetails
 } from 'interfaces/useObservationApi.interface';
 
 /**
@@ -47,14 +48,12 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   // testing
   const initiateScrapeOccurrences = async (submissionId: number) => {
-    const { data } = await axios.post(
-      `/api/dwc/scrape-occurrences`, {
-        occurrence_submission_id: submissionId
-      }
-    );
+    const { data } = await axios.post(`/api/dwc/scrape-occurrences`, {
+      occurrence_submission_id: submissionId
+    });
 
     return data;
-  }
+  };
 
   /**
    * Get observation submission csv data/details by submission id.
@@ -87,6 +86,16 @@ const useObservationApi = (axios: AxiosInstance) => {
     surveyId: number
   ): Promise<IGetObservationSubmissionResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`);
+
+    return data;
+  };
+
+  const getOccurrencesForView = async (
+    occurrenceSubmissionId: number
+  ): Promise<IGetOccurrencesForViewResponseDetails[]> => {
+    const { data } = await axios.post(`/api/dwc/view-occurrences`, {
+      occurrence_submission_id: occurrenceSubmissionId
+    });
 
     return data;
   };
@@ -134,7 +143,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationSubmission,
     initiateDwCSubmissionValidation,
     initiateXLSXSubmissionValidation,
-    initiateScrapeOccurrences // test
+    initiateScrapeOccurrences, // test
+    getOccurrencesForView
   };
 };
 

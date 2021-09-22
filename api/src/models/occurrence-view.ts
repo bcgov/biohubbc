@@ -2,14 +2,28 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/occurrence-view');
 
-export class GetOccurrenceGeometriesData {
-  occurrenceGeometries: any[];
+export class GetOccurrencesViewData {
+  occurrences: any[];
 
-  constructor(occurrenceGeometriesData?: any) {
-    defaultLog.debug({ label: 'GetOccurrenceGeometriesData', message: 'params', occurrenceGeometriesData });
+  constructor(occurrencesData?: any) {
+    defaultLog.debug({ label: 'GetOccurrencesViewData', message: 'params', occurrencesData });
 
-    this.occurrenceGeometries = occurrenceGeometriesData?.map((occurrenceGeometry: any) => {
-      return JSON.parse(occurrenceGeometry.geometry);
+    this.occurrences = occurrencesData?.map((occurrence: any) => {
+      const feature = {
+        type: 'Feature',
+        geometry: JSON.parse(occurrence.geometry),
+        properties: {}
+      };
+
+      return {
+        geometry: feature,
+        taxonId: occurrence.taxonid,
+        individualCount: Number(occurrence.individualcount),
+        lifeStage: occurrence.lifestage,
+        organismQuantity: Number(occurrence.organismquantity),
+        organismQuantityType: occurrence.organismquantitytype,
+        vernacularName: occurrence.vernacularname
+      };
     });
   }
 }

@@ -171,6 +171,7 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       fs.name as agency_name,
       s.revision_count,
       s.publish_timestamp as publish_date,
+      os.occurrence_submission_id,
       CASE
         WHEN wtu.english_name IS NULL and ss.is_focal = TRUE THEN wtu.unit_name2
         WHEN wtu.english_name IS NOT NULL and ss.is_focal = TRUE THEN CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
@@ -213,8 +214,15 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       common_survey_methodology as csm
     ON
       csm.common_survey_methodology_id = s.common_survey_methodology_id
+    LEFT OUTER JOIN
+      occurrence_submission as os
+    ON
+      os.survey_id = s.survey_id
     WHERE
-      s.survey_id = ${surveyId};
+      s.survey_id = ${surveyId}
+    ORDER BY
+      os.event_timestamp DESC
+    LIMIT 1;
   `;
 
   defaultLog.debug({
