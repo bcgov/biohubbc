@@ -320,6 +320,10 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
       }
 
       const rowValueForColumn = String(row[columnIndex]);
+
+      if (rowValueForColumn === 'undefined') {
+        return csvWorksheet;
+      }
       const regex = new RegExp(config.column_format_validator.reg_exp);
 
       // Add an error if the cell value is not in the correct range provided in the array
