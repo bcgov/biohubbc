@@ -2,6 +2,12 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/occurrence-view');
 
+/**
+ * Pre-processes GET occurrences data for view-only purposes
+ *
+ * @export
+ * @class GetOccurrencesViewData
+ */
 export class GetOccurrencesViewData {
   occurrences: any[];
 

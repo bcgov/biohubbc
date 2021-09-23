@@ -446,6 +446,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         />
       )}
 
+      {/* Render any additional layer feature groups */}
       {additionalLayers &&
         additionalLayers.map((additionalLayer: ReactElement, index: number) => (
           <Fragment key={index}>{additionalLayer}</Fragment>
