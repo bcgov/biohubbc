@@ -138,7 +138,7 @@ describe('uploadSubmission', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+      expect(actualError.message).to.equal('Failed to query template methodology species table');
     }
   });
 
@@ -214,7 +214,7 @@ describe('uploadSubmission', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL update statement');
+      expect(actualError.message).to.equal('Failed to insert survey occurrence submission record');
     }
   });
 
@@ -243,7 +243,7 @@ describe('uploadSubmission', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to update survey occurrence submission record');
+      expect(actualError.message).to.equal('Failed to insert survey occurrence submission record');
     }
   });
 
