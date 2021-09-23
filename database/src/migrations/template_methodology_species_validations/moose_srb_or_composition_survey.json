@@ -11,9 +11,9 @@
           "description": "",
           "validations": [
             {
-              "column_format_validator": {
-                "reg_exp": "^[sS][1-3]{1}$",
-                "expected_format": "Must be between s1 and s3."
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
               }
             }
           ]
@@ -63,14 +63,9 @@
           "description": "",
           "validations": [
             {
-              "column_code_validator": {
+              "column_numeric_validator": {
                 "name": "",
-                "description": "",
-                "allowed_code_values": [
-                  { "name": 1, "description": "High" },
-                  { "name": 2, "description": "Medium" },
-                  { "name": 3, "description": "Low" }
-                ]
+                "description": ""
               }
             }
           ]
@@ -87,6 +82,18 @@
                   { "name": "Y", "description": "Yes" },
                   { "name": "N", "description": "No" }
                 ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Area (km2)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
               }
             }
           ]
@@ -107,6 +114,30 @@
       "name": "Effort & Site Conditions",
       "description": "",
       "columns": [
+        {
+          "name": "Block ID/SU ID",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stratum",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
         {
           "name": "Aircraft Type",
           "description": "",
@@ -211,7 +242,43 @@
           ]
         },
         {
-          "name": "Calculated Total Block Time (hrs)",
+          "name": "Total Block Time",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Total Time (hours)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Total Time (mins)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Time (mins)/block area (km2)",
           "description": "",
           "validations": [
             {
@@ -247,7 +314,7 @@
           ]
         },
         {
-          "name": "Wind Speed (MPH)",
+          "name": "Wind Speed (KPH)",
           "description": "",
           "validations": [
             {
@@ -327,7 +394,8 @@
               "Air Temperature (C)",
               "Visibility",
               "Cloud Cover (%)",
-              "Wind Speed (MPH)",
+              "Wind Speed (KPH)",
+              "Precipitation",
               "Light",
               "Snow cover (%)",
               "Snow Depth",
@@ -340,7 +408,7 @@
       ]
     },
     {
-      "name": "Observations - Okanagan",
+      "name": "Observations",
       "description": "",
       "columns": [
         {
@@ -363,6 +431,18 @@
           ]
         },
         {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_format_validator": {
+                "reg_exp": "^wpt [0-9]+$",
+                "expected_format": "Must be in the format WPT X , ie WPT 11."
+              }
+            }
+          ]
+        },
+        {
           "name": "Activity",
           "description": "",
           "validations": [
@@ -376,7 +456,7 @@
           ]
         },
         {
-          "name": "Spike/Form Bulls",
+          "name": "Yearling Bulls",
           "description": "",
           "validations": [
             {
@@ -412,7 +492,7 @@
           ]
         },
         {
-          "name": "Unclassified Bulls",
+          "name": "Senior Bulls",
           "description": "",
           "validations": [
             {
@@ -424,7 +504,7 @@
           ]
         },
         {
-          "name": "Cows",
+          "name": "Bulls - Unclassified",
           "description": "",
           "validations": [
             {
@@ -436,7 +516,55 @@
           ]
         },
         {
-          "name": "Calves",
+          "name": "Spike/Fork Bulls",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lone Cows",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cow W/1 calf",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cow W/2 calves",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lone Calf",
           "description": "",
           "validations": [
             {
@@ -509,12 +637,16 @@
               "Waypoint",
               "Species",
               "Total Count",
-              "Spike/Fork Bulls",
+              "Yearling Bulls",
               "Sub-Prime Bulls",
               "Prime Bulls",
-              "Unclassified Bulls",
-              "Cows",
-              "Calves",
+              "Senior Bulls",
+              "Bulls - Unclassified",
+              "Spike/Fork Bulls",
+              "Lone Cows",
+              "Cow W/1 calf",
+              "Cow W/2 calves",
+              "Lone calf",
               "Unclassified",
               "Total Count",
               "Activity",
@@ -565,6 +697,18 @@
         },
         {
           "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_format_validator": {
+                "reg_exp": "^wpt [0-9]+$",
+                "expected_format": "Must be in the format WPT X , ie WPT 11."
+              }
+            }
+          ]
+        },
+        {
+          "name": "Total Count",
           "description": "",
           "validations": [
             {
@@ -671,6 +815,7 @@
               "Block ID/SU ID",
               "Waypoint",
               "Species",
+              "Total Count",
               "Adult Males",
               "Adult Females",
               "Adults - Unclassified Sex",
@@ -720,9 +865,9 @@
           "description": "",
           "validations": [
             {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
+              "column_format_validator": {
+                "reg_exp": "^wpt [0-9]+$",
+                "expected_format": "Must be in the format WPT X , ie WPT 11."
               }
             }
           ]
@@ -752,7 +897,7 @@
           ]
         },
         {
-          "name": "Lat (DD)",
+          "name": "Lat",
           "description": "",
           "validations": [
             {
@@ -764,7 +909,31 @@
           ]
         },
         {
-          "name": "Long (DD)",
+          "name": "Long",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Elevation (m)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Elevation(-65m)",
           "description": "",
           "validations": [
             {
@@ -788,8 +957,9 @@
               "Easting",
               "Northing",
               "GPS Datum",
-              "Lat (DD)",
-              "Long (DD)",
+              "Lat",
+              "Long",
+              "Lat/Long Units",
               "Elevation (m)",
               "Elevation(-65m)",
               "Comments"
@@ -827,7 +997,7 @@
           "Strata Metadata",
           "Block Summary",
           "Effort & Site Conditions",
-          "Observations - Okanagan",
+          "Observations",
           "NonTargetted Observations",
           "UTM_LatLong",
           "Photos"

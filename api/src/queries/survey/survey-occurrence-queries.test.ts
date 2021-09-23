@@ -184,19 +184,13 @@ describe('getOccurrenceSubmissionMessagesSQL', () => {
 
 describe('getTemplateMethodologySpeciesIdSQLStatement', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQLStatement((null as unknown) as number, 'sample_template');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null sample template provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQLStatement(1, (null as unknown) as string);
+    const response = getTemplateMethodologySpeciesIdSQLStatement((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQLStatement(1, 'sample_template');
+    const response = getTemplateMethodologySpeciesIdSQLStatement(1);
 
     expect(response).to.not.be.null;
   });

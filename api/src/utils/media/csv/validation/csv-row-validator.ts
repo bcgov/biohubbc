@@ -32,7 +32,7 @@ export const getRequiredFieldsValidator = (requiredFieldsByHeader?: string[]): C
     // If there are rows, then check each cell in each row against the list of required headers, adding errors as needed
     rows.forEach((row, rowIndex) => {
       for (const requiredFieldByHeader of requiredFieldsByHeader) {
-        const columnIndex = headers.indexOf(requiredFieldByHeader.toLowerCase());
+        const columnIndex = headers.indexOf(requiredFieldByHeader.trim().toLowerCase());
 
         //if column does not exist, return csvWorksheet
         if (columnIndex < 0) {
@@ -92,21 +92,31 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
     const headers = csvWorksheet.getHeaders();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headers.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headers.indexOf(config.columnName.trim().toLowerCase());
 
       // if column does not exist, return
       if (columnIndex < 0) {
         return csvWorksheet;
       }
 
-      const rowValueForColumn = row[columnIndex];
+      let rowValueForColumn = row[columnIndex];
 
       if (!rowValueForColumn) {
         // cell is empty, use the getRequiredFieldsValidator to assert required fields
         return csvWorksheet;
       }
 
-      const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => allowedCode.name);
+      if (typeof row[columnIndex] === 'string') {
+        rowValueForColumn = (row[columnIndex] as string).trim().toLowerCase();
+      }
+
+      const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
+        if (typeof allowedCode.name === 'string') {
+          allowedCode.name = allowedCode.name.toLowerCase();
+        }
+
+        return allowedCode.name;
+      });
 
       // Add an error if the cell value is not one of the elements in the codeValues array
       if (!allowedCodeValues.includes(rowValueForColumn)) {
@@ -154,7 +164,7 @@ export const getValidRangeFieldsValidator = (config?: ColumnRangeValidatorConfig
     const headers = csvWorksheet.getHeaders();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headers.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headers.indexOf(config.columnName.trim().toLowerCase());
 
       // if column does not exist, return
       if (columnIndex < 0) {
@@ -250,7 +260,7 @@ export const getNumericFieldsValidator = (config?: ColumnNumericValidatorConfig)
     const headers = csvWorksheet.getHeaders();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headers.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headers.indexOf(config.columnName.trim().toLowerCase());
 
       // if column does not exist, return
       if (columnIndex < 0) {
@@ -312,18 +322,23 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
     const headers = csvWorksheet.getHeaders();
 
     rows.forEach((row, rowIndex) => {
-      const columnIndex = headers.indexOf(config.columnName.toLowerCase());
+      const columnIndex = headers.indexOf(config.columnName.trim().toLowerCase());
 
       // if column does not exist, return
       if (columnIndex < 0) {
         return csvWorksheet;
       }
 
-      const rowValueForColumn = String(row[columnIndex]);
+      const rowValueForColumn = row[columnIndex];
+
+      if (rowValueForColumn === undefined || rowValueForColumn === null) {
+        return csvWorksheet;
+      }
+
       const regex = new RegExp(config.column_format_validator.reg_exp);
 
       // Add an error if the cell value is not in the correct range provided in the array
-      if (!regex.test(rowValueForColumn)) {
+      if (!regex.test(rowValueForColumn as string)) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: 'Unexpected Format',
