@@ -1,4 +1,4 @@
-import { getDBConnection } from '../../database/db';
+import { getDBConnection, IDBConnection } from '../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
@@ -81,27 +81,23 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
     try {
       await connection.open();
 
-      const eventHeaders = file.worksheets.event?.getHeaders();
-      const eventRows = file.worksheets.event?.getRows();
-
-      const eventEventIdHeader = eventHeaders?.indexOf('eventid') as number;
-      const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimcoordinates') as number;
-      const eventDateHeader = eventHeaders?.indexOf('eventdate') as number;
-
-      const occurrenceHeaders = file.worksheets.occurrence?.getHeaders();
-      const occurrenceRows = file.worksheets.occurrence?.getRows();
-
-      const taxonHeaders = file.worksheets.taxon?.getHeaders();
-      const taxonRows = file.worksheets.taxon?.getRows();
-      const taxonEventIdHeader = taxonHeaders?.indexOf('eventid') as number;
-      const vernacularNameHeader = taxonHeaders?.indexOf('vernacularname') as number;
-
-      const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventid') as number;
-      const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedtaxa') as number;
-      const lifeStageHeader = occurrenceHeaders?.indexOf('lifestage') as number;
-      const individualCountHeader = occurrenceHeaders?.indexOf('individualcount') as number;
-      const organismQuantityHeader = occurrenceHeaders?.indexOf('organismquantity') as number;
-      const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismquantitytype') as number;
+      const {
+        occurrenceRows,
+        occurrenceEventIdHeader,
+        associatedTaxaHeader,
+        eventRows,
+        lifeStageHeader,
+        individualCountHeader,
+        organismQuantityHeader,
+        organismQuantityTypeHeader,
+        occurrenceHeaders,
+        eventEventIdHeader,
+        eventDateHeader,
+        eventVerbatimCoordinatesHeader,
+        taxonRows,
+        taxonEventIdHeader,
+        vernacularNameHeader
+      } = getHeadersAndRowsFromFile(file);
 
       const scrapedOccurrences = occurrenceRows?.map((row: any) => {
         const occurrenceEventId = row[occurrenceEventIdHeader];
@@ -148,17 +144,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
       await Promise.all(
         scrapedOccurrences?.map(async (scrapedOccurrence: any) => {
-          const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
-
-          if (!sqlStatement) {
-            throw new HTTP400('Failed to build SQL post statement');
-          }
-
-          const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-          if (!response || !response.rowCount) {
-            throw new HTTP400('Failed to insert occurrence data');
-          }
+          uploadScrapedOccurrence(occurrenceSubmissionId, scrapedOccurrence, connection);
         }) || []
       );
 
@@ -172,6 +158,32 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
   };
 }
 
+/**
+ * Upload scraped occurrence data.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {any} scrapedOccurrence
+ * @param {IDBConnection} connection
+ * @return {*}
+ */
+export const uploadScrapedOccurrence = async (
+  occurrenceSubmissionId: number,
+  scrapedOccurrence: any,
+  connection: IDBConnection
+) => {
+  const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL post statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert occurrence data');
+  }
+};
+
 export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment => {
   const ssfDate = xlsx.SSF.parse_date_code(excelDateNumber);
 
@@ -183,4 +195,46 @@ export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment
     minute: ssfDate.M,
     second: ssfDate.S
   });
+};
+
+const getHeadersAndRowsFromFile = (file: any) => {
+  const eventHeaders = file.worksheets.event?.getHeaders();
+  const eventRows = file.worksheets.event?.getRows();
+
+  const eventEventIdHeader = eventHeaders?.indexOf('eventid') as number;
+  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimcoordinates') as number;
+  const eventDateHeader = eventHeaders?.indexOf('eventdate') as number;
+
+  const occurrenceHeaders = file.worksheets.occurrence?.getHeaders();
+  const occurrenceRows = file.worksheets.occurrence?.getRows();
+
+  const taxonHeaders = file.worksheets.taxon?.getHeaders();
+  const taxonRows = file.worksheets.taxon?.getRows();
+  const taxonEventIdHeader = taxonHeaders?.indexOf('eventid') as number;
+  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularname') as number;
+
+  const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventid') as number;
+  const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedtaxa') as number;
+  const lifeStageHeader = occurrenceHeaders?.indexOf('lifestage') as number;
+  const individualCountHeader = occurrenceHeaders?.indexOf('individualcount') as number;
+  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismquantity') as number;
+  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismquantitytype') as number;
+
+  return {
+    occurrenceRows,
+    occurrenceEventIdHeader,
+    associatedTaxaHeader,
+    eventRows,
+    lifeStageHeader,
+    individualCountHeader,
+    organismQuantityHeader,
+    organismQuantityTypeHeader,
+    occurrenceHeaders,
+    eventEventIdHeader,
+    eventDateHeader,
+    eventVerbatimCoordinatesHeader,
+    taxonRows,
+    taxonEventIdHeader,
+    vernacularNameHeader
+  };
 };
