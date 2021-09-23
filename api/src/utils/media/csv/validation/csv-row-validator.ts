@@ -331,7 +331,7 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
 
       const rowValueForColumn = row[columnIndex];
 
-      if (rowValueForColumn === undefined) {
+      if (rowValueForColumn === undefined || rowValueForColumn === null) {
         return csvWorksheet;
       }
 
