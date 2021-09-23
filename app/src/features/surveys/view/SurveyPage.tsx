@@ -361,7 +361,7 @@ const SurveyPage: React.FC = () => {
               />
             )}
             {location.pathname.includes('/results') && <SurveySummaryResults />}
-            {location.pathname.includes('/observations') && <SurveyObservations />}
+            {location.pathname.includes('/observations') && <SurveyObservations refresh={getSurvey} />}
             {location.pathname.includes('/attachments') && (
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}

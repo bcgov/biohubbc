@@ -30,6 +30,10 @@ import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.
 import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
+interface ISurveyObservationsProps {
+  refresh: () => void;
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   textSpacing: {
     marginBottom: '1rem'
@@ -72,7 +76,7 @@ export enum ClassGrouping {
 
 const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'System Error'];
 
-const SurveyObservations = () => {
+const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
 
@@ -93,12 +97,22 @@ const SurveyObservations = () => {
           }
 
           if (process.env.REACT_APP_N8N_PORT) {
-            biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type);
+            biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type).then(() => {
+              if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
+                biohubApi.n8n.initiateScrapeOccurrences(result.submissionId).then(() => {
+                  props.refresh();
+                });
+              }
+            });
             return;
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            biohubApi.observation.initiateDwCSubmissionValidation(result.submissionId);
+            biohubApi.observation.initiateDwCSubmissionValidation(result.submissionId).then(() => {
+              biohubApi.observation.initiateScrapeOccurrences(result.submissionId).then(() => {
+                props.refresh();
+              });
+            });
           } else {
             biohubApi.observation.initiateXLSXSubmissionValidation(result.submissionId);
           }

@@ -8,6 +8,7 @@ import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
+import OccurrenceFeatureGroup from 'components/map/OccurrenceFeatureGroup';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import StudyAreaForm, {
   IStudyAreaForm,
@@ -65,7 +66,10 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       return { feature: geom };
     });
 
-    setBounds(calculateUpdatedMapBounds(surveyGeometry));
+    if (!survey_details.occurrence_submission_id) {
+      setBounds(calculateUpdatedMapBounds(surveyGeometry));
+    }
+
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry]);
 
@@ -187,6 +191,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
+            additionalLayers={
+              survey_details.occurrence_submission_id
+                ? [<OccurrenceFeatureGroup occurrenceSubmissionId={survey_details.occurrence_submission_id} />]
+                : undefined
+            }
           />
         </Box>
         <Grid container spacing={2}>

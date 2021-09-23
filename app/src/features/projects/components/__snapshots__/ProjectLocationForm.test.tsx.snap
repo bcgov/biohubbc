@@ -424,7 +424,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_190"
+                            name="leaflet-base-layers_188"
                             type="radio"
                           />
                           <span>
@@ -436,7 +436,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_190"
+                            name="leaflet-base-layers_188"
                             type="radio"
                           />
                           <span>
@@ -540,10 +540,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           class="MuiBox-root MuiBox-root-63"
         >
           <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary"
+            aria-disabled="true"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary Mui-disabled Mui-disabled"
             role="button"
-            tabindex="0"
+            tabindex="-1"
             title="Will only accept kml files, kmz files not accepted."
           >
             <span
@@ -556,16 +556,13 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               />
               Upload KML
             </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
           </label>
           <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary"
+            aria-disabled="true"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary Mui-disabled Mui-disabled"
             role="button"
             style="margin-left: 1rem;"
-            tabindex="0"
+            tabindex="-1"
             title="Will only accept gpx files."
           >
             <span
@@ -578,16 +575,13 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               />
               Upload GPX
             </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
           </label>
           <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary"
+            aria-disabled="true"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary Mui-disabled Mui-disabled"
             role="button"
             style="margin-left: 1rem;"
-            tabindex="0"
+            tabindex="-1"
             title="Will only accept zipped shapefiles of a known projection."
           >
             <span
@@ -600,9 +594,6 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               />
               Upload Shapefile
             </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
           </label>
           <div
             class="MuiBox-root MuiBox-root-64"
@@ -698,8 +689,8 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                       alt=""
                       class="leaflet-tile"
                       role="presentation"
-                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
-                      style="width: 256px; height: 256px; left: -199px; top: -128px;"
+                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
                     />
                   </div>
                 </div>
@@ -720,7 +711,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                   <g>
                     <path
                       class="leaflet-interactive"
-                      d="M0 0L0 -1z"
+                      d="M0 0"
                       fill="#3388ff"
                       fill-opacity="0.2"
                       fill-rule="evenodd"
@@ -763,7 +754,7 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
                   </a>
                   <a
                     aria-label="Zoom out"
-                    class="leaflet-control-zoom-out leaflet-disabled"
+                    class="leaflet-control-zoom-out"
                     href="#"
                     role="button"
                     title="Zoom out"

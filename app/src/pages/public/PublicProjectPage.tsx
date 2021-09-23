@@ -9,7 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiInformationOutline } from '@mdi/js';
+import { mdiInformationOutline, mdiPaperclip } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -22,6 +22,7 @@ import { ProjectStatusType } from 'constants/misc';
 import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';
 import PublicProjectDetails from './PublicProjectDetails';
+import PublicProjectAttachments from './components/PublicProjectAttachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -158,12 +159,21 @@ const PublicProjectPage = () => {
                   </ListItemIcon>
                   <ListItemText>Project Details</ListItemText>
                 </ListItem>
+                <ListItem component={NavLink} to="attachments">
+                  <ListItemIcon>
+                    <Icon path={mdiPaperclip} size={1} />
+                  </ListItemIcon>
+                  <ListItemText>Attachments</ListItemText>
+                </ListItem>
               </List>
             </Paper>
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
               <PublicProjectDetails projectForViewData={projectWithDetails} refresh={getProject} />
+            )}
+            {location.pathname.includes('/attachments') && (
+              <PublicProjectAttachments projectForViewData={projectWithDetails} />
             )}
           </Box>
         </Box>
