@@ -99,14 +99,24 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
         return csvWorksheet;
       }
 
-      const rowValueForColumn = row[columnIndex];
+      let rowValueForColumn = row[columnIndex];
 
       if (!rowValueForColumn) {
         // cell is empty, use the getRequiredFieldsValidator to assert required fields
         return csvWorksheet;
       }
 
-      const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => allowedCode.name);
+      if (typeof row[columnIndex] === 'string') {
+        rowValueForColumn = new String(row[columnIndex]).toLowerCase();
+      }
+
+      const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
+        if (typeof allowedCode.name === 'string') {
+          allowedCode.name = allowedCode.name.toLowerCase();
+        }
+
+        return allowedCode.name;
+      });
 
       // Add an error if the cell value is not one of the elements in the codeValues array
       if (!allowedCodeValues.includes(rowValueForColumn)) {
