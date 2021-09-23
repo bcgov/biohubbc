@@ -64,18 +64,14 @@ export const insertSurveyOccurrenceSubmissionSQL = (
  * @param {string} key
  * @return {*}  {(SQLStatement | null)}
  */
-export const getTemplateMethodologySpeciesIdSQLStatement = (
-  surveyId: number,
-  template_name: string
-): SQLStatement | null => {
+export const getTemplateMethodologySpeciesIdSQLStatement = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'getTemplateMethodologySpeciesIdSQLStatement',
     message: 'params',
-    surveyId,
-    template_name
+    surveyId
   });
 
-  if (!surveyId || !template_name) {
+  if (!surveyId) {
     return null;
   }
 
@@ -91,9 +87,7 @@ export const getTemplateMethodologySpeciesIdSQLStatement = (
     LEFT OUTER JOIN
       survey s on csm.common_survey_methodology_id = s.common_survey_methodology_id
     WHERE
-      s.survey_id = ${surveyId}
-    AND
-      t.name = ${template_name} ;
+      s.survey_id = ${surveyId};
     `;
 
   defaultLog.debug({
