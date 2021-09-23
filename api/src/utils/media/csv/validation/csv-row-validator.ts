@@ -107,7 +107,7 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
       }
 
       if (typeof row[columnIndex] === 'string') {
-        rowValueForColumn = new String(row[columnIndex]).toLowerCase();
+        rowValueForColumn = (row[columnIndex] as string).toLowerCase();
       }
 
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
@@ -329,15 +329,16 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
         return csvWorksheet;
       }
 
-      const rowValueForColumn = String(row[columnIndex]);
+      const rowValueForColumn = row[columnIndex];
 
-      if (rowValueForColumn === 'undefined') {
+      if (rowValueForColumn === undefined) {
         return csvWorksheet;
       }
+
       const regex = new RegExp(config.column_format_validator.reg_exp);
 
       // Add an error if the cell value is not in the correct range provided in the array
-      if (!regex.test(rowValueForColumn)) {
+      if (!regex.test(rowValueForColumn as string)) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: 'Unexpected Format',
