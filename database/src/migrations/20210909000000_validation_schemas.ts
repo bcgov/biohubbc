@@ -30,7 +30,7 @@ enum TEMPLATE_NAME {
 }
 
 const validationSchemas = [
-  //Common Survey Methodology: Stratified Random Block or Composition
+  // Common Survey Methodology: Stratified Random Block or Composition
   {
     fileName: moose_srb_or_composition.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
