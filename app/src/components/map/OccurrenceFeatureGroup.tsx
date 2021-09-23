@@ -1,8 +1,10 @@
+import { Point } from 'geojson';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useIsMounted from 'hooks/useIsMounted';
 import { IGetOccurrencesForViewResponseDetails } from 'interfaces/useObservationApi.interface';
 import React, { useEffect, useState } from 'react';
-import { FeatureGroup, GeoJSON } from 'react-leaflet';
+import { FeatureGroup, Marker } from 'react-leaflet';
+import MarkerClusterGroup from 'react-leaflet-cluster';
 import { OccurrenceFeaturePopup } from './OccurrenceFeaturePopup';
 
 interface IOccurrenceFeatureGroupProps {
@@ -24,7 +26,7 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
     const occurrencesResponse = await biohubApi.observation.getOccurrencesForView(props.occurrenceSubmissionId);
 
     if (!occurrencesResponse) {
-      // Handle error
+      // TODO: Handle error
     }
 
     setOccurrences(occurrencesResponse);
@@ -40,16 +42,20 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
 
   return (
     <FeatureGroup>
-      {occurrences &&
-        occurrences?.map((occurrence) => {
-          const { geometry, ...featureData } = occurrence;
+      <MarkerClusterGroup chunkedLoading>
+        {occurrences &&
+          occurrences.map((occurrence: IGetOccurrencesForViewResponseDetails) => {
+            const { geometry, ...featureData } = occurrence;
 
-          return (
-            <GeoJSON data={occurrence.geometry} key={`feature`}>
-              <OccurrenceFeaturePopup featureData={featureData} />
-            </GeoJSON>
-          );
-        })}
+            return (
+              <Marker
+                key={occurrence.occurrenceId}
+                position={[(geometry.geometry as Point).coordinates[1], (geometry.geometry as Point).coordinates[0]]}>
+                <OccurrenceFeaturePopup featureData={featureData} />
+              </Marker>
+            );
+          })}
+      </MarkerClusterGroup>
     </FeatureGroup>
   );
 };

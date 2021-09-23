@@ -18,6 +18,7 @@ export const getOccurrencesForViewSQL = (occurrenceSubmissionId: number): SQLSta
     SELECT
       public.ST_asGeoJSON(o.geography) as geometry,
       o.taxonid,
+      o.occurrence_id,
       o.lifestage,
       o.vernacularname,
       o.individualcount,

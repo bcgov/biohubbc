@@ -18,6 +18,7 @@ export class GetOccurrencesViewData {
       return {
         geometry: feature,
         taxonId: occurrence.taxonid,
+        occurrenceId: occurrence.occurrence_id,
         individualCount: Number(occurrence.individualcount),
         lifeStage: occurrence.lifestage,
         organismQuantity: Number(occurrence.organismquantity),

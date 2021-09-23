@@ -1,7 +1,7 @@
 import { Feature } from 'geojson';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
-import React, { useEffect, useState, useCallback, ReactElement } from 'react';
+import React, { useEffect, useState, useCallback, ReactElement, Fragment } from 'react';
 import {
   FeatureGroup,
   GeoJSON,
@@ -446,7 +446,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         />
       )}
 
-      {additionalLayers && additionalLayers.map((additionalLayer: ReactElement) => <>{additionalLayer}</>)}
+      {additionalLayers &&
+        additionalLayers.map((additionalLayer: ReactElement, index: number) => (
+          <Fragment key={index}>{additionalLayer}</Fragment>
+        ))}
 
       <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="BC Government">

@@ -90,6 +90,12 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get occurrence information for view-only purposes based on occurrence submission id
+   *
+   * @param {number} occurrenceSubmissionId
+   * @returns {*} {Promise<IGetOccurrencesForViewResponseDetails[]>}
+   */
   const getOccurrencesForView = async (
     occurrenceSubmissionId: number
   ): Promise<IGetOccurrencesForViewResponseDetails[]> => {
