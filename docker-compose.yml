@@ -128,8 +128,7 @@ services:
       - ./n8n/.n8n:/home/node/.n8n
     depends_on:
       - api
-      - db
-      - db_setup
+      - app
     restart: always # n8n doesnt always start after db_setup is done, and can fail. Always restart to help resolve this.
     command: ["n8n", "start"]
 
@@ -211,7 +210,6 @@ services:
       - local-network
     depends_on:
       - api
-      - n8n
 
   ## Run the database migrations and seeding
   db_setup:
