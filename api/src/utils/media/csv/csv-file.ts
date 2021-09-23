@@ -1,6 +1,5 @@
 import xlsx from 'xlsx';
 import { IMediaState, MediaValidation } from '../media-file';
-import { Column } from '../xlsx/transformation/XLSXTransformation';
 
 export type CSVWorksheets = { [name: string]: CSVWorksheet };
 
@@ -166,44 +165,44 @@ export class CSVWorksheet {
     return xlsx.utils.sheet_to_json(this.worksheet);
   }
 
-  getColumnWithCoreId(
-    coreid: { file: string; columns: string[] },
-    uniqueid: { source: { columns: string[] }; target: { column: string } },
-    headerName: string,
-    pivot?: string
-  ): Column[] {
-    const headerIndex = this.getHeaderIndex(headerName);
+  // getColumnWithCoreId(
+  //   coreid: { file: string; columns: string[] },
+  //   uniqueid: { source: { columns: string[] }; target: { column: string } },
+  //   headerName: string,
+  //   pivot?: string
+  // ): Column[] {
+  //   const headerIndex = this.getHeaderIndex(headerName);
 
-    if (!headerIndex || headerIndex < 0) {
-      return [];
-    }
+  //   if (!headerIndex || headerIndex < 0) {
+  //     return [];
+  //   }
 
-    const rows = this.getRows();
+  //   const rows = this.getRows();
 
-    const columns: Column[] = [];
+  //   const columns: Column[] = [];
 
-    const coreidHeaderIndexes = coreid.columns.map((columnName) => this.getHeaderIndex(columnName));
+  //   const coreidHeaderIndexes = coreid.columns.map((columnName) => this.getHeaderIndex(columnName));
 
-    const uniqueidHeaderIndexes = uniqueid.source.columns.map((columnName) => this.getHeaderIndex(columnName));
+  //   const uniqueidHeaderIndexes = uniqueid.source.columns.map((columnName) => this.getHeaderIndex(columnName));
 
-    rows.forEach((row) => {
-      const coreID = this.buildID(coreidHeaderIndexes.map((coreidheaderIndex) => row[coreidheaderIndex]));
+  //   rows.forEach((row) => {
+  //     const coreID = this.buildID(coreidHeaderIndexes.map((coreidheaderIndex) => row[coreidheaderIndex]));
 
-      const uniqueID = this.buildID(
-        uniqueidHeaderIndexes.map((uniqueidheaderIndex) => row[uniqueidheaderIndex]),
-        pivot
-      );
+  //     const uniqueID = this.buildID(
+  //       uniqueidHeaderIndexes.map((uniqueidheaderIndex) => row[uniqueidheaderIndex]),
+  //       pivot
+  //     );
 
-      columns.push({
-        coreid: coreID,
-        uniqueid: { name: uniqueid.target.column, value: uniqueID },
-        name: headerName,
-        value: row[headerIndex]
-      });
-    });
+  //     columns.push({
+  //       coreid: coreID,
+  //       uniqueid: { name: uniqueid.target.column, value: uniqueID },
+  //       name: headerName,
+  //       value: row[headerIndex]
+  //     });
+  //   });
 
-    return columns;
-  }
+  //   return columns;
+  // }
 
   buildID(parts: (string | number)[], postfix?: string): string {
     return parts.join(':') + (postfix && `:${postfix}`);

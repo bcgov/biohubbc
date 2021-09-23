@@ -1,18 +1,4 @@
 import jsonpath from 'jsonpath';
-import { XLSXCSVTransformer } from '../xlsx-file';
-import { getBasicTransformer } from './csv-file-transformer';
-
-export const TransformationRulesRegistry = {
-  registry: [
-    {
-      name: 'basic_transformer',
-      generator: getBasicTransformer
-    }
-  ],
-  findMatchingRule(name: string): any {
-    return this.registry.find((item) => item.name === name)?.generator;
-  }
-};
 
 export type FileStructure = {
   name: string;
@@ -20,6 +6,17 @@ export type FileStructure = {
   parent?: { name: string; key: string[] };
 };
 
+export type FileTransformationSchema = {
+  fileName: string;
+  condition: string[];
+  fields: { [key: string]: { columns?: string[]; separator?: string; value?: any; unique?: string } };
+};
+
+export type ParseSchema = {
+  file: string;
+  columns: string[];
+  condition?: string[];
+};
 export class TransformationSchemaParser {
   transformationSchema: object;
 
@@ -31,42 +28,11 @@ export class TransformationSchemaParser {
     }
   }
 
-  getFileTransformations(fileName: string): XLSXCSVTransformer[] {
-    const transformationSchemas = this.getFileTransformationSchemas(fileName);
-
-    const rules: XLSXCSVTransformer[] = [];
-
-    transformationSchemas.forEach((transformationSchema) => {
-      const keys = Object.keys(transformationSchema);
-
-      if (keys.length !== 1) {
-        return;
-      }
-
-      const key = keys[0];
-
-      const generatorFunction = TransformationRulesRegistry.findMatchingRule(key);
-
-      if (!generatorFunction) {
-        return;
-      }
-
-      const rule = generatorFunction(transformationSchema);
-
-      rules.push(rule);
-    });
-
-    return rules;
-  }
-
   getFileTransformationSchemas(fileName: string): object[] {
     return jsonpath.query(this.transformationSchema, this.getFileTransformationsJsonPath(fileName))?.[0] || [];
   }
 
-  getTransformationSchemas(): {
-    condition: string[];
-    fields: { [key: string]: { columns?: string[]; separator?: string; value?: any; unique?: string } };
-  }[] {
+  getTransformationSchemas(): { fileTransformations: FileTransformationSchema[] }[] {
     return jsonpath.query(this.transformationSchema, this.getTransformationsJsonPath())?.[0] || [];
   }
 
@@ -74,7 +40,7 @@ export class TransformationSchemaParser {
     return jsonpath.query(this.transformationSchema, this.getFileStructureJsonPath(fileName))?.[0] || null;
   }
 
-  getParseSchemas(): { file: string; columns: string[] }[] {
+  getParseSchemas(): ParseSchema[] {
     return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || null;
   }
 

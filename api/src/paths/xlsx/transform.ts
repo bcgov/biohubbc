@@ -5,7 +5,7 @@ import { getSubmissionFileFromS3, getSubmissionS3Key } from '../../paths/dwc/val
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
-// import { TargetFile } from '../../utils/media/xlsx/transformation/XLSXTransformation';
+import { XLSXTransformation } from '../../utils/media/xlsx/transformation/XLSXTransformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
 import { prepXLSX } from './validate';
@@ -115,80 +115,148 @@ export function getTransformationSchema(): RequestHandler {
       // ],
       transformations: [
         {
-          condition: ['individualCount'],
-          fields: {
-            id: {
-              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-              separator: ':'
+          fileTransformations: [
+            {
+              fileName: 'event',
+              fields: {
+                id: {
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                  separator: ':'
+                },
+                eventID: {
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                  separator: ':'
+                },
+                eventDate: {
+                  columns: ['Date']
+                },
+                verbatimCoordinates: {
+                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+                }
+              }
             },
-            eventID: {
-              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-              separator: ':'
-            },
-            eventDate: {
-              columns: ['Date']
-            },
-            verbatimCoordinates: {
-              columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-            },
-            occurrenceID: {
-              columns: ['Waypoint'],
-              unique: 'occ'
-            },
-            individualCount: {
-              columns: ['Mature Bulls']
-            },
-            taxon: {
-              columns: ['Species']
-            },
-            lifestage: {
-              value: 'Adult'
-            },
-            sex: {
-              value: 'Male'
-            },
-            occurrenceRemarks: {
-              columns: ['Observation Comments']
+            {
+              fileName: 'occurrence',
+              condition: ['individualCount'],
+              fields: {
+                occurrenceID: {
+                  columns: ['Waypoint'],
+                  unique: 'occ'
+                },
+                individualCount: {
+                  columns: ['Mature Bulls']
+                },
+                taxon: {
+                  columns: ['Species']
+                },
+                lifestage: {
+                  value: 'Adult'
+                },
+                sex: {
+                  value: 'Male'
+                },
+                occurrenceRemarks: {
+                  columns: ['Observation Comments']
+                }
+              }
             }
-          }
+          ]
         },
         {
-          condition: ['individualCount'],
-          fields: {
-            id: {
-              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-              separator: ':'
+          fileTransformations: [
+            {
+              fileName: 'event',
+              fields: {
+                id: {
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                  separator: ':'
+                },
+                eventID: {
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                  separator: ':'
+                },
+                eventDate: {
+                  columns: ['Date']
+                },
+                verbatimCoordinates: {
+                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+                }
+              }
             },
-            eventID: {
-              columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-              separator: ':'
-            },
-            eventDate: {
-              columns: ['Date']
-            },
-            verbatimCoordinates: {
-              columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-            },
-            occurrenceID: {
-              columns: ['Waypoint'],
-              unique: 'occ'
-            },
-            individualCount: {
-              columns: ['Yearlings Bulls']
-            },
-            taxon: {
-              columns: ['Species']
-            },
-            lifestage: {
-              value: 'Yearling'
-            },
-            sex: {
-              value: 'Male'
-            },
-            occurrenceRemarks: {
-              columns: ['Observation Comments']
+            {
+              fileName: 'occurrence',
+              condition: ['individualCount'],
+              fields: {
+                occurrenceID: {
+                  columns: ['Waypoint'],
+                  unique: 'occ'
+                },
+                individualCount: {
+                  columns: ['Yearlings Bulls']
+                },
+                taxon: {
+                  columns: ['Species']
+                },
+                lifestage: {
+                  value: 'Yearling'
+                },
+                sex: {
+                  value: 'Male'
+                },
+                occurrenceRemarks: {
+                  columns: ['Observation Comments']
+                }
+              }
             }
-          }
+          ]
+        },
+        {
+          fileTransformations: [
+            {
+              fileName: 'event',
+              fields: {
+                id: {
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                  separator: ':'
+                },
+                eventID: {
+                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                  separator: ':'
+                },
+                eventDate: {
+                  columns: ['Date']
+                },
+                verbatimCoordinates: {
+                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+                }
+              }
+            },
+            {
+              fileName: 'occurrence',
+              condition: ['individualCount'],
+              fields: {
+                occurrenceID: {
+                  columns: ['Waypoint'],
+                  unique: 'occ'
+                },
+                individualCount: {
+                  columns: ['Lone Cows']
+                },
+                taxon: {
+                  columns: ['Species']
+                },
+                lifestage: {
+                  value: 'Adult'
+                },
+                sex: {
+                  value: 'Female'
+                },
+                occurrenceRemarks: {
+                  columns: ['Observation Comments']
+                }
+              }
+            }
+          ]
         }
       ],
       parse: [
@@ -198,6 +266,7 @@ export function getTransformationSchema(): RequestHandler {
         },
         {
           file: 'occurrence',
+          condition: ['individualCount'],
           columns: ['id', 'occurrenceID', 'individualCount', 'taxon', 'lifestage', 'sex', 'occurrenceRemarks']
         }
       ]
@@ -235,36 +304,37 @@ function transformXLSX(): RequestHandler {
 
       const transformationSchemaParser: TransformationSchemaParser = req['transformationSchemaParser'];
 
-      const mergedAndFlattenedData = xlsxCsv.flattenData(transformationSchemaParser);
+      const xlsxTransformation = new XLSXTransformation(transformationSchemaParser, xlsxCsv);
+
+      const mergedAndFlattenedData = xlsxTransformation.flattenData();
 
       console.log('================================');
-      // console.log(mergedHeaders);
       console.log(mergedAndFlattenedData);
       console.log('================================');
 
-      const flattenedDWCData = xlsxCsv.transformFlattenedData(mergedAndFlattenedData, transformationSchemaParser);
+      const flattenedDWCData = xlsxTransformation.transformFlattenedData(mergedAndFlattenedData);
 
       console.log('#################################');
       console.log(flattenedDWCData);
       console.log('#################################');
 
-      const parsedData = xlsxCsv.parseTransformedData(flattenedDWCData, transformationSchemaParser);
+      const parsedData = xlsxTransformation.parseTransformedData(flattenedDWCData);
 
       console.log('---------------------------------');
       console.log(parsedData);
       console.log('---------------------------------');
 
-      const mergedParsedData = xlsxCsv.margeParsedData(parsedData);
+      const mergedParsedDWCData = xlsxTransformation.margeParsedData(parsedData);
 
       console.log('**********************************');
-      console.log(mergedParsedData);
+      console.log(mergedParsedDWCData);
       console.log('**********************************');
 
-      const worksheets = xlsxCsv.dataToSheet(mergedParsedData);
+      const worksheets = xlsxTransformation.dataToSheet(mergedParsedDWCData);
 
-      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
-      console.log(worksheets);
-      console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+      // console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
+      // console.log(worksheets);
+      // console.log('^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^');
 
       const fileBuffers = Object.entries(worksheets).map(([fileName, worksheet]) => {
         return {
