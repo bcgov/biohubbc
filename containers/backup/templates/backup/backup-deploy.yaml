@@ -204,6 +204,26 @@ objects:
                   value: ${ENVIRONMENT_FRIENDLY_NAME}
                 - name: ENVIRONMENT_NAME
                   value: ${ENVIRONMENT_NAME}
+                - name: OBJECT_STORE_URL
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_url
+                - name: OBJECT_STORE_ACCESS_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_access_key_id
+                - name: OBJECT_STORE_SECRET_KEY_ID
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_secret_key_id
+                - name: OBJECT_STORE_BUCKET_NAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: biohubbc-object-store
+                      key: object_store_bucket_name
               resources:
                 requests:
                   cpu: ${CPU_REQUEST}
@@ -445,3 +465,15 @@ parameters:
     description: The resources Memory limit (in Mi, Gi, etc) for this build.
     required: true
     value: 0Mi
+  - name: OBJECT_STORE_URL
+    displayName: Object Store URL
+    description: URL for the object store
+  - name: OBJECT_STORE_ACCESS_KEY_ID
+    displayName: Access Key
+    description: Access Key for the object store
+  - name: OBJECT_STORE_SECRET_KEY_ID
+    displayName: Secret Key
+    description: Object Store Secret key
+  - name: OBJECT_STORE_BUCKET_NAME
+    displayName: Bucket name
+    description: Object Store Bucket Name
