@@ -2,7 +2,8 @@ import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   IGetSubmissionCSVForViewResponse,
   IGetObservationSubmissionResponse,
-  IUploadObservationSubmissionResponse
+  IUploadObservationSubmissionResponse,
+  IGetOccurrencesForViewResponseDetails
 } from 'interfaces/useObservationApi.interface';
 
 /**
@@ -81,6 +82,22 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get occurrence information for view-only purposes based on occurrence submission id
+   *
+   * @param {number} occurrenceSubmissionId
+   * @returns {*} {Promise<IGetOccurrencesForViewResponseDetails[]>}
+   */
+  const getOccurrencesForView = async (
+    occurrenceSubmissionId: number
+  ): Promise<IGetOccurrencesForViewResponseDetails[]> => {
+    const { data } = await axios.post(`/api/dwc/view-occurrences`, {
+      occurrence_submission_id: occurrenceSubmissionId
+    });
+
+    return data;
+  };
+
+  /**
    * Delete observation submission based on submission ID
    *
    * @param {number} projectId
@@ -101,7 +118,7 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Initiate the validation process for the submitted observations
+   * Initiate the validation process for the submitted DWC observations
    * @param {number} submissionId
    */
   const initiateDwCSubmissionValidation = async (submissionId: number) => {
@@ -110,10 +127,26 @@ const useObservationApi = (axios: AxiosInstance) => {
     });
   };
 
+  /**
+   * Initiate the validation process for the submitted XLSX observations
+   * @param {number} submissionId
+   */
   const initiateXLSXSubmissionValidation = async (submissionId: number) => {
     axios.post(`/api/xlsx/validate`, {
       occurrence_submission_id: submissionId
     });
+  };
+
+  /**
+   * Initiate the scraping process for the submitted DWC observations
+   * @param {number} submissionId
+   */
+  const initiateScrapeOccurrences = async (submissionId: number) => {
+    const { data } = await axios.post(`/api/dwc/scrape-occurrences`, {
+      occurrence_submission_id: submissionId
+    });
+
+    return data;
   };
 
   return {
@@ -122,7 +155,9 @@ const useObservationApi = (axios: AxiosInstance) => {
     getObservationSubmission,
     deleteObservationSubmission,
     initiateDwCSubmissionValidation,
-    initiateXLSXSubmissionValidation
+    initiateXLSXSubmissionValidation,
+    initiateScrapeOccurrences,
+    getOccurrencesForView
   };
 };
 

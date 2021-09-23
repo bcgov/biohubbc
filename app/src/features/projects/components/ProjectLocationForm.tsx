@@ -1,10 +1,9 @@
 import Grid from '@material-ui/core/Grid';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import yup from 'utils/YupSchema';
 import MapBoundary from 'components/boundary/MapBoundary';
-import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IProjectLocationForm {
@@ -32,14 +31,8 @@ const ProjectLocationForm = () => {
 
   const { values, handleSubmit, setFieldValue, errors } = formikProps;
 
-  const [bounds, setBounds] = useState<any>([]);
   const [uploadError, setUploadError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    setIsLoading(false);
-    setBounds(calculateUpdatedMapBounds(values.geometry));
-  }, [values.geometry]);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -59,7 +52,7 @@ const ProjectLocationForm = () => {
           uploadError={uploadError}
           setUploadError={setUploadError}
           values={values}
-          bounds={bounds}
+          bounds={[]}
           errors={errors}
           setFieldValue={setFieldValue}
         />

@@ -3,6 +3,7 @@ import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   survey_details: {
     id: 1,
+    occurrence_submission_id: null,
     survey_name: 'survey name',
     survey_purpose: 'survey purpose',
     focal_species: ['focal species 1'],

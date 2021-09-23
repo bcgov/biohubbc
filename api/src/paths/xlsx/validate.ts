@@ -1,3 +1,4 @@
+import { getDBConnection, IDBConnection } from '../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getLogger } from '../../utils/logger';
@@ -12,10 +13,13 @@ import {
   getSubmissionS3Key,
   getValidateAPIDoc,
   getValidationRules,
+  insertSubmissionMessage,
+  insertSubmissionStatus,
   persistParseErrors,
-  persistValidationResults,
-  getValidationSchema
+  persistValidationResults
 } from '../dwc/validate';
+import { HTTP400 } from '../../errors/CustomError';
+import { getValidationSchemaSQL } from '../../queries/survey/survey-occurrence-queries';
 
 const defaultLog = getLogger('paths/xlsx/validate');
 
@@ -72,6 +76,50 @@ function prepXLSX(): RequestHandler {
   };
 }
 
+export function getValidationSchema(): RequestHandler {
+  return async (req, res, next) => {
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const validationSchema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
+
+      if (!validationSchema) {
+        // no schema to validate the template, generate error
+
+        const submissionStatusId = await insertSubmissionStatus(
+          req.body.occurrence_submission_id,
+          'System Error',
+          connection
+        );
+
+        await insertSubmissionMessage(
+          submissionStatusId,
+          'Error',
+          `Unable to fetch an appropriate validation schema for your submission`,
+          'Missing Validation Schema',
+          connection
+        );
+
+        await connection.commit();
+
+        return res.status(200).json();
+      }
+
+      req['validationSchema'] = validationSchema;
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'getValidationSchema', message: 'error', error });
+      connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
 function validateXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'validateXLSX', message: 'dwcArchive' });
@@ -101,3 +149,25 @@ function validateXLSX(): RequestHandler {
     }
   };
 }
+
+/**
+ * Get a validation schema from the template table.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<any>}
+ */
+export const getValidationSchemaJSON = async (
+  occurrenceSubmissionId: number,
+  connection: IDBConnection
+): Promise<any> => {
+  const sqlStatement = getValidationSchemaSQL(occurrenceSubmissionId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (response && response.rows && response.rows[0]).validation || null;
+};

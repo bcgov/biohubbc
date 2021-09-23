@@ -1,3 +1,5 @@
+import { Feature } from 'geojson';
+
 export interface IGetSubmissionCSVForViewItem {
   name: string;
   headers: string[];
@@ -38,4 +40,15 @@ export interface IGetObservationSubmissionErrorListResponse {
 
 export interface IUploadObservationSubmissionResponse {
   submissionId: number;
+}
+
+export interface IGetOccurrencesForViewResponseDetails {
+  geometry: Feature;
+  taxonId: string;
+  lifeStage: string;
+  vernacularName: string;
+  individualCount: number;
+  organismQuantity: number;
+  organismQuantityType: string;
+  occurrenceId: number;
 }
