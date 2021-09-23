@@ -130,7 +130,6 @@ export function uploadMedia(): RequestHandler {
 
       const templateMethodologyId = await getTemplateMethodologySpeciesIdStatement(
         Number(req.params.surveyId),
-        rawMediaFile.originalname,
         connection
       );
 
@@ -217,37 +216,9 @@ export const insertSurveyOccurrenceSubmission = async (
  */
 export const getTemplateMethodologySpeciesIdStatement = async (
   surveyId: number,
-  file_name: string,
   connection: IDBConnection
 ): Promise<number | null> => {
-  let templateName;
-
-  switch (file_name) {
-    case 'Moose_SRB_or_Composition_Survey_Skeena.xlsx':
-      templateName = 'Moose SRB or Composition Survey Skeena';
-      break;
-    case 'Moose_SRB_or_Composition_Survey_Omineca.xlsx':
-      templateName = 'Moose SRB or Composition Survey Omineca';
-      break;
-    case 'Moose_SRB_or_Composition_Survey_Cariboo.xlsx':
-      templateName = 'Moose SRB or Composition Survey Cariboo';
-      break;
-    case 'Moose_SRB_or_Composition_Survey_Okanagan.xlsx':
-      templateName = 'Moose SRB or Composition Survey Okanagan';
-      break;
-    case 'Moose_SRB_or_Composition_Survey_Kootenay.xlsx':
-      templateName = 'Moose SRB or Composition Survey Kootenay';
-      break;
-    case 'Moose_Recruitment_Survey.xlsx':
-      templateName = 'Moose Recruitment Survey';
-      break;
-  }
-
-  if (!templateName) {
-    return null;
-  }
-
-  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQLStatement(surveyId, templateName);
+  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQLStatement(surveyId);
 
   if (!getIdSqlStatement) {
     throw new HTTP400('Failed to build SQL get template methodology species id sql statement');

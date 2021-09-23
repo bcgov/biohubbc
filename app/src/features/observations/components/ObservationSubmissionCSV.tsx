@@ -109,7 +109,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
 
   return (
     <>
-      <Tabs value={value} onChange={handleChange} aria-label="csv-groups" indicatorColor="primary">
+      <Tabs value={value} onChange={handleChange} aria-label="csv-groups" indicatorColor="primary" variant="scrollable">
         {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, dataItemIndex: number) => (
           <Tab key={dataItemIndex} label={dataItem.name} {...a11yProps(dataItemIndex)} />
         ))}
