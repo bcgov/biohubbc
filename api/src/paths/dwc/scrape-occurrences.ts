@@ -163,6 +163,8 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
       );
 
       await connection.commit();
+
+      return res.status(200).send();
     } catch (error) {
       defaultLog.debug({ label: 'scrapeAndUploadOccurrences', message: 'error', error });
       throw error;
