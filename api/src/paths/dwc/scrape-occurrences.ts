@@ -116,20 +116,20 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         let verbatimCoordinates;
         let eventDate;
 
-        eventRows?.forEach((row: any) => {
-          if (row[eventEventIdHeader] === occurrenceEventId) {
-            const eventMoment = convertExcelDateToMoment(row[eventDateHeader] as number);
+        eventRows?.forEach((eventRow: any) => {
+          if (eventRow[eventEventIdHeader] === occurrenceEventId) {
+            const eventMoment = convertExcelDateToMoment(eventRow[eventDateHeader] as number);
             eventDate = eventMoment.toISOString();
 
-            verbatimCoordinates = row[eventVerbatimCoordinatesHeader];
+            verbatimCoordinates = eventRow[eventVerbatimCoordinatesHeader];
           }
         });
 
         let vernacularName;
 
-        taxonRows?.forEach((row: any) => {
-          if (row[taxonEventIdHeader] === occurrenceEventId) {
-            vernacularName = row[vernacularNameHeader];
+        taxonRows?.forEach((taxonRow: any) => {
+          if (taxonRow[taxonEventIdHeader] === occurrenceEventId) {
+            vernacularName = taxonRow[vernacularNameHeader];
           }
         });
 
