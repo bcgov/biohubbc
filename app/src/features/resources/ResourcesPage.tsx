@@ -23,46 +23,14 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose SRB or Composition Survey Skeena',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Skeena.xlsx',
+      name: 'Moose SRB Composition Survey 2.0',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_Composition_Survey_2.0.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '82 KB'
+      fileSize: '80 KB'
     },
     {
       id: '2',
-      name: 'Moose SRB or Composition Survey Omineca',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Omineca.xlsx',
-      type: mdiFileExcelOutline,
-      lastModified: 'Today',
-      fileSize: '64 KB'
-    },
-    {
-      id: '3',
-      name: 'Moose SRB or Composition Survey Cariboo',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Cariboo.xlsx',
-      type: mdiFileExcelOutline,
-      lastModified: 'Today',
-      fileSize: '60 KB'
-    },
-    {
-      id: '4',
-      name: 'Moose SRB or Composition Survey Okanagan',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Okanagan.xlsx',
-      type: mdiFileExcelOutline,
-      lastModified: 'Today',
-      fileSize: '63 KB'
-    },
-    {
-      id: '5',
-      name: 'Moose SRB or Composition Survey Kootenay',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_or_Composition_Survey_Kootenay.xlsx',
-      type: mdiFileExcelOutline,
-      lastModified: 'Today',
-      fileSize: '63 KB'
-    },
-    {
-      id: '6',
       name: 'Moose Recruitment Survey',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Survey.xlsx',
       type: mdiFileExcelOutline,
