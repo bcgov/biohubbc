@@ -1,21 +1,17 @@
-import Box from '@material-ui/core/Box';
-import Typography from '@material-ui/core/Typography';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import React from 'react';
 import { Popup } from 'react-leaflet';
+import { getFormattedDate } from 'utils/Utils';
 
 export const OccurrenceFeaturePopup: React.FC<{ featureData: any }> = (props) => {
   const { featureData } = props;
 
   return (
     <Popup key={featureData.id} keepInView={false} autoPan={false}>
-      <Box mb={1}>
-        <Typography variant="body1">Occurrence</Typography>
-      </Box>
-      {Object.entries(featureData).map(([key, value]) => {
-        if (value) {
-          return <div key={key}>{`${key}: ${value}`}</div>;
-        }
-      })}
+      <div>{`Species: ${featureData.taxonId}`}</div>
+      <div>{`Lifestage: ${featureData.lifeStage}`}</div>
+      <div>{`Count: ${featureData.organismQuantity}`}</div>
+      <div>{`Date: ${getFormattedDate(DATE_FORMAT.ShortMediumDateTimeFormat, featureData.eventDate)}`}</div>
     </Popup>
   );
 };

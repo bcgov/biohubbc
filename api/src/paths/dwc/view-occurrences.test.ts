@@ -139,7 +139,8 @@ describe('getOccurrencesForView', () => {
       vernacularname: 'V-name',
       individualcount: 2,
       organismquantity: 2,
-      organismquantitytype: 'Q-type'
+      organismquantitytype: 'Q-type',
+      eventdate: '2020/04/04'
     };
 
     const mockQuery = sinon.stub();
@@ -178,7 +179,8 @@ describe('getOccurrencesForView', () => {
         lifeStage: data.lifestage,
         organismQuantity: Number(data.organismquantity),
         organismQuantityType: data.organismquantitytype,
-        vernacularName: data.vernacularname
+        vernacularName: data.vernacularname,
+        eventDate: data.eventdate
       }
     ]);
   });
