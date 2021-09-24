@@ -2,14 +2,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as makePublic from './makePublic';
+import * as makeUnsecure from './makeUnsecure';
 import * as db from '../../../../../database/db';
 import * as project_attachments_queries from '../../../../../queries/project/project-attachments-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
-describe('makeProjectAttachmentPublic', () => {
+describe('makeProjectAttachmentUnsecure', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -62,7 +62,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makePublic.makeProjectAttachmentPublic();
+      const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
@@ -80,7 +80,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makePublic.makeProjectAttachmentPublic();
+      const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
@@ -98,7 +98,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makePublic.makeProjectAttachmentPublic();
+      const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -113,7 +113,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(null);
 
     try {
-      const result = makePublic.makeProjectAttachmentPublic();
+      const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
       await result(
         { ...sampleReq, body: { securityToken: 'token123' } },
@@ -138,7 +138,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
 
     try {
-      const result = makePublic.makeProjectAttachmentPublic();
+      const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
       await result(
         { ...sampleReq, body: { securityToken: 'token123' } },
@@ -164,7 +164,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(project_attachments_queries, 'removeProjectAttachmentSecurityTokenSQL').returns(null);
 
     try {
-      const result = makePublic.makeProjectAttachmentPublic();
+      const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
       await result(
         { ...sampleReq, body: { securityToken: 'token123' } },
@@ -196,7 +196,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(project_attachments_queries, 'removeProjectAttachmentSecurityTokenSQL').returns(SQL`something`);
 
     try {
-      const result = makePublic.makeProjectAttachmentPublic();
+      const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
       await result(
         { ...sampleReq, body: { securityToken: 'token123' } },
@@ -227,7 +227,7 @@ describe('makeProjectAttachmentPublic', () => {
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
     sinon.stub(project_attachments_queries, 'removeProjectAttachmentSecurityTokenSQL').returns(SQL`something`);
 
-    const result = makePublic.makeProjectAttachmentPublic();
+    const result = makeUnsecure.makeProjectAttachmentUnsecure();
 
     await result({ ...sampleReq, body: { securityToken: 'token123' } }, sampleRes as any, (null as unknown) as any);
 

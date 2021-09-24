@@ -12,13 +12,13 @@ import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/makePrivate');
+const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/makeSecure');
 
-export const PUT: Operation = [makeProjectAttachmentPrivate()];
+export const PUT: Operation = [makeProjectAttachmentSecure()];
 
 PUT.apiDoc = {
-  description: 'Make visibility of a project attachment private.',
-  tags: ['attachment', 'visibility'],
+  description: 'Make security status of a project attachment secure.',
+  tags: ['attachment', 'security_status'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -44,11 +44,11 @@ PUT.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Project attachment make private visibility response.',
+      description: 'Project attachment make secure security status response.',
       content: {
         'application/json': {
           schema: {
-            title: 'Row count of record for which visibility has been made private',
+            title: 'Row count of record for which security status has been made secure',
             type: 'number'
           }
         }
@@ -63,10 +63,10 @@ PUT.apiDoc = {
   }
 };
 
-export function makeProjectAttachmentPrivate(): RequestHandler {
+export function makeProjectAttachmentSecure(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'Make visibility of a project attachment private',
+      label: 'Make security status of a project attachment secure',
       message: 'params',
       req_params: req.params
     });
@@ -103,7 +103,7 @@ export function makeProjectAttachmentPrivate(): RequestHandler {
 
       return res.status(200).json(1);
     } catch (error) {
-      defaultLog.debug({ label: 'makeProjectAttachmentPrivate', message: 'error', error });
+      defaultLog.debug({ label: 'makeProjectAttachmentSecure', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

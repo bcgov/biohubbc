@@ -2,14 +2,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as makePrivate from './makePrivate';
+import * as makeSecure from './makeSecure';
 import * as db from '../../../../../database/db';
 import * as project_attachments_queries from '../../../../../queries/project/project-attachments-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
-describe('makeProjectAttachmentPrivate', () => {
+describe('makeProjectAttachmentSecure', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -47,7 +47,7 @@ describe('makeProjectAttachmentPrivate', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makePrivate.makeProjectAttachmentPrivate();
+      const result = makeSecure.makeProjectAttachmentSecure();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
@@ -65,7 +65,7 @@ describe('makeProjectAttachmentPrivate', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makePrivate.makeProjectAttachmentPrivate();
+      const result = makeSecure.makeProjectAttachmentSecure();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
@@ -84,7 +84,7 @@ describe('makeProjectAttachmentPrivate', () => {
     sinon.stub(project_attachments_queries, 'getProjectAttachmentSecurityRuleSQL').returns(null);
 
     try {
-      const result = makePrivate.makeProjectAttachmentPrivate();
+      const result = makeSecure.makeProjectAttachmentSecure();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -110,7 +110,7 @@ describe('makeProjectAttachmentPrivate', () => {
     sinon.stub(project_attachments_queries, 'addProjectAttachmentSecurityRuleSQL').returns(null);
 
     try {
-      const result = makePrivate.makeProjectAttachmentPrivate();
+      const result = makeSecure.makeProjectAttachmentSecure();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -146,7 +146,7 @@ describe('makeProjectAttachmentPrivate', () => {
     sinon.stub(project_attachments_queries, 'addProjectAttachmentSecurityRuleSQL').returns(SQL`something`);
 
     try {
-      const result = makePrivate.makeProjectAttachmentPrivate();
+      const result = makeSecure.makeProjectAttachmentSecure();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();

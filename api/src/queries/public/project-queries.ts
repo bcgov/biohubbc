@@ -441,7 +441,8 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
       pa.file_name,
       pa.update_date,
       pa.create_date,
-      pa.file_size
+      pa.file_size,
+      CASE WHEN api_security_check(pa.security_token,pa.create_user) THEN false ELSE true END as is_secured
     from
       project_attachment as pa
     left outer join
@@ -456,6 +457,39 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
 
   defaultLog.debug({
     label: 'getPublicProjectAttachmentsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get S3 key of an attachment for a single public (published) project.
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getPublicProjectAttachmentS3KeySQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getPublicProjectAttachmentS3KeySQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      CASE WHEN api_security_check(security_token,create_user) THEN key ELSE null
+      END as key
+    FROM
+      project_attachment
+    WHERE
+      project_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'getPublicProjectAttachmentS3KeySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -540,10 +540,10 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
           class="MuiBox-root MuiBox-root-63"
         >
           <label
-            aria-disabled="true"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary Mui-disabled Mui-disabled"
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary"
             role="button"
-            tabindex="-1"
+            tabindex="0"
             title="Will only accept kml files, kmz files not accepted."
           >
             <span
@@ -556,13 +556,16 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               />
               Upload KML
             </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </label>
           <label
-            aria-disabled="true"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary Mui-disabled Mui-disabled"
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
-            tabindex="-1"
+            tabindex="0"
             title="Will only accept gpx files."
           >
             <span
@@ -575,13 +578,16 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               />
               Upload GPX
             </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </label>
           <label
-            aria-disabled="true"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary Mui-disabled Mui-disabled"
+            aria-disabled="false"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-61 MuiButton-outlinedPrimary"
             role="button"
             style="margin-left: 1rem;"
-            tabindex="-1"
+            tabindex="0"
             title="Will only accept zipped shapefiles of a known projection."
           >
             <span
@@ -594,6 +600,9 @@ exports[`ProjectLocationForm displays the uploaded geo on the map when the spati
               />
               Upload Shapefile
             </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
           </label>
           <div
             class="MuiBox-root MuiBox-root-64"
