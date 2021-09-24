@@ -93,11 +93,11 @@ export function getOccurrencesForView(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-      const result = (response && response.rows && new GetOccurrencesViewData(response.rows)) || null;
-
-      if (!result || !result.occurrences) {
+      if (!response || !response.rows) {
         throw new HTTP400('Failed to get occurrences view data');
       }
+
+      const result = new GetOccurrencesViewData(response.rows);
 
       await connection.commit();
 
