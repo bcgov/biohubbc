@@ -73,8 +73,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       ...defaultYesNoDialogProps,
       dialogTitle: 'Change Security Status',
       dialogText: attachment.securityToken
-        ? `Changing this attachment's security status to public will make it visible to all users. Are you sure you want to continue?`
-        : `Changing this attachment's security status to private will restrict it to yourself and other authorized users. Are you sure you want to continue?`,
+        ? `Changing this attachment's security status to unsecured will make it accessible by all users. Are you sure you want to continue?`
+        : `Changing this attachment's security status to secured will restrict it to yourself and other authorized users. Are you sure you want to continue?`,
       open: true,
       onYes: () => {
         if (attachment.securityToken) {

@@ -52,7 +52,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
   const showRequestAccessDialog = () => {
     dialogContext.setErrorDialog({
       dialogTitle: 'Access Denied',
-      dialogText: 'You need to request access to view this attachment.',
+      dialogText: 'This attachment is secured. Please contact SPI_Mail@gov.bc.ca to request access.',
       onClose: () => dialogContext.setErrorDialog({ open: false }),
       open: true,
       onOk: () => {
