@@ -2,15 +2,15 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
-import { getLatestSurveySummaryResultsSQL } from '../../../../../../queries/survey/survey-summary-queries';
-import { getLogger } from '../../../../../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { getLatestSurveySummarySubmissionSQL } from '../../../../../../../queries/survey/survey-summary-queries';
+import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/get');
 
-export const GET: Operation = [getSummaryResults()];
+export const GET: Operation = [getSurveySummarySubmission()];
 
 GET.apiDoc = {
   description: 'Fetches an observation occurrence submission for a survey.',
@@ -88,7 +88,7 @@ GET.apiDoc = {
   }
 };
 
-export function getSummaryResults(): RequestHandler {
+export function getSurveySummarySubmission(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get a survey summary result', message: 'params', req_params: req.params });
 
@@ -99,43 +99,41 @@ export function getSummaryResults(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSummaryResultsSQLStatement = getLatestSurveySummaryResultsSQL(Number(req.params.surveyId));
+      const getSurveySummarySubmissionSQLStatement = getLatestSurveySummarySubmissionSQL(Number(req.params.surveyId));
 
-
-
-      if (!getSummaryResultsSQLStatement) {
-        throw new HTTP400('Failed to build SQL getSummaryResultsSQLStatement statement');
+      if (!getSurveySummarySubmissionSQLStatement) {
+        throw new HTTP400('Failed to build SQL getLatestSurveySummarySubmissionSQLStatement statement');
       }
 
       await connection.open();
 
-      const summaryResultsData = await connection.query(
-        getSummaryResultsSQLStatement.text,
-        getSummaryResultsSQLStatement.values
+      const summarySubmissionData = await connection.query(
+        getSurveySummarySubmissionSQLStatement.text,
+        getSurveySummarySubmissionSQLStatement.values
       );
 
-      console.log('summaryResultsData: ', summaryResultsData);
+      console.log('*********************summarySubmissionData: ', summarySubmissionData);
 
-      if (!summaryResultsData || !summaryResultsData.rows || !summaryResultsData.rows[0]) {
+      if (!summarySubmissionData || !summarySubmissionData.rows || !summarySubmissionData.rows[0]) {
         return res.status(200).json(null);
       }
 
       await connection.commit();
 
-      const getSummaryResultsData =
-        (summaryResultsData &&
-          summaryResultsData.rows &&
-          summaryResultsData.rows[0] && {
-            id: summaryResultsData.rows[0].id,
-            fileName: 'some file'
+      const getSummarySubmissionData =
+        (summarySubmissionData &&
+          summarySubmissionData.rows &&
+          summarySubmissionData.rows[0] && {
+            id: summarySubmissionData.rows[0].survey_summary_submission_id,
+            fileName: summarySubmissionData.rows[0].file_name
           }) ||
         null;
 
-      console.log('getSummaryResultsData: ', getSummaryResultsData);
+      console.log('******************************getSummarySubmissionData: ', summarySubmissionData);
 
-      return res.status(200).json(getSummaryResultsData);
+      return res.status(200).json(getSummarySubmissionData);
     } catch (error) {
-      defaultLog.debug({ label: 'getSummaryResultsData', message: 'error', error });
+      defaultLog.debug({ label: 'getSummarySubmissionData', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

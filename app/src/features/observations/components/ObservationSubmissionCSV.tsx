@@ -11,10 +11,10 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+//import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSubmissionCSVForViewItem, IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams } from 'react-router';
+//import { useParams } from 'react-router';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 
 const useStyles = makeStyles({
@@ -62,15 +62,18 @@ const TabPanel: React.FC<ITabPanelProps> = (props) => {
 };
 
 export interface IObservationSubmissionCSVProps {
-  submissionId: number;
+  //submissionId: number;
+  getCSVData: (
+
+  ) => Promise<IGetSubmissionCSVForViewResponse>;
 }
 
 const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (props) => {
-  const biohubApi = useBiohubApi();
+  //const biohubApi = useBiohubApi();
   const classes = useStyles();
-  const urlParams = useParams();
+  //const urlParams = useParams();
 
-  const { submissionId } = props;
+  const { getCSVData } = props;
 
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
@@ -79,18 +82,14 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
   const [submissionCSVDetails, setSubmissionCSVDetails] = useState<IGetSubmissionCSVForViewResponse | null>(null);
 
   const getSubmissionCSVDetails = useCallback(async () => {
-    const submissionCSVWithDetailsResponse = await biohubApi.observation.getSubmissionCSVForView(
-      urlParams['id'],
-      urlParams['survey_id'],
-      submissionId
-    );
+    const submissionCSVWithDetailsResponse = await getCSVData();
 
     if (!submissionCSVWithDetailsResponse) {
       return;
     }
 
     setSubmissionCSVDetails(submissionCSVWithDetailsResponse);
-  }, [biohubApi.observation, urlParams, submissionId]);
+  }, [getCSVData]);
 
   useEffect(() => {
     if (isLoadingSubmissionCSV && !submissionCSVDetails) {

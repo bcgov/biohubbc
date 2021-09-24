@@ -159,7 +159,7 @@ export function getOccurrenceSubmission(): RequestHandler {
           }) ||
         null;
 
-        console.log('getOccurrence Sumbmission Data', occurrenceSubmissionData);
+        console.log('getOccurrence Submission Data', occurrenceSubmissionData);
 
       return res.status(200).json(getOccurrenceSubmissionData);
     } catch (error) {

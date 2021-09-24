@@ -1,16 +1,16 @@
 'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
-import { insertSurveySummarySubmissionSQL } from '../../../../../../queries/survey/survey-summary-queries';
-import { //generateS3FileKey,
-  scanFileForVirus
- // , uploadFileToS3
-} from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
-import { logRequest } from '../../../../../../utils/path-utils';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/CustomError';
+import {
+  insertSurveySummarySubmissionSQL,
+  updateSurveySummarySubmissionWithKeySQL
+} from '../../../../../../../queries/survey/survey-summary-queries';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
+import { logRequest } from '../../../../../../../utils/path-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -127,22 +127,35 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-
-
-
-
-      const response = await insertSurveySummarySubmissionSQL(
+      const response = await insertSurveySummarySubmission(
         Number(req.params.surveyId),
         'BioHub',
         rawMediaFile.originalname,
         connection
       );
 
-      const summaryResultsId = response.rows[0].id;
+      const summarySubmissionId = response.rows[0].id;
+
+      const key = generateS3FileKey({
+        projectId: Number(req.params.projectId),
+        surveyId: Number(req.params.surveyId),
+        folder: `summaryresults/${summarySubmissionId}`,
+        fileName: rawMediaFile.originalname
+      });
+
+      await updateSurveySummarySubmissionWithKey(summarySubmissionId, key, connection);
 
       await connection.commit();
 
-      return res.status(200).send({ summaryResultsId });
+      const metadata = {
+        filename: rawMediaFile.originalname,
+        username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
+        email: (req['auth_payload'] && req['auth_payload'].email) || ''
+      };
+
+      await uploadFileToS3(rawMediaFile, key, metadata);
+
+      return res.status(200).send({ summarySubmissionId });
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
@@ -154,7 +167,7 @@ export function uploadMedia(): RequestHandler {
 }
 
 /**
- * Inserts a new record into the `occurrence_submission` table.
+ * Inserts a new record into the `survey_summary_submission` table.
  *
  * @param {number} surveyId
  * @param {string} source
@@ -162,13 +175,13 @@ export function uploadMedia(): RequestHandler {
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
-export const insertSurveySummarySu = async (
+export const insertSurveySummarySubmission = async (
   surveyId: number,
   source: string,
   file_name: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveySummarySubmissionSQL(surveyId);
+  const insertSqlStatement = insertSurveySummarySubmissionSQL(surveyId, source, file_name);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -177,8 +190,37 @@ export const insertSurveySummarySu = async (
   const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
 
   if (!insertResponse || !insertResponse.rowCount) {
-    throw new HTTP400('Failed to insert survey occurrence submission record');
+    throw new HTTP400('Failed to insert survey summary submission record');
   }
 
   return insertResponse;
+};
+
+/**
+ * Update existing `survey_summary_submission` record with key.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const updateSurveySummarySubmissionWithKey = async (
+  submissionId: number,
+  key: string,
+  connection: IDBConnection
+): Promise<any> => {
+  const updateSqlStatement = updateSurveySummarySubmissionWithKeySQL(submissionId, key);
+
+  if (!updateSqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
+
+  if (!updateResponse || !updateResponse.rowCount) {
+    throw new HTTP400('Failed to update survey summary submission record');
+  }
+
+  return updateResponse;
 };

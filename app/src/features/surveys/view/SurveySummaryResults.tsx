@@ -30,7 +30,6 @@ import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.inte
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
-
 const useStyles = makeStyles((theme: Theme) => ({
   textSpacing: {
     marginBottom: '1rem'
@@ -79,8 +78,8 @@ const SurveySummaryResults = () => {
   const surveyId = urlParams['survey_id'];
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
 
-  const [summaryResults, setSummaryResults] = useState<IGetSummaryResultsResponse | null>(null);
-  const [summaryResultsId, setSummaryResultsId] = useState<number | null>(null);
+  const [submission, setSubmission] = useState<IGetSummaryResultsResponse | null>(null);
+  //const [submissionId, setSubmissionId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const classes = useStyles();
@@ -99,40 +98,35 @@ const SurveySummaryResults = () => {
 
   const dialogContext = useContext(DialogContext);
 
-
-
-
   useEffect(() => {
-    const getSummaryResults = async () => {
-      const summaryResponse = await biohubApi.survey.getSurveySummaryResults(projectId, surveyId);
+    const getSummarySubmission = async () => {
+      const submission = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
 
-      if (!summaryResponse){
-
+      if (!submission) {
         return null;
       }
 
-      setSummaryResults(() => {
+      setSubmission(() => {
         setIsLoading(false);
-        return summaryResponse;
+        return submission;
       });
 
-      setSummaryResultsId(() => {
-        return summaryResponse.id;
-      });
+      // setSubmissionId(() => {
+      //   return submission.id;
+      // });
     };
 
     if (isLoading) {
-      getSummaryResults();
+      getSummarySubmission();
     }
   }, [biohubApi, isLoading]);
 
-
   const softDeleteSubmission = async () => {
-    if (!summaryResults?.id) {
+    if (!submission?.id) {
       return;
     }
 
-    await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, summaryResults?.id);
+    await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, submission?.id);
 
     //fetchSummaryResults();
   };
@@ -155,7 +149,7 @@ const SurveySummaryResults = () => {
   };
 
   const showUploadDialog = () => {
-    if (summaryResults) {
+    if (submission) {
       // already have observation data, prompt user to confirm override
       dialogContext.setYesNoDialog({
         ...defaultUploadYesNoDialogProps,
@@ -194,14 +188,14 @@ const SurveySummaryResults = () => {
   );
 
   const viewFileContents = async () => {
-    if (!summaryResultsId) {
+    if (!submission) {
       return;
     }
 
     let response;
 
     try {
-      response = await biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, summaryResultsId);
+      response = await biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, submission?.id);
     } catch {
       return;
     }
@@ -248,7 +242,7 @@ const SurveySummaryResults = () => {
       </Box>
 
       <Box component={Paper} p={4}>
-        {!summaryResults && (
+        {!submission && (
           <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
             No Summary Results. &nbsp;
             <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
@@ -256,14 +250,17 @@ const SurveySummaryResults = () => {
             </Link>
           </Typography>
         )}
-        {summaryResults && (
+        {submission && (
           <>
-            {displayAlertBox(
-              'info',
-              mdiFileOutline,
-              summaryResults?.fileName,
-              ''
-            )}
+            {displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}
+
+            {/* <Box mt={5} overflow="hidden">
+              <ObservationSubmissionCSV
+                getCSVData={() => {
+                  return biohubApi.survey.getSubmissionCSVForView(projectId, surveyId, summaryResults.id);
+                }}
+              />
+            </Box> */}
           </>
         )}
       </Box>

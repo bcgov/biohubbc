@@ -12,6 +12,11 @@ import {
   SurveyPermits,
   SurveyFundingSources,
 } from 'interfaces/useSurveyApi.interface';
+
+import {
+  IGetSubmissionCSVForViewResponse,
+} from 'interfaces/useObservationApi.interface';
+
 import qs from 'qs';
 
 /**
@@ -280,16 +285,37 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<string>}
    */
-   const getSurveySummaryResults = async (
+   const getSurveySummarySubmission = async (
     projectId: number,
     surveyId: number
   ): Promise<IGetSummaryResultsResponse> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/summary/get`
+      `/api/project/${projectId}/survey/${surveyId}/summary/submission/get`
     );
 
     return data;
   };
+
+
+  /**
+   * Get observation submission csv data/details by submission id.
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} submissionId
+   * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
+   */
+   const getSubmissionCSVForView = async (
+    projectId: number,
+    surveyId: number,
+    submissionId: number
+  ): Promise<IGetSubmissionCSVForViewResponse> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${submissionId}/view`
+    );
+
+    return data;
+  };
+
 
 
 
@@ -301,7 +327,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     updateSurvey,
     uploadSurveyAttachments,
     uploadSurveySummaryResults,
-    getSurveySummaryResults,
+    getSurveySummarySubmission,
     getSurveyAttachments,
     deleteSurveyAttachment,
     getSurveyAttachmentSignedURL,
@@ -309,7 +335,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyPermits,
     getSurveyFundingSources,
-    publishSurvey
+    publishSurvey,
+    getSubmissionCSVForView
   };
 };
 

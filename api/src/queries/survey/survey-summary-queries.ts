@@ -11,9 +11,13 @@ const defaultLog = getLogger('queries/survey/survey-summary-queries');
  * @param {string} key
  * @return {*}  {(SQLStatement | null)}
  */
-export const insertSurveySummarySubmissionSQL = (surveyId: number, source: string, file_name:string): SQLStatement | null => {
+export const insertSurveySummarySubmissionSQL = (
+  surveyId: number,
+  source: string,
+  file_name: string
+): SQLStatement | null => {
   defaultLog.debug({
-    label: 'insertSurveySummaryResultsSQL',
+    label: 'insertSurveySummarySubmissionSQL',
     message: 'params',
     surveyId
   });
@@ -29,8 +33,10 @@ export const insertSurveySummarySubmissionSQL = (surveyId: number, source: strin
       file_name,
       event_timestamp
     ) VALUES (
-      ${surveyId},${source},
-      ${file_name}, now()
+      ${surveyId},
+      ${source},
+      ${file_name},
+      now()
     )
     RETURNING survey_summary_submission_id as id;
   `;
@@ -51,7 +57,7 @@ export const insertSurveySummarySubmissionSQL = (surveyId: number, source: strin
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getLatestSurveySummaryResultsSQL = (surveyId: number): SQLStatement | null => {
+export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'getLatestSurveySummaryResultsSQL',
     message: 'params',
@@ -63,17 +69,25 @@ export const getLatestSurveySummaryResultsSQL = (surveyId: number): SQLStatement
   }
 
   const sqlStatement = SQL`
-    SELECT ssg.survey_summary_general_id as id
+    SELECT
+      sss.survey_summary_submission_id,
+		  sss.key,
+		  sss.file_name,
+      sss.delete_timestamp,
     FROM
-      survey_summary_general as ssg
+      survey_summary_submission as sss
     LEFT OUTER JOIN
       survey_summary_detail as ssd
     ON
-      ssg.survey_summary_general_id = ssd.survey_summary_general_id
+      sss.survey_summary_submission_id = ssd.survey_summary_submission_id
+    LEFT OUTER JOIN
+      survey_summary_submission_message sssm
+    ON
+      sss.survey_summary_submission_id = sssm.survey_summary_submission_id
     WHERE
-      ssg.survey_id = ${surveyId}
+      sss.survey_id = ${surveyId}
     ORDER BY
-      ssg.survey_summary_general_id DESC
+      sss.survey_summary_submission_id DESC
     LIMIT 1;
     `;
 
@@ -224,3 +238,82 @@ export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement
 
 //   return sqlStatement;
 // };
+
+
+
+/**
+ * SQL query to insert a survey occurrence submission row.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} key
+ * @return {*}  {(SQLStatement | null)}
+ */
+ export const updateSurveySummarySubmissionWithKeySQL = (
+  surveySubmissionId: number,
+  key: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'updateSurveySummarySubmissionWithKeySQL',
+    message: 'params',
+    surveySubmissionId,
+    key
+  });
+
+  if (!surveySubmissionId || !key) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE survey_summary_submission
+    SET
+      key=  ${key}
+    WHERE
+      survey_summary_submission_id = ${surveySubmissionId}
+    RETURNING survey_summary_submission_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'updateSurveySummarySubmissionWithKeySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+
+/**
+ * SQL query to get the record for a single occurrence submission.
+ *
+ * @param {number} submissionId
+ * @returns {SQLStatement} sql query object
+ */
+ export const getSurveySummaryResultsSubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveySummarySubmissionSQL', message: 'params', summarySubmissionId });
+
+  if (!summarySubmissionId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      *
+    FROM
+      survey_summary_submission
+    WHERE
+      survey_summary_submission_id = ${summarySubmissionId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveySummarySubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+
