@@ -167,28 +167,28 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Make visibility of project attachment private.
+   * Make security status of project attachment secure.
    *
    * @param {number} projectId
    * @param {number} attachmentId
    * @return {*}  {Promise<any>}
    */
-  const makeAttachmentPrivate = async (projectId: number, attachmentId: number): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makePrivate`);
+  const makeAttachmentSecure = async (projectId: number, attachmentId: number): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`);
 
     return data;
   };
 
   /**
-   * Make visibility of project attachment public.
+   * Make security status of project attachment unsecure.
    *
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {any} securityToken
    * @return {*}  {Promise<any>}
    */
-  const makeAttachmentPublic = async (projectId: number, attachmentId: number, securityToken: any): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makePublic`, {
+  const makeAttachmentUnsecure = async (projectId: number, attachmentId: number, securityToken: any): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`, {
       securityToken
     });
 
@@ -246,8 +246,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     addFundingSource,
     deleteProject,
     publishProject,
-    makeAttachmentPublic,
-    makeAttachmentPrivate
+    makeAttachmentSecure,
+    makeAttachmentUnsecure
   };
 };
 
@@ -301,7 +301,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<string>}
    */
-   const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
+  const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
     const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`);
 
     return data;

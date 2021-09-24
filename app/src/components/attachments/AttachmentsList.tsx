@@ -9,7 +9,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { mdiEyeOffOutline, mdiEyeOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiLockOutline, mdiLockOpenVariantOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -68,19 +68,19 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const showToggleVisibilityAttachmentDialog = (attachment: IGetProjectAttachment) => {
+  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
-      dialogTitle: 'Change Visibility',
+      dialogTitle: 'Change Security Status',
       dialogText: attachment.securityToken
-        ? `Changing this attachment's visibility to public will make it visible to all users. Are you sure you want to continue?`
-        : `Changing this attachment's visibility to private will restrict it to yourself and other authorized users. Are you sure you want to continue?`,
+        ? `Changing this attachment's security status to public will make it visible to all users. Are you sure you want to continue?`
+        : `Changing this attachment's security status to private will restrict it to yourself and other authorized users. Are you sure you want to continue?`,
       open: true,
       onYes: () => {
         if (attachment.securityToken) {
-          makeAttachmentPublic(attachment);
+          makeAttachmentUnsecure(attachment);
         } else {
-          makeAttachmentPrivate(attachment);
+          makeAttachmentSecure(attachment);
         }
         dialogContext.setYesNoDialog({ open: false });
       }
@@ -131,7 +131,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const makeAttachmentPrivate = async (attachment: IGetProjectAttachment) => {
+  const makeAttachmentSecure = async (attachment: IGetProjectAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
@@ -140,7 +140,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (!props.surveyId) {
-        response = await biohubApi.project.makeAttachmentPrivate(props.projectId, attachment.id);
+        response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id);
       }
 
       if (!response) {
@@ -153,7 +153,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const makeAttachmentPublic = async (attachment: IGetProjectAttachment) => {
+  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
@@ -162,7 +162,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (!props.surveyId) {
-        response = await biohubApi.project.makeAttachmentPublic(
+        response = await biohubApi.project.makeAttachmentUnsecure(
           props.projectId,
           attachment.id,
           attachment.securityToken
@@ -189,7 +189,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 <TableCell className={classes.heading}>Name</TableCell>
                 <TableCell className={classes.heading}>Last Modified</TableCell>
                 <TableCell className={classes.heading}>File Size</TableCell>
-                <TableCell className={classes.heading}>Visibility</TableCell>
+                <TableCell className={classes.heading}>Security Status</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -207,12 +207,12 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                     <TableCell>
                       <IconButton
                         color="primary"
-                        aria-label="toggle-attachment-visibility"
-                        data-testid="toggle-attachment-visibility"
-                        onClick={() => showToggleVisibilityAttachmentDialog(row)}>
-                        <Icon path={row.securityToken ? mdiEyeOffOutline : mdiEyeOutline} size={1} />
+                        aria-label="toggle-attachment-security-status"
+                        data-testid="toggle-attachment-security-status"
+                        onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
+                        <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
                       </IconButton>
-                      {row.securityToken ? 'Private' : 'Public'}
+                      {row.securityToken ? 'Secure' : 'Unsecure'}
                     </TableCell>
                     <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
                       <IconButton

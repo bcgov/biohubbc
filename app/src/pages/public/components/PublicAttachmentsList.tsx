@@ -7,13 +7,17 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
+import { mdiLockOutline, mdiLockOpenVariantOutline } from '@mdi/js';
 import TableRow from '@material-ui/core/TableRow';
+import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import Box from '@material-ui/core/Box';
+import { DialogContext } from 'contexts/dialogContext';
 
 const useStyles = makeStyles({
   table: {
@@ -24,6 +28,9 @@ const useStyles = makeStyles({
   },
   tableCellBorderTop: {
     borderTop: '1px solid rgba(224, 224, 224, 1)'
+  },
+  spacingRight: {
+    marginRight: '0.5rem'
   }
 });
 
@@ -39,6 +46,20 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
+
+  const dialogContext = useContext(DialogContext);
+
+  const showRequestAccessDialog = () => {
+    dialogContext.setErrorDialog({
+      dialogTitle: 'Access Denied',
+      dialogText: 'You need to request access to view this attachment.',
+      onClose: () => dialogContext.setErrorDialog({ open: false }),
+      open: true,
+      onOk: () => {
+        dialogContext.setErrorDialog({ open: false });
+      }
+    });
+  };
 
   const viewFileContents = async (attachment: any) => {
     try {
@@ -65,6 +86,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                 <TableCell className={classes.heading}>Name</TableCell>
                 <TableCell className={classes.heading}>Last Modified</TableCell>
                 <TableCell className={classes.heading}>File Size</TableCell>
+                <TableCell className={classes.heading}>Security Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -72,12 +94,32 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow key={row.fileName}>
                     <TableCell component="th" scope="row">
-                      <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
+                      <Link
+                        underline="always"
+                        component="button"
+                        variant="body2"
+                        onClick={() => {
+                          if (row.securityToken) {
+                            showRequestAccessDialog();
+                          } else {
+                            viewFileContents(row);
+                          }
+                        }}>
                         {row.fileName}
                       </Link>
                     </TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
+                    <TableCell>
+                      <Box display="flex">
+                        <Icon
+                          path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline}
+                          size={1}
+                          className={classes.spacingRight}
+                        />
+                        {row.securityToken ? 'Secure' : 'Unsecure'}
+                      </Box>
+                    </TableCell>
                   </TableRow>
                 ))}
               {!props.attachmentsList.length && (
