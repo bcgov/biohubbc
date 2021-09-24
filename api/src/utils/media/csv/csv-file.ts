@@ -165,45 +165,6 @@ export class CSVWorksheet {
     return xlsx.utils.sheet_to_json(this.worksheet);
   }
 
-  // getColumnWithCoreId(
-  //   coreid: { file: string; columns: string[] },
-  //   uniqueid: { source: { columns: string[] }; target: { column: string } },
-  //   headerName: string,
-  //   pivot?: string
-  // ): Column[] {
-  //   const headerIndex = this.getHeaderIndex(headerName);
-
-  //   if (!headerIndex || headerIndex < 0) {
-  //     return [];
-  //   }
-
-  //   const rows = this.getRows();
-
-  //   const columns: Column[] = [];
-
-  //   const coreidHeaderIndexes = coreid.columns.map((columnName) => this.getHeaderIndex(columnName));
-
-  //   const uniqueidHeaderIndexes = uniqueid.source.columns.map((columnName) => this.getHeaderIndex(columnName));
-
-  //   rows.forEach((row) => {
-  //     const coreID = this.buildID(coreidHeaderIndexes.map((coreidheaderIndex) => row[coreidheaderIndex]));
-
-  //     const uniqueID = this.buildID(
-  //       uniqueidHeaderIndexes.map((uniqueidheaderIndex) => row[uniqueidheaderIndex]),
-  //       pivot
-  //     );
-
-  //     columns.push({
-  //       coreid: coreID,
-  //       uniqueid: { name: uniqueid.target.column, value: uniqueID },
-  //       name: headerName,
-  //       value: row[headerIndex]
-  //     });
-  //   });
-
-  //   return columns;
-  // }
-
   buildID(parts: (string | number)[], postfix?: string): string {
     return parts.join(':') + (postfix && `:${postfix}`);
   }
@@ -275,14 +236,14 @@ export class CSVWorksheet {
    * @param {number} [row] the row number (row indexes start at 1)
    * @memberof CSVWorksheet
    */
-  // setRow(data: (string | number)[], row?: number) {
-  //   const options = (row && { origin: row }) || undefined;
+  setRow(data: (string | number)[], row?: number) {
+    const options = (row && { origin: row }) || undefined;
 
-  //   xlsx.utils.sheet_add_aoa(this.worksheet, [data], options);
+    xlsx.utils.sheet_add_aoa(this.worksheet, [data], options);
 
-  //   // Reset _rows so that the worksheet is re-parsed when getRows is called
-  //   this._rows = [];
-  // }
+    // Reset _rows so that the worksheet is re-parsed when getRows is called
+    this._rows = [];
+  }
 
   /**
    * Set a cell.
@@ -292,12 +253,12 @@ export class CSVWorksheet {
    * @param {(string | number)} data
    * @memberof CSVWorksheet
    */
-  // setCell(row: number, col: number, data: string | number) {
-  //   xlsx.utils.sheet_add_aoa(this.worksheet, [[data]], { origin: { r: row, c: col } });
+  setCell(row: number, col: number, data: string | number) {
+    xlsx.utils.sheet_add_aoa(this.worksheet, [[data]], { origin: { r: row, c: col } });
 
-  //   // Reset _rows so that the worksheet is re-parsed when getRows is called
-  //   this._rows = [];
-  // }
+    // Reset _rows so that the worksheet is re-parsed when getRows is called
+    this._rows = [];
+  }
 
   validate(validators: CSVValidator[]): CSVValidation {
     validators.forEach((validator) => validator(this));
