@@ -7,6 +7,7 @@ import { getLogger } from '../../../../../../utils/logger';
 import { getDBConnection } from '../../../../../../database/db';
 import { getS3SignedURL } from '../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../utils/shared-api-docs';
+import { getPublicProjectAttachmentS3KeySQL } from '../../../../../../queries/public/project-queries';
 
 const defaultLog = getLogger('/api/public/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
@@ -35,10 +36,7 @@ export function getSingleAttachmentURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectAttachmentS3KeySQLStatement = getPublicProjectAttachmentS3KeySQL(
-        Number(req.params.projectId),
-        Number(req.params.attachmentId)
-      );
+      const getProjectAttachmentS3KeySQLStatement = getPublicProjectAttachmentS3KeySQL(Number(req.params.attachmentId));
 
       if (!getProjectAttachmentS3KeySQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -53,9 +51,12 @@ export function getSingleAttachmentURL(): RequestHandler {
 
       await connection.commit();
 
+      console.log('YOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOO')
+      console.log(result && result.rows)
+
       const s3Key = result && result.rows.length && result.rows[0].key;
 
-      const s3SignedUrl = await getS3SignedURL(s3Key);
+      const s3SignedUrl = s3Key && await getS3SignedURL(s3Key);
 
       if (!s3SignedUrl) {
         return res.status(200).json(null);

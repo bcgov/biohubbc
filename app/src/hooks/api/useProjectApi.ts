@@ -295,9 +295,22 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get public (published) project attachment S3 url based on project and attachment ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+   const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`);
+
+    return data;
+  };
+
   return {
     getProjectsList,
     getProjectForView,
-    getProjectAttachments
+    getProjectAttachments,
+    getAttachmentSignedURL
   };
 };
