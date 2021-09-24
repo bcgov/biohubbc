@@ -1,8 +1,31 @@
 import { isEqual, uniqWith } from 'lodash';
 import xlsx from 'xlsx';
+import { CSVWorksheet } from '../../../../utils/media/csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
-import { FileTransformationSchema, TransformationSchemaParser } from './transformation-schema-parser';
+import {
+  FileTransformationFieldSchema,
+  TransformationSchema,
+  TransformationSchemaParser
+} from './transformation-schema-parser';
 
+export type FlattenedRowPartsBySourceFile = {
+  sourceFile: string;
+  uniqueId: any;
+  row: object;
+};
+
+export type RowObject = { [key: string]: any };
+
+export type RowsObjectsByFileName = { [key: string]: RowObject[] };
+
+export type XLSXWorksheetByFileName = { [key: string]: xlsx.WorkSheet };
+
+/**
+ * Applies transformations to an `XLSXCSV` instance.
+ *
+ * @export
+ * @class XLSXTransformation
+ */
 export class XLSXTransformation {
   transformationSchemaParser: TransformationSchemaParser;
   xlsxCsv: XLSXCSV;
@@ -12,109 +35,145 @@ export class XLSXTransformation {
     this.xlsxCsv = xlsxCsv;
   }
 
-  flattenData() {
-    const rowsBySourceFileArray: { sourceFile: string; uniqueId: any; row: object }[][] = [];
+  /**
+   * Transform the raw XLSX data.
+   *
+   * @return {*}  {RowsObjectsByFileName}
+   * @memberof XLSXTransformation
+   */
+  transform(): RowsObjectsByFileName {
+    const flattenedData = this._flattenData();
+
+    const mergedFlattenedData = this._mergedFlattenedRows(flattenedData);
+
+    const transformedMergedFlattenedData = this._transformFlattenedData(mergedFlattenedData);
+
+    const parsedTransformedMergedFlattenedData = this._parseTransformedData(transformedMergedFlattenedData);
+
+    const mergedParsedTransformedMergedFlattenedData = this._mergeParsedData(parsedTransformedMergedFlattenedData);
+
+    return mergedParsedTransformedMergedFlattenedData;
+  }
+
+  /**
+   * Flattens the worksheet data into arrays of objects.
+   *
+   * @return {*}  {FlattenedRowPartsBySourceFile[][]}
+   * @memberof XLSXTransformation
+   */
+  _flattenData(): FlattenedRowPartsBySourceFile[][] {
+    const rowsBySourceFileArray: FlattenedRowPartsBySourceFile[][] = [];
 
     Object.entries(this.xlsxCsv.workbook.worksheets).forEach(([fileName, worksheet]) => {
-      const fileStructure = this.transformationSchemaParser.getFileStructureSchemas(fileName);
+      // Get the file structure schema for the given fileName
+      const fileStructure = this.transformationSchemaParser.getFlattenSchemas(fileName);
 
       if (!fileStructure) {
         return;
       }
 
-      const rows = worksheet.getRowObjects();
+      // Get all rows, as objects
+      const rowObjects = worksheet.getRowObjects();
 
       if (!fileStructure.parent) {
-        // Handle root records
+        // Handle root records, that have no parent record
 
-        rows.forEach((row, rowIndex) => {
-          const uniqueId = fileStructure.uniqueId
-            .map((uniqueIdColumn) => worksheet.getCell(uniqueIdColumn, rowIndex))
-            .join(':');
+        rowObjects.forEach((rowObject, rowIndex) => {
+          const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, fileStructure.uniqueId);
 
           const newRecord = {
-            sourceFile: fileStructure.name,
+            sourceFile: fileStructure.fileName,
             uniqueId: uniqueId,
-            row: row
+            row: rowObject
           };
 
           rowsBySourceFileArray.push([newRecord]);
         });
       } else {
-        // Handle child records
+        // Handle child records, that have a parent record
 
-        rows.forEach((row, rowIndex) => {
-          const parentFile = fileStructure.parent?.name;
-          const parentUniqueId = fileStructure.parent?.key
-            .map((uniqueIdColumn) => worksheet.getCell(uniqueIdColumn, rowIndex))
-            .join(':');
+        const parentFileName = fileStructure.parent.fileName;
+        const parentUniqueIdColumns = fileStructure.parent.uniqueId;
 
-          const uniqueId = fileStructure.uniqueId
-            .map((uniqueIdColumn) => worksheet.getCell(uniqueIdColumn, rowIndex))
-            .join(':');
+        const fileName = fileStructure.fileName;
+        const uniqueIdColumns = fileStructure.uniqueId;
 
-          const sourceFile = fileStructure.name;
+        rowObjects.forEach((rowObject, rowIndex) => {
+          const parentUniqueId = this._buildMultiColumnID(worksheet, rowIndex, parentUniqueIdColumns);
+
+          const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, uniqueIdColumns);
 
           const newRecord = {
-            sourceFile: sourceFile,
+            sourceFile: fileName,
             uniqueId: uniqueId,
-            row: row
+            row: rowObject
           };
 
+          // An array of indexes that tracks which records to add `newRecord` to, and which records should be duplicated
+          // before adding `newRecord` to them.
           const recordsToModify: { rowsBySourceFileIndex: number; rowBySourceFileIndex: number }[] = [];
-          let recordsToModifyCurrentIndex = 0;
-          // let matchingFlattenedRowIndex = -1; // Index of a matching parent record
-          // let matchingSourceRecordIndex = -1; // Index of a matching child record in the parent record
+          let recordsToModifyIndex = 0;
 
-          // console.log('--------------------');
-          // console.log(parentFile);
-          // console.log(parentUniqueId);
-          // console.log(newRecord);
-          // console.log('--------------------');
-          // console.log(rowsBySourceFileArray);
-          // console.log('--------------------');
-
+          // For each parent array of child arrays of objects
           rowsBySourceFileArray.forEach((rowsBySourceFile, rowsBySourceFileIndex) => {
-            let foundMatchingRecord = false;
-            rowsBySourceFile.forEach((rowBySourceFile, rowBySourceFileIndex) => {
-              if (rowBySourceFile.sourceFile === parentFile && rowBySourceFile.uniqueId === parentUniqueId) {
-                // matchingFlattenedRowIndex = rowsBySourceFileIndex;
+            let foundRecordToModify = false;
 
-                recordsToModify[recordsToModifyCurrentIndex] = {
-                  ...recordsToModify[recordsToModifyCurrentIndex],
+            /*
+             * Compare the `newRecord` to each object in the child array
+             * If a matching parent record is found
+             *  - mark this parent array index
+             * If a matching child record from the same sourceFile is found
+             *  - mark this child array index
+             */
+            rowsBySourceFile.forEach((rowBySourceFile, rowBySourceFileIndex) => {
+              const existingRowFileName = rowBySourceFile.sourceFile;
+              const existingRowUniqueId = rowBySourceFile.uniqueId;
+
+              if (existingRowFileName === parentFileName && existingRowUniqueId === parentUniqueId) {
+                // This array may need a copy of `newRecord`
+                recordsToModify[recordsToModifyIndex] = {
+                  ...recordsToModify[recordsToModifyIndex],
                   rowsBySourceFileIndex
                 };
-                foundMatchingRecord = true;
-              } else if (rowBySourceFile.sourceFile === sourceFile) {
-                // matchingSourceRecordIndex = rowBySourceFileIndex;
 
-                recordsToModify[recordsToModifyCurrentIndex] = {
-                  ...recordsToModify[recordsToModifyCurrentIndex],
+                foundRecordToModify = true;
+              } else if (existingRowFileName === fileName) {
+                // This array already contains a record from the same file as `newRecord` and will need to be duplicated
+                recordsToModify[recordsToModifyIndex] = {
+                  ...recordsToModify[recordsToModifyIndex],
                   rowBySourceFileIndex
                 };
-                foundMatchingRecord = true;
+
+                foundRecordToModify = true;
               }
             });
 
-            if (foundMatchingRecord) {
-              recordsToModifyCurrentIndex++;
+            if (foundRecordToModify) {
+              // A record was found after iterating over the previous array, increase the index before we loop over
+              // the next array.
+              recordsToModifyIndex++;
             }
           });
-          // console.log('===================================');
 
-          // console.log(recordsToModify);
-
+          // For each `recordsToModify`
+          // Apply updates to the existing records based on the `recordsToModify` array.
           recordsToModify.forEach((recordToModify) => {
             if (recordToModify.rowsBySourceFileIndex >= 0 && recordToModify.rowBySourceFileIndex >= 0) {
-              // console.log('XXX', recordToModify);
-              // The matching parent record already had a matching child record, duplicate the parent and overwrite the
-              // existing child record with the new child record
+              // `recordToModify` indicates that a matching parent was found AND a matching child from the same
+              // sourceFile was found.  Duplicate the array, and overwrite the existing matching child with the
+              // `newRecord`.
+
+              // Copy the existing items into a new array
               const newRowRecord = [...rowsBySourceFileArray[recordToModify.rowsBySourceFileIndex]];
+
+              // Overwrite the matching item at index `rowBySourceFileIndex` with our new record
               newRowRecord[recordToModify.rowBySourceFileIndex] = newRecord;
+
+              // Append this new duplicated record to the parent array
               rowsBySourceFileArray.push(newRowRecord);
             } else if (recordToModify.rowsBySourceFileIndex >= 0) {
-              // console.log('YYY', recordToModify);
-              // The matching parent record had no matching child record, add the new child record
+              // `recordToModify` indicates that a matching parent was found.  Add the `newRecord` to this existing
+              // array.
               rowsBySourceFileArray[recordToModify.rowsBySourceFileIndex].push(newRecord);
             }
           });
@@ -122,9 +181,28 @@ export class XLSXTransformation {
       }
     });
 
-    const mergedAndFlattenedRows: object[][] = [];
+    return rowsBySourceFileArray;
+  }
 
-    rowsBySourceFileArray.forEach((rowsBySourceFile, index) => {
+  _buildMultiColumnID(worksheet: CSVWorksheet, rowIndex: number, columnNames: string[]) {
+    return this._buildMultiColumnValue(worksheet, rowIndex, columnNames, ':');
+  }
+
+  _buildMultiColumnValue(worksheet: CSVWorksheet, rowIndex: number, columnNames: string[], separator?: string) {
+    return columnNames.map((columnName) => worksheet.getCell(columnName, rowIndex)).join(separator || ' ');
+  }
+
+  /**
+   * Merges the arrays of objects into an array of objects.
+   *
+   * @param {FlattenedRowPartsBySourceFile[][]} flattenedData
+   * @return {*}  {object[][]}
+   * @memberof XLSXTransformation
+   */
+  _mergedFlattenedRows(flattenedData: FlattenedRowPartsBySourceFile[][]): object[] {
+    const mergedAndFlattenedRows: object[] = [];
+
+    flattenedData.forEach((rowsBySourceFile, index) => {
       rowsBySourceFile.forEach((rowPart) => {
         mergedAndFlattenedRows[index] = { ...mergedAndFlattenedRows[index], ...rowPart.row };
       });
@@ -133,182 +211,205 @@ export class XLSXTransformation {
     return mergedAndFlattenedRows;
   }
 
-  transformFlattenedData(mergedAndFlattenedRowsArray: object[][]) {
+  /**
+   * Applies transformation logic to the flattened array of objects, creating a new array of objects (which may contain
+   * duplicate items)
+   *
+   * @param {object[]} mergedFlattenedData
+   * @return {*}  {object[]}
+   * @memberof XLSXTransformation
+   */
+  _transformFlattenedData(mergedFlattenedData: object[]): object[] {
     const transformationSchemas = this.transformationSchemaParser.getTransformationSchemas();
 
-    const flattenedDWCData: object[] = [];
+    const transformedDWCData: object[] = [];
 
-    mergedAndFlattenedRowsArray.forEach((row, rowIndex) => {
-      transformationSchemas.forEach((transformationSchema, transformationIndex) => {
+    mergedFlattenedData.forEach((rowObject, rowObjectIndex) => {
+      transformationSchemas.forEach((transformationSchema, transformationSchemaIndex) => {
         let newDWCRowParts = {};
 
         transformationSchema.fileTransformations.forEach((fileTransformationSchema) => {
-          const newDWCRow = this._applyFileTransformations(row, fileTransformationSchema);
+          const newDWCRow = this._applyFileTransformations(
+            rowObject,
+            fileTransformationSchema,
+            rowObjectIndex,
+            transformationSchemaIndex
+          );
 
-          if (newDWCRow) {
-            newDWCRowParts = { ...newDWCRowParts, ...newDWCRow };
+          if (!newDWCRow) {
+            return;
           }
-          // const conditionFields = transformationSchema.condition;
-          // let skipRecord = false;
 
-          // const newDWCRow = {};
-          // console.log('====================');
-          // Object.entries(transformationSchema.fields).forEach(([dwcField, config]) => {
-          //   let columnValue = undefined;
-
-          //   if (config.columns) {
-          //     if (config.columns.length > 1) {
-          //       const columnValueParts: any[] = [];
-
-          //       config.columns.forEach((columnName: any) => {
-          //         columnValue = row[columnName];
-
-          //         if (columnValue !== undefined && columnValue !== null) {
-          //           columnValueParts.push(columnValue);
-          //         }
-          //       });
-
-          //       columnValue = columnValueParts.join(config?.separator || ' ');
-          //     } else if (config.columns.length === 1) {
-          //       columnValue = row[config.columns[0]];
-          //     }
-          //   } else if (config.value) {
-          //     columnValue = config.value;
-          //   }
-
-          //   // if (config.unique) {
-          //   // columnValue = `${columnValue}:${config.unique}-${rowIndex}-${transformationIndex}`;
-          //   // }
-
-          //   if (conditionFields.includes(dwcField) && (columnValue === undefined || columnValue === null)) {
-          //     skipRecord = true;
-          //   }
-
-          //   newDWCRow[dwcField] = columnValue;
-          // });
-
-          // if (skipRecord) {
-          //   return;
-          // }
+          newDWCRowParts = { ...newDWCRowParts, ...newDWCRow };
         });
 
-        flattenedDWCData.push(newDWCRowParts);
+        transformedDWCData.push(newDWCRowParts);
       });
     });
 
-    return flattenedDWCData;
+    return transformedDWCData;
   }
 
-  _applyFileTransformations(row: object[], fileTransformationSchema: FileTransformationSchema) {
-    const conditionFields = fileTransformationSchema.condition || [];
+  _applyFileTransformations(
+    rowObject: object,
+    fileTransformationSchema: TransformationSchema,
+    rowObjectIndex: number,
+    transformationSchemaIndex: number
+  ): object | undefined {
+    const conditionFields = fileTransformationSchema.conditionalFields || [];
+
     let skipRecord = false;
 
-    const newDWCRow = {};
-    // console.log('====================');
+    const newDWCRowObject = {};
+
     Object.entries(fileTransformationSchema.fields).forEach(([dwcField, config]) => {
-      let columnValue = undefined;
+      let columnValue = this._getColumnValue(rowObject, config);
 
-      if (config.columns) {
-        if (config.columns.length > 1) {
-          const columnValueParts: any[] = [];
-
-          config.columns.forEach((columnName: any) => {
-            columnValue = row[columnName];
-
-            if (columnValue !== undefined && columnValue !== null) {
-              columnValueParts.push(columnValue);
-            }
-          });
-
-          columnValue = columnValueParts.join(config?.separator || ' ');
-        } else if (config.columns.length === 1) {
-          columnValue = row[config.columns[0]];
-        }
-      } else if (config.value) {
-        columnValue = config.value;
+      if (config.unique) {
+        // Append `config.unique` + indexes to ensure this column value is unique
+        columnValue = `${columnValue}:${config.unique}-${rowObjectIndex}-${transformationSchemaIndex}`;
       }
-
-      // if (config.unique) {
-      // columnValue = `${columnValue}:${config.unique}-${rowIndex}-${transformationIndex}`;
-      // }
 
       if (conditionFields.includes(dwcField) && (columnValue === undefined || columnValue === null)) {
         skipRecord = true;
       }
 
-      newDWCRow[dwcField] = columnValue;
+      newDWCRowObject[dwcField] = columnValue;
     });
 
     if (skipRecord) {
       return;
     }
 
-    return newDWCRow;
+    return newDWCRowObject;
   }
 
-  parseTransformedData(flattenedDWCData: object[]) {
+  /**
+   * Builds a new value from the `rowObject`, based on the config.
+   *
+   * This may involve returning a single `rowObject` value, concatenating multiple `rowObject` values together, or
+   * returning a static value.
+   *
+   * @param {object} rowObject
+   * @param {FileTransformationFieldSchema} config
+   * @return {*}  {*}
+   * @memberof XLSXTransformation
+   */
+  _getColumnValue(rowObject: object, config: FileTransformationFieldSchema): any {
+    let columnValue = undefined;
+
+    if (config.columns) {
+      if (config.columns.length === 1) {
+        columnValue = rowObject[config.columns[0]];
+      } else if (config.columns.length > 1) {
+        const columnValueParts: any[] = [];
+
+        config.columns.forEach((columnName: any) => {
+          columnValue = rowObject[columnName];
+
+          if (columnValue !== undefined && columnValue !== null) {
+            columnValueParts.push(columnValue);
+          }
+        });
+
+        columnValue = columnValueParts.join(config?.separator || ' ');
+      }
+    }
+
+    if (config.value) {
+      columnValue = config.value;
+    }
+
+    return columnValue;
+  }
+
+  /**
+   * Parses the array of objects into separate arrays of objects (which may contain duplicate items), based on fileName.
+   *
+   * @param {object[]} transformedMergedFlattenedData
+   * @return {*}  {RowsObjectsByFileName}
+   * @memberof XLSXTransformation
+   */
+  _parseTransformedData(transformedMergedFlattenedData: object[]): RowsObjectsByFileName {
     const parseSchemas = this.transformationSchemaParser.getParseSchemas();
 
-    const parsedDWCData: { [key: string]: object[] } = {};
+    const parsedDWCData: RowsObjectsByFileName = {};
 
     parseSchemas.forEach((parseSchema) => {
-      const fileName = parseSchema.file;
+      const fileName = parseSchema.fileName;
       const columns = parseSchema.columns;
-      const conditions = parseSchema.condition || [];
-
-      console.log(conditions);
+      const conditions = parseSchema.conditionalFields || [];
 
       if (!parsedDWCData[fileName]) {
+        // initialize an empty array for the current fileName if one does not yet exist
         parsedDWCData[fileName] = [];
       }
 
-      flattenedDWCData.forEach((row) => {
+      transformedMergedFlattenedData.forEach((rowObject) => {
         let skipRecord = false;
-        const rowDataForFile = {};
 
-        Object.entries(row).forEach(([key, value]) => {
-          if (columns.includes(key)) {
-            rowDataForFile[key] = value;
+        const newRowObject = {};
+
+        Object.entries(rowObject).forEach(([dwcField, value]) => {
+          if (columns.includes(dwcField)) {
+            newRowObject[dwcField] = value;
           }
 
-          if (conditions.includes(key) && (value === undefined || value === null)) {
+          if (conditions.includes(dwcField) && (value === undefined || value === null)) {
             skipRecord = true;
           }
         });
 
         if (skipRecord) {
+          // A conditional field was undefined or null, skip this record
           return;
         }
 
-        const recordKeys = Object.keys(rowDataForFile);
-        if (!conditions.every((condition) => recordKeys.includes(condition))) {
-          // If the rowDataForFile is missing any of the condition fields, then skip it
+        const newRowObjectKeys = Object.keys(newRowObject);
+        if (!conditions.every((conditionalFields) => newRowObjectKeys.includes(conditionalFields))) {
+          // If the `newRowObject` is missing any of the conditional fields, skip this record
           return;
         }
 
-        parsedDWCData[fileName].push(rowDataForFile);
+        parsedDWCData[fileName].push(newRowObject);
       });
     });
 
     return parsedDWCData;
   }
 
-  margeParsedData(parsedDWCData: { [key: string]: object[] }) {
-    Object.entries(parsedDWCData).forEach(([file, rows]) => {
-      parsedDWCData[file] = uniqWith(rows, isEqual);
+  /**
+   * Merges the array of objects for each fileName, removing duplicate items.
+   *
+   * @param {RowsObjectsByFileName} parsedDWCData
+   * @return {*}  {RowsObjectsByFileName}
+   * @memberof XLSXTransformation
+   */
+  _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): RowsObjectsByFileName {
+    // For each entry (based on fileName), do a deep equality check on each of its row objects, removing any duplicates.
+    Object.entries(parsedTransformedMergedFlattenedData).forEach(([fileName, rowObjects]) => {
+      parsedTransformedMergedFlattenedData[fileName] = uniqWith(rowObjects, isEqual);
     });
 
-    return parsedDWCData;
+    return parsedTransformedMergedFlattenedData;
   }
 
-  dataToSheet(mergedParsedData: { [key: string]: object[] }) {
-    const dwcSheets: { [key: string]: xlsx.WorkSheet } = {};
+  /**
+   * Converts an object (whose keys are file names, and whose value is an array of objects) into a new object (whose
+   * keys are file names, and whose value is an `xlsx.Worksheet`).
+   *
+   * @param {RowsObjectsByFileName} mergedParsedData
+   * @return {*}  {XLSXWorksheetByFileName}
+   * @memberof XLSXTransformation
+   */
+  dataToSheet(mergedParsedTransformedData: RowsObjectsByFileName): XLSXWorksheetByFileName {
+    const sheets: XLSXWorksheetByFileName = {};
 
-    Object.entries(mergedParsedData).forEach(([key, rows]) => {
-      const worksheet = xlsx.utils.json_to_sheet(rows);
-      dwcSheets[key] = worksheet;
+    Object.entries(mergedParsedTransformedData).forEach(([fileName, rowObjects]) => {
+      const worksheet = xlsx.utils.json_to_sheet(rowObjects);
+      sheets[fileName] = worksheet;
     });
 
-    return dwcSheets;
+    return sheets;
   }
 }

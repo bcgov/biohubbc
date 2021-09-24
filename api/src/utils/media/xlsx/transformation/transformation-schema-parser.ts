@@ -1,21 +1,32 @@
 import jsonpath from 'jsonpath';
 
-export type FileStructure = {
-  name: string;
+export type FlattenSchema = {
+  fileName: string;
   uniqueId: string[];
-  parent?: { name: string; key: string[] };
+  parent?: { fileName: string; uniqueId: string[] };
 };
 
-export type FileTransformationSchema = {
+export type FileTransformationFieldSchema = {
+  columns?: string[];
+  separator?: string;
+  value?: any;
+  unique?: string;
+};
+
+export type FileTransformationFieldsSchema = {
+  [key: string]: FileTransformationFieldSchema;
+};
+
+export type TransformationSchema = {
   fileName: string;
-  condition: string[];
-  fields: { [key: string]: { columns?: string[]; separator?: string; value?: any; unique?: string } };
+  conditionalFields: string[];
+  fields: FileTransformationFieldsSchema;
 };
 
 export type ParseSchema = {
-  file: string;
+  fileName: string;
   columns: string[];
-  condition?: string[];
+  conditionalFields?: string[];
 };
 export class TransformationSchemaParser {
   transformationSchema: object;
@@ -28,36 +39,28 @@ export class TransformationSchemaParser {
     }
   }
 
-  getFileTransformationSchemas(fileName: string): object[] {
-    return jsonpath.query(this.transformationSchema, this.getFileTransformationsJsonPath(fileName))?.[0] || [];
+  getFlattenSchemas(fileName: string): FlattenSchema | null {
+    return jsonpath.query(this.transformationSchema, this.getFlattenJsonPath(fileName))?.[0] || null;
   }
 
-  getTransformationSchemas(): { fileTransformations: FileTransformationSchema[] }[] {
-    return jsonpath.query(this.transformationSchema, this.getTransformationsJsonPath())?.[0] || [];
-  }
-
-  getFileStructureSchemas(fileName: string): FileStructure | null {
-    return jsonpath.query(this.transformationSchema, this.getFileStructureJsonPath(fileName))?.[0] || null;
+  getTransformationSchemas(): { fileTransformations: TransformationSchema[] }[] {
+    return jsonpath.query(this.transformationSchema, this.getTransformationJsonPath())?.[0] || [];
   }
 
   getParseSchemas(): ParseSchema[] {
     return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || null;
   }
 
-  getFileTransformationsJsonPath(fileName: string): string {
-    return `$.files[?(@.name == '${fileName}')].transformations`;
+  getFlattenJsonPath(fileName: string): string {
+    return `$.flatten[?(@.fileName == '${fileName}')]`;
   }
 
-  getTransformationsJsonPath(): string {
+  getTransformationJsonPath(): string {
     return '$.transformations';
   }
 
   getParseJsonPath(): string {
     return '$.parse';
-  }
-
-  getFileStructureJsonPath(fileName: string): string {
-    return `$.flatten[?(@.name == '${fileName}')]`;
   }
 
   parseJson(json: any): object {

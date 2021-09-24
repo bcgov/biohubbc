@@ -4,7 +4,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
-  // getSurveyOccurrenceSubmissionSQL,
+  getSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL
 } from '../../queries/survey/survey-occurrence-queries';
@@ -93,41 +93,40 @@ export function getSubmissionS3Key(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
 
-    // const connection = getDBConnection(req['keycloak_token']);
+    const connection = getDBConnection(req['keycloak_token']);
 
-    // const occurrenceSubmissionId = req.body.occurrence_submission_id;
+    const occurrenceSubmissionId = req.body.occurrence_submission_id;
 
-    // if (!occurrenceSubmissionId) {
-    //   throw new HTTP400('Missing required body param `occurrence_submission_id`.');
-    // }
+    if (!occurrenceSubmissionId) {
+      throw new HTTP400('Missing required body param `occurrence_submission_id`.');
+    }
 
-    // try {
-    //   const sqlStatement = getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
+    try {
+      const sqlStatement = getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
 
-    //   if (!sqlStatement) {
-    //     throw new HTTP400('Failed to build SQL get statement');
-    //   }
+      if (!sqlStatement) {
+        throw new HTTP400('Failed to build SQL get statement');
+      }
 
-    //   await connection.open();
+      await connection.open();
 
-    //   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-    //   if (!response || !response.rows.length) {
-    //     throw new HTTP400('Failed to get survey occurrence submission');
-    //   }
+      if (!response || !response.rows.length) {
+        throw new HTTP400('Failed to get survey occurrence submission');
+      }
 
       const s3Key = response.rows[0].input_key;
 
-    // req['s3Key'] = s3Key;
+      req['s3Key'] = s3Key;
 
-    req['s3Key'] = 'temp/Moose_SRB_or_Composition_Survey_Skeena.xlsx';
-    next();
-    // } catch (error) {
-    //   defaultLog.debug({ label: 'getSubmissionS3Key', message: 'error', error });
-    //   throw error;
-    // } finally {
-    //   connection.release();
-    // }
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'getSubmissionS3Key', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
+    }
   };
 }
 

@@ -78,7 +78,6 @@ try {
   initDBPool(defaultPoolConfig);
 
   app.listen(PORT, () => {
-    console.log(`start api: started api on ${HOST}:${PORT}/api`);
     defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });
   });
 } catch (error) {
