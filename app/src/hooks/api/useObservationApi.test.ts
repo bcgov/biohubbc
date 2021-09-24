@@ -27,6 +27,16 @@ describe('useObservationApi', () => {
     expect(result.fileName).toEqual('file.txt');
   });
 
+  it('initiateScrapeOccurrences works as expected', async () => {
+    const submissionId = 1;
+
+    mock.onPost(`/api/dwc/scrape-occurrences`).reply(200, true);
+
+    const result = await useObservationApi(axios).initiateScrapeOccurrences(submissionId);
+
+    expect(result).toEqual(true);
+  });
+
   it('deleteObservationSubmission works as expected', async () => {
     const submissionId = 1;
 
