@@ -23,7 +23,8 @@ export const getOccurrencesForViewSQL = (occurrenceSubmissionId: number): SQLSta
       o.vernacularname,
       o.individualcount,
       o.organismquantity,
-      o.organismquantitytype
+      o.organismquantitytype,
+      o.eventdate
     FROM
       occurrence as o
     LEFT OUTER JOIN

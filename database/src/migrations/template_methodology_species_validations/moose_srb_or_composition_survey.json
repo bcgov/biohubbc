@@ -504,7 +504,7 @@
           ]
         },
         {
-          "name": "Bulls - Unclassified",
+          "name": "Bulls Unclassified",
           "description": "",
           "validations": [
             {
@@ -641,7 +641,7 @@
               "Sub-Prime Bulls",
               "Prime Bulls",
               "Senior Bulls",
-              "Bulls - Unclassified",
+              "Bulls Unclassified",
               "Spike/Fork Bulls",
               "Lone Cows",
               "Cow W/1 calf",
