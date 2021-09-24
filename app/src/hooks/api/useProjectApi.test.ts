@@ -196,18 +196,18 @@ describe('useProjectApi', () => {
     expect(result).toEqual(true);
   });
 
-  it('makeAttachmentPrivate works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makePrivate`).reply(200, 1);
+  it('makeAttachmentSecure works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`).reply(200, 1);
 
-    const result = await useProjectApi(axios).makeAttachmentPrivate(projectId, attachmentId);
+    const result = await useProjectApi(axios).makeAttachmentSecure(projectId, attachmentId);
 
     expect(result).toEqual(1);
   });
 
-  it('makeAttachmentPublic works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makePublic`).reply(200, 1);
+  it('makeAttachmentUnsecure works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`).reply(200, 1);
 
-    const result = await useProjectApi(axios).makeAttachmentPublic(projectId, attachmentId, 'token123');
+    const result = await useProjectApi(axios).makeAttachmentUnsecure(projectId, attachmentId, 'token123');
 
     expect(result).toEqual(1);
   });

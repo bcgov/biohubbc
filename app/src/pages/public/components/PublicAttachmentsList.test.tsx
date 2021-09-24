@@ -1,26 +1,52 @@
-import { fireEvent, render, waitFor } from '@testing-library/react';
+import { fireEvent, render, cleanup, waitFor } from '@testing-library/react';
 import React from 'react';
 import PublicAttachmentsList from './PublicAttachmentsList';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+
+jest.mock('../../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  public: {
+    project: {
+      getAttachmentSignedURL: jest.fn()
+    }
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
 
 describe('PublicAttachmentsList', () => {
+  beforeEach(() => {
+    // clear mocks before each test
+    mockBiohubApi().public.project.getAttachmentSignedURL.mockClear();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
   const attachmentsList = [
     {
       id: 1,
       fileName: 'filename.test',
       lastModified: '2021-04-09 11:53:53',
-      size: 3028
+      size: 3028,
+      securityToken: true
     },
     {
       id: 20,
       fileName: 'filename20.test',
       lastModified: '2021-04-09 11:53:53',
-      size: 30280000
+      size: 30280000,
+      securityToken: true
     },
     {
       id: 30,
       fileName: 'filename30.test',
       lastModified: '2021-04-09 11:53:53',
-      size: 30280000000
+      size: 30280000000,
+      securityToken: false
     }
   ];
 
@@ -30,6 +56,42 @@ describe('PublicAttachmentsList', () => {
     );
 
     expect(getByText('No Attachments')).toBeInTheDocument();
+  });
+
+  it('viewing file contents in new tab works as expected for project attachments that are unsecure', async () => {
+    window.open = jest.fn();
+
+    const signedUrl = 'www.signedurl.com';
+
+    mockBiohubApi().public.project.getAttachmentSignedURL.mockResolvedValue(signedUrl);
+
+    const { getByText } = render(
+      <PublicAttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
+    );
+
+    expect(getByText('filename30.test')).toBeInTheDocument();
+
+    fireEvent.click(getByText('filename30.test'));
+
+    await waitFor(() => {
+      expect(window.open).toHaveBeenCalledWith(signedUrl);
+    });
+  });
+
+  it('viewing file contents in new tab does not work for project attachments that are secure', async () => {
+    window.open = jest.fn();
+
+    const { getByText } = render(
+      <PublicAttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
+    );
+
+    expect(getByText('filename.test')).toBeInTheDocument();
+
+    fireEvent.click(getByText('filename.test'));
+
+    await waitFor(() => {
+      expect(window.open).not.toHaveBeenCalled();
+    });
   });
 
   it('renders correctly with attachments (of various sizes)', async () => {
