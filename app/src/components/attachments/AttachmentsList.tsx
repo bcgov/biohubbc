@@ -212,7 +212,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
                         <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
                       </IconButton>
-                      {row.securityToken ? 'Secure' : 'Unsecure'}
+                      {row.securityToken ? 'Secured' : 'Unsecured'}
                     </TableCell>
                     <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
                       <IconButton

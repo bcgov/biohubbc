@@ -117,7 +117,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                           size={1}
                           className={classes.spacingRight}
                         />
-                        {row.securityToken ? 'Secure' : 'Unsecure'}
+                        {row.securityToken ? 'Secured' : 'Unsecured'}
                       </Box>
                     </TableCell>
                   </TableRow>
