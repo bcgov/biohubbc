@@ -137,7 +137,7 @@ describe('publishSurveyAndOccurrences', () => {
     try {
       const result = publish.publishSurveyAndOccurrences();
 
-      await result(sampleReq, sampleRes, sampleNext);
+      await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
       expect(actualError.message).to.equal('Failed to build get survey occurrence submission SQL statement');
@@ -162,7 +162,7 @@ describe('publishSurveyAndOccurrences', () => {
     try {
       const result = publish.publishSurveyAndOccurrences();
 
-      await result(sampleReq, sampleRes, sampleNext);
+      await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
       expect(actualError.message).to.equal('Failed to get survey occurrence submissions');
@@ -220,26 +220,6 @@ describe('publishSurveyAndOccurrences', () => {
     }
   });
 
-  it('should throw an error when parsing/inserting occurrences fails', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(publish, 'insertOccurrences').throws('An occurrence error');
-
-    try {
-      const result = publish.publishSurveyAndOccurrences();
-
-      await result(sampleReq, sampleRes, sampleNext);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.name).to.equal('An occurrence error');
-    }
-  });
-
   it('should throw a 400 error when no publish survey sql statement produced', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -247,8 +227,6 @@ describe('publishSurveyAndOccurrences', () => {
         return 20;
       }
     });
-
-    sinon.stub(publish, 'insertOccurrences').resolves();
 
     sinon.stub(survey_update_queries, 'updateSurveyPublishStatusSQL').returns(null);
 
@@ -274,8 +252,6 @@ describe('publishSurveyAndOccurrences', () => {
       },
       query: mockQuery
     });
-
-    sinon.stub(publish, 'insertOccurrences').resolves();
 
     sinon.stub(survey_update_queries, 'updateSurveyPublishStatusSQL').returns(SQL`some query`);
 
@@ -311,8 +287,6 @@ describe('publishSurveyAndOccurrences', () => {
         } as QueryResult<any>;
       }
     });
-
-    sinon.stub(publish, 'insertOccurrences').resolves();
 
     sinon.stub(survey_update_queries, 'updateSurveyPublishStatusSQL').returns(SQL`some query`);
 

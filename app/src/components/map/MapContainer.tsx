@@ -1,7 +1,7 @@
 import { Feature } from 'geojson';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet/dist/leaflet.css';
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useEffect, useState, useCallback, ReactElement, Fragment } from 'react';
 import {
   FeatureGroup,
   GeoJSON,
@@ -193,6 +193,7 @@ export interface IMapContainerProps {
   hideDrawControls?: boolean;
   selectedLayer?: string;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
+  additionalLayers?: ReactElement[];
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -207,7 +208,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     hideDrawControls,
     scrollWheelZoom,
     selectedLayer,
-    setInferredLayersInfo
+    setInferredLayersInfo,
+    additionalLayers
   } = props;
 
   const biohubApi = useBiohubApi();
@@ -443,6 +445,12 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           onSelectGeometry={setPreDefinedGeometry}
         />
       )}
+
+      {/* Render any additional layer feature groups */}
+      {additionalLayers &&
+        additionalLayers.map((additionalLayer: ReactElement, index: number) => (
+          <Fragment key={index}>{additionalLayer}</Fragment>
+        ))}
 
       <LayersControl position="bottomright">
         <LayersControl.BaseLayer checked name="BC Government">

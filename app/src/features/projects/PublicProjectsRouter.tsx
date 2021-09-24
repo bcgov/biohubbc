@@ -28,6 +28,13 @@ const PublicProjectsRouter: React.FC<IPublicProjectsRouterProps> = (props) => {
         component={PublicProjectPage}
         title="Projects"
       />
+      <AppRoute
+        exact
+        layout={PublicLayout}
+        path="/projects/:id?/attachments"
+        component={PublicProjectPage}
+        title="Projects"
+      />
       {/*  Catch any unknown routes, and re-direct to the not found page */}
       <AppRoute title="*" path="/projects/*" component={() => <Redirect to="/page-not-found" />} />
     </Switch>

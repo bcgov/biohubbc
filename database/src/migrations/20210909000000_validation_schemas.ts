@@ -6,19 +6,13 @@ const VALIDATION_SCHEMAS = 'template_methodology_species_validations';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
-const csm1_wld4147_t1 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm1_wld4147_t1.json'));
-const csm1_wld4147_t2 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm1_wld4147_t2.json'));
-const csm1_wld4147_t3 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm1_wld4147_t3.json'));
-const csm1_wld4147_t4 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm1_wld4147_t4.json'));
-const csm1_wld4147_t5 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm1_wld4147_t5.json'));
+const moose_srb_or_composition = fs.readFileSync(
+  path.join(__dirname, VALIDATION_SCHEMAS, 'moose_srb_or_composition_survey.json')
+);
 
-const csm2_wld4147_t1 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm2_wld4147_t1.json'));
-const csm2_wld4147_t2 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm2_wld4147_t2.json'));
-const csm2_wld4147_t3 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm2_wld4147_t3.json'));
-const csm2_wld4147_t4 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm2_wld4147_t4.json'));
-const csm2_wld4147_t5 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm2_wld4147_t5.json'));
-
-const csm3_wld4147_t6 = fs.readFileSync(path.join(__dirname, VALIDATION_SCHEMAS, 'csm3_wld4147_t6.json'));
+const moose_recruitment_survey = fs.readFileSync(
+  path.join(__dirname, VALIDATION_SCHEMAS, 'moose_recruitment_survey.json')
+);
 
 enum COMMON_SURVEY_METHODOLOGY {
   STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block',
@@ -31,82 +25,27 @@ enum SPECIES_NAME {
 }
 
 enum TEMPLATE_NAME {
-  MOOSE_SRB_OR_COMPOSITION_SURVEY_SKEENA = 'Moose SRB or Composition Survey Skeena',
-  MOOSE_SRB_OR_COMPOSITION_SURVEY_OMINECA = 'Moose SRB or Composition Survey Omineca',
-  MOOSE_SRB_OR_COMPOSITION_SURVEY_CARIBOO = 'Moose SRB or Composition Survey Cariboo',
-  MOOSE_SRB_OR_COMPOSITION_SURVEY_OKANAGAN = 'Moose SRB or Composition Survey Okanagan',
-  MOOSE_SRB_OR_COMPOSITION_SURVEY_KOOTENAY = 'Moose SRB or Composition Survey Kootenay',
+  MOOSE_SRB_OR_COMPOSITION_SURVEY = 'Moose SRB or Composition Survey',
   MOOSE_RECRUITMENT_SURVEY = 'Moose Recruitment Survey'
 }
 
 const validationSchemas = [
-  //Common Survey Methodology: Stratified Random Block
+  // Common Survey Methodology: Stratified Random Block or Composition
   {
-    fileName: csm1_wld4147_t1.toString(),
+    fileName: moose_srb_or_composition.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
     species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_SKEENA
+    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY
   },
   {
-    fileName: csm1_wld4147_t2.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_OMINECA
-  },
-  {
-    fileName: csm1_wld4147_t3.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_CARIBOO
-  },
-  {
-    fileName: csm1_wld4147_t4.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_OKANAGAN
-  },
-  {
-    fileName: csm1_wld4147_t5.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_KOOTENAY
-  },
-
-  // Common Survey Methodology: Composition
-  {
-    fileName: csm2_wld4147_t1.toString(),
+    fileName: moose_srb_or_composition.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
     species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_SKEENA
+    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY
   },
-  {
-    fileName: csm2_wld4147_t2.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_OMINECA
-  },
-  {
-    fileName: csm2_wld4147_t3.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_CARIBOO
-  },
-  {
-    fileName: csm2_wld4147_t4.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_OKANAGAN
-  },
-  {
-    fileName: csm2_wld4147_t5.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY_KOOTENAY
-  },
-
   // Common Survey Methodology: Recruitment
   {
-    fileName: csm3_wld4147_t6.toString(),
+    fileName: moose_recruitment_survey.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT,
     species: SPECIES_NAME.MOOSE,
     template: TEMPLATE_NAME.MOOSE_RECRUITMENT_SURVEY
