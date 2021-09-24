@@ -3,7 +3,7 @@ import Grid from '@material-ui/core/Grid';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import { v4 as uuidv4 } from 'uuid';
 import MapContainer from 'components/map/MapContainer';
@@ -84,6 +84,10 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
     env: [],
     wmu: []
   });
+
+  useEffect(() => {
+    setIsLoading(false);
+  }, [values.geometry]);
 
   return (
     <Grid item xs={12}>
