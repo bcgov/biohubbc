@@ -23,7 +23,7 @@ import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { DialogContext } from 'contexts/dialogContext';
-//import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
+import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 //import { useInterval } from 'hooks/useInterval';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
@@ -254,13 +254,13 @@ const SurveySummaryResults = () => {
           <>
             {displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}
 
-            {/* <Box mt={5} overflow="hidden">
+            <Box mt={5} overflow="hidden">
               <ObservationSubmissionCSV
                 getCSVData={() => {
-                  return biohubApi.survey.getSubmissionCSVForView(projectId, surveyId, summaryResults.id);
+                  return biohubApi.survey.getSubmissionCSVForView(projectId, surveyId, submission.id);
                 }}
               />
-            </Box> */}
+            </Box>
           </>
         )}
       </Box>

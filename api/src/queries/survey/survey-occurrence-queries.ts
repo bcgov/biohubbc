@@ -520,3 +520,35 @@ export const getValidationSchemaSQL = (occurrenceId: number): SQLStatement | nul
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get the record for a single occurrence submission.
+ *
+ * @param {number} submissionId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveySummarySubmissionSQL', message: 'params', summarySubmissionId });
+
+  if (!summarySubmissionId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      *
+    FROM
+      survey_summary_submission
+    WHERE
+      survey_summary_submission_id = ${summarySubmissionId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveySummarySubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

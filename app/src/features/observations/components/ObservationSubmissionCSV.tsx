@@ -63,9 +63,7 @@ const TabPanel: React.FC<ITabPanelProps> = (props) => {
 
 export interface IObservationSubmissionCSVProps {
   //submissionId: number;
-  getCSVData: (
-
-  ) => Promise<IGetSubmissionCSVForViewResponse>;
+  getCSVData: () => Promise<IGetSubmissionCSVForViewResponse>;
 }
 
 const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (props) => {

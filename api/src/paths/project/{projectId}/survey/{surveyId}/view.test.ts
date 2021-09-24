@@ -101,6 +101,7 @@ describe('getSurveyForView', () => {
     const survey_details = {
       id: 2,
       occurrence_submission_id: 3,
+      summary_results_submission_id: 4,
       name: 'name',
       objectives: 'objective',
       focal_species: 'species',
@@ -154,6 +155,7 @@ describe('getSurveyForView', () => {
     expect(actualResult.survey_details).to.eql({
       id: survey_details.id,
       occurrence_submission_id: survey_details.occurrence_submission_id,
+      summary_results_submission_id: survey_details.summary_results_submission_id,
       survey_name: survey_details.name,
       survey_purpose: survey_details.objectives,
       focal_species: [survey_details.focal_species],

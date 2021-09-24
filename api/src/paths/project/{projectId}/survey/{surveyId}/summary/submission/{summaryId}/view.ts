@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
-import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { DWCArchive } from '../../../../../../../../utils/media/dwc/dwc-archive-file';
@@ -13,13 +13,13 @@ import { MediaFile } from '../../../../../../../../utils/media/media-file';
 import { parseUnknownMedia } from '../../../../../../../../utils/media/media-utils';
 import { XLSXCSV } from '../../../../../../../../utils/media/xlsx/xlsx-file';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/view');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/{summaryId}/view');
 
-export const GET: Operation = [getSummaryResultsSubmissionCSVForView()];
+export const GET: Operation = [getSummarySubmissionCSVForView()];
 
 GET.apiDoc = {
-  description: 'Fetches an observation submission csv details for a survey.',
-  tags: ['observation_submission_csv'],
+  description: 'Fetches a summary submission csv details for a survey.',
+  tags: ['summary_submission_csv'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -44,7 +44,7 @@ GET.apiDoc = {
     },
     {
       in: 'path',
-      name: 'submissionId',
+      name: 'summaryId',
       schema: {
         type: 'number'
       },
@@ -53,7 +53,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Observation submission csv details response.',
+      description: 'Summary submission csv details response.',
       content: {
         'application/json': {
           schema: {
@@ -62,7 +62,7 @@ GET.apiDoc = {
               data: {
                 type: 'array',
                 items: {
-                  title: 'Observation submission CSV data',
+                  title: 'Summary submission CSV data',
                   type: 'object',
                   properties: {
                     name: {
@@ -100,7 +100,7 @@ GET.apiDoc = {
   }
 };
 
-export function getSummaryResultsSubmissionCSVForView(): RequestHandler {
+export function getSummarySubmissionCSVForView(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get observation submission csv details', message: 'params', req_params: req.params });
 
@@ -112,14 +112,14 @@ export function getSummaryResultsSubmissionCSVForView(): RequestHandler {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
-    if (!req.params.submissionId) {
+    if (!req.params.summaryId) {
       throw new HTTP400('Missing required path param `submissionId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSubmissionSQLStatement = getSurveyOccurrenceSubmissionSQL(Number(req.params.submissionId));
+      const getSubmissionSQLStatement = getSurveySummarySubmissionSQL(Number(req.params.summaryId));
 
       if (!getSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -137,7 +137,7 @@ export function getSummaryResultsSubmissionCSVForView(): RequestHandler {
       const s3Key = generateS3FileKey({
         projectId: Number(req.params.projectId),
         surveyId: Number(req.params.surveyId),
-        submissionId: Number(req.params.submissionId),
+        summaryId: Number(req.params.summaryId),
         fileName
       });
 
@@ -181,7 +181,7 @@ export function getSummaryResultsSubmissionCSVForView(): RequestHandler {
 
       return res.status(200).json({ data });
     } catch (error) {
-      defaultLog.debug({ label: 'getObservationSubmissionCSVForView', message: 'error', error });
+      defaultLog.debug({ label: 'getSummarySubmissionCSVForView', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

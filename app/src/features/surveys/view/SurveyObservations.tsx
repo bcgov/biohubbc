@@ -436,13 +436,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               <Box mt={5} overflow="hidden">
                 <ObservationSubmissionCSV
                   getCSVData={() => {
-                    return biohubApi.observation.getSubmissionCSVForView(
-                      projectId,
-                      surveyId,
-                      submissionStatus.id
-                    );
-
-
+                    return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
                   }}
                 />
               </Box>

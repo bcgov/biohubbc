@@ -112,8 +112,6 @@ export function getSurveySummarySubmission(): RequestHandler {
         getSurveySummarySubmissionSQLStatement.values
       );
 
-      console.log('*********************summarySubmissionData: ', summarySubmissionData);
-
       if (!summarySubmissionData || !summarySubmissionData.rows || !summarySubmissionData.rows[0]) {
         return res.status(200).json(null);
       }
@@ -128,8 +126,6 @@ export function getSurveySummarySubmission(): RequestHandler {
             fileName: summarySubmissionData.rows[0].file_name
           }) ||
         null;
-
-      console.log('******************************getSummarySubmissionData: ', summarySubmissionData);
 
       return res.status(200).json(getSummarySubmissionData);
     } catch (error) {

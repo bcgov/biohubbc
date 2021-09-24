@@ -73,7 +73,7 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
       sss.survey_summary_submission_id,
 		  sss.key,
 		  sss.file_name,
-      sss.delete_timestamp,
+      sss.delete_timestamp
     FROM
       survey_summary_submission as sss
     LEFT OUTER JOIN
@@ -239,8 +239,6 @@ export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement
 //   return sqlStatement;
 // };
 
-
-
 /**
  * SQL query to insert a survey occurrence submission row.
  *
@@ -249,7 +247,7 @@ export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement
  * @param {string} key
  * @return {*}  {(SQLStatement | null)}
  */
- export const updateSurveySummarySubmissionWithKeySQL = (
+export const updateSurveySummarySubmissionWithKeySQL = (
   surveySubmissionId: number,
   key: string
 ): SQLStatement | null => {
@@ -283,14 +281,13 @@ export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement
   return sqlStatement;
 };
 
-
 /**
  * SQL query to get the record for a single occurrence submission.
  *
  * @param {number} submissionId
  * @returns {SQLStatement} sql query object
  */
- export const getSurveySummaryResultsSubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
+export const getSurveySummaryResultsSubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getSurveySummarySubmissionSQL', message: 'params', summarySubmissionId });
 
   if (!summarySubmissionId) {
@@ -315,5 +312,3 @@ export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement
 
   return sqlStatement;
 };
-
-

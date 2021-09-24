@@ -1,5 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IGetSummaryResultsResponse , IUploadSummaryResultsResponse} from 'interfaces/useSummaryResultsApi.interface';
+import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
@@ -10,12 +10,10 @@ import {
   UPDATE_GET_SURVEY_ENTITIES,
   IGetSurveyAttachmentsResponse,
   SurveyPermits,
-  SurveyFundingSources,
+  SurveyFundingSources
 } from 'interfaces/useSurveyApi.interface';
 
-import {
-  IGetSubmissionCSVForViewResponse,
-} from 'interfaces/useObservationApi.interface';
+import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
 
 import qs from 'qs';
 
@@ -245,9 +243,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
-
-
-
   /**
    * Upload survey summary results.
    *
@@ -258,7 +253,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
-   const uploadSurveySummaryResults = async (
+  const uploadSurveySummaryResults = async (
     projectId: number,
     surveyId: number,
     file: File,
@@ -269,15 +264,17 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
 
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/summary/upload`, req_message, {
-      cancelToken: cancelTokenSource?.token,
-      onUploadProgress: onProgress
-    });
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/summary/submission/upload`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
 
     return data;
   };
-
-
 
   /**
    * Get observation submission S3 url based on survey and submission ID
@@ -285,39 +282,33 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {AxiosInstance} axios
    * @returns {*} {Promise<string>}
    */
-   const getSurveySummarySubmission = async (
+  const getSurveySummarySubmission = async (
     projectId: number,
     surveyId: number
   ): Promise<IGetSummaryResultsResponse> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/get`
-    );
+    const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/summary/submission/get`);
 
     return data;
   };
-
 
   /**
    * Get observation submission csv data/details by submission id.
    * @param {number} projectId
    * @param {number} surveyId
-   * @param {number} submissionId
+   * @param {number} summaryId
    * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
    */
-   const getSubmissionCSVForView = async (
+  const getSubmissionCSVForView = async (
     projectId: number,
     surveyId: number,
-    submissionId: number
+    summaryId: number
   ): Promise<IGetSubmissionCSVForViewResponse> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${submissionId}/view`
+      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/view`
     );
 
     return data;
   };
-
-
-
 
   return {
     createSurvey,
