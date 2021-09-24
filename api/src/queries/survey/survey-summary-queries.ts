@@ -102,88 +102,15 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
 };
 
 /**
- * SQL query to insert a survey occurrence submission row.
- *
- * @param {number} surveyId
- * @param {string} source
- * @param {string} key
- * @return {*}  {(SQLStatement | null)}
- */
-// export const updateSurveyOccurrenceSubmissionWithKeySQL = (submissionId: number, key: string): SQLStatement | null => {
-//   defaultLog.debug({
-//     label: 'uodateSurveyOccurrenceSubmissionWithKeySQL',
-//     message: 'params',
-//     submissionId,
-//     key
-//   });
-
-//   if (!submissionId || !key) {
-//     return null;
-//   }
-
-//   const sqlStatement: SQLStatement = SQL`
-//     UPDATE occurrence_submission
-//     SET
-//       key=  ${key}
-//     WHERE
-//       occurrence_submission_id = ${submissionId}
-//     RETURNING occurrence_submission_id as id;
-//   `;
-
-//   defaultLog.debug({
-//     label: 'updateSurveyOccurrenceSubmissionWithKeySQL',
-//     message: 'sql',
-//     'sqlStatement.text': sqlStatement.text,
-//     'sqlStatement.values': sqlStatement.values
-//   });
-
-//   return sqlStatement;
-// };
-
-/**
- * SQL query to delete occurrence records by occurrence submission id.
- *
- * @param {number} occurrenceSubmissionId
- * @return {*}  {(SQLStatement | null)}
- */
-// export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-//   defaultLog.debug({
-//     label: 'deleteSurveyOccurrencesSQL',
-//     message: 'params',
-//     occurrenceSubmissionId
-//   });
-
-//   if (!occurrenceSubmissionId) {
-//     return null;
-//   }
-
-//   const sqlStatement: SQLStatement = SQL`
-//     DELETE FROM
-//       occurrence
-//     WHERE
-//       occurrence_submission_id = ${occurrenceSubmissionId};
-//   `;
-
-//   defaultLog.debug({
-//     label: 'deleteSurveyOccurrencesSQL',
-//     message: 'sql',
-//     'sqlStatement.text': sqlStatement.text,
-//     'sqlStatement.values': sqlStatement.values
-//   });
-
-//   return sqlStatement;
-// };
-
-/**
  * SQL query to get the record for a single occurrence submission.
  *
- * @param {number} submissionId
+ * @param {number} summaryId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveySummaryResultSQL', message: 'params', summaryResultId });
+export const getSurveySummaryResultSQL = (summaryId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveySummaryResultSQL', message: 'params', summaryId });
 
-  if (!summaryResultId) {
+  if (!summaryId) {
     return null;
   }
 
@@ -193,7 +120,7 @@ export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement
     FROM
     survey_summary_general
     WHERE
-    survey_summary_general_id = ${summaryResultId};
+    survey_summary_general_id = ${summaryId};
   `;
 
   defaultLog.debug({
@@ -205,39 +132,6 @@ export const getSurveySummaryResultSQL = (summaryResultId: number): SQLStatement
 
   return sqlStatement;
 };
-
-/**
- * SQL query to soft delete the occurrence submission entry by ID
- *
- * @param {number} occurrenceSubmissionId
- * @returns {SQLStatement} sql query object
- */
-// export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-//   defaultLog.debug({
-//     label: 'deleteOccurrenceSubmissionSQL',
-//     message: 'params',
-//     occurrenceSubmissionId
-//   });
-
-//   if (!occurrenceSubmissionId) {
-//     return null;
-//   }
-
-//   const sqlStatement: SQLStatement = SQL`
-//     UPDATE occurrence_submission
-//     SET delete_timestamp = now()
-//     WHERE occurrence_submission_id = ${occurrenceSubmissionId};
-//   `;
-
-//   defaultLog.debug({
-//     label: 'deleteOccurrenceSubmissionSQL',
-//     message: 'sql',
-//     'sqlStatement.text': sqlStatement.text,
-//     'sqlStatement.values': sqlStatement.values
-//   });
-
-//   return sqlStatement;
-// };
 
 /**
  * SQL query to insert a survey occurrence submission row.
