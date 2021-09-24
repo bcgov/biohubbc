@@ -66,7 +66,15 @@ export function add_locations(description, kml_file) {
   cy.contains("Locations").should("be.visible");
   cy.get("#location_description").type(description || faker.lorem.paragraph());
   cy.get('[data-testid="kml-file-upload"]').attachFile(
-    kml_file || faker.random.number({ min: 1, max: 6 }) + ".kml"
+    kml_file || faker.random.number({ min: 1, max: 7 }) + ".kml"
+  );
+  cy.wait(5000);
+}
+
+export function add_gpx(gpx_file) {
+  // GPX Flight Path upload
+  cy.get('[data-testid="gpx-file-upload"]').attachFile(
+    gpx_file || faker.random.number({ min: 1, max: 4 }) + ".gpx"
   );
   cy.wait(5000);
 }
@@ -145,50 +153,49 @@ export function add_classification(classification, sub_classification1, sub_clas
     ).click();
   }
 
-  cy.get('#classificationDetails\\.\\[0\\]\\.subClassification1')
-  .find('ul')
-  .find('li')
-  .then(li => {
-    const subclass1_count = Cypress.$(li).length;
-  });
+  cy.get('#classificationDetails\\.\\[0\\]\\.subClassification1').focus().type("{downarrow}{enter}"); // Select the first Entry
 
-
-  cy.get("#classificationDetails\\.\\[0\\]\\.subClassification1")
-  .focus()
-  .type("{enter}");
-  if (sub_classification1) {
-    cy.get('li[data-value="' + sub_classification1 + '"]').click();
-  } else {
-    cy.get(
-      'li[data-value="' + faker.random.number({ min: 7, max: 9 }) + '"]'
-    ).click();
-  }
-
-  cy.get("#classificationDetails\\.\\[0\\]\\.subClassification2")
-  .focus()
-  .type("{enter}");
-  if (sub_classification2) {
-    cy.get('li[data-value="' + sub_classification2 + '"]').click();
-  } else {
-    cy.get(
-      'li[data-value="' + faker.random.number({ min: 38, max: 40 }) + '"]'
-    ).click();
-  }
-
-
+  cy.get("#classificationDetails\\.\\[0\\]\\.subClassification2").focus().type("{downarrow}{enter}"); // Select the first Entry
 
   cy.wait(5000);
 }
 
-export function add_funding() {
+export function add_funding(start_date, end_date) {
   cy.get("span.MuiStepLabel-iconContainer").eq(6).click(); // Click on the Navigation bar
   cy.contains("Funding").should("be.visible");
+  cy.get('button[data-testid="add-button"]').contains("Add Funding Source").click();
+  cy.get('#agency_id').focus().type("{downarrow}{enter}");
+  cy.get('#agency_project_id').type(faker.random.number({ min: 1000, max: 9999999 }));
+  cy.get('#funding_amount').type(faker.random.number({ min: 100, max: 100000 }));
+  cy.get("#start_date").type(
+    start_date ||
+      "20" +
+        faker.random.number({ min: 19, max: 21 }) +
+        "-" +
+        faker.random.number({ min: 10, max: 12 }) +
+        "-" +
+        faker.random.number({ min: 10, max: 28 })
+  );
+  cy.get("#end_date").type(
+    end_date ||
+      "20" +
+        faker.random.number({ min: 22, max: 30 }) +
+        "-" +
+        faker.random.number({ min: 10, max: 12 }) +
+        "-" +
+        faker.random.number({ min: 10, max: 28 })
+  );
+  cy.get('button').contains("Save Changes").click();
   cy.wait(5000);
 }
 
 export function add_partnerships() {
   cy.get("span.MuiStepLabel-iconContainer").eq(7).click(); // Click on the Navigation bar
   cy.contains("Partnerships").should("be.visible");
+
+  cy.get('#indigenous_partnerships').focus().type("{downarrow}{enter}");
+  cy.get('#stakeholder_partnerships').focus().type("{downarrow}{enter}");
+
   cy.wait(5000);
 }
 

@@ -11,6 +11,7 @@ import {
   previous_page_project,
   cancel_project,
   add_locations,
+  add_gpx,
   add_project_info,
   add_objectives,
   add_classification,
@@ -48,15 +49,16 @@ while (n < 1) {
     next_page_project();
 
     add_locations(null, null); //description, kml_file
+    add_gpx(null) // gpx_file
     next_page_project();
 
-/*     add_classification(null, null, null); //classification, sub_classification1, sub_classification2
+    add_classification(null, null, null); //classification, sub_classification1, sub_classification2
     next_page_project();
 
-    add_funding();
+    add_funding(null,null);
     next_page_project();
 
-    add_partnerships(); */
+    add_partnerships();
 
     submit_project();
   });
