@@ -5,7 +5,7 @@ import { getSubmissionFileFromS3, getSubmissionS3Key } from '../../paths/dwc/val
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
-import { XLSXTransformation } from '../../utils/media/xlsx/transformation/XLSXTransformation';
+import { XLSXTransformation } from '../../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
 import { prepXLSX } from './validate';

@@ -1,6 +1,6 @@
 import { isEqual, uniqWith } from 'lodash';
 import xlsx from 'xlsx';
-import { CSVWorksheet } from '../../../../utils/media/csv/csv-file';
+import { CSVWorksheet } from '../../csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
 import {
   FileTransformationFieldSchema,
