@@ -51,4 +51,5 @@ export interface IGetOccurrencesForViewResponseDetails {
   organismQuantity: number;
   organismQuantityType: string;
   occurrenceId: number;
+  eventDate: string;
 }

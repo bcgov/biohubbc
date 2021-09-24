@@ -29,7 +29,8 @@ export class GetOccurrencesViewData {
         lifeStage: occurrence.lifestage,
         organismQuantity: Number(occurrence.organismquantity),
         organismQuantityType: occurrence.organismquantitytype,
-        vernacularName: occurrence.vernacularname
+        vernacularName: occurrence.vernacularname,
+        eventDate: occurrence.eventdate
       };
     });
   }
