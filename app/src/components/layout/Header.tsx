@@ -1,7 +1,6 @@
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -20,10 +19,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   govHeader: {
     borderBottom: '2px solid #fcba19'
   },
-  govHeaderContainer: {
-    paddingLeft: 0,
-    paddingRight: 0
-  },
   govHeaderToolbar: {
     height: '70px'
   },
@@ -33,8 +28,8 @@ const useStyles = makeStyles((theme: Theme) => ({
     alignItems: 'center',
     color: 'inherit',
     textDecoration: 'none',
-    fontSize: '1.5rem',
-    fontWeight: 400,
+    fontSize: '1.25rem',
+    fontWeight: 700,
     '& img': {
       verticalAlign: 'middle'
     },
@@ -50,16 +45,27 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   '@media (max-width: 1000px)': {
     brand: {
+      fontSize: '1rem',
       '& picture': {
         marginRight: '1rem'
       }
+    },
+    wrapText: {
+      display: 'block'
     }
   },
-  usernameAndLogout: {
+  appPhaseTag: {
+    marginLeft: theme.spacing(0.5),
+    color: '#fcba19',
+    textTransform: 'uppercase',
+    fontSize: '0.875rem',
+    fontWeight: 700
+  },
+  userProfile: {
     color: theme.palette.primary.contrastText,
     fontSize: '0.9375rem',
     '& hr': {
-      backgroundColor: theme.palette.primary.contrastText,
+      backgroundColor: '#4b5e7e',
       height: '1rem'
     },
     '& a': {
@@ -72,10 +78,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   mainNav: {
     backgroundColor: '#38598a'
-  },
-  mainNavContainer: {
-    paddingLeft: 0,
-    paddingRight: 0
   },
   mainNavToolbar: {
     '& a': {
@@ -104,7 +106,7 @@ const Header: React.FC = () => {
     const loggedInUserDisplayName = `${keycloakWrapper?.getIdentitySource()} / ${keycloakWrapper?.getUserIdentifier()}`.toUpperCase();
 
     return (
-      <Box display="flex" className={classes.usernameAndLogout} my="auto" alignItems="center">
+      <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
         <Icon path={mdiAccountCircle} size={1.25} />
         <Box ml={1}>{loggedInUserDisplayName}</Box>
         <Box px={2}>
@@ -151,66 +153,69 @@ const Header: React.FC = () => {
   return (
     <AppBar position="sticky" style={{ boxShadow: 'none' }}>
       <Box className={classes.govHeader}>
-        <Container maxWidth="xl" className={classes.govHeaderContainer}>
-          <Toolbar className={classes.govHeaderToolbar}>
-            <Box display="flex" justifyContent="space-between" width="100%">
-              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-                <picture>
-                  <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                  <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                  <img src={headerImageSmall} alt={'Government of British Columbia'} />
-                </picture>
+        <Toolbar className={classes.govHeaderToolbar}>
+          <Box display="flex" justifyContent="space-between" width="100%">
+            <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+              <picture>
+                <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                <img src={headerImageSmall} alt={'Government of British Columbia'} />
+              </picture>
+              <span>
                 Species Inventory Management System
-              </Link>
-              {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
-              {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
-            </Box>
-          </Toolbar>
-        </Container>
+                <sup
+                  className={classes.appPhaseTag}
+                  aria-label="This application is currently in beta phase of development">
+                  Beta
+                </sup>
+              </span>
+            </Link>
+            {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
+            {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
+          </Box>
+        </Toolbar>
       </Box>
       <Box className={classes.mainNav}>
-        <Container maxWidth="xl" className={classes.mainNavContainer}>
-          <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            {isAuthenticated(keycloakWrapper) && (
-              <SecureLink
-                to="/admin/projects"
-                label="Projects"
-                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-                id="menu_projects"
-              />
-            )}
-            {!isAuthenticated(keycloakWrapper) && (
-              <>
-                <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
-                <SecureLink to="/search" label="Search" validRoles={[]} id="menu_search" />
-              </>
-            )}
+        <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
+          {isAuthenticated(keycloakWrapper) && (
             <SecureLink
-              to="/admin/permits"
-              label="Permits"
+              to="/admin/projects"
+              label="Projects"
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_permits"
+              id="menu_projects"
             />
-            <SecureLink
-              to="/admin/users"
-              label="Manage Users"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
-              id="menu_admin_users"
-            />
-            <SecureLink
-              to="/admin/search"
-              label="Search"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_search"
-            />
-            <SecureLink
-              to="/admin/resources"
-              label="Resources"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_resources"
-            />
-          </Toolbar>
-        </Container>
+          )}
+          {!isAuthenticated(keycloakWrapper) && (
+            <>
+              <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+              <SecureLink to="/search" label="Search" validRoles={[]} id="menu_search" />
+            </>
+          )}
+          <SecureLink
+            to="/admin/permits"
+            label="Permits"
+            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+            id="menu_permits"
+          />
+          <SecureLink
+            to="/admin/users"
+            label="Manage Users"
+            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
+            id="menu_admin_users"
+          />
+          <SecureLink
+            to="/admin/search"
+            label="Search"
+            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+            id="menu_search"
+          />
+          <SecureLink
+            to="/admin/resources"
+            label="Resources"
+            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+            id="menu_resources"
+          />
+        </Toolbar>
       </Box>
     </AppBar>
   );
