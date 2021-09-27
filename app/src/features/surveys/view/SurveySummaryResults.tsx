@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-//import CircularProgress from '@material-ui/core/CircularProgress';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
@@ -25,7 +25,6 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-//import { useInterval } from 'hooks/useInterval';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -79,7 +78,6 @@ const SurveySummaryResults = () => {
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
 
   const [submission, setSubmission] = useState<IGetSummaryResultsResponse | null>(null);
-  //const [submissionId, setSubmissionId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const classes = useStyles();
@@ -110,10 +108,6 @@ const SurveySummaryResults = () => {
         setIsLoading(false);
         return submission;
       });
-
-      // setSubmissionId(() => {
-      //   return submission.id;
-      // });
     };
 
     if (isLoading) {
@@ -127,8 +121,6 @@ const SurveySummaryResults = () => {
     }
 
     await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, submission?.id);
-
-    //fetchSummaryResults();
   };
 
   const defaultUploadYesNoDialogProps = {
@@ -150,7 +142,7 @@ const SurveySummaryResults = () => {
 
   const showUploadDialog = () => {
     if (submission) {
-      // already have observation data, prompt user to confirm override
+      // already have summary data, prompt user to confirm override
       dialogContext.setYesNoDialog({
         ...defaultUploadYesNoDialogProps,
         open: true,
@@ -207,9 +199,9 @@ const SurveySummaryResults = () => {
     window.open(response);
   };
 
-  // if (isLoading) {
-  //   return <CircularProgress className="pageProgress" size={40} />;
-  // }
+  if (isLoading) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   type severityLevel = 'error' | 'info' | 'success' | 'warning' | undefined;
 
