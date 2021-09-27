@@ -12,26 +12,15 @@ const appTheme = createMuiTheme({
     }
   },
   palette: {
-    background: {
-      default: '#f7f8fa'
-    },
     // https://material-ui.com/customization/palette/
+    background: {
+      default: '#f1f1f1'
+    },
     primary: {
       light: '#5469a4',
       main: '#003366', // BC ID: corporate blue
       dark: '#001949',
       contrastText: '#ffffff'
-    },
-    secondary: {
-      light: '#ffd95e',
-      main: '#e3a82b', // BC ID: corporate gold
-      dark: '#ad7900',
-      contrastText: '#000000'
-    },
-    text: {
-      primary: 'rgba(0, 0, 0, 0.87)',
-      secondary: 'rgba(0, 0, 0, 0.67)',
-      disabled: 'rgba(0, 0, 0, 0.67)'
     }
   },
   typography: {
