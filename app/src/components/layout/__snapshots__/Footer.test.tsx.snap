@@ -6,44 +6,40 @@ exports[`Footer renders correctly 1`] = `
     class="makeStyles-appFooter-1"
   >
     <div
-      class="MuiContainer-root makeStyles-appFooterContainer-2 MuiContainer-maxWidthXl"
+      aria-label="Footer"
+      class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-2 MuiToolbar-gutters"
+      role="navigation"
     >
-      <div
-        aria-label="Footer"
-        class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-3 MuiToolbar-gutters"
-        role="navigation"
-      >
-        <ul>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/disclaimer"
-            >
-              Disclaimer
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/privacy"
-            >
-              Privacy
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/accessible-government"
-            >
-              Accessibility
-            </a>
-          </li>
-          <li>
-            <a
-              href="https://www.gov.bc.ca/gov/content/home/copyright"
-            >
-              Copyright
-            </a>
-          </li>
-        </ul>
-      </div>
+      <ul>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/disclaimer"
+          >
+            Disclaimer
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/privacy"
+          >
+            Privacy
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/accessible-government"
+          >
+            Accessibility
+          </a>
+        </li>
+        <li>
+          <a
+            href="https://www.gov.bc.ca/gov/content/home/copyright"
+          >
+            Copyright
+          </a>
+        </li>
+      </ul>
     </div>
   </footer>
 </DocumentFragment>

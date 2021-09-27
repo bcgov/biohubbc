@@ -13,84 +13,84 @@ exports[`PublicLayout renders correctly 1`] = `
         class="MuiBox-root MuiBox-root-10 makeStyles-govHeader-2"
       >
         <div
-          class="MuiContainer-root makeStyles-govHeaderContainer-3 MuiContainer-maxWidthXl"
+          class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-3 MuiToolbar-gutters"
         >
           <div
-            class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-4 MuiToolbar-gutters"
+            class="MuiBox-root MuiBox-root-11"
           >
-            <div
-              class="MuiBox-root MuiBox-root-11"
+            <a
+              aria-label="Go to SIMS Home"
+              class="makeStyles-brand-4"
+              href="/projects"
             >
-              <a
-                aria-label="Go to SIMS Home"
-                class="makeStyles-brand-5"
-                href="/projects"
-              >
-                <picture>
-                  <source
-                    media="(min-width: 1200px)"
-                    srcset="gov-bc-logo-horiz.png"
-                  />
-                  <source
-                    media="(min-width: 600px)"
-                    srcset="gov-bc-logo-vert.png"
-                  />
-                  <img
-                    alt="Government of British Columbia"
-                    src="gov-bc-logo-vert.png"
-                  />
-                </picture>
+              <picture>
+                <source
+                  media="(min-width: 1200px)"
+                  srcset="gov-bc-logo-horiz.png"
+                />
+                <source
+                  media="(min-width: 600px)"
+                  srcset="gov-bc-logo-vert.png"
+                />
+                <img
+                  alt="Government of British Columbia"
+                  src="gov-bc-logo-vert.png"
+                />
+              </picture>
+              <span>
                 Species Inventory Management System
-              </a>
-              <div
-                class="MuiBox-root MuiBox-root-12"
+                <sup
+                  aria-label="This application is currently in beta phase of development"
+                  class="makeStyles-appPhaseTag-6"
+                >
+                  Beta
+                </sup>
+              </span>
+            </a>
+            <div
+              class="MuiBox-root MuiBox-root-12"
+            >
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
+                data-testid="login"
+                tabindex="0"
+                type="submit"
               >
-                <button
-                  class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
-                  data-testid="login"
-                  tabindex="0"
-                  type="submit"
+                <span
+                  class="MuiButton-label"
                 >
                   <span
-                    class="MuiButton-label"
+                    class="MuiButton-startIcon MuiButton-iconSizeLarge"
                   >
-                    <span
-                      class="MuiButton-startIcon MuiButton-iconSizeLarge"
+                    <svg
+                      role="presentation"
+                      style="width: 1.5rem; height: 1.5rem;"
+                      viewBox="0 0 24 24"
                     >
-                      <svg
-                        role="presentation"
-                        style="width: 1.5rem; height: 1.5rem;"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M19,3H5C3.89,3 3,3.89 3,5V9H5V5H19V19H5V15H3V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10.08,15.58L11.5,17L16.5,12L11.5,7L10.08,8.41L12.67,11H3V13H12.67L10.08,15.58Z"
-                          style="fill: currentColor;"
-                        />
-                      </svg>
-                    </span>
-                    Log In
+                      <path
+                        d="M19,3H5C3.89,3 3,3.89 3,5V9H5V5H19V19H5V15H3V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10.08,15.58L11.5,17L16.5,12L11.5,7L10.08,8.41L12.67,11H3V13H12.67L10.08,15.58Z"
+                        style="fill: currentColor;"
+                      />
+                    </svg>
                   </span>
-                  <span
-                    class="MuiTouchRipple-root"
-                  />
-                </button>
-              </div>
+                  Log In
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
             </div>
           </div>
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-13 makeStyles-mainNav-7"
+        class="MuiBox-root MuiBox-root-13 makeStyles-mainNav-8"
       >
         <div
-          class="MuiContainer-root makeStyles-mainNavContainer-8 MuiContainer-maxWidthXl"
-        >
-          <div
-            aria-label="Main Navigation"
-            class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-9 MuiToolbar-gutters"
-            role="navigation"
-          />
-        </div>
+          aria-label="Main Navigation"
+          class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-9 MuiToolbar-gutters"
+          role="navigation"
+        />
       </div>
     </header>
     <main
@@ -106,44 +106,40 @@ exports[`PublicLayout renders correctly 1`] = `
       class="makeStyles-appFooter-15"
     >
       <div
-        class="MuiContainer-root makeStyles-appFooterContainer-16 MuiContainer-maxWidthXl"
+        aria-label="Footer"
+        class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-16 MuiToolbar-gutters"
+        role="navigation"
       >
-        <div
-          aria-label="Footer"
-          class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-17 MuiToolbar-gutters"
-          role="navigation"
-        >
-          <ul>
-            <li>
-              <a
-                href="https://www.gov.bc.ca/gov/content/home/disclaimer"
-              >
-                Disclaimer
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.gov.bc.ca/gov/content/home/privacy"
-              >
-                Privacy
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.gov.bc.ca/gov/content/home/accessible-government"
-              >
-                Accessibility
-              </a>
-            </li>
-            <li>
-              <a
-                href="https://www.gov.bc.ca/gov/content/home/copyright"
-              >
-                Copyright
-              </a>
-            </li>
-          </ul>
-        </div>
+        <ul>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/disclaimer"
+            >
+              Disclaimer
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/privacy"
+            >
+              Privacy
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/accessible-government"
+            >
+              Accessibility
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/copyright"
+            >
+              Copyright
+            </a>
+          </li>
+        </ul>
       </div>
     </footer>
   </div>

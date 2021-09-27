@@ -1,4 +1,3 @@
-import Container from '@material-ui/core/Container';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -8,18 +7,14 @@ const useStyles = makeStyles((theme: Theme) => ({
   appFooter: {
     backgroundColor: theme.palette.primary.main
   },
-  appFooterContainer: {
-    paddingLeft: 0,
-    paddingRight: 0
-  },
   appFooterToolbar: {
+    minHeight: '46px',
     '& ul': {
       display: 'flex',
       flexWrap: 'wrap',
       alignItems: 'center',
       margin: 0,
       padding: 0,
-      minHeight: '46px',
       listStyleType: 'none'
     },
     '& li + li ': {
@@ -42,24 +37,22 @@ const Footer: React.FC = () => {
 
   return (
     <footer className={classes.appFooter}>
-      <Container maxWidth="xl" className={classes.appFooterContainer}>
-        <Toolbar className={classes.appFooterToolbar} role="navigation" aria-label="Footer">
-          <ul>
-            <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
-            </li>
-            <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/privacy">Privacy</a>
-            </li>
-            <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/accessible-government">Accessibility</a>
-            </li>
-            <li>
-              <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
-            </li>
-          </ul>
-        </Toolbar>
-      </Container>
+      <Toolbar className={classes.appFooterToolbar} role="navigation" aria-label="Footer">
+        <ul>
+          <li>
+            <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
+          </li>
+          <li>
+            <a href="https://www.gov.bc.ca/gov/content/home/privacy">Privacy</a>
+          </li>
+          <li>
+            <a href="https://www.gov.bc.ca/gov/content/home/accessible-government">Accessibility</a>
+          </li>
+          <li>
+            <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
+          </li>
+        </ul>
+      </Toolbar>
     </footer>
   );
 };
