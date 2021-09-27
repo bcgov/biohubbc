@@ -87,6 +87,8 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
 
   useEffect(() => {
     setIsLoading(false);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.geometry]);
 
   return (

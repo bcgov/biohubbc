@@ -183,7 +183,7 @@ export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: str
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      survey_attachment_id asid,
+      survey_attachment_id as id,
       file_name,
       update_date,
       create_date,

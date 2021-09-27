@@ -40,7 +40,7 @@ const PublicProjectAttachments: React.FC<IPublicProjectAttachmentsProps> = () =>
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length]
+    [attachmentsList.length, biohubApi.public.project, projectId]
   );
 
   useEffect(() => {

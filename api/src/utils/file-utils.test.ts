@@ -42,4 +42,24 @@ describe('generateS3FileKey', () => {
 
     expect(result).to.equal('projects/1/surveys/2/folder/testFileName');
   });
+  it('returns survey occurrence folder file path', async () => {
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      submissionId: 3,
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('projects/1/surveys/2/submissions/3/testFileName');
+  });
+  it('returns survey summaryresults folder file path', async () => {
+    const result = generateS3FileKey({
+      projectId: 1,
+      surveyId: 2,
+      summaryId: 3,
+      fileName: 'testFileName'
+    });
+
+    expect(result).to.equal('projects/1/surveys/2/summaryresults/3/testFileName');
+  });
 });

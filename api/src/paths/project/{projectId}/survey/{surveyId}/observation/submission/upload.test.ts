@@ -10,7 +10,7 @@ import * as upload from './upload';
 
 chai.use(sinonChai);
 
-describe('uploadSubmission', () => {
+describe('uploadObservationSubmission', () => {
   afterEach(() => {
     sinon.restore();
   });
