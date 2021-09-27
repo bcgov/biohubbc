@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
-import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
+import { GetSurveyAttachmentsData } from '../../../../../../models/survey-attachments';
 import { getSurveyAttachmentsSQL } from '../../../../../../queries/survey/survey-attachments-queries';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -99,7 +99,7 @@ export function getSurveyAttachments(): RequestHandler {
       await connection.commit();
 
       const getAttachmentsData =
-        (attachmentsData && attachmentsData.rows && new GetAttachmentsData(attachmentsData.rows)) || null;
+        (attachmentsData && attachmentsData.rows && new GetSurveyAttachmentsData(attachmentsData.rows)) || null;
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {

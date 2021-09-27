@@ -104,8 +104,7 @@ describe('lists the survey attachments', () => {
           file_name: 'name1',
           create_date: '2020-01-01',
           update_date: '',
-          file_size: 50,
-          security_token: 'token123'
+          file_size: 50
         }
       ]
     });
@@ -125,7 +124,7 @@ describe('lists the survey attachments', () => {
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-01', size: 50, securityToken: 'token123' }]
+      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-01', size: 50 }]
     });
   });
 
@@ -139,8 +138,7 @@ describe('lists the survey attachments', () => {
           file_name: 'name1',
           create_date: '2020-01-01',
           update_date: '2020-01-02',
-          file_size: 50,
-          security_token: 'token123'
+          file_size: 50
         }
       ]
     });
@@ -160,7 +158,7 @@ describe('lists the survey attachments', () => {
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-02', size: 50, securityToken: 'token123' }]
+      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-02', size: 50 }]
     });
   });
 

@@ -173,6 +173,7 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
     SELECT
       project_attachment_id as id,
       file_name,
+      file_type,
       update_date,
       create_date,
       file_size,
@@ -269,6 +270,7 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
  *
  * @param fileName
  * @param fileSize
+ * @param fileType
  * @param projectId
  * @param {string} key to use in s3
  * @returns {SQLStatement} sql query object
@@ -276,6 +278,7 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
 export const postProjectAttachmentSQL = (
   fileName: string,
   fileSize: number,
+  fileType: string,
   projectId: number,
   key: string
 ): SQLStatement | null => {
@@ -284,11 +287,12 @@ export const postProjectAttachmentSQL = (
     message: 'params',
     fileName,
     fileSize,
+    fileType,
     projectId,
     key
   });
 
-  if (!fileName || !fileSize || !projectId || !key) {
+  if (!fileName || !fileSize || !fileType || !projectId || !key) {
     return null;
   }
 
@@ -297,11 +301,13 @@ export const postProjectAttachmentSQL = (
       project_id,
       file_name,
       file_size,
+      file_type,
       key
     ) VALUES (
       ${projectId},
       ${fileName},
       ${fileSize},
+      ${fileType},
       ${key}
     )
     RETURNING
@@ -362,12 +368,13 @@ export const getProjectAttachmentByFileNameSQL = (projectId: number, fileName: s
  *
  * @param {number} projectId
  * @param {string} fileName
+ * @param {string} fileType
  * @returns {SQLStatement} sql query object
  */
-export const putProjectAttachmentSQL = (projectId: number, fileName: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'putProjectAttachmentSQL', message: 'params', projectId });
+export const putProjectAttachmentSQL = (projectId: number, fileName: string, fileType: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'putProjectAttachmentSQL', message: 'params', projectId, fileName, fileType });
 
-  if (!projectId || !fileName) {
+  if (!projectId || !fileName || !fileType) {
     return null;
   }
 
@@ -375,7 +382,8 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string): SQ
     UPDATE
       project_attachment
     SET
-      file_name = ${fileName}
+      file_name = ${fileName},
+      file_type = ${fileType}
     WHERE
       file_name = ${fileName}
     AND

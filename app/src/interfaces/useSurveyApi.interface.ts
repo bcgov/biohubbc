@@ -164,8 +164,10 @@ export enum UPDATE_GET_SURVEY_ENTITIES {
 export interface IGetSurveyAttachment {
   id: number;
   fileName: string;
+  fileType?: string;
   lastModified: string;
   size: number;
+  securityToken?: any;
 }
 
 /**

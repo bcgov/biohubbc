@@ -1,13 +1,13 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetAttachmentsData } from './project-survey-attachments';
+import { GetSurveyAttachmentsData } from './survey-attachments';
 
-describe('GetAttachmentsData', () => {
+describe('GetSurveyAttachmentsData', () => {
   describe('No values provided', () => {
-    let getAttachmentsData: GetAttachmentsData;
+    let getAttachmentsData: GetSurveyAttachmentsData;
 
     before(() => {
-      getAttachmentsData = new GetAttachmentsData(null);
+      getAttachmentsData = new GetSurveyAttachmentsData(null);
     });
 
     it('sets attachmentsList', function () {
@@ -16,20 +16,19 @@ describe('GetAttachmentsData', () => {
   });
 
   describe('All values provided with only create date', () => {
-    let getAttachmentsData: GetAttachmentsData;
+    let getAttachmentsData: GetSurveyAttachmentsData;
 
     const attachmentsData = [
       {
         id: 1,
         file_name: 'filename',
         create_date: '2020/04/04',
-        file_size: 24,
-        security_token: 'token123'
+        file_size: 24
       }
     ];
 
     before(() => {
-      getAttachmentsData = new GetAttachmentsData(attachmentsData);
+      getAttachmentsData = new GetSurveyAttachmentsData(attachmentsData);
     });
 
     it('sets attachmentsList', function () {
@@ -38,8 +37,7 @@ describe('GetAttachmentsData', () => {
           id: 1,
           fileName: 'filename',
           lastModified: '2020/04/04',
-          size: 24,
-          securityToken: 'token123'
+          size: 24
         }
       ]);
     });

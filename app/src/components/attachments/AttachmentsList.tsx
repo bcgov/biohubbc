@@ -16,6 +16,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
@@ -35,7 +36,7 @@ const useStyles = makeStyles({
 export interface IAttachmentsListProps {
   projectId: number;
   surveyId?: number;
-  attachmentsList: IGetProjectAttachment[];
+  attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
   getAttachments: (forceFetch: boolean) => void;
 }
 
@@ -57,7 +58,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
-  const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment) => {
+  const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
@@ -68,7 +69,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment) => {
+  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       dialogTitle: 'Change Security Status',
@@ -87,7 +88,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const deleteAttachment = async (attachment: IGetProjectAttachment) => {
+  const deleteAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (!attachment?.id) {
       return;
     }
@@ -131,7 +132,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const makeAttachmentSecure = async (attachment: IGetProjectAttachment) => {
+  const makeAttachmentSecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
@@ -153,7 +154,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment) => {
+  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
@@ -187,9 +188,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell className={classes.heading}>Name</TableCell>
+                {!props.surveyId && <TableCell className={classes.heading}>Type</TableCell>}
                 <TableCell className={classes.heading}>Last Modified</TableCell>
                 <TableCell className={classes.heading}>File Size</TableCell>
-                <TableCell className={classes.heading}>Security Status</TableCell>
+                {!props.surveyId && <TableCell className={classes.heading}>Security Status</TableCell>}
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -202,18 +204,21 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         {row.fileName}
                       </Link>
                     </TableCell>
+                    {!props.surveyId && <TableCell>{row.fileType}</TableCell>}
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                    <TableCell>
-                      <IconButton
-                        color="primary"
-                        aria-label="toggle-attachment-security-status"
-                        data-testid="toggle-attachment-security-status"
-                        onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
-                        <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                      </IconButton>
-                      {row.securityToken ? 'Secured' : 'Unsecured'}
-                    </TableCell>
+                    {!props.surveyId && row.securityToken && (
+                      <TableCell>
+                        <IconButton
+                          color="primary"
+                          aria-label="toggle-attachment-security-status"
+                          data-testid="toggle-attachment-security-status"
+                          onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
+                          <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                        </IconButton>
+                        {row.securityToken ? 'Secured' : 'Unsecured'}
+                      </TableCell>
+                    )}
                     <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
                       <IconButton
                         color="primary"

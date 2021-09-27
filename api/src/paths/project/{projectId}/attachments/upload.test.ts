@@ -49,7 +49,10 @@ describe('uploadMedia', () => {
         mimetype: 'text/plain',
         size: 340
       }
-    ]
+    ],
+    body: {
+      attachmentType: 'type'
+    }
   } as any;
 
   let actualResult: any = null;
@@ -63,6 +66,24 @@ describe('uploadMedia', () => {
       };
     }
   };
+
+  it('should throw an error when attachmentType is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = upload.uploadMedia();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing attachment file type');
+    }
+  });
 
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);

@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
+import { GetProjectAttachmentsData } from '../../../../models/project-attachments';
 import { getProjectAttachmentsSQL } from '../../../../queries/project/project-attachments-queries';
 import { getLogger } from '../../../../utils/logger';
 
@@ -91,7 +91,7 @@ export function getAttachments(): RequestHandler {
       await connection.commit();
 
       const getAttachmentsData =
-        (attachmentsData && attachmentsData.rows && new GetAttachmentsData(attachmentsData.rows)) || null;
+        (attachmentsData && attachmentsData.rows && new GetProjectAttachmentsData(attachmentsData.rows)) || null;
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
