@@ -171,7 +171,7 @@ export function uploadMedia(): RequestHandler {
  *
  * @param {number} surveyId
  * @param {string} source
- * @param {string} key
+ * @param {string} file_name
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
