@@ -94,7 +94,7 @@ describe('getSummarySubmission', () => {
     }
   });
 
-  it('should return an summary submission, on success', async () => {
+  it('should return a summary submission, on success', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({

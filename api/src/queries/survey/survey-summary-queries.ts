@@ -104,23 +104,22 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
 /**
  * SQL query to insert a survey summary submission row.
  *
- * @param {number} surveyId
- * @param {string} source
+ * @param {number} summarySubmissionId
  * @param {string} key
  * @return {*}  {(SQLStatement | null)}
  */
 export const updateSurveySummarySubmissionWithKeySQL = (
-  surveySubmissionId: number,
+  summarySubmissionId: number,
   key: string
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'updateSurveySummarySubmissionWithKeySQL',
     message: 'params',
-    surveySubmissionId,
+    summarySubmissionId,
     key
   });
 
-  if (!surveySubmissionId || !key) {
+  if (!summarySubmissionId || !key) {
     return null;
   }
 
@@ -129,7 +128,7 @@ export const updateSurveySummarySubmissionWithKeySQL = (
     SET
       key=  ${key}
     WHERE
-      survey_summary_submission_id = ${surveySubmissionId}
+      survey_summary_submission_id = ${summarySubmissionId}
     RETURNING survey_summary_submission_id as id;
   `;
 

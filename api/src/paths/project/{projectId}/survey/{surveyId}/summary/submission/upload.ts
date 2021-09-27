@@ -20,7 +20,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'Upload survey results file.',
+  description: 'Upload survey summary results file.',
   tags: ['results'],
   security: [
     {

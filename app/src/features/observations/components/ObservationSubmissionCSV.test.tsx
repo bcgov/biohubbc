@@ -1,7 +1,6 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-//import { MemoryRouter } from 'react-router';
 import ObservationSubmissionCSV, { IObservationSubmissionCSVProps } from './ObservationSubmissionCSV';
 
 jest.mock('../../../hooks/useBioHubApi');
