@@ -70,7 +70,7 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
 
   const sqlStatement = SQL`
     SELECT
-      sss.survey_summary_submission_id,
+      sss.survey_summary_submission_id as id,
 		  sss.key,
 		  sss.file_name,
       sss.delete_timestamp
@@ -93,38 +93,6 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
 
   defaultLog.debug({
     label: 'getLatestSurveySummaryResultsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get the record for a single occurrence submission.
- *
- * @param {number} summaryId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveySummaryResultSQL = (summaryId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveySummaryResultSQL', message: 'params', summaryId });
-
-  if (!summaryId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      *
-    FROM
-    survey_summary_general
-    WHERE
-    survey_summary_general_id = ${summaryId};
-  `;
-
-  defaultLog.debug({
-    label: 'getSurveySummaryResultSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -176,12 +144,12 @@ export const updateSurveySummarySubmissionWithKeySQL = (
 };
 
 /**
- * SQL query to get the record for a single occurrence submission.
+ * SQL query to get the record for a single summary submission.
  *
  * @param {number} submissionId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveySummaryResultsSubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
+export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getSurveySummarySubmissionSQL', message: 'params', summarySubmissionId });
 
   if (!summarySubmissionId) {

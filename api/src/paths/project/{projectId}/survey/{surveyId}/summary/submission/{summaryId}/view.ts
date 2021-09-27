@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
-import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-summary-queries';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { DWCArchive } from '../../../../../../../../utils/media/dwc/dwc-archive-file';
@@ -100,6 +100,9 @@ GET.apiDoc = {
   }
 };
 
+//TODO: have a conversation - this endpoint is awfully similar to the other view.ts.  Would it make sense to use just one
+// endpoint and pass in the table name as a parameter?
+
 export function getSummarySubmissionCSVForView(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get observation submission csv details', message: 'params', req_params: req.params });
@@ -113,7 +116,7 @@ export function getSummarySubmissionCSVForView(): RequestHandler {
     }
 
     if (!req.params.summaryId) {
-      throw new HTTP400('Missing required path param `submissionId`');
+      throw new HTTP400('Missing required path param `summaryId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);

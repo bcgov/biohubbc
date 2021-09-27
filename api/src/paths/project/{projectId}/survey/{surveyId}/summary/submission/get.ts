@@ -102,7 +102,7 @@ export function getSurveySummarySubmission(): RequestHandler {
       const getSurveySummarySubmissionSQLStatement = getLatestSurveySummarySubmissionSQL(Number(req.params.surveyId));
 
       if (!getSurveySummarySubmissionSQLStatement) {
-        throw new HTTP400('Failed to build SQL getLatestSurveySummarySubmissionSQLStatement statement');
+        throw new HTTP400('Failed to build getLatestSurveySummarySubmissionSQLStatement statement');
       }
 
       await connection.open();
@@ -122,7 +122,7 @@ export function getSurveySummarySubmission(): RequestHandler {
         (summarySubmissionData &&
           summarySubmissionData.rows &&
           summarySubmissionData.rows[0] && {
-            id: summarySubmissionData.rows[0].survey_summary_submission_id,
+            id: summarySubmissionData.rows[0].id,
             fileName: summarySubmissionData.rows[0].file_name
           }) ||
         null;
