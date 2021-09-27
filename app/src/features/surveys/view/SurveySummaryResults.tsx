@@ -106,7 +106,7 @@ const SurveySummaryResults = () => {
     if (isLoading) {
       getSummarySubmission();
     }
-  }, [biohubApi, projectId, surveyId]);
+  }, [biohubApi, projectId, surveyId, isLoading]);
 
   const softDeleteSubmission = async () => {
     if (!submission?.id) {

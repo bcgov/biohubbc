@@ -38,7 +38,8 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
     }
 
     getOccurrences();
-  }, [getOccurrences, isMounted]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
     <FeatureGroup>

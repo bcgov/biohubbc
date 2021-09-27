@@ -87,7 +87,9 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
 
   useEffect(() => {
     setIsLoading(false);
-  }, [setIsLoading, values.geometry]);
+
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [values.geometry]);
 
   return (
     <Grid item xs={12}>
