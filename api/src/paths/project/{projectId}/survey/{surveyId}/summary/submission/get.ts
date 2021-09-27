@@ -52,18 +52,6 @@ GET.apiDoc = {
               fileName: {
                 description: 'The file name of the submission',
                 type: 'string'
-              },
-              status: {
-                description: 'The validation status of the submission',
-                type: 'string'
-              },
-              messages: {
-                description: 'The validation status messages of the submission',
-                type: 'array',
-                items: {
-                  type: 'object',
-                  description: 'A validation status message of the submission'
-                }
               }
             }
           }

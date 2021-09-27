@@ -90,16 +90,16 @@ const SurveySummaryResults = () => {
 
   useEffect(() => {
     const getSummarySubmission = async () => {
-      const submission = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
+      const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
 
-      if (!submission) {
+      if (!submissionResponse) {
         setIsLoading(false);
         return null;
       }
 
       setSubmission(() => {
         setIsLoading(false);
-        return submission;
+        return submissionResponse;
       });
     };
 
