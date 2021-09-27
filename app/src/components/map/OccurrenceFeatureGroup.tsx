@@ -38,7 +38,7 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
     }
 
     getOccurrences();
-  }, []);
+  }, [getOccurrences, isMounted]);
 
   return (
     <FeatureGroup>

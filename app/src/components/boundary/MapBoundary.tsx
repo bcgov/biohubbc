@@ -87,7 +87,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
 
   useEffect(() => {
     setIsLoading(false);
-  }, [values.geometry]);
+  }, [setIsLoading, values.geometry]);
 
   return (
     <Grid item xs={12}>

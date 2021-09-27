@@ -80,7 +80,7 @@ const PublicProjectPage = () => {
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [biohubApi.public.project, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {
