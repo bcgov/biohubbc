@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
@@ -7,7 +7,6 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import PublicProjectAttachments from './PublicProjectAttachments';
 
 const history = createMemoryHistory();
-
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   public: {
