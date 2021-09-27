@@ -17,7 +17,7 @@ export type FileTransformationFieldsSchema = {
   [key: string]: FileTransformationFieldSchema;
 };
 
-export type TransformationSchema = {
+export type TransformSchema = {
   fileName: string;
   conditionalFields: string[];
   fields: FileTransformationFieldsSchema;
@@ -43,7 +43,7 @@ export class TransformationSchemaParser {
     return jsonpath.query(this.transformationSchema, this.getFlattenJsonPath(fileName))?.[0] || null;
   }
 
-  getTransformationSchemas(): { fileTransformations: TransformationSchema[] }[] {
+  getTransformSchemas(): TransformSchema[][] {
     return jsonpath.query(this.transformationSchema, this.getTransformationJsonPath())?.[0] || [];
   }
 
@@ -56,7 +56,7 @@ export class TransformationSchemaParser {
   }
 
   getTransformationJsonPath(): string {
-    return '$.transformations';
+    return '$.transform';
   }
 
   getParseJsonPath(): string {

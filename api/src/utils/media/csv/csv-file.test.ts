@@ -9,7 +9,7 @@ describe('CSVWorkBook', () => {
     const csvWorkBook = new CSVWorkBook();
 
     expect(csvWorkBook).not.to.be.null;
-    expect(csvWorkBook.workbook).not.to.be.null;
+    expect(csvWorkBook.rawWorkbook).not.to.be.null;
     expect(csvWorkBook.worksheets).to.eql({});
   });
 
@@ -25,7 +25,7 @@ describe('CSVWorkBook', () => {
     const csvWorkBook = new CSVWorkBook(xlsxWorkBook);
 
     expect(csvWorkBook).not.to.be.null;
-    expect(csvWorkBook.workbook).not.to.be.null;
+    expect(csvWorkBook.rawWorkbook).not.to.be.null;
     expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
   });
 });
@@ -108,7 +108,7 @@ describe('CSVWorksheet', () => {
         ['Header1Data2', 'Header2Data2']
       ]);
 
-      csvWorksheet.setRow(2, ['newHeader1Data2', 'newHeader2Data2']);
+      csvWorksheet.setRow(['newHeader1Data2', 'newHeader2Data2'], 2);
 
       expect(csvWorksheet.getRows()).to.eql([
         ['Header1Data1', 'Header2Data1'],
@@ -131,7 +131,7 @@ describe('CSVWorksheet', () => {
         ['Header1Data2', 'Header2Data2']
       ]);
 
-      csvWorksheet.setRow(-1, ['newHeader1Data3', 'newHeader2Data3']);
+      csvWorksheet.setRow(['newHeader1Data3', 'newHeader2Data3'], -1);
 
       expect(csvWorksheet.getRows()).to.eql([
         ['Header1Data1', 'Header2Data1'],

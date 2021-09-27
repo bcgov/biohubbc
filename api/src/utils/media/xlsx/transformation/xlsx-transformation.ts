@@ -4,7 +4,7 @@ import { CSVWorksheet } from '../../csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
 import {
   FileTransformationFieldSchema,
-  TransformationSchema,
+  TransformSchema,
   TransformationSchemaParser
 } from './transformation-schema-parser';
 
@@ -50,9 +50,7 @@ export class XLSXTransformation {
 
     const parsedTransformedMergedFlattenedData = this._parseTransformedData(transformedMergedFlattenedData);
 
-    const mergedParsedTransformedMergedFlattenedData = this._mergeParsedData(parsedTransformedMergedFlattenedData);
-
-    return mergedParsedTransformedMergedFlattenedData;
+    return this._mergeParsedData(parsedTransformedMergedFlattenedData);
   }
 
   /**
@@ -64,9 +62,9 @@ export class XLSXTransformation {
   _flattenData(): FlattenedRowPartsBySourceFile[][] {
     const rowsBySourceFileArray: FlattenedRowPartsBySourceFile[][] = [];
 
-    Object.entries(this.xlsxCsv.workbook.worksheets).forEach(([fileName, worksheet]) => {
+    Object.entries(this.xlsxCsv.workbook.worksheets).forEach(([worksheetName, worksheet]) => {
       // Get the file structure schema for the given fileName
-      const fileStructure = this.transformationSchemaParser.getFlattenSchemas(fileName);
+      const fileStructure = this.transformationSchemaParser.getFlattenSchemas(worksheetName);
 
       if (!fileStructure) {
         return;
@@ -220,20 +218,20 @@ export class XLSXTransformation {
    * @memberof XLSXTransformation
    */
   _transformFlattenedData(mergedFlattenedData: object[]): object[] {
-    const transformationSchemas = this.transformationSchemaParser.getTransformationSchemas();
+    const transformSchemasArray = this.transformationSchemaParser.getTransformSchemas();
 
     const transformedDWCData: object[] = [];
 
     mergedFlattenedData.forEach((rowObject, rowObjectIndex) => {
-      transformationSchemas.forEach((transformationSchema, transformationSchemaIndex) => {
+      transformSchemasArray.forEach((transformationSchemas, transformationSchemasIndex) => {
         let newDWCRowParts = {};
 
-        transformationSchema.fileTransformations.forEach((fileTransformationSchema) => {
+        transformationSchemas.forEach((transformSchema) => {
           const newDWCRow = this._applyFileTransformations(
             rowObject,
-            fileTransformationSchema,
+            transformSchema,
             rowObjectIndex,
-            transformationSchemaIndex
+            transformationSchemasIndex
           );
 
           if (!newDWCRow) {
@@ -252,7 +250,7 @@ export class XLSXTransformation {
 
   _applyFileTransformations(
     rowObject: object,
-    fileTransformationSchema: TransformationSchema,
+    fileTransformationSchema: TransformSchema,
     rowObjectIndex: number,
     transformationSchemaIndex: number
   ): object | undefined {

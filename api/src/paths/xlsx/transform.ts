@@ -104,391 +104,375 @@ export function getTransformationSchema(): RequestHandler {
           parent: { fileName: 'Observations - Skeena', uniqueId: ['Waypoint'] }
         }
       ],
-      transformations: [
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Mature Bulls']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'Adult'
-                },
-                sex: {
-                  value: 'Male'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+      transform: [
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
               }
             }
-          ]
-        },
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Yearlings Bulls']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'Yearling'
-                },
-                sex: {
-                  value: 'Male'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Mature Bulls']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'Adult'
+              },
+              sex: {
+                value: 'Male'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
               }
             }
-          ]
-        },
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Lone Cows']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'Adult'
-                },
-                sex: {
-                  value: 'Female'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+          }
+        ],
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
               }
             }
-          ]
-        },
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Unclassified Bulls']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'unknown'
-                },
-                sex: {
-                  value: 'Male'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Yearlings Bulls']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'Yearling'
+              },
+              sex: {
+                value: 'Male'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
               }
             }
-          ]
-        },
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Cow W/1 calf']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'Adult'
-                },
-                sex: {
-                  value: 'Female'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+          }
+        ],
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
               }
             }
-          ]
-        },
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Cow W/2 calves']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'Adult'
-                },
-                sex: {
-                  value: 'Female'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Lone Cows']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'Adult'
+              },
+              sex: {
+                value: 'Female'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
               }
             }
-          ]
-        },
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Lone calf']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'Yearling'
-                },
-                sex: {
-                  value: 'unknown'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+          }
+        ],
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
               }
             }
-          ]
-        },
-        {
-          fileTransformations: [
-            {
-              fileName: 'event',
-              fields: {
-                id: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                  separator: ':'
-                },
-                eventID: {
-                  columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                  separator: ':'
-                },
-                eventDate: {
-                  columns: ['Date']
-                },
-                verbatimCoordinates: {
-                  columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-                }
-              }
-            },
-            {
-              fileName: 'occurrence',
-              conditionalFields: ['individualCount'],
-              fields: {
-                occurrenceID: {
-                  columns: ['Waypoint'],
-                  unique: 'occ'
-                },
-                individualCount: {
-                  columns: ['Unclassified']
-                },
-                taxon: {
-                  columns: ['Species']
-                },
-                lifestage: {
-                  value: 'unknown'
-                },
-                sex: {
-                  value: 'unknown'
-                },
-                occurrenceRemarks: {
-                  columns: ['Observation Comments']
-                }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Unclassified Bulls']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'unknown'
+              },
+              sex: {
+                value: 'Male'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
               }
             }
-          ]
-        }
+          }
+        ],
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+              }
+            }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Cow W/1 calf']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'Adult'
+              },
+              sex: {
+                value: 'Female'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
+              }
+            }
+          }
+        ],
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+              }
+            }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Cow W/2 calves']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'Adult'
+              },
+              sex: {
+                value: 'Female'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
+              }
+            }
+          }
+        ],
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+              }
+            }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Lone calf']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'Yearling'
+              },
+              sex: {
+                value: 'unknown'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
+              }
+            }
+          }
+        ],
+        [
+          {
+            fileName: 'event',
+            fields: {
+              id: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
+                separator: ':'
+              },
+              eventID: {
+                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
+                separator: ':'
+              },
+              eventDate: {
+                columns: ['Date']
+              },
+              verbatimCoordinates: {
+                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
+              }
+            }
+          },
+          {
+            fileName: 'occurrence',
+            conditionalFields: ['individualCount'],
+            fields: {
+              occurrenceID: {
+                columns: ['Waypoint'],
+                unique: 'occ'
+              },
+              individualCount: {
+                columns: ['Unclassified']
+              },
+              taxon: {
+                columns: ['Species']
+              },
+              lifestage: {
+                value: 'unknown'
+              },
+              sex: {
+                value: 'unknown'
+              },
+              occurrenceRemarks: {
+                columns: ['Observation Comments']
+              }
+            }
+          }
+        ]
       ],
       parse: [
         {

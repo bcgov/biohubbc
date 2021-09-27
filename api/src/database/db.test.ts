@@ -1,11 +1,14 @@
-import { expect } from 'chai';
+import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import * as pg from 'pg';
 import Sinon from 'sinon';
+import sinonChai from 'sinon-chai';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { setSystemUserContextSQL } from '../queries/user-context-queries';
 import * as db from './db';
 import { getAPIUserDBConnection, getDBConnection, getDBPool, IDBConnection, initDBPool } from './db';
+
+chai.use(sinonChai);
 
 describe('db', () => {
   beforeEach(() => {
