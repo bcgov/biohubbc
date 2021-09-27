@@ -20,15 +20,6 @@ import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePagination
 import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  table: {
-    minWidth: 650
-  },
-  heading: {
-    fontWeight: 'bold'
-  },
-  tableCellBorderTop: {
-    borderTop: '1px solid rgba(224, 224, 224, 1)'
-  },
   chip: {
     padding: '0px 8px',
     borderRadius: '4px',
@@ -75,18 +66,18 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
       chipStatusClass = classes.chipPublishedCompleted;
     }
 
-    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
   return (
     <Paper>
       <TableContainer>
-        <Table className={classes.table} aria-label="surveys-list-table">
+        <Table aria-label="surveys-list-table">
           <TableHead>
             <TableRow>
-              <TableCell className={classes.heading}>Name</TableCell>
-              <TableCell className={classes.heading}>Species</TableCell>
-              <TableCell className={classes.heading}>Timeline</TableCell>
+              <TableCell>Name</TableCell>
+              <TableCell>Species</TableCell>
+              <TableCell>Timeline</TableCell>
               <TableCell>Completion Status</TableCell>
               <TableCell>Publish Status</TableCell>
             </TableRow>

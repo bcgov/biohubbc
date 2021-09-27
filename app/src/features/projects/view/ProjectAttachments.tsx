@@ -78,17 +78,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           }}
         />
       </ComponentDialog>
-      <Box mb={5}>
-        <Box display="flex" justifyContent="space-between">
-          <Box>
-            <Typography variant="h2">Project Attachments</Typography>
-          </Box>
-          <Box>
-            <Button variant="outlined" onClick={() => setOpenUploadAttachments(true)}>
-              <Icon path={mdiUploadOutline} size={1} />
-              <Typography>Upload</Typography>
-            </Button>
-          </Box>
+      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h2">Project Attachments</Typography>
+        <Box my={-1}>
+          <Button
+            color="primary"
+            variant="outlined"
+            startIcon={<Icon path={mdiUploadOutline} size={1} />}
+            onClick={() => setOpenUploadAttachments(true)}>
+            Upload
+          </Button>
         </Box>
       </Box>
       <Box mb={3}>

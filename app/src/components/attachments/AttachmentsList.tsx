@@ -1,7 +1,8 @@
+import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,9 +10,10 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { mdiLockOutline, mdiLockOpenVariantOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -20,17 +22,13 @@ import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650
-  },
-  heading: {
-    fontWeight: 'bold'
-  },
-  tableCellBorderTop: {
-    borderTop: '1px solid rgba(224, 224, 224, 1)'
+const useStyles = makeStyles((theme: Theme) => ({
+  attachmentsTable: {
+    '& .MuiTableCell-root': {
+      verticalAlign: 'middle'
+    }
   }
-});
+}));
 
 export interface IAttachmentsListProps {
   projectId: number;
@@ -183,13 +181,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     <>
       <Paper>
         <TableContainer>
-          <Table className={classes.table} aria-label="attachments-list-table">
+          <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
             <TableHead>
               <TableRow>
-                <TableCell className={classes.heading}>Name</TableCell>
-                <TableCell className={classes.heading}>Last Modified</TableCell>
-                <TableCell className={classes.heading}>File Size</TableCell>
-                <TableCell className={classes.heading}>Security Status</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Last Modified</TableCell>
+                <TableCell>File Size</TableCell>
+                <TableCell>Security Status</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -205,23 +203,30 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
                     <TableCell>
-                      <IconButton
-                        color="primary"
-                        aria-label="toggle-attachment-security-status"
-                        data-testid="toggle-attachment-security-status"
-                        onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
-                        <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                      </IconButton>
-                      {row.securityToken ? 'Secured' : 'Unsecured'}
+                      <Box my={-1}>
+                        <Button
+                          color="primary"
+                          variant="text"
+                          startIcon={
+                            <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                          }
+                          aria-label="toggle attachment security status"
+                          data-testid="toggle-attachment-security-status"
+                          onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
+                          {row.securityToken ? 'Secured' : 'Unsecured'}
+                        </Button>
+                      </Box>
                     </TableCell>
-                    <TableCell align="right" className={clsx(index === 0 && classes.tableCellBorderTop)}>
-                      <IconButton
-                        color="primary"
-                        aria-label="delete-attachment"
-                        data-testid="delete-attachment"
-                        onClick={() => showDeleteAttachmentDialog(row)}>
-                        <Icon path={mdiTrashCanOutline} size={1} />
-                      </IconButton>
+                    <TableCell align="right">
+                      <Box my={-1}>
+                        <IconButton
+                          color="primary"
+                          aria-label="delete attachment"
+                          data-testid="delete-attachment"
+                          onClick={() => showDeleteAttachmentDialog(row)}>
+                          <Icon path={mdiTrashCanOutline} size={1} />
+                        </IconButton>
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
