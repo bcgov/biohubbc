@@ -199,8 +199,7 @@ export const insertSurveySummarySubmission = async (
 /**
  * Update existing `survey_summary_submission` record with key.
  *
- * @param {number} surveyId
- * @param {string} source
+ * @param {number} submissionId
  * @param {string} key
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}

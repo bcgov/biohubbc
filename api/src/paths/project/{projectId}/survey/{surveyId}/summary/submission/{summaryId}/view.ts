@@ -100,9 +100,6 @@ GET.apiDoc = {
   }
 };
 
-//TODO: have a conversation - this endpoint is awfully similar to the other view.ts.  Would it make sense to use just one
-// endpoint and pass in the table name as a parameter?
-
 export function getSummarySubmissionCSVForView(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Get observation submission csv details', message: 'params', req_params: req.params });
