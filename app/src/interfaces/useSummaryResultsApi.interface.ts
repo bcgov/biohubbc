@@ -7,7 +7,6 @@
 export interface IGetSummaryResultsResponse {
   id: number;
   fileName: string;
-  // status: string;
 }
 
 export interface IUploadSummaryResultsResponse {

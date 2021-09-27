@@ -9,15 +9,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import {
-  // mdiAlertCircle,
-  // mdiInformationOutline,
-  //mdiClockOutline,
-  mdiFileOutline,
-  mdiImport,
-  mdiTrashCanOutline,
-  mdiDownload
-} from '@mdi/js';
+import { mdiFileOutline, mdiImport, mdiTrashCanOutline, mdiDownload } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';

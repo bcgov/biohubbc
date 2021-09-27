@@ -79,7 +79,7 @@ POST.apiDoc = {
 };
 
 /**
- * Uploads a media file to S3 and inserts a matching record in the `occurrence_submission` table.
+ * Uploads a media file to S3 and inserts a matching record in the `summary_submission` table.
  *
  * @return {*}  {RequestHandler}
  */

@@ -4,11 +4,11 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/survey/survey-summary-queries');
 
 /**
- * SQL query to insert a survey occurrence submission row.
+ * SQL query to insert a survey summary submission row.
  *
  * @param {number} surveyId
  * @param {string} source
- * @param {string} key
+ * @param {string} file_name
  * @return {*}  {(SQLStatement | null)}
  */
 export const insertSurveySummarySubmissionSQL = (
@@ -52,7 +52,7 @@ export const insertSurveySummarySubmissionSQL = (
 };
 
 /**
- * SQL query to get latest occurrence submission for a survey.
+ * SQL query to get latest summary submission for a survey.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
@@ -102,7 +102,7 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
 };
 
 /**
- * SQL query to insert a survey occurrence submission row.
+ * SQL query to insert a survey summary submission row.
  *
  * @param {number} surveyId
  * @param {string} source

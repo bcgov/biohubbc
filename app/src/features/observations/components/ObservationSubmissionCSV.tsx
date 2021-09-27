@@ -11,10 +11,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Tabs from '@material-ui/core/Tabs';
 import Typography from '@material-ui/core/Typography';
-//import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSubmissionCSVForViewItem, IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
-//import { useParams } from 'react-router';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 
 const useStyles = makeStyles({
@@ -62,17 +60,12 @@ const TabPanel: React.FC<ITabPanelProps> = (props) => {
 };
 
 export interface IObservationSubmissionCSVProps {
-  //submissionId: number;
   getCSVData: () => Promise<IGetSubmissionCSVForViewResponse>;
 }
 
 const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (props) => {
-  //const biohubApi = useBiohubApi();
   const classes = useStyles();
-  //const urlParams = useParams();
-
   const { getCSVData } = props;
-
   const [rowsPerPage, setRowsPerPage] = useState(50);
   const [page, setPage] = useState(0);
   const [value, setValue] = useState(0);

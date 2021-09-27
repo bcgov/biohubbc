@@ -13,8 +13,8 @@ const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary
 export const GET: Operation = [getSurveySummarySubmission()];
 
 GET.apiDoc = {
-  description: 'Fetches an observation occurrence submission for a survey.',
-  tags: ['observation_submission'],
+  description: 'Fetches an summary occurrence submission for a survey.',
+  tags: ['summary_submission'],
   security: [
     {
       Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
@@ -40,7 +40,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Observation submission get response.',
+      description: 'Summary submission get response.',
       content: {
         'application/json': {
           schema: {
@@ -119,13 +119,10 @@ export function getSurveySummarySubmission(): RequestHandler {
       await connection.commit();
 
       const getSummarySubmissionData =
-        (summarySubmissionData &&
-          summarySubmissionData.rows &&
-          summarySubmissionData.rows[0] && {
-            id: summarySubmissionData.rows[0].id,
-            fileName: summarySubmissionData.rows[0].file_name
-          }) ||
-        null;
+        {
+          id: summarySubmissionData.rows[0].id,
+          fileName: summarySubmissionData.rows[0].file_name
+        } || null;
 
       return res.status(200).json(getSummarySubmissionData);
     } catch (error) {
