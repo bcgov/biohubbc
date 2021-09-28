@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
+// import { getDBConnection } from '../../database/db';
 import { getSubmissionFileFromS3, getSubmissionS3Key } from '../../paths/dwc/validate';
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
@@ -493,7 +494,7 @@ export function getTransformationSchema(): RequestHandler {
 
 export function getTransformationRules(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'getTransformationRules', message: 's3File' });
+    defaultLog.debug({ label: 'getTransformationRules', message: 'xlsx transform' });
 
     try {
       const transformationSchema: JSON = req['transformationSchema'];
@@ -512,7 +513,7 @@ export function getTransformationRules(): RequestHandler {
 
 function transformXLSX(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'transformXLSX', message: 'xlsx' });
+    defaultLog.debug({ label: 'transformXLSX', message: 'xlsx transform' });
 
     try {
       const xlsxCsv: XLSXCSV = req['xlsx'];
@@ -544,13 +545,31 @@ function transformXLSX(): RequestHandler {
 
 export function persistTransformationResults(): RequestHandler {
   return async (req, res) => {
+    defaultLog.debug({ label: 'persistTransformationResults', message: 'xlsx transform' });
+
     const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
 
     const promises = fileBuffers.map((record) =>
-      uploadBufferToS3(record.buffer, 'text/csv', `testing_transformations/${record.name}.csv`)
+      uploadBufferToS3(record.buffer, 'text/csv', `${req['s3Key']}/dwc/${record.name}.csv`)
     );
 
     await Promise.all(promises);
+
+    // const connection = getDBConnection(req['keycloak_token']);
+
+    // await connection.open();
+
+    // let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
+    // if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
+    //   // At least 1 error exists
+    //   submissionStatusType = 'Rejected';
+    // }
+
+    // const submissionStatusId = await insertSubmissionStatus(
+    //   req.body.occurrence_submission_id,
+    //   submissionStatusType,
+    //   connection
+    // );
 
     return res.sendStatus(200);
   };

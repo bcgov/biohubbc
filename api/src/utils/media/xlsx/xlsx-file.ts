@@ -62,7 +62,7 @@ export class XLSXCSV {
 
     xlsx.utils.book_append_sheet(newWorkbook, worksheet, DEFAULT_XLSX_SHEET);
 
-    return xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' }) as Buffer;
+    return xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
   }
 
   /**
