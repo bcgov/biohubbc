@@ -44,6 +44,12 @@ export async function up(knex: Knex): Promise<void> {
       FOR EACH ROW
       EXECUTE PROCEDURE ${DB_SCHEMA}.tr_secure_record_trigger();
 
+  CREATE TRIGGER secure_record
+      AFTER INSERT
+      ON ${DB_SCHEMA}.project_report_attachment
+      FOR EACH ROW
+      EXECUTE PROCEDURE ${DB_SCHEMA}.tr_secure_record_trigger();
+
   `);
 }
 

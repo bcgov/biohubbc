@@ -12,6 +12,7 @@ export async function up(knex: Knex): Promise<void> {
   insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Project Attachment','{"target":"project_attachment","rule":""}', true, now()); -- 1
   insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Survey Attachment','{"target":"survey_attachment","rule":""}', true, now()); -- 2
   insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Occurrence','{"target":"occurrence","rule":""}', true, now()); -- 3
+  insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Project Report Attachment','{"target":"project_report_attachment","rule":""}', true, now()); -- 4
 
   `);
 }
