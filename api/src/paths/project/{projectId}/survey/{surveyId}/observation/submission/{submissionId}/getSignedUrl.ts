@@ -84,7 +84,7 @@ export function getSingleSubmissionURL(): RequestHandler {
 
       await connection.commit();
 
-      const s3Key = result && result.rows.length && result.rows[0].key;
+      const s3Key = result && result.rows.length && result.rows[0].input_key;
       const s3SignedUrl = await getS3SignedURL(s3Key);
 
       if (!s3SignedUrl) {

@@ -116,7 +116,7 @@ export function getSubmissionS3Key(): RequestHandler {
         throw new HTTP400('Failed to get survey occurrence submission');
       }
 
-      const s3Key = response.rows[0].key;
+      const s3Key = response.rows[0].input_key;
 
       req['s3Key'] = s3Key;
 

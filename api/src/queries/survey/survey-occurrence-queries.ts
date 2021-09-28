@@ -8,13 +8,14 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
  *
  * @param {number} surveyId
  * @param {string} source
- * @param {string} key
+ * @param {string} inputFileName
+ * @param {(number | null)} templateMethodologyId
  * @return {*}  {(SQLStatement | null)}
  */
 export const insertSurveyOccurrenceSubmissionSQL = (
   surveyId: number,
   source: string,
-  file_name: string,
+  inputFileName: string,
   templateMethodologyId: number | null
 ): SQLStatement | null => {
   defaultLog.debug({
@@ -22,10 +23,10 @@ export const insertSurveyOccurrenceSubmissionSQL = (
     message: 'params',
     surveyId,
     source,
-    file_name
+    inputFileName
   });
 
-  if (!surveyId || !source || !file_name) {
+  if (!surveyId || !source || !inputFileName) {
     return null;
   }
 
@@ -34,13 +35,13 @@ export const insertSurveyOccurrenceSubmissionSQL = (
       survey_id,
       template_methodology_species_id,
       source,
-      file_name,
+      input_file_name,
       event_timestamp
     ) VALUES (
       ${surveyId},
       ${templateMethodologyId},
       ${source},
-      ${file_name},
+      ${inputFileName},
       now()
     )
     RETURNING occurrence_submission_id as id;
@@ -61,7 +62,7 @@ export const insertSurveyOccurrenceSubmissionSQL = (
  *
  * @param {number} surveyId
  * @param {string} source
- * @param {string} key
+ * @param {string} inputKey
  * @return {*}  {(SQLStatement | null)}
  */
 export const getTemplateMethodologySpeciesIdSQLStatement = (surveyId: number): SQLStatement | null => {
@@ -105,25 +106,28 @@ export const getTemplateMethodologySpeciesIdSQLStatement = (surveyId: number): S
  *
  * @param {number} surveyId
  * @param {string} source
- * @param {string} key
+ * @param {string} inputKey
  * @return {*}  {(SQLStatement | null)}
  */
-export const updateSurveyOccurrenceSubmissionWithKeySQL = (submissionId: number, key: string): SQLStatement | null => {
+export const updateSurveyOccurrenceSubmissionWithKeySQL = (
+  submissionId: number,
+  inputKey: string
+): SQLStatement | null => {
   defaultLog.debug({
     label: 'uodateSurveyOccurrenceSubmissionWithKeySQL',
     message: 'params',
     submissionId,
-    key
+    inputKey
   });
 
-  if (!submissionId || !key) {
+  if (!submissionId || !inputKey) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
     UPDATE occurrence_submission
     SET
-      key=  ${key}
+      input_key = ${inputKey}
     WHERE
       occurrence_submission_id = ${submissionId}
     RETURNING occurrence_submission_id as id;
@@ -163,8 +167,8 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
       os.source,
       os.delete_timestamp,
       os.event_timestamp,
-      os.key,
-      os.file_name,
+      os.input_key,
+      os.input_file_name,
       ss.submission_status_id,
       ss.submission_status_type_id,
       sst.name as submission_status_type_name,

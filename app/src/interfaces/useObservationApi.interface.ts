@@ -26,7 +26,7 @@ interface IGetObservationSubmissionResponseMessages {
  */
 export interface IGetObservationSubmissionResponse {
   id: number;
-  fileName: string;
+  inputFileName: string;
   status: string;
   messages: IGetObservationSubmissionResponseMessages[];
 }
