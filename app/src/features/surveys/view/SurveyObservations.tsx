@@ -434,7 +434,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               {displayAlertBox('info', mdiFileOutline, submissionStatus.fileName, '')}
 
               <Box mt={5} overflow="hidden">
-                <ObservationSubmissionCSV submissionId={submissionStatus.id} />
+                <ObservationSubmissionCSV
+                  getCSVData={() => {
+                    return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
+                  }}
+                />
               </Box>
             </>
           )}

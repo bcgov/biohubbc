@@ -101,6 +101,7 @@ export interface IS3FileKey {
   projectId: number;
   surveyId?: number;
   submissionId?: number;
+  summaryId?: number;
   folder?: string;
   fileName: string;
 }
@@ -121,6 +122,11 @@ export function generateS3FileKey(options: IS3FileKey): string {
   if (options.submissionId) {
     keyParts.push('submissions');
     keyParts.push(options.submissionId);
+  }
+
+  if (options.summaryId) {
+    keyParts.push('summaryresults');
+    keyParts.push(options.summaryId);
   }
 
   if (options.folder) {

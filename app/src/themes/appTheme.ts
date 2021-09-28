@@ -59,9 +59,6 @@ const appTheme = createMuiTheme({
       outlinedPrimary: {
         background: '#ffffff'
       },
-      containedPrimary: {
-        fontWeight: 700
-      },
       startIcon: {
         marginTop: '-1px'
       }
@@ -94,6 +91,12 @@ const appTheme = createMuiTheme({
         '&.Mui-error': {
           color: '#db3131'
         }
+      }
+    },
+    MuiLink: {
+      root: {
+        textAlign: 'left',
+        color: '#1a5a96'
       }
     },
     MuiOutlinedInput: {
@@ -157,10 +160,6 @@ const appTheme = createMuiTheme({
     MuiTableCell: {
       root: {
         verticalAlign: 'top'
-      },
-      head: {
-        fontWeight: 700,
-        lineHeight: 'auto'
       }
     },
     MuiTab: {

@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
@@ -55,8 +54,8 @@ const ResourcesPage: React.FC = () => {
             {resources?.map((row) => (
               <TableRow key={row.id}>
                 <TableCell>
-                  <Link underline="always" component="button" variant="body2">
-                    <a href={row.url}>{row.name}</a>
+                  <Link href={row.url} underline="always">
+                    {row.name}
                   </Link>
                 </TableCell>
 
@@ -81,13 +80,9 @@ const ResourcesPage: React.FC = () => {
     <Box my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" justifyContent="space-between">
-          <Typography variant="h1">Survey Forms</Typography>
+          <Typography variant="h1">Resources</Typography>
         </Box>
-        <Paper>
-          <Box display="flex" alignItems="center" justifyContent="space-between" p={2}></Box>
-          <Divider></Divider>
-          {getResourcesList()}
-        </Paper>
+        <Paper>{getResourcesList()}</Paper>
       </Container>
     </Box>
   );

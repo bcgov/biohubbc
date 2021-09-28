@@ -31,6 +31,7 @@ export class GetViewSurveyDetailsData {
   completion_status: string;
   publish_date: string;
   occurrence_submission_id: number;
+  summary_results_submission_id: number;
 
   constructor(surveyDetailsData?: any) {
     defaultLog.debug({ label: 'GetViewSurveyDetailsData', message: 'params', surveyDetailsData });
@@ -72,6 +73,7 @@ export class GetViewSurveyDetailsData {
 
     this.id = surveyDataItem?.id ?? null;
     this.occurrence_submission_id = surveyDataItem?.occurrence_submission_id ?? null;
+    this.summary_results_submission_id = surveyDataItem?.summary_results_submission_id ?? null;
     this.survey_name = surveyDataItem?.name || '';
     this.survey_purpose = surveyDataItem?.objectives || '';
     this.focal_species = (focalSpeciesList.length && focalSpeciesList.filter((item: string | number) => !!item)) || [];

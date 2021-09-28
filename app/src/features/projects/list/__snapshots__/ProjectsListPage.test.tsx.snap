@@ -188,10 +188,10 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-52 makeStyles-chipDraft-56"
+                    class="MuiChip-root makeStyles-chip-52 makeStyles-chipDraft-56 MuiChip-sizeSmall"
                   >
                     <span
-                      class="MuiChip-label"
+                      class="MuiChip-label MuiChip-labelSmall"
                     >
                       DRAFT
                     </span>
@@ -201,10 +201,10 @@ exports[`ProjectsListPage renders with a list of drafts 1`] = `
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-52 makeStyles-chipUnpublished-55"
+                    class="MuiChip-root makeStyles-chip-52 makeStyles-chipUnpublished-55 MuiChip-sizeSmall"
                   >
                     <span
-                      class="MuiChip-label"
+                      class="MuiChip-label MuiChip-labelSmall"
                     >
                       UNPUBLISHED
                     </span>
@@ -414,10 +414,10 @@ exports[`ProjectsListPage renders with a proper list of projects when published 
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-28 makeStyles-chipPublishedCompleted-30"
+                    class="MuiChip-root makeStyles-chip-28 makeStyles-chipPublishedCompleted-30 MuiChip-sizeSmall"
                   >
                     <span
-                      class="MuiChip-label"
+                      class="MuiChip-label MuiChip-labelSmall"
                     >
                       COMPLETED
                     </span>
@@ -427,10 +427,10 @@ exports[`ProjectsListPage renders with a proper list of projects when published 
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-28 makeStyles-chipPublishedCompleted-30"
+                    class="MuiChip-root makeStyles-chip-28 makeStyles-chipPublishedCompleted-30 MuiChip-sizeSmall"
                   >
                     <span
-                      class="MuiChip-label"
+                      class="MuiChip-label MuiChip-labelSmall"
                     >
                       PUBLISHED
                     </span>
@@ -640,10 +640,10 @@ exports[`ProjectsListPage renders with a proper list of projects when unpublishe
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-40 makeStyles-chipActive-41"
+                    class="MuiChip-root makeStyles-chip-40 makeStyles-chipActive-41 MuiChip-sizeSmall"
                   >
                     <span
-                      class="MuiChip-label"
+                      class="MuiChip-label MuiChip-labelSmall"
                     >
                       ACTIVE
                     </span>
@@ -653,10 +653,10 @@ exports[`ProjectsListPage renders with a proper list of projects when unpublishe
                   class="MuiTableCell-root MuiTableCell-body"
                 >
                   <div
-                    class="MuiChip-root makeStyles-chip-40 makeStyles-chipUnpublished-43"
+                    class="MuiChip-root makeStyles-chip-40 makeStyles-chipUnpublished-43 MuiChip-sizeSmall"
                   >
                     <span
-                      class="MuiChip-label"
+                      class="MuiChip-label MuiChip-labelSmall"
                     >
                       UNPUBLISHED
                     </span>

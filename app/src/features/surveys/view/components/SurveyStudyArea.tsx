@@ -71,7 +71,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     }
 
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry]);
+  }, [surveyGeometry, survey_details.occurrence_submission_id]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,

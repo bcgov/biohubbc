@@ -108,7 +108,7 @@ const ProjectsListPage: React.FC = () => {
       chipStatusClass = classes.chipDraft;
     }
 
-    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
   const navigateToCreateProjectPage = (draftId?: number) => {

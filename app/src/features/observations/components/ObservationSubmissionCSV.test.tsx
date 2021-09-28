@@ -1,8 +1,7 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import { MemoryRouter } from 'react-router';
-import ObservationSubmissionCSV from './ObservationSubmissionCSV';
+import ObservationSubmissionCSV, { IObservationSubmissionCSVProps } from './ObservationSubmissionCSV';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -15,14 +14,8 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const submissionId = 1;
-
-const renderContainer = () => {
-  return render(
-    <MemoryRouter>
-      <ObservationSubmissionCSV submissionId={submissionId} />
-    </MemoryRouter>
-  );
+const renderContainer = (props: IObservationSubmissionCSVProps) => {
+  return render(<ObservationSubmissionCSV {...props} />);
 };
 
 describe('ObservationSubmissionCSV', () => {
@@ -36,7 +29,9 @@ describe('ObservationSubmissionCSV', () => {
   });
 
   it('renders a spinner with no data', async () => {
-    const { getByTestId } = renderContainer();
+    const mockGetCSVData = jest.fn().mockResolvedValue(null);
+
+    const { getByTestId } = renderContainer({ getCSVData: mockGetCSVData });
 
     await waitFor(() => {
       expect(getByTestId('spinner')).toBeInTheDocument();
@@ -44,7 +39,7 @@ describe('ObservationSubmissionCSV', () => {
   });
 
   it('renders correctly with file csv data', async () => {
-    mockBiohubApi().observation.getSubmissionCSVForView.mockResolvedValue({
+    const mockGetCSVData = mockBiohubApi().observation.getSubmissionCSVForView.mockResolvedValue({
       data: [
         {
           name: 'test 1',
@@ -65,7 +60,7 @@ describe('ObservationSubmissionCSV', () => {
       ]
     });
 
-    const { getByTestId } = renderContainer();
+    const { getByTestId } = renderContainer({ getCSVData: mockGetCSVData });
 
     await waitFor(() => {
       expect(getByTestId('submission-data-table')).toBeInTheDocument();
