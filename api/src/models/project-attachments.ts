@@ -20,7 +20,7 @@ export class GetProjectAttachmentsData {
           return {
             id: item.id,
             fileName: item.file_name,
-            fileType: item.file_type,
+            fileType: item.file_type || 'Report',
             lastModified: item.update_date || item.create_date,
             size: item.file_size,
             securityToken: item.security_token

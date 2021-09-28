@@ -196,6 +196,44 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
 };
 
 /**
+ * SQL query to get report attachments for a single project.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectReportAttachmentsSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      project_report_attachment_id as id,
+      file_name,
+      update_date,
+      create_date,
+      file_size,
+      key,
+      security_token
+    from
+      project_report_attachment
+    where
+      project_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectReportAttachmentsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to delete an attachment for a single project.
  *
  * @param {number} projectId
@@ -325,6 +363,71 @@ export const postProjectAttachmentSQL = (
 };
 
 /**
+ * SQL query to insert a project report attachment row.
+ *
+ * @param fileName
+ * @param fileSize
+ * @param projectId
+ * @param {string} key to use in s3
+ * @returns {SQLStatement} sql query object
+ */
+export const postProjectReportAttachmentSQL = (
+  fileName: string,
+  fileSize: number,
+  projectId: number,
+  key: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postProjectReportAttachmentSQL',
+    message: 'params',
+    fileName,
+    fileSize,
+    projectId,
+    key
+  });
+
+  if (!fileName || !fileSize || !projectId || !key) {
+    return null;
+  }
+
+  // TODO: Replace hard-coded title, year and description
+  const title = 'Test Report';
+  const year = '2021';
+  const description = 'Test description';
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO project_report_attachment (
+      project_id,
+      title,
+      year,
+      description,
+      file_name,
+      file_size,
+      key
+    ) VALUES (
+      ${projectId},
+      ${title},
+      ${year},
+      ${description},
+      ${fileName},
+      ${fileSize},
+      ${key}
+    )
+    RETURNING
+      project_report_attachment_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'postProjectReportAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get an attachment for a single project by project id and filename.
  *
  * @param {number} projectId
@@ -364,7 +467,7 @@ export const getProjectAttachmentByFileNameSQL = (projectId: number, fileName: s
 };
 
 /**
- * SQL query to update an attachment for a single project by project id and filename.
+ * SQL query to update an attachment for a single project by project id and filename and filetype.
  *
  * @param {number} projectId
  * @param {string} fileName
@@ -392,6 +495,41 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string, fil
 
   defaultLog.debug({
     label: 'putProjectAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to update a report attachment for a single project by project id and filename.
+ *
+ * @param {number} projectId
+ * @param {string} fileName
+ * @returns {SQLStatement} sql query object
+ */
+export const putProjectReportAttachmentSQL = (projectId: number, fileName: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'putProjectReportAttachmentSQL', message: 'params', projectId, fileName });
+
+  if (!projectId || !fileName) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE
+      project_report_attachment
+    SET
+      file_name = ${fileName}
+    WHERE
+      file_name = ${fileName}
+    AND
+      project_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'putProjectReportAttachmentSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
