@@ -389,7 +389,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
         {!isValidating && submissionStatus?.status === 'System Error' && (
           <>
-            {displayAlertBox('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed to Start')}
+            {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed to Start')}
 
             <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
@@ -410,7 +410,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
         {!isValidating && submissionStatus?.status === 'Rejected' && (
           <>
-            {displayAlertBox('error', mdiAlertCircle, submissionStatus.fileName, 'Validation Failed')}
+            {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed')}
             <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
                 What's next?
@@ -431,7 +431,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           submissionStatus &&
           (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
             <>
-              {displayAlertBox('info', mdiFileOutline, submissionStatus.fileName, '')}
+              {displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}
 
               <Box mt={5} overflow="hidden">
                 <ObservationSubmissionCSV
@@ -447,7 +447,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             {displayAlertBox(
               'info',
               mdiClockOutline,
-              submissionStatus?.fileName,
+              submissionStatus?.inputFileName,
               'Validating observation data. Please wait ...'
             )}
           </>
