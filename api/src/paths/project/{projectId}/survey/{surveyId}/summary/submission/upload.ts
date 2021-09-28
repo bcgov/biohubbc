@@ -11,12 +11,19 @@ import {
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { logRequest } from '../../../../../../../utils/path-utils';
+import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
+//import { getFileFromS3 } from '../../../../../../../utils/file-utils';
+
+//import { IMediaState, MediaFile } from '../../utils/media/media-file';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
 export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
-  uploadMedia()
+  uploadMedia(),
+  prepXLSX(),
+  insertContentIntoDB(),
+  returnSummarySubmissionId()
 ];
 
 POST.apiDoc = {
@@ -84,7 +91,7 @@ POST.apiDoc = {
  * @return {*}  {RequestHandler}
  */
 export function uploadMedia(): RequestHandler {
-  return async (req, res) => {
+  return async (req, res, next) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
     if (!rawMediaArray || !rawMediaArray.length) {
@@ -155,7 +162,10 @@ export function uploadMedia(): RequestHandler {
 
       await uploadFileToS3(rawMediaFile, key, metadata);
 
-      return res.status(200).send({ summarySubmissionId });
+      req['s3File'] = rawMediaFile;
+
+      req['summarySubmissionId'] = summarySubmissionId;
+      next();
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
@@ -188,6 +198,8 @@ export const insertSurveySummarySubmission = async (
   }
 
   const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
+
+  console.log('insertResponse', insertResponse);
 
   if (!insertResponse || !insertResponse.rowCount) {
     throw new HTTP400('Failed to insert survey summary submission record');
@@ -223,3 +235,20 @@ export const updateSurveySummarySubmissionWithKey = async (
 
   return updateResponse;
 };
+
+export function insertContentIntoDB(): RequestHandler {
+  return async (req, res, next) => {
+    const resultFromPrevStep = req['xlsx'];
+
+    console.log('resultFromPrevStep: ', resultFromPrevStep);
+    next();
+  };
+}
+
+function returnSummarySubmissionId(): RequestHandler {
+  return async (req, res) => {
+    const summarySubmissionId = req['summarySubmissionId'];
+
+    return res.status(200).send({ summarySubmissionId });
+  };
+}
