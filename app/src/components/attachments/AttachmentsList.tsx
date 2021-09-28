@@ -205,7 +205,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                     {!props.surveyId && <TableCell>{row.fileType}</TableCell>}
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                    {!props.surveyId && row.securityToken && (
+                    {!props.surveyId && (
                       <TableCell>
                         <Box my={-1}>
                           <Button

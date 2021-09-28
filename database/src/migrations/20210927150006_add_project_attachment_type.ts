@@ -24,12 +24,12 @@ export async function down(knex: Knex): Promise<void> {
     SET SCHEMA '${DB_SCHEMA}';
     SET SEARCH_PATH = ${DB_SCHEMA},public, biohub_dapi_v1;
 
-    SET ROLE biohub_api;
-
-    create or replace view project_attachment as select * from ${DB_SCHEMA}.project_attachment;
-
     SET ROLE postgres;
 
     ALTER TABLE ${DB_SCHEMA}.project_attachment remove column file_type;
+
+    SET ROLE biohub_api;
+
+    create or replace view project_attachment as select * from ${DB_SCHEMA}.project_attachment;
   `);
 }
