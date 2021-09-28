@@ -52,7 +52,7 @@ GET.apiDoc = {
               id: {
                 type: 'number'
               },
-              fileName: {
+              inputFileName: {
                 description: 'The file name of the submission',
                 type: 'string'
               },
@@ -153,7 +153,7 @@ export function getOccurrenceSubmission(): RequestHandler {
           occurrenceSubmissionData.rows &&
           occurrenceSubmissionData.rows[0] && {
             id: occurrenceSubmissionData.rows[0].id,
-            fileName: occurrenceSubmissionData.rows[0].file_name,
+            inputFileName: occurrenceSubmissionData.rows[0].input_file_name,
             status: occurrenceSubmissionData.rows[0].submission_status_type_name,
             messages: messageList
           }) ||
