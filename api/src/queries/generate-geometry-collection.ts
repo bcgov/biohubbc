@@ -8,7 +8,7 @@ export function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement
   if (geometry.length === 1) {
     const geo = JSON.stringify(geometry[0].geometry);
 
-    return SQL`public.ST_GeomFromGeoJSON(${geo})`;
+    return SQL`public.ST_Force2D(public.ST_GeomFromGeoJSON(${geo}))`;
   }
 
   const sqlStatement: SQLStatement = SQL`public.ST_AsText(public.ST_Collect(array[`;
@@ -19,11 +19,11 @@ export function generateGeometryCollectionSQL(geometry: Feature[]): SQLStatement
     // as long as it is not the last geometry, keep adding to the ST_collect
     if (index !== geometry.length - 1) {
       sqlStatement.append(SQL`
-        public.ST_GeomFromGeoJSON(${geo}),
+        public.ST_Force2D(public.ST_GeomFromGeoJSON(${geo})),
       `);
     } else {
       sqlStatement.append(SQL`
-        public.ST_GeomFromGeoJSON(${geo})]))
+        public.ST_Force2D(public.ST_GeomFromGeoJSON(${geo}))]))
       `);
     }
   });
