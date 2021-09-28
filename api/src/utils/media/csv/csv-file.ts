@@ -78,6 +78,10 @@ export class CSVWorksheet {
     return this._headers;
   }
 
+  getHeaderIndex(headerName: string): number {
+    return this.getHeaders().indexOf(headerName);
+  }
+
   /**
    * Return an array of row value arrays.
    *
@@ -107,6 +111,62 @@ export class CSVWorksheet {
     }
 
     return this._rows;
+  }
+
+  getRowObjects(): object[] {
+    if (!this.worksheet) {
+      return [];
+    }
+
+    const ref = this.worksheet['!ref'];
+
+    if (!ref) {
+      return [];
+    }
+
+    return xlsx.utils.sheet_to_json(this.worksheet);
+  }
+
+  buildID(parts: (string | number)[], postfix?: string): string {
+    return parts.join(':') + (postfix && `:${postfix}`);
+  }
+
+  getColumn(headerName: string): (string | number)[] {
+    const headerIndex = this.getHeaderIndex(headerName);
+
+    if (!headerIndex || headerIndex < 0) {
+      return [];
+    }
+
+    const rows = this.getRows();
+
+    const columnValues: (string | number)[] = [];
+
+    rows.forEach((row, rowIndex) => {
+      const columnValue = row[headerIndex];
+
+      columnValues[rowIndex] = columnValue;
+    });
+
+    return columnValues;
+  }
+
+  getCell(headerName: string, rowIndex: number) {
+    const headerIndex = this.getHeaderIndex(headerName);
+
+    if (headerIndex < 0) {
+      return undefined;
+    }
+
+    const rows = this.getRows();
+
+    const row = rows?.[rowIndex];
+
+    if (!row || !row.length) {
+      return undefined;
+    }
+
+    return row[headerIndex];
   }
 
   /**

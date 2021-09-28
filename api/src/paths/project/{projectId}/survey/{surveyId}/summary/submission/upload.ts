@@ -12,6 +12,7 @@ import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../..
 import { getLogger } from '../../../../../../../utils/logger';
 import { logRequest } from '../../../../../../../utils/path-utils';
 import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
+import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 //import { getFileFromS3 } from '../../../../../../../utils/file-utils';
 
 //import { IMediaState, MediaFile } from '../../utils/media/media-file';
@@ -238,9 +239,13 @@ export const updateSurveySummarySubmissionWithKey = async (
 
 export function insertContentIntoDB(): RequestHandler {
   return async (req, res, next) => {
-    const resultFromPrevStep = req['xlsx'];
 
-    console.log('resultFromPrevStep: ', resultFromPrevStep);
+
+    const xlsxCsv: XLSXCSV = req['xlsx'];
+
+    console.log('**xlsxCsv rawfile: ', xlsxCsv.rawFile);
+    console.log('**xlsxCsv workbook: ', xlsxCsv.workbook);
+    console.log('**xlsxCsv worksheets: ', xlsxCsv.workbook.worksheets);
     next();
   };
 }
