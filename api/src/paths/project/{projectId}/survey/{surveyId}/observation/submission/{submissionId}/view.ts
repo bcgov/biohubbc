@@ -132,7 +132,8 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
       await connection.commit();
 
       const fileName =
-        (submissionData && submissionData.rows && submissionData.rows[0] && submissionData.rows[0].file_name) || null;
+        (submissionData && submissionData.rows && submissionData.rows[0] && submissionData.rows[0].input_file_name) ||
+        null;
 
       const s3Key = generateS3FileKey({
         projectId: Number(req.params.projectId),

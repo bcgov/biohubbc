@@ -113,7 +113,7 @@ describe('getSubmissionS3Key', () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
-      rows: [{ key: 'somekey' }]
+      rows: [{ input_key: 'somekey' }]
     });
 
     sinon.stub(db, 'getDBConnection').returns({

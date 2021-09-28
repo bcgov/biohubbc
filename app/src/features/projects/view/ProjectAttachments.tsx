@@ -82,6 +82,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);
+          setAttachmentType('');
         }}>
         <Box>
           <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%', marginBottom: '1rem' }}>
