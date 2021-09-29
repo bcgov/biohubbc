@@ -13,8 +13,9 @@ export async function up(knex: Knex): Promise<void> {
   insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Survey Attachment','{"target":"survey_attachment","rule":""}', true, now()); -- 2
   insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Occurrence','{"target":"occurrence","rule":""}', true, now()); -- 3
   insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Project Report Attachment','{"target":"project_report_attachment","rule":""}', true, now()); -- 4
+  insert into  security_rule (name, rule_definition, system_rule, record_effective_date) values ('New Survey Report Attachment','{"target":"survey_report_attachment","rule":""}', true, now()); -- 5
 
-  `);
+`);
 }
 
 export async function down(knex: Knex): Promise<void> {
