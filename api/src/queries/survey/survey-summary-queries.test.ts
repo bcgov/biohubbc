@@ -88,24 +88,19 @@ describe('insertSurveySummaryDetailsSQL', () => {
     study_area_id: 'area_name',
     parameter: 'density',
     stratum: 'S1',
-    parameter_value: '18',
-    parameter_estimate: '100',
-    standard_error: '166.4',
+    parameter_value: 18,
+    parameter_estimate: 100,
+    standard_error: 166.4,
     coefficient_variation: 0.4,
     confidence_level_percent: 0.9,
     confidence_limit_upper: 143.8,
     confidence_limit_lower: 0.1,
     kilometres_surveyed: 10,
-    total_area_surveyed_sqm: 100
+    total_area_surveyed_sqm: 10
   };
   const summaryDetailsData = new PostSummaryDetails(obj);
 
-  // before(() => {
-  //   const summaryDetailsData = new PostSummaryDetails(obj);
-  // });
-
   it('returns null response when null summarySubmissionId provided', () => {
-    //const summaryDetailsData = new PostSummaryDetails(obj);
     const response = insertSurveySummaryDetailsSQL((null as unknown) as number, summaryDetailsData);
 
     expect(response).to.be.null;

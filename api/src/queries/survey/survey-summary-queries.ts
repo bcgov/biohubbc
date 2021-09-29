@@ -23,7 +23,7 @@ export const insertSurveySummarySubmissionSQL = (
     surveyId
   });
 
-  if (!surveyId) {
+  if (!surveyId || !source || !file_name) {
     return null;
   }
 
@@ -192,7 +192,7 @@ export const insertSurveySummaryDetailsSQL = (
     summarySubmissionId
   });
 
-  if (!summarySubmissionId) {
+  if (!summarySubmissionId || !summaryDetails) {
     return null;
   }
 
