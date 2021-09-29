@@ -6,7 +6,8 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL
+  updateSurveySummarySubmissionWithKeySQL,
+  insertSurveySummaryDetailsSQL
 } from '../../../../../../../queries/survey/survey-summary-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -254,76 +255,97 @@ export const updateSurveySummarySubmissionWithKey = async (
 export function parseSummarySubmissionInput(): RequestHandler {
   return async (req, res, next) => {
     const xlsxCsv: XLSXCSV = req['xlsx'];
+
+    const summarySubmissionId = req['summarySubmissionId'];
     const data = [];
+
+    const connection = getDBConnection(req['keycloak_token']);
 
     const worksheets = xlsxCsv.workbook.worksheets;
 
-    for (const [key] of Object.entries(worksheets)) {
-      const dataItem = {
-        name: key,
-        headers: worksheets[key]?.getHeaders(),
-        rows: worksheets[key]?.getRows(),
-        rowObjects: worksheets[key]?.getRowObjects()
-      };
+    try {
+      await connection.open();
 
-      data.push(dataItem);
-    }
+      const promises: Promise<any>[] = [];
 
-    for (const [key] of Object.entries(worksheets)) {
-      const dataItem = {
-        name: key,
-        rowObjects: worksheets[key]?.getRowObjects()
-      };
+      for (const [key] of Object.entries(worksheets)) {
+        const dataItem = {
+          name: key,
+          headers: worksheets[key]?.getHeaders(),
+          rows: worksheets[key]?.getRows(),
+          rowObjects: worksheets[key]?.getRowObjects()
+        };
 
-      for (const [item, value] of Object.entries(dataItem.rowObjects)) {
-        console.log('this is the content of each row', `${item.toString()}: ${JSON.stringify(value)}`);
-
-        let summaryObject = new PostSummaryDetails();
-
-        summaryObject = JSON.parse(JSON.stringify(value), function (rowKey, rowValue) {
-          switch (rowKey) {
-            case SUMMARY_CLASS.STUDY_AREA:
-              summaryObject.study_area_id = rowValue;
-              break;
-            case SUMMARY_CLASS.SUMMARY_STATISTIC:
-              summaryObject.parameter = rowValue;
-              break;
-            case SUMMARY_CLASS.STRATUM:
-              summaryObject.stratum = rowValue;
-              break;
-            case SUMMARY_CLASS.OBSERVED:
-              summaryObject.parameter_value = rowValue;
-              break;
-            case SUMMARY_CLASS.ESTIMATE:
-              summaryObject.parameter_estimate = rowValue;
-              break;
-            case SUMMARY_CLASS.STANDARD_ERROR:
-              summaryObject.standard_error = rowValue;
-              break;
-            case SUMMARY_CLASS.COEFFICIENT_VARIATION:
-              summaryObject.coefficient_variation = rowValue;
-              break;
-            case SUMMARY_CLASS.CONFIDENCE_LEVEL:
-              summaryObject.confidence_level_percent = rowValue;
-              break;
-            case SUMMARY_CLASS.UPPER_CONFIDENCE_LIMIT:
-              summaryObject.confidence_limit_upper = rowValue;
-              break;
-            case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
-              summaryObject.confidence_limit_lower = rowValue;
-              break;
-            case SUMMARY_CLASS.AREA:
-              summaryObject.total_area_surveyed_sqm = rowValue;
-              break;
-            case SUMMARY_CLASS.AREA_FLOWN:
-              summaryObject.kilometres_surveyed = rowValue;
-              break;
-            default:
-              return summaryObject;
-          }
-        });
-        console.log('summary Object to be sent to the DB: ', summaryObject);
+        data.push(dataItem);
       }
+
+      for (const [key] of Object.entries(worksheets)) {
+        const dataItem = {
+          name: key,
+          rowObjects: worksheets[key]?.getRowObjects()
+        };
+
+        for (const [item, value] of Object.entries(dataItem.rowObjects)) {
+          console.log('row', `${item.toString()} content : ${JSON.stringify(value)}`);
+
+          let summaryObject = new PostSummaryDetails();
+
+          summaryObject = JSON.parse(JSON.stringify(value), function (rowKey, rowValue) {
+            switch (rowKey) {
+              case SUMMARY_CLASS.STUDY_AREA:
+                summaryObject.study_area_id = rowValue;
+                break;
+              case SUMMARY_CLASS.SUMMARY_STATISTIC:
+                summaryObject.parameter = rowValue;
+                break;
+              case SUMMARY_CLASS.STRATUM:
+                summaryObject.stratum = rowValue;
+                break;
+              case SUMMARY_CLASS.OBSERVED:
+                summaryObject.parameter_value = rowValue;
+                break;
+              case SUMMARY_CLASS.ESTIMATE:
+                summaryObject.parameter_estimate = rowValue;
+                break;
+              case SUMMARY_CLASS.STANDARD_ERROR:
+                summaryObject.standard_error = rowValue;
+                break;
+              case SUMMARY_CLASS.COEFFICIENT_VARIATION:
+                summaryObject.coefficient_variation = rowValue;
+                break;
+              case SUMMARY_CLASS.CONFIDENCE_LEVEL:
+                summaryObject.confidence_level_percent = rowValue;
+                break;
+              case SUMMARY_CLASS.UPPER_CONFIDENCE_LIMIT:
+                summaryObject.confidence_limit_upper = rowValue;
+                break;
+              case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
+                summaryObject.confidence_limit_lower = rowValue;
+                break;
+              case SUMMARY_CLASS.AREA:
+                summaryObject.total_area_surveyed_sqm = rowValue;
+                break;
+              case SUMMARY_CLASS.AREA_FLOWN:
+                summaryObject.kilometres_surveyed = rowValue;
+                break;
+              default:
+                return summaryObject;
+            }
+          });
+          console.log('summary Object to be sent to the DB: ', summaryObject);
+
+          promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
+        }
+      }
+
+      await Promise.all(promises);
+
+      await connection.commit();
+
+      //return res.status(200).send();
+    } catch (error) {
+      defaultLog.debug({ label: 'scrapeAndUploadSummaryDetails', message: 'error', error });
+      throw error;
     }
 
     next();
@@ -337,3 +359,29 @@ function returnSummarySubmissionId(): RequestHandler {
     return res.status(200).send({ summarySubmissionId });
   };
 }
+
+/**
+ * Upload scraped summary submission data.
+ *
+ * @param {number} summarySubmissionId
+ * @param {any} scrapedSummaryDetail
+ * @param {IDBConnection} connection
+ * @return {*}
+ */
+export const uploadScrapedSummarySubmission = async (
+  summarySubmissionId: number,
+  scrapedSummaryDetail: any,
+  connection: IDBConnection
+) => {
+  const sqlStatement = insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL post statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert summary detailsa data');
+  }
+};
