@@ -179,8 +179,7 @@ export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLS
  * SQL query to insert a survey summary submission row.
  *
  * @param {number} summarySubmissionId
- * @param {string} source
- * @param {string} file_name
+ * @param {string} summaryDetails
  * @return {*}  {(SQLStatement | null)}
  */
 export const insertSurveySummaryDetailsSQL = (

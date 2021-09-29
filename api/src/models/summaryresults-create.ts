@@ -1,12 +1,12 @@
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('models/summaryresults-create');
+const defaultLog = getLogger('models/summary-results-create');
 
 /**
- * Pre-processes POST occurrences data
+ * Pre-processes POST Summary details data
  *
  * @export
- * @class PostOccurrence
+ * @class PostSummaryDetails
  */
 export class PostSummaryDetails {
   study_area_id: string;
