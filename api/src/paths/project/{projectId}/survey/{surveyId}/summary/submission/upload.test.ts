@@ -54,11 +54,10 @@ describe('uploadSummarySubmission', () => {
     ]
   } as any;
 
-  let actualStatus = 0;
+  //let actualStatus = 0;
 
   const mockRes = {
     status: (status: number) => {
-      actualStatus = status;
       return {
         send: () => {
           //do nothing
@@ -277,6 +276,7 @@ describe('uploadSummarySubmission', () => {
 
   it('should return 200 on success with no methodology selected', async () => {
     const mockQuery = sinon.stub();
+    const nextSpy = sinon.spy();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
@@ -299,8 +299,9 @@ describe('uploadSummarySubmission', () => {
     await result(
       { ...mockReq, auth_payload: { preferred_username: 'user', email: 'example@email.com' } },
       mockRes,
-      mockNext
+      nextSpy as any
     );
-    expect(actualStatus).to.equal(200);
+
+    expect(nextSpy).to.have.been.called;
   });
 });

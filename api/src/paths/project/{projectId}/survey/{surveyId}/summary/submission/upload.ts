@@ -4,20 +4,17 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
 import {
+  insertSurveySummaryDetailsSQL,
   insertSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL,
-  insertSurveySummaryDetailsSQL
+  updateSurveySummarySubmissionWithKeySQL
 } from '../../../../../../../queries/survey/survey-summary-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
+import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../../../../../../utils/path-utils';
 import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
-import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
-import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
-//import { getFileFromS3 } from '../../../../../../../utils/file-utils';
-
-//import { IMediaState, MediaFile } from '../../utils/media/media-file';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -286,8 +283,6 @@ export function parseSummarySubmissionInput(): RequestHandler {
         };
 
         for (const [item, value] of Object.entries(dataItem.rowObjects)) {
-          console.log('row', `${item.toString()} content : ${JSON.stringify(value)}`);
-
           let summaryObject = new PostSummaryDetails();
 
           summaryObject = JSON.parse(JSON.stringify(value), function (rowKey, rowValue) {
@@ -332,7 +327,6 @@ export function parseSummarySubmissionInput(): RequestHandler {
                 return summaryObject;
             }
           });
-          console.log('summary Object to be sent to the DB: ', summaryObject);
 
           promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
         }
@@ -341,8 +335,6 @@ export function parseSummarySubmissionInput(): RequestHandler {
       await Promise.all(promises);
 
       await connection.commit();
-
-      //return res.status(200).send();
     } catch (error) {
       defaultLog.debug({ label: 'scrapeAndUploadSummaryDetails', message: 'error', error });
       throw error;
