@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, September 21, 2021 11:13:38
+-- Date Created : Monday, September 27, 2021 15:51:02
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -825,8 +825,10 @@ CREATE TABLE occurrence_submission(
     source                             varchar(300)      NOT NULL,
     event_timestamp                    TIMESTAMPTZ       NOT NULL,
     delete_timestamp                   TIMESTAMPTZ,
-    key                                varchar(1000),
-    file_name                          varchar(300),
+    input_key                          varchar(1000),
+    input_file_name                    varchar(300),
+    output_key                         varchar(1000),
+    output_file_name                   varchar(300),
     create_date                        timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                        integer           NOT NULL,
     update_date                        timestamptz(6),
@@ -850,9 +852,15 @@ COMMENT ON COLUMN occurrence_submission.event_timestamp IS 'The timestamp of the
 ;
 COMMENT ON COLUMN occurrence_submission.delete_timestamp IS 'The time stamp of a logical delete. When this value is not null then the record is considered logically deleted and will not display in specific user interfaces. Historical data persists for investigative purposes.'
 ;
-COMMENT ON COLUMN occurrence_submission.key IS 'The identifying key to the file in the storage system.'
+COMMENT ON COLUMN occurrence_submission.input_key IS 'The identifying key to the file in the storage system. The target is the input data file or template. For example, a custom data submission template.'
 ;
-COMMENT ON COLUMN occurrence_submission.file_name IS 'The name of the file submitted.'
+COMMENT ON COLUMN occurrence_submission.input_file_name IS 'The name of the file submitted. The target is the input data file or template. For example, a custom data submission template.'
+;
+COMMENT ON COLUMN occurrence_submission.output_key IS 'The identifying key to the file in the storage system. The target is the output data file or template. For example, a Darwin Core Archive file that has been transformed from a custom template input.
+
+'
+;
+COMMENT ON COLUMN occurrence_submission.output_file_name IS 'The name of the file submitted. The target is the output data file or template. For example, a Darwin Core Archive file that has been transformed from a custom template input.'
 ;
 COMMENT ON COLUMN occurrence_submission.create_date IS 'The datetime the record was created.'
 ;

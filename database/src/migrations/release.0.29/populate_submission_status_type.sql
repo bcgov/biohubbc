@@ -3,7 +3,7 @@
 insert into submission_status_type (name, record_effective_date, description) values ('Submitted', now(), 'Submitted for processing.');
 insert into submission_status_type (name, record_effective_date, description) values ('Template Validated', now(), 'The submission input template has been validated.');
 insert into submission_status_type (name, record_effective_date, description) values ('Darwin Core Validated', now(), 'Darwin Core validation has completed.');
-insert into submission_status_type (name, record_effective_date, description) values ('BioHub Validated', now(), 'BioHub validation has completed.');
+insert into submission_status_type (name, record_effective_date, description) values ('Template Transformed', now(), 'Custom template transform has completed.');
 insert into submission_status_type (name, record_effective_date, description) values ('Submission Data Ingested', now(), 'Submission data has been ingested.');
 insert into submission_status_type (name, record_effective_date, description) values ('Secured', now(), 'The submission has had security applied.');
 insert into submission_status_type (name, record_effective_date, description) values ('Awaiting Curration', now(), 'The submission is awaiting curration.');

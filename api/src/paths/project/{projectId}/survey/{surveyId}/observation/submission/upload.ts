@@ -143,15 +143,15 @@ export function uploadMedia(): RequestHandler {
 
       const submissionId = response.rows[0].id;
 
-      const key = generateS3FileKey({
+      const inputKey = generateS3FileKey({
         projectId: Number(req.params.projectId),
         surveyId: Number(req.params.surveyId),
         folder: `submissions/${submissionId}`,
         fileName: rawMediaFile.originalname
       });
 
-      // Query to update the record with the key before uploading the file
-      await updateSurveyOccurrenceSubmissionWithKey(submissionId, key, connection);
+      // Query to update the record with the inputKey before uploading the file
+      await updateSurveyOccurrenceSubmissionWithKey(submissionId, inputKey, connection);
 
       await connection.commit();
 
@@ -161,7 +161,7 @@ export function uploadMedia(): RequestHandler {
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
 
-      await uploadFileToS3(rawMediaFile, key, metadata);
+      await uploadFileToS3(rawMediaFile, inputKey, metadata);
 
       return res.status(200).send({ submissionId });
     } catch (error) {
@@ -179,18 +179,24 @@ export function uploadMedia(): RequestHandler {
  *
  * @param {number} surveyId
  * @param {string} source
- * @param {string} key
+ * @param {string} inputFileName
+ * @param {(number | null)} templateMethodologyId
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
 export const insertSurveyOccurrenceSubmission = async (
   surveyId: number,
   source: string,
-  file_name: string,
+  inputFileName: string,
   templateMethodologyId: number | null,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(surveyId, source, file_name, templateMethodologyId);
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(
+    surveyId,
+    source,
+    inputFileName,
+    templateMethodologyId
+  );
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -209,8 +215,6 @@ export const insertSurveyOccurrenceSubmission = async (
  * Inserts a new record into the `occurrence_submission` table.
  *
  * @param {number} surveyId
- * @param {string} source
- * @param {string} key
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
@@ -233,20 +237,19 @@ export const getTemplateMethodologySpeciesIdStatement = async (
 };
 
 /**
- * Update existing `occurrence_submission` record with key.
+ * Update existing `occurrence_submission` record with inputKey.
  *
- * @param {number} surveyId
- * @param {string} source
- * @param {string} key
+ * @param {number} submissionId
+ * @param {string} inputKey
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
 export const updateSurveyOccurrenceSubmissionWithKey = async (
   submissionId: number,
-  key: string,
+  inputKey: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const updateSqlStatement = updateSurveyOccurrenceSubmissionWithKeySQL(submissionId, key);
+  const updateSqlStatement = updateSurveyOccurrenceSubmissionWithKeySQL(submissionId, inputKey);
 
   if (!updateSqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

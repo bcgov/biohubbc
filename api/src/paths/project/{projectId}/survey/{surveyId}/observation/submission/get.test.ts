@@ -101,7 +101,7 @@ describe('getObservationSubmission', () => {
       rows: [
         {
           id: 13,
-          file_name: 'dwca_moose.zip',
+          input_file_name: 'dwca_moose.zip',
           submission_status_type_name: 'Darwin Core Validated',
           messages: [{}]
         }
@@ -124,7 +124,7 @@ describe('getObservationSubmission', () => {
 
     expect(actualResult).to.be.eql({
       id: 13,
-      fileName: 'dwca_moose.zip',
+      inputFileName: 'dwca_moose.zip',
       status: 'Darwin Core Validated',
       messages: []
     });
@@ -137,7 +137,7 @@ describe('getObservationSubmission', () => {
       rows: [
         {
           id: 13,
-          file_name: 'dwca_moose.zip',
+          input_file_name: 'dwca_moose.zip',
           message: 'some message',
           submission_status_type_name: 'Rejected'
         }
@@ -175,7 +175,7 @@ describe('getObservationSubmission', () => {
         rows: [
           {
             id: 13,
-            file_name: 'dwca_moose.zip',
+            input_file_name: 'dwca_moose.zip',
             messages: [],
             submission_status_type_name: 'Rejected'
           }
@@ -218,7 +218,7 @@ describe('getObservationSubmission', () => {
 
     expect(actualResult).to.be.eql({
       id: 13,
-      fileName: 'dwca_moose.zip',
+      inputFileName: 'dwca_moose.zip',
       status: 'Rejected',
       messages: [
         {
