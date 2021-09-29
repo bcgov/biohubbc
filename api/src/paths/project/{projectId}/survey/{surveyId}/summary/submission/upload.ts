@@ -282,7 +282,7 @@ export function parseSummarySubmissionInput(): RequestHandler {
           rowObjects: worksheets[key]?.getRowObjects()
         };
 
-        for (const [item, value] of Object.entries(dataItem.rowObjects)) {
+        for (const value of Object.values(dataItem.rowObjects)) {
           let summaryObject = new PostSummaryDetails();
 
           summaryObject = JSON.parse(JSON.stringify(value), function (rowKey, rowValue) {

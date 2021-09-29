@@ -54,10 +54,8 @@ describe('uploadSummarySubmission', () => {
     ]
   } as any;
 
-  //let actualStatus = 0;
-
   const mockRes = {
-    status: (status: number) => {
+    status: () => {
       return {
         send: () => {
           //do nothing
