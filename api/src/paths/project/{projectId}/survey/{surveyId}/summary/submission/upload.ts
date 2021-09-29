@@ -86,16 +86,16 @@ POST.apiDoc = {
 };
 
 export enum SUMMARY_CLASS {
-  STUDY_AREA = 'Study Area',
-  SUMMARY_STATISTIC = 'Summary Statistic',
-  STRATUM = 'Stratum',
-  OBSERVED = 'Observed',
-  ESTIMATE = 'Estimate',
-  STANDARD_ERROR = 'SE',
-  COEFFICIENT_VARIATION = 'CV',
-  CONFIDENCE_LEVEL = 'Conf.Level',
-  UPPER_CONFIDENCE_LIMIT = 'UCL',
-  LOWER_CONFIDENCE_LIMIT = 'LCL',
+  STUDY_AREA = 'study area',
+  SUMMARY_STATISTIC = 'summary statistic',
+  STRATUM = 'stratum',
+  OBSERVED = 'observed',
+  ESTIMATE = 'estimate',
+  STANDARD_ERROR = 'se',
+  COEFFICIENT_VARIATION = 'cv',
+  CONFIDENCE_LEVEL = 'conf.level',
+  UPPER_CONFIDENCE_LIMIT = 'ucl',
+  LOWER_CONFIDENCE_LIMIT = 'lcl',
   AREA = 'area',
   AREA_FLOWN = 'area.flown'
 }
@@ -264,58 +264,56 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
 
       const promises: Promise<any>[] = [];
 
-      for (const [key] of Object.entries(worksheets)) {
-        const dataItem = {
-          name: key,
-          rowObjects: worksheets[key]?.getRowObjects()
-        };
+      for (const worksheet of Object.values(worksheets)) {
+        const rowObjects = worksheet.getRowObjects();
 
-        for (const value of Object.values(dataItem.rowObjects)) {
-          let summaryObject = new PostSummaryDetails();
+        for (const rowObject of Object.values(rowObjects)) {
+          const summaryObject = new PostSummaryDetails();
 
-          summaryObject = JSON.parse(JSON.stringify(value), function (rowKey, rowValue) {
-            switch (rowKey) {
+          for (const columnName in rowObject) {
+            const columnValue = rowObject[columnName];
+
+            switch (columnName.toLowerCase()) {
               case SUMMARY_CLASS.STUDY_AREA:
-                summaryObject.study_area_id = rowValue;
+                summaryObject.study_area_id = columnValue;
                 break;
               case SUMMARY_CLASS.SUMMARY_STATISTIC:
-                summaryObject.parameter = rowValue;
+                summaryObject.parameter = columnValue;
                 break;
               case SUMMARY_CLASS.STRATUM:
-                summaryObject.stratum = rowValue;
+                summaryObject.stratum = columnValue;
                 break;
               case SUMMARY_CLASS.OBSERVED:
-                summaryObject.parameter_value = rowValue;
+                summaryObject.parameter_value = columnValue;
                 break;
               case SUMMARY_CLASS.ESTIMATE:
-                summaryObject.parameter_estimate = rowValue;
+                summaryObject.parameter_estimate = columnValue;
                 break;
               case SUMMARY_CLASS.STANDARD_ERROR:
-                summaryObject.standard_error = rowValue;
+                summaryObject.standard_error = columnValue;
                 break;
               case SUMMARY_CLASS.COEFFICIENT_VARIATION:
-                summaryObject.coefficient_variation = rowValue;
+                summaryObject.coefficient_variation = columnValue;
                 break;
               case SUMMARY_CLASS.CONFIDENCE_LEVEL:
-                summaryObject.confidence_level_percent = rowValue;
+                summaryObject.confidence_level_percent = columnValue;
                 break;
               case SUMMARY_CLASS.UPPER_CONFIDENCE_LIMIT:
-                summaryObject.confidence_limit_upper = rowValue;
+                summaryObject.confidence_limit_upper = columnValue;
                 break;
               case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
-                summaryObject.confidence_limit_lower = rowValue;
+                summaryObject.confidence_limit_lower = columnValue;
                 break;
               case SUMMARY_CLASS.AREA:
-                summaryObject.total_area_surveyed_sqm = rowValue;
+                summaryObject.total_area_surveyed_sqm = columnValue;
                 break;
               case SUMMARY_CLASS.AREA_FLOWN:
-                summaryObject.kilometres_surveyed = rowValue;
+                summaryObject.kilometres_surveyed = columnValue;
                 break;
               default:
-                return summaryObject;
+                break;
             }
-          });
-
+          }
           promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
         }
       }
@@ -323,12 +321,14 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
       await Promise.all(promises);
 
       await connection.commit();
+      next();
     } catch (error) {
       defaultLog.debug({ label: 'parseAndUploadSummaryDetails', message: 'error', error });
+      await connection.rollback();
       throw error;
+    } finally {
+      connection.release();
     }
-
-    next();
   };
 }
 
@@ -336,7 +336,9 @@ function returnSummarySubmissionId(): RequestHandler {
   return async (req, res) => {
     const summarySubmissionId = req['summarySubmissionId'];
 
-    return res.status(200).send({ summarySubmissionId });
+    console.log('about to return');
+
+    return res.status(200).json({ summarySubmissionId });
   };
 }
 
@@ -362,6 +364,6 @@ export const uploadScrapedSummarySubmission = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert summary detailsa data');
+    throw new HTTP400('Failed to insert summary details data');
   }
 };
