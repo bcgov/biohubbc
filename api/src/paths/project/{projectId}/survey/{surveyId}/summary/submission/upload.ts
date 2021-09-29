@@ -13,6 +13,7 @@ import { getLogger } from '../../../../../../../utils/logger';
 import { logRequest } from '../../../../../../../utils/path-utils';
 import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
+import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
 //import { getFileFromS3 } from '../../../../../../../utils/file-utils';
 
 //import { IMediaState, MediaFile } from '../../utils/media/media-file';
@@ -23,7 +24,7 @@ export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
   uploadMedia(),
   prepXLSX(),
-  insertContentIntoDB(),
+  parseSummarySubmissionInput(),
   returnSummarySubmissionId()
 ];
 
@@ -85,6 +86,21 @@ POST.apiDoc = {
     }
   }
 };
+
+export enum SUMMARY_CLASS {
+  STUDY_AREA = 'Study Area',
+  SUMMARY_STATISTIC = 'Summary Statistic',
+  STRATUM = 'Stratum',
+  OBSERVED = 'Observed',
+  ESTIMATE = 'Estimate',
+  STANDARD_ERROR = 'SE',
+  COEFFICIENT_VARIATION = 'CV',
+  CONFIDENCE_LEVEL = 'Conf.Level',
+  UPPER_CONFIDENCE_LIMIT = 'UCL',
+  LOWER_CONFIDENCE_LIMIT = 'LCL',
+  AREA = 'area',
+  AREA_FLOWN = 'area.flown'
+}
 
 /**
  * Uploads a media file to S3 and inserts a matching record in the `summary_submission` table.
@@ -200,8 +216,6 @@ export const insertSurveySummarySubmission = async (
 
   const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
 
-  console.log('insertResponse', insertResponse);
-
   if (!insertResponse || !insertResponse.rowCount) {
     throw new HTTP400('Failed to insert survey summary submission record');
   }
@@ -237,15 +251,81 @@ export const updateSurveySummarySubmissionWithKey = async (
   return updateResponse;
 };
 
-export function insertContentIntoDB(): RequestHandler {
+export function parseSummarySubmissionInput(): RequestHandler {
   return async (req, res, next) => {
-
-
     const xlsxCsv: XLSXCSV = req['xlsx'];
+    const data = [];
 
-    console.log('**xlsxCsv rawfile: ', xlsxCsv.rawFile);
-    console.log('**xlsxCsv workbook: ', xlsxCsv.workbook);
-    console.log('**xlsxCsv worksheets: ', xlsxCsv.workbook.worksheets);
+    const worksheets = xlsxCsv.workbook.worksheets;
+
+    for (const [key] of Object.entries(worksheets)) {
+      const dataItem = {
+        name: key,
+        headers: worksheets[key]?.getHeaders(),
+        rows: worksheets[key]?.getRows(),
+        rowObjects: worksheets[key]?.getRowObjects()
+      };
+
+      data.push(dataItem);
+    }
+
+    for (const [key] of Object.entries(worksheets)) {
+      const dataItem = {
+        name: key,
+        rowObjects: worksheets[key]?.getRowObjects()
+      };
+
+      for (const [item, value] of Object.entries(dataItem.rowObjects)) {
+        console.log('this is the content of each row', `${item.toString()}: ${JSON.stringify(value)}`);
+
+        let summaryObject = new PostSummaryDetails();
+
+        summaryObject = JSON.parse(JSON.stringify(value), function (rowKey, rowValue) {
+          switch (rowKey) {
+            case SUMMARY_CLASS.STUDY_AREA:
+              summaryObject.study_area_id = rowValue;
+              break;
+            case SUMMARY_CLASS.SUMMARY_STATISTIC:
+              summaryObject.parameter = rowValue;
+              break;
+            case SUMMARY_CLASS.STRATUM:
+              summaryObject.stratum = rowValue;
+              break;
+            case SUMMARY_CLASS.OBSERVED:
+              summaryObject.parameter_value = rowValue;
+              break;
+            case SUMMARY_CLASS.ESTIMATE:
+              summaryObject.parameter_estimate = rowValue;
+              break;
+            case SUMMARY_CLASS.STANDARD_ERROR:
+              summaryObject.standard_error = rowValue;
+              break;
+            case SUMMARY_CLASS.COEFFICIENT_VARIATION:
+              summaryObject.coefficient_variation = rowValue;
+              break;
+            case SUMMARY_CLASS.CONFIDENCE_LEVEL:
+              summaryObject.confidence_level_percent = rowValue;
+              break;
+            case SUMMARY_CLASS.UPPER_CONFIDENCE_LIMIT:
+              summaryObject.confidence_limit_upper = rowValue;
+              break;
+            case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
+              summaryObject.confidence_limit_lower = rowValue;
+              break;
+            case SUMMARY_CLASS.AREA:
+              summaryObject.total_area_surveyed_sqm = rowValue;
+              break;
+            case SUMMARY_CLASS.AREA_FLOWN:
+              summaryObject.kilometres_surveyed = rowValue;
+              break;
+            default:
+              return summaryObject;
+          }
+        });
+        console.log('summary Object to be sent to the DB: ', summaryObject);
+      }
+    }
+
     next();
   };
 }
