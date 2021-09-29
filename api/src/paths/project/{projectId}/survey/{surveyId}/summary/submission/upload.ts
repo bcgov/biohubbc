@@ -22,7 +22,7 @@ export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
   uploadMedia(),
   prepXLSX(),
-  parseSummarySubmissionInput(),
+  parseAndUploadSummarySubmissionInput(),
   returnSummarySubmissionId()
 ];
 
@@ -249,12 +249,11 @@ export const updateSurveySummarySubmissionWithKey = async (
   return updateResponse;
 };
 
-export function parseSummarySubmissionInput(): RequestHandler {
+export function parseAndUploadSummarySubmissionInput(): RequestHandler {
   return async (req, res, next) => {
     const xlsxCsv: XLSXCSV = req['xlsx'];
 
     const summarySubmissionId = req['summarySubmissionId'];
-    const data = [];
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -264,17 +263,6 @@ export function parseSummarySubmissionInput(): RequestHandler {
       await connection.open();
 
       const promises: Promise<any>[] = [];
-
-      for (const [key] of Object.entries(worksheets)) {
-        const dataItem = {
-          name: key,
-          headers: worksheets[key]?.getHeaders(),
-          rows: worksheets[key]?.getRows(),
-          rowObjects: worksheets[key]?.getRowObjects()
-        };
-
-        data.push(dataItem);
-      }
 
       for (const [key] of Object.entries(worksheets)) {
         const dataItem = {
@@ -336,7 +324,7 @@ export function parseSummarySubmissionInput(): RequestHandler {
 
       await connection.commit();
     } catch (error) {
-      defaultLog.debug({ label: 'scrapeAndUploadSummaryDetails', message: 'error', error });
+      defaultLog.debug({ label: 'parseAndUploadSummaryDetails', message: 'error', error });
       throw error;
     }
 
