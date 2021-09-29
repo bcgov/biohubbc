@@ -23,7 +23,9 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
       update_date,
       create_date,
       file_size,
-      key
+      file_type,
+      key,
+      security_token
     from
       survey_attachment
     where
@@ -32,6 +34,44 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
 
   defaultLog.debug({
     label: 'getSurveyAttachmentsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get report attachments for a single survey.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyReportAttachmentsSQL', message: 'params', surveyId });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      survey_report_attachment_id as id,
+      file_name,
+      update_date,
+      create_date,
+      file_size,
+      key,
+      security_token
+    from
+      survey_report_attachment
+    where
+      survey_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyReportAttachmentsSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -113,14 +153,76 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
 /**
  * SQL query to insert a survey attachment row.
  *
- * @param fileName
- * @param fileSize
- * @param projectId
- * @param surveyId
+ * @param {string} fileName
+ * @param {number} fileSize
+ * @param {string} fileType
+ * @param {number} projectId
+ * @param {number} surveyId
  * @param {string} key to use in s3
  * @returns {SQLStatement} sql query object
  */
 export const postSurveyAttachmentSQL = (
+  fileName: string,
+  fileSize: number,
+  fileType: string,
+  projectId: number,
+  surveyId: number,
+  key: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'postSurveyAttachmentSQL',
+    message: 'params',
+    fileName,
+    fileSize,
+    fileType,
+    projectId,
+    surveyId,
+    key
+  });
+
+  if (!fileName || !fileSize || !fileType || !projectId || !surveyId || !key) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO survey_attachment (
+      survey_id,
+      file_name,
+      file_size,
+      file_type,
+      key
+    ) VALUES (
+      ${surveyId},
+      ${fileName},
+      ${fileSize},
+      ${fileType},
+      ${key}
+    )
+    RETURNING
+      survey_attachment_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'postSurveyAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a survey report attachment row.
+ *
+ * @param {string} fileName
+ * @param {number} fileSize
+ * @param {number} projectId
+ * @param {number} surveyId
+ * @param {string} key to use in s3
+ * @returns {SQLStatement} sql query object
+ */
+export const postSurveyReportAttachmentSQL = (
   fileName: string,
   fileSize: number,
   projectId: number,
@@ -128,7 +230,7 @@ export const postSurveyAttachmentSQL = (
   key: string
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'postSurveyAttachmentSQL',
+    label: 'postSurveyReportAttachmentSQL',
     message: 'params',
     fileName,
     fileSize,
@@ -141,24 +243,35 @@ export const postSurveyAttachmentSQL = (
     return null;
   }
 
+  // TODO: Replace hard-coded title, year and description
+  const title = 'Test Report';
+  const year = '2021';
+  const description = 'Test description';
+
   const sqlStatement: SQLStatement = SQL`
-    INSERT INTO survey_attachment (
+    INSERT INTO survey_report_attachment (
       survey_id,
       file_name,
       file_size,
-      key
+      key,
+      title,
+      year,
+      description
     ) VALUES (
       ${surveyId},
       ${fileName},
       ${fileSize},
-      ${key}
+      ${key},
+      ${title},
+      ${year},
+      ${description}
     )
     RETURNING
-      survey_attachment_id as id;
+      survey_report_attachment_id as id;
   `;
 
   defaultLog.debug({
-    label: 'postSurveyAttachmentSQL',
+    label: 'postSurveyReportAttachmentSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -211,10 +324,47 @@ export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: str
  *
  * @param {number} surveyId
  * @param {string} fileName
+ * @param {string} fileType
  * @returns {SQLStatement} sql query object
  */
-export const putSurveyAttachmentSQL = (surveyId: number, fileName: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'putSurveyAttachmentSQL', message: 'params', surveyId });
+export const putSurveyAttachmentSQL = (surveyId: number, fileName: string, fileType: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'putSurveyAttachmentSQL', message: 'params', surveyId, fileName, fileType });
+
+  if (!surveyId || !fileName || !fileType) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE
+      survey_attachment
+    SET
+      file_name = ${fileName},
+      file_type = ${fileType}
+    WHERE
+      file_name = ${fileName}
+    AND
+      survey_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'putSurveyAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to update a report attachment for a single survey by survey id and filename.
+ *
+ * @param {number} surveyId
+ * @param {string} fileName
+ * @returns {SQLStatement} sql query object
+ */
+export const putSurveyReportAttachmentSQL = (surveyId: number, fileName: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'putSurveyReportAttachmentSQL', message: 'params', surveyId, fileName });
 
   if (!surveyId || !fileName) {
     return null;
@@ -222,7 +372,7 @@ export const putSurveyAttachmentSQL = (surveyId: number, fileName: string): SQLS
 
   const sqlStatement: SQLStatement = SQL`
     UPDATE
-      survey_attachment
+      survey_report_attachment
     SET
       file_name = ${fileName}
     WHERE
@@ -232,7 +382,7 @@ export const putSurveyAttachmentSQL = (surveyId: number, fileName: string): SQLS
   `;
 
   defaultLog.debug({
-    label: 'putSurveyAttachmentSQL',
+    label: 'putSurveyReportAttachmentSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -8,12 +8,14 @@ export async function up(knex: Knex): Promise<void> {
     set search_path = ${DB_SCHEMA},public;
 
     ALTER TABLE ${DB_SCHEMA}.project_attachment add column file_type varchar(300);
+    ALTER TABLE ${DB_SCHEMA}.survey_attachment add column file_type varchar(300);
 
     set search_path = biohub_dapi_v1;
 
     set role biohub_api;
 
     create or replace view project_attachment as select * from ${DB_SCHEMA}.project_attachment;
+    create or replace view survey_attachment as select * from ${DB_SCHEMA}.survey_attachment;
 
     set role postgres;
   `);
@@ -27,9 +29,11 @@ export async function down(knex: Knex): Promise<void> {
     SET ROLE postgres;
 
     ALTER TABLE ${DB_SCHEMA}.project_attachment remove column file_type;
+    ALTER TABLE ${DB_SCHEMA}.survey_attachment remove column file_type;
 
     SET ROLE biohub_api;
 
     create or replace view project_attachment as select * from ${DB_SCHEMA}.project_attachment;
+    create or replace view survey_attachment as select * from ${DB_SCHEMA}.survey_attachment;
   `);
 }

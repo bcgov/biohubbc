@@ -69,6 +69,51 @@ export const addProjectAttachmentSecurityRuleSQL = (projectId: number, attachmen
 };
 
 /**
+ * SQL query to add security rule for project report attachment table
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const addProjectReportAttachmentSecurityRuleSQL = (
+  projectId: number,
+  attachmentId: number
+): SQLStatement | null => {
+  defaultLog.debug({ label: 'addProjectReportAttachmentSecurityRuleSQL', message: 'params', projectId, attachmentId });
+
+  if (!projectId || !attachmentId) {
+    return null;
+  }
+
+  const ruleDefinition = [
+    { target: 'project_report_attachment', rule: `project_report_attachment_id=${attachmentId}` }
+  ];
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO security_rule (
+      project_id,
+      rule_definition,
+      record_effective_date
+    ) VALUES (
+      ${projectId},
+      ${JSON.stringify(ruleDefinition)},
+      now()
+    )
+    RETURNING
+      security_rule_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'addProjectReportAttachmentSecurityRuleSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get security rule for project attachments table
  *
  * @param {number} attachmentId
@@ -100,6 +145,37 @@ export const getProjectAttachmentSecurityRuleSQL = (attachmentId: number): SQLSt
 };
 
 /**
+ * SQL query to get security rule for project report attachment table
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectReportAttachmentSecurityRuleSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectReportAttachmentSecurityRuleSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const query = `project_report_attachment_id=${attachmentId}`;
+
+  const sqlStatement: SQLStatement = SQL`
+    select security_rule_id as id
+    from security_rule sr
+    where sr.rule_definition->0 ->> 'rule' = ${query};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectReportAttachmentSecurityRuleSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to set security token to null for a project attachment row.
  *
  * @param {number} attachmentId
@@ -120,6 +196,35 @@ export const removeProjectAttachmentSecurityTokenSQL = (attachmentId: number): S
 
   defaultLog.debug({
     label: 'removeProjectAttachmentSecurityTokenSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to set security token to null for a project report attachment row.
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const removeProjectReportAttachmentSecurityTokenSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'removeProjectReportAttachmentSecurityTokenSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE project_report_attachment
+    SET security_token = ${null}
+    WHERE project_report_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'removeProjectReportAttachmentSecurityTokenSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -6,20 +6,65 @@ import { HTTP400 } from '../../../../../../errors/CustomError';
 import { getLogger } from '../../../../../../utils/logger';
 import { getAPIUserDBConnection } from '../../../../../../database/db';
 import { getS3SignedURL } from '../../../../../../utils/file-utils';
-import { attachmentApiDocObject } from '../../../../../../utils/shared-api-docs';
-import { getPublicProjectAttachmentS3KeySQL } from '../../../../../../queries/public/project-queries';
+import {
+  getPublicProjectAttachmentS3KeySQL,
+  getPublicProjectReportAttachmentS3KeySQL
+} from '../../../../../../queries/public/project-queries';
 
 const defaultLog = getLogger('/api/public/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
-export const GET: Operation = [getSingleAttachmentURL()];
+export const POST: Operation = [getSingleAttachmentURL()];
 
-const apiDoc = attachmentApiDocObject(
-  'Retrieves the signed url of an attachment in a public (published) project by its file name.',
-  'GET response containing the signed url of an attachment.'
-);
-const { security, ...publicApiDoc } = apiDoc;
-
-GET.apiDoc = publicApiDoc;
+POST.apiDoc = {
+  description: 'Retrieves the signed url of an attachment in a public (published) project by its file name.',
+  tags: ['attachment'],
+  parameters: [
+    {
+      in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'attachmentId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    }
+  ],
+  requestBody: {
+    description: 'Current attachment type for public (published) project attachment.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object'
+        }
+      }
+    }
+  },
+  responses: {
+    200: {
+      description: 'Response containing the signed url of an attachment.',
+      content: {
+        'text/plain': {
+          schema: {
+            type: 'number'
+          }
+        }
+      }
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
+  }
+};;
 
 export function getSingleAttachmentURL(): RequestHandler {
   return async (req, res) => {
@@ -33,10 +78,17 @@ export function getSingleAttachmentURL(): RequestHandler {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
 
+    if (!req.body || !req.body.attachmentType) {
+      throw new HTTP400('Missing required body param `attachmentType`');
+    }
+
     const connection = getAPIUserDBConnection();
 
     try {
-      const getProjectAttachmentS3KeySQLStatement = getPublicProjectAttachmentS3KeySQL(Number(req.params.attachmentId));
+      const getProjectAttachmentS3KeySQLStatement =
+        req.body.attachmentType === 'Report'
+          ? getPublicProjectReportAttachmentS3KeySQL(Number(req.params.attachmentId))
+          : getPublicProjectAttachmentS3KeySQL(Number(req.params.attachmentId));
 
       if (!getProjectAttachmentS3KeySQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

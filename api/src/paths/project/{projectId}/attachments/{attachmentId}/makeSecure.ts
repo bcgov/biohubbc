@@ -5,7 +5,9 @@ import { Operation } from 'express-openapi';
 import {
   getProjectAttachmentSecurityRuleSQL,
   applyProjectAttachmentSecurityRuleSQL,
-  addProjectAttachmentSecurityRuleSQL
+  addProjectAttachmentSecurityRuleSQL,
+  getProjectReportAttachmentSecurityRuleSQL,
+  addProjectReportAttachmentSecurityRuleSQL
 } from '../../../../../queries/project/project-attachments-queries';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
@@ -42,6 +44,16 @@ PUT.apiDoc = {
       required: true
     }
   ],
+  requestBody: {
+    description: 'Current attachment type for project attachment.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object'
+        }
+      }
+    }
+  },
   responses: {
     200: {
       description: 'Project attachment make secure security status response.',
@@ -79,19 +91,28 @@ export function makeProjectAttachmentSecure(): RequestHandler {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
 
+    if (!req.body || !req.body.attachmentType) {
+      throw new HTTP400('Missing required body param `attachmentType`');
+    }
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
       // Step 1: Check if security rule already exists
-      let securityRuleId = await getExistingSecurityToken(Number(req.params.attachmentId), connection);
+      let securityRuleId = await getExistingSecurityToken(
+        Number(req.params.attachmentId),
+        req.body.attachmentType,
+        connection
+      );
 
       // Step 2: Create security rule if it does not exist
       if (!securityRuleId) {
         securityRuleId = await createNewSecurityRule(
           Number(req.params.projectId),
           Number(req.params.attachmentId),
+          req.body.attachmentType,
           connection
         );
       }
@@ -114,9 +135,13 @@ export function makeProjectAttachmentSecure(): RequestHandler {
 
 export const getExistingSecurityToken = async (
   attachmentId: number,
+  attachmentType: string,
   connection: IDBConnection
 ): Promise<number | null> => {
-  const getSecurityRuleSQLStatement = getProjectAttachmentSecurityRuleSQL(attachmentId);
+  const getSecurityRuleSQLStatement =
+    attachmentType === 'Report'
+      ? getProjectReportAttachmentSecurityRuleSQL(attachmentId)
+      : getProjectAttachmentSecurityRuleSQL(attachmentId);
 
   if (!getSecurityRuleSQLStatement) {
     throw new HTTP400('Failed to build SQL get project attachment security rule statement');
@@ -139,9 +164,13 @@ export const getExistingSecurityToken = async (
 export const createNewSecurityRule = async (
   projectId: number,
   attachmentId: number,
+  attachmentType: string,
   connection: IDBConnection
 ): Promise<number> => {
-  const createSecurityRuleSQLStatement = addProjectAttachmentSecurityRuleSQL(projectId, attachmentId);
+  const createSecurityRuleSQLStatement =
+    attachmentType === 'Report'
+      ? addProjectReportAttachmentSecurityRuleSQL(projectId, attachmentId)
+      : addProjectAttachmentSecurityRuleSQL(projectId, attachmentId);
 
   if (!createSecurityRuleSQLStatement) {
     throw new HTTP400('Failed to build SQL insert project attachment security rule statement');

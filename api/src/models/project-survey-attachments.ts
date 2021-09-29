@@ -1,18 +1,18 @@
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('models/project-attachments');
+const defaultLog = getLogger('models/project-survey-attachments');
 
 /**
- * Pre-processes GET project attachments data
+ * Pre-processes GET project/survey attachments data
  *
  * @export
- * @class GetProjectAttachmentsData
+ * @class GetAttachmentsData
  */
-export class GetProjectAttachmentsData {
+export class GetAttachmentsData {
   attachmentsList: any[];
 
   constructor(attachmentsData?: any) {
-    defaultLog.debug({ label: 'GetProjectAttachmentsData', message: 'params', attachmentsData });
+    defaultLog.debug({ label: 'GetAttachmentsData', message: 'params', attachmentsData });
 
     this.attachmentsList =
       (attachmentsData?.length &&

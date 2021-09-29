@@ -14,7 +14,7 @@ export interface IGetProjectAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken?: any;
+  securityToken: any;
 }
 
 /**

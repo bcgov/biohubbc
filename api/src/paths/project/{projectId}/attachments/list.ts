@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { GetProjectAttachmentsData } from '../../../../models/project-attachments';
+import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
 import {
   getProjectAttachmentsSQL,
   getProjectReportAttachmentsSQL
@@ -104,7 +104,7 @@ export function getAttachments(): RequestHandler {
           reportAttachmentsData &&
           attachmentsData.rows &&
           reportAttachmentsData.rows &&
-          new GetProjectAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
+          new GetAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
         null;
 
       return res.status(200).json(getAttachmentsData);

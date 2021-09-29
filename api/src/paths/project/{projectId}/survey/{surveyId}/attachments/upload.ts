@@ -7,7 +7,9 @@ import { HTTP400 } from '../../../../../../errors/CustomError';
 import {
   getSurveyAttachmentByFileNameSQL,
   postSurveyAttachmentSQL,
-  putSurveyAttachmentSQL
+  postSurveyReportAttachmentSQL,
+  putSurveyAttachmentSQL,
+  putSurveyReportAttachmentSQL
 } from '../../../../../../queries/survey/survey-attachments-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
@@ -90,6 +92,10 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
+    if (!req.body || !req.body.attachmentType) {
+      throw new HTTP400('Missing attachment file type');
+    }
+
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
 
     defaultLog.debug({
@@ -114,8 +120,14 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      // Insert file metadata into survey_attachment table
-      await upsertSurveyAttachment(rawMediaFile, Number(req.params.projectId), Number(req.params.surveyId), connection);
+      // Insert file metadata into survey_attachment or survey_report_attachment table
+      await upsertSurveyAttachment(
+        rawMediaFile,
+        Number(req.params.projectId),
+        Number(req.params.surveyId),
+        req.body.attachmentType,
+        connection
+      );
 
       // Upload file to S3
       const key = generateS3FileKey({
@@ -151,6 +163,7 @@ export const upsertSurveyAttachment = async (
   file: Express.Multer.File,
   projectId: number,
   surveyId: number,
+  attachmentType: string,
   connection: IDBConnection
 ): Promise<number> => {
   const getSqlStatement = getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
@@ -162,7 +175,10 @@ export const upsertSurveyAttachment = async (
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
 
   if (getResponse && getResponse.rowCount > 0) {
-    const updateSqlStatement = putSurveyAttachmentSQL(surveyId, file.originalname);
+    const updateSqlStatement =
+      attachmentType === 'Report'
+        ? putSurveyReportAttachmentSQL(surveyId, file.originalname)
+        : putSurveyAttachmentSQL(surveyId, file.originalname, attachmentType);
 
     if (!updateSqlStatement) {
       throw new HTTP400('Failed to build SQL update statement');
@@ -180,7 +196,10 @@ export const upsertSurveyAttachment = async (
 
   const key = generateS3FileKey({ projectId: projectId, surveyId: surveyId, fileName: file.originalname });
 
-  const insertSqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, projectId, surveyId, key);
+  const insertSqlStatement =
+    attachmentType === 'Report'
+      ? postSurveyReportAttachmentSQL(file.originalname, file.size, projectId, surveyId, key)
+      : postSurveyAttachmentSQL(file.originalname, file.size, attachmentType, projectId, surveyId, key);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

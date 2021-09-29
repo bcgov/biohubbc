@@ -61,9 +61,9 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
     });
   };
 
-  const viewFileContents = async (attachment: any) => {
+  const viewFileContents = async (attachment: IGetProjectAttachment) => {
     try {
-      const response = await biohubApi.public.project.getAttachmentSignedURL(props.projectId, attachment.id);
+      const response = await biohubApi.public.project.getAttachmentSignedURL(props.projectId, attachment.id, attachment.fileType);
 
       if (!response) {
         // TODO: handle showing message indicating that no access to view file

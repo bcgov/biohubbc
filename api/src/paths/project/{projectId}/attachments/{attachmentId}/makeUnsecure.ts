@@ -4,6 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import {
   removeProjectAttachmentSecurityTokenSQL,
+  removeProjectReportAttachmentSecurityTokenSQL,
   removeSecurityRecordSQL
 } from '../../../../../queries/project/project-attachments-queries';
 import { SYSTEM_ROLE } from '../../../../../constants/roles';
@@ -42,7 +43,7 @@ PUT.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Current security token value for project attachment.',
+    description: 'Current security token value and attachment type for project attachment.',
     content: {
       'application/json': {
         schema: {
@@ -88,7 +89,7 @@ export function makeProjectAttachmentUnsecure(): RequestHandler {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
 
-    if (!req.body) {
+    if (!req.body || !req.body.attachmentType || !req.body.securityToken) {
       throw new HTTP400('Missing required request body');
     }
 
@@ -101,7 +102,7 @@ export function makeProjectAttachmentUnsecure(): RequestHandler {
       await removeSecurityRecord(req.body.securityToken, connection);
 
       // Step 2: Remove security token from project attachment row
-      await removeProjectAttachmentSecurityToken(Number(req.params.attachmentId), connection);
+      await removeProjectAttachmentSecurityToken(Number(req.params.attachmentId), req.body.attachmentType, connection);
 
       await connection.commit();
 
@@ -135,9 +136,13 @@ export const removeSecurityRecord = async (securityToken: any, connection: IDBCo
 
 export const removeProjectAttachmentSecurityToken = async (
   attachmentId: number,
+  attachmentType: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const removeProjectAttachmentSecurityTokenSQLStatement = removeProjectAttachmentSecurityTokenSQL(attachmentId);
+  const removeProjectAttachmentSecurityTokenSQLStatement =
+    attachmentType === 'Report'
+      ? removeProjectReportAttachmentSecurityTokenSQL(attachmentId)
+      : removeProjectAttachmentSecurityTokenSQL(attachmentId);
 
   if (!removeProjectAttachmentSecurityTokenSQLStatement) {
     throw new HTTP400('Failed to build SQL remove project attachment security token statement');

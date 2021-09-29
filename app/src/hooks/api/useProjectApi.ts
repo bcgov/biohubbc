@@ -174,10 +174,17 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} attachmentId
+   * @param {string} attachmentType
    * @return {*}  {Promise<any>}
    */
-  const makeAttachmentSecure = async (projectId: number, attachmentId: number): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`);
+  const makeAttachmentSecure = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string
+  ): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`, {
+      attachmentType
+    });
 
     return data;
   };
@@ -188,11 +195,18 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {any} securityToken
+   * @param {string} attachmentType
    * @return {*}  {Promise<any>}
    */
-  const makeAttachmentUnsecure = async (projectId: number, attachmentId: number, securityToken: any): Promise<any> => {
+  const makeAttachmentUnsecure = async (
+    projectId: number,
+    attachmentId: number,
+    securityToken: any,
+    attachmentType: string
+  ): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`, {
-      securityToken
+      securityToken,
+      attachmentType
     });
 
     return data;
@@ -289,7 +303,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   /**
    * Get public (published) project attachments based on project ID
    *
-   * @param {AxiosInstance} axios
+   * @param {number} projectId
    * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
    */
   const getProjectAttachments = async (projectId: number): Promise<IGetProjectAttachmentsResponse> => {
@@ -301,11 +315,13 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   /**
    * Get public (published) project attachment S3 url based on project and attachment ID
    *
-   * @param {AxiosInstance} axios
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
    * @returns {*} {Promise<string>}
    */
-  const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
-    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`);
+  const getAttachmentSignedURL = async (projectId: number, attachmentId: number, attachmentType: string): Promise<string> => {
+    const { data } = await axios.post(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, { attachmentType });
 
     return data;
   };

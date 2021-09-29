@@ -11,7 +11,7 @@ import AttachmentsList from 'components/attachments/AttachmentsList';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
-import { ProjectAttachmentType, ProjectAttachmentValidExtensions } from 'constants/attachments';
+import { ProjectSurveyAttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -96,9 +96,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               onChange={(e) => setAttachmentType(e.target.value as string)}
               displayEmpty
               inputProps={{ 'aria-label': 'Attachment Type' }}>
-              {Object.keys(ProjectAttachmentType).map((key) => (
-                <MenuItem key={key} value={ProjectAttachmentType[key]}>
-                  {ProjectAttachmentType[key]}
+              {Object.keys(ProjectSurveyAttachmentType).map((key) => (
+                <MenuItem key={key} value={ProjectSurveyAttachmentType[key]}>
+                  {ProjectSurveyAttachmentType[key]}
                 </MenuItem>
               ))}
             </Select>
@@ -108,7 +108,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
               uploadHandler={uploadAttachments()}
               dropZoneProps={{
                 acceptedFileExtensions:
-                  ProjectAttachmentValidExtensions[getKeyByValue(ProjectAttachmentType, attachmentType) || 'OTHER']
+                  ProjectSurveyAttachmentValidExtensions[
+                    getKeyByValue(ProjectSurveyAttachmentType, attachmentType) || 'OTHER'
+                  ]
               }}
             />
           )}

@@ -139,7 +139,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (!props.surveyId) {
-        response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id);
+        response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id, attachment.fileType);
       }
 
       if (!response) {
@@ -164,7 +164,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         response = await biohubApi.project.makeAttachmentUnsecure(
           props.projectId,
           attachment.id,
-          attachment.securityToken
+          attachment.securityToken,
+          attachment.fileType
         );
       }
 

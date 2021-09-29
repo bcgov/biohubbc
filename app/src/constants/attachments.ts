@@ -1,4 +1,4 @@
-export enum ProjectAttachmentType {
+export enum ProjectSurveyAttachmentType {
   AUDIO = 'Audio',
   DATA = 'Data File',
   IMAGE = 'Image',
@@ -7,7 +7,7 @@ export enum ProjectAttachmentType {
   VIDEO = 'Video'
 }
 
-export enum ProjectAttachmentValidExtensions {
+export enum ProjectSurveyAttachmentValidExtensions {
   AUDIO = '.wav, .mp3, .mp4, .wma',
   DATA = '.txt, .xls, .xlsx, .xlsm, .xlsb, .accdb, .mdb, .ods, .csv',
   IMAGE = '.gif, .png, .jpg, .jpeg, .svg, .tiff, .bmp, .tif',
