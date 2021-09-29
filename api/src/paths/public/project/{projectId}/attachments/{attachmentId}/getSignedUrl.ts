@@ -64,7 +64,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/default'
     }
   }
-};;
+};
 
 export function getSingleAttachmentURL(): RequestHandler {
   return async (req, res) => {

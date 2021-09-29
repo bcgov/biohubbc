@@ -138,7 +138,14 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      if (!props.surveyId) {
+      if (props.surveyId) {
+        response = await biohubApi.survey.makeAttachmentSecure(
+          props.projectId,
+          props.surveyId,
+          attachment.id,
+          attachment.fileType
+        );
+      } else {
         response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id, attachment.fileType);
       }
 
@@ -160,7 +167,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      if (!props.surveyId) {
+      if (props.surveyId) {
+        response = await biohubApi.survey.makeAttachmentUnsecure(
+          props.projectId,
+          props.surveyId,
+          attachment.id,
+          attachment.securityToken,
+          attachment.fileType
+        );
+      } else {
         response = await biohubApi.project.makeAttachmentUnsecure(
           props.projectId,
           attachment.id,
@@ -187,10 +202,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
-                {!props.surveyId && <TableCell>Type</TableCell>}
+                <TableCell>Type</TableCell>
                 <TableCell>Last Modified</TableCell>
                 <TableCell>File Size</TableCell>
-                {!props.surveyId && <TableCell>Security Status</TableCell>}
+                <TableCell>Security Status</TableCell>
                 <TableCell></TableCell>
               </TableRow>
             </TableHead>
@@ -203,26 +218,24 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         {row.fileName}
                       </Link>
                     </TableCell>
-                    {!props.surveyId && <TableCell>{row.fileType}</TableCell>}
+                    <TableCell>{row.fileType}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                    {!props.surveyId && (
-                      <TableCell>
-                        <Box my={-1}>
-                          <Button
-                            color="primary"
-                            variant="text"
-                            startIcon={
-                              <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                            }
-                            aria-label="toggle attachment security status"
-                            data-testid="toggle-attachment-security-status"
-                            onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
-                            {row.securityToken ? 'Secured' : 'Unsecured'}
-                          </Button>
-                        </Box>
-                      </TableCell>
-                    )}
+                    <TableCell>
+                      <Box my={-1}>
+                        <Button
+                          color="primary"
+                          variant="text"
+                          startIcon={
+                            <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                          }
+                          aria-label="toggle attachment security status"
+                          data-testid="toggle-attachment-security-status"
+                          onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
+                          {row.securityToken ? 'Secured' : 'Unsecured'}
+                        </Button>
+                      </Box>
+                    </TableCell>
                     <TableCell align="right">
                       <Box my={-1}>
                         <IconButton
@@ -238,7 +251,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 ))}
               {!props.attachmentsList.length && (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
+                  <TableCell colSpan={5} align="center">
                     No Attachments
                   </TableCell>
                 </TableRow>

@@ -2,24 +2,24 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { applyAttachmentSecurityRuleSQL } from '../../../../../../../queries/project/project-attachments-queries';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { getLogger } from '../../../../../../../utils/logger';
 import {
-  getProjectAttachmentSecurityRuleSQL,
-  applyAttachmentSecurityRuleSQL,
-  addProjectAttachmentSecurityRuleSQL,
-  getProjectReportAttachmentSecurityRuleSQL,
-  addProjectReportAttachmentSecurityRuleSQL
-} from '../../../../../queries/project/project-attachments-queries';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { getLogger } from '../../../../../utils/logger';
+  addSurveyAttachmentSecurityRuleSQL,
+  addSurveyReportAttachmentSecurityRuleSQL,
+  getSurveyAttachmentSecurityRuleSQL,
+  getSurveyReportAttachmentSecurityRuleSQL
+} from '../../../../../../../queries/survey/survey-attachments-queries';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/makeSecure');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/makeSecure');
 
-export const PUT: Operation = [makeProjectAttachmentSecure()];
+export const PUT: Operation = [makeSurveyAttachmentSecure()];
 
 PUT.apiDoc = {
-  description: 'Make security status of a project attachment secure.',
+  description: 'Make security status of a survey attachment secure.',
   tags: ['attachment', 'security_status'],
   security: [
     {
@@ -37,6 +37,14 @@ PUT.apiDoc = {
     },
     {
       in: 'path',
+      name: 'surveyId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'attachmentId',
       schema: {
         type: 'number'
@@ -45,7 +53,7 @@ PUT.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Current attachment type for project attachment.',
+    description: 'Current attachment type for survey attachment.',
     content: {
       'application/json': {
         schema: {
@@ -56,7 +64,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project attachment make secure security status response.',
+      description: 'Survey attachment make secure security status response.',
       content: {
         'application/json': {
           schema: {
@@ -75,16 +83,20 @@ PUT.apiDoc = {
   }
 };
 
-export function makeProjectAttachmentSecure(): RequestHandler {
+export function makeSurveyAttachmentSecure(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'Make security status of a project attachment secure',
+      label: 'Make security status of a survey attachment secure',
       message: 'params',
       req_params: req.params
     });
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
+    }
+
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
     }
 
     if (!req.params.attachmentId) {
@@ -110,7 +122,6 @@ export function makeProjectAttachmentSecure(): RequestHandler {
       // Step 2: Create security rule if it does not exist
       if (!securityRuleId) {
         securityRuleId = await createNewSecurityRule(
-          Number(req.params.projectId),
           Number(req.params.attachmentId),
           req.body.attachmentType,
           connection
@@ -124,7 +135,7 @@ export function makeProjectAttachmentSecure(): RequestHandler {
 
       return res.status(200).json(1);
     } catch (error) {
-      defaultLog.debug({ label: 'makeProjectAttachmentSecure', message: 'error', error });
+      defaultLog.debug({ label: 'makeSurveyAttachmentSecure', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -140,11 +151,11 @@ export const getExistingSecurityRule = async (
 ): Promise<number | null> => {
   const getSecurityRuleSQLStatement =
     attachmentType === 'Report'
-      ? getProjectReportAttachmentSecurityRuleSQL(attachmentId)
-      : getProjectAttachmentSecurityRuleSQL(attachmentId);
+      ? getSurveyReportAttachmentSecurityRuleSQL(attachmentId)
+      : getSurveyAttachmentSecurityRuleSQL(attachmentId);
 
   if (!getSecurityRuleSQLStatement) {
-    throw new HTTP400('Failed to build SQL get project attachment security rule statement');
+    throw new HTTP400('Failed to build SQL get survey attachment security rule statement');
   }
 
   const getSecurityRuleSQLResponse = await connection.query(
@@ -162,18 +173,17 @@ export const getExistingSecurityRule = async (
 };
 
 export const createNewSecurityRule = async (
-  projectId: number,
   attachmentId: number,
   attachmentType: string,
   connection: IDBConnection
 ): Promise<number> => {
   const createSecurityRuleSQLStatement =
     attachmentType === 'Report'
-      ? addProjectReportAttachmentSecurityRuleSQL(projectId, attachmentId)
-      : addProjectAttachmentSecurityRuleSQL(projectId, attachmentId);
+      ? addSurveyReportAttachmentSecurityRuleSQL(attachmentId)
+      : addSurveyAttachmentSecurityRuleSQL(attachmentId);
 
   if (!createSecurityRuleSQLStatement) {
-    throw new HTTP400('Failed to build SQL insert project attachment security rule statement');
+    throw new HTTP400('Failed to build SQL insert survey attachment security rule statement');
   }
 
   const createSecurityRuleSQLResponse = await connection.query(
@@ -189,7 +199,7 @@ export const createNewSecurityRule = async (
     null;
 
   if (!securityRuleId) {
-    throw new HTTP400('Failed to insert project attachment security rule');
+    throw new HTTP400('Failed to insert survey attachment security rule');
   }
 
   return securityRuleId;
@@ -202,7 +212,7 @@ export const applyProjectAttachmentSecurityRule = async (
   const applySecurityRuleSQLStatement = applyAttachmentSecurityRuleSQL(securityRuleId);
 
   if (!applySecurityRuleSQLStatement) {
-    throw new HTTP400('Failed to build SQL apply project attachment security rule statement');
+    throw new HTTP400('Failed to build SQL apply survey attachment security rule statement');
   }
 
   const applySecurityRuleSQLResponse = await connection.query(
@@ -211,6 +221,6 @@ export const applyProjectAttachmentSecurityRule = async (
   );
 
   if (!applySecurityRuleSQLResponse) {
-    throw new HTTP400('Failed to apply project attachment security rule');
+    throw new HTTP400('Failed to apply survey attachment security rule');
   }
 };

@@ -5,8 +5,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getLogger } from '../../../../../utils/logger';
-import { getPublicProjectAttachmentsSQL, getPublicProjectReportAttachmentsSQL } from '../../../../../queries/public/project-queries';
-import { GetAttachmentsData } from '../../../../../models/project-survey-attachments';
+import {
+  getPublicProjectAttachmentsSQL,
+  getPublicProjectReportAttachmentsSQL
+} from '../../../../../queries/public/project-queries';
+import { GetPublicAttachmentsData } from '../../../../../models/public/project';
 
 const defaultLog = getLogger('/api/public/project/{projectId}/attachments/list');
 
@@ -97,7 +100,7 @@ export function getPublicProjectAttachments(): RequestHandler {
           reportAttachmentsData &&
           attachmentsData.rows &&
           reportAttachmentsData.rows &&
-          new GetAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
+          new GetPublicAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
         null;
 
       return res.status(200).json(getAttachmentsData);

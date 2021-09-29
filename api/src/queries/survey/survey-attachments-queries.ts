@@ -390,3 +390,197 @@ export const putSurveyReportAttachmentSQL = (surveyId: number, fileName: string)
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get security rule for survey report attachment table
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyReportAttachmentSecurityRuleSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyReportAttachmentSecurityRuleSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const query = `survey_report_attachment_id=${attachmentId}`;
+
+  const sqlStatement: SQLStatement = SQL`
+    select security_rule_id as id
+    from security_rule sr
+    where sr.rule_definition->0 ->> 'rule' = ${query};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyReportAttachmentSecurityRuleSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get security rule for survey attachments table
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyAttachmentSecurityRuleSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyAttachmentSecurityRuleSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const query = `survey_attachment_id=${attachmentId}`;
+
+  const sqlStatement: SQLStatement = SQL`
+    select security_rule_id as id
+    from security_rule sr
+    where sr.rule_definition->0 ->> 'rule' = ${query};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyAttachmentSecurityRuleSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to add security rule for survey attachments table
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const addSurveyAttachmentSecurityRuleSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'addSurveyAttachmentSecurityRuleSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const ruleDefinition = [{ target: 'survey_attachment', rule: `survey_attachment_id=${attachmentId}` }];
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO security_rule (
+      rule_definition,
+      record_effective_date
+    ) VALUES (
+      ${JSON.stringify(ruleDefinition)},
+      now()
+    )
+    RETURNING
+      security_rule_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'addSurveyAttachmentSecurityRuleSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to add security rule for survey report attachment table
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const addSurveyReportAttachmentSecurityRuleSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'addSurveyReportAttachmentSecurityRuleSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const ruleDefinition = [{ target: 'survey_report_attachment', rule: `survey_report_attachment_id=${attachmentId}` }];
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO security_rule (
+      rule_definition,
+      record_effective_date
+    ) VALUES (
+      ${JSON.stringify(ruleDefinition)},
+      now()
+    )
+    RETURNING
+      security_rule_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'addSurveyReportAttachmentSecurityRuleSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to set security token to null for a survey attachment row.
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const removeSurveyAttachmentSecurityTokenSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'removeSurveyAttachmentSecurityTokenSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE survey_attachment
+    SET security_token = ${null}
+    WHERE survey_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'removeSurveyAttachmentSecurityTokenSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to set security token to null for a survey report attachment row.
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const removeSurveyReportAttachmentSecurityTokenSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'removeSurveyReportAttachmentSecurityTokenSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE survey_report_attachment
+    SET security_token = ${null}
+    WHERE survey_report_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'removeSurveyReportAttachmentSecurityTokenSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

@@ -472,7 +472,7 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
- export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
+export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getPublicProjectReportAttachmentsSQL', message: 'params', projectId });
 
   if (!projectId) {
@@ -548,7 +548,7 @@ export const getPublicProjectAttachmentS3KeySQL = (attachmentId: number): SQLSta
  * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
- export const getPublicProjectReportAttachmentS3KeySQL = (attachmentId: number): SQLStatement | null => {
+export const getPublicProjectReportAttachmentS3KeySQL = (attachmentId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getPublicProjectReportAttachmentS3KeySQL', message: 'params', attachmentId });
 
   if (!attachmentId) {

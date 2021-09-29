@@ -1,6 +1,6 @@
-# Static Deploy On OpensShift
+# Static Deploy On OpenShift
 # Builds and Deploys merged PR's to persistent pods/services/routes/etc in the OpenShift Dev or Test or Prod environment.
-name: Static Deploy on OpensShift
+name: Static Deploy on OpenShift
 
 on:
   pull_request:

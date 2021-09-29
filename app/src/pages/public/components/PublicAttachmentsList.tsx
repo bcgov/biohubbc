@@ -63,7 +63,11 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
 
   const viewFileContents = async (attachment: IGetProjectAttachment) => {
     try {
-      const response = await biohubApi.public.project.getAttachmentSignedURL(props.projectId, attachment.id, attachment.fileType);
+      const response = await biohubApi.public.project.getAttachmentSignedURL(
+        props.projectId,
+        attachment.id,
+        attachment.fileType
+      );
 
       if (!response) {
         // TODO: handle showing message indicating that no access to view file
@@ -84,6 +88,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
             <TableHead>
               <TableRow>
                 <TableCell className={classes.heading}>Name</TableCell>
+                <TableCell className={classes.heading}>Type</TableCell>
                 <TableCell className={classes.heading}>Last Modified</TableCell>
                 <TableCell className={classes.heading}>File Size</TableCell>
                 <TableCell className={classes.heading}>Security Status</TableCell>
@@ -108,6 +113,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                         {row.fileName}
                       </Link>
                     </TableCell>
+                    <TableCell>{row.fileType}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
                     <TableCell>

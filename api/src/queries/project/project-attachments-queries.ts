@@ -4,13 +4,13 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/project/project-attachments-queries');
 
 /**
- * SQL query to apply security rule for project attachments table
+ * SQL query to apply security rule for any attachments table
  *
  * @param {number | null} securityRuleId
  * @returns {SQLStatement} sql query object
  */
-export const applyProjectAttachmentSecurityRuleSQL = (securityRuleId: number | null): SQLStatement | null => {
-  defaultLog.debug({ label: 'applyProjectAttachmentSecurityRuleSQL', message: 'params', securityRuleId });
+export const applyAttachmentSecurityRuleSQL = (securityRuleId: number | null): SQLStatement | null => {
+  defaultLog.debug({ label: 'applyAttachmentSecurityRuleSQL', message: 'params', securityRuleId });
 
   if (!securityRuleId) {
     return null;
@@ -19,7 +19,7 @@ export const applyProjectAttachmentSecurityRuleSQL = (securityRuleId: number | n
   const sqlStatement: SQLStatement = SQL`SELECT api_apply_security_rule(${securityRuleId})`;
 
   defaultLog.debug({
-    label: 'applyProjectAttachmentSecurityRuleSQL',
+    label: 'applyAttachmentSecurityRuleSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

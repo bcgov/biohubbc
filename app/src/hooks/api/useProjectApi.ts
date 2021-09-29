@@ -320,8 +320,14 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
    * @param {string} attachmentType
    * @returns {*} {Promise<string>}
    */
-  const getAttachmentSignedURL = async (projectId: number, attachmentId: number, attachmentType: string): Promise<string> => {
-    const { data } = await axios.post(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, { attachmentType });
+  const getAttachmentSignedURL = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string
+  ): Promise<string> => {
+    const { data } = await axios.post(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+      attachmentType
+    });
 
     return data;
   };
