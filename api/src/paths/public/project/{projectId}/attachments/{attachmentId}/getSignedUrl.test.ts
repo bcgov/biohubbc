@@ -41,6 +41,9 @@ describe('getSingleAttachmentURL', () => {
     params: {
       projectId: 1,
       attachmentId: 2
+    },
+    body: {
+      attachmentType: 'Image'
     }
   } as any;
 
@@ -89,6 +92,24 @@ describe('getSingleAttachmentURL', () => {
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Missing required path param `attachmentId`');
+    }
+  });
+
+  it('should throw an error when attachmentType is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = get_signed_url.getSingleAttachmentURL();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body param `attachmentType`');
     }
   });
 

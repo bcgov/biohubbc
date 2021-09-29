@@ -3,13 +3,14 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as makeUnsecure from './makeUnsecure';
-import * as db from '../../../../../database/db';
-import * as project_attachments_queries from '../../../../../queries/project/project-attachments-queries';
+import * as db from '../../../../../../../database/db';
+import * as project_attachments_queries from '../../../../../../../queries/project/project-attachments-queries';
+import * as survey_attachments_queries from '../../../../../../../queries/survey/survey-attachments-queries';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
-describe('makeProjectAttachmentUnsecure', () => {
+describe('makeSurveyAttachmentUnsecure', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -39,6 +40,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     keycloak_token: {},
     params: {
       projectId: 1,
+      surveyId: 3,
       attachmentId: 2
     },
     body: {
@@ -63,10 +65,28 @@ describe('makeProjectAttachmentUnsecure', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required path param `projectId`');
+    }
+  });
+
+  it('should throw an error when surveyId is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
@@ -81,7 +101,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
@@ -99,7 +119,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -113,7 +133,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(
         { ...sampleReq, body: { attachmentType: null, securityToken: 'sometoken' } },
@@ -131,7 +151,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(
         { ...sampleReq, body: { attachmentType: 'Image', securityToken: null } },
@@ -150,7 +170,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(null);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -171,7 +191,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -181,7 +201,7 @@ describe('makeProjectAttachmentUnsecure', () => {
     }
   });
 
-  it('should throw an error when fails to build SQL remove project attachment security token statement', async () => {
+  it('should throw an error when fails to build SQL remove survey attachment security token statement', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.onFirstCall().resolves({
@@ -190,20 +210,20 @@ describe('makeProjectAttachmentUnsecure', () => {
 
     sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
-    sinon.stub(project_attachments_queries, 'removeProjectAttachmentSecurityTokenSQL').returns(null);
+    sinon.stub(survey_attachments_queries, 'removeSurveyAttachmentSecurityTokenSQL').returns(null);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL remove project attachment security token statement');
+      expect(actualError.message).to.equal('Failed to build SQL remove survey attachment security token statement');
     }
   });
 
-  it('should throw an error when fails to remove project attachment security token', async () => {
+  it('should throw an error when fails to remove survey attachment security token', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -218,16 +238,16 @@ describe('makeProjectAttachmentUnsecure', () => {
 
     sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
-    sinon.stub(project_attachments_queries, 'removeProjectAttachmentSecurityTokenSQL').returns(SQL`something`);
+    sinon.stub(survey_attachments_queries, 'removeSurveyAttachmentSecurityTokenSQL').returns(SQL`something`);
 
     try {
-      const result = makeUnsecure.makeProjectAttachmentUnsecure();
+      const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to remove project attachment security token');
+      expect(actualError.message).to.equal('Failed to remove survey attachment security token');
     }
   });
 
@@ -246,9 +266,9 @@ describe('makeProjectAttachmentUnsecure', () => {
 
     sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
     sinon.stub(project_attachments_queries, 'removeSecurityRecordSQL').returns(SQL`something`);
-    sinon.stub(project_attachments_queries, 'removeProjectAttachmentSecurityTokenSQL').returns(SQL`something`);
+    sinon.stub(survey_attachments_queries, 'removeSurveyAttachmentSecurityTokenSQL').returns(SQL`something`);
 
-    const result = makeUnsecure.makeProjectAttachmentUnsecure();
+    const result = makeUnsecure.makeSurveyAttachmentUnsecure();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 

@@ -7,7 +7,7 @@ import {
   postProjectAttachmentSQL,
   getProjectAttachmentByFileNameSQL,
   putProjectAttachmentSQL,
-  applyProjectAttachmentSecurityRuleSQL,
+  applyAttachmentSecurityRuleSQL,
   addProjectAttachmentSecurityRuleSQL,
   getProjectAttachmentSecurityRuleSQL,
   removeProjectAttachmentSecurityTokenSQL,
@@ -45,15 +45,15 @@ describe('getProjectReportAttachmentsSQL', () => {
   });
 });
 
-describe('applyProjectAttachmentSecurityRuleSQL', () => {
+describe('applyAttachmentSecurityRuleSQL', () => {
   it('returns null response when null securityRuleId provided', () => {
-    const response = applyProjectAttachmentSecurityRuleSQL(null);
+    const response = applyAttachmentSecurityRuleSQL(null);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid securityRuleId provided', () => {
-    const response = applyProjectAttachmentSecurityRuleSQL(1);
+    const response = applyAttachmentSecurityRuleSQL(1);
 
     expect(response).to.not.be.null;
   });
