@@ -204,7 +204,7 @@ export const insertSurveySummaryDetailsSQL = (
       parameter,
       stratum,
       parameter_value,
-      parameter_esitmate,
+      parameter_estimate,
       confidence_limit_lower,
       confidence_limit_upper,
       confidence_level_percent,
