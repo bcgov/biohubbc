@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Wednesday, September 29, 2021 12:50:45
+-- Date Created : Thursday, September 30, 2021 11:07:58
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -1948,6 +1948,97 @@ COMMENT ON TABLE summary_parameter_code IS 'Lookup values for parameter codes us
 ;
 
 -- 
+-- TABLE: summary_submission_message_class 
+--
+
+CREATE TABLE summary_submission_message_class(
+    summary_submission_message_class_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                                   varchar(50)       NOT NULL,
+    record_end_date                        date,
+    record_effective_date                  date              NOT NULL,
+    description                            varchar(250),
+    create_date                            timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                            integer           NOT NULL,
+    update_date                            timestamptz(6),
+    update_user                            integer,
+    revision_count                         integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT summary_submission_message_class_pk PRIMARY KEY (summary_submission_message_class_id)
+)
+;
+
+
+
+COMMENT ON COLUMN summary_submission_message_class.summary_submission_message_class_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_submission_message_class.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_class.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN summary_submission_message_class.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN summary_submission_message_class.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_class.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN summary_submission_message_class.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_class.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN summary_submission_message_class.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_class.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE summary_submission_message_class IS 'The classification of summary submission message types available to report.'
+;
+
+-- 
+-- TABLE: summary_submission_message_type 
+--
+
+CREATE TABLE summary_submission_message_type(
+    submission_message_type_id             integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    summary_submission_message_class_id    integer           NOT NULL,
+    name                                   varchar(50)       NOT NULL,
+    record_end_date                        date,
+    record_effective_date                  date              NOT NULL,
+    description                            varchar(250),
+    create_date                            timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                            integer           NOT NULL,
+    update_date                            timestamptz(6),
+    update_user                            integer,
+    revision_count                         integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT summary_submission_message_type_pk PRIMARY KEY (submission_message_type_id)
+)
+;
+
+
+
+COMMENT ON COLUMN summary_submission_message_type.submission_message_type_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_submission_message_type.summary_submission_message_class_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_submission_message_type.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_type.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN summary_submission_message_type.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN summary_submission_message_type.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_type.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN summary_submission_message_type.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_type.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN summary_submission_message_type.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_type.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE summary_submission_message_type IS 'The types of summary submission messages available to report. These messages may include metrics and validation concerns.'
+;
+
+-- 
 -- TABLE: survey 
 --
 
@@ -2320,6 +2411,7 @@ CREATE TABLE survey_summary_detail(
     study_area_id                   varchar(100)      NOT NULL,
     parameter                       varchar(100)      NOT NULL,
     stratum                         varchar(100)      NOT NULL,
+    parameter_method                varchar(200),
     parameter_value                 numeric(10, 0),
     parameter_esitmate              numeric(10, 0),
     parameter_denominator_value     numeric(14, 2),
@@ -2336,6 +2428,8 @@ CREATE TABLE survey_summary_detail(
     sample_variance                 numeric(20, 2),
     sight_variance                  numeric(20, 2),
     model_variance                  numeric(20, 2),
+    sightability_model              varchar(100),
+    outlier_blocks_removed          varchar(200),
     create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                     integer           NOT NULL,
     update_date                     timestamptz(6),
@@ -2356,6 +2450,8 @@ COMMENT ON COLUMN survey_summary_detail.study_area_id IS 'Study area identifier 
 COMMENT ON COLUMN survey_summary_detail.parameter IS 'The population metric that is quantified in the parameter value column. e.g. "All Individuals" mean the total number of individuals/animals observed in a study area or block.'
 ;
 COMMENT ON COLUMN survey_summary_detail.stratum IS 'The stratum as provided in the survey observation detail data.'
+;
+COMMENT ON COLUMN survey_summary_detail.parameter_method IS 'the method used to derive the value in column "parameter value". E.g. ''Observed - Total Count''.'
 ;
 COMMENT ON COLUMN survey_summary_detail.parameter_value IS 'A numerical observed value of the parameter. e.g. number of individuals, or population ratio, or relative abundance index, or density.'
 ;
@@ -2388,6 +2484,10 @@ COMMENT ON COLUMN survey_summary_detail.sample_variance IS 'The sample variance 
 COMMENT ON COLUMN survey_summary_detail.sight_variance IS 'The sight variance of the measured parameter.'
 ;
 COMMENT ON COLUMN survey_summary_detail.model_variance IS 'The model variance of the measured parameter.'
+;
+COMMENT ON COLUMN survey_summary_detail.sightability_model IS 'The sightability model of the data in the record.'
+;
+COMMENT ON COLUMN survey_summary_detail.outlier_blocks_removed IS 'The outlier blocks removed of the data record.'
 ;
 COMMENT ON COLUMN survey_summary_detail.create_date IS 'The datetime the record was created.'
 ;
@@ -2459,6 +2559,7 @@ COMMENT ON TABLE survey_summary_submission IS 'Provides a historical listing of 
 CREATE TABLE survey_summary_submission_message(
     submission_message_id           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     survey_summary_submission_id    integer           NOT NULL,
+    submission_message_type_id      integer           NOT NULL,
     event_timestamp                 TIMESTAMPTZ       NOT NULL,
     message                         varchar(3000),
     create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
@@ -2475,6 +2576,8 @@ CREATE TABLE survey_summary_submission_message(
 COMMENT ON COLUMN survey_summary_submission_message.submission_message_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_summary_submission_message.survey_summary_submission_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_summary_submission_message.submission_message_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_summary_submission_message.event_timestamp IS 'The timestamp of the associated event.'
 ;
@@ -3433,6 +3536,24 @@ CREATE UNIQUE INDEX submission_status_type_nuk1 ON submission_status_type(name, 
 CREATE UNIQUE INDEX summary_parameter_code_nuk1 ON summary_parameter_code(code, (record_end_date is NULL)) where record_end_date is null
 ;
 -- 
+-- INDEX: summary_submission_message_class_nuk1 
+--
+
+CREATE UNIQUE INDEX summary_submission_message_class_nuk1 ON summary_submission_message_class(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: summary_submission_message_type_nuk1 
+--
+
+CREATE UNIQUE INDEX summary_submission_message_type_nuk1 ON summary_submission_message_type(name, (record_end_date is NULL)) where record_end_date is null
+;
+-- 
+-- INDEX: "Ref215206" 
+--
+
+CREATE INDEX "Ref215206" ON summary_submission_message_type(summary_submission_message_class_id)
+;
+-- 
 -- INDEX: "Ref45147" 
 --
 
@@ -3545,6 +3666,12 @@ CREATE INDEX "Ref153199" ON survey_summary_submission(survey_id)
 --
 
 CREATE INDEX "Ref211201" ON survey_summary_submission_message(survey_summary_submission_id)
+;
+-- 
+-- INDEX: "Ref216207" 
+--
+
+CREATE INDEX "Ref216207" ON survey_summary_submission_message(submission_message_type_id)
 ;
 -- 
 -- INDEX: system_constant_uk1 
@@ -3982,6 +4109,16 @@ ALTER TABLE submission_status ADD CONSTRAINT "Refsubmission_status_type164"
 
 
 -- 
+-- TABLE: summary_submission_message_type 
+--
+
+ALTER TABLE summary_submission_message_type ADD CONSTRAINT "Refsummary_submission_message_class206" 
+    FOREIGN KEY (summary_submission_message_class_id)
+    REFERENCES summary_submission_message_class(summary_submission_message_class_id)
+;
+
+
+-- 
 -- TABLE: survey 
 --
 
@@ -4098,6 +4235,11 @@ ALTER TABLE survey_summary_submission ADD CONSTRAINT "Refsurvey199"
 ALTER TABLE survey_summary_submission_message ADD CONSTRAINT "Refsurvey_summary_submission201" 
     FOREIGN KEY (survey_summary_submission_id)
     REFERENCES survey_summary_submission(survey_summary_submission_id)
+;
+
+ALTER TABLE survey_summary_submission_message ADD CONSTRAINT "Refsummary_submission_message_type207" 
+    FOREIGN KEY (submission_message_type_id)
+    REFERENCES summary_submission_message_type(submission_message_type_id)
 ;
 
 
