@@ -62,7 +62,7 @@ describe('useProjectApi', () => {
   it('deleteProjectAttachment works as expected', async () => {
     mock.onPost(`/api/project/${projectId}/attachments/${attachmentId}/delete`).reply(200, 1);
 
-    const result = await useProjectApi(axios).deleteProjectAttachment(projectId, attachmentId, attachmentType);
+    const result = await useProjectApi(axios).deleteProjectAttachment(projectId, attachmentId, attachmentType, 'token');
 
     expect(result).toEqual(1);
   });

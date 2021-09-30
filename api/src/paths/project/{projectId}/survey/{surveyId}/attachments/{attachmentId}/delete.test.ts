@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as delete_attachment from './delete';
 import * as db from '../../../../../../../database/db';
 import * as survey_attachments_queries from '../../../../../../../queries/survey/survey-attachments-queries';
+import * as security_queries from '../../../../../../../queries/security/security-queries';
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
@@ -41,11 +42,12 @@ describe('deleteAttachment', () => {
     keycloak_token: {},
     params: {
       projectId: 1,
-      surveyId: 1,
+      surveyId: 3,
       attachmentId: 2
     },
     body: {
-      attachmentType: 'Image'
+      attachmentType: 'Image',
+      securityToken: 'token'
     }
   } as any;
 
@@ -115,7 +117,7 @@ describe('deleteAttachment', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned', async () => {
+  it('should throw a 400 error when no sql statement returned for unsecureAttachmentRecordSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -123,6 +125,59 @@ describe('deleteAttachment', () => {
       }
     });
 
+    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(null);
+
+    try {
+      const result = delete_attachment.deleteAttachment();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL unsecure record statement');
+    }
+  });
+
+  it('should throw a 400 error when fails to unsecure attachment record', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: null });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
+
+    try {
+      const result = delete_attachment.deleteAttachment();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to unsecure record');
+    }
+  });
+
+  it('should throw a 400 error when no sql statement returned for deleteSurveyAttachmentSQL', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.onFirstCall().resolves({ rowCount: 1 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
     sinon.stub(survey_attachments_queries, 'deleteSurveyAttachmentSQL').returns(null);
 
     try {
@@ -139,7 +194,11 @@ describe('deleteAttachment', () => {
   it('should return null when deleting file from S3 fails', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
+    mockQuery
+      .onFirstCall()
+      .resolves({ rowCount: 1 })
+      .onSecondCall()
+      .resolves({ rows: [{ key: 's3Key' }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -149,6 +208,7 @@ describe('deleteAttachment', () => {
       query: mockQuery
     });
 
+    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
     sinon.stub(survey_attachments_queries, 'deleteSurveyAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
 
@@ -159,10 +219,14 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.equal(null);
   });
 
-  it('should return the rowCount response on success when attachment type is not Report', async () => {
+  it('should return the rowCount response on success when type is not Report', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
+    mockQuery
+      .onFirstCall()
+      .resolves({ rowCount: 1 })
+      .onSecondCall()
+      .resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -172,6 +236,7 @@ describe('deleteAttachment', () => {
       query: mockQuery
     });
 
+    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
     sinon.stub(survey_attachments_queries, 'deleteSurveyAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
 
@@ -182,10 +247,14 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.equal(1);
   });
 
-  it('should return the rowCount response on success when attachment type is Report', async () => {
+  it('should return the rowCount response on success when type is Report', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
+    mockQuery
+      .onFirstCall()
+      .resolves({ rowCount: 1 })
+      .onSecondCall()
+      .resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -195,12 +264,17 @@ describe('deleteAttachment', () => {
       query: mockQuery
     });
 
+    sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
     sinon.stub(survey_attachments_queries, 'deleteSurveyReportAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
 
     const result = delete_attachment.deleteAttachment();
 
-    await result({ ...sampleReq, body: { attachmentType: 'Report' } }, sampleRes as any, (null as unknown) as any);
+    await result(
+      { ...sampleReq, body: { ...sampleReq.body, attachmentType: 'Report' } },
+      sampleRes as any,
+      (null as unknown) as any
+    );
 
     expect(actualResult).to.equal(1);
   });

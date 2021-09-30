@@ -2,7 +2,8 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../../../../../database/db';
+import { unsecureAttachmentRecordSQL } from '../../../../../queries/security/security-queries';
+import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import {
   deleteProjectAttachmentSQL,
@@ -72,6 +73,12 @@ export function deleteAttachment(): RequestHandler {
     try {
       await connection.open();
 
+      // If the attachment record is currently secured, need to unsecure it prior to deleting it
+      if (req.body.securityToken) {
+        await unsecureProjectAttachmentRecord(req.body.securityToken, req.body.attachmentType, connection);
+      }
+
+      // Proceed to delete the attachment record itself
       const deleteProjectAttachmentSQLStatement =
         req.body.attachmentType === 'Report'
           ? deleteProjectReportAttachmentSQL(Number(req.params.attachmentId))
@@ -85,6 +92,7 @@ export function deleteAttachment(): RequestHandler {
         deleteProjectAttachmentSQLStatement.text,
         deleteProjectAttachmentSQLStatement.values
       );
+
       const s3Key = result && result.rows.length && result.rows[0].key;
 
       await connection.commit();
@@ -105,3 +113,27 @@ export function deleteAttachment(): RequestHandler {
     }
   };
 }
+
+const unsecureProjectAttachmentRecord = async (
+  securityToken: any,
+  attachmentType: string,
+  connection: IDBConnection
+): Promise<void> => {
+  const unsecureRecordSQLStatement =
+    attachmentType === 'Report'
+      ? unsecureAttachmentRecordSQL('project_report_attachment', securityToken)
+      : unsecureAttachmentRecordSQL('project_attachment', securityToken);
+
+  if (!unsecureRecordSQLStatement) {
+    throw new HTTP400('Failed to build SQL unsecure record statement');
+  }
+
+  const unsecureRecordSQLResponse = await connection.query(
+    unsecureRecordSQLStatement.text,
+    unsecureRecordSQLStatement.values
+  );
+
+  if (!unsecureRecordSQLResponse || !unsecureRecordSQLResponse.rowCount) {
+    throw new HTTP400('Failed to unsecure record');
+  }
+};

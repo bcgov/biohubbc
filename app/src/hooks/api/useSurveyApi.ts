@@ -227,18 +227,21 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} surveyId
    * @param {number} attachmentId
    * @param {string} attachmentType
+   * @param {any} securityToken
    * @returns {*} {Promise<number>}
    */
   const deleteSurveyAttachment = async (
     projectId: number,
     surveyId: number,
     attachmentId: number,
-    attachmentType: string
+    attachmentType: string,
+    securityToken: any
   ): Promise<number> => {
     const { data } = await axios.post(
       `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`,
       {
-        attachmentType
+        attachmentType,
+        securityToken
       }
     );
 

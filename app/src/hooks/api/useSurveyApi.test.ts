@@ -85,7 +85,13 @@ describe('useSurveyApi', () => {
   it('deleteSurveyAttachment works as expected', async () => {
     mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`).reply(200, 1);
 
-    const result = await useSurveyApi(axios).deleteSurveyAttachment(projectId, surveyId, attachmentId, attachmentType);
+    const result = await useSurveyApi(axios).deleteSurveyAttachment(
+      projectId,
+      surveyId,
+      attachmentId,
+      attachmentType,
+      'token'
+    );
 
     expect(result).toEqual(1);
   });
