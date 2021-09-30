@@ -48,10 +48,20 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @param {any} securityToken
    * @returns {*} {Promise<number>}
    */
-  const deleteProjectAttachment = async (projectId: number, attachmentId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/attachments/${attachmentId}/delete`);
+  const deleteProjectAttachment = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string,
+    securityToken: any
+  ): Promise<number> => {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/delete`, {
+      attachmentType,
+      securityToken
+    });
 
     return data;
   };
@@ -144,6 +154,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {File} file
+   * @param {string} attachmentType
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
@@ -151,12 +162,14 @@ const useProjectApi = (axios: AxiosInstance) => {
   const uploadProjectAttachments = async (
     projectId: number,
     file: File,
+    attachmentType: string,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<string> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
+    req_message.append('attachmentType', attachmentType);
 
     const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
@@ -171,10 +184,17 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} attachmentId
+   * @param {string} attachmentType
    * @return {*}  {Promise<any>}
    */
-  const makeAttachmentSecure = async (projectId: number, attachmentId: number): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`);
+  const makeAttachmentSecure = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string
+  ): Promise<any> => {
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`, {
+      attachmentType
+    });
 
     return data;
   };
@@ -185,11 +205,18 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {any} securityToken
+   * @param {string} attachmentType
    * @return {*}  {Promise<any>}
    */
-  const makeAttachmentUnsecure = async (projectId: number, attachmentId: number, securityToken: any): Promise<any> => {
+  const makeAttachmentUnsecure = async (
+    projectId: number,
+    attachmentId: number,
+    securityToken: any,
+    attachmentType: string
+  ): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`, {
-      securityToken
+      securityToken,
+      attachmentType
     });
 
     return data;
@@ -286,7 +313,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   /**
    * Get public (published) project attachments based on project ID
    *
-   * @param {AxiosInstance} axios
+   * @param {number} projectId
    * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
    */
   const getProjectAttachments = async (projectId: number): Promise<IGetProjectAttachmentsResponse> => {
@@ -298,11 +325,19 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   /**
    * Get public (published) project attachment S3 url based on project and attachment ID
    *
-   * @param {AxiosInstance} axios
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
    * @returns {*} {Promise<string>}
    */
-  const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
-    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`);
+  const getAttachmentSignedURL = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string
+  ): Promise<string> => {
+    const { data } = await axios.post(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+      attachmentType
+    });
 
     return data;
   };
