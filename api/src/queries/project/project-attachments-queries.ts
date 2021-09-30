@@ -83,14 +83,13 @@ export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement 
 /**
  * SQL query to delete an attachment for a single project.
  *
- * @param {number} projectId
  * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
-export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteProjectAttachmentSQL', message: 'params', projectId });
+export const deleteProjectAttachmentSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteProjectAttachmentSQL', message: 'params', attachmentId });
 
-  if (!projectId || !attachmentId) {
+  if (!attachmentId) {
     return null;
   }
 
@@ -98,8 +97,6 @@ export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: numb
     DELETE
       from project_attachment
     WHERE
-      project_id = ${projectId}
-    AND
       project_attachment_id = ${attachmentId}
     RETURNING
       key;
@@ -107,6 +104,38 @@ export const deleteProjectAttachmentSQL = (projectId: number, attachmentId: numb
 
   defaultLog.debug({
     label: 'deleteProjectAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete a report attachment for a single project.
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteProjectReportAttachmentSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteProjectReportAttachmentSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from project_report_attachment
+    WHERE
+      project_report_attachment_id = ${attachmentId}
+    RETURNING
+      key;
+  `;
+
+  defaultLog.debug({
+    label: 'deleteProjectReportAttachmentSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

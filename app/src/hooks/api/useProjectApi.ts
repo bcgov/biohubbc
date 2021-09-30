@@ -48,10 +48,17 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} attachmentId
+   * @param {string} attachmentType
    * @returns {*} {Promise<number>}
    */
-  const deleteProjectAttachment = async (projectId: number, attachmentId: number): Promise<number> => {
-    const { data } = await axios.delete(`/api/project/${projectId}/attachments/${attachmentId}/delete`);
+  const deleteProjectAttachment = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string
+  ): Promise<number> => {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/delete`, {
+      attachmentType
+    });
 
     return data;
   };

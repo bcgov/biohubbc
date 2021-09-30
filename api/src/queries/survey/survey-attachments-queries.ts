@@ -83,14 +83,13 @@ export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | 
 /**
  * SQL query to delete an attachment for a single survey.
  *
- * @param {number} surveyId
  * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveyAttachmentSQL = (surveyId: number, attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteSurveyAttachmentSQL', message: 'params', surveyId });
+export const deleteSurveyAttachmentSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteSurveyAttachmentSQL', message: 'params', attachmentId });
 
-  if (!surveyId || !attachmentId) {
+  if (!attachmentId) {
     return null;
   }
 
@@ -98,8 +97,6 @@ export const deleteSurveyAttachmentSQL = (surveyId: number, attachmentId: number
     DELETE
       from survey_attachment
     WHERE
-      survey_id = ${surveyId}
-    AND
       survey_attachment_id = ${attachmentId}
     RETURNING
       key;
@@ -107,6 +104,38 @@ export const deleteSurveyAttachmentSQL = (surveyId: number, attachmentId: number
 
   defaultLog.debug({
     label: 'deleteSurveyAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to delete a report attachment for a single survey.
+ *
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveyReportAttachmentSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteSurveyReportAttachmentSQL', message: 'params', attachmentId });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from survey_report_attachment
+    WHERE
+      survey_report_attachment_id = ${attachmentId}
+    RETURNING
+      key;
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSurveyReportAttachmentSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -18,6 +18,7 @@ describe('useSurveyApi', () => {
   const projectId = 1;
   const surveyId = 2;
   const attachmentId = 3;
+  const attachmentType = 'type';
 
   it('getObservationSubmissionSignedURL works as expected', async () => {
     const submissionId = 4;
@@ -82,9 +83,9 @@ describe('useSurveyApi', () => {
   });
 
   it('deleteSurveyAttachment works as expected', async () => {
-    mock.onDelete(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`).reply(200, 1);
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`).reply(200, 1);
 
-    const result = await useSurveyApi(axios).deleteSurveyAttachment(projectId, surveyId, attachmentId);
+    const result = await useSurveyApi(axios).deleteSurveyAttachment(projectId, surveyId, attachmentId, attachmentType);
 
     expect(result).toEqual(1);
   });
@@ -156,7 +157,7 @@ describe('useSurveyApi', () => {
 
     mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file);
+    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file, attachmentType);
 
     expect(result).toEqual('result 1');
   });

@@ -41,20 +41,14 @@ describe('getProjectReportAttachmentsSQL', () => {
 });
 
 describe('deleteProjectAttachmentSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = deleteProjectAttachmentSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
   it('returns null response when null attachmentId provided', () => {
-    const response = deleteProjectAttachmentSQL(1, (null as unknown) as number);
+    const response = deleteProjectAttachmentSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid projectId and attachmentId provided', () => {
-    const response = deleteProjectAttachmentSQL(1, 2);
+  it('returns non null response when valid attachmentId provided', () => {
+    const response = deleteProjectAttachmentSQL(1);
 
     expect(response).to.not.be.null;
   });

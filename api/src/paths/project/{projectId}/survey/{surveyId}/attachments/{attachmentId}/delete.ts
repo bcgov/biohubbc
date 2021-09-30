@@ -4,16 +4,19 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
-import { deleteSurveyAttachmentSQL } from '../../../../../../../queries/survey/survey-attachments-queries';
+import {
+  deleteSurveyAttachmentSQL,
+  deleteSurveyReportAttachmentSQL
+} from '../../../../../../../queries/survey/survey-attachments-queries';
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/delete');
 
-export const DELETE: Operation = [deleteAttachment()];
+export const POST: Operation = [deleteAttachment()];
 
-DELETE.apiDoc = {
+POST.apiDoc = {
   ...attachmentApiDocObject('Delete an attachment of a survey.', 'Row count of successfully deleted attachment record'),
   parameters: [
     {
@@ -40,7 +43,17 @@ DELETE.apiDoc = {
       },
       required: true
     }
-  ]
+  ],
+  requestBody: {
+    description: 'Current attachment type for survey attachment.',
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object'
+        }
+      }
+    }
+  }
 };
 
 export function deleteAttachment(): RequestHandler {
@@ -55,15 +68,19 @@ export function deleteAttachment(): RequestHandler {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
 
+    if (!req.body || !req.body.attachmentType) {
+      throw new HTTP400('Missing required body param `attachmentType`');
+    }
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      const deleteSurveyAttachmentSQLStatement = deleteSurveyAttachmentSQL(
-        Number(req.params.surveyId),
-        Number(req.params.attachmentId)
-      );
+      const deleteSurveyAttachmentSQLStatement =
+        req.body.attachmentType === 'Report'
+          ? deleteSurveyReportAttachmentSQL(Number(req.params.attachmentId))
+          : deleteSurveyAttachmentSQL(Number(req.params.attachmentId));
 
       if (!deleteSurveyAttachmentSQLStatement) {
         throw new HTTP400('Failed to build SQL delete statement');

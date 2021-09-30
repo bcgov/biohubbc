@@ -24,20 +24,14 @@ describe('getSurveyAttachmentsSQL', () => {
 });
 
 describe('deleteSurveyAttachmentSQL', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = deleteSurveyAttachmentSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
   it('returns null response when null attachmentId provided', () => {
-    const response = deleteSurveyAttachmentSQL(1, (null as unknown) as number);
+    const response = deleteSurveyAttachmentSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid surveyId and attachmentId provided', () => {
-    const response = deleteSurveyAttachmentSQL(1, 2);
+  it('returns non null response when valid attachmentId provided', () => {
+    const response = deleteSurveyAttachmentSQL(1);
 
     expect(response).to.not.be.null;
   });

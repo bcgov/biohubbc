@@ -42,6 +42,9 @@ describe('deleteAttachment', () => {
     params: {
       projectId: 1,
       attachmentId: 2
+    },
+    body: {
+      attachmentType: 'Image'
     }
   } as any;
 
@@ -93,6 +96,24 @@ describe('deleteAttachment', () => {
     }
   });
 
+  it('should throw an error when attachmentType is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = delete_attachment.deleteAttachment();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body param `attachmentType`');
+    }
+  });
+
   it('should throw a 400 error when no sql statement returned', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -137,7 +158,7 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.equal(null);
   });
 
-  it('should return the rowCount response on success', async () => {
+  it('should return the rowCount response on success when type is not Report', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
@@ -156,6 +177,29 @@ describe('deleteAttachment', () => {
     const result = delete_attachment.deleteAttachment();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.equal(1);
+  });
+
+  it('should return the rowCount response on success when type is Report', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(project_attachments_queries, 'deleteProjectReportAttachmentSQL').returns(SQL`some query`);
+    sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
+
+    const result = delete_attachment.deleteAttachment();
+
+    await result({ ...sampleReq, body: { attachmentType: 'Report' } }, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.equal(1);
   });
