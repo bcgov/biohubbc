@@ -2,15 +2,11 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { removeSecurityRecordSQL } from '../../../../../../../queries/project/project-attachments-queries';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { getDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import { getLogger } from '../../../../../../../utils/logger';
-import {
-  removeSurveyAttachmentSecurityTokenSQL,
-  removeSurveyReportAttachmentSecurityTokenSQL
-} from '../../../../../../../queries/survey/survey-attachments-queries';
+import { unsecureAttachmentRecordSQL } from '../../../../../../../queries/security/security-queries';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/makeUnsecure');
 
@@ -110,11 +106,23 @@ export function makeSurveyAttachmentUnsecure(): RequestHandler {
     try {
       await connection.open();
 
-      // Step 1: Remove associated row from the security table
-      await removeSecurityRecord(req.body.securityToken, connection);
+      const unsecureRecordSQLStatement =
+        req.body.attachmentType === 'Report'
+          ? unsecureAttachmentRecordSQL('survey_report_attachment', req.body.securityToken)
+          : unsecureAttachmentRecordSQL('survey_attachment', req.body.securityToken);
 
-      // Step 2: Remove security token from survey attachment row
-      await removeSurveyAttachmentSecurityToken(Number(req.params.attachmentId), req.body.attachmentType, connection);
+      if (!unsecureRecordSQLStatement) {
+        throw new HTTP400('Failed to build SQL unsecure record statement');
+      }
+
+      const unsecureRecordSQLResponse = await connection.query(
+        unsecureRecordSQLStatement.text,
+        unsecureRecordSQLStatement.values
+      );
+
+      if (!unsecureRecordSQLResponse || !unsecureRecordSQLResponse.rowCount) {
+        throw new HTTP400('Failed to unsecure record');
+      }
 
       await connection.commit();
 
@@ -128,44 +136,3 @@ export function makeSurveyAttachmentUnsecure(): RequestHandler {
     }
   };
 }
-
-export const removeSecurityRecord = async (securityToken: any, connection: IDBConnection): Promise<void> => {
-  const removeSecurityRecordSQLStatement = removeSecurityRecordSQL(securityToken);
-
-  if (!removeSecurityRecordSQLStatement) {
-    throw new HTTP400('Failed to build SQL remove security record statement');
-  }
-
-  const removeSecurityRecordSQLResponse = await connection.query(
-    removeSecurityRecordSQLStatement.text,
-    removeSecurityRecordSQLStatement.values
-  );
-
-  if (!removeSecurityRecordSQLResponse || !removeSecurityRecordSQLResponse.rowCount) {
-    throw new HTTP400('Failed to remove security record');
-  }
-};
-
-export const removeSurveyAttachmentSecurityToken = async (
-  attachmentId: number,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const removeSurveyAttachmentSecurityTokenSQLStatement =
-    attachmentType === 'Report'
-      ? removeSurveyReportAttachmentSecurityTokenSQL(attachmentId)
-      : removeSurveyAttachmentSecurityTokenSQL(attachmentId);
-
-  if (!removeSurveyAttachmentSecurityTokenSQLStatement) {
-    throw new HTTP400('Failed to build SQL remove survey attachment security token statement');
-  }
-
-  const removeSurveyAttachmentSecurityTokenSQLResponse = await connection.query(
-    removeSurveyAttachmentSecurityTokenSQLStatement.text,
-    removeSurveyAttachmentSecurityTokenSQLStatement.values
-  );
-
-  if (!removeSurveyAttachmentSecurityTokenSQLResponse || !removeSurveyAttachmentSecurityTokenSQLResponse.rowCount) {
-    throw new HTTP400('Failed to remove survey attachment security token');
-  }
-};
