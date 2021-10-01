@@ -104,6 +104,13 @@ $$;
           return true;
       end if;
 
+      --- Is the user a member of the project this record belongs to
+      select count(*)::integer into v_user_access from ${DB_SCHEMA}.project_participation where system_user_id = _system_user_id and
+      project_id = (select project_id from ${DB_SCHEMA}.security where security_token = __security_token);
+      if (v_user_access > 0) then
+        return true;
+      end if;
+
       -- Has the user been given specific access to this record$5
       select count(*)::integer into v_user_access from ${DB_SCHEMA}.security where system_user_id = _system_user_id and security_token = __security_token;
       if (v_user_access > 0) then
@@ -140,21 +147,27 @@ $$;
           v_system_user_id character varying;
           v_rule_definition character varying;
           v_target character varying;
+          v_project_id character varying;
           begin
           -- Delete all security references in the security table as this might be an update
           delete from ${DB_SCHEMA}.security where security_rule_id = __security_rule_id;
 
           --- Iterate over all the securable objects and apply security
           <<outer>>
-        FOR v_target, v_rule_definition IN
-              SELECT trim('"' FROM cast(data->'target' as text)), trim('"' FROM cast(data->'rule' as text))
-          FROM ${DB_SCHEMA}.security_rule, json_array_elements(rule_definition) AS data
+        FOR v_target, v_rule_definition, v_project_id IN
+          SELECT rule_definition->>'target', rule_definition->>'rule', rule_definition->>'project'
+          FROM ${DB_SCHEMA}.security_rule
           where security_rule_id = __security_rule_id and system_rule = false and
           (record_end_date <= now()::date or record_end_date is NULL) and
           (record_effective_date >= now()::date)
         LOOP
+
+          IF v_project_id is NULL THEN
+             v_project_id = 'NULL';
+          END IF;
+
           -- Execute the query to find the records that need to be secured
-          execute format('select ${DB_SCHEMA}.api_secure_record(%1$s_id, ''%1$s'', %2$s, %3$s) from ${DB_SCHEMA}.%1$s where %4$s', v_target, __security_rule_id, 'NULL', v_rule_definition);
+          execute format('select ${DB_SCHEMA}.api_secure_record(%1$s_id, ''%1$s'', %2$s, %3$s, %5$s) from biohub.%1$s where %4$s', v_target, __security_rule_id, 'NULL', v_rule_definition,v_project_id);
 
           <<inner>>
           FOR v_system_user_id IN
@@ -164,7 +177,7 @@ $$;
           (record_effective_date >= now()::date)
           LOOP
             -- Execute the query to set the exception for identified users
-            execute format('select ${DB_SCHEMA}.api_secure_record(%1$s_id, ''%1$s'', %2$s, %3$s) from ${DB_SCHEMA}.%1$s where %4$s', v_target, __security_rule_id, v_system_user_id, v_rule_definition);
+            execute format('select ${DB_SCHEMA}.api_secure_record(%1$s_id, ''%1$s'', %2$s, %3$s, %5$s) from biohub.%1$s where %4$s', v_target, __security_rule_id, v_system_user_id, v_rule_definition,v_project_id);
           END LOOP inner;
 
           END LOOP outer;
@@ -177,10 +190,11 @@ $$;
       OWNER TO postgres;
 
   CREATE OR REPLACE FUNCTION ${DB_SCHEMA}.api_secure_record(
-    __id integer,
-    __table_name character varying,
-    __security_rule_id integer,
-    __system_user_id integer)
+      __id integer,
+      __table_name character varying,
+      __security_rule_id integer,
+      __system_user_id integer,
+      __project_id integer)
       RETURNS boolean
       LANGUAGE 'plpgsql'
       COST 100
@@ -210,13 +224,13 @@ $$;
     end if;
 
     -- Create a new entry in the security table
-    insert into ${DB_SCHEMA}.security(system_user_id, security_rule_id,security_token,create_date) values(__system_user_id,__security_rule_id,v_security_token,now());
+    insert into ${DB_SCHEMA}.security(system_user_id,security_rule_id,security_token,project_id,create_date) values(__system_user_id,__security_rule_id,v_security_token,__project_id,now());
 
     return true;
     end;
   $BODY$;
 
-  ALTER FUNCTION ${DB_SCHEMA}.api_secure_record(integer, character varying, integer, integer)
+  ALTER FUNCTION ${DB_SCHEMA}.api_secure_record(integer, character varying, integer, integer, integer)
       OWNER TO postgres;
 
   CREATE OR REPLACE FUNCTION ${DB_SCHEMA}.api_get_context_system_user_role_id(
@@ -286,6 +300,10 @@ $$;
       execute format('update ${DB_SCHEMA}.%1$s a set security_token = null where  a.security_token IS NOT NULL and a.security_token not in
 					   (select distinct security_token from ${DB_SCHEMA}.security order by 1)',v_table_name);
 
+      -- Remove security table entries for orphaned entries
+      execute format('delete from ${DB_SCHEMA}.security where security_token not in (select security_token from ${DB_SCHEMA}.%1$s) and security_rule_id in
+      (select security_rule_id from ${DB_SCHEMA}.security_rule where rule_definition->>''target'' = ''%1$s'')',v_table_name);
+
     END LOOP;
   end;
   $BODY$;
@@ -341,17 +359,13 @@ $$;
         -- *******************************************************************
         declare
           v_security_rule_id integer;
-
+          v_project_id integer;
         begin
           -- Find the system security rule for this table
           execute format('select security_rule_id from ${DB_SCHEMA}.security_rule where rule_definition ->> ''target'' = lower(''%1$s'') and system_rule=true', __table_name) into v_security_rule_id;
 
           -- Secure the record
-          execute format('select ${DB_SCHEMA}.api_secure_record(%1$s, lower(''%2$s''), %3$s, api_get_context_user_id())', __id,__table_name,v_security_rule_id);
-
-          --- make sure that the project_id has been filled out too.
-          execute format('update ${DB_SCHEMA}.security set project_id = %1$s where security_token =  (select security_token from ${DB_SCHEMA}.%2$s
-            where %2$s_id = %3$s)', __project_id, __table_name, __id);
+          execute format('select ${DB_SCHEMA}.api_secure_record(%1$s, lower(''%2$s''), %3$s, api_get_context_user_id(),%4$s)', __id,__table_name,v_security_rule_id, __project_id);
 
           return true;
         end;
@@ -402,7 +416,7 @@ export async function down(knex: Knex): Promise<void> {
   set search_path = ${DB_SCHEMA},public;
   DROP FUNCTION ${DB_SCHEMA}.api_security_check(uuid, integer);
   DROP FUNCTION ${DB_SCHEMA}.api_set_context(character varying, character varying);
-  DROP FUNCTION ${DB_SCHEMA}.api_secure_record(integer, character varying, integer, integer);
+  DROP FUNCTION ${DB_SCHEMA}.api_secure_record(integer, character varying, integer, integer,integer);
   DROP FUNCTION ${DB_SCHEMA}.api_apply_security_rule(integer);
   DROP FUNCTION ${DB_SCHEMA}.api_get_context_system_user_role_id();
   `);
