@@ -87,26 +87,45 @@ export class CSVWorksheet {
    * @memberof CSVWorksheet
    */
   getRows(): (string | number)[][] {
+    const rowsToReturn: (string | number)[][] = [];
+
     if (!this.worksheet) {
-      return [];
+      return rowsToReturn;
     }
 
     const ref = this.worksheet['!ref'];
 
     if (!ref) {
-      return [];
+      return rowsToReturn;
     }
 
     if (!this._rows.length) {
       const originalRange = xlsx.utils.decode_range(ref);
 
-      // Specify range to not include the 0th row (header row)
-      const customRange: xlsx.Range = { ...originalRange, s: { ...originalRange.s, r: 1 } };
+      for (let i = 1; i <= originalRange.e.r; i++) {
+        const row = [];
 
-      this._rows = xlsx.utils.sheet_to_json(this.worksheet, { header: 1, blankrows: false, range: customRange });
+        for (let j = 0; j <= originalRange.e.c; j++) {
+          const cellAddress = { c: j, r: i };
+          const cellRef = xlsx.utils.encode_cell(cellAddress);
+          const cellValue = this.worksheet[cellRef];
+
+          if (!cellValue) {
+            continue;
+          }
+
+          if (cellValue.t === 'n') {
+            row.push(cellValue.w);
+          } else {
+            row.push(cellValue.v);
+          }
+        }
+
+        rowsToReturn.push(row);
+      }
     }
 
-    return this._rows;
+    return rowsToReturn;
   }
 
   /**
