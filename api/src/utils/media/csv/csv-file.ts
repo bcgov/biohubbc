@@ -125,7 +125,9 @@ export class CSVWorksheet {
           }
         }
 
-        rowsToReturn.push(row);
+        if (row.length) {
+          rowsToReturn.push(row);
+        }
       }
 
       this._rows = rowsToReturn;
