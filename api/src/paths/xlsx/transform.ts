@@ -127,7 +127,7 @@ export function getTransformationSchema(): RequestHandler {
         // await insertSubmissionMessage(
         //   submissionStatusId,
         //   'Error',
-        //   `Unable to fetch an appropriate validation schema for your submission`,
+        //   `Unable to fetch an appropriate transformation schema for your submission`,
         //   'Missing Validation Schema',
         //   connection
         // );

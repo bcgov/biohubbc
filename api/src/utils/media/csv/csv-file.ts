@@ -171,24 +171,6 @@ export class CSVWorksheet {
     return parts.join(':') + (postfix && `:${postfix}`);
   }
 
-  getRowObjects(): object[] {
-    if (!this.worksheet) {
-      return [];
-    }
-
-    const ref = this.worksheet['!ref'];
-
-    if (!ref) {
-      return [];
-    }
-
-    return xlsx.utils.sheet_to_json(this.worksheet);
-  }
-
-  buildID(parts: (string | number)[], postfix?: string): string {
-    return parts.join(':') + (postfix && `:${postfix}`);
-  }
-
   getColumn(headerName: string): (string | number)[] {
     const headerIndex = this.getHeaderIndex(headerName);
 
