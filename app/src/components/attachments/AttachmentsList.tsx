@@ -18,6 +18,7 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
@@ -33,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IAttachmentsListProps {
   projectId: number;
   surveyId?: number;
-  attachmentsList: IGetProjectAttachment[];
+  attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
   getAttachments: (forceFetch: boolean) => void;
 }
 
@@ -55,7 +56,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
 
-  const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment) => {
+  const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
@@ -66,7 +67,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment) => {
+  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       dialogTitle: 'Change Security Status',
@@ -85,7 +86,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const deleteAttachment = async (attachment: IGetProjectAttachment) => {
+  const deleteAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (!attachment?.id) {
       return;
     }
@@ -94,9 +95,20 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
       let response;
 
       if (!props.surveyId) {
-        response = await biohubApi.project.deleteProjectAttachment(props.projectId, attachment.id);
+        response = await biohubApi.project.deleteProjectAttachment(
+          props.projectId,
+          attachment.id,
+          attachment.fileType,
+          attachment.securityToken
+        );
       } else if (props.surveyId) {
-        response = await biohubApi.survey.deleteSurveyAttachment(props.projectId, props.surveyId, attachment.id);
+        response = await biohubApi.survey.deleteSurveyAttachment(
+          props.projectId,
+          props.surveyId,
+          attachment.id,
+          attachment.fileType,
+          attachment.securityToken
+        );
       }
 
       if (!response) {
@@ -129,7 +141,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const makeAttachmentSecure = async (attachment: IGetProjectAttachment) => {
+  const makeAttachmentSecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
@@ -137,8 +149,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      if (!props.surveyId) {
-        response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id);
+      if (props.surveyId) {
+        response = await biohubApi.survey.makeAttachmentSecure(
+          props.projectId,
+          props.surveyId,
+          attachment.id,
+          attachment.fileType
+        );
+      } else {
+        response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id, attachment.fileType);
       }
 
       if (!response) {
@@ -151,7 +170,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment) => {
+  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
@@ -159,11 +178,20 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      if (!props.surveyId) {
+      if (props.surveyId) {
+        response = await biohubApi.survey.makeAttachmentUnsecure(
+          props.projectId,
+          props.surveyId,
+          attachment.id,
+          attachment.securityToken,
+          attachment.fileType
+        );
+      } else {
         response = await biohubApi.project.makeAttachmentUnsecure(
           props.projectId,
           attachment.id,
-          attachment.securityToken
+          attachment.securityToken,
+          attachment.fileType
         );
       }
 
@@ -185,6 +213,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
+                <TableCell>Type</TableCell>
                 <TableCell>Last Modified</TableCell>
                 <TableCell>File Size</TableCell>
                 <TableCell>Security Status</TableCell>
@@ -200,6 +229,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         {row.fileName}
                       </Link>
                     </TableCell>
+                    <TableCell>{row.fileType}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
                     <TableCell>
@@ -232,7 +262,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 ))}
               {!props.attachmentsList.length && (
                 <TableRow>
-                  <TableCell colSpan={4} align="center">
+                  <TableCell colSpan={5} align="center">
                     No Attachments
                   </TableCell>
                 </TableRow>

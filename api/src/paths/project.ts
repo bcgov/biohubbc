@@ -16,7 +16,9 @@ import { postProjectPermitSQL } from '../queries/permit/permit-create-queries';
 import {
   getProjectAttachmentByFileNameSQL,
   postProjectAttachmentSQL,
-  putProjectAttachmentSQL
+  postProjectReportAttachmentSQL,
+  putProjectAttachmentSQL,
+  putProjectReportAttachmentSQL
 } from '../queries/project/project-attachments-queries';
 import {
   postProjectActivitySQL,
@@ -365,6 +367,7 @@ export const insertProjectActivity = async (
 export const upsertProjectAttachment = async (
   file: Express.Multer.File,
   projectId: number,
+  attachmentType: string,
   connection: IDBConnection
 ): Promise<number> => {
   const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
@@ -376,7 +379,10 @@ export const upsertProjectAttachment = async (
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
 
   if (getResponse && getResponse.rowCount > 0) {
-    const updateSqlStatement = putProjectAttachmentSQL(projectId, file.originalname);
+    const updateSqlStatement =
+      attachmentType === 'Report'
+        ? putProjectReportAttachmentSQL(projectId, file.originalname)
+        : putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
 
     if (!updateSqlStatement) {
       throw new HTTP400('Failed to build SQL update statement');
@@ -394,7 +400,10 @@ export const upsertProjectAttachment = async (
 
   const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
 
-  const insertSqlStatement = postProjectAttachmentSQL(file.originalname, file.size, projectId, key);
+  const insertSqlStatement =
+    attachmentType === 'Report'
+      ? postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key)
+      : postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

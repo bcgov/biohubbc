@@ -62,7 +62,6 @@ export async function up(knex: Knex): Promise<void> {
   CREATE TABLE security_rule(
     security_rule_id                 integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
       name               varchar(300),
-      project_id               integer,
       rule_definition    json,
       users              json,
       record_effective_date    date              NOT NULL,
@@ -80,8 +79,6 @@ export async function up(knex: Knex): Promise<void> {
   COMMENT ON COLUMN security_rule.security_rule_id IS 'System generated surrogate primary key identifier.'
   ;
   COMMENT ON COLUMN security_rule.name IS 'The name of the record.'
-  ;
-  COMMENT ON COLUMN security_rule.project_id IS 'The associated project.'
   ;
   COMMENT ON COLUMN security_rule.rule_definition IS 'The definition of the rule suitable for application in code to apply the security rule.'
   ;

@@ -103,6 +103,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {File} file
+   * @param {string} attachmentType
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
@@ -111,12 +112,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     file: File,
+    attachmentType: string,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<string> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
+    req_message.append('attachmentType', attachmentType);
 
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
@@ -135,6 +138,59 @@ const useSurveyApi = (axios: AxiosInstance) => {
    */
   const getSurveyAttachments = async (projectId: number, surveyId: number): Promise<IGetSurveyAttachmentsResponse> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/${surveyId}/attachments/list`);
+
+    return data;
+  };
+
+  /**
+   * Make security status of survey attachment secure.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<any>}
+   */
+  const makeAttachmentSecure = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    attachmentType: string
+  ): Promise<any> => {
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeSecure`,
+      {
+        attachmentType
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Make security status of survey attachment unsecure.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @param {any} securityToken
+   * @param {string} attachmentType
+   * @return {*}  {Promise<any>}
+   */
+  const makeAttachmentUnsecure = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    securityToken: any,
+    attachmentType: string
+  ): Promise<any> => {
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeUnsecure`,
+      {
+        securityToken,
+        attachmentType
+      }
+    );
 
     return data;
   };
@@ -170,11 +226,23 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @param {any} securityToken
    * @returns {*} {Promise<number>}
    */
-  const deleteSurveyAttachment = async (projectId: number, surveyId: number, attachmentId: number): Promise<number> => {
-    const { data } = await axios.delete(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`
+  const deleteSurveyAttachment = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    attachmentType: string,
+    securityToken: any
+  ): Promise<number> => {
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/delete`,
+      {
+        attachmentType,
+        securityToken
+      }
     );
 
     return data;
@@ -327,7 +395,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyPermits,
     getSurveyFundingSources,
     publishSurvey,
-    getSubmissionCSVForView
+    getSubmissionCSVForView,
+    makeAttachmentUnsecure,
+    makeAttachmentSecure
   };
 };
 

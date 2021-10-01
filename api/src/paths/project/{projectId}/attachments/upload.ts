@@ -82,6 +82,10 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
+    if (!req.body || !req.body.attachmentType) {
+      throw new HTTP400('Missing attachment file type');
+    }
+
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
 
     defaultLog.debug({
@@ -106,8 +110,8 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      // Insert file metadata into project_attachment table
-      await upsertProjectAttachment(rawMediaFile, Number(req.params.projectId), connection);
+      // Insert file metadata into project_attachment or project_report_attachment table
+      await upsertProjectAttachment(rawMediaFile, Number(req.params.projectId), req.body.attachmentType, connection);
 
       // Upload file to S3
       const key = generateS3FileKey({

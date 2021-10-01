@@ -5,7 +5,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getLogger } from '../../../../../utils/logger';
-import { getPublicProjectAttachmentsSQL } from '../../../../../queries/public/project-queries';
+import {
+  getPublicProjectAttachmentsSQL,
+  getPublicProjectReportAttachmentsSQL
+} from '../../../../../queries/public/project-queries';
 import { GetPublicAttachmentsData } from '../../../../../models/public/project';
 
 const defaultLog = getLogger('/api/public/project/{projectId}/attachments/list');
@@ -70,8 +73,11 @@ export function getPublicProjectAttachments(): RequestHandler {
 
     try {
       const getPublicProjectAttachmentsSQLStatement = getPublicProjectAttachmentsSQL(Number(req.params.projectId));
+      const getPublicProjectReportAttachmentsSQLStatement = getPublicProjectReportAttachmentsSQL(
+        Number(req.params.projectId)
+      );
 
-      if (!getPublicProjectAttachmentsSQLStatement) {
+      if (!getPublicProjectAttachmentsSQLStatement || !getPublicProjectReportAttachmentsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
@@ -82,10 +88,20 @@ export function getPublicProjectAttachments(): RequestHandler {
         getPublicProjectAttachmentsSQLStatement.values
       );
 
+      const reportAttachmentsData = await connection.query(
+        getPublicProjectReportAttachmentsSQLStatement.text,
+        getPublicProjectReportAttachmentsSQLStatement.values
+      );
+
       await connection.commit();
 
       const getAttachmentsData =
-        (attachmentsData && attachmentsData.rows && new GetPublicAttachmentsData(attachmentsData.rows)) || null;
+        (attachmentsData &&
+          reportAttachmentsData &&
+          attachmentsData.rows &&
+          reportAttachmentsData.rows &&
+          new GetPublicAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
+        null;
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
