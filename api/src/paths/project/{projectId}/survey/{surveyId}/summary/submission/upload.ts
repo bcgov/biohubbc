@@ -86,8 +86,8 @@ POST.apiDoc = {
 };
 
 export enum SUMMARY_CLASS {
-  STUDY_AREA = 'study area',
-  SUMMARY_STATISTIC = 'summary statistic',
+  STUDY_AREA = 'survey area',
+  SUMMARY_STATISTIC = 'statistic',
   STRATUM = 'stratum',
   OBSERVED = 'observed',
   ESTIMATE = 'estimate',
