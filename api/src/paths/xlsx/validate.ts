@@ -43,7 +43,7 @@ POST.apiDoc = {
   )
 };
 
-function prepXLSX(): RequestHandler {
+export function prepXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
 

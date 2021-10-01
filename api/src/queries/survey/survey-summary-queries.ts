@@ -1,3 +1,4 @@
+import { PostSummaryDetails } from '../../models/summaryresults-create';
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
 
@@ -22,7 +23,7 @@ export const insertSurveySummarySubmissionSQL = (
     surveyId
   });
 
-  if (!surveyId) {
+  if (!surveyId || !source || !file_name) {
     return null;
   }
 
@@ -166,6 +167,70 @@ export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLS
 
   defaultLog.debug({
     label: 'getSurveySummarySubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a survey summary submission row.
+ *
+ * @param {number} summarySubmissionId
+ * @param {string} summaryDetails
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const insertSurveySummaryDetailsSQL = (
+  summarySubmissionId: number,
+  summaryDetails: PostSummaryDetails
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'insertSurveySummarySubmissionSQL',
+    message: 'params',
+    summarySubmissionId
+  });
+
+  if (!summarySubmissionId || !summaryDetails) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO survey_summary_detail (
+      survey_summary_submission_id,
+      study_area_id,
+      parameter,
+      stratum,
+      parameter_value,
+      parameter_estimate,
+      confidence_limit_lower,
+      confidence_limit_upper,
+      confidence_level_percent,
+      standard_error,
+      coefficient_variation,
+      kilometres_surveyed,
+      total_area_surveyed_sqm
+    ) VALUES (
+      ${summarySubmissionId},
+      ${summaryDetails.study_area_id},
+      ${summaryDetails.parameter},
+      ${summaryDetails.stratum},
+      ${summaryDetails.parameter_value},
+      ${summaryDetails.parameter_estimate},
+      ${summaryDetails.confidence_limit_lower},
+      ${summaryDetails.confidence_limit_upper},
+      ${summaryDetails.confidence_level_percent},
+      ${summaryDetails.standard_error},
+      ${summaryDetails.coefficient_variation},
+      ${summaryDetails.kilometres_surveyed},
+      ${summaryDetails.total_area_surveyed_sqm}
+    )
+    RETURNING survey_summary_detail_id as id;
+  `;
+
+  defaultLog.debug({
+    label: 'insertSurveySummaryResultsSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

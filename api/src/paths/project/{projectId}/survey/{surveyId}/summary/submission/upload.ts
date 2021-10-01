@@ -4,19 +4,26 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
 import {
+  insertSurveySummaryDetailsSQL,
   insertSurveySummarySubmissionSQL,
   updateSurveySummarySubmissionWithKeySQL
 } from '../../../../../../../queries/survey/survey-summary-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
+import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../../../../../../utils/path-utils';
+import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
 export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
-  uploadMedia()
+  uploadMedia(),
+  prepXLSX(),
+  parseAndUploadSummarySubmissionInput(),
+  returnSummarySubmissionId()
 ];
 
 POST.apiDoc = {
@@ -78,13 +85,28 @@ POST.apiDoc = {
   }
 };
 
+export enum SUMMARY_CLASS {
+  STUDY_AREA = 'survey area',
+  SUMMARY_STATISTIC = 'statistic',
+  STRATUM = 'stratum',
+  OBSERVED = 'observed',
+  ESTIMATE = 'estimate',
+  STANDARD_ERROR = 'se',
+  COEFFICIENT_VARIATION = 'cv',
+  CONFIDENCE_LEVEL = 'conf.level',
+  UPPER_CONFIDENCE_LIMIT = 'ucl',
+  LOWER_CONFIDENCE_LIMIT = 'lcl',
+  AREA = 'area',
+  AREA_FLOWN = 'area.flown'
+}
+
 /**
  * Uploads a media file to S3 and inserts a matching record in the `summary_submission` table.
  *
  * @return {*}  {RequestHandler}
  */
 export function uploadMedia(): RequestHandler {
-  return async (req, res) => {
+  return async (req, res, next) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
     if (!rawMediaArray || !rawMediaArray.length) {
@@ -155,7 +177,10 @@ export function uploadMedia(): RequestHandler {
 
       await uploadFileToS3(rawMediaFile, key, metadata);
 
-      return res.status(200).send({ summarySubmissionId });
+      req['s3File'] = rawMediaFile;
+
+      req['summarySubmissionId'] = summarySubmissionId;
+      next();
     } catch (error) {
       defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
@@ -222,4 +247,121 @@ export const updateSurveySummarySubmissionWithKey = async (
   }
 
   return updateResponse;
+};
+
+export function parseAndUploadSummarySubmissionInput(): RequestHandler {
+  return async (req, res, next) => {
+    const xlsxCsv: XLSXCSV = req['xlsx'];
+
+    const summarySubmissionId = req['summarySubmissionId'];
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    const worksheets = xlsxCsv.workbook.worksheets;
+
+    try {
+      await connection.open();
+
+      const promises: Promise<any>[] = [];
+
+      for (const worksheet of Object.values(worksheets)) {
+        const rowObjects = worksheet.getRowObjects();
+
+        for (const rowObject of Object.values(rowObjects)) {
+          const summaryObject = new PostSummaryDetails();
+
+          for (const columnName in rowObject) {
+            const columnValue = rowObject[columnName];
+
+            switch (columnName.toLowerCase()) {
+              case SUMMARY_CLASS.STUDY_AREA:
+                summaryObject.study_area_id = columnValue;
+                break;
+              case SUMMARY_CLASS.SUMMARY_STATISTIC:
+                summaryObject.parameter = columnValue;
+                break;
+              case SUMMARY_CLASS.STRATUM:
+                summaryObject.stratum = columnValue;
+                break;
+              case SUMMARY_CLASS.OBSERVED:
+                summaryObject.parameter_value = columnValue;
+                break;
+              case SUMMARY_CLASS.ESTIMATE:
+                summaryObject.parameter_estimate = columnValue;
+                break;
+              case SUMMARY_CLASS.STANDARD_ERROR:
+                summaryObject.standard_error = columnValue;
+                break;
+              case SUMMARY_CLASS.COEFFICIENT_VARIATION:
+                summaryObject.coefficient_variation = columnValue;
+                break;
+              case SUMMARY_CLASS.CONFIDENCE_LEVEL:
+                summaryObject.confidence_level_percent = columnValue;
+                break;
+              case SUMMARY_CLASS.UPPER_CONFIDENCE_LIMIT:
+                summaryObject.confidence_limit_upper = columnValue;
+                break;
+              case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
+                summaryObject.confidence_limit_lower = columnValue;
+                break;
+              case SUMMARY_CLASS.AREA:
+                summaryObject.total_area_surveyed_sqm = columnValue;
+                break;
+              case SUMMARY_CLASS.AREA_FLOWN:
+                summaryObject.kilometres_surveyed = columnValue;
+                break;
+              default:
+                break;
+            }
+          }
+          promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
+        }
+      }
+
+      await Promise.all(promises);
+
+      await connection.commit();
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'parseAndUploadSummaryDetails', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+function returnSummarySubmissionId(): RequestHandler {
+  return async (req, res) => {
+    const summarySubmissionId = req['summarySubmissionId'];
+
+    return res.status(200).json({ summarySubmissionId });
+  };
+}
+
+/**
+ * Upload scraped summary submission data.
+ *
+ * @param {number} summarySubmissionId
+ * @param {any} scrapedSummaryDetail
+ * @param {IDBConnection} connection
+ * @return {*}
+ */
+export const uploadScrapedSummarySubmission = async (
+  summarySubmissionId: number,
+  scrapedSummaryDetail: any,
+  connection: IDBConnection
+) => {
+  const sqlStatement = insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL post statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert summary details data');
+  }
 };
