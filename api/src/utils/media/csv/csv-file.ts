@@ -87,19 +87,19 @@ export class CSVWorksheet {
    * @memberof CSVWorksheet
    */
   getRows(): (string | number)[][] {
-    const rowsToReturn: (string | number)[][] = [];
-
     if (!this.worksheet) {
-      return rowsToReturn;
+      return [];
     }
 
     const ref = this.worksheet['!ref'];
 
     if (!ref) {
-      return rowsToReturn;
+      return [];
     }
 
     if (!this._rows.length) {
+      const rowsToReturn: (string | number)[][] = [];
+
       const originalRange = xlsx.utils.decode_range(ref);
 
       for (let i = 1; i <= originalRange.e.r; i++) {
@@ -123,9 +123,11 @@ export class CSVWorksheet {
 
         rowsToReturn.push(row);
       }
+
+      this._rows = rowsToReturn;
     }
 
-    return rowsToReturn;
+    return this._rows;
   }
 
   /**
