@@ -25,6 +25,7 @@ describe('useProjectApi', () => {
 
   const projectId = 1;
   const attachmentId = 1;
+  const attachmentType = 'type';
 
   it('getProjectAttachments works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/attachments/list`).reply(200, {
@@ -59,9 +60,9 @@ describe('useProjectApi', () => {
   });
 
   it('deleteProjectAttachment works as expected', async () => {
-    mock.onDelete(`/api/project/${projectId}/attachments/${attachmentId}/delete`).reply(200, 1);
+    mock.onPost(`/api/project/${projectId}/attachments/${attachmentId}/delete`).reply(200, 1);
 
-    const result = await useProjectApi(axios).deleteProjectAttachment(projectId, attachmentId);
+    const result = await useProjectApi(axios).deleteProjectAttachment(projectId, attachmentId, attachmentType, 'token');
 
     expect(result).toEqual(1);
   });
@@ -199,7 +200,7 @@ describe('useProjectApi', () => {
   it('makeAttachmentSecure works as expected', async () => {
     mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makeSecure`).reply(200, 1);
 
-    const result = await useProjectApi(axios).makeAttachmentSecure(projectId, attachmentId);
+    const result = await useProjectApi(axios).makeAttachmentSecure(projectId, attachmentId, attachmentType);
 
     expect(result).toEqual(1);
   });
@@ -207,7 +208,12 @@ describe('useProjectApi', () => {
   it('makeAttachmentUnsecure works as expected', async () => {
     mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`).reply(200, 1);
 
-    const result = await useProjectApi(axios).makeAttachmentUnsecure(projectId, attachmentId, 'token123');
+    const result = await useProjectApi(axios).makeAttachmentUnsecure(
+      projectId,
+      attachmentId,
+      'token123',
+      attachmentType
+    );
 
     expect(result).toEqual(1);
   });
@@ -219,7 +225,7 @@ describe('useProjectApi', () => {
 
     mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file);
+    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file, attachmentType);
 
     expect(result).toEqual('result 1');
   });

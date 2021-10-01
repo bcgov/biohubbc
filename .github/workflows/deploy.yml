@@ -1,6 +1,6 @@
-# PR Based Deploy On OpensShift
+# PR Based Deploy On OpenShift
 # Builds and Deploys unmerged PR's to temporary pods/services/routes/etc in the OpenShift Dev environment.
-name: PR-Based Deploy on OpensShift
+name: PR-Based Deploy on OpenShift
 
 on:
   pull_request:

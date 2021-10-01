@@ -50,6 +50,7 @@ declare
   _geography project.geography%type;
   _project_funding_source_id project_funding_source.project_funding_source_id%type;
   _project_report_attachment_id project_report_attachment.project_report_attachment_id%type;
+  _survey_report_attachment_id survey_report_attachment.survey_report_attachment_id%type;
 begin
   -- set security context
   select api_set_context('myIDIR', 'IDIR') into _system_user_id;
@@ -88,10 +89,10 @@ begin
   insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date, funding_source_project_id) values (_project_id, (select investment_action_category_id from investment_action_category where name = 'Action 1'), '$1,000.00', now(), now(), 'test') returning project_funding_source_id into _project_funding_source_id;
   --insert into project_funding_source (project_id, investment_action_category_id, funding_amount, funding_start_date, funding_end_date) values (_project_id, 43, '$1,000.00', now(), now());
   insert into project_iucn_action_classification (project_id, iucn_conservation_action_level_3_subclassification_id) values (_project_id, (select iucn_conservation_action_level_3_subclassification_id from iucn_conservation_action_level_3_subclassification where name = 'Primary Education'));
-  insert into project_attachment (project_id, file_name, title, key, file_size) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000);
+  insert into project_attachment (project_id, file_name, title, key, file_size, file_type) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000, 'video');
   insert into project_report_attachment (project_id, file_name, title, key, file_size, year, description) values (_project_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text, 10000, '2021', 'example abstract') returning project_report_attachment_id into _project_report_attachment_id;
-  insert into author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'john', 'doe');
-  insert into author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'bob', 'dole');
+  insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'john', 'doe');
+  insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'bob', 'dole');
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
   insert into permit (system_user_id, project_id, number, type, issue_date, end_date) values (_system_user_id, _project_id, '8377262', 'permit type', now(), now()+interval '1 day');
 
@@ -109,10 +110,12 @@ begin
   assert _count = 1, 'FAIL project_iucn_action_classification';
   select count(1) into _count from project_attachment;
   assert _count = 1, 'FAIL project_attachment';
+  select count(1) into _count from project_attachment;
+  assert _count = 1, 'FAIL project_attachment';
   select count(1) into _count from project_report_attachment;
   assert _count = 1, 'FAIL project_report_attachment';
-  select count(1) into _count from author;
-  assert _count = 2, 'FAIL author';
+  select count(1) into _count from project_report_author;
+  assert _count = 2, 'FAIL project_report_author';
   select count(1) into _count from project_first_nation;
   assert _count = 1, 'FAIL project_first_nation';
   select count(1) into _count from permit;
@@ -121,21 +124,29 @@ begin
   -- surveys
   insert into survey (project_id, name, objectives, location_name, location_description, start_date, lead_first_name, lead_last_name, geography)
     values (_project_id, 'survey name', 'survey objectives', 'survey location name', 'survey location description', now(), 'lead first', 'lead last', _geography) returning survey_id into _survey_id;
+  insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
+    values (_survey_id, (select first_nations_id from first_nations where name = 'Squamish Nation'), (select proprietor_type_id from proprietor_type where name = 'First Nations Land'), 'proprietor rationale', true);  
+  insert into survey_attachment (survey_id, file_name, title, key, file_size, file_type) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text||'/surveys/'||_survey_id::text, 10000, 'video');
+  insert into survey_report_attachment (survey_id, file_name, title, key, file_size, year, description) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_survey_id::text, 10000, '2021', 'example abstract') returning survey_report_attachment_id into _survey_report_attachment_id;
+  insert into survey_report_author (survey_report_attachment_id, first_name, last_name) values (_survey_report_attachment_id, 'john', 'doe');
+  insert into survey_report_author (survey_report_attachment_id, first_name, last_name) values (_survey_report_attachment_id, 'bob', 'dole');
+  insert into study_species (survey_id, wldtaxonomic_units_id, is_focal) values (_survey_id, (select wldtaxonomic_units_id from wldtaxonomic_units where CODE = 'AMARALB'), true);
+  insert into survey_funding_source (survey_id, project_funding_source_id) values (_survey_id, _project_funding_source_id);
+
   select count(1) into _count from survey;
   assert _count = 1, 'FAIL survey';
-  insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
-    values (_survey_id, (select first_nations_id from first_nations where name = 'Squamish Nation'), (select proprietor_type_id from proprietor_type where name = 'First Nations Land'), 'proprietor rationale', true);
   select count(1) into _count from survey_proprietor;
   assert _count = 1, 'FAIL survey_proprietor';
-  insert into survey_attachment (survey_id, file_name, title, key, file_size) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text||'/surveys/'||_survey_id::text, 10000);
   select count(1) into _count from survey_attachment where survey_id = _survey_id;
-  assert _count = 1, 'FAIL survey_attachment';
-  insert into study_species (survey_id, wldtaxonomic_units_id, is_focal) values (_survey_id, (select wldtaxonomic_units_id from wldtaxonomic_units where CODE = 'AMARALB'), true);
+  assert _count = 1, 'FAIL survey_attachment';  
+  select count(1) into _count from survey_report_attachment;
+  assert _count = 1, 'FAIL survey_report_attachment';    
+  select count(1) into _count from survey_report_author;
+  assert _count = 2, 'FAIL survey_report_author';  
   select count(1) into _count from study_species;
-  assert _count = 1, 'FAIL study_species';
-  insert into survey_funding_source (survey_id, project_funding_source_id) values (_survey_id, _project_funding_source_id);
+  assert _count = 1, 'FAIL study_species';  
   select count(1) into _count from survey_funding_source;
-  assert _count = 1, 'FAIL survey_funding_source';
+  assert _count = 1, 'FAIL survey_funding_source';  
 
   -- occurrence
   -- occurrence submission 1

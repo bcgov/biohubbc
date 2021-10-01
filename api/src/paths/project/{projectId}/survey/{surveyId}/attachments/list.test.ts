@@ -97,18 +97,35 @@ describe('lists the survey attachments', () => {
   it('should return a list of survey attachments where the lastModified is the create_date', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({
-      rows: [
-        {
-          id: 13,
-          file_name: 'name1',
-          create_date: '2020-01-01',
-          update_date: '',
-          file_size: 50,
-          security_token: 'token123'
-        }
-      ]
-    });
+    mockQuery
+      .onFirstCall()
+      .resolves({
+        rows: [
+          {
+            id: 13,
+            file_name: 'name1',
+            create_date: '2020-01-01',
+            update_date: '',
+            file_size: 50,
+            file_type: 'type',
+            security_token: 'sometoken'
+          }
+        ]
+      })
+      .onSecondCall()
+      .resolves({
+        rows: [
+          {
+            id: 14,
+            file_name: 'name2',
+            create_date: '2020-01-01',
+            update_date: '',
+            file_size: 50,
+            file_type: 'type',
+            security_token: 'sometoken'
+          }
+        ]
+      });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -125,25 +142,59 @@ describe('lists the survey attachments', () => {
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-01', size: 50, securityToken: 'token123' }]
+      attachmentsList: [
+        {
+          fileName: 'name1',
+          fileType: 'type',
+          securityToken: 'sometoken',
+          id: 13,
+          lastModified: '2020-01-01',
+          size: 50
+        },
+        {
+          fileName: 'name2',
+          fileType: 'type',
+          securityToken: 'sometoken',
+          id: 14,
+          lastModified: '2020-01-01',
+          size: 50
+        }
+      ]
     });
   });
 
   it('should return a list of survey attachments where the lastModified is the update_date', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({
-      rows: [
-        {
-          id: 13,
-          file_name: 'name1',
-          create_date: '2020-01-01',
-          update_date: '2020-01-02',
-          file_size: 50,
-          security_token: 'token123'
-        }
-      ]
-    });
+    mockQuery
+      .onFirstCall()
+      .resolves({
+        rows: [
+          {
+            id: 13,
+            file_name: 'name1',
+            create_date: '2020-01-01',
+            update_date: '2020-04-04',
+            file_size: 50,
+            file_type: 'type',
+            security_token: 'sometoken'
+          }
+        ]
+      })
+      .onSecondCall()
+      .resolves({
+        rows: [
+          {
+            id: 14,
+            file_name: 'name2',
+            create_date: '2020-01-01',
+            update_date: '2020-04-04',
+            file_size: 50,
+            file_type: 'type',
+            security_token: 'sometoken'
+          }
+        ]
+      });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -160,7 +211,24 @@ describe('lists the survey attachments', () => {
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.be.eql({
-      attachmentsList: [{ fileName: 'name1', id: 13, lastModified: '2020-01-02', size: 50, securityToken: 'token123' }]
+      attachmentsList: [
+        {
+          fileName: 'name1',
+          fileType: 'type',
+          securityToken: 'sometoken',
+          id: 13,
+          lastModified: '2020-04-04',
+          size: 50
+        },
+        {
+          fileName: 'name2',
+          fileType: 'type',
+          securityToken: 'sometoken',
+          id: 14,
+          lastModified: '2020-04-04',
+          size: 50
+        }
+      ]
     });
   });
 

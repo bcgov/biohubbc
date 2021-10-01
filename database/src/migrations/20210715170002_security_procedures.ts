@@ -322,6 +322,76 @@ $$;
     ALTER FUNCTION ${DB_SCHEMA}.api_security_rules_bulk_apply()
       OWNER TO postgres;
 
+      CREATE OR REPLACE FUNCTION ${DB_SCHEMA}.api_secure_attachment_record(__id integer, __table_name character varying, __project_id integer)
+          RETURNS boolean
+          LANGUAGE 'plpgsql'
+          COST 100
+          VOLATILE PARALLEL UNSAFE
+      AS $BODY$
+        -- *******************************************************************
+        -- Procedure: api_secure_attachment_record
+        -- Purpose: Secures the attachment record in the table and creates an entry
+        -- in the security table
+        --
+        -- MODIFICATION HISTORY
+        -- Person           Date        Comments
+        -- ---------------- ----------- --------------------------------------
+        -- roland.stens@gov.bc.ca
+        --                  2021-09-20  initial release
+        -- *******************************************************************
+        declare
+          v_security_rule_id integer;
+
+        begin
+          -- Find the system security rule for this table
+          execute format('select security_rule_id from ${DB_SCHEMA}.security_rule where rule_definition ->> ''target'' = lower(''%1$s'') and system_rule=true', __table_name) into v_security_rule_id;
+
+          -- Secure the record
+          execute format('select ${DB_SCHEMA}.api_secure_record(%1$s, lower(''%2$s''), %3$s, api_get_context_user_id())', __id,__table_name,v_security_rule_id);
+
+          --- make sure that the project_id has been filled out too.
+          execute format('update ${DB_SCHEMA}.security set project_id = %1$s where security_token =  (select security_token from ${DB_SCHEMA}.%2$s
+            where %2$s_id = %3$s)', __project_id, __table_name, __id);
+
+          return true;
+        end;
+      $BODY$;
+
+      ALTER FUNCTION ${DB_SCHEMA}.api_secure_attachment_record(integer, character varying, integer)
+          OWNER TO postgres;
+
+      CREATE OR REPLACE FUNCTION ${DB_SCHEMA}.api_unsecure_attachment_record(__table_name character varying, __security_token uuid)
+          RETURNS boolean
+          LANGUAGE 'plpgsql'
+          COST 100
+          VOLATILE PARALLEL UNSAFE
+      AS $BODY$
+        -- *******************************************************************
+        -- Procedure: api_unsecure_attachment_record
+        -- Purpose: Unecures the attachment record in the table and removes the entry from the security table
+        -- in the security table
+        --
+        -- MODIFICATION HISTORY
+        -- Person           Date        Comments
+        -- ---------------- ----------- --------------------------------------
+        -- roland.stens@gov.bc.ca
+        --                  2021-09-20  initial release
+        -- *******************************************************************
+        declare
+          v_security_rule_id integer;
+
+        begin
+
+          execute format('delete from ${DB_SCHEMA}.security where security_token = ''%1$s''', __security_token);
+          execute format('update ${DB_SCHEMA}.%1$s set security_token = null where security_token = ''%2$s''', __table_name, __security_token);
+
+          return true;
+        end;
+      $BODY$;
+
+      ALTER FUNCTION ${DB_SCHEMA}.api_unsecure_attachment_record(character varying, uuid)
+          OWNER TO postgres;
+
   `);
 }
 

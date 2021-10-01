@@ -2,18 +2,18 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { getLogger } from '../../../../../utils/logger';
-import { unsecureAttachmentRecordSQL } from '../../../../../queries/security/security-queries';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { getLogger } from '../../../../../../../utils/logger';
+import { unsecureAttachmentRecordSQL } from '../../../../../../../queries/security/security-queries';
 
-const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/makeUnsecure');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/makeUnsecure');
 
-export const PUT: Operation = [makeProjectAttachmentUnsecure()];
+export const PUT: Operation = [makeSurveyAttachmentUnsecure()];
 
 PUT.apiDoc = {
-  description: 'Make security status of a project attachment unsecure.',
+  description: 'Make security status of a survey attachment unsecure.',
   tags: ['attachment', 'security_status'],
   security: [
     {
@@ -31,6 +31,14 @@ PUT.apiDoc = {
     },
     {
       in: 'path',
+      name: 'surveyId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'attachmentId',
       schema: {
         type: 'number'
@@ -39,7 +47,7 @@ PUT.apiDoc = {
     }
   ],
   requestBody: {
-    description: 'Current security token value and attachment type for project attachment.',
+    description: 'Current security token value and attachment type for survey attachment.',
     content: {
       'application/json': {
         schema: {
@@ -50,7 +58,7 @@ PUT.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Project attachment make unsecure security status response.',
+      description: 'Survey attachment make unsecure security status response.',
       content: {
         'application/json': {
           schema: {
@@ -69,15 +77,19 @@ PUT.apiDoc = {
   }
 };
 
-export function makeProjectAttachmentUnsecure(): RequestHandler {
+export function makeSurveyAttachmentUnsecure(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'Make security status of a project attachment unsecure',
+      label: 'Make security status of a survey attachment unsecure',
       message: 'params',
       req_params: req.params
     });
 
     if (!req.params.projectId) {
+      throw new HTTP400('Missing required path param `projectId`');
+    }
+
+    if (!req.params.surveyId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
@@ -96,8 +108,8 @@ export function makeProjectAttachmentUnsecure(): RequestHandler {
 
       const unsecureRecordSQLStatement =
         req.body.attachmentType === 'Report'
-          ? unsecureAttachmentRecordSQL('project_report_attachment', req.body.securityToken)
-          : unsecureAttachmentRecordSQL('project_attachment', req.body.securityToken);
+          ? unsecureAttachmentRecordSQL('survey_report_attachment', req.body.securityToken)
+          : unsecureAttachmentRecordSQL('survey_attachment', req.body.securityToken);
 
       if (!unsecureRecordSQLStatement) {
         throw new HTTP400('Failed to build SQL unsecure record statement');
@@ -116,7 +128,7 @@ export function makeProjectAttachmentUnsecure(): RequestHandler {
 
       return res.status(200).json(1);
     } catch (error) {
-      defaultLog.debug({ label: 'makeProjectAttachmentUnsecure', message: 'error', error });
+      defaultLog.debug({ label: 'makeSurveyAttachmentUnsecure', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
