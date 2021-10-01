@@ -26,6 +26,7 @@ export class CSVWorksheet {
 
   _headers: string[];
   _rows: (string | number)[][];
+  _rowObjects: object[];
 
   csvValidation: CSVValidation;
 
@@ -36,6 +37,7 @@ export class CSVWorksheet {
 
     this._headers = [];
     this._rows = [];
+    this._rowObjects = [];
 
     this.csvValidation = new CSVValidation(this.name);
   }
@@ -107,7 +109,8 @@ export class CSVWorksheet {
       const originalRange = xlsx.utils.decode_range(ref);
 
       for (let i = 1; i <= originalRange.e.r; i++) {
-        const row = [];
+        const row = new Array(this.getHeaders().length);
+        let rowHasValues = false;
 
         for (let j = 0; j <= originalRange.e.c; j++) {
           const cellAddress = { c: j, r: i };
@@ -119,13 +122,15 @@ export class CSVWorksheet {
           }
 
           if (cellValue.t === 'n' || cellValue.t === 'd') {
-            row.push(cellValue.w);
+            row[j] = cellValue.w;
           } else {
-            row.push(cellValue.v);
+            row[j] = cellValue.v;
           }
+
+          rowHasValues = true;
         }
 
-        if (row.length) {
+        if (row.length && rowHasValues) {
           rowsToReturn.push(row);
         }
       }
@@ -147,7 +152,25 @@ export class CSVWorksheet {
       return [];
     }
 
-    return xlsx.utils.sheet_to_json(this.worksheet);
+    if (!this._rowObjects.length) {
+      const rowObjectsArray: object[] = [];
+      const rows = this.getRows();
+      const headers = this.getHeaders();
+
+      rows.forEach((row: (string | number)[]) => {
+        let rowObject = {};
+
+        headers.forEach((header: string, index: number) => {
+          rowObject[header] = row[index];
+        });
+
+        rowObjectsArray.push(rowObject);
+      });
+
+      this._rowObjects = rowObjectsArray;
+    }
+
+    return this._rowObjects;
   }
 
   buildID(parts: (string | number)[], postfix?: string): string {
