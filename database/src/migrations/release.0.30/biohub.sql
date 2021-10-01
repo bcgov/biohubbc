@@ -2321,7 +2321,7 @@ CREATE TABLE survey_summary_detail(
     parameter                       varchar(100)      NOT NULL,
     stratum                         varchar(100)      NOT NULL,
     parameter_value                 numeric(10, 0),
-    parameter_estimate              numeric(10, 0),
+    parameter_esitmate              numeric(10, 0),
     parameter_denominator_value     numeric(14, 2),
     confidence_limit_lower          numeric(10, 3),
     confidence_limit_upper          numeric(10, 3),
@@ -2359,7 +2359,7 @@ COMMENT ON COLUMN survey_summary_detail.stratum IS 'The stratum as provided in t
 ;
 COMMENT ON COLUMN survey_summary_detail.parameter_value IS 'A numerical observed value of the parameter. e.g. number of individuals, or population ratio, or relative abundance index, or density.'
 ;
-COMMENT ON COLUMN survey_summary_detail.parameter_estimate IS 'A numerical estimated value of the parameter. e.g. number of individuals, or population ratio, or relative abundance index, or density.'
+COMMENT ON COLUMN survey_summary_detail.parameter_esitmate IS 'A numerical estimated value of the parameter. e.g. number of individuals, or population ratio, or relative abundance index, or density.'
 ;
 COMMENT ON COLUMN survey_summary_detail.parameter_denominator_value IS 'The numeric value used as the divisor (denominator) when the parameter is given as a quotient (e.g. Individuals/km2, Detections/km, Detections/100 days). For example, the area value used to calculate a density would be the parameter denominator value. The parameter denominator value unit can be derived from the parameter field.'
 ;
