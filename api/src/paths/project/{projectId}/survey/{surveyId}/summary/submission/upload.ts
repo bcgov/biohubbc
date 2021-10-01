@@ -336,8 +336,6 @@ function returnSummarySubmissionId(): RequestHandler {
   return async (req, res) => {
     const summarySubmissionId = req['summarySubmissionId'];
 
-    console.log('about to return');
-
     return res.status(200).json({ summarySubmissionId });
   };
 }
