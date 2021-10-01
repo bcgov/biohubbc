@@ -27,6 +27,7 @@ begin
     call api_delete_occurrence_submission(_occurrence_submission_id);
   end loop;
 
+  delete from survey_summary_submission_message where survey_summary_submission_id in (select survey_summary_submission_id from survey_summary_submission where survey_id = p_survey_id);
   delete from survey_summary_detail where survey_summary_submission_id in (select survey_summary_submission_id from survey_summary_submission where survey_id = p_survey_id);
   delete from survey_summary_submission where survey_id = p_survey_id;
   delete from survey_proprietor where survey_id = p_survey_id;

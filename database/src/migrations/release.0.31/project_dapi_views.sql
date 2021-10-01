@@ -39,6 +39,8 @@
  create or replace view submission_status as select * from biohub.submission_status;
  create or replace view submission_status_type as select * from biohub.submission_status_type;
  create or replace view summary_parameter_code as select * from biohub.summary_parameter_code;
+ create or replace view summary_submission_message_class as select * from biohub.summary_submission_message_class;
+ create or replace view summary_submission_message_type as select * from biohub.summary_submission_message_type;
  create or replace view survey as select * from biohub.survey;
  create or replace view survey_attachment as select * from biohub.survey_attachment;
  create or replace view survey_funding_source as select * from biohub.survey_funding_source;
