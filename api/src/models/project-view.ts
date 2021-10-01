@@ -22,7 +22,12 @@ export class GetProjectData {
   publish_date: string;
 
   constructor(projectData?: any, activityData?: any[]) {
-    defaultLog.debug({ label: 'GetProjectData', message: 'params', projectData, activityData });
+    defaultLog.debug({
+      label: 'GetProjectData',
+      message: 'params',
+      projectData: { ...projectData, geometry: 'Too big to print' },
+      activityData
+    });
 
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.type || '';
@@ -87,13 +92,11 @@ export class GetLocationData {
     defaultLog.debug({
       label: 'GetLocationData',
       message: 'params',
-      locationData
+      locationData: { ...locationData, geometry: 'Too big to print' }
     });
 
-    const locationDataItem = locationData && locationData.length && locationData[0];
-
-    this.location_description = locationDataItem?.location_description || '';
-    this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
+    this.location_description = locationData?.location_description || '';
+    this.geometry = (locationData?.geometry?.length && locationData.geometry) || [];
   }
 }
 
@@ -107,11 +110,15 @@ export class GetObjectivesData {
   objectives: string;
   caveats: string;
 
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'GetObjectivesData', message: 'params', obj });
+  constructor(objectivesData?: any) {
+    defaultLog.debug({
+      label: 'GetObjectivesData',
+      message: 'params',
+      objectivesData: { ...objectivesData, geometry: 'Too big to print' }
+    });
 
-    this.objectives = obj?.objectives || '';
-    this.caveats = obj?.caveats || '';
+    this.objectives = objectivesData?.objectives || '';
+    this.caveats = objectivesData?.caveats || '';
   }
 }
 
@@ -128,14 +135,18 @@ export class GetCoordinatorData {
   coordinator_agency: string;
   share_contact_details: string;
 
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'GetCoordinatorData', message: 'params', obj });
+  constructor(coordinatorData?: any) {
+    defaultLog.debug({
+      label: 'GetCoordinatorData',
+      message: 'params',
+      coordinatorData: { ...coordinatorData, geometry: 'Too big to print' }
+    });
 
-    this.first_name = obj?.coordinator_first_name || '';
-    this.last_name = obj?.coordinator_last_name || '';
-    this.email_address = obj?.coordinator_email_address || '';
-    this.coordinator_agency = obj?.coordinator_agency_name || '';
-    this.share_contact_details = obj?.coordinator_public ? 'true' : 'false';
+    this.first_name = coordinatorData?.coordinator_first_name || '';
+    this.last_name = coordinatorData?.coordinator_last_name || '';
+    this.email_address = coordinatorData?.coordinator_email_address || '';
+    this.coordinator_agency = coordinatorData?.coordinator_agency_name || '';
+    this.share_contact_details = coordinatorData?.coordinator_public ? 'true' : 'false';
   }
 }
 

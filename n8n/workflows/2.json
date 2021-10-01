@@ -9,8 +9,8 @@
       "type": "n8n-nodes-base.start",
       "typeVersion": 1,
       "position": [
-        250,
-        300
+        940,
+        560
       ]
     },
     {
@@ -75,6 +75,7 @@
         "authentication": "headerAuth",
         "requestMethod": "POST",
         "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/scrape-occurrences",
+        "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
         "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
@@ -127,7 +128,7 @@
     }
   },
   "createdAt": "2021-09-23T10:29:03.227Z",
-  "updatedAt": "2021-09-23T18:48:14.495Z",
+  "updatedAt": "2021-09-28T22:23:32.950Z",
   "settings": {},
   "staticData": null
 }

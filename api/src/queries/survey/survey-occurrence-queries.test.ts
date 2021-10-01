@@ -10,37 +10,62 @@ import {
   insertSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
-  updateSurveyOccurrenceSubmissionWithKeySQL,
+  updateSurveyOccurrenceSubmissionSQL,
   deleteOccurrenceSubmissionSQL
 } from './survey-occurrence-queries';
 
 describe('insertSurveyOccurrenceSubmissionSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL((null as unknown) as number, 'fileSource', 'fileKey', 1);
+    const response = insertSurveyOccurrenceSubmissionSQL({
+      surveyId: (null as unknown) as number,
+      source: 'fileSource',
+      inputKey: 'fileKey',
+      templateMethodologyId: 1
+    });
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null source provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL(1, (null as unknown) as string, 'fileKey', 1);
+    const response = insertSurveyOccurrenceSubmissionSQL({
+      surveyId: 1,
+      source: (null as unknown) as string,
+      inputKey: 'fileKey',
+      templateMethodologyId: 1
+    });
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileKey provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL(1, 'fileSource', (null as unknown) as string, 1);
+    const response = insertSurveyOccurrenceSubmissionSQL({
+      surveyId: 1,
+      source: 'fileSource',
+      inputKey: (null as unknown) as string,
+      templateMethodologyId: 1
+    });
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when null templateMethodologyId provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL(1, 'fileSource', 'fileKey', null);
+    const response = insertSurveyOccurrenceSubmissionSQL({
+      surveyId: 1,
+      source: 'fileSource',
+      inputKey: 'fileKey',
+      templateMethodologyId: null
+    });
 
     expect(response).to.not.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL(1, 'fileSource', 'fileKey', 1);
+    const response = insertSurveyOccurrenceSubmissionSQL({
+      surveyId: 1,
+      source: 'fileSource',
+      inputKey: 'fileKey',
+      templateMethodologyId: 1
+    });
 
     expect(response).to.not.be.null;
   });
@@ -88,21 +113,30 @@ describe('deleteSurveyOccurrencesSQL', () => {
   });
 });
 
-describe('updateSurveyOccurrenceSubmissionwithKeySQL', () => {
+describe('updateSurveyOccurrenceSubmissionSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = updateSurveyOccurrenceSubmissionWithKeySQL((null as unknown) as number, 'fileKey');
+    const response = updateSurveyOccurrenceSubmissionSQL({
+      submissionId: (null as unknown) as number,
+      inputKey: 'fileKey'
+    });
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null key provided', () => {
-    const response = updateSurveyOccurrenceSubmissionWithKeySQL(1, (null as unknown) as string);
+    const response = updateSurveyOccurrenceSubmissionSQL({
+      submissionId: 1,
+      inputKey: (null as unknown) as string
+    });
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = updateSurveyOccurrenceSubmissionWithKeySQL(1, 'fileKey');
+    const response = updateSurveyOccurrenceSubmissionSQL({
+      submissionId: 1,
+      inputKey: 'fileKey'
+    });
 
     expect(response).to.not.be.null;
   });

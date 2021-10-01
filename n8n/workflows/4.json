@@ -1,6 +1,6 @@
 {
-  "id": 1,
-  "name": "Submission Validation",
+  "id": 4,
+  "name": "Process Occurrence Submission",
   "active": true,
   "nodes": [
     {
@@ -9,35 +9,14 @@
       "type": "n8n-nodes-base.start",
       "typeVersion": 1,
       "position": [
-        930,
-        550
+        550,
+        -100
       ]
     },
     {
       "parameters": {
-        "authentication": "headerAuth",
-        "requestMethod": "POST",
-        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/validate",
-        "responseFormat": "string",
-        "jsonParameters": true,
-        "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
-      },
-      "name": "DWC Validate",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 1,
-      "position": [
-        1770,
-        665
-      ],
-      "credentials": {
-        "httpHeaderAuth": "Bearer Token"
-      }
-    },
-    {
-      "parameters": {
         "httpMethod": "POST",
-        "path": "validate",
+        "path": "process-occurrence-submission",
         "options": {
           "responseHeaders": {
             "entries": [
@@ -62,8 +41,8 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        930,
-        750
+        550,
+        130
       ],
       "webhookId": "a346c2c5-d43e-4bc8-8dd1-dbcee88e1638"
     },
@@ -87,8 +66,32 @@
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        1520,
-        750
+        1140,
+        130
+      ]
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_HOST}"
+      },
+      "name": "Get N8N API Host",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        740,
+        130
+      ]
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_PORT}"
+      },
+      "name": "Get N8N API Port",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        940,
+        130
       ]
     },
     {
@@ -105,8 +108,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1770,
-        885
+        1430,
+        270
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -114,27 +117,66 @@
     },
     {
       "parameters": {
-        "command": "echo ${N8N_API_HOST}"
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/xlsx/transform",
+        "responseFormat": "string",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
-      "name": "Get N8N API Host",
-      "type": "n8n-nodes-base.executeCommand",
+      "name": "XLSX Transform",
+      "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1120,
-        750
-      ]
+        1690,
+        270
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
     },
     {
       "parameters": {
-        "command": "echo ${N8N_API_PORT}"
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/scrape-occurrences",
+        "responseFormat": "string",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
-      "name": "Get N8N API Port",
-      "type": "n8n-nodes-base.executeCommand",
+      "name": "Scrape Occurrences",
+      "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1320,
-        750
-      ]
+        1930,
+        120
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/validate",
+        "responseFormat": "string",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+      },
+      "name": "DWC Validate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1430,
+        -20
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
     }
   ],
   "connections": {
@@ -189,14 +231,42 @@
         ]
       ]
     },
-    "Start": {
+    "XLSX Validate": {
       "main": [
-        []
+        [
+          {
+            "node": "XLSX Transform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DWC Validate": {
+      "main": [
+        [
+          {
+            "node": "Scrape Occurrences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XLSX Transform": {
+      "main": [
+        [
+          {
+            "node": "Scrape Occurrences",
+            "type": "main",
+            "index": 0
+          }
+        ]
       ]
     }
   },
-  "createdAt": "2021-08-26T12:19:31.100Z",
-  "updatedAt": "2021-09-28T23:13:58.567Z",
+  "createdAt": "2021-09-29T15:30:03.805Z",
+  "updatedAt": "2021-09-30T01:15:53.740Z",
   "settings": {},
   "staticData": null
 }

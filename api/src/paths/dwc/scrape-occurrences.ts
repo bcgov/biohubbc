@@ -1,22 +1,24 @@
-import { getDBConnection, IDBConnection } from '../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
-import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
-import { getSubmissionFileFromS3, getSubmissionS3Key, prepDWCArchive } from './validate';
-import { HTTP400 } from '../../errors/CustomError';
-import { postOccurrenceSQL } from '../../queries/occurrence/occurrence-create-queries';
-import { PostOccurrence } from '../../models/occurrence-create';
-import xlsx from 'xlsx';
 import moment from 'moment';
+import xlsx from 'xlsx';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/CustomError';
+import { PostOccurrence } from '../../models/occurrence-create';
+import { postOccurrenceSQL } from '../../queries/occurrence/occurrence-create-queries';
+import { getLogger } from '../../utils/logger';
+import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
+import { logRequest } from '../../utils/path-utils';
+import { getOccurrenceSubmission, getS3File, prepDWCArchive } from './validate';
 
 const defaultLog = getLogger('paths/dwc/scrape-occurrences');
 
 export const POST: Operation = [
   logRequest('paths/dwc/scrape-occurrences', 'POST'),
-  getSubmissionS3Key(),
-  getSubmissionFileFromS3(),
+  getOccurrenceSubmission(),
+  getSubmissionOutputS3Key(),
+  getS3File(),
   prepDWCArchive(),
   scrapeAndUploadOccurrences()
 ];
@@ -69,12 +71,23 @@ POST.apiDoc = {
   }
 };
 
+export function getSubmissionOutputS3Key(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'getSubmissionOutputS3Key', message: 'params', files: req.body });
+    const occurrence_submission = req['occurrence_submission'];
+
+    req['s3Key'] = occurrence_submission.output_key;
+
+    next();
+  };
+}
+
 export function scrapeAndUploadOccurrences(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'scrapeAndUploadOccurrences', message: 'params', files: req.body });
 
     const occurrenceSubmissionId = req.body.occurrence_submission_id;
-    const file = req['dwcArchive'];
+    const file: DWCArchive = req['dwcArchive'];
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -83,7 +96,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
       const {
         occurrenceRows,
-        occurrenceEventIdHeader,
+        occurrenceIdHeader,
         associatedTaxaHeader,
         eventRows,
         lifeStageHeader,
@@ -91,16 +104,16 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         organismQuantityHeader,
         organismQuantityTypeHeader,
         occurrenceHeaders,
-        eventEventIdHeader,
+        eventIdHeader,
         eventDateHeader,
         eventVerbatimCoordinatesHeader,
         taxonRows,
-        taxonEventIdHeader,
+        taxonIdHeader,
         vernacularNameHeader
       } = getHeadersAndRowsFromFile(file);
 
       const scrapedOccurrences = occurrenceRows?.map((row: any) => {
-        const occurrenceEventId = row[occurrenceEventIdHeader];
+        const occurrenceId = row[occurrenceIdHeader];
         const associatedTaxa = row[associatedTaxaHeader];
         const lifeStage = row[lifeStageHeader];
         const individualCount = row[individualCountHeader];
@@ -113,7 +126,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         let eventDate;
 
         eventRows?.forEach((eventRow: any) => {
-          if (eventRow[eventEventIdHeader] === occurrenceEventId) {
+          if (eventRow[eventIdHeader] === occurrenceId) {
             const eventMoment = convertExcelDateToMoment(eventRow[eventDateHeader] as number);
             eventDate = eventMoment.toISOString();
 
@@ -124,7 +137,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         let vernacularName;
 
         taxonRows?.forEach((taxonRow: any) => {
-          if (taxonRow[taxonEventIdHeader] === occurrenceEventId) {
+          if (taxonRow[taxonIdHeader] === occurrenceId) {
             vernacularName = taxonRow[vernacularNameHeader];
           }
         });
@@ -150,10 +163,13 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(200).json({ status: 'success' });
     } catch (error) {
       defaultLog.debug({ label: 'scrapeAndUploadOccurrences', message: 'error', error });
+      await connection.rollback();
       throw error;
+    } finally {
+      connection.release();
     }
   };
 }
@@ -168,7 +184,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
  */
 export const uploadScrapedOccurrence = async (
   occurrenceSubmissionId: number,
-  scrapedOccurrence: any,
+  scrapedOccurrence: PostOccurrence,
   connection: IDBConnection
 ) => {
   const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
@@ -186,7 +202,6 @@ export const uploadScrapedOccurrence = async (
 
 export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment => {
   const ssfDate = xlsx.SSF.parse_date_code(excelDateNumber);
-
   return moment({
     year: ssfDate.y,
     month: ssfDate.m,
@@ -197,11 +212,11 @@ export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment
   });
 };
 
-const getHeadersAndRowsFromFile = (file: any) => {
+const getHeadersAndRowsFromFile = (file: DWCArchive) => {
   const eventHeaders = file.worksheets.event?.getHeaders();
   const eventRows = file.worksheets.event?.getRows();
 
-  const eventEventIdHeader = eventHeaders?.indexOf('eventid') as number;
+  const eventIdHeader = eventHeaders?.indexOf('id') as number;
   const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimcoordinates') as number;
   const eventDateHeader = eventHeaders?.indexOf('eventdate') as number;
 
@@ -210,10 +225,10 @@ const getHeadersAndRowsFromFile = (file: any) => {
 
   const taxonHeaders = file.worksheets.taxon?.getHeaders();
   const taxonRows = file.worksheets.taxon?.getRows();
-  const taxonEventIdHeader = taxonHeaders?.indexOf('eventid') as number;
+  const taxonIdHeader = taxonHeaders?.indexOf('id') as number;
   const vernacularNameHeader = taxonHeaders?.indexOf('vernacularname') as number;
 
-  const occurrenceEventIdHeader = occurrenceHeaders?.indexOf('eventid') as number;
+  const occurrenceIdHeader = occurrenceHeaders?.indexOf('id') as number;
   const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedtaxa') as number;
   const lifeStageHeader = occurrenceHeaders?.indexOf('lifestage') as number;
   const individualCountHeader = occurrenceHeaders?.indexOf('individualcount') as number;
@@ -222,7 +237,7 @@ const getHeadersAndRowsFromFile = (file: any) => {
 
   return {
     occurrenceRows,
-    occurrenceEventIdHeader,
+    occurrenceIdHeader,
     associatedTaxaHeader,
     eventRows,
     lifeStageHeader,
@@ -230,11 +245,11 @@ const getHeadersAndRowsFromFile = (file: any) => {
     organismQuantityHeader,
     organismQuantityTypeHeader,
     occurrenceHeaders,
-    eventEventIdHeader,
+    eventIdHeader,
     eventDateHeader,
     eventVerbatimCoordinatesHeader,
     taxonRows,
-    taxonEventIdHeader,
+    taxonIdHeader,
     vernacularNameHeader
   };
 };

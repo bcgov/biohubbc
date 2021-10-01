@@ -1,28 +1,38 @@
+import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
-// import { getDBConnection } from '../../database/db';
-import { getSubmissionFileFromS3, getSubmissionS3Key } from '../../paths/dwc/validate';
+import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
+import { getDBConnection } from '../../database/db';
+import {
+  getOccurrenceSubmission,
+  getOccurrenceSubmissionInputS3Key,
+  getS3File,
+  insertSubmissionStatus,
+  updateSurveyOccurrenceSubmissionWithOutputKey
+} from '../../paths/dwc/validate';
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
-import { prepXLSX } from './validate';
+import { getTemplateMethodologySpecies, prepXLSX } from './validate';
 
 const defaultLog = getLogger('paths/xlsx/transform');
 
 export const POST: Operation = [
   logRequest('paths/xlsx/transform', 'POST'),
-  getSubmissionS3Key(),
-  getSubmissionFileFromS3(),
+  getOccurrenceSubmission(),
+  getOccurrenceSubmissionInputS3Key(),
+  getS3File(),
   prepXLSX(),
   persistParseErrors(),
   getTransformationSchema(),
   getTransformationRules(),
   transformXLSX(),
-  persistTransformationResults()
+  persistTransformationResults(),
+  sendResponse()
 ];
 
 POST.apiDoc = {
@@ -83,412 +93,58 @@ export function persistParseErrors(): RequestHandler {
     }
 
     // file is not parsable, don't continue to next step and return early
-    return res.status(200).json();
+    // TODO add new status for "Transformation Failed" and insert new status record?
+    return res.status(200).json({ status: 'failed' });
   };
 }
 
 export function getTransformationSchema(): RequestHandler {
   return async (req, res, next) => {
-    // TODO store this schema in the database
-    req['transformationSchema'] = {
-      name: 'test file 1',
-      flatten: [
-        { fileName: 'Effort & Site Conditions', uniqueId: ['Survey Area', 'Sampling Unit ID', 'Stratum'] },
-        {
-          fileName: 'Observations - Skeena',
-          uniqueId: ['Waypoint'],
-          parent: { fileName: 'Effort & Site Conditions', uniqueId: ['Survey Area', 'Sampling Unit ID', 'Stratum'] }
-        },
-        {
-          fileName: 'UTM_LatLong',
-          uniqueId: ['Waypoint'],
-          parent: { fileName: 'Observations - Skeena', uniqueId: ['Waypoint'] }
-        }
-      ],
-      transform: [
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Mature Bulls']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'Adult'
-              },
-              sex: {
-                value: 'Male'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ],
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Yearlings Bulls']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'Yearling'
-              },
-              sex: {
-                value: 'Male'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ],
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Lone Cows']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'Adult'
-              },
-              sex: {
-                value: 'Female'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ],
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Unclassified Bulls']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'unknown'
-              },
-              sex: {
-                value: 'Male'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ],
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Cow W/1 calf']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'Adult'
-              },
-              sex: {
-                value: 'Female'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ],
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Cow W/2 calves']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'Adult'
-              },
-              sex: {
-                value: 'Female'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ],
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Lone calf']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'Yearling'
-              },
-              sex: {
-                value: 'unknown'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ],
-        [
-          {
-            fileName: 'event',
-            fields: {
-              id: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum', 'Waypoint'],
-                separator: ':'
-              },
-              eventID: {
-                columns: ['Survey Area', 'Sampling Unit ID', 'Stratum'],
-                separator: ':'
-              },
-              eventDate: {
-                columns: ['Date']
-              },
-              verbatimCoordinates: {
-                columns: ['Site UTM Zone', 'Site Easting', 'Site Northing']
-              }
-            }
-          },
-          {
-            fileName: 'occurrence',
-            conditionalFields: ['individualCount'],
-            fields: {
-              occurrenceID: {
-                columns: ['Waypoint'],
-                unique: 'occ'
-              },
-              individualCount: {
-                columns: ['Unclassified']
-              },
-              taxon: {
-                columns: ['Species']
-              },
-              lifestage: {
-                value: 'unknown'
-              },
-              sex: {
-                value: 'unknown'
-              },
-              occurrenceRemarks: {
-                columns: ['Observation Comments']
-              }
-            }
-          }
-        ]
-      ],
-      parse: [
-        {
-          fileName: 'event',
-          columns: ['id', 'eventID', 'eventDate', 'verbatimCoordinates']
-        },
-        {
-          fileName: 'occurrence',
-          conditionalFields: ['individualCount'],
-          columns: ['id', 'occurrenceID', 'individualCount', 'taxon', 'lifestage', 'sex', 'occurrenceRemarks']
-        }
-      ]
-    };
+    defaultLog.debug({ label: 'getTransformationSchema', message: 'xlsx transform' });
 
-    next();
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const templateMethodologySpeciesRecord = await getTemplateMethodologySpecies(
+        req.body.occurrence_submission_id,
+        connection
+      );
+
+      console.log(templateMethodologySpeciesRecord);
+
+      const transformationSchema = templateMethodologySpeciesRecord?.transform;
+
+      if (!transformationSchema) {
+        // TODO handle errors if no transformation schema is found
+        // no schema to validate the template, generate error
+        // const submissionStatusId = await insertSubmissionStatus(
+        //   req.body.occurrence_submission_id,
+        //   'System Error',
+        //   connection
+        // );
+        // await insertSubmissionMessage(
+        //   submissionStatusId,
+        //   'Error',
+        //   `Unable to fetch an appropriate validation schema for your submission`,
+        //   'Missing Validation Schema',
+        //   connection
+        // );
+        // await connection.commit();
+        return res.status(200).json({ status: 'failed' });
+      }
+
+      req['transformationSchema'] = transformationSchema;
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'getTransformationSchema', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
   };
 }
 
@@ -544,33 +200,63 @@ function transformXLSX(): RequestHandler {
 }
 
 export function persistTransformationResults(): RequestHandler {
+  return async (req, res, next) => {
+    try {
+      defaultLog.debug({ label: 'persistTransformationResults', message: 'xlsx transform' });
+
+      const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
+
+      // Build the archive zip file
+      const dwcArchiveZip = new AdmZip();
+      fileBuffers.forEach((file) => dwcArchiveZip.addFile(`${file.name}.csv`, file.buffer));
+
+      // Build output s3Key based on the original input s3Key
+      const s3Key: string = req['s3Key'];
+      const outputS3KeyPrefix = s3Key.split('/').slice(0, -1).join('/'); // Remove the filename from original s3Key
+
+      const xlsxCsv: XLSXCSV = req['xlsx'];
+      const outputFileName = `${xlsxCsv.rawFile.name}.zip`;
+
+      const outputS3Key = `${outputS3KeyPrefix}/${outputFileName}`;
+
+      // Upload transformed archive to s3
+      await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
+
+      const connection = getDBConnection(req['keycloak_token']);
+
+      try {
+        await connection.open();
+
+        // Update occurrence submission record to include the transformed output file name and s3 key
+        await updateSurveyOccurrenceSubmissionWithOutputKey(
+          req.body.occurrence_submission_id,
+          outputFileName,
+          outputS3Key,
+          connection
+        );
+
+        await insertSubmissionStatus(
+          req.body.occurrence_submission_id,
+          SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED,
+          connection
+        );
+
+        next();
+      } catch (error) {
+        await connection.rollback();
+        throw error;
+      } finally {
+        connection.release();
+      }
+    } catch (error) {
+      defaultLog.debug({ label: 'persistTransformationResults', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
+function sendResponse(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'persistTransformationResults', message: 'xlsx transform' });
-
-    const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
-
-    const promises = fileBuffers.map((record) =>
-      uploadBufferToS3(record.buffer, 'text/csv', `${req['s3Key']}/dwc/${record.name}.csv`)
-    );
-
-    await Promise.all(promises);
-
-    // const connection = getDBConnection(req['keycloak_token']);
-
-    // await connection.open();
-
-    // let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
-    // if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-    //   // At least 1 error exists
-    //   submissionStatusType = 'Rejected';
-    // }
-
-    // const submissionStatusId = await insertSubmissionStatus(
-    //   req.body.occurrence_submission_id,
-    //   submissionStatusType,
-    //   connection
-    // );
-
-    return res.sendStatus(200);
+    return res.status(200).json({ status: 'success' });
   };
 }

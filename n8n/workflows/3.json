@@ -9,8 +9,8 @@
       "type": "n8n-nodes-base.start",
       "typeVersion": 1,
       "position": [
-        250,
-        300
+        940,
+        580
       ]
     },
     {
@@ -99,6 +99,7 @@
         "authentication": "headerAuth",
         "requestMethod": "POST",
         "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/xlsx/transform",
+        "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
         "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
@@ -163,7 +164,7 @@
     }
   },
   "createdAt": "2021-09-23T14:54:04.504Z",
-  "updatedAt": "2021-09-23T22:02:06.232Z",
+  "updatedAt": "2021-09-28T22:23:45.838Z",
   "settings": {},
   "staticData": null
 }

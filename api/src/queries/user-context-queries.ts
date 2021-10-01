@@ -17,7 +17,7 @@ export const setSystemUserContextSQL = (
   const sqlStatement = SQL`select api_set_context(${userIdentifier}, ${systemUserType});`;
 
   defaultLog.debug({
-    label: 'postTemplateSQL',
+    label: 'setSystemUserContextSQL',
     message: 'sql',
     'sqlStatement.text': JSON.stringify(sqlStatement.text),
     'sqlStatement.values': sqlStatement.values

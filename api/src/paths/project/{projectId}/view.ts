@@ -163,7 +163,7 @@ function getProjectForView(): RequestHandler {
 
       const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
 
-      const getLocationData = (locationData && locationData.rows && new GetLocationData(locationData.rows)) || null;
+      const getLocationData = (locationData && locationData.rows && new GetLocationData(locationData.rows[0])) || null;
 
       const getCoordinatorData =
         (projectData && projectData.rows && new GetCoordinatorData(projectData.rows[0])) || null;

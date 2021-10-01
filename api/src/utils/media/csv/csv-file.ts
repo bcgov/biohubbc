@@ -109,8 +109,10 @@ export class CSVWorksheet {
         range: customRange
       });
 
-      // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-      this._headers = aoaHeaders[0].map((header: any) => header.trim().toLowerCase());
+      if (aoaHeaders.length > 0) {
+        // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
+        this._headers = aoaHeaders[0].map((header: any) => header.trim().toLowerCase());
+      }
     }
 
     return this._headers;

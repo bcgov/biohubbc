@@ -131,7 +131,7 @@ describe('getSubmissionS3Key', () => {
   });
 });
 
-describe('getSubmissionFileFromS3', () => {
+describe('getSubmissionInputFileFromS3', () => {
   const updatedSampleReq = { ...sampleReq, s3Key: 'somekey' };
 
   afterEach(() => {
@@ -143,7 +143,7 @@ describe('getSubmissionFileFromS3', () => {
     sinon.stub(file_utils, 'getFileFromS3').resolves(undefined);
 
     try {
-      const result = validate.getSubmissionFileFromS3();
+      const result = validate.getSubmissionInputFileFromS3();
       await result(updatedSampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
@@ -166,7 +166,7 @@ describe('getSubmissionFileFromS3', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
     sinon.stub(file_utils, 'getFileFromS3').resolves(file as GetObjectOutput);
 
-    const result = validate.getSubmissionFileFromS3();
+    const result = validate.getSubmissionInputFileFromS3();
     await result(sampleReq, (null as unknown) as any, nextSpy as any);
 
     expect(sampleReq.s3File).to.eql(file);
