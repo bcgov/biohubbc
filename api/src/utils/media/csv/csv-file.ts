@@ -118,7 +118,7 @@ export class CSVWorksheet {
             continue;
           }
 
-          if (cellValue.t === 'n') {
+          if (cellValue.t === 'n' || cellValue.t === 'd') {
             row.push(cellValue.w);
           } else {
             row.push(cellValue.v);
