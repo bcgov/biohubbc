@@ -112,8 +112,6 @@ export function getTransformationSchema(): RequestHandler {
         connection
       );
 
-      console.log(templateMethodologySpeciesRecord);
-
       const transformationSchema = templateMethodologySpeciesRecord?.transform;
 
       if (!transformationSchema) {
