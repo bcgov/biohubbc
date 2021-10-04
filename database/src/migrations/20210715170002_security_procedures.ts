@@ -332,7 +332,7 @@ $$;
     declare
 
     begin
-      perform ${DB_SCHEMA}.api_apply_security_rule(security_rule_id) from ${DB_SCHEMA}.security_rule;
+      perform ${DB_SCHEMA}.api_apply_security_rule(security_rule_id) from ${DB_SCHEMA}.security_rule where system_rule = false;
       perform ${DB_SCHEMA}.api_security_maintenance();
     end;
     $BODY$;
@@ -365,7 +365,7 @@ $$;
           execute format('select security_rule_id from ${DB_SCHEMA}.security_rule where rule_definition ->> ''target'' = lower(''%1$s'') and system_rule=true', __table_name) into v_security_rule_id;
 
           -- Secure the record
-          execute format('select ${DB_SCHEMA}.api_secure_record(%1$s, lower(''%2$s''), %3$s, api_get_context_user_id(),%4$s)', __id,__table_name,v_security_rule_id, __project_id);
+          execute format('select ${DB_SCHEMA}.api_secure_record(%1$s, lower(''%2$s''), %3$s, NULL,%4$s)', __id,__table_name,v_security_rule_id, __project_id);
 
           return true;
         end;
@@ -396,8 +396,8 @@ $$;
 
         begin
 
-          execute format('delete from ${DB_SCHEMA}.security where security_token = ''%1$s''', __security_token);
-          execute format('update ${DB_SCHEMA}.%1$s set security_token = null where security_token = ''%2$s''', __table_name, __security_token);
+          execute format('delete from ${DB_SCHEMA}.security where security_token = ''%1$s'' and security_rule_id in (select security_rule_id from ${DB_SCHEMA}.security_rule where system_rule = true)', __security_token);
+          execute format('update ${DB_SCHEMA}.%1$s set security_token = null where security_token = (select security_token from ${DB_SCHEMA}.security where security_token = ''%2$s'' group by security_token having count(*) = 1)', __table_name, __security_token);
 
           return true;
         end;
