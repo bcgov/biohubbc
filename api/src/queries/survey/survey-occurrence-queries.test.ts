@@ -6,7 +6,7 @@ import {
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
   getTemplateMethodologySpeciesIdSQLStatement,
-  getValidationSchemaSQL,
+  getTemplateMethodologySpeciesSQL,
   insertSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
@@ -37,17 +37,6 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
     expect(response).to.be.null;
   });
 
-  it('returns null response when null fileKey provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputKey: (null as unknown) as string,
-      templateMethodologyId: 1
-    });
-
-    expect(response).to.be.null;
-  });
-
   it('returns non null response when null templateMethodologyId provided', () => {
     const response = insertSurveyOccurrenceSubmissionSQL({
       surveyId: 1,
@@ -59,11 +48,14 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when valid params provided', () => {
+  it('returns non null response when all valid params provided', () => {
     const response = insertSurveyOccurrenceSubmissionSQL({
       surveyId: 1,
       source: 'fileSource',
-      inputKey: 'fileKey',
+      inputFileName: 'inputFileName',
+      inputKey: 'inputfileKey',
+      outputFileName: 'outputFileName',
+      outputKey: 'outputfileKey',
       templateMethodologyId: 1
     });
 
@@ -230,15 +222,15 @@ describe('getTemplateMethodologySpeciesIdSQLStatement', () => {
   });
 });
 
-describe('getValidationSchemaSQL', () => {
+describe('getTemplateMethodologySpeciesSQL', () => {
   it('returns null response when null occurrenceId provided', () => {
-    const response = getValidationSchemaSQL((null as unknown) as number);
+    const response = getTemplateMethodologySpeciesSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getValidationSchemaSQL(1);
+    const response = getTemplateMethodologySpeciesSQL(1);
 
     expect(response).to.not.be.null;
   });

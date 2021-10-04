@@ -92,11 +92,15 @@ export class GetLocationData {
     defaultLog.debug({
       label: 'GetLocationData',
       message: 'params',
-      locationData: { ...locationData, geometry: 'Too big to print' }
+      locationData: locationData?.map((item: any) => {
+        return { ...item, geometry: 'Too big to print' };
+      })
     });
 
-    this.location_description = locationData?.location_description || '';
-    this.geometry = (locationData?.geometry?.length && locationData.geometry) || [];
+    const locationDataItem = locationData && locationData.length && locationData[0];
+
+    this.location_description = locationDataItem?.location_description || '';
+    this.geometry = (locationDataItem?.geometry?.length && locationDataItem.geometry) || [];
   }
 }
 

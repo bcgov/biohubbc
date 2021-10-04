@@ -39,7 +39,7 @@ const sampleReq = {
   }
 } as any;
 
-describe('getSubmissionS3Key', () => {
+describe('getOccurrenceSubmission', () => {
   const sampleReq = {
     keycloak_token: {},
     body: {
@@ -55,7 +55,7 @@ describe('getSubmissionS3Key', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = validate.getSubmissionS3Key();
+      const result = validate.getOccurrenceSubmission();
       await result(
         { ...sampleReq, body: { ...sampleReq.body, occurrence_submission_id: null } },
         (null as unknown) as any,
@@ -73,7 +73,7 @@ describe('getSubmissionS3Key', () => {
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
-      const result = validate.getSubmissionS3Key();
+      const result = validate.getOccurrenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -98,7 +98,7 @@ describe('getSubmissionS3Key', () => {
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     try {
-      const result = validate.getSubmissionS3Key();
+      const result = validate.getOccurrenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
@@ -108,12 +108,15 @@ describe('getSubmissionS3Key', () => {
     }
   });
 
-  it('should set the s3 key in the request on success', async () => {
+  // TODO update this test as teh s3 key is not part of the `getOccurrenceSubmission` step now
+  it('should set occurrence_submission in the request on success', async () => {
     const nextSpy = sinon.spy();
     const mockQuery = sinon.stub();
 
+    const expectedRecord = { id: 123, input_file_name: 'someFile', input_key: 'somekey' };
+
     mockQuery.resolves({
-      rows: [{ input_key: 'somekey' }]
+      rows: [expectedRecord]
     });
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -123,15 +126,15 @@ describe('getSubmissionS3Key', () => {
 
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = validate.getSubmissionS3Key();
+    const result = validate.getOccurrenceSubmission();
     await result(sampleReq, (null as unknown) as any, nextSpy as any);
 
-    expect(sampleReq.s3Key).to.equal('somekey');
+    expect(sampleReq.occurrence_submission).to.eql(expectedRecord);
     expect(nextSpy).to.have.been.called;
   });
 });
 
-describe('getSubmissionInputFileFromS3', () => {
+describe('getS3File', () => {
   const updatedSampleReq = { ...sampleReq, s3Key: 'somekey' };
 
   afterEach(() => {
@@ -143,12 +146,12 @@ describe('getSubmissionInputFileFromS3', () => {
     sinon.stub(file_utils, 'getFileFromS3').resolves(undefined);
 
     try {
-      const result = validate.getSubmissionInputFileFromS3();
+      const result = validate.getS3File();
       await result(updatedSampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to get occurrence submission file');
+      expect(actualError.message).to.equal('Failed to get file from S3');
     }
   });
 
@@ -166,7 +169,7 @@ describe('getSubmissionInputFileFromS3', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
     sinon.stub(file_utils, 'getFileFromS3').resolves(file as GetObjectOutput);
 
-    const result = validate.getSubmissionInputFileFromS3();
+    const result = validate.getS3File();
     await result(sampleReq, (null as unknown) as any, nextSpy as any);
 
     expect(sampleReq.s3File).to.eql(file);
