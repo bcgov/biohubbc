@@ -157,9 +157,37 @@ export class XLSXTransformation {
           // Apply updates to the existing records based on the `recordsToModify` array.
           recordsToModify.forEach((recordToModify) => {
             if (recordToModify.rowsBySourceFileIndex >= 0 && recordToModify.rowBySourceFileIndex >= 0) {
-              // `recordToModify` indicates that a matching parent was found AND a matching child from the same
-              // sourceFile was found.  Duplicate the array, and overwrite the existing matching child with the
-              // `newRecord`.
+              /*
+               * `recordToModify` indicates that a matching parent was found AND a matching child from the same
+               * sourceFile was found. Duplicate the array, and in the duplicated array, overwrite the existing
+               * matching child with the `newRecord`.
+               *
+               * Example:
+               *
+               * Initial state:
+               *
+               *   newRecord = {sourceFile: 'file2', uniqueId: 3, row: {...}};
+               *
+               *   rowsBySourceFileArray = [
+               *     [
+               *       {sourceFile: 'file1', uniqueId: 1, row: {...}}, // matching parent of `newRecord`
+               *       {sourceFile: 'file2', uniqueId: 2, row: {...}} // matching child from same sourceFile as `newRecord`
+               *     ]
+               *   ]
+               *
+               * Final state:
+               *
+               *   rowsBySourceFileArray = [
+               *     [
+               *       {sourceFile: 'file1', uniqueId: 1, row: {...}},
+               *       {sourceFile: 'file2', uniqueId: 2, row: {...}}
+               *     ],
+               *     [
+               *       {sourceFile: 'file1', uniqueId: 1, row: {...}},
+               *       {sourceFile: 'file2', uniqueId: 3, row: {...}}
+               *     ]
+               *   ]
+               */
 
               // Copy the existing items into a new array
               const newRowRecord = [...rowsBySourceFileArray[recordToModify.rowsBySourceFileIndex]];
@@ -170,8 +198,31 @@ export class XLSXTransformation {
               // Append this new duplicated record to the parent array
               rowsBySourceFileArray.push(newRowRecord);
             } else if (recordToModify.rowsBySourceFileIndex >= 0) {
-              // `recordToModify` indicates that a matching parent was found.  Add the `newRecord` to this existing
-              // array.
+              /*
+               * `recordToModify` indicates that a matching parent was found.  Add the `newRecord` to this existing
+               * array.
+               *
+               * Example:
+               *
+               * Initial state:
+               *
+               *   newRecord = {sourceFile: 'file2', uniqueId: 3, row: {...}};
+               *
+               *   rowsBySourceFileArray = [
+               *     [
+               *       {sourceFile: 'file1', uniqueId: 1, row: {...}} // matching parent of `newRecord`
+               *     ]
+               *   ]
+               *
+               * Final state:
+               *
+               *   rowsBySourceFileArray = [
+               *     [
+               *       {sourceFile: 'file1', uniqueId: 1, row: {...}},
+               *       {sourceFile: 'file2', uniqueId: 3, row: {...}}
+               *     ]
+               *   ]
+               */
               rowsBySourceFileArray[recordToModify.rowsBySourceFileIndex].push(newRecord);
             }
           });
