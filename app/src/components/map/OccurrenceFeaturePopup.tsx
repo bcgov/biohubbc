@@ -26,7 +26,7 @@ export const OccurrenceFeaturePopup: React.FC<{ featureData: any }> = (props) =>
       </div>
       <div>
         <b>Date</b>
-        {`: ${getFormattedDate(DATE_FORMAT.ShortMediumDateTimeFormat, featureData.eventDate)}`}
+        {`: ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat2, featureData.eventDate)}`}
       </div>
     </Popup>
   );

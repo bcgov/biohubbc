@@ -242,18 +242,6 @@
           ]
         },
         {
-          "name": "Total Block Time",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
           "name": "Total Time (hours)",
           "description": "",
           "validations": [
