@@ -120,7 +120,7 @@ export function getValidationSchema(): RequestHandler {
   };
 }
 
-function validateXLSX(): RequestHandler {
+export function validateXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'validateXLSX', message: 'dwcArchive' });
 
@@ -139,6 +139,8 @@ function validateXLSX(): RequestHandler {
       }
 
       const csvState: ICsvState[] = xlsxCsv.isContentValid(validationSchemaParser);
+
+      console.log('csvState is: ', csvState);
 
       req['csvState'] = csvState;
 

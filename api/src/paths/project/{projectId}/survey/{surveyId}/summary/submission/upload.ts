@@ -8,13 +8,19 @@ import { PostSummaryDetails } from '../../../../../../../models/summaryresults-c
 import {
   insertSurveySummaryDetailsSQL,
   insertSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL
+  updateSurveySummarySubmissionWithKeySQL,
+  insertSurveySummarySubmissionMessageSQL
 } from '../../../../../../../queries/survey/survey-summary-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../../../../../../utils/path-utils';
 import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
+import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
+import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
+import { IMediaState } from '../../../../../../../utils/media/media-file';
+import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
+import { generateHeaderErrorMessage, generateRowErrorMessage} from '../../../../../../../paths/dwc/validate';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -22,6 +28,10 @@ export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
   uploadMedia(),
   prepXLSX(),
+  //persistParseErrors(),
+  getValidationRules(),
+  validateXLSX(),
+  persistSummaryValidationResults(),
   parseAndUploadSummarySubmissionInput(),
   returnSummarySubmissionId()
 ];
@@ -249,6 +259,137 @@ export const updateSurveySummarySubmissionWithKey = async (
   return updateResponse;
 };
 
+export function getValidationRules(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
+
+    try {
+      const validationSchema = {
+        name: '',
+        description: '',
+        defaultFile: {
+          description: '',
+          columns: [
+            {
+              name: 'Stratum',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            }
+          ],
+          validations: [
+            {
+              file_duplicate_columns_validator: {}
+            },
+            {
+              file_required_columns_validator: {
+                required_columns: ['Stratum']
+              }
+            }
+          ]
+        },
+        validations: [
+          {
+            mimetype_validator: {
+              reg_exps: ['text\\/csv', 'application\\/vnd.*']
+            }
+          }
+        ]
+      };
+
+      const validationSchemaParser = new ValidationSchemaParser(validationSchema);
+
+      req['validationSchemaParser'] = validationSchemaParser;
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'getValidationRules', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
+function persistSummaryValidationResults(): RequestHandler {
+  return async (req, res) => {
+    defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      const mediaState: IMediaState = req['mediaState'];
+      const csvState: ICsvState[] = req['csvState'];
+
+      await connection.open();
+
+      // let submissionStatusType;
+      // if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
+      //   // At least 1 error exists
+      //   submissionStatusType = 'Rejected';
+      // }
+
+      // const submissionStatusId = await insertSubmissionStatus(
+      //   req.body.occurrence_submission_id,
+      //   submissionStatusType,
+      //   connection
+      // );
+
+      const summarySubmissionId = req['summarySubmissionId'];
+
+      const promises: Promise<any>[] = [];
+
+      mediaState.fileErrors?.forEach((fileError) => {
+        promises.push(
+          insertSummarySubmissionMessage(summarySubmissionId, 'Error', `${fileError}`, 'Miscellaneous', connection)
+        );
+      });
+
+      csvState?.forEach((csvStateItem) => {
+        csvStateItem.headerErrors?.forEach((headerError) => {
+          promises.push(
+            insertSummarySubmissionMessage(
+              summarySubmissionId,
+              'Error',
+              generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+              headerError.errorCode,
+              connection
+            )
+          );
+        });
+
+        csvStateItem.rowErrors?.forEach((rowError) => {
+          promises.push(
+            insertSummarySubmissionMessage(
+              summarySubmissionId,
+              'Error',
+              generateRowErrorMessage(csvStateItem.fileName, rowError),
+              rowError.errorCode,
+              connection
+            )
+          );
+        });
+      });
+
+      await Promise.all(promises);
+
+      await connection.commit();
+
+      // TODO return something to indicate if any errors had been found, or not?
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
 export function parseAndUploadSummarySubmissionInput(): RequestHandler {
   return async (req, res, next) => {
     const xlsxCsv: XLSXCSV = req['xlsx'];
@@ -336,8 +477,6 @@ function returnSummarySubmissionId(): RequestHandler {
   return async (req, res) => {
     const summarySubmissionId = req['summarySubmissionId'];
 
-    console.log('about to return');
-
     return res.status(200).json({ summarySubmissionId });
   };
 }
@@ -365,5 +504,33 @@ export const uploadScrapedSummarySubmission = async (
 
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to insert summary details data');
+  }
+};
+
+/**
+ * Insert a record into the survey_summary_submission_message table.
+ *
+ * @param {string} submissionMessageType
+ * @param {string} message
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const insertSummarySubmissionMessage = async (
+  submissionStatusId: number,
+  submissionMessageType: string,
+  message: string,
+  errorCode: string,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = insertSurveySummarySubmissionMessageSQL(submissionStatusId, submissionMessageType, message, errorCode);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert survey submission message data');
   }
 };

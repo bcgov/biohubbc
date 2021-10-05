@@ -238,3 +238,66 @@ export const insertSurveySummaryDetailsSQL = (
 
   return sqlStatement;
 };
+
+
+/**
+ * SQL query to insert the occurrence submission message.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @param {string} submissionMessage
+ * @returns {SQLStatement} sql query object
+ */
+ export const insertSurveySummarySubmissionMessageSQL = (
+  summarySubmissionId: number,
+  summarySubmissionMessageType: string,
+  summarySubmissionMessage: string,
+  errorCode: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'insertSurveySummarySubmissionMessageSQL',
+    message: 'params',
+    summarySubmissionId,
+    summarySubmissionMessageType,
+    summarySubmissionMessage,
+    errorCode
+  });
+
+  if (!summarySubmissionId || !summarySubmissionMessageType || !summarySubmissionMessage || !errorCode) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO survey_summary_submission_message (
+      survey_summary_submission_id,
+      submission_message_type_id,
+      event_timestamp,
+      message
+    ) VALUES (
+      ${summarySubmissionId},
+      (
+        SELECT
+          submission_message_type_id
+        FROM
+          summary_submission_message_type
+        WHERE
+          name = ${errorCode}
+      ),
+      now(),
+      ${summarySubmissionMessage}
+    )
+    RETURNING
+      submission_message_id;
+  `;
+
+
+  defaultLog.debug({
+    label: 'insertSurveySummarySubmissionMessageSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+

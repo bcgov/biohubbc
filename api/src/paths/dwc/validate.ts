@@ -281,11 +281,12 @@ function validateDWCArchive(): RequestHandler {
   };
 }
 
-function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+export function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+  console.log('generated a header error : ', fileName, '   ', headerError.message, '  ', headerError.col);
   return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
 }
 
-function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+export function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
   return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
 }
 

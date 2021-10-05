@@ -88,6 +88,9 @@ export async function up(knex: Knex): Promise<void> {
   const populate_submission_message_type = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_submission_message_type.sql')
   );
+  const populate_summary_submission_message_type = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_summary_submission_message_type.sql')
+  );
   const populate_system_metadata_constant = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_system_metadata_constant.sql')
   );
@@ -186,6 +189,7 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_common_survey_methodology}
     ${populate_template}
     ${populate_summary_parameter_code}
+    ${populate_summary_submission_message_type}
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}
@@ -196,7 +200,7 @@ export async function up(knex: Knex): Promise<void> {
     set role biohub_api;
     ${project_dapi_views}
     ${dapi_custom_views}
-    
+
     set role postgres;
     set search_path = biohub;
     grant execute on function biohub.api_set_context(_system_user_identifier system_user.user_identifier%type, _user_identity_source_name user_identity_source.name%type) to ${DB_USER_API};
