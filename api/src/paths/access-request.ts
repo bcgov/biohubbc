@@ -168,7 +168,7 @@ function updateAccessRequest(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'updateAccessRequest', message: 'error', error });
+      defaultLog.error({ label: 'updateAccessRequest', message: 'error', error });
       throw error;
     } finally {
       connection.release();

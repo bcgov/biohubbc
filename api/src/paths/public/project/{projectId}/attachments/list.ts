@@ -105,7 +105,7 @@ export function getPublicProjectAttachments(): RequestHandler {
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getPublicProjectAttachments', message: 'error', error });
+      defaultLog.error({ label: 'getPublicProjectAttachments', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

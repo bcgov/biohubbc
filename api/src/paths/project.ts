@@ -201,7 +201,7 @@ export function createProject(): RequestHandler {
 
       return res.status(200).json({ id: projectId });
     } catch (error) {
-      defaultLog.debug({ label: 'createProject', message: 'error', error });
+      defaultLog.error({ label: 'createProject', message: 'error', error });
       throw error;
     } finally {
       connection.release();

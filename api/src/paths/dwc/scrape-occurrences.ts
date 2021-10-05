@@ -148,7 +148,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'scrapeAndUploadOccurrences', message: 'error', error });
+      defaultLog.error({ label: 'scrapeAndUploadOccurrences', message: 'error', error });
       throw error;
     }
   };

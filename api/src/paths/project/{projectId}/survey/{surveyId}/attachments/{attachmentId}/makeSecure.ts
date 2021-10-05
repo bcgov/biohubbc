@@ -136,7 +136,7 @@ export function makeSurveyAttachmentSecure(): RequestHandler {
 
       return res.status(200).json(1);
     } catch (error) {
-      defaultLog.debug({ label: 'makeSurveyAttachmentSecure', message: 'error', error });
+      defaultLog.error({ label: 'makeSurveyAttachmentSecure', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
