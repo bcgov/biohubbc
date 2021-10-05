@@ -410,7 +410,7 @@ function updateOccurrenceSubmission(): RequestHandler {
   };
 }
 
-function sendResponse(): RequestHandler {
+export function sendResponse(): RequestHandler {
   return async (req, res) => {
     return res.status(200).json({ status: 'success' });
   };

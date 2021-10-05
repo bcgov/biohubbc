@@ -99,20 +99,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           if (process.env.REACT_APP_N8N_PORT) {
             biohubApi.n8n.initiateOccurrenceSubmissionProcessing(result.submissionId, file.type);
 
-            // biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type).then(() => {
-            //   if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            //     biohubApi.n8n.initiateScrapeOccurrences(result.submissionId).then(() => {
-            //       props.refresh();
-            //     });
-            //   } else {
-            //     biohubApi.n8n.initiateTransformTemplate(result.submissionId).then(() => {
-            //       biohubApi.n8n.initiateScrapeOccurrences(result.submissionId).then(() => {
-            //         props.refresh();
-            //       });
-            //     });
-            //   }
-            // });
-
             return;
           }
 

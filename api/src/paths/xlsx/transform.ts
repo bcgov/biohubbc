@@ -9,6 +9,7 @@ import {
   getOccurrenceSubmissionInputS3Key,
   getS3File,
   insertSubmissionStatus,
+  sendResponse,
   updateSurveyOccurrenceSubmissionWithOutputKey
 } from '../../paths/dwc/validate';
 import { uploadBufferToS3 } from '../../utils/file-utils';
@@ -94,7 +95,7 @@ export function persistParseErrors(): RequestHandler {
 
     // file is not parsable, don't continue to next step and return early
     // TODO add new status for "Transformation Failed" and insert new status record?
-    return res.status(200).json({ status: 'failed' });
+    return res.status(200).json({ status: 'failed', reason: 'unable to parse submission' });
   };
 }
 
@@ -130,7 +131,10 @@ export function getTransformationSchema(): RequestHandler {
         //   connection
         // );
         // await connection.commit();
-        return res.status(200).json({ status: 'failed' });
+        return res.status(200).json({
+          status: 'failed',
+          reason: 'Unable to fetch an appropriate transformation schema for your submission'
+        });
       }
 
       req['transformationSchema'] = transformationSchema;
@@ -210,7 +214,10 @@ export function persistTransformationResults(): RequestHandler {
 
       // Build output s3Key based on the original input s3Key
       const s3Key: string = req['s3Key'];
-      const outputS3KeyPrefix = s3Key.split('/').slice(0, -1).join('/'); // Remove the filename from original s3Key
+
+      // Remove the filename from original s3Key
+      // project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
+      const outputS3KeyPrefix = s3Key.split('/').slice(0, -1).join('/');
 
       const xlsxCsv: XLSXCSV = req['xlsx'];
       const outputFileName = `${xlsxCsv.rawFile.name}.zip`;
@@ -250,11 +257,5 @@ export function persistTransformationResults(): RequestHandler {
       defaultLog.debug({ label: 'persistTransformationResults', message: 'error', error });
       throw error;
     }
-  };
-}
-
-function sendResponse(): RequestHandler {
-  return async (req, res) => {
-    return res.status(200).json({ status: 'success' });
   };
 }

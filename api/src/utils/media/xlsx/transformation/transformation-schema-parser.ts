@@ -82,7 +82,7 @@ export class TransformationSchemaParser {
     try {
       parsedJson = JSON.parse(json);
     } catch {
-      throw Error('TransformationSchemaParser - provided validatioNSchema was not valid JSON');
+      throw Error('TransformationSchemaParser - provided validationSchema was not valid JSON');
     }
 
     return parsedJson;

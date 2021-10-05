@@ -19,7 +19,8 @@ import {
   insertSubmissionMessage,
   insertSubmissionStatus,
   persistParseErrors,
-  persistValidationResults
+  persistValidationResults,
+  sendResponse
 } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xlsx/validate');
@@ -155,12 +156,6 @@ function validateXLSX(): RequestHandler {
       defaultLog.debug({ label: 'validateXLSX', message: 'error', error });
       throw error;
     }
-  };
-}
-
-function sendResponse(): RequestHandler {
-  return async (req, res) => {
-    return res.status(200).json({ status: 'success' });
   };
 }
 
