@@ -3651,7 +3651,7 @@ CREATE INDEX "Ref153193" ON survey_spatial_component(survey_id)
 -- INDEX: survey_summary_detail_uk1
 --
 
-CREATE UNIQUE INDEX survey_summary_detail_uk1 ON survey_summary_detail(survey_summary_submission_id, study_area_id, parameter, stratum)
+CREATE UNIQUE INDEX survey_summary_detail_uk1 ON survey_summary_detail(survey_summary_submission_id, study_area_id, parameter, stratum, sightability_model)
 ;
 --
 -- INDEX: "Ref211202"

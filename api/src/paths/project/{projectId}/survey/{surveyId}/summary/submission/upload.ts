@@ -20,7 +20,7 @@ import { ValidationSchemaParser } from '../../../../../../../utils/media/validat
 import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
 import { IMediaState } from '../../../../../../../utils/media/media-file';
 import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
-import { generateHeaderErrorMessage, generateRowErrorMessage} from '../../../../../../../paths/dwc/validate';
+import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -28,7 +28,7 @@ export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
   uploadMedia(),
   prepXLSX(),
-  //persistParseErrors(),
+  persistSummaryParseErrors(),
   getValidationRules(),
   validateXLSX(),
   persistSummaryValidationResults(),
@@ -96,18 +96,21 @@ POST.apiDoc = {
 };
 
 export enum SUMMARY_CLASS {
-  STUDY_AREA = 'study area',
-  SUMMARY_STATISTIC = 'summary statistic',
+  STUDY_AREA = 'survey area',
+  SUMMARY_STATISTIC = 'statistic',
   STRATUM = 'stratum',
   OBSERVED = 'observed',
   ESTIMATE = 'estimate',
   STANDARD_ERROR = 'se',
   COEFFICIENT_VARIATION = 'cv',
   CONFIDENCE_LEVEL = 'conf.level',
-  UPPER_CONFIDENCE_LIMIT = 'ucl',
   LOWER_CONFIDENCE_LIMIT = 'lcl',
+  UPPER_CONFIDENCE_LIMIT = 'ucl',
+  SIGHTABILITY_MODEL = 'sightability.model',
   AREA = 'area',
-  AREA_FLOWN = 'area.flown'
+  AREA_FLOWN = 'area.flown',
+  OUTLIER_BLOCKS_REMOVED = 'outlier.blocks.removed',
+  ANALYSIS_METHOD = 'analysis.method'
 }
 
 /**
@@ -259,6 +262,40 @@ export const updateSurveySummarySubmissionWithKey = async (
   return updateResponse;
 };
 
+function persistSummaryParseErrors(): RequestHandler {
+  return async (req, res, next) => {
+    const parseError = req['parseError'];
+
+    if (!parseError) {
+      // no errors to persist, skip to next step
+      return next();
+    }
+
+    defaultLog.debug({ label: 'persistSummaryParseErrors', message: 'parseError', parseError });
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+
+      const summarySubmissionId = req['summarySubmissionId'];
+      await insertSummarySubmissionMessage(summarySubmissionId, 'Error', parseError, 'Miscellaneous', connection);
+
+      await connection.commit();
+
+      // archive is not parsable, don't continue to next step and return early
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
+      connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
 export function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
@@ -271,7 +308,103 @@ export function getValidationRules(): RequestHandler {
           description: '',
           columns: [
             {
-              name: 'Stratum',
+              name: 'Observed',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Estimate',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'SE',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'CV',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Conf.Level',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'LCL',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'UCL',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Area',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Area.Flown',
               description: '',
               validations: [
                 {
@@ -289,7 +422,23 @@ export function getValidationRules(): RequestHandler {
             },
             {
               file_required_columns_validator: {
-                required_columns: ['Stratum']
+                required_columns: [
+                  'Survey Area',
+                  'Statistic',
+                  'Stratum',
+                  'Observed',
+                  'Estimate',
+                  'SE',
+                  'CV',
+                  'Conf.Level',
+                  'LCL',
+                  'UCL',
+                  'Sightability.Model',
+                  'Area',
+                  'Area.Flown',
+                  'Outlier.Blocks.Removed',
+                  'Analysis.Method'
+                ]
               }
             }
           ]
@@ -316,7 +465,7 @@ export function getValidationRules(): RequestHandler {
 }
 
 function persistSummaryValidationResults(): RequestHandler {
-  return async (req, res) => {
+  return async (req, res, next) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -326,18 +475,6 @@ function persistSummaryValidationResults(): RequestHandler {
       const csvState: ICsvState[] = req['csvState'];
 
       await connection.open();
-
-      // let submissionStatusType;
-      // if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-      //   // At least 1 error exists
-      //   submissionStatusType = 'Rejected';
-      // }
-
-      // const submissionStatusId = await insertSubmissionStatus(
-      //   req.body.occurrence_submission_id,
-      //   submissionStatusType,
-      //   connection
-      // );
 
       const summarySubmissionId = req['summarySubmissionId'];
 
@@ -378,9 +515,7 @@ function persistSummaryValidationResults(): RequestHandler {
       await Promise.all(promises);
 
       await connection.commit();
-
-      // TODO return something to indicate if any errors had been found, or not?
-      return res.status(200).json();
+      next();
     } catch (error) {
       defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
       throw error;
@@ -445,11 +580,20 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
               case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
                 summaryObject.confidence_limit_lower = columnValue;
                 break;
+              case SUMMARY_CLASS.SIGHTABILITY_MODEL:
+                summaryObject.sightability_model = columnValue;
+                break;
               case SUMMARY_CLASS.AREA:
-                summaryObject.total_area_surveyed_sqm = columnValue;
+                summaryObject.area= columnValue;
                 break;
               case SUMMARY_CLASS.AREA_FLOWN:
-                summaryObject.kilometres_surveyed = columnValue;
+                summaryObject.area_flown = columnValue;
+                break;
+              case SUMMARY_CLASS.OUTLIER_BLOCKS_REMOVED:
+                summaryObject.outlier_blocks_removed = columnValue;
+                break;
+              case SUMMARY_CLASS.ANALYSIS_METHOD:
+                summaryObject.analysis_method = columnValue;
                 break;
               default:
                 break;
@@ -522,7 +666,12 @@ export const insertSummarySubmissionMessage = async (
   errorCode: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertSurveySummarySubmissionMessageSQL(submissionStatusId, submissionMessageType, message, errorCode);
+  const sqlStatement = insertSurveySummarySubmissionMessageSQL(
+    submissionStatusId,
+    submissionMessageType,
+    message,
+    errorCode
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

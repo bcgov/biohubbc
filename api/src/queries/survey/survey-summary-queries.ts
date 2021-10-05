@@ -207,10 +207,13 @@ export const insertSurveySummaryDetailsSQL = (
       confidence_limit_lower,
       confidence_limit_upper,
       confidence_level_percent,
+      sightability_model,
       standard_error,
       coefficient_variation,
-      kilometres_surveyed,
-      total_area_surveyed_sqm
+      area,
+      area_flown,
+      outlier_blocks_removed,
+      analysis_method
     ) VALUES (
       ${summarySubmissionId},
       ${summaryDetails.study_area_id},
@@ -221,10 +224,13 @@ export const insertSurveySummaryDetailsSQL = (
       ${summaryDetails.confidence_limit_lower},
       ${summaryDetails.confidence_limit_upper},
       ${summaryDetails.confidence_level_percent},
+      ${summaryDetails.sightability_model},
       ${summaryDetails.standard_error},
       ${summaryDetails.coefficient_variation},
-      ${summaryDetails.kilometres_surveyed},
-      ${summaryDetails.total_area_surveyed_sqm}
+      ${summaryDetails.area},
+      ${summaryDetails.area_flown},
+      ${summaryDetails.outlier_blocks_removed},
+      ${summaryDetails.analysis_method}
     )
     RETURNING survey_summary_detail_id as id;
   `;
@@ -239,7 +245,6 @@ export const insertSurveySummaryDetailsSQL = (
   return sqlStatement;
 };
 
-
 /**
  * SQL query to insert the occurrence submission message.
  *
@@ -248,7 +253,7 @@ export const insertSurveySummaryDetailsSQL = (
  * @param {string} submissionMessage
  * @returns {SQLStatement} sql query object
  */
- export const insertSurveySummarySubmissionMessageSQL = (
+export const insertSurveySummarySubmissionMessageSQL = (
   summarySubmissionId: number,
   summarySubmissionMessageType: string,
   summarySubmissionMessage: string,
@@ -290,7 +295,6 @@ export const insertSurveySummaryDetailsSQL = (
       submission_message_id;
   `;
 
-
   defaultLog.debug({
     label: 'insertSurveySummarySubmissionMessageSQL',
     message: 'sql',
@@ -300,4 +304,3 @@ export const insertSurveySummaryDetailsSQL = (
 
   return sqlStatement;
 };
-

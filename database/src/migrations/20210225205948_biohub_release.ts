@@ -192,8 +192,9 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_common_survey_methodology}
     ${populate_template}
     ${populate_summary_parameter_code}
-    ${populate_summary_submission_message_type}
     ${populate_summary_submission_message_class}
+    ${populate_summary_submission_message_type}
+
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}
