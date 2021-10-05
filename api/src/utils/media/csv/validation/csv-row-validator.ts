@@ -106,16 +106,12 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
         return csvWorksheet;
       }
 
-      if (typeof row[columnIndex] === 'string') {
-        rowValueForColumn = (row[columnIndex] as string).trim().toLowerCase();
-      }
+      // compare column values as strings
+      rowValueForColumn = row[columnIndex]?.toString().trim().toLowerCase();
 
+      // compare allowed code values as strings
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
-        if (typeof allowedCode.name === 'string') {
-          allowedCode.name = allowedCode.name.toLowerCase();
-        }
-
-        return allowedCode.name;
+        return allowedCode.name?.toString().trim().toLowerCase();
       });
 
       // Add an error if the cell value is not one of the elements in the codeValues array

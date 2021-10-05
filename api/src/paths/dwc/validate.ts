@@ -64,7 +64,14 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
     },
     responses: {
       200: {
-        description: successDescription
+        description: successDescription,
+        content: {
+          'application/json': {
+            schema: {
+              $ref: '#/components/schemas/Error'
+            }
+          }
+        }
       },
       400: {
         $ref: '#/components/responses/400'
