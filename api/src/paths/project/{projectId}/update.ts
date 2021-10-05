@@ -251,7 +251,7 @@ function getProjectForUpdate(): RequestHandler {
 
       return res.status(200).send(results);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjectForUpdate', message: 'error', error });
+      defaultLog.error({ label: 'getProjectForUpdate', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -518,7 +518,7 @@ function updateProject(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'updateProject', message: 'error', error });
+      defaultLog.error({ label: 'updateProject', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -93,7 +93,7 @@ export function getSingleSubmissionURL(): RequestHandler {
 
       return res.status(200).json(s3SignedUrl);
     } catch (error) {
-      defaultLog.debug({ label: 'getSingleSubmissionURL', message: 'error', error });
+      defaultLog.error({ label: 'getSingleSubmissionURL', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

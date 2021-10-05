@@ -125,7 +125,7 @@ export function getAddSystemRolesHandler(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'addSystemRoles', message: 'error', error });
+      defaultLog.error({ label: 'addSystemRoles', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -251,7 +251,7 @@ export function removeSystemRoles(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'removeSystemRoles', message: 'error', error });
+      defaultLog.error({ label: 'removeSystemRoles', message: 'error', error });
       throw error;
     } finally {
       connection.release();

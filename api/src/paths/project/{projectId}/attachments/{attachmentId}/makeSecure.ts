@@ -124,7 +124,7 @@ export function makeProjectAttachmentSecure(): RequestHandler {
 
       return res.status(200).json(1);
     } catch (error) {
-      defaultLog.debug({ label: 'makeProjectAttachmentSecure', message: 'error', error });
+      defaultLog.error({ label: 'makeProjectAttachmentSecure', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

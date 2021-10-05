@@ -84,7 +84,7 @@ export function getNonSamplingPermits(): RequestHandler {
 
       return res.status(200).json(getNonSamplingPermitsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getNonSamplingPermits', message: 'error', error });
+      defaultLog.error({ label: 'getNonSamplingPermits', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

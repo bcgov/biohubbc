@@ -122,7 +122,7 @@ export function getSubmissionS3Key(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'getSubmissionS3Key', message: 'error', error });
+      defaultLog.error({ label: 'getSubmissionS3Key', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -147,7 +147,7 @@ export function getSubmissionFileFromS3(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'getSubmissionFileFromS3', message: 'error', error });
+      defaultLog.error({ label: 'getSubmissionFileFromS3', message: 'error', error });
       throw error;
     }
   };
@@ -180,7 +180,7 @@ export function prepDWCArchive(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'prepDWCArchive', message: 'error', error });
+      defaultLog.error({ label: 'prepDWCArchive', message: 'error', error });
       throw error;
     }
   };
@@ -215,7 +215,7 @@ export function persistParseErrors(): RequestHandler {
       // archive is not parsable, don't continue to next step and return early
       return res.status(200).json();
     } catch (error) {
-      defaultLog.debug({ label: 'persistParseErrors', message: 'error', error });
+      defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
       connection.rollback();
       throw error;
     } finally {
@@ -245,7 +245,7 @@ export function getValidationRules(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'getValidationRules', message: 'error', error });
+      defaultLog.error({ label: 'getValidationRules', message: 'error', error });
       throw error;
     }
   };
@@ -275,7 +275,7 @@ function validateDWCArchive(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'validateDWCArchive', message: 'error', error });
+      defaultLog.error({ label: 'validateDWCArchive', message: 'error', error });
       throw error;
     }
   };
@@ -355,7 +355,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
       // TODO return something to indicate if any errors had been found, or not?
       return res.status(200).json();
     } catch (error) {
-      defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
+      defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
       throw error;
     } finally {
       connection.release();

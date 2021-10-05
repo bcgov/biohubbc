@@ -115,7 +115,7 @@ export function getSurveyForView(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getSurveyForView', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyForView', message: 'error', error });
       throw error;
     } finally {
       connection.release();

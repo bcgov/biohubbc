@@ -117,7 +117,7 @@ export function getSurveyAttachments(): RequestHandler {
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getSurveyAttachments', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyAttachments', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -161,7 +161,7 @@ export function getOccurrenceSubmission(): RequestHandler {
 
       return res.status(200).json(getOccurrenceSubmissionData);
     } catch (error) {
-      defaultLog.debug({ label: 'getOccurrenceSubmission', message: 'error', error });
+      defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
