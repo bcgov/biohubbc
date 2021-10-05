@@ -3,9 +3,10 @@ import xlsx from 'xlsx';
 import { CSVWorksheet } from '../../csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
 import {
-  FileTransformationFieldSchema,
-  TransformSchema,
-  TransformationSchemaParser
+  PostTransformationRelatopnshipSchema,
+  TransformationFieldSchema,
+  TransformationSchemaParser,
+  TransformSchema
 } from './transformation-schema-parser';
 
 export type FlattenedRowPartsBySourceFile = {
@@ -271,28 +272,18 @@ export class XLSXTransformation {
   _transformFlattenedData(mergedFlattenedData: object[]): object[] {
     const transformSchemasArray = this.transformationSchemaParser.getTransformSchemas();
 
-    const transformedDWCData: object[] = [];
+    let transformedDWCData: object[] = [];
 
     mergedFlattenedData.forEach((rowObject, rowObjectIndex) => {
-      transformSchemasArray.forEach((transformationSchemas, transformationSchemasIndex) => {
-        let newDWCRowParts = {};
+      transformSchemasArray.forEach((transformationSchema, transformationSchemaIndex) => {
+        const newDWCRowObjects = this._applyFileTransformations(
+          rowObject,
+          transformationSchema,
+          rowObjectIndex,
+          transformationSchemaIndex
+        );
 
-        transformationSchemas.forEach((transformSchema) => {
-          const newDWCRow = this._applyFileTransformations(
-            rowObject,
-            transformSchema,
-            rowObjectIndex,
-            transformationSchemasIndex
-          );
-
-          if (!newDWCRow) {
-            return;
-          }
-
-          newDWCRowParts = { ...newDWCRowParts, ...newDWCRow };
-        });
-
-        transformedDWCData.push(newDWCRowParts);
+        transformedDWCData = transformedDWCData.concat(newDWCRowObjects);
       });
     });
 
@@ -301,37 +292,91 @@ export class XLSXTransformation {
 
   _applyFileTransformations(
     rowObject: object,
-    fileTransformationSchema: TransformSchema,
+    transformationSchema: TransformSchema,
     rowObjectIndex: number,
     transformationSchemaIndex: number
-  ): object | undefined {
-    const conditionFields = fileTransformationSchema.conditionalFields || [];
+  ): object[] {
+    const condition = transformationSchema?.condition;
+    const conditionalColumnValue = this._getColumnValue(rowObject, condition?.if);
 
-    let skipRecord = false;
-
-    const newDWCRowObject = {};
-
-    Object.entries(fileTransformationSchema.fields).forEach(([dwcField, config]) => {
-      let columnValue = this._getColumnValue(rowObject, config);
-
-      if (config.unique) {
-        // Append `config.unique` + indexes to ensure this column value is unique
-        columnValue = `${columnValue}:${config.unique}-${rowObjectIndex}-${transformationSchemaIndex}`;
-      }
-
-      if (conditionFields.includes(dwcField) && (columnValue === undefined || columnValue === null)) {
-        skipRecord = true;
-      }
-
-      newDWCRowObject[dwcField] = columnValue;
-    });
-
-    if (skipRecord) {
-      return;
+    if (!conditionalColumnValue) {
+      // condition not met, return an empty array (contains no new records)
+      return [];
     }
 
-    return newDWCRowObject;
+    let newDWCRowObjects: object[] = [];
+
+    transformationSchema.transformations.forEach((transformation) => {
+      const newDWCRowObject = {};
+
+      Object.entries(transformation.fields).forEach(([dwcField, config]) => {
+        let columnValue = this._getColumnValue(rowObject, config);
+
+        if (config.unique) {
+          // Append `config.unique` + indexes to ensure this column value is unique
+          columnValue = `${columnValue}:${config.unique}-${rowObjectIndex}-${transformationSchemaIndex}`;
+        }
+
+        newDWCRowObject[dwcField] = columnValue;
+      });
+
+      newDWCRowObjects.push(newDWCRowObject);
+    });
+
+    transformationSchema?.postTransformations?.forEach((postTransformation) => {
+      if (postTransformation.relationship) {
+        newDWCRowObjects = this._postTransformRelationships(
+          postTransformation as PostTransformationRelatopnshipSchema,
+          newDWCRowObjects
+        );
+      }
+    });
+
+    return newDWCRowObjects;
   }
+
+  _postTransformRelationships = (
+    postTransformRelationshipSchema: PostTransformationRelatopnshipSchema,
+    originalDWCRowObjects: object[]
+  ) => {
+    // Spread the parent/child row objects and update relationship fields
+
+    const spreadColumn = postTransformRelationshipSchema.relationship.spreadColumn;
+    const uniqueIdColumn = postTransformRelationshipSchema.relationship.uniqueIdColumn;
+
+    let spreadDWCRowObjects: object[] = [];
+
+    if (spreadColumn) {
+      const originalParentRecord = originalDWCRowObjects[0];
+      const originalChildRecord = originalDWCRowObjects[1];
+
+      const spreadColumnValue = Number(originalParentRecord[spreadColumn]);
+
+      if (spreadColumnValue) {
+        for (let i = 0; i < spreadColumnValue; i++) {
+          const newParentRecord = {
+            ...originalParentRecord,
+            [spreadColumn]: 1,
+            [uniqueIdColumn]: `${originalParentRecord[uniqueIdColumn]}-${i}-0`
+          };
+          const newChildRecord = {
+            ...originalChildRecord,
+            [uniqueIdColumn]: `${originalChildRecord[uniqueIdColumn]}-${i}-1`
+          };
+
+          newParentRecord['resourceID'] = newParentRecord[uniqueIdColumn];
+          newParentRecord['relatedResourceID'] = newChildRecord[uniqueIdColumn];
+
+          newChildRecord['resourceID'] = newChildRecord[uniqueIdColumn];
+          newChildRecord['relatedResourceID'] = newParentRecord[uniqueIdColumn];
+
+          spreadDWCRowObjects = spreadDWCRowObjects.concat([newParentRecord, newChildRecord]);
+        }
+      }
+    }
+
+    return spreadDWCRowObjects;
+  };
 
   /**
    * Builds a new value from the `rowObject`, based on the config.
@@ -340,11 +385,15 @@ export class XLSXTransformation {
    * returning a static value.
    *
    * @param {object} rowObject
-   * @param {FileTransformationFieldSchema} config
+   * @param {(TransformationFieldSchema | undefined)} config
    * @return {*}  {*}
    * @memberof XLSXTransformation
    */
-  _getColumnValue(rowObject: object, config: FileTransformationFieldSchema): any {
+  _getColumnValue(rowObject: object, config: TransformationFieldSchema | undefined): any {
+    if (!config) {
+      return;
+    }
+
     let columnValue = undefined;
 
     if (config.columns) {
@@ -400,8 +449,11 @@ export class XLSXTransformation {
         const newRowObject = {};
 
         Object.entries(rowObject).forEach(([dwcField, value]) => {
-          if (columns.includes(dwcField)) {
-            newRowObject[dwcField] = value;
+          for (const column of columns) {
+            if (column.source === dwcField) {
+              newRowObject[column.target] = value;
+              break;
+            }
           }
 
           if (conditions.includes(dwcField) && (value === undefined || value === null)) {

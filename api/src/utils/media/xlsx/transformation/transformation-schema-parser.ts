@@ -6,26 +6,39 @@ export type FlattenSchema = {
   parent?: { fileName: string; uniqueId: string[] };
 };
 
-export type FileTransformationFieldSchema = {
+export type TransformationFieldSchema = {
   columns?: string[];
   separator?: string;
   value?: any;
   unique?: string;
 };
 
-export type FileTransformationFieldsSchema = {
-  [key: string]: FileTransformationFieldSchema;
+export type TransformationFieldsSchema = {
+  [key: string]: TransformationFieldSchema;
+};
+
+export type PostTransformationRelatopnshipSchema = {
+  relationship: {
+    spreadColumn: string;
+    uniqueIdColumn: 'string';
+  };
 };
 
 export type TransformSchema = {
-  fileName: string;
-  conditionalFields: string[];
-  fields: FileTransformationFieldsSchema;
+  condition?: {
+    if?: TransformationFieldSchema;
+  };
+  transformations: {
+    fields: TransformationFieldsSchema;
+  }[];
+  postTransformations?: PostTransformationRelatopnshipSchema[];
 };
+
+export type ParseColumnSchema = { source: string; target: string };
 
 export type ParseSchema = {
   fileName: string;
-  columns: string[];
+  columns: ParseColumnSchema[];
   conditionalFields?: string[];
 };
 export class TransformationSchemaParser {
@@ -43,7 +56,7 @@ export class TransformationSchemaParser {
     return jsonpath.query(this.transformationSchema, this.getFlattenJsonPath(fileName))?.[0] || null;
   }
 
-  getTransformSchemas(): TransformSchema[][] {
+  getTransformSchemas(): TransformSchema[] {
     return jsonpath.query(this.transformationSchema, this.getTransformationJsonPath())?.[0] || [];
   }
 
