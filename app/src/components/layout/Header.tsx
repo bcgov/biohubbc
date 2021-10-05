@@ -205,7 +205,7 @@ const Header: React.FC = () => {
           />
           <SecureLink
             to="/admin/search"
-            label="Search"
+            label="Map"
             validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
             id="menu_search"
           />

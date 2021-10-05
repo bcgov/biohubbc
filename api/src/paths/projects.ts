@@ -127,13 +127,15 @@ function getProjectList(): RequestHandler {
     const filterFields = req.body || null;
 
     try {
-      const getProjectListSQLStatement = getProjectListSQL(filterFields);
+      await connection.open();
+
+      const systemUserId = connection.systemUserId();
+
+      const getProjectListSQLStatement = getProjectListSQL(systemUserId, filterFields);
 
       if (!getProjectListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
-
-      await connection.open();
 
       const getProjectListResponse = await connection.query(
         getProjectListSQLStatement.text,
