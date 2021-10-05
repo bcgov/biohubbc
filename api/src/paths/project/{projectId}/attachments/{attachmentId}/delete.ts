@@ -105,7 +105,7 @@ export function deleteAttachment(): RequestHandler {
 
       return res.status(200).json(result && result.rowCount);
     } catch (error) {
-      defaultLog.debug({ label: 'deleteAttachment', message: 'error', error });
+      defaultLog.error({ label: 'deleteAttachment', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -174,7 +174,7 @@ export function createSurvey(): RequestHandler {
 
       return res.status(200).json({ id: surveyId });
     } catch (error) {
-      defaultLog.debug({ label: 'createSurvey', message: 'error', error });
+      defaultLog.error({ label: 'createSurvey', message: 'error', error });
       throw error;
     } finally {
       connection.release();

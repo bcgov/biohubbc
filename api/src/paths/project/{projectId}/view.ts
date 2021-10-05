@@ -198,7 +198,7 @@ function getProjectForView(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjectForView', message: 'error', error });
+      defaultLog.error({ label: 'getProjectForView', message: 'error', error });
       throw error;
     } finally {
       connection.release();

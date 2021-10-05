@@ -104,7 +104,7 @@ export function deleteSurvey(): RequestHandler {
 
       return res.status(200).json(true);
     } catch (error) {
-      defaultLog.debug({ label: 'deleteSurvey', message: 'error', error });
+      defaultLog.error({ label: 'deleteSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -189,7 +189,7 @@ function getPublicProjectForView(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getPublicProjectForView', message: 'error', error });
+      defaultLog.error({ label: 'getPublicProjectForView', message: 'error', error });
       throw error;
     } finally {
       connection.release();

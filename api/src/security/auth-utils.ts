@@ -209,7 +209,7 @@ export const getSystemUser = async function (keycloakToken: object) {
 
     return (response && response.rowCount && response.rows[0]) || null;
   } catch (error) {
-    defaultLog.debug({ label: 'getSystemUser', message: 'error', error });
+    defaultLog.error({ label: 'getSystemUser', message: 'error', error });
     throw error;
   } finally {
     connection.release();

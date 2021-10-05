@@ -182,7 +182,7 @@ export function uploadMedia(): RequestHandler {
       req['summarySubmissionId'] = summarySubmissionId;
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -323,7 +323,7 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
       await connection.commit();
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'parseAndUploadSummaryDetails', message: 'error', error });
+      defaultLog.error({ label: 'parseAndUploadSummaryDetails', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

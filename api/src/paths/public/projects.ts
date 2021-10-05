@@ -80,7 +80,7 @@ export function getPublicProjectsList(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getPublicProjectsList', message: 'error', error });
+      defaultLog.error({ label: 'getPublicProjectsList', message: 'error', error });
       throw error;
     } finally {
       connection.release();

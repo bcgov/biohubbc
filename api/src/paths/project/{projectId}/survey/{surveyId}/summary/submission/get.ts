@@ -114,7 +114,7 @@ export function getSurveySummarySubmission(): RequestHandler {
 
       return res.status(200).json(getSummarySubmissionData);
     } catch (error) {
-      defaultLog.debug({ label: 'getSummarySubmissionData', message: 'error', error });
+      defaultLog.error({ label: 'getSummarySubmissionData', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

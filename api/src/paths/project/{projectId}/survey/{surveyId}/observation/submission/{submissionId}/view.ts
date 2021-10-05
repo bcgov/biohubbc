@@ -182,7 +182,7 @@ export function getObservationSubmissionCSVForView(): RequestHandler {
 
       return res.status(200).json({ data });
     } catch (error) {
-      defaultLog.debug({ label: 'getObservationSubmissionCSVForView', message: 'error', error });
+      defaultLog.error({ label: 'getObservationSubmissionCSVForView', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

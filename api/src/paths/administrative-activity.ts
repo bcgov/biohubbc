@@ -205,7 +205,7 @@ function getPendingAccessRequestsCount(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getPendingAccessRequestsCount', message: 'error', error });
+      defaultLog.error({ label: 'getPendingAccessRequestsCount', message: 'error', error });
 
       throw error;
     } finally {
@@ -306,7 +306,7 @@ function getUpdateAdministrativeActivityHandler(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'updateAdministrativeActivity', message: 'error', error });
+      defaultLog.error({ label: 'updateAdministrativeActivity', message: 'error', error });
       throw error;
     } finally {
       connection.release();
