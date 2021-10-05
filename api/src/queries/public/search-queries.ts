@@ -5,7 +5,6 @@ const defaultLog = getLogger('queries/public/search-queries');
 
 /**
  * SQL query to get public project geometries
- * TODO: be modified to restrict based on published state and geo boundary
  *
  * @returns {SQLStatement} sql query object
  */
