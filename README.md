@@ -322,6 +322,7 @@ _Note: all of the above connection values can be found in the `.env` file_
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
 
+
 # License
 
     Copyright 2019 Province of British Columbia

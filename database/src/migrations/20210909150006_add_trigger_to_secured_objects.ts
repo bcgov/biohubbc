@@ -23,14 +23,24 @@ export async function up(knex: Knex): Promise<void> {
   --                  2021-09-09  initial release
   -- *******************************************************************
   declare
-    v_security_rule_id integer;
     v_record_id integer;
-    v_identity_column character varying;
+    v_project_id integer;
   begin
-    execute format('select security_rule_id from ${DB_SCHEMA}.security_rule where rule_definition ->> ''target'' = lower(''%1$s'') and system_rule=true', TG_TABLE_NAME) into v_security_rule_id;
-    execute format('select ${DB_SCHEMA}.api_secure_record( %3$s, lower(''%1$s''), %2$s, ${DB_SCHEMA}.api_get_context_user_id())',TG_TABLE_NAME, v_security_rule_id,NEW.project_attachment_id);
-    update ${DB_SCHEMA}.security set project_id = NEW.project_id where security_token = NEW.security_token;
+    -- Find the value for the primary key column
+    SELECT "1" into v_record_id FROM (SELECT NEW.*) as t("1");
+
+    CASE upper(TG_TABLE_NAME)
+      WHEN 'PROJECT_ATTACHMENT', 'PROJECT_REPORT_ATTACHMENT' THEN
+        execute format('select project_id from ${DB_SCHEMA}.%1$s where %1$s_id = %2$s',TG_TABLE_NAME,v_record_id) into v_project_id;
+      ELSE
+        execute format('select a.project_id from ${DB_SCHEMA}.survey a, ${DB_SCHEMA}.%1$s b where a.survey_id = b.survey_id and b.%1$s_id = %2$s',TG_TABLE_NAME,v_record_id) into v_project_id;
+    END CASE;
+
+    -- Secure the record
+    execute format('select ${DB_SCHEMA}.api_secure_attachment_record(%1$s,lower(''%2$s''),%3$s)',v_record_id,TG_TABLE_NAME,v_project_id);
+
     return NEW;
+
   end;
 
   $BODY$;
@@ -44,6 +54,23 @@ export async function up(knex: Knex): Promise<void> {
       FOR EACH ROW
       EXECUTE PROCEDURE ${DB_SCHEMA}.tr_secure_record_trigger();
 
+  CREATE TRIGGER secure_record
+      AFTER INSERT
+      ON ${DB_SCHEMA}.project_report_attachment
+      FOR EACH ROW
+      EXECUTE PROCEDURE ${DB_SCHEMA}.tr_secure_record_trigger();
+
+  CREATE TRIGGER secure_record
+      AFTER INSERT
+      ON ${DB_SCHEMA}.survey_attachment
+      FOR EACH ROW
+      EXECUTE PROCEDURE ${DB_SCHEMA}.tr_secure_record_trigger();
+
+  CREATE TRIGGER secure_record
+     AFTER INSERT
+     ON ${DB_SCHEMA}.survey_report_attachment
+     FOR EACH ROW
+     EXECUTE PROCEDURE ${DB_SCHEMA}.tr_secure_record_trigger();
   `);
 }
 

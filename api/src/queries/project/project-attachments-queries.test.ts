@@ -7,11 +7,9 @@ import {
   postProjectAttachmentSQL,
   getProjectAttachmentByFileNameSQL,
   putProjectAttachmentSQL,
-  applyProjectAttachmentSecurityRuleSQL,
-  addProjectAttachmentSecurityRuleSQL,
-  getProjectAttachmentSecurityRuleSQL,
-  removeProjectAttachmentSecurityTokenSQL,
-  removeSecurityRecordSQL
+  postProjectReportAttachmentSQL,
+  getProjectReportAttachmentsSQL,
+  putProjectReportAttachmentSQL
 } from './project-attachments-queries';
 
 describe('getProjectAttachmentsSQL', () => {
@@ -28,97 +26,29 @@ describe('getProjectAttachmentsSQL', () => {
   });
 });
 
-describe('applyProjectAttachmentSecurityRuleSQL', () => {
-  it('returns null response when null securityRuleId provided', () => {
-    const response = applyProjectAttachmentSecurityRuleSQL(null);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid securityRuleId provided', () => {
-    const response = applyProjectAttachmentSecurityRuleSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('addProjectAttachmentSecurityRuleSQL', () => {
+describe('getProjectReportAttachmentsSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = addProjectAttachmentSecurityRuleSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null attachmentId provided', () => {
-    const response = addProjectAttachmentSecurityRuleSQL(1, (null as unknown) as number);
+    const response = getProjectReportAttachmentsSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectId provided', () => {
-    const response = addProjectAttachmentSecurityRuleSQL(1, 2);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getProjectAttachmentSecurityRuleSQL', () => {
-  it('returns null response when null attachmentId provided', () => {
-    const response = getProjectAttachmentSecurityRuleSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid attachmentId provided', () => {
-    const response = getProjectAttachmentSecurityRuleSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('removeProjectAttachmentSecurityTokenSQL', () => {
-  it('returns null response when null attachmentId provided', () => {
-    const response = removeProjectAttachmentSecurityTokenSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid attachmentId provided', () => {
-    const response = removeProjectAttachmentSecurityTokenSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('removeSecurityRecordSQL', () => {
-  it('returns null response when null securityToken provided', () => {
-    const response = removeSecurityRecordSQL(null);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid securityToken provided', () => {
-    const response = removeSecurityRecordSQL('token123');
+    const response = getProjectReportAttachmentsSQL(1);
 
     expect(response).to.not.be.null;
   });
 });
 
 describe('deleteProjectAttachmentSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = deleteProjectAttachmentSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
   it('returns null response when null attachmentId provided', () => {
-    const response = deleteProjectAttachmentSQL(1, (null as unknown) as number);
+    const response = deleteProjectAttachmentSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid projectId and attachmentId provided', () => {
-    const response = deleteProjectAttachmentSQL(1, 2);
+  it('returns non null response when valid attachmentId provided', () => {
+    const response = deleteProjectAttachmentSQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -146,31 +76,69 @@ describe('getProjectAttachmentS3KeySQL', () => {
 
 describe('postProjectAttachmentSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = postProjectAttachmentSQL('name', 20, (null as unknown) as number, 'key');
+    const response = postProjectAttachmentSQL('name', 20, 'type', (null as unknown) as number, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileName provided', () => {
-    const response = postProjectAttachmentSQL((null as unknown) as string, 20, 1, 'key');
+    const response = postProjectAttachmentSQL((null as unknown) as string, 20, 'type', 1, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileSize provided', () => {
-    const response = postProjectAttachmentSQL('name', (null as unknown) as number, 1, 'key');
+    const response = postProjectAttachmentSQL('name', (null as unknown) as number, 'type', 1, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null key provided', () => {
-    const response = postProjectAttachmentSQL('name', (null as unknown) as number, 1, (null as unknown) as string);
+    const response = postProjectAttachmentSQL('name', 2, 'type', 1, (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid projectId and fileName and fileSize provided', () => {
-    const response = postProjectAttachmentSQL('name', 20, 1, 'key');
+  it('returns null response when null fileType provided', () => {
+    const response = postProjectAttachmentSQL('name', 2, (null as unknown) as string, 1, 'key');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId and fileName and fileSize and key and fileType provided', () => {
+    const response = postProjectAttachmentSQL('name', 20, 'type', 1, 'key');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postProjectReportAttachmentSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = postProjectReportAttachmentSQL('name', 20, (null as unknown) as number, 'key');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileName provided', () => {
+    const response = postProjectReportAttachmentSQL((null as unknown) as string, 20, 1, 'key');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileSize provided', () => {
+    const response = postProjectReportAttachmentSQL('name', (null as unknown) as number, 1, 'key');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null key provided', () => {
+    const response = postProjectReportAttachmentSQL('name', 2, 1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId and fileName and fileSize and key provided', () => {
+    const response = postProjectReportAttachmentSQL('name', 20, 1, 'key');
 
     expect(response).to.not.be.null;
   });
@@ -198,19 +166,45 @@ describe('getProjectAttachmentByFileNameSQL', () => {
 
 describe('putProjectAttachmentSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = putProjectAttachmentSQL((null as unknown) as number, 'name');
+    const response = putProjectAttachmentSQL((null as unknown) as number, 'name', 'type');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileName provided', () => {
-    const response = putProjectAttachmentSQL(1, (null as unknown) as string);
+    const response = putProjectAttachmentSQL(1, (null as unknown) as string, 'type');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileType provided', () => {
+    const response = putProjectAttachmentSQL(1, 'name', (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId and fileName and fileType provided', () => {
+    const response = putProjectAttachmentSQL(1, 'name', 'type');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('putProjectReportAttachmentSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = putProjectReportAttachmentSQL((null as unknown) as number, 'name');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileName provided', () => {
+    const response = putProjectReportAttachmentSQL(1, (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid projectId and fileName provided', () => {
-    const response = putProjectAttachmentSQL(1, 'name');
+    const response = putProjectReportAttachmentSQL(1, 'name');
 
     expect(response).to.not.be.null;
   });

@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Monday, September 27, 2021 15:51:02
+-- Date Created : Thursday, September 30, 2021 11:07:58
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -224,47 +224,6 @@ COMMENT ON COLUMN audit_log.before_value IS 'The JSON representation of the befo
 COMMENT ON COLUMN audit_log.after_value IS 'The JSON representation of the after value of the record.'
 ;
 COMMENT ON TABLE audit_log IS 'Holds record level audit log data for the entire database.'
-;
-
---
--- TABLE: author
---
-
-CREATE TABLE author(
-    author_id                       integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
-    project_report_attachment_id    integer           NOT NULL,
-    first_name                      varchar(300)      NOT NULL,
-    last_name                       varchar(300)      NOT NULL,
-    create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
-    create_user                     integer           NOT NULL,
-    update_date                     timestamptz(6),
-    update_user                     integer,
-    revision_count                  integer           DEFAULT 0 NOT NULL,
-    CONSTRAINT author_pk PRIMARY KEY (author_id)
-)
-;
-
-
-
-COMMENT ON COLUMN author.author_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN author.project_report_attachment_id IS 'System generated surrogate primary key identifier.'
-;
-COMMENT ON COLUMN author.first_name IS 'The first name of the author.'
-;
-COMMENT ON COLUMN author.last_name IS 'The last name of the author.'
-;
-COMMENT ON COLUMN author.create_date IS 'The datetime the record was created.'
-;
-COMMENT ON COLUMN author.create_user IS 'The id of the user who created the record as identified in the system user table.'
-;
-COMMENT ON COLUMN author.update_date IS 'The datetime the record was updated.'
-;
-COMMENT ON COLUMN author.update_user IS 'The id of the user who updated the record as identified in the system user table.'
-;
-COMMENT ON COLUMN author.revision_count IS 'Revision count used for concurrency control.'
-;
-COMMENT ON TABLE author IS 'A listing of authors.'
 ;
 
 --
@@ -1116,6 +1075,7 @@ CREATE TABLE project_attachment(
     project_attachment_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     project_id               integer           NOT NULL,
     file_name                varchar(300),
+    file_type                varchar(300)      NOT NULL,
     title                    varchar(300),
     description              varchar(250),
     key                      varchar(1000)     NOT NULL,
@@ -1137,6 +1097,8 @@ COMMENT ON COLUMN project_attachment.project_attachment_id IS 'System generated 
 COMMENT ON COLUMN project_attachment.project_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN project_attachment.file_name IS 'The name of the file attachment.'
+;
+COMMENT ON COLUMN project_attachment.file_type IS 'The attachment type. Attachment type examples include video, audio and field data.'
 ;
 COMMENT ON COLUMN project_attachment.title IS 'The title of the file.'
 ;
@@ -1458,6 +1420,47 @@ COMMENT ON COLUMN project_report_attachment.update_user IS 'The id of the user w
 COMMENT ON COLUMN project_report_attachment.revision_count IS 'Revision count used for concurrency control.'
 ;
 COMMENT ON TABLE project_report_attachment IS 'A list of project report attachments.'
+;
+
+--
+-- TABLE: project_report_author
+--
+
+CREATE TABLE project_report_author(
+    project_report_author_id        integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    project_report_attachment_id    integer           NOT NULL,
+    first_name                      varchar(300)      NOT NULL,
+    last_name                       varchar(300)      NOT NULL,
+    create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                     integer           NOT NULL,
+    update_date                     timestamptz(6),
+    update_user                     integer,
+    revision_count                  integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT author_pk PRIMARY KEY (project_report_author_id)
+)
+;
+
+
+
+COMMENT ON COLUMN project_report_author.project_report_author_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN project_report_author.project_report_attachment_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN project_report_author.first_name IS 'The first name of the author.'
+;
+COMMENT ON COLUMN project_report_author.last_name IS 'The last name of the author.'
+;
+COMMENT ON COLUMN project_report_author.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN project_report_author.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN project_report_author.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN project_report_author.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN project_report_author.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE project_report_author IS 'A listing of authors.'
 ;
 
 --
@@ -1945,6 +1948,97 @@ COMMENT ON TABLE summary_parameter_code IS 'Lookup values for parameter codes us
 ;
 
 --
+-- TABLE: summary_submission_message_class
+--
+
+CREATE TABLE summary_submission_message_class(
+    summary_submission_message_class_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    name                                   varchar(50)       NOT NULL,
+    record_end_date                        date,
+    record_effective_date                  date              NOT NULL,
+    description                            varchar(250),
+    create_date                            timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                            integer           NOT NULL,
+    update_date                            timestamptz(6),
+    update_user                            integer,
+    revision_count                         integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT summary_submission_message_class_pk PRIMARY KEY (summary_submission_message_class_id)
+)
+;
+
+
+
+COMMENT ON COLUMN summary_submission_message_class.summary_submission_message_class_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_submission_message_class.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_class.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN summary_submission_message_class.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN summary_submission_message_class.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_class.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN summary_submission_message_class.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_class.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN summary_submission_message_class.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_class.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE summary_submission_message_class IS 'The classification of summary submission message types available to report.'
+;
+
+--
+-- TABLE: summary_submission_message_type
+--
+
+CREATE TABLE summary_submission_message_type(
+    submission_message_type_id             integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    summary_submission_message_class_id    integer           NOT NULL,
+    name                                   varchar(50)       NOT NULL,
+    record_end_date                        date,
+    record_effective_date                  date              NOT NULL,
+    description                            varchar(250),
+    create_date                            timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                            integer           NOT NULL,
+    update_date                            timestamptz(6),
+    update_user                            integer,
+    revision_count                         integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT summary_submission_message_type_pk PRIMARY KEY (submission_message_type_id)
+)
+;
+
+
+
+COMMENT ON COLUMN summary_submission_message_type.submission_message_type_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_submission_message_type.summary_submission_message_class_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN summary_submission_message_type.name IS 'The name of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_type.record_end_date IS 'Record level end date.'
+;
+COMMENT ON COLUMN summary_submission_message_type.record_effective_date IS 'Record level effective date.'
+;
+COMMENT ON COLUMN summary_submission_message_type.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN summary_submission_message_type.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN summary_submission_message_type.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_type.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN summary_submission_message_type.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN summary_submission_message_type.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE summary_submission_message_type IS 'The types of summary submission messages available to report. These messages may include metrics and validation concerns.'
+;
+
+--
 -- TABLE: survey
 --
 
@@ -2026,6 +2120,7 @@ COMMENT ON TABLE survey IS 'The top level organizational structure for survey da
 CREATE TABLE survey_attachment(
     survey_attachment_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     survey_id               integer           NOT NULL,
+    file_type               varchar(300)      NOT NULL,
     file_name               varchar(300),
     title                   varchar(300),
     description             varchar(250),
@@ -2046,6 +2141,8 @@ CREATE TABLE survey_attachment(
 COMMENT ON COLUMN survey_attachment.survey_attachment_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_attachment.survey_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_attachment.file_type IS 'The attachment type. Attachment type examples include video, audio and field data.'
 ;
 COMMENT ON COLUMN survey_attachment.file_name IS 'The name of the file attachment.'
 ;
@@ -2161,6 +2258,103 @@ COMMENT ON TABLE survey_proprietor IS 'Intersection table associating surveys to
 ;
 
 --
+-- TABLE: survey_report_attachment
+--
+
+CREATE TABLE survey_report_attachment(
+    survey_report_attachment_id    integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    file_name                      varchar(300)      NOT NULL,
+    title                          varchar(300)      NOT NULL,
+    description                    varchar(250)      NOT NULL,
+    year                           character(4)      NOT NULL,
+    key                            varchar(1000)     NOT NULL,
+    file_size                      integer,
+    security_token                 uuid,
+    survey_id                      integer           NOT NULL,
+    create_date                    timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                    integer           NOT NULL,
+    update_date                    timestamptz(6),
+    update_user                    integer,
+    revision_count                 integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT survey_report_attachment_pk PRIMARY KEY (survey_report_attachment_id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey_report_attachment.survey_report_attachment_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_report_attachment.file_name IS 'The name of the file attachment.'
+;
+COMMENT ON COLUMN survey_report_attachment.title IS 'The title of the file.'
+;
+COMMENT ON COLUMN survey_report_attachment.description IS 'The description of the record.'
+;
+COMMENT ON COLUMN survey_report_attachment.year IS 'The report publish year.'
+;
+COMMENT ON COLUMN survey_report_attachment.key IS 'The identifying key to the file in the storage system.'
+;
+COMMENT ON COLUMN survey_report_attachment.file_size IS 'The size of the file in bytes.'
+;
+COMMENT ON COLUMN survey_report_attachment.security_token IS 'The token indicates that this is a non-public row and it will trigger activation of the security rules defined for this row.'
+;
+COMMENT ON COLUMN survey_report_attachment.survey_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_report_attachment.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey_report_attachment.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_report_attachment.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey_report_attachment.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_report_attachment.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey_report_attachment IS 'A list of survey report attachments.'
+;
+
+--
+-- TABLE: survey_report_author
+--
+
+CREATE TABLE survey_report_author(
+    survey_report_author_id        integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
+    survey_report_attachment_id    integer           NOT NULL,
+    first_name                     varchar(300)      NOT NULL,
+    last_name                      varchar(300)      NOT NULL,
+    create_date                    timestamptz(6)    DEFAULT now() NOT NULL,
+    create_user                    integer           NOT NULL,
+    update_date                    timestamptz(6),
+    update_user                    integer,
+    revision_count                 integer           DEFAULT 0 NOT NULL,
+    CONSTRAINT survey_report_author_pk PRIMARY KEY (survey_report_author_id)
+)
+;
+
+
+
+COMMENT ON COLUMN survey_report_author.survey_report_author_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_report_author.survey_report_attachment_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_report_author.first_name IS 'The first name of the author.'
+;
+COMMENT ON COLUMN survey_report_author.last_name IS 'The last name of the author.'
+;
+COMMENT ON COLUMN survey_report_author.create_date IS 'The datetime the record was created.'
+;
+COMMENT ON COLUMN survey_report_author.create_user IS 'The id of the user who created the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_report_author.update_date IS 'The datetime the record was updated.'
+;
+COMMENT ON COLUMN survey_report_author.update_user IS 'The id of the user who updated the record as identified in the system user table.'
+;
+COMMENT ON COLUMN survey_report_author.revision_count IS 'Revision count used for concurrency control.'
+;
+COMMENT ON TABLE survey_report_author IS 'A listing of authors.'
+;
+
+--
 -- TABLE: survey_spatial_component
 --
 
@@ -2217,6 +2411,7 @@ CREATE TABLE survey_summary_detail(
     study_area_id                   varchar(100)      NOT NULL,
     parameter                       varchar(100)      NOT NULL,
     stratum                         varchar(100)      NOT NULL,
+    parameter_method                varchar(200),
     parameter_value                 numeric(10, 0),
     parameter_estimate              numeric(10, 0),
     parameter_denominator_value     numeric(14, 2),
@@ -2237,6 +2432,8 @@ CREATE TABLE survey_summary_detail(
     sample_variance                 numeric(20, 2),
     sight_variance                  numeric(20, 2),
     model_variance                  numeric(20, 2),
+    sightability_model              varchar(100),
+    outlier_blocks_removed          varchar(200),
     create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
     create_user                     integer           NOT NULL,
     update_date                     timestamptz(6),
@@ -2257,6 +2454,8 @@ COMMENT ON COLUMN survey_summary_detail.study_area_id IS 'Study area identifier 
 COMMENT ON COLUMN survey_summary_detail.parameter IS 'The population metric that is quantified in the parameter value column. e.g. "All Individuals" mean the total number of individuals/animals observed in a study area or block.'
 ;
 COMMENT ON COLUMN survey_summary_detail.stratum IS 'The stratum as provided in the survey observation detail data.'
+;
+COMMENT ON COLUMN survey_summary_detail.parameter_method IS 'the method used to derive the value in column "parameter value". E.g. ''Observed - Total Count''.'
 ;
 COMMENT ON COLUMN survey_summary_detail.parameter_value IS 'A numerical observed value of the parameter. e.g. number of individuals, or population ratio, or relative abundance index, or density.'
 ;
@@ -2289,6 +2488,10 @@ COMMENT ON COLUMN survey_summary_detail.sample_variance IS 'The sample variance 
 COMMENT ON COLUMN survey_summary_detail.sight_variance IS 'The sight variance of the measured parameter.'
 ;
 COMMENT ON COLUMN survey_summary_detail.model_variance IS 'The model variance of the measured parameter.'
+;
+COMMENT ON COLUMN survey_summary_detail.sightability_model IS 'The sightability model of the data in the record.'
+;
+COMMENT ON COLUMN survey_summary_detail.outlier_blocks_removed IS 'The outlier blocks removed of the data record.'
 ;
 COMMENT ON COLUMN survey_summary_detail.create_date IS 'The datetime the record was created.'
 ;
@@ -2360,6 +2563,7 @@ COMMENT ON TABLE survey_summary_submission IS 'Provides a historical listing of 
 CREATE TABLE survey_summary_submission_message(
     submission_message_id           integer           GENERATED ALWAYS AS IDENTITY (START WITH 1 INCREMENT BY 1),
     survey_summary_submission_id    integer           NOT NULL,
+    submission_message_type_id      integer           NOT NULL,
     event_timestamp                 TIMESTAMPTZ       NOT NULL,
     message                         varchar(3000),
     create_date                     timestamptz(6)    DEFAULT now() NOT NULL,
@@ -2376,6 +2580,8 @@ CREATE TABLE survey_summary_submission_message(
 COMMENT ON COLUMN survey_summary_submission_message.submission_message_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_summary_submission_message.survey_summary_submission_id IS 'System generated surrogate primary key identifier.'
+;
+COMMENT ON COLUMN survey_summary_submission_message.submission_message_type_id IS 'System generated surrogate primary key identifier.'
 ;
 COMMENT ON COLUMN survey_summary_submission_message.event_timestamp IS 'The timestamp of the associated event.'
 ;
@@ -2914,18 +3120,6 @@ CREATE UNIQUE INDEX administrative_activity_status_type_nuk1 ON administrative_a
 CREATE UNIQUE INDEX administrative_activity_type_nuk1 ON administrative_activity_type(name, (record_end_date is NULL)) where record_end_date is null
 ;
 --
--- INDEX: author_uk1
---
-
-CREATE UNIQUE INDEX author_uk1 ON author(project_report_attachment_id, first_name, last_name)
-;
---
--- INDEX: "Ref206198"
---
-
-CREATE INDEX "Ref206198" ON author(project_report_attachment_id)
-;
---
 -- INDEX: climate_change_initiative_nuk1
 --
 
@@ -3232,6 +3426,18 @@ CREATE UNIQUE INDEX project_report_attachment_uk1 ON project_report_attachment(f
 CREATE INDEX "Ref45197" ON project_report_attachment(project_id)
 ;
 --
+-- INDEX: author_uk1
+--
+
+CREATE UNIQUE INDEX author_uk1 ON project_report_author(project_report_attachment_id, first_name, last_name)
+;
+--
+-- INDEX: "Ref206198"
+--
+
+CREATE INDEX "Ref206198" ON project_report_author(project_report_attachment_id)
+;
+--
 -- INDEX: project_role_nuk1
 --
 
@@ -3334,6 +3540,24 @@ CREATE UNIQUE INDEX submission_status_type_nuk1 ON submission_status_type(name, 
 CREATE UNIQUE INDEX summary_parameter_code_nuk1 ON summary_parameter_code(code, (record_end_date is NULL)) where record_end_date is null
 ;
 --
+-- INDEX: summary_submission_message_class_nuk1
+--
+
+CREATE UNIQUE INDEX summary_submission_message_class_nuk1 ON summary_submission_message_class(name, (record_end_date is NULL)) where record_end_date is null
+;
+--
+-- INDEX: summary_submission_message_type_nuk1
+--
+
+CREATE UNIQUE INDEX summary_submission_message_type_nuk1 ON summary_submission_message_type(name, (record_end_date is NULL)) where record_end_date is null
+;
+--
+-- INDEX: "Ref215206"
+--
+
+CREATE INDEX "Ref215206" ON summary_submission_message_type(summary_submission_message_class_id)
+;
+--
 -- INDEX: "Ref45147"
 --
 
@@ -3388,6 +3612,30 @@ CREATE INDEX "Ref153154" ON survey_proprietor(survey_id)
 CREATE INDEX "Ref127155" ON survey_proprietor(first_nations_id)
 ;
 --
+-- INDEX: survey_report_attachment_uk1
+--
+
+CREATE UNIQUE INDEX survey_report_attachment_uk1 ON survey_report_attachment(file_name)
+;
+--
+-- INDEX: "Ref153205"
+--
+
+CREATE INDEX "Ref153205" ON survey_report_attachment(survey_id)
+;
+--
+-- INDEX: survey_report_author_uk1
+--
+
+CREATE UNIQUE INDEX survey_report_author_uk1 ON survey_report_author(survey_report_attachment_id, first_name, last_name)
+;
+--
+-- INDEX: "Ref213203"
+--
+
+CREATE INDEX "Ref213203" ON survey_report_author(survey_report_attachment_id)
+;
+--
 -- INDEX: survey_spatial_component_uk1
 --
 
@@ -3422,6 +3670,12 @@ CREATE INDEX "Ref153199" ON survey_summary_submission(survey_id)
 --
 
 CREATE INDEX "Ref211201" ON survey_summary_submission_message(survey_summary_submission_id)
+;
+--
+-- INDEX: "Ref216207"
+--
+
+CREATE INDEX "Ref216207" ON survey_summary_submission_message(submission_message_type_id)
 ;
 --
 -- INDEX: system_constant_uk1
@@ -3535,16 +3789,6 @@ ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_t
 ALTER TABLE administrative_activity ADD CONSTRAINT "Refadministrative_activity_status_type146"
     FOREIGN KEY (administrative_activity_status_type_id)
     REFERENCES administrative_activity_status_type(administrative_activity_status_type_id)
-;
-
-
---
--- TABLE: author
---
-
-ALTER TABLE author ADD CONSTRAINT "Refproject_report_attachment198"
-    FOREIGN KEY (project_report_attachment_id)
-    REFERENCES project_report_attachment(project_report_attachment_id)
 ;
 
 
@@ -3794,6 +4038,16 @@ ALTER TABLE project_report_attachment ADD CONSTRAINT "Refproject197"
 
 
 --
+-- TABLE: project_report_author
+--
+
+ALTER TABLE project_report_author ADD CONSTRAINT "Refproject_report_attachment198"
+    FOREIGN KEY (project_report_attachment_id)
+    REFERENCES project_report_attachment(project_report_attachment_id)
+;
+
+
+--
 -- TABLE: stakeholder_partnership
 --
 
@@ -3859,6 +4113,16 @@ ALTER TABLE submission_status ADD CONSTRAINT "Refsubmission_status_type164"
 
 
 --
+-- TABLE: summary_submission_message_type
+--
+
+ALTER TABLE summary_submission_message_type ADD CONSTRAINT "Refsummary_submission_message_class206"
+    FOREIGN KEY (summary_submission_message_class_id)
+    REFERENCES summary_submission_message_class(summary_submission_message_class_id)
+;
+
+
+--
 -- TABLE: survey
 --
 
@@ -3919,6 +4183,26 @@ ALTER TABLE survey_proprietor ADD CONSTRAINT "Reffirst_nations155"
 
 
 --
+-- TABLE: survey_report_attachment
+--
+
+ALTER TABLE survey_report_attachment ADD CONSTRAINT "Refsurvey205"
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
+;
+
+
+--
+-- TABLE: survey_report_author
+--
+
+ALTER TABLE survey_report_author ADD CONSTRAINT "Refsurvey_report_attachment203"
+    FOREIGN KEY (survey_report_attachment_id)
+    REFERENCES survey_report_attachment(survey_report_attachment_id)
+;
+
+
+--
 -- TABLE: survey_spatial_component
 --
 
@@ -3955,6 +4239,11 @@ ALTER TABLE survey_summary_submission ADD CONSTRAINT "Refsurvey199"
 ALTER TABLE survey_summary_submission_message ADD CONSTRAINT "Refsurvey_summary_submission201"
     FOREIGN KEY (survey_summary_submission_id)
     REFERENCES survey_summary_submission(survey_summary_submission_id)
+;
+
+ALTER TABLE survey_summary_submission_message ADD CONSTRAINT "Refsummary_submission_message_type207"
+    FOREIGN KEY (submission_message_type_id)
+    REFERENCES summary_submission_message_type(submission_message_type_id)
 ;
 
 

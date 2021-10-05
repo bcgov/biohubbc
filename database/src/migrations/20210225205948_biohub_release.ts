@@ -5,7 +5,7 @@ import path from 'path';
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
 const DB_USER_API = process.env.DB_USER_API;
 
-const DB_RELEASE = 'release.0.29';
+const DB_RELEASE = 'release.0.31';
 
 /**
  * Apply biohub release changes.
@@ -101,6 +101,9 @@ export async function up(knex: Knex): Promise<void> {
   const populate_summary_parameter_code = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_summary_parameter_code.sql')
   );
+  const populate_summary_submission_message_class = fs.readFileSync(
+    path.join(__dirname, DB_RELEASE, 'populate_summary_submission_message_class.sql')
+  );
 
   const populate_wldtaxonomic_units = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_wldtaxonomic_units.sql')
@@ -190,6 +193,7 @@ export async function up(knex: Knex): Promise<void> {
     ${populate_template}
     ${populate_summary_parameter_code}
     ${populate_summary_submission_message_type}
+    ${populate_summary_submission_message_class}
 
     -- temporary external interface tables
     ${populate_wldtaxonomic_units}

@@ -52,6 +52,9 @@ describe('uploadMedia', () => {
         size: 340
       }
     ],
+    body: {
+      attachmentType: 'Image'
+    },
     auth_payload: {
       preferred_username: 'user',
       email: 'email@example.com'
@@ -99,6 +102,24 @@ describe('uploadMedia', () => {
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
       expect(actualError.message).to.equal('Missing upload data');
+    }
+  });
+
+  it('should throw an error when attachmentType is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = upload.uploadMedia();
+
+      await result(
+        { ...sampleReq, body: { attachmentType: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing attachment file type');
     }
   });
 
@@ -225,12 +246,13 @@ describe('upsertSurveyAttachment', () => {
 
   const projectId = 1;
   const surveyId = 2;
+  const attachmentType = 'Image';
 
   it('should throw an error when failed to generate SQL get statement', async () => {
     sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(null);
 
     try {
-      await upload.upsertSurveyAttachment(file, projectId, surveyId, dbConnectionObj);
+      await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -250,7 +272,10 @@ describe('upsertSurveyAttachment', () => {
     sinon.stub(survey_attachment_queries, 'putSurveyAttachmentSQL').returns(null);
 
     try {
-      await upload.upsertSurveyAttachment(file, projectId, surveyId, { ...dbConnectionObj, query: mockQuery });
+      await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
 
       expect.fail();
     } catch (actualError) {
@@ -276,7 +301,10 @@ describe('upsertSurveyAttachment', () => {
     sinon.stub(survey_attachment_queries, 'putSurveyAttachmentSQL').returns(SQL`something`);
 
     try {
-      await upload.upsertSurveyAttachment(file, projectId, surveyId, { ...dbConnectionObj, query: mockQuery });
+      await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
 
       expect.fail();
     } catch (actualError) {
@@ -301,7 +329,7 @@ describe('upsertSurveyAttachment', () => {
     sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
     sinon.stub(survey_attachment_queries, 'putSurveyAttachmentSQL').returns(SQL`something`);
 
-    const result = await upload.upsertSurveyAttachment(file, projectId, surveyId, {
+    const result = await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
       ...dbConnectionObj,
       query: mockQuery
     });
@@ -320,7 +348,10 @@ describe('upsertSurveyAttachment', () => {
     sinon.stub(survey_attachment_queries, 'postSurveyAttachmentSQL').returns(null);
 
     try {
-      await upload.upsertSurveyAttachment(file, projectId, surveyId, { ...dbConnectionObj, query: mockQuery });
+      await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
 
       expect.fail();
     } catch (actualError) {
@@ -346,7 +377,10 @@ describe('upsertSurveyAttachment', () => {
     sinon.stub(survey_attachment_queries, 'postSurveyAttachmentSQL').returns(SQL`something`);
 
     try {
-      await upload.upsertSurveyAttachment(file, projectId, surveyId, { ...dbConnectionObj, query: mockQuery });
+      await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
+        ...dbConnectionObj,
+        query: mockQuery
+      });
 
       expect.fail();
     } catch (actualError) {
@@ -371,7 +405,7 @@ describe('upsertSurveyAttachment', () => {
     sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
     sinon.stub(survey_attachment_queries, 'postSurveyAttachmentSQL').returns(SQL`something`);
 
-    const result = await upload.upsertSurveyAttachment(file, projectId, surveyId, {
+    const result = await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
       ...dbConnectionObj,
       query: mockQuery
     });

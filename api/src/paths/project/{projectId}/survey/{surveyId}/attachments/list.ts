@@ -6,7 +6,10 @@ import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
-import { getSurveyAttachmentsSQL } from '../../../../../../queries/survey/survey-attachments-queries';
+import {
+  getSurveyAttachmentsSQL,
+  getSurveyReportAttachmentsSQL
+} from '../../../../../../queries/survey/survey-attachments-queries';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/list');
@@ -84,8 +87,9 @@ export function getSurveyAttachments(): RequestHandler {
 
     try {
       const getSurveyAttachmentsSQLStatement = getSurveyAttachmentsSQL(Number(req.params.surveyId));
+      const getSurveyReportAttachmentsSQLStatement = getSurveyReportAttachmentsSQL(Number(req.params.surveyId));
 
-      if (!getSurveyAttachmentsSQLStatement) {
+      if (!getSurveyAttachmentsSQLStatement || !getSurveyReportAttachmentsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
@@ -96,10 +100,20 @@ export function getSurveyAttachments(): RequestHandler {
         getSurveyAttachmentsSQLStatement.values
       );
 
+      const reportAttachmentsData = await connection.query(
+        getSurveyReportAttachmentsSQLStatement.text,
+        getSurveyReportAttachmentsSQLStatement.values
+      );
+
       await connection.commit();
 
       const getAttachmentsData =
-        (attachmentsData && attachmentsData.rows && new GetAttachmentsData(attachmentsData.rows)) || null;
+        (attachmentsData &&
+          reportAttachmentsData &&
+          attachmentsData.rows &&
+          reportAttachmentsData.rows &&
+          new GetAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
+        null;
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {

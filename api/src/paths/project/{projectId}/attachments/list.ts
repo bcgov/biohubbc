@@ -6,7 +6,10 @@ import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import { getProjectAttachmentsSQL } from '../../../../queries/project/project-attachments-queries';
+import {
+  getProjectAttachmentsSQL,
+  getProjectReportAttachmentsSQL
+} from '../../../../queries/project/project-attachments-queries';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
@@ -76,8 +79,9 @@ export function getAttachments(): RequestHandler {
 
     try {
       const getProjectAttachmentsSQLStatement = getProjectAttachmentsSQL(Number(req.params.projectId));
+      const getProjectReportAttachmentsSQLStatement = getProjectReportAttachmentsSQL(Number(req.params.projectId));
 
-      if (!getProjectAttachmentsSQLStatement) {
+      if (!getProjectAttachmentsSQLStatement || !getProjectReportAttachmentsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
@@ -88,10 +92,20 @@ export function getAttachments(): RequestHandler {
         getProjectAttachmentsSQLStatement.values
       );
 
+      const reportAttachmentsData = await connection.query(
+        getProjectReportAttachmentsSQLStatement.text,
+        getProjectReportAttachmentsSQLStatement.values
+      );
+
       await connection.commit();
 
       const getAttachmentsData =
-        (attachmentsData && attachmentsData.rows && new GetAttachmentsData(attachmentsData.rows)) || null;
+        (attachmentsData &&
+          reportAttachmentsData &&
+          attachmentsData.rows &&
+          reportAttachmentsData.rows &&
+          new GetAttachmentsData([...attachmentsData.rows, ...reportAttachmentsData.rows])) ||
+        null;
 
       return res.status(200).json(getAttachmentsData);
     } catch (error) {
