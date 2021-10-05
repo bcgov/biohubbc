@@ -26,6 +26,7 @@ export class CSVWorksheet {
 
   _headers: string[];
   _rows: (string | number)[][];
+  _rowObjects: object[];
 
   csvValidation: CSVValidation;
 
@@ -36,6 +37,7 @@ export class CSVWorksheet {
 
     this._headers = [];
     this._rows = [];
+    this._rowObjects = [];
 
     this.csvValidation = new CSVValidation(this.name);
   }
@@ -102,12 +104,38 @@ export class CSVWorksheet {
     }
 
     if (!this._rows.length) {
+      const rowsToReturn: (string | number)[][] = [];
+
       const originalRange = xlsx.utils.decode_range(ref);
 
-      // Specify range to not include the 0th row (header row)
-      const customRange: xlsx.Range = { ...originalRange, s: { ...originalRange.s, r: 1 } };
+      for (let i = 1; i <= originalRange.e.r; i++) {
+        const row = new Array(this.getHeaders().length);
+        let rowHasValues = false;
 
-      this._rows = xlsx.utils.sheet_to_json(this.worksheet, { header: 1, blankrows: false, range: customRange });
+        for (let j = 0; j <= originalRange.e.c; j++) {
+          const cellAddress = { c: j, r: i };
+          const cellRef = xlsx.utils.encode_cell(cellAddress);
+          const cellValue = this.worksheet[cellRef];
+
+          if (!cellValue) {
+            continue;
+          }
+
+          if (cellValue.t === 'n' || cellValue.t === 'd') {
+            row[j] = cellValue.w;
+          } else {
+            row[j] = cellValue.v;
+          }
+
+          rowHasValues = true;
+        }
+
+        if (row.length && rowHasValues) {
+          rowsToReturn.push(row);
+        }
+      }
+
+      this._rows = rowsToReturn;
     }
 
     return this._rows;
@@ -124,7 +152,25 @@ export class CSVWorksheet {
       return [];
     }
 
-    return xlsx.utils.sheet_to_json(this.worksheet);
+    if (!this._rowObjects.length) {
+      const rowObjectsArray: object[] = [];
+      const rows = this.getRows();
+      const headers = this.getHeaders();
+
+      rows.forEach((row: (string | number)[]) => {
+        const rowObject = {};
+
+        headers.forEach((header: string, index: number) => {
+          rowObject[header] = row[index];
+        });
+
+        rowObjectsArray.push(rowObject);
+      });
+
+      this._rowObjects = rowObjectsArray;
+    }
+
+    return this._rowObjects;
   }
 
   buildID(parts: (string | number)[], postfix?: string): string {

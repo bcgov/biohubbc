@@ -8,8 +8,6 @@ import { getSubmissionFileFromS3, getSubmissionS3Key, prepDWCArchive } from './v
 import { HTTP400 } from '../../errors/CustomError';
 import { postOccurrenceSQL } from '../../queries/occurrence/occurrence-create-queries';
 import { PostOccurrence } from '../../models/occurrence-create';
-import xlsx from 'xlsx';
-import moment from 'moment';
 
 const defaultLog = getLogger('paths/dwc/scrape-occurrences');
 
@@ -114,9 +112,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
         eventRows?.forEach((eventRow: any) => {
           if (eventRow[eventEventIdHeader] === occurrenceEventId) {
-            const eventMoment = convertExcelDateToMoment(eventRow[eventDateHeader] as number);
-            eventDate = eventMoment.toISOString();
-
+            eventDate = eventRow[eventDateHeader];
             verbatimCoordinates = eventRow[eventVerbatimCoordinatesHeader];
           }
         });
@@ -182,19 +178,6 @@ export const uploadScrapedOccurrence = async (
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to insert occurrence data');
   }
-};
-
-export const convertExcelDateToMoment = (excelDateNumber: number): moment.Moment => {
-  const ssfDate = xlsx.SSF.parse_date_code(excelDateNumber);
-
-  return moment({
-    year: ssfDate.y,
-    month: ssfDate.m,
-    day: ssfDate.d,
-    hour: ssfDate.H,
-    minute: ssfDate.M,
-    second: ssfDate.S
-  });
 };
 
 const getHeadersAndRowsFromFile = (file: any) => {
