@@ -1,7 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import moment from 'moment';
-import xlsx from 'xlsx';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
@@ -11,9 +9,6 @@ import { getLogger } from '../../utils/logger';
 import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
 import { logRequest } from '../../utils/path-utils';
 import { getOccurrenceSubmission, getS3File, prepDWCArchive } from './validate';
-import { HTTP400 } from '../../errors/CustomError';
-import { postOccurrenceSQL } from '../../queries/occurrence/occurrence-create-queries';
-import { PostOccurrence } from '../../models/occurrence-create';
 
 const defaultLog = getLogger('paths/dwc/scrape-occurrences');
 

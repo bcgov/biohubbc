@@ -302,7 +302,7 @@ test: ## Runs `npm test` for api, and app projects
 	@echo "==============================================="
 	@cd app && npm test && cd ..
 
-cypress: ## Runs `npm test` for api, and app projects
+cypress: ## Runs `npm run test:e2e` for api, and app projects
 	@echo "==============================================="
 	@echo "Running cypress tests"
 	@echo "==============================================="
