@@ -25,7 +25,6 @@ export class PostSummaryDetails {
   outlier_blocks_removed: string;
   analysis_method: string;
 
-
   constructor(obj?: any) {
     defaultLog.debug({ label: 'PostSummaryDetails', message: 'params', obj });
 

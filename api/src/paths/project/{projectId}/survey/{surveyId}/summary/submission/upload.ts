@@ -278,7 +278,6 @@ function persistSummaryParseErrors(): RequestHandler {
     try {
       await connection.open();
 
-
       const summarySubmissionId = req['summarySubmissionId'];
       await insertSummarySubmissionMessage(summarySubmissionId, 'Error', parseError, 'Miscellaneous', connection);
 
@@ -584,7 +583,7 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
                 summaryObject.sightability_model = columnValue;
                 break;
               case SUMMARY_CLASS.AREA:
-                summaryObject.area= columnValue;
+                summaryObject.area = columnValue;
                 break;
               case SUMMARY_CLASS.AREA_FLOWN:
                 summaryObject.area_flown = columnValue;
