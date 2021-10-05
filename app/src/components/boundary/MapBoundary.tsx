@@ -8,7 +8,12 @@ import Button from '@material-ui/core/Button';
 import { v4 as uuidv4 } from 'uuid';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
-import { handleGPXUpload, handleKMLUpload, handleShapefileUpload } from 'utils/mapBoundaryUploadHelpers';
+import {
+  calculateUpdatedMapBounds,
+  handleGPXUpload,
+  handleKMLUpload,
+  handleShapefileUpload
+} from 'utils/mapBoundaryUploadHelpers';
 import FormControl from '@material-ui/core/FormControl';
 import InputLabel from '@material-ui/core/InputLabel';
 import Select from '@material-ui/core/Select';
@@ -77,6 +82,8 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
     errors
   } = props;
 
+  const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
+  const [updatedBounds, setUpdatedBounds] = useState<any[][] | undefined>(undefined);
   const [selectedLayer, setSelectedLayer] = useState('');
   const [inferredLayersInfo, setInferredLayersInfo] = useState({
     parks: [],
@@ -90,6 +97,10 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [values.geometry]);
+
+  useEffect(() => {
+    setShouldUpdateBounds(false);
+  }, [updatedBounds]);
 
   return (
     <Grid item xs={12}>
@@ -207,7 +218,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             geometry: values.geometry,
             setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo)
           }}
-          bounds={bounds}
+          bounds={(shouldUpdateBounds && updatedBounds) || bounds}
           selectedLayer={selectedLayer}
           setInferredLayersInfo={setInferredLayersInfo}
         />
@@ -215,6 +226,22 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
       {errors && errors.geometry && (
         <Box pt={2}>
           <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.geometry}</Typography>
+        </Box>
+      )}
+      {values.geometry && values.geometry.length > 0 && (
+        <Box pt={2}>
+          <Button
+            variant="outlined"
+            component="label"
+            size="medium"
+            color="primary"
+            onClick={() => {
+              setUpdatedBounds(calculateUpdatedMapBounds(values.geometry));
+              setShouldUpdateBounds(true);
+            }}
+            className={classes.uploadButton}>
+            Zoom to Boundary Extent
+          </Button>
         </Box>
       )}
       {!Object.values(inferredLayersInfo).every((item: any) => !item.length) && (
