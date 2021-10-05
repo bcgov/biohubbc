@@ -72,7 +72,7 @@ export function getSearchResults(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getSearchResults', message: 'error', error });
+      defaultLog.error({ label: 'getSearchResults', message: 'error', error });
       throw error;
     } finally {
       connection.release();

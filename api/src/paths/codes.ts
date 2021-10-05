@@ -258,7 +258,7 @@ export function getAllCodes(): RequestHandler {
 
       return res.status(200).json(allCodeSets);
     } catch (error) {
-      defaultLog.debug({ label: 'getAllCodes', message: 'error', error });
+      defaultLog.error({ label: 'getAllCodes', message: 'error', error });
       throw error;
     } finally {
       connection.release();

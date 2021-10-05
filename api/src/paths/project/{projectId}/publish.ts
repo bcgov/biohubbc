@@ -123,7 +123,7 @@ export function publishProject(): RequestHandler {
       await connection.commit();
       return res.status(200).json({ id: result.id });
     } catch (error) {
-      defaultLog.debug({ label: 'publishProject', message: 'error', error });
+      defaultLog.error({ label: 'publishProject', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -163,7 +163,7 @@ export function deleteProject(): RequestHandler {
 
       return res.status(200).json(true);
     } catch (error) {
-      defaultLog.debug({ label: 'deleteProject', message: 'error', error });
+      defaultLog.error({ label: 'deleteProject', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

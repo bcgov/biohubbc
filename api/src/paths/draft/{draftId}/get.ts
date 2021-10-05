@@ -85,7 +85,7 @@ export function getSingleDraft(): RequestHandler {
 
       return res.status(200).json(draftResult);
     } catch (error) {
-      defaultLog.debug({ label: 'getSingleDraft', message: 'error', error });
+      defaultLog.error({ label: 'getSingleDraft', message: 'error', error });
       throw error;
     } finally {
       connection.release();

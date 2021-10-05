@@ -74,7 +74,7 @@ export function prepXLSX(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'prepXLSX', message: 'error', error });
+      defaultLog.error({ label: 'prepXLSX', message: 'error', error });
       throw error;
     }
   };
@@ -120,7 +120,7 @@ export function getValidationSchema(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'getValidationSchema', message: 'error', error });
+      defaultLog.error({ label: 'getValidationSchema', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -153,7 +153,7 @@ function validateXLSX(): RequestHandler {
 
       next();
     } catch (error) {
-      defaultLog.debug({ label: 'validateXLSX', message: 'error', error });
+      defaultLog.error({ label: 'validateXLSX', message: 'error', error });
       throw error;
     }
   };

@@ -93,7 +93,7 @@ export function getSurveyPermits(): RequestHandler {
 
       return res.status(200).json(getSurveyPermitsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getSurveyPermits', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyPermits', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

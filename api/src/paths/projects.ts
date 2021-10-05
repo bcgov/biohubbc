@@ -152,7 +152,7 @@ function getProjectList(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjectList', message: 'error', error });
+      defaultLog.error({ label: 'getProjectList', message: 'error', error });
       throw error;
     } finally {
       connection.release();

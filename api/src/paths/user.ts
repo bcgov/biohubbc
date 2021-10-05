@@ -109,7 +109,7 @@ export function addUser(): RequestHandler {
 
       return res.send(200);
     } catch (error) {
-      defaultLog.debug({ label: 'getUser', message: 'error', error });
+      defaultLog.error({ label: 'getUser', message: 'error', error });
       throw error;
     } finally {
       connection.release();

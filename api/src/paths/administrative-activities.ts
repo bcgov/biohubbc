@@ -153,7 +153,7 @@ function getAdministrativeActivities(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getAdministrativeActivities', message: 'error', error });
+      defaultLog.error({ label: 'getAdministrativeActivities', message: 'error', error });
       throw error;
     } finally {
       connection.release();

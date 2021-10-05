@@ -241,7 +241,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       return res.status(200).send(results);
     } catch (error) {
-      defaultLog.debug({ label: 'getSurveyForUpdate', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyForUpdate', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -330,7 +330,7 @@ export function updateSurvey(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'updateSurvey', message: 'error', error });
+      defaultLog.error({ label: 'updateSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
