@@ -108,7 +108,7 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1430,
+        1380,
         270
       ],
       "credentials": {
@@ -129,8 +129,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1690,
-        270
+        1820,
+        250
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -150,8 +150,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1930,
-        120
+        2250,
+        130
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -171,12 +171,69 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1430,
+        1380,
         -20
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
       }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"XLSX Validate\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "IF1",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1590,
+        270
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"XLSX Transform\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "IF2",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2030,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"DWC Validate\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "IF3",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1590,
+        -20
+      ]
     }
   ],
   "connections": {
@@ -235,7 +292,7 @@
       "main": [
         [
           {
-            "node": "XLSX Transform",
+            "node": "IF1",
             "type": "main",
             "index": 0
           }
@@ -246,7 +303,7 @@
       "main": [
         [
           {
-            "node": "Scrape Occurrences",
+            "node": "IF3",
             "type": "main",
             "index": 0
           }
@@ -254,6 +311,39 @@
       ]
     },
     "XLSX Transform": {
+      "main": [
+        [
+          {
+            "node": "IF2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF1": {
+      "main": [
+        [
+          {
+            "node": "XLSX Transform",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF2": {
+      "main": [
+        [
+          {
+            "node": "Scrape Occurrences",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "IF3": {
       "main": [
         [
           {
@@ -266,7 +356,7 @@
     }
   },
   "createdAt": "2021-09-29T15:30:03.805Z",
-  "updatedAt": "2021-09-30T01:15:53.740Z",
+  "updatedAt": "2021-10-06T16:25:44.265Z",
   "settings": {},
   "staticData": null
 }

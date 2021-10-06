@@ -51,7 +51,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -63,7 +63,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Yearling"
             },
             "sex": {
@@ -94,7 +94,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -106,7 +106,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Adult"
             },
             "sex": {
@@ -137,7 +137,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -149,7 +149,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Adult"
             },
             "sex": {
@@ -180,7 +180,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -192,7 +192,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Adult"
             },
             "sex": {
@@ -223,7 +223,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -235,7 +235,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Unknown"
             },
             "sex": {
@@ -266,7 +266,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -278,7 +278,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Adult"
             },
             "sex": {
@@ -309,7 +309,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -321,7 +321,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Adult"
             },
             "sex": {
@@ -352,7 +352,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -364,7 +364,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Adult"
             },
             "sex": {
@@ -396,7 +396,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -408,7 +408,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Yearling"
             },
             "sex": {
@@ -419,7 +419,7 @@
               "unique": "occ"
             },
             "relatedResourceID": {
-              "parent": "occurrenceID"
+              "value": ""
             },
             "relationshipOfResource": {
               "value": "offspring of"
@@ -457,7 +457,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -469,14 +469,15 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Adult"
             },
             "sex": {
               "value": "Female"
             },
             "resourceID": {
-              "value": ""
+              "columns": ["Waypoint"],
+              "unique": "occ"
             },
             "relatedResourceID": {
               "value": ""
@@ -500,7 +501,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -512,7 +513,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Yearling"
             },
             "sex": {
@@ -560,7 +561,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -572,7 +573,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Yearling"
             },
             "sex": {
@@ -603,7 +604,7 @@
               "columns": ["Date"]
             },
             "verbatimCoordinates": {
-              "columns": ["Site UTM Zone", "Site Easting", "Site Northing"]
+              "columns": ["UTM Zone", "Easting", "Northing"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -615,7 +616,7 @@
             "vernacularName": {
               "columns": ["Species"]
             },
-            "lifestage": {
+            "lifeStage": {
               "value": "Unknown"
             },
             "sex": {
@@ -643,8 +644,8 @@
         { "source": "id", "target": "id" },
         { "source": "occurrenceID", "target": "occurrenceID" },
         { "source": "individualCount", "target": "individualCount" },
-        { "source": "associatedTaxa", "target": "vernacularName" },
-        { "source": "lifestage", "target": "lifestage" },
+        { "source": "vernacularName", "target": "associatedTaxa" },
+        { "source": "lifeStage", "target": "lifeStage" },
         { "source": "sex", "target": "sex" }
       ]
     },

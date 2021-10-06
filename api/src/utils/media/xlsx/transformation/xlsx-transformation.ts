@@ -402,7 +402,7 @@ export class XLSXTransformation {
       } else if (config.columns.length > 1) {
         const columnValueParts: any[] = [];
 
-        config.columns.forEach((columnName: any) => {
+        config.columns.forEach((columnName) => {
           columnValue = rowObject[columnName];
 
           if (columnValue !== undefined && columnValue !== null) {

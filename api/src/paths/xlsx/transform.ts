@@ -64,7 +64,22 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Transform XLSX survey observation submission OK'
+      description: 'Transform XLSX survey observation submission OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string'
+              },
+              reason: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -245,6 +260,8 @@ export function persistTransformationResults(): RequestHandler {
           SUBMISSION_STATUS_TYPE.TEMPLATE_TRANSFORMED,
           connection
         );
+
+        await connection.commit();
 
         next();
       } catch (error) {

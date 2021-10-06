@@ -8,7 +8,7 @@ import { postOccurrenceSQL } from '../../queries/occurrence/occurrence-create-qu
 import { getLogger } from '../../utils/logger';
 import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
 import { logRequest } from '../../utils/path-utils';
-import { getOccurrenceSubmission, getS3File, prepDWCArchive } from './validate';
+import { getOccurrenceSubmission, getS3File, prepDWCArchive, sendResponse } from './validate';
 
 const defaultLog = getLogger('paths/dwc/scrape-occurrences');
 
@@ -18,7 +18,8 @@ export const POST: Operation = [
   getSubmissionOutputS3Key(),
   getS3File(),
   prepDWCArchive(),
-  scrapeAndUploadOccurrences()
+  scrapeAndUploadOccurrences(),
+  sendResponse()
 ];
 
 POST.apiDoc = {
@@ -81,11 +82,11 @@ export function getSubmissionOutputS3Key(): RequestHandler {
 }
 
 export function scrapeAndUploadOccurrences(): RequestHandler {
-  return async (req, res) => {
+  return async (req, res, next) => {
     defaultLog.debug({ label: 'scrapeAndUploadOccurrences', message: 'params', files: req.body });
 
     const occurrenceSubmissionId = req.body.occurrence_submission_id;
-    const file: DWCArchive = req['dwcArchive'];
+    const dwcArchive: DWCArchive = req['dwcArchive'];
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -108,7 +109,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         taxonRows,
         taxonIdHeader,
         vernacularNameHeader
-      } = getHeadersAndRowsFromFile(file);
+      } = getHeadersAndRowsFromFile(dwcArchive);
 
       const scrapedOccurrences = occurrenceRows?.map((row: any) => {
         const occurrenceId = row[occurrenceIdHeader];
@@ -159,7 +160,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({ status: 'success' });
+      next();
     } catch (error) {
       defaultLog.error({ label: 'scrapeAndUploadOccurrences', message: 'error', error });
       await connection.rollback();
@@ -196,28 +197,28 @@ export const uploadScrapedOccurrence = async (
   }
 };
 
-const getHeadersAndRowsFromFile = (file: DWCArchive) => {
-  const eventHeaders = file.worksheets.event?.getHeaders();
-  const eventRows = file.worksheets.event?.getRows();
+const getHeadersAndRowsFromFile = (dwcArchive: DWCArchive) => {
+  const eventHeaders = dwcArchive.worksheets.event?.getHeaders();
+  const eventRows = dwcArchive.worksheets.event?.getRows();
 
   const eventIdHeader = eventHeaders?.indexOf('id') as number;
-  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimcoordinates') as number;
-  const eventDateHeader = eventHeaders?.indexOf('eventdate') as number;
+  const eventVerbatimCoordinatesHeader = eventHeaders?.indexOf('verbatimCoordinates') as number;
+  const eventDateHeader = eventHeaders?.indexOf('eventDate') as number;
 
-  const occurrenceHeaders = file.worksheets.occurrence?.getHeaders();
-  const occurrenceRows = file.worksheets.occurrence?.getRows();
-
-  const taxonHeaders = file.worksheets.taxon?.getHeaders();
-  const taxonRows = file.worksheets.taxon?.getRows();
-  const taxonIdHeader = taxonHeaders?.indexOf('id') as number;
-  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularname') as number;
+  const occurrenceHeaders = dwcArchive.worksheets.occurrence?.getHeaders();
+  const occurrenceRows = dwcArchive.worksheets.occurrence?.getRows();
 
   const occurrenceIdHeader = occurrenceHeaders?.indexOf('id') as number;
-  const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedtaxa') as number;
-  const lifeStageHeader = occurrenceHeaders?.indexOf('lifestage') as number;
-  const individualCountHeader = occurrenceHeaders?.indexOf('individualcount') as number;
-  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismquantity') as number;
-  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismquantitytype') as number;
+  const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
+  const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
+  const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
+  const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
+  const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
+
+  const taxonHeaders = dwcArchive.worksheets.taxon?.getHeaders();
+  const taxonRows = dwcArchive.worksheets.taxon?.getRows();
+  const taxonIdHeader = taxonHeaders?.indexOf('id') as number;
+  const vernacularNameHeader = taxonHeaders?.indexOf('vernacularName') as number;
 
   return {
     occurrenceRows,

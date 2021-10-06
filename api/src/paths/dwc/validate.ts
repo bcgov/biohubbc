@@ -68,7 +68,15 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
         content: {
           'application/json': {
             schema: {
-              $ref: '#/components/schemas/Error'
+              type: 'object',
+              properties: {
+                status: {
+                  type: 'string'
+                },
+                reason: {
+                  type: 'string'
+                }
+              }
             }
           }
         }

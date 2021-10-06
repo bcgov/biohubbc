@@ -27,8 +27,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1770,
-        665
+        1750,
+        630
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -105,8 +105,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1770,
-        885
+        1750,
+        850
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -188,15 +188,10 @@
           }
         ]
       ]
-    },
-    "Start": {
-      "main": [
-        []
-      ]
     }
   },
   "createdAt": "2021-08-26T12:19:31.100Z",
-  "updatedAt": "2021-09-28T23:13:58.567Z",
+  "updatedAt": "2021-10-06T16:26:28.543Z",
   "settings": {},
   "staticData": null
 }

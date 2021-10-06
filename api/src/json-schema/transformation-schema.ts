@@ -38,7 +38,8 @@ export const submissionTransformationSchema = {
                   type: 'string'
                 }
               }
-            }
+            },
+            additionalProperties: false
           }
         },
         additionalProperties: false
@@ -47,57 +48,103 @@ export const submissionTransformationSchema = {
     transform: {
       type: 'array',
       items: {
-        type: 'array',
-        items: {
-          type: 'object',
-          required: ['fileName', 'fields'],
-          properties: {
-            fileName: {
-              type: 'string'
-            },
-            fields: {
-              type: 'object',
-              patternProperties: {
-                '^.*$': {
-                  type: 'object',
-                  oneOf: [
-                    {
-                      type: 'object',
-                      required: ['columns'],
-                      properties: {
-                        columns: {
-                          type: 'array',
-                          items: {
-                            type: 'string'
-                          }
-                        },
-                        separator: {
-                          type: 'string'
-                        }
-                      }
-                    },
-                    {
-                      type: 'object',
-                      required: ['value'],
-                      properties: {
-                        value: {
-                          type: 'string'
-                        }
-                      }
+        type: 'object',
+        required: ['transformations'],
+        properties: {
+          condition: {
+            type: 'object',
+            properties: {
+              if: {
+                type: 'object',
+                properties: {
+                  columns: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
                     }
-                  ]
-                }
+                  }
+                },
+                additionalProperties: false
               }
             },
-            conditionalFields: {
-              type: 'array',
-              items: {
-                type: 'string'
-              }
+            additionalProperties: false
+          },
+          transformations: {
+            type: 'array',
+            items: {
+              type: 'object',
+              required: ['fields'],
+              properties: {
+                fields: {
+                  type: 'object',
+                  patternProperties: {
+                    '^.*$': {
+                      type: 'object',
+                      oneOf: [
+                        {
+                          type: 'object',
+                          required: ['columns'],
+                          properties: {
+                            columns: {
+                              type: 'array',
+                              items: {
+                                type: 'string'
+                              }
+                            },
+                            separator: {
+                              type: 'string'
+                            },
+                            unique: {
+                              type: 'string'
+                            }
+                          },
+                          additionalProperties: false
+                        },
+                        {
+                          type: 'object',
+                          required: ['value'],
+                          properties: {
+                            value: {
+                              type: ['string', 'number']
+                            }
+                          },
+                          additionalProperties: false
+                        }
+                      ]
+                    }
+                  }
+                }
+              },
+              additionalProperties: false
             }
           },
-          additionalProperties: false
-        }
+          postTransformations: {
+            type: 'array',
+            items: {
+              anyOf: [
+                {
+                  type: 'object',
+                  properties: {
+                    relationship: {
+                      type: 'object',
+                      properties: {
+                        spreadColumn: {
+                          type: 'string'
+                        },
+                        uniqueIdColumn: {
+                          type: 'string'
+                        }
+                      },
+                      additionalProperties: false
+                    }
+                  },
+                  additionalProperties: false
+                }
+              ]
+            }
+          }
+        },
+        additionalProperties: false
       }
     },
     parse: {
@@ -112,7 +159,15 @@ export const submissionTransformationSchema = {
           columns: {
             type: 'array',
             items: {
-              type: 'string'
+              type: 'object',
+              properties: {
+                source: {
+                  type: 'string'
+                },
+                target: {
+                  type: 'string'
+                }
+              }
             }
           },
           conditionalFields: {
