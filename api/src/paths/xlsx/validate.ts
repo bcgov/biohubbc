@@ -140,8 +140,6 @@ export function validateXLSX(): RequestHandler {
 
       const csvState: ICsvState[] = xlsxCsv.isContentValid(validationSchemaParser);
 
-      console.log('csvState is: ', csvState);
-
       req['csvState'] = csvState;
 
       next();
