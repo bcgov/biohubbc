@@ -88,7 +88,7 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
       return csvWorksheet;
     }
 
-    const rows = csvWorksheet.getRowsLowerCase();
+    const rows = csvWorksheet.getRows();
     const headersLowerCase = csvWorksheet.getHeadersLowerCase();
 
     rows.forEach((row, rowIndex) => {

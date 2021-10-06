@@ -27,9 +27,8 @@ export class CSVWorksheet {
   worksheet: xlsx.WorkSheet;
 
   _headers: string[];
-  _headersLowercase: string[];
+  _headersLowerCase: string[];
   _rows: string[][];
-  _rowsLowercase: string[][];
   _rowObjects: object[];
 
   csvValidation: CSVValidation;
@@ -40,9 +39,8 @@ export class CSVWorksheet {
     this.worksheet = worksheet || xlsx.utils.aoa_to_sheet([]);
 
     this._headers = [];
-    this._headersLowercase = [];
+    this._headersLowerCase = [];
     this._rows = [];
-    this._rowsLowercase = [];
     this._rowObjects = [];
 
     this.csvValidation = new CSVValidation(this.name);
@@ -89,11 +87,11 @@ export class CSVWorksheet {
   }
 
   getHeadersLowerCase(): string[] {
-    if (!this._headersLowercase.length) {
-      this._headersLowercase = this.getHeaders().map((item) => item?.trim().toLowerCase());
+    if (!this._headersLowerCase.length) {
+      this._headersLowerCase = this.getHeaders().map((item) => item?.trim().toLowerCase());
     }
 
-    return this._headersLowercase;
+    return this._headersLowerCase;
   }
 
   getHeaderIndex(headerName: string): number {
@@ -155,14 +153,6 @@ export class CSVWorksheet {
     }
 
     return this._rows;
-  }
-
-  getRowsLowerCase(): string[][] {
-    if (!this._rowsLowercase.length) {
-      this._rowsLowercase = this.getRows().map((row) => row.map((col) => col?.trim()?.toLowerCase()));
-    }
-
-    return this._rowsLowercase;
   }
 
   getRowObjects(): object[] {
