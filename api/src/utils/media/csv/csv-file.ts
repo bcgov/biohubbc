@@ -79,7 +79,7 @@ export class CSVWorksheet {
 
       if (aoaHeaders.length > 0) {
         // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-        this._headers = aoaHeaders[0];
+        this._headers = aoaHeaders[0].map((item) => item?.trim());
       }
     }
 
@@ -88,7 +88,7 @@ export class CSVWorksheet {
 
   getHeadersLowerCase(): string[] {
     if (!this._headersLowerCase.length) {
-      this._headersLowerCase = this.getHeaders().map((item) => item?.trim().toLowerCase());
+      this._headersLowerCase = this.getHeaders().map((item) => item?.toLowerCase());
     }
 
     return this._headersLowerCase;

@@ -99,15 +99,12 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
         return csvWorksheet;
       }
 
-      let rowValueForColumn = row[columnIndex];
+      const rowValueForColumn = row[columnIndex];
 
       if (rowValueForColumn === undefined || rowValueForColumn === null || rowValueForColumn === '') {
         // cell is empty, use the getRequiredFieldsValidator to assert required fields
         return csvWorksheet;
       }
-
-      // compare column values as strings
-      rowValueForColumn = row[columnIndex]?.toLowerCase();
 
       // compare allowed code values as strings
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
@@ -115,7 +112,7 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
       });
 
       // Add an error if the cell value is not one of the elements in the codeValues array
-      if (!allowedCodeValues.includes(rowValueForColumn)) {
+      if (!allowedCodeValues.includes(rowValueForColumn?.toLowerCase())) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: 'Invalid Value',
