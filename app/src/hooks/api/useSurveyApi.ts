@@ -298,6 +298,40 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get summary submission S3 url based on survey and summary ID
+   *
+   * @param {AxiosInstance} axios
+   * @returns {*} {Promise<string>}
+   */
+  const getSummarySubmissionSignedURL = async (
+    projectId: number,
+    surveyId: number,
+    summaryId: number
+  ): Promise<string> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/getSignedUrl`
+    );
+
+    return data;
+  };
+
+  /**
+   * Delete summary submission based on summary ID
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} summaryId
+   * @returns {*} {Promise<number>}
+   */
+  const deleteSummarySubmission = async (projectId: number, surveyId: number, summaryId: number): Promise<number> => {
+    const { data } = await axios.delete(
+      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/delete`
+    );
+
+    return data;
+  };
+
+  /**
    * Publish/unpublish a survey.
    *
    * @param {number} projectId
@@ -397,7 +431,9 @@ const useSurveyApi = (axios: AxiosInstance) => {
     publishSurvey,
     getSubmissionCSVForView,
     makeAttachmentUnsecure,
-    makeAttachmentSecure
+    makeAttachmentSecure,
+    getSummarySubmissionSignedURL,
+    deleteSummarySubmission
   };
 };
 

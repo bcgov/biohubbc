@@ -73,8 +73,7 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
     SELECT
       sss.survey_summary_submission_id as id,
 		  sss.key,
-		  sss.file_name,
-      sss.delete_timestamp
+		  sss.file_name
     FROM
       survey_summary_submission as sss
     LEFT OUTER JOIN
@@ -87,6 +86,8 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
       sss.survey_summary_submission_id = sssm.survey_summary_submission_id
     WHERE
       sss.survey_id = ${surveyId}
+    AND
+      sss.delete_timestamp is NULL
     ORDER BY
       sss.survey_summary_submission_id DESC
     LIMIT 1;
@@ -94,6 +95,39 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
 
   defaultLog.debug({
     label: 'getLatestSurveySummaryResultsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to soft delete the summary submission entry by ID
+ *
+ * @param {number} summarySubmissionId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSummarySubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSummarySubmissionSQL',
+    message: 'params',
+    summarySubmissionId
+  });
+
+  if (!summarySubmissionId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE survey_summary_submission
+    SET delete_timestamp = now()
+    WHERE survey_summary_submission_id = ${summarySubmissionId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSummarySubmissionSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
