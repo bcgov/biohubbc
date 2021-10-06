@@ -75,7 +75,7 @@ export function deleteDraft(): RequestHandler {
 
       return res.status(200).json(result && result.rowCount);
     } catch (error) {
-      defaultLog.debug({ label: 'deleteDraft', message: 'error', error });
+      defaultLog.error({ label: 'deleteDraft', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

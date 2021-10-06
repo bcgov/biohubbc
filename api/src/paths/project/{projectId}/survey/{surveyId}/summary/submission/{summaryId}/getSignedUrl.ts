@@ -5,20 +5,18 @@ import { Operation } from 'express-openapi';
 import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
+import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-summary-queries';
 
-const defaultLog = getLogger(
-  '/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/getSignedUrl'
-);
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/{summaryId}/getSignedUrl');
 
-export const GET: Operation = [getSingleSubmissionURL()];
+export const GET: Operation = [getSingleSummarySubmissionURL()];
 
 GET.apiDoc = {
   ...attachmentApiDocObject(
-    'Retrieves the signed url of observation submission in a survey by its submission id.',
-    'GET response containing the signed url of a submission.'
+    'Retrieves the signed url of summary submission in a survey by its summary id.',
+    'GET response containing the signed url of a summary submission.'
   ),
   parameters: [
     {
@@ -39,7 +37,7 @@ GET.apiDoc = {
     },
     {
       in: 'path',
-      name: 'submissionId',
+      name: 'summaryId',
       schema: {
         type: 'number'
       },
@@ -48,9 +46,9 @@ GET.apiDoc = {
   ]
 };
 
-export function getSingleSubmissionURL(): RequestHandler {
+export function getSingleSummarySubmissionURL(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get single submission url', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'Get single summary submission url', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
@@ -60,31 +58,29 @@ export function getSingleSubmissionURL(): RequestHandler {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
-    if (!req.params.submissionId) {
-      throw new HTTP400('Missing required path param `submissionId`');
+    if (!req.params.summaryId) {
+      throw new HTTP400('Missing required path param `summaryId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyOccurrenceSubmissionSQLStatement = getSurveyOccurrenceSubmissionSQL(
-        Number(req.params.submissionId)
-      );
+      const getSurveySummarySubmissionSQLStatement = getSurveySummarySubmissionSQL(Number(req.params.summaryId));
 
-      if (!getSurveyOccurrenceSubmissionSQLStatement) {
+      if (!getSurveySummarySubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
       await connection.open();
 
       const result = await connection.query(
-        getSurveyOccurrenceSubmissionSQLStatement.text,
-        getSurveyOccurrenceSubmissionSQLStatement.values
+        getSurveySummarySubmissionSQLStatement.text,
+        getSurveySummarySubmissionSQLStatement.values
       );
 
       await connection.commit();
 
-      const s3Key = result && result.rows.length && result.rows[0].input_key;
+      const s3Key = result && result.rows.length && result.rows[0].key;
       const s3SignedUrl = await getS3SignedURL(s3Key);
 
       if (!s3SignedUrl) {
@@ -93,7 +89,7 @@ export function getSingleSubmissionURL(): RequestHandler {
 
       return res.status(200).json(s3SignedUrl);
     } catch (error) {
-      defaultLog.error({ label: 'getSingleSubmissionURL', message: 'error', error });
+      defaultLog.error({ label: 'getSingleSummarySubmissionURL', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

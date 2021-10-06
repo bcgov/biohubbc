@@ -104,7 +104,7 @@ export function getSurveyList(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getSurveyList', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyList', message: 'error', error });
       throw error;
     } finally {
       connection.release();

@@ -61,7 +61,7 @@ export function getSingleAttachmentURL(): RequestHandler {
 
       return res.status(200).json(s3SignedUrl);
     } catch (error) {
-      defaultLog.debug({ label: 'getSingleAttachmentURL', message: 'error', error });
+      defaultLog.error({ label: 'getSingleAttachmentURL', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
