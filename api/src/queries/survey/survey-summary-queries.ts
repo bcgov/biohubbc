@@ -367,8 +367,7 @@ export const getSummarySubmissionMessagesSQL = (summarySubmissionId: number): SQ
 
   const sqlStatement = SQL`
   SELECT
-    sss.survey_summary_submission_id,
-    sssm.submission_message_id,
+    sssm.submission_message_id as id,
     sssm.message,
     ssmt.name as type,
     ssmc.name as class
