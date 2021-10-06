@@ -61,11 +61,11 @@ GET.apiDoc = {
                 type: 'string'
               },
               messages: {
-                description: 'The validation status messages of the submission',
+                description: 'The validation status messages of the observation submission',
                 type: 'array',
                 items: {
                   type: 'object',
-                  description: 'A validation status message of the submission'
+                  description: 'A validation status message of the observation submission'
                 }
               }
             }
