@@ -88,21 +88,16 @@ const SurveySummaryResults = () => {
 
   const dialogContext = useContext(DialogContext);
 
+  const getSummarySubmission = async () => {
+    const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
+
+    setSubmission(() => {
+      setIsLoading(false);
+      return submissionResponse;
+    });
+  };
+
   useEffect(() => {
-    const getSummarySubmission = async () => {
-      const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
-
-      if (!submissionResponse) {
-        setIsLoading(false);
-        return null;
-      }
-
-      setSubmission(() => {
-        setIsLoading(false);
-        return submissionResponse;
-      });
-    };
-
     if (isLoading) {
       getSummarySubmission();
     }
@@ -113,7 +108,9 @@ const SurveySummaryResults = () => {
       return;
     }
 
-    await biohubApi.observation.deleteObservationSubmission(projectId, surveyId, submission?.id);
+    await biohubApi.survey.deleteSummarySubmission(projectId, surveyId, submission?.id);
+
+    await getSummarySubmission();
   };
 
   const defaultUploadYesNoDialogProps = {
@@ -128,9 +125,9 @@ const SurveySummaryResults = () => {
 
   const defaultDeleteYesNoDialogProps = {
     ...defaultUploadYesNoDialogProps,
-    dialogTitle: 'Delete Observation',
+    dialogTitle: 'Delete Summary Results Data',
     dialogText:
-      'Are you sure you want to delete the current observation data? Your observation will be removed from this survey.'
+      'Are you sure you want to delete the summary results data? Your summary results will be removed from this survey.'
   };
 
   const showUploadDialog = () => {
@@ -180,7 +177,7 @@ const SurveySummaryResults = () => {
     let response;
 
     try {
-      response = await biohubApi.survey.getObservationSubmissionSignedURL(projectId, surveyId, submission?.id);
+      response = await biohubApi.survey.getSummarySubmissionSignedURL(projectId, surveyId, submission?.id);
     } catch {
       return;
     }
