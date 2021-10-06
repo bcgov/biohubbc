@@ -467,12 +467,16 @@ function persistSummaryValidationResults(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
+    const mediaState: IMediaState = req['mediaState'];
+    const csvState: ICsvState[] = req['csvState'];
+
     const connection = getDBConnection(req['keycloak_token']);
 
-    try {
-      const mediaState: IMediaState = req['mediaState'];
-      const csvState: ICsvState[] = req['csvState'];
+    if (mediaState.isValid && csvState?.every((item) => item.isValid)) {
+      return next();
+    }
 
+    try {
       await connection.open();
 
       const summarySubmissionId = req['summarySubmissionId'];
@@ -514,7 +518,7 @@ function persistSummaryValidationResults(): RequestHandler {
       await Promise.all(promises);
 
       await connection.commit();
-      next();
+      return res.status(200).send();
     } catch (error) {
       defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
       throw error;

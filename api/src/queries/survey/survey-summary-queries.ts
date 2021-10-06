@@ -95,10 +95,8 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
     ssmt.summary_submission_message_class_id = ssmc.summary_submission_message_class_id
   WHERE
     sss.survey_id = ${surveyId}
-  AND
-    sss.delete_timestamp is NULL
   ORDER BY
-    sss.survey_summary_submission_id DESC
+    sss.event_timestamp DESC
   LIMIT 1;
   `;
 

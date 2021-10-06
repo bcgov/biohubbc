@@ -25,7 +25,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -97,24 +97,38 @@ const SurveySummaryResults = () => {
 
   const dialogContext = useContext(DialogContext);
 
-  const getSummarySubmission = async () => {
-    const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
+  const getSummarySubmission = useCallback(async () => {
+    // if (submission.messages=[] && !forceFetch) {
+    //   return;
+    // }
 
-    setSubmission(() => {
-      setIsLoading(false);
-      return submissionResponse;
-    });
+    try {
+      const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
 
-    if (submissionResponse.messages.length) {
-      setHasErrorMessages(true);
+      if (!submissionResponse) {
+        return;
+      }
+
+      if (submissionResponse.messages.length) {
+        setHasErrorMessages(true);
+      } else {
+        setHasErrorMessages(false);
+      }
+
+      setSubmission(() => {
+        setIsLoading(false);
+        return submissionResponse;
+      });
+    } catch (error) {
+      return error;
     }
-  };
+  }, [biohubApi.project, projectId, hasErrorMessages]);
 
   useEffect(() => {
     if (isLoading) {
       getSummarySubmission();
     }
-  }, [biohubApi, projectId, surveyId, isLoading]);
+  }, [biohubApi, projectId, surveyId, isLoading, submission, getSummarySubmission]);
 
   const softDeleteSubmission = async () => {
     if (!submission?.id) {
@@ -331,7 +345,7 @@ const SurveySummaryResults = () => {
 
         {submission && hasErrorMessages && (
           <>
-            {displayAlertBox('error', mdiAlertCircle, submission.fileName, 'Validation Failed to Start')}
+            {displayAlertBox('error', mdiAlertCircle, submission.fileName, 'Validation Failed')}
 
             <Box mt={3} mb={1}>
               <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
