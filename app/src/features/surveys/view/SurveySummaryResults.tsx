@@ -105,8 +105,6 @@ const SurveySummaryResults = () => {
       return submissionResponse;
     });
 
-    console.log('number of messages:', submissionResponse.messages.length);
-
     if (submissionResponse.messages.length) {
       setHasErrorMessages(true);
     }
