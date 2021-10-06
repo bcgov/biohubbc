@@ -110,7 +110,7 @@ export function persistParseErrors(): RequestHandler {
 
     // file is not parsable, don't continue to next step and return early
     // TODO add new status for "Transformation Failed" and insert new status record?
-    return res.status(200).json({ status: 'failed', reason: 'unable to parse submission' });
+    return res.status(200).json({ status: 'failed', reason: 'Unable to parse submission' });
   };
 }
 
