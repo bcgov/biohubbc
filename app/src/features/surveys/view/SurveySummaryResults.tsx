@@ -9,7 +9,14 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import AlertTitle from '@material-ui/lab/AlertTitle';
-import { mdiFileOutline, mdiImport, mdiTrashCanOutline, mdiDownload } from '@mdi/js';
+import {
+  mdiAlertCircle,
+  mdiDownload,
+  mdiFileOutline,
+  mdiImport,
+  mdiInformationOutline,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -70,6 +77,8 @@ const SurveySummaryResults = () => {
   const [openImportSummaryResults, setOpenImportSummaryResults] = useState(false);
 
   const [submission, setSubmission] = useState<IGetSummaryResultsResponse | null>(null);
+  const [hasErrorMessages, setHasErrorMessages] = useState(false);
+
   const [isLoading, setIsLoading] = useState(true);
 
   const classes = useStyles();
@@ -95,6 +104,12 @@ const SurveySummaryResults = () => {
       setIsLoading(false);
       return submissionResponse;
     });
+
+    console.log('number of messages:', submissionResponse.messages.length);
+
+    if (submissionResponse.messages.length) {
+      setHasErrorMessages(true);
+    }
   };
 
   useEffect(() => {
@@ -169,6 +184,67 @@ const SurveySummaryResults = () => {
     </Box>
   );
 
+  type MessageGrouping = { [key: string]: { type: string[]; label: string } };
+
+  const messageGrouping: MessageGrouping = {
+    mandatory: {
+      type: ['Missing Required Field', 'Missing Required Header', 'Duplicate Header'],
+      label: 'Mandatory fields have not been filled out'
+    },
+    recommended: {
+      type: ['Missing Recommended Header'],
+      label: 'Recommended fields have not been filled out'
+    },
+    value_not_from_list: {
+      type: ['Invalid Value'],
+      label: "Values have not been selected from the field's dropdown list"
+    },
+    unsupported_header: {
+      type: ['Unknown Header'],
+      label: 'Column headers are not supported'
+    },
+    out_of_range: {
+      type: ['Out of Range'],
+      label: 'Values are out of range'
+    },
+    formatting_errors: {
+      type: ['Unexpected Format'],
+      label: 'Unexpected formats in the values provided'
+    },
+    miscellaneous: { type: ['Miscellaneous'], label: 'Miscellaneous errors exist in your file' },
+    system_error: { type: ['Missing Validation Schema'], label: 'Contact your system administrator' }
+  };
+
+  type SubmissionErrors = { [key: string]: string[] };
+  type SubmissionWarnings = { [key: string]: string[] };
+
+  const submissionErrors: SubmissionErrors = {};
+  const submissionWarnings: SubmissionWarnings = {};
+
+  const messageList = submission?.messages;
+
+  if (messageList) {
+    Object.entries(messageGrouping).forEach(([key, value]) => {
+      messageList.forEach((message) => {
+        if (value.type.includes(message.type)) {
+          if (message.class === ClassGrouping.ERROR) {
+            if (!submissionErrors[key]) {
+              submissionErrors[key] = [];
+            }
+            submissionErrors[key].push(message.message);
+          }
+
+          if (message.class === ClassGrouping.WARNING) {
+            if (!submissionWarnings[key]) {
+              submissionWarnings[key] = [];
+            }
+
+            submissionWarnings[key].push(message.message);
+          }
+        }
+      });
+    });
+  }
   const viewFileContents = async () => {
     if (!submission) {
       return;
@@ -208,6 +284,28 @@ const SurveySummaryResults = () => {
     );
   }
 
+  function displayMessages(list: SubmissionErrors | SubmissionWarnings, msgGroup: MessageGrouping, iconName: string) {
+    return (
+      <Box>
+        {Object.entries(list).map(([key, value], index) => (
+          <Box key={index}>
+            <Box display="flex" alignItems="center">
+              <Icon path={iconName} size={1} color="#ff5252" />
+              <strong className={classes.tab}>{msgGroup[key].label}</strong>
+            </Box>
+            <Box pl={2}>
+              <ul>
+                {value.map((message: string, index2: number) => {
+                  return <li key={`${index}-${index2}`}>{message}</li>;
+                })}
+              </ul>
+            </Box>
+          </Box>
+        ))}
+      </Box>
+    );
+  }
+
   return (
     <Box>
       <Box mb={5} display="flex" justifyContent="space-between">
@@ -232,7 +330,28 @@ const SurveySummaryResults = () => {
             </Link>
           </Typography>
         )}
-        {submission && (
+
+        {submission && hasErrorMessages && (
+          <>
+            {displayAlertBox('error', mdiAlertCircle, submission.fileName, 'Validation Failed to Start')}
+
+            <Box mt={3} mb={1}>
+              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
+                What's next?
+              </Typography>
+            </Box>
+            <Box mb={3}>
+              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
+                Resolve the following errors in your local file and re-import.
+              </Typography>
+            </Box>
+
+            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
+
+            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+          </>
+        )}
+        {submission && !hasErrorMessages && (
           <>
             {displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}
 
