@@ -116,7 +116,9 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: 'Invalid Value',
-            message: `Invalid value: ${rowValueForColumn}. Must be one of [${allowedCodeValues.join(', ')}]`,
+            message: `Invalid value: ${rowValueForColumn}. Must be one of [${config.column_code_validator.allowed_code_values.join(
+              ', '
+            )}]`,
             col: config.columnName,
             row: rowIndex + 2
           }
