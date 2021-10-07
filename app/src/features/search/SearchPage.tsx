@@ -12,6 +12,8 @@ import centroid from '@turf/centroid';
 import Grid from '@material-ui/core/Grid';
 import { useEffect } from 'react';
 import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
+import { AuthStateContext } from 'contexts/authStateContext';
+import { isAuthenticated } from 'utils/authUtils';
 
 /**
  * Page to search for and display a list of records spatially.
@@ -21,9 +23,11 @@ import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
 const SearchPage: React.FC = () => {
   const biohubApi = useBiohubApi();
 
+  const [performSearch, setPerformSearch] = useState<boolean>(true);
   const [geometries, setGeometries] = useState<IClusteredPointGeometries[]>([]);
 
   const dialogContext = useContext(DialogContext);
+  const { keycloakWrapper } = useContext(AuthStateContext);
 
   const showFilterErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -43,9 +47,12 @@ const SearchPage: React.FC = () => {
 
   const getSearchResults = useCallback(async () => {
     try {
-      const response = await biohubApi.search.getSearchResults();
+      const response = isAuthenticated(keycloakWrapper)
+        ? await biohubApi.search.getSearchResults()
+        : await biohubApi.public.search.getSearchResults();
 
       if (!response) {
+        setPerformSearch(false);
         return;
       }
 
@@ -60,6 +67,7 @@ const SearchPage: React.FC = () => {
         });
       });
 
+      setPerformSearch(false);
       setGeometries(clusteredPointGeometries);
     } catch (error) {
       const apiError = error as APIError;
@@ -72,10 +80,10 @@ const SearchPage: React.FC = () => {
   }, [biohubApi.search, showFilterErrorDialog]);
 
   useEffect(() => {
-    if (!geometries.length) {
+    if (performSearch) {
       getSearchResults();
     }
-  }, [geometries.length, getSearchResults]);
+  }, [performSearch, getSearchResults]);
 
   /**
    * Displays search results visualized on a map spatially.
@@ -84,7 +92,7 @@ const SearchPage: React.FC = () => {
     <Box my={4}>
       <Container maxWidth="xl">
         <Box mb={5} display="flex" justifyContent="space-between">
-          <Typography variant="h1">Search</Typography>
+          <Typography variant="h1">Map</Typography>
         </Box>
         <Box>
           <Box mb={4}>
