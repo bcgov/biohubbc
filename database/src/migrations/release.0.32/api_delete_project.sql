@@ -24,6 +24,7 @@ declare
       call api_delete_survey(_survey_id);
     end loop;
 
+    delete from security where project_id = p_project_id;
     delete from permit where project_id = p_project_id;
     delete from survey where project_id = p_project_id;
     delete from stakeholder_partnership where project_id = p_project_id;

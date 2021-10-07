@@ -5,7 +5,7 @@ import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
 import useProjectApi, { usePublicProjectApi } from './api/useProjectApi';
-import useSearchApi from './api/useSearchApi';
+import useSearchApi, { usePublicSearchApi } from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
 import usePermitApi from './api/usePermitApi';
@@ -47,7 +47,8 @@ export const useBiohubApi = () => {
   const external = useExternalApi(axios);
 
   const publicApis = {
-    project: usePublicProjectApi(apiAxios)
+    project: usePublicProjectApi(apiAxios),
+    search: usePublicSearchApi(apiAxios)
   };
 
   return {

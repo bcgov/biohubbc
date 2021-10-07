@@ -1,10 +1,10 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getSpatialSearchResultsSQL } from './search-queries';
+import { getPublicSpatialSearchResultsSQL } from './search-queries';
 
-describe('getSpatialSearchResultsSQL', () => {
+describe('getPublicSpatialSearchResultsSQL', () => {
   it('returns a SQLStatement when valid filter fields provided (project)', () => {
-    const response = getSpatialSearchResultsSQL();
+    const response = getPublicSpatialSearchResultsSQL();
 
     expect(response).to.not.be.null;
   });
