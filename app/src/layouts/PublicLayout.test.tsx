@@ -7,7 +7,7 @@ import { createMemoryHistory } from 'history';
 const history = createMemoryHistory();
 
 describe('PublicLayout', () => {
-  it('renders correctly', () => {
+  it('renders correctly with unsupported browser alert', () => {
     const { asFragment } = render(
       <Router history={history}>
         <PublicLayout>
