@@ -147,6 +147,10 @@ export interface IDBConnection {
  * @return {*} {IDBConnection}
  */
 export const getDBConnection = function (keycloakToken: object): IDBConnection {
+  if (!keycloakToken) {
+    throw Error('Keycloak token is undefined');
+  }
+
   let _client: pg.PoolClient;
 
   let _isOpen = false;
