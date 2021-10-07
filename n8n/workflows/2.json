@@ -90,6 +90,16 @@
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
       }
+    },
+    {
+      "parameters": {},
+      "name": "Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1690,
+        750
+      ]
     }
   ],
   "connections": {
@@ -125,10 +135,21 @@
           }
         ]
       ]
+    },
+    "Scrape Occurrences": {
+      "main": [
+        [
+          {
+            "node": "Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2021-09-23T10:29:03.227Z",
-  "updatedAt": "2021-10-06T16:26:36.997Z",
+  "updatedAt": "2021-10-07T17:56:48.035Z",
   "settings": {},
   "staticData": null
 }

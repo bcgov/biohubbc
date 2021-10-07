@@ -9,8 +9,8 @@
       "type": "n8n-nodes-base.start",
       "typeVersion": 1,
       "position": [
-        550,
-        -100
+        510,
+        -40
       ]
     },
     {
@@ -41,34 +41,10 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        550,
+        510,
         130
       ],
       "webhookId": "a346c2c5-d43e-4bc8-8dd1-dbcee88e1638"
-    },
-    {
-      "parameters": {
-        "conditions": {
-          "boolean": [
-            {
-              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
-              "value2": "=application/x-zip-compressed"
-            },
-            {
-              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
-              "value2": "=application/zip"
-            }
-          ]
-        },
-        "combineOperation": "any"
-      },
-      "name": "IF",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [
-        1140,
-        130
-      ]
     },
     {
       "parameters": {
@@ -78,7 +54,7 @@
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        740,
+        680,
         130
       ]
     },
@@ -90,7 +66,7 @@
       "type": "n8n-nodes-base.executeCommand",
       "typeVersion": 1,
       "position": [
-        940,
+        850,
         130
       ]
     },
@@ -108,8 +84,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1380,
-        270
+        1210,
+        250
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -129,8 +105,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1820,
-        250
+        1620,
+        230
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -150,8 +126,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        2250,
-        130
+        2020,
+        70
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -171,12 +147,44 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1380,
+        1210,
         -20
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
       }
+    },
+    {
+      "parameters": {
+        "functionCode": "throw Error(JSON.stringify(items));\n"
+      },
+      "name": "Throw Error",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2450,
+        300
+      ],
+      "notes": "The previous steps always return a \"200\" (unless a run-time exception occurs) and so the workflow will indicate it succeeded even if the response from one of the steps returns \"status: failed\".  This step throws an Error, so that the workflow will be marked as having failed."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"DWC Validate\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "If DWC Validate Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1410,
+        -20
+      ]
     },
     {
       "parameters": {
@@ -189,12 +197,12 @@
           ]
         }
       },
-      "name": "IF1",
+      "name": "If XLSX Validate Success",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        1590,
-        270
+        1410,
+        250
       ]
     },
     {
@@ -208,12 +216,12 @@
           ]
         }
       },
-      "name": "IF2",
+      "name": "If XLSX Transform Success",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        2030,
-        250
+        1820,
+        230
       ]
     },
     {
@@ -221,18 +229,52 @@
         "conditions": {
           "string": [
             {
-              "value1": "={{$node[\"DWC Validate\"].json[\"data\"][\"status\"]}}",
+              "value1": "={{$node[\"Scrape Occurrences\"].json[\"data\"][\"status\"]}}",
               "value2": "success"
             }
           ]
         }
       },
-      "name": "IF3",
+      "name": "If Scrape Occurrences Success",
       "type": "n8n-nodes-base.if",
       "typeVersion": 1,
       "position": [
-        1590,
-        -20
+        2230,
+        70
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2450,
+        50
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/x-zip-compressed"
+            },
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/zip"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "name": "If Zip",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        130
       ]
     }
   ],
@@ -242,24 +284,6 @@
         [
           {
             "node": "Get N8N API Host",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF": {
-      "main": [
-        [
-          {
-            "node": "DWC Validate",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "XLSX Validate",
             "type": "main",
             "index": 0
           }
@@ -281,7 +305,7 @@
       "main": [
         [
           {
-            "node": "IF",
+            "node": "If Zip",
             "type": "main",
             "index": 0
           }
@@ -292,7 +316,7 @@
       "main": [
         [
           {
-            "node": "IF1",
+            "node": "If XLSX Validate Success",
             "type": "main",
             "index": 0
           }
@@ -303,7 +327,7 @@
       "main": [
         [
           {
-            "node": "IF3",
+            "node": "If DWC Validate Success",
             "type": "main",
             "index": 0
           }
@@ -314,14 +338,43 @@
       "main": [
         [
           {
-            "node": "IF2",
+            "node": "If XLSX Transform Success",
             "type": "main",
             "index": 0
           }
         ]
       ]
     },
-    "IF1": {
+    "Scrape Occurrences": {
+      "main": [
+        [
+          {
+            "node": "If Scrape Occurrences Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If DWC Validate Success": {
+      "main": [
+        [
+          {
+            "node": "Scrape Occurrences",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If XLSX Validate Success": {
       "main": [
         [
           {
@@ -329,10 +382,17 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "IF2": {
+    "If XLSX Transform Success": {
       "main": [
         [
           {
@@ -340,14 +400,51 @@
             "type": "main",
             "index": 0
           }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
         ]
       ]
     },
-    "IF3": {
+    "If Scrape Occurrences Success": {
       "main": [
         [
           {
-            "node": "Scrape Occurrences",
+            "node": "Complete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Throw Error": {
+      "main": [
+        []
+      ]
+    },
+    "If Zip": {
+      "main": [
+        [
+          {
+            "node": "DWC Validate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "XLSX Validate",
             "type": "main",
             "index": 0
           }
@@ -356,7 +453,7 @@
     }
   },
   "createdAt": "2021-09-29T15:30:03.805Z",
-  "updatedAt": "2021-10-06T16:25:44.265Z",
+  "updatedAt": "2021-10-07T18:01:07.427Z",
   "settings": {},
   "staticData": null
 }
