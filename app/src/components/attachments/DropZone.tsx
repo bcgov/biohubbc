@@ -34,18 +34,12 @@ export interface IDropZoneConfigProps {
   /**
    * Maximum file size allowed (in bytes).
    *
-   * Note: defaults to `process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE` or `52428800` if not provided
-   * Note: Set to `Infinity` if no size limit is needed.
-   *
    * @type {number}
    * @memberof IDropZoneProps
    */
   maxFileSize?: number;
   /**
    * Maximum number of files allowed.
-   *
-   * Note: defaults to `process.env.MAX_UPLOAD_NUM_FILES` or `10` if not provided
-   * Note: Set to `0` if no file number limit is needed.
    *
    * @type {number}
    * @memberof IDropZoneProps
