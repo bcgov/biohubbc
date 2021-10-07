@@ -166,7 +166,12 @@ const Header: React.FC = () => {
                 <sup
                   className={classes.appPhaseTag}
                   aria-label="This application is currently in beta phase of development">
-                  Beta
+                  Beta,
+                </sup>
+                <sup
+                  className={classes.appPhaseTag}
+                  aria-label={`This application is currently being run in the ${process.env.REACT_APP_NODE_ENV} environment`}>
+                  {process.env.REACT_APP_NODE_ENV}
                 </sup>
               </span>
             </Link>

@@ -43,8 +43,12 @@ exports[`PublicLayout renders correctly 1`] = `
                   aria-label="This application is currently in beta phase of development"
                   class="makeStyles-appPhaseTag-6"
                 >
-                  Beta
+                  Beta,
                 </sup>
+                <sup
+                  aria-label="This application is currently being run in the undefined environment"
+                  class="makeStyles-appPhaseTag-6"
+                />
               </span>
             </a>
             <div
