@@ -657,8 +657,10 @@ export const uploadScrapedSummarySubmission = async (
 /**
  * Insert a record into the survey_summary_submission_message table.
  *
+ * @param {number} submissionStatusId
  * @param {string} submissionMessageType
  * @param {string} message
+ * @param {string} errorCode
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */

@@ -282,7 +282,6 @@ function validateDWCArchive(): RequestHandler {
 }
 
 export function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
-  console.log('generated a header error : ', fileName, '   ', headerError.message, '  ', headerError.col);
   return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
 }
 

@@ -101,23 +101,13 @@ const SurveySummaryResults = () => {
     try {
       const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
 
-      // if (!submissionResponse) {
-      //   console.log('submission response is null');
-      //   return;
-      // }
-
-      console.log('1 . submission response is:', submissionResponse);
-
       if (submissionResponse?.messages.length) {
-        console.log('2 . submission response is:', submissionResponse);
         setHasErrorMessages(true);
       } else {
-        console.log('3 . submission response is:', submissionResponse);
         setHasErrorMessages(false);
       }
 
       setSubmission(() => {
-        console.log('4 . submission response is:', submissionResponse);
         setIsLoading(false);
 
         return submissionResponse;
@@ -129,7 +119,6 @@ const SurveySummaryResults = () => {
 
   useEffect(() => {
     if (isLoading) {
-      console.log('is loading');
       getSummarySubmission();
     }
   }, [biohubApi, projectId, surveyId, isLoading, submission, getSummarySubmission]);
