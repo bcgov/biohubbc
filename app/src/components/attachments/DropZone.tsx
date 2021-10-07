@@ -4,8 +4,9 @@ import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React from 'react';
+import React, { useContext } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
+import { ConfigContext } from 'contexts/configContext';
 
 const useStyles = makeStyles(() => ({
   textSpacing: {
@@ -15,9 +16,6 @@ const useStyles = makeStyles(() => ({
     cursor: 'pointer'
   }
 }));
-
-const MAX_NUM_FILES = Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10;
-const MAX_FILE_SIZE_BYTES = Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800;
 
 const BYTES_PER_MEGABYTE = 1048576;
 
@@ -59,9 +57,10 @@ export interface IDropZoneConfigProps {
 
 export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props) => {
   const classes = useStyles();
+  const config = useContext(ConfigContext);
 
-  const maxNumFiles = props.maxNumFiles || MAX_NUM_FILES;
-  const maxFileSize = props.maxFileSize || MAX_FILE_SIZE_BYTES;
+  const maxNumFiles = props.maxNumFiles || config?.MAX_UPLOAD_NUM_FILES;
+  const maxFileSize = props.maxFileSize || config?.MAX_UPLOAD_FILE_SIZE;
   const acceptedFileExtensions = props.acceptedFileExtensions;
 
   return (

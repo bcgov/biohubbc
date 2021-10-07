@@ -23,6 +23,7 @@ const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${ver
 const staticBranches = config.staticBranches || [];
 const staticUrls = config.staticUrls || {};
 const staticUrlsAPI = config.staticUrlsAPI || {};
+const staticUrlsN8N = config.staticUrlsN8N || {};
 
 const sso = config.sso;
 
@@ -78,6 +79,7 @@ const phases = {
     apiHost:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
       `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    n8nHost: staticUrlsN8N.dev,
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
     env: 'dev',
     sso: sso.dev,
@@ -95,6 +97,7 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrls.test,
     apiHost: staticUrlsAPI.test || defaultHostAPI,
+    n8nHost: staticUrlsN8N.test,
     siteminderLogoutURL: config.siteminderLogoutURL.test,
     env: 'test',
     sso: sso.test,
@@ -112,6 +115,7 @@ const phases = {
     tag: `prod-${version}`,
     host: staticUrls.prod,
     apiHost: staticUrlsAPI.prod || defaultHostAPI,
+    n8nHost: staticUrlsN8N.prod,
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
     env: 'prod',
     sso: sso.prod,
