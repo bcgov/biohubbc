@@ -16,7 +16,7 @@ describe('Header', () => {
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(false) // Return false when the `Manage Users` secure link is parsed
-      .mockReturnValueOnce(true) // Return true when the `Search` secure link is parsed
+      .mockReturnValueOnce(true) // Return true when the `Map` secure link is parsed
       .mockReturnValueOnce(true); // Return true when the `Resources` secure link is parsed
 
     const authState = {
@@ -49,7 +49,7 @@ describe('Header', () => {
 
     expect(getByText('Projects')).toBeVisible();
     expect(getByText('Permits')).toBeVisible();
-    expect(getByText('Search')).toBeVisible();
+    expect(getByText('Map')).toBeVisible();
     expect(queryByText('Manage Users')).not.toBeInTheDocument();
     expect(queryByText('Resources')).toBeInTheDocument();
   });
@@ -61,7 +61,7 @@ describe('Header', () => {
       .mockReturnValueOnce(true) // Return true when the `Projects` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Permits` secure link is parsed
       .mockReturnValueOnce(true) // Return true when the `Manage Users` secure link is parsed
-      .mockReturnValueOnce(true) // Return true when the `Search` secure link is parsed
+      .mockReturnValueOnce(true) // Return true when the `Map` secure link is parsed
       .mockReturnValueOnce(true); // Return true when the `Resources` secure link is parsed
 
     const authState = {
@@ -94,7 +94,7 @@ describe('Header', () => {
 
     expect(getByText('Projects')).toBeVisible();
     expect(getByText('Permits')).toBeVisible();
-    expect(getByText('Search')).toBeVisible();
+    expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
     expect(getByText('Resources')).toBeVisible();
   });

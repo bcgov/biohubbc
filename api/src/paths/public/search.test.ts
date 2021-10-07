@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as search from './search';
-import * as db from '../database/db';
-import * as search_queries from '../queries/search-queries';
+import * as db from '../../database/db';
+import * as search_queries from '../../queries/public/search-queries';
 
 chai.use(sinonChai);
 
@@ -46,7 +46,7 @@ describe('search', () => {
           return 20;
         }
       });
-      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(null);
+      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(null);
 
       try {
         const result = search.getSearchResults();
