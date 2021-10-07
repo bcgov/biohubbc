@@ -44,7 +44,7 @@ export interface IDropZoneConfigProps {
   /**
    * Maximum number of files allowed.
    *
-   * Note: defaults to `process.env.REACT_APP_MAX_UPLOAD_NUM_FILES` or `10` if not provided
+   * Note: defaults to `process.env.MAX_UPLOAD_NUM_FILES` or `10` if not provided
    * Note: Set to `0` if no file number limit is needed.
    *
    * @type {number}

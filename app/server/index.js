@@ -51,7 +51,9 @@ const request = require('request');
         clientId: process.env.SSO_CLIENT_ID || 'biohubbc'
       },
       SITEMINDER_LOGOUT_URL:
-        process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi'
+        process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi',
+      MAX_UPLOAD_NUM_FILES: process.env.REACT_APP_MAX_UPLOAD_NUM_FILES,
+      MAX_UPLOAD_FILE_SIZE: process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE
     };
     resp.status(200).json(config);
   });
