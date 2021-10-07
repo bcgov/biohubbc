@@ -7,6 +7,7 @@ import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 import { getSpatialSearchResultsSQL } from '../queries/search-queries';
 import { SYSTEM_ROLE } from '../constants/roles';
+import { userHasValidSystemRoles } from '../security/auth-utils';
 
 const defaultLog = getLogger('paths/search');
 
@@ -56,8 +57,9 @@ export function getSearchResults(): RequestHandler {
       await connection.open();
 
       const systemUserId = connection.systemUserId();
+      const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
 
-      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(systemUserId);
+      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 
       if (!getSpatialSearchResultsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
