@@ -1,4 +1,4 @@
--- populate_submission_message_type.sql
+-- populate_summary_submission_message_type.sql
 
 -- term related
 insert into summary_submission_message_type (name, record_effective_date, description, summary_submission_message_class_id) values ('Duplicate Header', now(), 'A duplicate header term was detected.', (select summary_submission_message_class_id from summary_submission_message_class where name = 'Error'));

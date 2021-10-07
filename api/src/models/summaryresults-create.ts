@@ -19,8 +19,8 @@ export class PostSummaryDetails {
   confidence_level_percent: number;
   confidence_limit_upper: number;
   confidence_limit_lower: number;
-  area: number;
-  area_flown: number;
+  total_area_survey_sqm: number;
+  kilometres_surveyed: number;
   sightability_model: string;
   outlier_blocks_removed: string;
   analysis_method: string;
@@ -38,8 +38,8 @@ export class PostSummaryDetails {
     this.confidence_level_percent = obj?.confidence_level_percent || null;
     this.confidence_limit_upper = obj?.confidence_limit_upper || null;
     this.confidence_limit_lower = obj?.confidence_limit_lower || null;
-    this.area = obj?.area || null;
-    this.area_flown = obj?.area_flown || null;
+    this.total_area_survey_sqm = obj?.area || null;
+    this.kilometres_surveyed = obj?.area_flown || null;
     this.sightability_model = obj?.sightability_model || null;
     this.outlier_blocks_removed = obj?.outlier_blocks_removed || null;
     this.analysis_method = obj?.analysis_method || null;

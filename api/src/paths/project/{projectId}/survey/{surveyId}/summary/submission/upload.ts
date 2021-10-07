@@ -588,10 +588,10 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
                 summaryObject.sightability_model = columnValue;
                 break;
               case SUMMARY_CLASS.AREA:
-                summaryObject.area = columnValue;
+                summaryObject.total_area_survey_sqm = columnValue;
                 break;
               case SUMMARY_CLASS.AREA_FLOWN:
-                summaryObject.area_flown = columnValue;
+                summaryObject.kilometres_surveyed = columnValue;
                 break;
               case SUMMARY_CLASS.OUTLIER_BLOCKS_REMOVED:
                 summaryObject.outlier_blocks_removed = columnValue;

@@ -269,8 +269,8 @@ export const insertSurveySummaryDetailsSQL = (
       ${summaryDetails.sightability_model},
       ${summaryDetails.standard_error},
       ${summaryDetails.coefficient_variation},
-      ${summaryDetails.area_flown},
-      ${summaryDetails.area},
+      ${summaryDetails.kilometres_surveyed},
+      ${summaryDetails.total_area_survey_sqm},
       ${summaryDetails.outlier_blocks_removed},
       ${summaryDetails.analysis_method}
     )
