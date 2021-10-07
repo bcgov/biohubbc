@@ -287,7 +287,7 @@ function persistSummaryParseErrors(): RequestHandler {
       return res.status(200).json();
     } catch (error) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
-      connection.rollback();
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -521,6 +521,7 @@ function persistSummaryValidationResults(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
