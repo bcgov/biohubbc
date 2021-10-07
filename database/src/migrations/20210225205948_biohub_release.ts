@@ -91,6 +91,7 @@ export async function up(knex: Knex): Promise<void> {
   const populate_summary_submission_message_type = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_summary_submission_message_type.sql')
   );
+
   const populate_system_metadata_constant = fs.readFileSync(
     path.join(__dirname, DB_RELEASE, 'populate_system_metadata_constant.sql')
   );

@@ -252,8 +252,8 @@ export const insertSurveySummaryDetailsSQL = (
       sightability_model,
       standard_error,
       coefficient_variation,
-      area,
-      area_flown,
+      kilometres_surveyed,
+      total_area_surveyed_sqm,
       outlier_blocks_removed,
       analysis_method
     ) VALUES (
@@ -269,8 +269,8 @@ export const insertSurveySummaryDetailsSQL = (
       ${summaryDetails.sightability_model},
       ${summaryDetails.standard_error},
       ${summaryDetails.coefficient_variation},
-      ${summaryDetails.area},
       ${summaryDetails.area_flown},
+      ${summaryDetails.area},
       ${summaryDetails.outlier_blocks_removed},
       ${summaryDetails.analysis_method}
     )
