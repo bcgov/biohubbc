@@ -98,34 +98,38 @@ const SurveySummaryResults = () => {
   const dialogContext = useContext(DialogContext);
 
   const getSummarySubmission = useCallback(async () => {
-    // if (submission.messages=[] && !forceFetch) {
-    //   return;
-    // }
-
     try {
       const submissionResponse = await biohubApi.survey.getSurveySummarySubmission(projectId, surveyId);
 
-      if (!submissionResponse) {
-        return;
-      }
+      // if (!submissionResponse) {
+      //   console.log('submission response is null');
+      //   return;
+      // }
 
-      if (submissionResponse.messages.length) {
+      console.log('1 . submission response is:', submissionResponse);
+
+      if (submissionResponse?.messages.length) {
+        console.log('2 . submission response is:', submissionResponse);
         setHasErrorMessages(true);
       } else {
+        console.log('3 . submission response is:', submissionResponse);
         setHasErrorMessages(false);
       }
 
       setSubmission(() => {
+        console.log('4 . submission response is:', submissionResponse);
         setIsLoading(false);
+
         return submissionResponse;
       });
     } catch (error) {
       return error;
     }
-  }, [biohubApi.project, projectId, hasErrorMessages]);
+  }, [biohubApi.project, biohubApi.survey, surveyId, projectId, hasErrorMessages]);
 
   useEffect(() => {
     if (isLoading) {
+      console.log('is loading');
       getSummarySubmission();
     }
   }, [biohubApi, projectId, surveyId, isLoading, submission, getSummarySubmission]);

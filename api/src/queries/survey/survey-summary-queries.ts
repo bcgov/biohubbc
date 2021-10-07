@@ -74,6 +74,7 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
     sss.survey_summary_submission_id as id,
     sss.key,
     sss.file_name,
+    sss.delete_timestamp,
     sssm.submission_message_type_id,
     sssm.message,
     ssmt.name as submission_message_type_name,
