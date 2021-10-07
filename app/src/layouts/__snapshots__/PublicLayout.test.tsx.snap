@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PublicLayout renders correctly 1`] = `
+exports[`PublicLayout renders correctly with environment tag 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-1"
@@ -43,12 +43,14 @@ exports[`PublicLayout renders correctly 1`] = `
                   aria-label="This application is currently in beta phase of development"
                   class="makeStyles-appPhaseTag-6"
                 >
-                  Beta,
+                  Beta
                 </sup>
                 <sup
-                  aria-label="This application is currently being run in the undefined environment"
+                  aria-label="This application is currently being run in the local environment"
                   class="makeStyles-appPhaseTag-6"
-                />
+                >
+                  & local
+                </sup>
               </span>
             </a>
             <div
@@ -112,6 +114,152 @@ exports[`PublicLayout renders correctly 1`] = `
       <div
         aria-label="Footer"
         class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-16 MuiToolbar-gutters"
+        role="navigation"
+      >
+        <ul>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/disclaimer"
+            >
+              Disclaimer
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/privacy"
+            >
+              Privacy
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/accessible-government"
+            >
+              Accessibility
+            </a>
+          </li>
+          <li>
+            <a
+              href="https://www.gov.bc.ca/gov/content/home/copyright"
+            >
+              Copyright
+            </a>
+          </li>
+        </ul>
+      </div>
+    </footer>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`PublicLayout renders correctly without environment tag (when prod) 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiBox-root MuiBox-root-17"
+  >
+    <header
+      class="MuiPaper-root MuiAppBar-root MuiAppBar-positionSticky MuiAppBar-colorPrimary MuiPaper-elevation4"
+      style="box-shadow: none;"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-26 makeStyles-govHeader-18"
+      >
+        <div
+          class="MuiToolbar-root MuiToolbar-regular makeStyles-govHeaderToolbar-19 MuiToolbar-gutters"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-27"
+          >
+            <a
+              aria-label="Go to SIMS Home"
+              class="makeStyles-brand-20"
+              href="/projects"
+            >
+              <picture>
+                <source
+                  media="(min-width: 1200px)"
+                  srcset="gov-bc-logo-horiz.png"
+                />
+                <source
+                  media="(min-width: 600px)"
+                  srcset="gov-bc-logo-vert.png"
+                />
+                <img
+                  alt="Government of British Columbia"
+                  src="gov-bc-logo-vert.png"
+                />
+              </picture>
+              <span>
+                Species Inventory Management System
+                <sup
+                  aria-label="This application is currently in beta phase of development"
+                  class="makeStyles-appPhaseTag-22"
+                >
+                  Beta
+                </sup>
+              </span>
+            </a>
+            <div
+              class="MuiBox-root MuiBox-root-28"
+            >
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge MuiButton-disableElevation"
+                data-testid="login"
+                tabindex="0"
+                type="submit"
+              >
+                <span
+                  class="MuiButton-label"
+                >
+                  <span
+                    class="MuiButton-startIcon MuiButton-iconSizeLarge"
+                  >
+                    <svg
+                      role="presentation"
+                      style="width: 1.5rem; height: 1.5rem;"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M19,3H5C3.89,3 3,3.89 3,5V9H5V5H19V19H5V15H3V19A2,2 0 0,0 5,21H19A2,2 0 0,0 21,19V5C21,3.89 20.1,3 19,3M10.08,15.58L11.5,17L16.5,12L11.5,7L10.08,8.41L12.67,11H3V13H12.67L10.08,15.58Z"
+                        style="fill: currentColor;"
+                      />
+                    </svg>
+                  </span>
+                  Log In
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-29 makeStyles-mainNav-24"
+      >
+        <div
+          aria-label="Main Navigation"
+          class="MuiToolbar-root MuiToolbar-dense makeStyles-mainNavToolbar-25 MuiToolbar-gutters"
+          role="navigation"
+        />
+      </div>
+    </header>
+    <main
+      class="MuiBox-root MuiBox-root-30"
+    >
+      <div>
+        <p>
+          The public layout content
+        </p>
+      </div>
+    </main>
+    <footer
+      class="makeStyles-appFooter-31"
+    >
+      <div
+        aria-label="Footer"
+        class="MuiToolbar-root MuiToolbar-regular makeStyles-appFooterToolbar-32 MuiToolbar-gutters"
         role="navigation"
       >
         <ul>
