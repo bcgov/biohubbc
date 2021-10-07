@@ -266,12 +266,12 @@ function persistSummaryParseErrors(): RequestHandler {
   return async (req, res, next) => {
     const parseError = req['parseError'];
 
+    defaultLog.debug({ label: 'persistSummaryParseErrors', message: 'parseError', parseError });
+
     if (!parseError) {
       // no errors to persist, skip to next step
       return next();
     }
-
-    defaultLog.debug({ label: 'persistSummaryParseErrors', message: 'parseError', parseError });
 
     const connection = getDBConnection(req['keycloak_token']);
 
