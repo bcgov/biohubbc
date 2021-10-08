@@ -260,4 +260,38 @@ describe('useProjectApi', () => {
 
     expect(result).toEqual({ id: 1 });
   });
+
+  it('getAttachmentSignedURL works as expected', async () => {
+    mock
+      .onPost(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`)
+      .reply(200, 'www.signedurl.com');
+
+    const result = await usePublicProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Image');
+
+    expect(result).toEqual('www.signedurl.com');
+  });
+
+  it('getProjectAttachments works as expected', async () => {
+    mock.onGet(`/api/public/project/${projectId}/attachments/list`).reply(200, {
+      attachmentsList: [
+        {
+          id: 1,
+          fileName: 'filename',
+          lastModified: '2020/04/04',
+          size: 3028
+        }
+      ]
+    });
+
+    const result = await usePublicProjectApi(axios).getProjectAttachments(projectId);
+
+    expect(result.attachmentsList).toEqual([
+      {
+        id: 1,
+        fileName: 'filename',
+        lastModified: '2020/04/04',
+        size: 3028
+      }
+    ]);
+  });
 });

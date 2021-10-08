@@ -168,6 +168,18 @@ describe('useSurveyApi', () => {
     expect(result).toEqual('result 1');
   });
 
+  it('uploadSurveySummaryResults works as expected', async () => {
+    const file = new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    });
+
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/summary/submission/upload`).reply(200, 'result 1');
+
+    const result = await useSurveyApi(axios).uploadSurveySummaryResults(projectId, surveyId, file);
+
+    expect(result).toEqual('result 1');
+  });
+
   it('updateSurvey works as expected', async () => {
     const request = {
       survey_details: {
@@ -194,6 +206,39 @@ describe('useSurveyApi', () => {
     const result = await useSurveyApi(axios).updateSurvey(projectId, surveyId, request as any);
 
     expect(result).toEqual(true);
+  });
+
+  it('getSurveySummarySubmission works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/survey/${surveyId}/summary/submission/get`).reply(200, {
+      id: 1,
+      fileName: 'name'
+    });
+
+    const result = await useSurveyApi(axios).getSurveySummarySubmission(projectId, surveyId);
+
+    expect(result).toEqual({
+      id: 1,
+      fileName: 'name'
+    });
+  });
+
+  it('getSubmissionCSVForView works as expected', async () => {
+    const summaryId = 2;
+    const resultData = {
+      data: {
+        name: 'name',
+        headers: [],
+        rows: [[]]
+      }
+    };
+
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/view`)
+      .reply(200, resultData);
+
+    const result = await useSurveyApi(axios).getSubmissionCSVForView(projectId, surveyId, summaryId);
+
+    expect(result).toEqual(resultData);
   });
 
   it('getSurveyForUpdate works as expected', async () => {
@@ -230,5 +275,51 @@ describe('useSurveyApi', () => {
     const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
 
     expect(result).toEqual('OK');
+  });
+
+  it('deleteSummarySubmission works as expected', async () => {
+    const summaryId = 2;
+
+    mock.onDelete(`/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/delete`).reply(200, 1);
+
+    const result = await useSurveyApi(axios).deleteSummarySubmission(projectId, surveyId, summaryId);
+
+    expect(result).toEqual(1);
+  });
+
+  it('getSummarySubmissionSignedURL works as expected', async () => {
+    const summaryId = 2;
+
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/getSignedUrl`)
+      .reply(200, 'url.com');
+
+    const result = await useSurveyApi(axios).getSummarySubmissionSignedURL(projectId, surveyId, summaryId);
+
+    expect(result).toEqual('url.com');
+  });
+
+  it('makeAttachmentUnsecure works as expected', async () => {
+    mock
+      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeUnsecure`)
+      .reply(200, true);
+
+    const result = await useSurveyApi(axios).makeAttachmentUnsecure(
+      projectId,
+      surveyId,
+      attachmentId,
+      'token',
+      'Image'
+    );
+
+    expect(result).toEqual(true);
+  });
+
+  it('makeAttachmentSecure works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/makeSecure`).reply(200, true);
+
+    const result = await useSurveyApi(axios).makeAttachmentSecure(projectId, surveyId, attachmentId, 'Image');
+
+    expect(result).toEqual(true);
   });
 });
