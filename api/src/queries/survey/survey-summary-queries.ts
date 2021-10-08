@@ -70,28 +70,36 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
   }
 
   const sqlStatement = SQL`
-    SELECT
-      sss.survey_summary_submission_id as id,
-		  sss.key,
-		  sss.file_name
-    FROM
-      survey_summary_submission as sss
-    LEFT OUTER JOIN
-      survey_summary_detail as ssd
-    ON
-      sss.survey_summary_submission_id = ssd.survey_summary_submission_id
-    LEFT OUTER JOIN
-      survey_summary_submission_message sssm
-    ON
-      sss.survey_summary_submission_id = sssm.survey_summary_submission_id
-    WHERE
-      sss.survey_id = ${surveyId}
-    AND
-      sss.delete_timestamp is NULL
-    ORDER BY
-      sss.survey_summary_submission_id DESC
-    LIMIT 1;
-    `;
+  SELECT
+    sss.survey_summary_submission_id as id,
+    sss.key,
+    sss.file_name,
+    sss.delete_timestamp,
+    sssm.submission_message_type_id,
+    sssm.message,
+    ssmt.name as submission_message_type_name,
+    ssmt.summary_submission_message_class_id,
+    ssmc.name as submission_message_class_name
+  FROM
+    survey_summary_submission as sss
+  LEFT OUTER JOIN
+    survey_summary_submission_message as sssm
+  ON
+    sss.survey_summary_submission_id = sssm.survey_summary_submission_id
+  LEFT OUTER JOIN
+    summary_submission_message_type as ssmt
+  ON
+    sssm.submission_message_type_id = ssmt.submission_message_type_id
+  LEFT OUTER JOIN
+    summary_submission_message_class as ssmc
+  ON
+    ssmt.summary_submission_message_class_id = ssmc.summary_submission_message_class_id
+  WHERE
+    sss.survey_id = ${surveyId}
+  ORDER BY
+    sss.event_timestamp DESC
+  LIMIT 1;
+  `;
 
   defaultLog.debug({
     label: 'getLatestSurveySummaryResultsSQL',
@@ -241,10 +249,13 @@ export const insertSurveySummaryDetailsSQL = (
       confidence_limit_lower,
       confidence_limit_upper,
       confidence_level_percent,
+      sightability_model,
       standard_error,
       coefficient_variation,
       kilometres_surveyed,
-      total_area_surveyed_sqm
+      total_area_surveyed_sqm,
+      outlier_blocks_removed,
+      analysis_method
     ) VALUES (
       ${summarySubmissionId},
       ${summaryDetails.study_area_id},
@@ -255,16 +266,132 @@ export const insertSurveySummaryDetailsSQL = (
       ${summaryDetails.confidence_limit_lower},
       ${summaryDetails.confidence_limit_upper},
       ${summaryDetails.confidence_level_percent},
+      ${summaryDetails.sightability_model},
       ${summaryDetails.standard_error},
       ${summaryDetails.coefficient_variation},
       ${summaryDetails.kilometres_surveyed},
-      ${summaryDetails.total_area_surveyed_sqm}
+      ${summaryDetails.total_area_survey_sqm},
+      ${summaryDetails.outlier_blocks_removed},
+      ${summaryDetails.analysis_method}
     )
     RETURNING survey_summary_detail_id as id;
   `;
 
   defaultLog.debug({
     label: 'insertSurveySummaryResultsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert the occurrence submission message.
+ *
+ * @param {number} occurrenceSubmissionId
+ * @param {string} submissionStatusType
+ * @param {string} submissionMessage
+ * @returns {SQLStatement} sql query object
+ */
+export const insertSurveySummarySubmissionMessageSQL = (
+  summarySubmissionId: number,
+  summarySubmissionMessageType: string,
+  summarySubmissionMessage: string,
+  errorCode: string
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'insertSurveySummarySubmissionMessageSQL',
+    message: 'params',
+    summarySubmissionId,
+    summarySubmissionMessageType,
+    summarySubmissionMessage,
+    errorCode
+  });
+
+  if (!summarySubmissionId || !summarySubmissionMessageType || !summarySubmissionMessage || !errorCode) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO survey_summary_submission_message (
+      survey_summary_submission_id,
+      submission_message_type_id,
+      event_timestamp,
+      message
+    ) VALUES (
+      ${summarySubmissionId},
+      (
+        SELECT
+          submission_message_type_id
+        FROM
+          summary_submission_message_type
+        WHERE
+          name = ${errorCode}
+      ),
+      now(),
+      ${summarySubmissionMessage}
+    )
+    RETURNING
+      submission_message_id;
+  `;
+
+  defaultLog.debug({
+    label: 'insertSurveySummarySubmissionMessageSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get the list of messages for an summary submission.
+ *
+ * @param {number} summarySubmissionId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSummarySubmissionMessagesSQL = (summarySubmissionId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSummarySubmissionMessagesSQL',
+    message: 'params',
+    summarySubmissionId
+  });
+
+  if (!summarySubmissionId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+  SELECT
+    sssm.submission_message_id as id,
+    sssm.message,
+    ssmt.name as type,
+    ssmc.name as class
+  FROM
+    survey_summary_submission as sss
+  LEFT OUTER JOIN
+    survey_summary_submission_message as sssm
+  ON
+    sssm.survey_summary_submission_id = sss.survey_summary_submission_id
+  LEFT OUTER JOIN
+    summary_submission_message_type as ssmt
+  ON
+    ssmt.submission_message_type_id = sssm.submission_message_type_id
+  LEFT OUTER JOIN
+    summary_submission_message_class as ssmc
+  ON
+    ssmc.summary_submission_message_class_id = ssmt.summary_submission_message_class_id
+  WHERE
+    sss.survey_summary_submission_id = ${summarySubmissionId}
+  ORDER BY
+    sssm.submission_message_id;
+  `;
+
+  defaultLog.debug({
+    label: 'getOccurrenceSubmissionMessagesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

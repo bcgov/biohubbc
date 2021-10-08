@@ -1,7 +1,6 @@
 export const submissionValidationSchema = {
   description: 'Occurrence Submission Validation Schema',
   type: 'object',
-  required: ['files'],
   properties: {
     name: {
       description: 'The name of the submission file',
@@ -19,6 +18,10 @@ export const submissionValidationSchema = {
           $ref: '#/$defs/file'
         }
       ]
+    },
+    defaultFile: {
+      description: 'A fall-back file definition to use when no files/sheets match items in the files array',
+      $ref: '#/$defs/file'
     },
     validations: {
       description: 'An array of validations to apply against the submission file',

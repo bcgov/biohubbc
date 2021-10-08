@@ -12,7 +12,16 @@ export class GetOccurrencesViewData {
   occurrences: any[];
 
   constructor(occurrencesData?: any) {
-    defaultLog.debug({ label: 'GetOccurrencesViewData', message: 'params', occurrencesData });
+    defaultLog.debug({
+      label: 'GetOccurrencesViewData',
+      message: 'params',
+      occurrencesData: {
+        ...occurrencesData,
+        geometry: occurrencesData?.geometry?.map((item: any) => {
+          return { ...item, geometry: 'Too big to print' };
+        })
+      }
+    });
 
     this.occurrences = occurrencesData?.map((occurrence: any) => {
       const feature =

@@ -34,7 +34,16 @@ export class GetViewSurveyDetailsData {
   summary_results_submission_id: number;
 
   constructor(surveyDetailsData?: any) {
-    defaultLog.debug({ label: 'GetViewSurveyDetailsData', message: 'params', surveyDetailsData });
+    defaultLog.debug({
+      label: 'GetViewSurveyDetailsData',
+      message: 'params',
+      surveyDetailsData: {
+        ...surveyDetailsData,
+        geometry: surveyDetailsData?.geometry?.map((item: any) => {
+          return { ...item, geometry: 'Too big to print' };
+        })
+      }
+    });
 
     const surveyDataItem = surveyDetailsData && surveyDetailsData.length && surveyDetailsData[0];
 
