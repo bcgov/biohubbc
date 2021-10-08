@@ -48,7 +48,16 @@ export class PutLocationData {
   revision_count: number;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutLocationData', message: 'params', obj });
+    defaultLog.debug({
+      label: 'PutLocationData',
+      message: 'params',
+      obj: {
+        ...obj,
+        geometry: obj?.geometry?.map((item: any) => {
+          return { ...item, geometry: 'Too big to print' };
+        })
+      }
+    });
 
     this.location_description = (obj && obj.location_description) || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];

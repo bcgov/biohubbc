@@ -91,6 +91,33 @@ describe('useObservationApi', () => {
     expect(result).toEqual({});
   });
 
+  it('initiateXLSXSubmissionTransform works as expected', async () => {
+    const submissionId = 2;
+    mock.onPost(`/api/xlsx/transform`).reply(200, true);
+
+    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(submissionId);
+
+    expect(result).toEqual(true);
+  });
+
+  it('initiateXLSXSubmissionValidation works as expected', async () => {
+    const submissionId = 2;
+    mock.onPost(`/api/xlsx/validate`).reply(200, true);
+
+    const result = await useObservationApi(axios).initiateXLSXSubmissionValidation(submissionId);
+
+    expect(result).toEqual(true);
+  });
+
+  it('initiateDwCSubmissionValidation works as expected', async () => {
+    const submissionId = 2;
+    mock.onPost(`/api/dwc/validate`).reply(200, true);
+
+    const result = await useObservationApi(axios).initiateDwCSubmissionValidation(submissionId);
+
+    expect(result).toEqual(true);
+  });
+
   it('getSubmissionCSVForView works as expected', async () => {
     const submissionId = 2;
     const data = [
@@ -111,5 +138,26 @@ describe('useObservationApi', () => {
     const result = await useObservationApi(axios).getSubmissionCSVForView(projectId, surveyId, submissionId);
 
     expect(result.data[0].name).toEqual('name 1');
+  });
+
+  it('getOccurrencesForView works as expected', async () => {
+    const submissionId = 2;
+    const data = {
+      geometry: null,
+      taxonId: 'taxon123',
+      lifeStage: 'yearling',
+      vernacularName: 'vname',
+      individualCount: 23,
+      organismQuantity: 23,
+      organismQuantityType: 'Individual',
+      occurrenceId: 2,
+      eventDate: '2020/04/04'
+    };
+
+    mock.onPost(`/api/dwc/view-occurrences`).reply(200, data);
+
+    const result = await useObservationApi(axios).getOccurrencesForView(submissionId);
+
+    expect(result).toEqual(data);
   });
 });

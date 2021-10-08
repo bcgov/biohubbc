@@ -31,6 +31,10 @@ describe('PublicProjectAttachments', () => {
   });
 
   it('renders correctly with no attachments', () => {
+    mockBiohubApi().public.project.getProjectAttachments.mockResolvedValue({
+      attachmentsList: []
+    });
+
     const { getByText } = render(
       <Router history={history}>
         <PublicProjectAttachments projectForViewData={getProjectForViewResponse} />
