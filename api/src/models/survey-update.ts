@@ -32,7 +32,16 @@ export class GetUpdateSurveyDetailsData {
   publish_date: string;
 
   constructor(surveyDetailsData?: any) {
-    defaultLog.debug({ label: 'GetUpdateSurveyDetailsData', message: 'params', surveyDetailsData });
+    defaultLog.debug({
+      label: 'GetUpdateSurveyDetailsData',
+      message: 'params',
+      surveyDetailsData: {
+        ...surveyDetailsData,
+        geometry: surveyDetailsData?.geometry?.map((item: any) => {
+          return { ...item, geometry: 'Too big to print' };
+        })
+      }
+    });
 
     const surveyDataItem = surveyDetailsData && surveyDetailsData.length && surveyDetailsData[0];
 
@@ -114,7 +123,16 @@ export class PutSurveyDetailsData {
   revision_count: number;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutSurveyDetailsData', message: 'params', obj });
+    defaultLog.debug({
+      label: 'PutSurveyDetailsData',
+      message: 'params',
+      obj: {
+        ...obj,
+        geometry: obj?.geometry?.map((item: any) => {
+          return { ...item, geometry: 'Too big to print' };
+        })
+      }
+    });
 
     this.name = obj?.survey_details?.survey_name || null;
     this.objectives = obj?.survey_details?.survey_purpose || null;

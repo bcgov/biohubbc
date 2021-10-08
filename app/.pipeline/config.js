@@ -79,7 +79,7 @@ const phases = {
     apiHost:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHostAPI)) ||
       `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    n8nHost: staticUrlsN8N.dev,
+    n8nHost: '', // staticUrlsN8N.dev, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
     env: 'dev',
     sso: sso.dev,
@@ -97,7 +97,7 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrls.test,
     apiHost: staticUrlsAPI.test || defaultHostAPI,
-    n8nHost: staticUrlsN8N.test,
+    n8nHost: '', // staticUrlsN8N.test, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.test,
     env: 'test',
     sso: sso.test,
@@ -115,7 +115,7 @@ const phases = {
     tag: `prod-${version}`,
     host: staticUrls.prod,
     apiHost: staticUrlsAPI.prod || defaultHostAPI,
-    n8nHost: staticUrlsN8N.prod,
+    n8nHost: '', // staticUrlsN8N.prod, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
     env: 'prod',
     sso: sso.prod,
