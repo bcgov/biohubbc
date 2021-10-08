@@ -4,11 +4,13 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
 import { PostOccurrence } from '../../models/occurrence-create';
+import { prepDWCArchive } from '../../paths-handlers/dwc';
+import { getS3File } from '../../paths-handlers/file';
+import { getOccurrenceSubmission, sendSuccessResponse } from '../../paths-handlers/occurrence-submission';
 import { postOccurrenceSQL } from '../../queries/occurrence/occurrence-create-queries';
 import { getLogger } from '../../utils/logger';
 import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
 import { logRequest } from '../../utils/path-utils';
-import { getOccurrenceSubmission, getS3File, prepDWCArchive, sendResponse } from './validate';
 
 const defaultLog = getLogger('paths/dwc/scrape-occurrences');
 
@@ -19,7 +21,7 @@ export const POST: Operation = [
   getS3File(),
   prepDWCArchive(),
   scrapeAndUploadOccurrences(),
-  sendResponse()
+  sendSuccessResponse()
 ];
 
 POST.apiDoc = {

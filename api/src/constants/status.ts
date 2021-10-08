@@ -30,3 +30,17 @@ export enum SUBMISSION_STATUS_TYPE {
   'ON HOLD' = 'On Hold',
   'SYSTEM_ERROR' = 'System Error'
 }
+
+/**
+ * Submission Message Types.
+ *
+ * See submission_message_type table -> name.
+ *
+ * @export
+ * @enum {number}
+ */
+export enum SUBMISSION_MESSAGE_TYPE {
+  NOTICE = 'Notice',
+  WARNING = 'Warning',
+  ERROR = 'Error'
+}

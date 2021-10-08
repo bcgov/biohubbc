@@ -1,20 +1,25 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400, HTTP500 } from '../../errors/CustomError';
+import { HTTP400 } from '../../errors/CustomError';
+import { prepDWCArchive } from '../../paths-handlers/dwc';
+import { getS3File } from '../../paths-handlers/file';
 import {
-  getSurveyOccurrenceSubmissionSQL,
-  insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL,
-  updateSurveyOccurrenceSubmissionSQL
-} from '../../queries/survey/survey-occurrence-queries';
-import { getFileFromS3 } from '../../utils/file-utils';
+  getOccurrenceSubmission,
+  getOccurrenceSubmissionInputS3Key,
+  getValidationRules,
+  insertSubmissionMessage,
+  insertSubmissionStatus,
+  persistValidationResults,
+  sendSuccessResponse
+} from '../../paths-handlers/occurrence-submission';
+import { updateSurveyOccurrenceSubmissionSQL } from '../../queries/survey/survey-occurrence-queries';
 import { getLogger } from '../../utils/logger';
-import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
+import { ICsvState } from '../../utils/media/csv/csv-file';
 import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
-import { ArchiveFile, IMediaState } from '../../utils/media/media-file';
-import { parseUnknownMedia } from '../../utils/media/media-utils';
+import { IMediaState } from '../../utils/media/media-file';
 import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
 import { logRequest } from '../../utils/path-utils';
 
@@ -30,9 +35,9 @@ export const POST: Operation = [
   getValidationSchema(),
   getValidationRules(),
   validateDWCArchive(),
-  persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' }),
+  persistValidationResults(),
   updateOccurrenceSubmission,
-  sendResponse()
+  sendSuccessResponse()
 ];
 
 export const getValidateAPIDoc = (basicDescription: string, successDescription: string, tags: string[]) => {
@@ -108,112 +113,6 @@ POST.apiDoc = {
   )
 };
 
-export function getOccurrenceSubmission(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getOccurrenceSubmission', message: 'params', files: req.body });
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const occurrenceSubmissionId = req.body.occurrence_submission_id;
-
-    if (!occurrenceSubmissionId) {
-      throw new HTTP400('Missing required body param `occurrence_submission_id`.');
-    }
-
-    try {
-      const sqlStatement = getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      await connection.open();
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      if (!response || !response.rows.length) {
-        throw new HTTP400('Failed to get survey occurrence submission');
-      }
-
-      req['occurrence_submission'] = response.rows[0];
-
-      next();
-    } catch (error) {
-      defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export function getOccurrenceSubmissionInputS3Key(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
-    const occurrence_submission = req['occurrence_submission'];
-
-    req['s3Key'] = occurrence_submission.input_key;
-
-    next();
-  };
-}
-
-export function getS3File(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getS3File', message: 'params', files: req.body });
-
-    try {
-      const s3Key = req['s3Key'];
-
-      const s3File = await getFileFromS3(s3Key);
-
-      if (!s3File) {
-        throw new HTTP500('Failed to get file from S3');
-      }
-
-      req['s3File'] = s3File;
-
-      next();
-    } catch (error) {
-      defaultLog.error({ label: 'getS3File', message: 'error', error });
-      throw error;
-    }
-  };
-}
-
-export function prepDWCArchive(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'prepDWCArchive', message: 's3File' });
-
-    try {
-      const s3File = req['s3File'];
-
-      const parsedMedia = parseUnknownMedia(s3File);
-
-      if (!parsedMedia) {
-        req['parseError'] = 'Failed to parse submission, file was empty';
-
-        return next();
-      }
-
-      if (!(parsedMedia instanceof ArchiveFile)) {
-        req['parseError'] = 'Failed to parse submission, not a valid DwC Archive Zip file';
-
-        return next();
-      }
-
-      const dwcArchive = new DWCArchive(parsedMedia);
-
-      req['dwcArchive'] = dwcArchive;
-
-      next();
-    } catch (error) {
-      defaultLog.error({ label: 'prepDWCArchive', message: 'error', error });
-      throw error;
-    }
-  };
-}
-
 export function persistParseErrors(): RequestHandler {
   return async (req, res, next) => {
     const parseError = req['parseError'];
@@ -232,11 +131,17 @@ export function persistParseErrors(): RequestHandler {
 
       const submissionStatusId = await insertSubmissionStatus(
         req.body.occurrence_submission_id,
-        'Rejected',
+        SUBMISSION_STATUS_TYPE.REJECTED,
         connection
       );
 
-      await insertSubmissionMessage(submissionStatusId, 'Error', parseError, 'Miscellaneous', connection);
+      await insertSubmissionMessage(
+        submissionStatusId,
+        SUBMISSION_MESSAGE_TYPE.ERROR,
+        parseError,
+        'Miscellaneous',
+        connection
+      );
 
       await connection.commit();
 
@@ -257,25 +162,6 @@ function getValidationSchema(): RequestHandler {
     req['validationSchema'] = {};
 
     next();
-  };
-}
-
-export function getValidationRules(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
-
-    try {
-      const validationSchema: JSON = req['validationSchema'];
-
-      const validationSchemaParser = new ValidationSchemaParser(validationSchema);
-
-      req['validationSchemaParser'] = validationSchemaParser;
-
-      next();
-    } catch (error) {
-      defaultLog.error({ label: 'getValidationRules', message: 'error', error });
-      throw error;
-    }
   };
 }
 
@@ -305,92 +191,6 @@ function validateDWCArchive(): RequestHandler {
     } catch (error) {
       defaultLog.error({ label: 'validateDWCArchive', message: 'error', error });
       throw error;
-    }
-  };
-}
-
-export function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
-  return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
-}
-
-export function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
-  return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
-}
-
-export function persistValidationResults(statusTypeObject: any): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      const mediaState: IMediaState = req['mediaState'];
-      const csvState: ICsvState[] = req['csvState'];
-
-      await connection.open();
-
-      let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
-      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-        // At least 1 error exists
-        submissionStatusType = 'Rejected';
-      }
-
-      const submissionStatusId = await insertSubmissionStatus(
-        req.body.occurrence_submission_id,
-        submissionStatusType,
-        connection
-      );
-
-      const promises: Promise<any>[] = [];
-
-      mediaState.fileErrors?.forEach((fileError) => {
-        promises.push(
-          insertSubmissionMessage(submissionStatusId, 'Error', `${fileError}`, 'Miscellaneous', connection)
-        );
-      });
-
-      csvState?.forEach((csvStateItem) => {
-        csvStateItem.headerErrors?.forEach((headerError) => {
-          promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              generateHeaderErrorMessage(csvStateItem.fileName, headerError),
-              headerError.errorCode,
-              connection
-            )
-          );
-        });
-
-        csvStateItem.rowErrors?.forEach((rowError) => {
-          promises.push(
-            insertSubmissionMessage(
-              submissionStatusId,
-              'Error',
-              generateRowErrorMessage(csvStateItem.fileName, rowError),
-              rowError.errorCode,
-              connection
-            )
-          );
-        });
-      });
-
-      await Promise.all(promises);
-
-      await connection.commit();
-
-      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
-        // At least 1 error exists, skip remaining steps
-        return res.status(200).json({ status: 'failed' });
-      }
-
-      return next();
-    } catch (error) {
-      defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
     }
   };
 }
@@ -429,76 +229,6 @@ function updateOccurrenceSubmission(): RequestHandler {
     }
   };
 }
-
-export function sendResponse(): RequestHandler {
-  return async (req, res) => {
-    return res.status(200).json({ status: 'success' });
-  };
-}
-
-/**
- * Insert a record into the submission_status table.
- *
- * @param {number} occurrenceSubmissionId
- * @param {string} submissionStatusType
- * @param {IDBConnection} connection
- * @return {*}  {Promise<number>}
- */
-export const insertSubmissionStatus = async (
-  occurrenceSubmissionId: number,
-  submissionStatusType: string,
-  connection: IDBConnection
-): Promise<number> => {
-  const sqlStatement = insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert survey submission status data');
-  }
-
-  return result.id;
-};
-
-/**
- * Insert a record into the submission_message table.
- *
- * @param {number} submissionStatusId
- * @param {string} submissionMessageType
- * @param {string} message
- * @param {IDBConnection} connection
- * @return {*}  {Promise<void>}
- */
-export const insertSubmissionMessage = async (
-  submissionStatusId: number,
-  submissionMessageType: string,
-  message: string,
-  errorCode: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const sqlStatement = insertOccurrenceSubmissionMessageSQL(
-    submissionStatusId,
-    submissionMessageType,
-    message,
-    errorCode
-  );
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert survey submission message data');
-  }
-};
 
 /**
  * Update existing `occurrence_submission` record with outputKey and outputFileName.

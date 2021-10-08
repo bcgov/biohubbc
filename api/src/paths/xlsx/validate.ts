@@ -1,27 +1,27 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SUBMISSION_MESSAGE_TYPE, SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
-import { getTemplateMethodologySpeciesSQL } from '../../queries/survey/survey-occurrence-queries';
-import { getLogger } from '../../utils/logger';
-import { ICsvState } from '../../utils/media/csv/csv-file';
-import { IMediaState, MediaFile } from '../../utils/media/media-file';
-import { parseUnknownMedia } from '../../utils/media/media-utils';
-import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
-import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
-import { logRequest } from '../../utils/path-utils';
+import { getS3File } from '../../paths-handlers/file';
 import {
   getOccurrenceSubmission,
   getOccurrenceSubmissionInputS3Key,
-  getS3File,
-  getValidateAPIDoc,
   getValidationRules,
   insertSubmissionMessage,
   insertSubmissionStatus,
-  persistParseErrors,
   persistValidationResults,
-  sendResponse
-} from '../dwc/validate';
+  sendSuccessResponse
+} from '../../paths-handlers/occurrence-submission';
+import { prepXLSX } from '../../paths-handlers/xlsx';
+import { getTemplateMethodologySpeciesSQL } from '../../queries/survey/survey-occurrence-queries';
+import { getLogger } from '../../utils/logger';
+import { ICsvState } from '../../utils/media/csv/csv-file';
+import { IMediaState } from '../../utils/media/media-file';
+import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
+import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
+import { logRequest } from '../../utils/path-utils';
+import { getValidateAPIDoc, persistParseErrors } from '../dwc/validate';
 
 const defaultLog = getLogger('paths/xlsx/validate');
 
@@ -35,8 +35,8 @@ export const POST: Operation = [
   getValidationSchema(),
   getValidationRules(),
   validateXLSX(),
-  persistValidationResults({ initialSubmissionStatusType: 'Template Validated' }),
-  sendResponse()
+  persistValidationResults(),
+  sendSuccessResponse()
 ];
 
 POST.apiDoc = {
@@ -46,39 +46,6 @@ POST.apiDoc = {
     ['survey', 'observation', 'xlsx']
   )
 };
-
-export function prepXLSX(): RequestHandler {
-  return async (req, res, next) => {
-    defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
-
-    try {
-      const s3File = req['s3File'];
-
-      const parsedMedia = parseUnknownMedia(s3File);
-
-      if (!parsedMedia) {
-        req['parseError'] = 'Failed to parse submission, file was empty';
-
-        return next();
-      }
-
-      if (!(parsedMedia instanceof MediaFile)) {
-        req['parseError'] = 'Failed to parse submission, not a valid XLSX CSV file';
-
-        return next();
-      }
-
-      const xlsxCsv = new XLSXCSV(parsedMedia);
-
-      req['xlsx'] = xlsxCsv;
-
-      next();
-    } catch (error) {
-      defaultLog.error({ label: 'prepXLSX', message: 'error', error });
-      throw error;
-    }
-  };
-}
 
 export function getValidationSchema(): RequestHandler {
   return async (req, res, next) => {
@@ -99,13 +66,13 @@ export function getValidationSchema(): RequestHandler {
 
         const submissionStatusId = await insertSubmissionStatus(
           req.body.occurrence_submission_id,
-          'System Error',
+          SUBMISSION_STATUS_TYPE.SYSTEM_ERROR,
           connection
         );
 
         await insertSubmissionMessage(
           submissionStatusId,
-          'Error',
+          SUBMISSION_MESSAGE_TYPE.ERROR,
           `Unable to fetch an appropriate validation schema for your submission`,
           'Missing Validation Schema',
           connection
@@ -134,7 +101,7 @@ export function validateXLSX(): RequestHandler {
     defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
 
     try {
-      const xlsxCsv: XLSXCSV = req['xlsx'];
+      const xlsxCsv: XLSXCSV = req['xlsxCsv'];
 
       const validationSchemaParser: ValidationSchemaParser = req['validationSchemaParser'];
 

@@ -6,21 +6,24 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
 import {
+  generateHeaderErrorMessage,
+  generateRowErrorMessage
+} from '../../../../../../../paths-handlers/occurrence-submission';
+import { prepXLSX } from '../../../../../../../paths-handlers/xlsx';
+import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
+import {
   insertSurveySummaryDetailsSQL,
+  insertSurveySummarySubmissionMessageSQL,
   insertSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL,
-  insertSurveySummarySubmissionMessageSQL
+  updateSurveySummarySubmissionWithKeySQL
 } from '../../../../../../../queries/survey/survey-summary-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
+import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
+import { IMediaState } from '../../../../../../../utils/media/media-file';
+import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../../../../../../utils/path-utils';
-import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
-import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
-import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
-import { IMediaState } from '../../../../../../../utils/media/media-file';
-import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
-import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -465,7 +468,7 @@ export function getValidationRules(): RequestHandler {
 
 function persistSummaryValidationResults(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
+    defaultLog.debug({ label: 'persistSummaryValidationResults', message: 'validationResults' });
 
     const mediaState: IMediaState = req['mediaState'];
     const csvState: ICsvState[] = req['csvState'];
@@ -521,7 +524,7 @@ function persistSummaryValidationResults(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
+      defaultLog.debug({ label: 'persistSummaryValidationResults', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -532,7 +535,7 @@ function persistSummaryValidationResults(): RequestHandler {
 
 export function parseAndUploadSummarySubmissionInput(): RequestHandler {
   return async (req, res, next) => {
-    const xlsxCsv: XLSXCSV = req['xlsx'];
+    const xlsxCsv: XLSXCSV = req['xlsxCsv'];
 
     const summarySubmissionId = req['summarySubmissionId'];
 

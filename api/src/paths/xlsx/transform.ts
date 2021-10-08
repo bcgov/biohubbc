@@ -4,21 +4,22 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
+import { getS3File } from '../../paths-handlers/file';
 import {
   getOccurrenceSubmission,
   getOccurrenceSubmissionInputS3Key,
-  getS3File,
   insertSubmissionStatus,
-  sendResponse,
-  updateSurveyOccurrenceSubmissionWithOutputKey
-} from '../../paths/dwc/validate';
+  sendSuccessResponse
+} from '../../paths-handlers/occurrence-submission';
+import { prepXLSX } from '../../paths-handlers/xlsx';
+import { updateSurveyOccurrenceSubmissionWithOutputKey } from '../../paths/dwc/validate';
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
-import { getTemplateMethodologySpecies, prepXLSX } from './validate';
+import { getTemplateMethodologySpecies } from './validate';
 
 const defaultLog = getLogger('paths/xlsx/transform');
 
@@ -33,7 +34,7 @@ export const POST: Operation = [
   getTransformationRules(),
   transformXLSX(),
   persistTransformationResults(),
-  sendResponse()
+  sendSuccessResponse()
 ];
 
 POST.apiDoc = {
@@ -177,7 +178,7 @@ function transformXLSX(): RequestHandler {
     defaultLog.debug({ label: 'transformXLSX', message: 'xlsx transform' });
 
     try {
-      const xlsxCsv: XLSXCSV = req['xlsx'];
+      const xlsxCsv: XLSXCSV = req['xlsxCsv'];
 
       const transformationSchemaParser: TransformationSchemaParser = req['transformationSchemaParser'];
 
@@ -222,7 +223,7 @@ export function persistTransformationResults(): RequestHandler {
       // project/1/survey/1/submission/file_name.txt -> project/1/survey/1/submission
       const outputS3KeyPrefix = s3Key.split('/').slice(0, -1).join('/');
 
-      const xlsxCsv: XLSXCSV = req['xlsx'];
+      const xlsxCsv: XLSXCSV = req['xlsxCsv'];
       const outputFileName = `${xlsxCsv.rawFile.name}.zip`;
 
       const outputS3Key = `${outputS3KeyPrefix}/${outputFileName}`;

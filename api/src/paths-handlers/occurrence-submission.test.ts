@@ -2,12 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as validate from './validate';
-import * as db from '../../database/db';
-import * as survey_occurrence_queries from '../../queries/survey/survey-occurrence-queries';
 import SQL from 'sql-template-strings';
-import * as file_utils from '../../utils/file-utils';
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
+import * as db from '../database/db';
+import { CustomError } from '../errors/CustomError';
+import * as survey_occurrence_queries from '../queries/survey/survey-occurrence-queries';
+import { getOccurrenceSubmission } from './occurrence-submission';
 
 chai.use(sinonChai);
 
@@ -32,13 +31,6 @@ const dbConnectionObj = {
   }
 };
 
-const sampleReq = {
-  keycloak_token: {},
-  body: {
-    occurrence_submission_id: 1
-  }
-} as any;
-
 describe('getOccurrenceSubmission', () => {
   const sampleReq = {
     keycloak_token: {},
@@ -55,7 +47,7 @@ describe('getOccurrenceSubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = validate.getOccurrenceSubmission();
+      const result = getOccurrenceSubmission();
       await result(
         { ...sampleReq, body: { ...sampleReq.body, occurrence_submission_id: null } },
         (null as unknown) as any,
@@ -63,8 +55,8 @@ describe('getOccurrenceSubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `occurrence_submission_id`.');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required body param `occurrence_submission_id`.');
     }
   });
 
@@ -73,13 +65,13 @@ describe('getOccurrenceSubmission', () => {
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
-      const result = validate.getOccurrenceSubmission();
+      const result = getOccurrenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -98,13 +90,13 @@ describe('getOccurrenceSubmission', () => {
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     try {
-      const result = validate.getOccurrenceSubmission();
+      const result = getOccurrenceSubmission();
 
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get survey occurrence submission');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get survey occurrence submission');
     }
   });
 
@@ -126,53 +118,10 @@ describe('getOccurrenceSubmission', () => {
 
     sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
-    const result = validate.getOccurrenceSubmission();
+    const result = getOccurrenceSubmission();
     await result(sampleReq, (null as unknown) as any, nextSpy as any);
 
     expect(sampleReq.occurrence_submission).to.eql(expectedRecord);
-    expect(nextSpy).to.have.been.called;
-  });
-});
-
-describe('getS3File', () => {
-  const updatedSampleReq = { ...sampleReq, s3Key: 'somekey' };
-
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it('should throw a 500 error when no file in S3', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-    sinon.stub(file_utils, 'getFileFromS3').resolves(undefined);
-
-    try {
-      const result = validate.getS3File();
-      await result(updatedSampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to get file from S3');
-    }
-  });
-
-  it('should set the s3 file in the request on success', async () => {
-    const file = {
-      fieldname: 'media',
-      originalname: 'test.txt',
-      encoding: '7bit',
-      mimetype: 'text/plain',
-      size: 340
-    };
-
-    const nextSpy = sinon.spy();
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-    sinon.stub(file_utils, 'getFileFromS3').resolves(file as GetObjectOutput);
-
-    const result = validate.getS3File();
-    await result(sampleReq, (null as unknown) as any, nextSpy as any);
-
-    expect(sampleReq.s3File).to.eql(file);
     expect(nextSpy).to.have.been.called;
   });
 });
