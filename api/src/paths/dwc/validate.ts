@@ -379,7 +379,12 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
 
       await connection.commit();
 
-      next();
+      if (!mediaState.isValid || csvState?.some((item) => !item.isValid)) {
+        // At least 1 error exists, skip remaining steps
+        return res.status(200).json({ status: 'failed' });
+      }
+
+      return next();
     } catch (error) {
       defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
       await connection.rollback();

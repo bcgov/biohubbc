@@ -29,7 +29,16 @@ export class PostSurveyObject {
   survey_proprietor?: PostSurveyProprietorData;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostSurveyData', message: 'params', obj });
+    defaultLog.debug({
+      label: 'PostSurveyData',
+      message: 'params',
+      obj: {
+        ...obj,
+        geometry: obj?.geometry?.map((item: any) => {
+          return { ...item, geometry: 'Too big to print' };
+        })
+      }
+    });
 
     this.biologist_first_name = obj?.biologist_first_name || null;
     this.biologist_last_name = obj?.biologist_last_name || null;
