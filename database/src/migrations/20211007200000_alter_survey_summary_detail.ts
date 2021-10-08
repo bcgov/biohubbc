@@ -32,23 +32,18 @@ export async function up(knex: Knex): Promise<void> {
     set search_path = biohub;
 
 
-    Alter table survey_summary_detail add column analysis_method varchar(100);
-    Alter table survey_summary_detail alter column total_area_surveyed_sqm type numeric(8,3);
-
-
-    -- CREATE UNIQUE INDEX survey_summary_detail_uk1 ON survey_summary_detail(survey_summary_submission_id, study_area_id, parameter, stratum, sightability_model);
-
+    ALTER TABLE survey_summary_detail add column analysis_method varchar(100);
+    ALTER TABLE survey_summary_detail alter column total_area_surveyed_sqm type numeric(8,3);
 
 
     ${populate_summary_submission_message_type}
-
 
 
     -- create the views
     set search_path = biohub_dapi_v1;
     set role biohub_api;
 
-    -- create or replace view survey_summary_detail as select * from biohub.survey_summary_detail;
+    create or replace view survey_summary_detail as select * from biohub.survey_summary_detail;
 
     set role postgres;
     set search_path = biohub;
