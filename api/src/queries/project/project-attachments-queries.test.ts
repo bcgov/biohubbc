@@ -9,7 +9,8 @@ import {
   putProjectAttachmentSQL,
   postProjectReportAttachmentSQL,
   getProjectReportAttachmentsSQL,
-  putProjectReportAttachmentSQL
+  putProjectReportAttachmentSQL,
+  deleteProjectReportAttachmentSQL
 } from './project-attachments-queries';
 
 describe('getProjectAttachmentsSQL', () => {
@@ -49,6 +50,20 @@ describe('deleteProjectAttachmentSQL', () => {
 
   it('returns non null response when valid attachmentId provided', () => {
     const response = deleteProjectAttachmentSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteProjectReportAttachmentSQL', () => {
+  it('returns null response when null attachmentId provided', () => {
+    const response = deleteProjectReportAttachmentSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid attachmentId provided', () => {
+    const response = deleteProjectReportAttachmentSQL(1);
 
     expect(response).to.not.be.null;
   });
