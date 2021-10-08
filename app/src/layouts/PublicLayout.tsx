@@ -9,10 +9,10 @@ import React from 'react';
 const PublicLayout: React.FC = (props) => {
   function isSupportedBrowser() {
     if (
-      navigator.userAgent.indexOf('Chrome') != -1 ||
-      navigator.userAgent.indexOf('Firefox') != -1 ||
-      navigator.userAgent.indexOf('Safari') != -1 ||
-      navigator.userAgent.indexOf('Edge') != -1
+      navigator.userAgent.indexOf('Chrome') !== -1 ||
+      navigator.userAgent.indexOf('Firefox') !== -1 ||
+      navigator.userAgent.indexOf('Safari') !== -1 ||
+      navigator.userAgent.indexOf('Edge') !== -1
     ) {
       return true;
     }
