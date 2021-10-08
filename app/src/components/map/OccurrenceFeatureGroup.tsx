@@ -49,7 +49,7 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
           occurrences.map((occurrence: IGetOccurrencesForViewResponseDetails) => {
             const { geometry, ...featureData } = occurrence;
 
-            if (!geometry || !geometry.geometry) {
+            if (!geometry) {
               return <></>;
             }
 

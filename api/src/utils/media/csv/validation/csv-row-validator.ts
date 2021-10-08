@@ -106,19 +106,19 @@ export const getCodeValueFieldsValidator = (config?: ColumnCodeValidatorConfig):
         return csvWorksheet;
       }
 
-      // compare allowed code values as strings
+      // compare allowed code values as lowercase strings
+      const allowedCodeValuesLowerCase: string[] = [];
       const allowedCodeValues = config.column_code_validator.allowed_code_values.map((allowedCode) => {
-        return allowedCode.name?.toString().toLowerCase();
+        allowedCodeValuesLowerCase.push(allowedCode.name?.toString().toLowerCase());
+        return allowedCode.name;
       });
 
       // Add an error if the cell value is not one of the elements in the codeValues array
-      if (!allowedCodeValues.includes(rowValueForColumn?.toLowerCase())) {
+      if (!allowedCodeValuesLowerCase.includes(rowValueForColumn?.toLowerCase())) {
         csvWorksheet.csvValidation.addRowErrors([
           {
             errorCode: 'Invalid Value',
-            message: `Invalid value: ${rowValueForColumn}. Must be one of [${config.column_code_validator.allowed_code_values.join(
-              ', '
-            )}]`,
+            message: `Invalid value: ${rowValueForColumn}. Must be one of [${allowedCodeValues.join(', ')}]`,
             col: config.columnName,
             row: rowIndex + 2
           }
