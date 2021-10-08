@@ -345,7 +345,7 @@ describe('getValidRangeFieldsValidator', () => {
     ]);
   });
 
-  it('adds an invalue value error when value provided is not a number', () => {
+  it('adds an invalid value error when value provided is not a number', () => {
     const codeValuesRangeByHeader = {
       columnName: 'Header1',
       column_range_validator: {
