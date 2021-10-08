@@ -15,11 +15,8 @@ export class GetOccurrencesViewData {
     defaultLog.debug({ label: 'GetOccurrencesViewData', message: 'params', occurrencesData });
 
     this.occurrences = occurrencesData?.map((occurrence: any) => {
-      const feature = {
-        type: 'Feature',
-        geometry: JSON.parse(occurrence.geometry),
-        properties: {}
-      };
+      const feature =
+        (occurrence.geometry && { type: 'Feature', geometry: JSON.parse(occurrence.geometry), properties: {} }) || null;
 
       return {
         geometry: feature,

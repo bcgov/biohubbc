@@ -9,8 +9,8 @@
       "type": "n8n-nodes-base.start",
       "typeVersion": 1,
       "position": [
-        250,
-        300
+        930,
+        550
       ]
     },
     {
@@ -18,6 +18,7 @@
         "authentication": "headerAuth",
         "requestMethod": "POST",
         "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/validate",
+        "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
         "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
@@ -26,8 +27,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1770,
-        665
+        1750,
+        630
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -61,40 +62,17 @@
       "type": "n8n-nodes-base.webhook",
       "typeVersion": 1,
       "position": [
-        940,
+        930,
         750
       ],
       "webhookId": "a346c2c5-d43e-4bc8-8dd1-dbcee88e1638"
     },
     {
       "parameters": {
-        "conditions": {
-          "boolean": [
-            {
-              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
-              "value2": "=application/x-zip-compressed"
-            },
-            {
-              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
-              "value2": "=application/zip"
-            }
-          ]
-        },
-        "combineOperation": "any"
-      },
-      "name": "IF",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 1,
-      "position": [
-        1520,
-        750
-      ]
-    },
-    {
-      "parameters": {
         "authentication": "headerAuth",
         "requestMethod": "POST",
         "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/xlsx/validate",
+        "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
         "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
@@ -103,8 +81,8 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1770,
-        885
+        1750,
+        850
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
@@ -133,6 +111,40 @@
         1320,
         750
       ]
+    },
+    {
+      "parameters": {},
+      "name": "Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1970,
+        750
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/x-zip-compressed"
+            },
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/zip"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "name": "If Zip",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1520,
+        750
+      ]
     }
   ],
   "connections": {
@@ -141,24 +153,6 @@
         [
           {
             "node": "Get N8N API Host",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "IF": {
-      "main": [
-        [
-          {
-            "node": "DWC Validate",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "XLSX Validate",
             "type": "main",
             "index": 0
           }
@@ -180,7 +174,47 @@
       "main": [
         [
           {
-            "node": "IF",
+            "node": "If Zip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DWC Validate": {
+      "main": [
+        [
+          {
+            "node": "Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XLSX Validate": {
+      "main": [
+        [
+          {
+            "node": "Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Zip": {
+      "main": [
+        [
+          {
+            "node": "DWC Validate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "XLSX Validate",
             "type": "main",
             "index": 0
           }
@@ -189,7 +223,7 @@
     }
   },
   "createdAt": "2021-08-26T12:19:31.100Z",
-  "updatedAt": "2021-08-27T17:21:21.156Z",
+  "updatedAt": "2021-10-07T18:00:44.931Z",
   "settings": {},
   "staticData": null
 }
