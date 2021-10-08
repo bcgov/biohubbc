@@ -2,14 +2,13 @@ import * as fs from 'fs';
 import Knex from 'knex';
 import path from 'path';
 
-//const DB_USER_API_PASS = process.env.DB_USER_API_PASS;
-//const DB_USER_API = process.env.DB_USER_API;
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
 const DB_RELEASE = 'release.0.32';
 
 /**
- * Apply biohub release changes.
+ * Apply changes required to the survey_summary_details table
+ * and populate the populate_summary_submission_message_type table.
  *
  * @export
  * @param {Knex} knex
@@ -22,16 +21,12 @@ export async function up(knex: Knex): Promise<void> {
 
   await knex.raw(`
 
-    --set schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public, biohub_dapi_v1;
     set schema 'biohub_dapi_v1';
     set role biohub_api;
 
-
     drop view if exists survey_summary_detail;
     DROP INDEX if exists survey_summary_detail_uk1;
-    -- DROP INDEX if exists summary_submission_message_type_nuk1;
-
 
     set role postgres;
     set search_path = biohub;
