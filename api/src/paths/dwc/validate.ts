@@ -321,12 +321,16 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
   return async (req, res, next) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
+    const mediaState: IMediaState = req['mediaState'];
+    const csvState: ICsvState[] = req['csvState'];
+
+    if (mediaState.isValid && csvState?.every((item) => item.isValid)) {
+      return next();
+    }
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const mediaState: IMediaState = req['mediaState'];
-      const csvState: ICsvState[] = req['csvState'];
-
       await connection.open();
 
       let submissionStatusType = statusTypeObject.initialSubmissionStatusType;
@@ -379,7 +383,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
 
       await connection.commit();
 
-      next();
+      return res.status(200).json({ status: 'failed' });
     } catch (error) {
       defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
       await connection.rollback();

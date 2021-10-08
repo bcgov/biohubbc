@@ -155,7 +155,16 @@ export class PostLocationData {
   geometry: Feature[];
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostLocationData', message: 'params', obj });
+    defaultLog.debug({
+      label: 'PostLocationData',
+      message: 'params',
+      obj: {
+        ...obj,
+        geometry: obj.geometry?.map((item: any) => {
+          return { ...item, geometry: 'Too big to print' };
+        })
+      }
+    });
 
     this.location_description = (obj && obj.location_description) || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
