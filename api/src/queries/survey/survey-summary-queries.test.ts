@@ -6,8 +6,23 @@ import {
   getLatestSurveySummarySubmissionSQL,
   updateSurveySummarySubmissionWithKeySQL,
   getSurveySummarySubmissionSQL,
-  insertSurveySummaryDetailsSQL
+  insertSurveySummaryDetailsSQL,
+  deleteSummarySubmissionSQL
 } from './survey-summary-queries';
+
+describe('deleteSummarySubmissionSQL', () => {
+  it('returns null response when null summarySubmissionId provided', () => {
+    const response = deleteSummarySubmissionSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = deleteSummarySubmissionSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
 
 describe('insertSurveySummarySubmissionSQL', () => {
   it('returns null response when null surveyId provided', () => {
