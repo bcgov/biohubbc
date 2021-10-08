@@ -470,11 +470,11 @@ function persistSummaryValidationResults(): RequestHandler {
     const mediaState: IMediaState = req['mediaState'];
     const csvState: ICsvState[] = req['csvState'];
 
-    const connection = getDBConnection(req['keycloak_token']);
-
     if (mediaState.isValid && csvState?.every((item) => item.isValid)) {
       return next();
     }
+
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
@@ -518,6 +518,7 @@ function persistSummaryValidationResults(): RequestHandler {
       await Promise.all(promises);
 
       await connection.commit();
+
       return res.status(200).send();
     } catch (error) {
       defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
