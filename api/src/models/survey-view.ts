@@ -39,7 +39,7 @@ export class GetViewSurveyDetailsData {
       message: 'params',
       surveyDetailsData: {
         ...surveyDetailsData,
-        geometry: surveyDetailsData.geometry?.map((item: any) => {
+        geometry: surveyDetailsData?.geometry?.map((item: any) => {
           return { ...item, geometry: 'Too big to print' };
         })
       }

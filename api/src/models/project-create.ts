@@ -160,7 +160,7 @@ export class PostLocationData {
       message: 'params',
       obj: {
         ...obj,
-        geometry: obj.geometry?.map((item: any) => {
+        geometry: obj?.geometry?.map((item: any) => {
           return { ...item, geometry: 'Too big to print' };
         })
       }

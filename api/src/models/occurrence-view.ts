@@ -17,7 +17,7 @@ export class GetOccurrencesViewData {
       message: 'params',
       occurrencesData: {
         ...occurrencesData,
-        geometry: occurrencesData.geometry?.map((item: any) => {
+        geometry: occurrencesData?.geometry?.map((item: any) => {
           return { ...item, geometry: 'Too big to print' };
         })
       }

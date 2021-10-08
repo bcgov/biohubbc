@@ -37,7 +37,7 @@ export class GetUpdateSurveyDetailsData {
       message: 'params',
       surveyDetailsData: {
         ...surveyDetailsData,
-        geometry: surveyDetailsData.geometry?.map((item: any) => {
+        geometry: surveyDetailsData?.geometry?.map((item: any) => {
           return { ...item, geometry: 'Too big to print' };
         })
       }
@@ -128,7 +128,7 @@ export class PutSurveyDetailsData {
       message: 'params',
       obj: {
         ...obj,
-        geometry: obj.geometry?.map((item: any) => {
+        geometry: obj?.geometry?.map((item: any) => {
           return { ...item, geometry: 'Too big to print' };
         })
       }
