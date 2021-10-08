@@ -122,9 +122,11 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} submissionId
    */
   const initiateDwCSubmissionValidation = async (submissionId: number) => {
-    axios.post(`/api/dwc/validate`, {
+    const { data } = await axios.post(`/api/dwc/validate`, {
       occurrence_submission_id: submissionId
     });
+
+    return data;
   };
 
   /**
@@ -132,9 +134,11 @@ const useObservationApi = (axios: AxiosInstance) => {
    * @param {number} submissionId
    */
   const initiateXLSXSubmissionValidation = async (submissionId: number) => {
-    axios.post(`/api/xlsx/validate`, {
+    const { data } = await axios.post(`/api/xlsx/validate`, {
       occurrence_submission_id: submissionId
     });
+
+    return data;
   };
 
   /**
