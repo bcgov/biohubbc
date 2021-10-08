@@ -6,7 +6,8 @@ import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL
+  insertOccurrenceSubmissionStatusSQL,
+  updateSurveyOccurrenceSubmissionSQL
 } from '../../queries/survey/survey-occurrence-queries';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
@@ -21,14 +22,17 @@ const defaultLog = getLogger('paths/dwc/validate');
 
 export const POST: Operation = [
   logRequest('paths/dwc/validate', 'POST'),
-  getSubmissionS3Key(),
-  getSubmissionFileFromS3(),
+  getOccurrenceSubmission(),
+  getOccurrenceSubmissionInputS3Key(),
+  getS3File(),
   prepDWCArchive(),
   persistParseErrors(),
   getValidationSchema(),
   getValidationRules(),
   validateDWCArchive(),
-  persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' })
+  persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' }),
+  updateOccurrenceSubmission,
+  sendResponse()
 ];
 
 export const getValidateAPIDoc = (basicDescription: string, successDescription: string, tags: string[]) => {
@@ -60,7 +64,22 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
     },
     responses: {
       200: {
-        description: successDescription
+        description: successDescription,
+        content: {
+          'application/json': {
+            schema: {
+              type: 'object',
+              properties: {
+                status: {
+                  type: 'string'
+                },
+                reason: {
+                  type: 'string'
+                }
+              }
+            }
+          }
+        }
       },
       400: {
         $ref: '#/components/responses/400'
@@ -89,9 +108,9 @@ POST.apiDoc = {
   )
 };
 
-export function getSubmissionS3Key(): RequestHandler {
+export function getOccurrenceSubmission(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
+    defaultLog.debug({ label: 'getOccurrenceSubmission', message: 'params', files: req.body });
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -116,13 +135,11 @@ export function getSubmissionS3Key(): RequestHandler {
         throw new HTTP400('Failed to get survey occurrence submission');
       }
 
-      const s3Key = response.rows[0].input_key;
-
-      req['s3Key'] = s3Key;
+      req['occurrence_submission'] = response.rows[0];
 
       next();
     } catch (error) {
-      defaultLog.error({ label: 'getSubmissionS3Key', message: 'error', error });
+      defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -130,9 +147,20 @@ export function getSubmissionS3Key(): RequestHandler {
   };
 }
 
-export function getSubmissionFileFromS3(): RequestHandler {
+export function getOccurrenceSubmissionInputS3Key(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'getSubmissionFileFromS3', message: 'params', files: req.body });
+    defaultLog.debug({ label: 'getSubmissionS3Key', message: 'params', files: req.body });
+    const occurrence_submission = req['occurrence_submission'];
+
+    req['s3Key'] = occurrence_submission.input_key;
+
+    next();
+  };
+}
+
+export function getS3File(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'getS3File', message: 'params', files: req.body });
 
     try {
       const s3Key = req['s3Key'];
@@ -140,14 +168,14 @@ export function getSubmissionFileFromS3(): RequestHandler {
       const s3File = await getFileFromS3(s3Key);
 
       if (!s3File) {
-        throw new HTTP500('Failed to get occurrence submission file');
+        throw new HTTP500('Failed to get file from S3');
       }
 
       req['s3File'] = s3File;
 
       next();
     } catch (error) {
-      defaultLog.error({ label: 'getSubmissionFileFromS3', message: 'error', error });
+      defaultLog.error({ label: 'getS3File', message: 'error', error });
       throw error;
     }
   };
@@ -213,10 +241,10 @@ export function persistParseErrors(): RequestHandler {
       await connection.commit();
 
       // archive is not parsable, don't continue to next step and return early
-      return res.status(200).json();
+      return res.status(200).json({ status: 'failed' });
     } catch (error) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
-      connection.rollback();
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -281,16 +309,16 @@ function validateDWCArchive(): RequestHandler {
   };
 }
 
-function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
+export function generateHeaderErrorMessage(fileName: string, headerError: IHeaderError): string {
   return `${fileName} - ${headerError.message} - Column: ${headerError.col}`;
 }
 
-function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
+export function generateRowErrorMessage(fileName: string, rowError: IRowError): string {
   return `${fileName} - ${rowError.message} - Column: ${rowError.col} - Row: ${rowError.row}`;
 }
 
 export function persistValidationResults(statusTypeObject: any): RequestHandler {
-  return async (req, res) => {
+  return async (req, res, next) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -351,14 +379,55 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
 
       await connection.commit();
 
-      // TODO return something to indicate if any errors had been found, or not?
-      return res.status(200).json();
+      next();
     } catch (error) {
       defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
     }
+  };
+}
+
+function updateOccurrenceSubmission(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'updateOccurrenceSubmission', message: 'Update output file name and output key' });
+
+    const dwcArchive: DWCArchive = req['dwcArchive'];
+    const inputFileName = dwcArchive.rawFile.name;
+    const s3Key: string = req['s3Key'];
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      // Update occurrence submission record to include the DWC output file name and s3 key (which in this case are the
+      // same as the input file name and s3 key, as it is already a DWC zip)
+      await updateSurveyOccurrenceSubmissionWithOutputKey(
+        req.body.occurrence_submission_id,
+        inputFileName,
+        s3Key,
+        connection
+      );
+
+      await connection.commit();
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'updateOccurrenceSubmission', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export function sendResponse(): RequestHandler {
+  return async (req, res) => {
+    return res.status(200).json({ status: 'success' });
   };
 }
 
@@ -424,4 +493,34 @@ export const insertSubmissionMessage = async (
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to insert survey submission message data');
   }
+};
+
+/**
+ * Update existing `occurrence_submission` record with outputKey and outputFileName.
+ *
+ * @param {number} submissionId
+ * @param {string} outputFileName
+ * @param {string} outputKey
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const updateSurveyOccurrenceSubmissionWithOutputKey = async (
+  submissionId: number,
+  outputFileName: string,
+  outputKey: string,
+  connection: IDBConnection
+): Promise<any> => {
+  const updateSqlStatement = updateSurveyOccurrenceSubmissionSQL({ submissionId, outputFileName, outputKey });
+
+  if (!updateSqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
+
+  if (!updateResponse || !updateResponse.rowCount) {
+    throw new HTTP400('Failed to update survey occurrence submission record');
+  }
+
+  return updateResponse;
 };

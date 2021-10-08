@@ -9,7 +9,7 @@ describe('CSVWorkBook', () => {
     const csvWorkBook = new CSVWorkBook();
 
     expect(csvWorkBook).not.to.be.null;
-    expect(csvWorkBook.workbook).not.to.be.null;
+    expect(csvWorkBook.rawWorkbook).not.to.be.null;
     expect(csvWorkBook.worksheets).to.eql({});
   });
 
@@ -25,7 +25,7 @@ describe('CSVWorkBook', () => {
     const csvWorkBook = new CSVWorkBook(xlsxWorkBook);
 
     expect(csvWorkBook).not.to.be.null;
-    expect(csvWorkBook.workbook).not.to.be.null;
+    expect(csvWorkBook.rawWorkbook).not.to.be.null;
     expect(csvWorkBook.worksheets['Sheet1']).not.to.be.null;
   });
 });
@@ -61,7 +61,7 @@ describe('CSVWorksheet', () => {
       const csvWorksheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
 
       expect(csvWorksheet).not.to.be.null;
-      expect(csvWorksheet.getHeaders()).to.eql(['header1', 'header2']);
+      expect(csvWorksheet.getHeaders()).to.eql(['Header1', 'Header2']);
     });
   });
 
@@ -88,80 +88,6 @@ describe('CSVWorksheet', () => {
       expect(csvWorksheet.getRows()).to.eql([
         ['Header1Data1', 'Header2Data1'],
         ['Header1Data2', 'Header2Data2']
-      ]);
-    });
-  });
-
-  describe('setRow', () => {
-    it('overwrites a row in the worksheet', () => {
-      const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
-        ['Header1', 'Header2'],
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'Header2Data2']
-      ]);
-
-      const csvWorksheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
-
-      expect(csvWorksheet).not.to.be.null;
-      expect(csvWorksheet.getRows()).to.eql([
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'Header2Data2']
-      ]);
-
-      csvWorksheet.setRow(2, ['newHeader1Data2', 'newHeader2Data2']);
-
-      expect(csvWorksheet.getRows()).to.eql([
-        ['Header1Data1', 'Header2Data1'],
-        ['newHeader1Data2', 'newHeader2Data2']
-      ]);
-    });
-
-    it('adds a new row in the worksheet', () => {
-      const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
-        ['Header1', 'Header2'],
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'Header2Data2']
-      ]);
-
-      const csvWorksheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
-
-      expect(csvWorksheet).not.to.be.null;
-      expect(csvWorksheet.getRows()).to.eql([
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'Header2Data2']
-      ]);
-
-      csvWorksheet.setRow(-1, ['newHeader1Data3', 'newHeader2Data3']);
-
-      expect(csvWorksheet.getRows()).to.eql([
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'Header2Data2'],
-        ['newHeader1Data3', 'newHeader2Data3']
-      ]);
-    });
-  });
-
-  describe('setCell', () => {
-    it('sets a cell in the worksheet', () => {
-      const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([
-        ['Header1', 'Header2'],
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'Header2Data2']
-      ]);
-
-      const csvWorksheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
-
-      expect(csvWorksheet).not.to.be.null;
-      expect(csvWorksheet.getRows()).to.eql([
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'Header2Data2']
-      ]);
-
-      csvWorksheet.setCell(2, 1, 'newHeader2Data2');
-
-      expect(csvWorksheet.getRows()).to.eql([
-        ['Header1Data1', 'Header2Data1'],
-        ['Header1Data2', 'newHeader2Data2']
       ]);
     });
   });

@@ -25,8 +25,9 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
   const getOccurrences = async () => {
     const occurrencesResponse = await biohubApi.observation.getOccurrencesForView(props.occurrenceSubmissionId);
 
-    if (!occurrencesResponse) {
+    if (!occurrencesResponse || !occurrencesResponse.length) {
       // TODO: Handle error
+      return;
     }
 
     setOccurrences(occurrencesResponse);
@@ -47,6 +48,10 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
         {occurrences &&
           occurrences.map((occurrence: IGetOccurrencesForViewResponseDetails) => {
             const { geometry, ...featureData } = occurrence;
+
+            if (!geometry) {
+              return <></>;
+            }
 
             return (
               <Marker

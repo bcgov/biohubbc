@@ -15,6 +15,17 @@ const useN8NApi = (axios: AxiosInstance) => {
     });
   };
 
+  /**
+   * Initiate the transformation process for the submitted observation template using n8n.
+   *
+   * @param {number} submissionId
+   */
+  const initiateTransformTemplate = async (submissionId: number) => {
+    await axios.post('/webhook/transform', {
+      occurrence_submission_id: submissionId
+    });
+  };
+
   // Initiate the scraping process for the submitted occurrence using n8n webhook
   const initiateScrapeOccurrences = async (submissionId: number) => {
     await axios.post('/webhook/scrape', {
@@ -22,9 +33,24 @@ const useN8NApi = (axios: AxiosInstance) => {
     });
   };
 
+  /**
+   * Initiate the validation, transformation, and scraping processes for the submitted observation file using n8n.
+   *
+   * @param {number} submissionId
+   * @param {string} fileType
+   */
+  const initiateOccurrenceSubmissionProcessing = async (submissionId: number, fileType: string) => {
+    await axios.post('/webhook/process-occurrence-submission', {
+      occurrence_submission_id: submissionId,
+      file_type: fileType
+    });
+  };
+
   return {
     initiateSubmissionValidation,
-    initiateScrapeOccurrences
+    initiateTransformTemplate,
+    initiateScrapeOccurrences,
+    initiateOccurrenceSubmissionProcessing
   };
 };
 

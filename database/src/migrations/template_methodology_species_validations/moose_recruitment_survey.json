@@ -374,14 +374,14 @@
       "description": "",
       "columns": [
         {
-          "name": "Site UTM Zone",
+          "name": "UTM Zone",
           "description": "",
           "validations": [
             {
               "column_code_validator": {
                 "name": "",
                 "description": "",
-                "allowed_code_values": [{ "name": 8 }, { "name": 9 }, { "name": 10 }, { "name": 11 }]
+                "allowed_code_values": [{ "name": "8N" }, { "name": "9N" }, { "name": "10N" }, { "name": "11N" }]
               }
             }
           ]
@@ -399,7 +399,7 @@
           ]
         },
         {
-          "name": "Site Easting",
+          "name": "Easting",
           "description": "",
           "validations": [
             {
@@ -411,7 +411,7 @@
           ]
         },
         {
-          "name": "Site Northing",
+          "name": "Northing",
           "description": "",
           "validations": [
             {
@@ -456,9 +456,9 @@
             "required_columns": [
               "Survey Area",
               "Waypoint",
-              "Site UTM Zone",
-              "Site Easting",
-              "Site Northing",
+              "UTM Zone",
+              "Easting",
+              "Northing",
               "Lat (DD)",
               "Long (DD)",
               "Comments"
