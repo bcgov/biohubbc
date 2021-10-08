@@ -302,6 +302,12 @@ test: ## Runs `npm test` for api, and app projects
 	@echo "==============================================="
 	@cd app && npm test && cd ..
 
+cypress: ## Runs `npm run test:e2e` for api, and app projects
+	@echo "==============================================="
+	@echo "Running cypress tests"
+	@echo "==============================================="
+	@cd testing/e2e && npm run test:e2e && cd ../..
+
 lint: ## Runs `npm lint` for all projects
 	@echo "==============================================="
 	@echo "Running /api lint"

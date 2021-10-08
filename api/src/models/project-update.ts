@@ -211,7 +211,9 @@ export class GetLocationData {
     defaultLog.debug({
       label: 'GetLocationData',
       message: 'params',
-      locationData
+      locationData: locationData?.map((item: any) => {
+        return { ...item, geometry: 'Too big to print' };
+      })
     });
 
     const locationDataItem = locationData && locationData.length && locationData[0];

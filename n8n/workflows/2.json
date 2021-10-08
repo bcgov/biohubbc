@@ -9,8 +9,8 @@
       "type": "n8n-nodes-base.start",
       "typeVersion": 1,
       "position": [
-        250,
-        300
+        940,
+        560
       ]
     },
     {
@@ -75,6 +75,7 @@
         "authentication": "headerAuth",
         "requestMethod": "POST",
         "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/scrape-occurrences",
+        "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
         "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
@@ -83,12 +84,22 @@
       "type": "n8n-nodes-base.httpRequest",
       "typeVersion": 1,
       "position": [
-        1550,
+        1510,
         750
       ],
       "credentials": {
         "httpHeaderAuth": "Bearer Token"
       }
+    },
+    {
+      "parameters": {},
+      "name": "Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        1690,
+        750
+      ]
     }
   ],
   "connections": {
@@ -124,10 +135,21 @@
           }
         ]
       ]
+    },
+    "Scrape Occurrences": {
+      "main": [
+        [
+          {
+            "node": "Complete",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "createdAt": "2021-09-23T10:29:03.227Z",
-  "updatedAt": "2021-09-23T18:48:14.495Z",
+  "updatedAt": "2021-10-07T17:56:48.035Z",
   "settings": {},
   "staticData": null
 }
