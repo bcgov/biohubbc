@@ -131,21 +131,9 @@ export function getTransformationSchema(): RequestHandler {
       const transformationSchema = templateMethodologySpeciesRecord?.transform;
 
       if (!transformationSchema) {
-        // TODO handle errors if no transformation schema is found
-        // no schema to validate the template, generate error
-        // const submissionStatusId = await insertSubmissionStatus(
-        //   req.body.occurrence_submission_id,
-        //   'System Error',
-        //   connection
-        // );
-        // await insertSubmissionMessage(
-        //   submissionStatusId,
-        //   'Error',
-        //   `Unable to fetch an appropriate transformation schema for your submission`,
-        //   'Missing Validation Schema',
-        //   connection
-        // );
-        // await connection.commit();
+        // TODO handle errors if no transformation schema is found?
+        // No schema to validate the template, insert error?
+        // See `xlsx/validate/getValidationSchema()`
         return res.status(200).json({
           status: 'failed',
           reason: 'Unable to fetch an appropriate transformation schema for your submission'
