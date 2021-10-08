@@ -48,7 +48,20 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when all valid params provided', () => {
+  it('returns non null response when all valid params provided without inputKey', () => {
+    const response = insertSurveyOccurrenceSubmissionSQL({
+      surveyId: 1,
+      source: 'fileSource',
+      inputFileName: 'inputFileName',
+      outputFileName: 'outputFileName',
+      outputKey: 'outputfileKey',
+      templateMethodologyId: 1
+    });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when all valid params provided with inputKey', () => {
     const response = insertSurveyOccurrenceSubmissionSQL({
       surveyId: 1,
       source: 'fileSource',
@@ -127,7 +140,46 @@ describe('updateSurveyOccurrenceSubmissionSQL', () => {
   it('returns non null response when valid params provided', () => {
     const response = updateSurveyOccurrenceSubmissionSQL({
       submissionId: 1,
+      inputKey: 'fileKey',
+      inputFileName: 'fileName',
+      outputFileName: 'outputFileName',
+      outputKey: 'outputKey'
+    });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when valid params provided without inputKey', () => {
+    const response = updateSurveyOccurrenceSubmissionSQL({
+      submissionId: 1,
       inputKey: 'fileKey'
+    });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when valid params provided without inputFileName', () => {
+    const response = updateSurveyOccurrenceSubmissionSQL({
+      submissionId: 1,
+      inputFileName: 'fileName'
+    });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when valid params provided without outputFileName', () => {
+    const response = updateSurveyOccurrenceSubmissionSQL({
+      submissionId: 1,
+      outputFileName: 'outputFileName'
+    });
+
+    expect(response).to.not.be.null;
+  });
+
+  it('returns non null response when valid params provided without outputKey', () => {
+    const response = updateSurveyOccurrenceSubmissionSQL({
+      submissionId: 1,
+      outputKey: 'outputKey'
     });
 
     expect(response).to.not.be.null;
