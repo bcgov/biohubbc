@@ -151,6 +151,7 @@ export class ValidationSchemaParser {
 
     columnNames.forEach((columnName) => {
       const columnValidators = this.getColumnValidations(fileName, columnName);
+
       rules = rules.concat(columnValidators);
     });
 
@@ -190,15 +191,51 @@ export class ValidationSchemaParser {
   }
 
   getFileValidationSchemas(fileName: string): object[] {
-    return jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
+    let validationSchemas = jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
+
+    if (!validationSchemas.length) {
+      validationSchemas = this.getDefaultFileValidationSchemas();
+    }
+    return validationSchemas;
+  }
+
+  getDefaultFileValidationSchemas(): object[] {
+    return jsonpath.query(this.validationSchema, this.getDefaultFileValidationsJsonPath())?.[0] || [];
   }
 
   getColumnValidationSchemas(fileName: string, columnName: string): object[] {
-    return jsonpath.query(this.validationSchema, this.getColumnValidationsJsonpath(fileName, columnName))?.[0] || [];
+    const filevalidationSchemas =
+      jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
+
+    let columnValidationSchemas;
+
+    if (!filevalidationSchemas.length) {
+      columnValidationSchemas = this.getDefaultColumnValidationSchemas(columnName);
+    } else {
+      columnValidationSchemas =
+        jsonpath.query(this.validationSchema, this.getColumnValidationsJsonpath(fileName, columnName))?.[0] || [];
+    }
+
+    return columnValidationSchemas;
+  }
+
+  getDefaultColumnValidationSchemas(columnName: string): object[] {
+    return jsonpath.query(this.validationSchema, this.getDefaultColumnValidationsJsonpath(columnName))?.[0] || [];
   }
 
   getColumnNames(fileName: string): string[] {
-    return jsonpath.query(this.validationSchema, this.getColumnNamesJsonpath(fileName));
+    let columnNames;
+
+    const filevalidationSchemas =
+      jsonpath.query(this.validationSchema, this.getFileValidationsJsonPath(fileName))?.[0] || [];
+
+    if (!filevalidationSchemas.length) {
+      columnNames = jsonpath.query(this.validationSchema, this.getDefaultColumnNamesJsonpath());
+    } else {
+      columnNames = jsonpath.query(this.validationSchema, this.getColumnNamesJsonpath(fileName));
+    }
+
+    return columnNames;
   }
 
   getSubmissionValidationsJsonPath(): string {
@@ -208,13 +245,24 @@ export class ValidationSchemaParser {
   getFileValidationsJsonPath(fileName: string): string {
     return `$.files[?(@.name == '${fileName}')].validations`;
   }
+  getDefaultFileValidationsJsonPath(): string {
+    return `$.defaultFile.validations`;
+  }
 
   getColumnNamesJsonpath(fileName: string): string {
     return `$.files[?(@.name == '${fileName}')].columns[*].name`;
   }
 
+  getDefaultColumnNamesJsonpath(): string {
+    return `$.defaultFile.columns[*].name`;
+  }
+
   getColumnValidationsJsonpath(fileName: string, columnName: string): string {
     return `$.files[?(@.name == '${fileName}')].columns[?(@.name == '${columnName}')].validations`;
+  }
+
+  getDefaultColumnValidationsJsonpath(columnName: string): string {
+    return `$.defaultFile.columns[?(@.name == '${columnName}')].validations`;
   }
 
   parseJson(json: any): object {
