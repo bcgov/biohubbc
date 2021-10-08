@@ -89,7 +89,6 @@ alter role biohub_api set search_path to biohub_dapi_v1, biohub, public, topolog
 \i populate_common_survey_methodology.sql
 \i populate_template.sql
 \i populate_summary_parameter_code.sql
-\i populate_summary_submission_message_type.sql
 \i populate_summary_submission_message_class.sql
 
 -- temporary external interface tables
