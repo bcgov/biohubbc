@@ -63,6 +63,22 @@ export async function uploadFileToS3(
   }).promise();
 }
 
+export async function uploadBufferToS3(
+  buffer: Buffer,
+  mimetype: string,
+  key: string,
+  metadata: Metadata = {}
+): Promise<ManagedUpload.SendData> {
+  return S3.upload({
+    Bucket: OBJECT_STORE_BUCKET_NAME,
+    Body: buffer,
+    ContentType: mimetype,
+    Key: key,
+    ACL: S3_ROLE.AUTH_READ,
+    Metadata: metadata
+  }).promise();
+}
+
 /**
  * Fetch a file from S3.
  *

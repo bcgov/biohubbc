@@ -7,7 +7,9 @@ import { createMemoryHistory } from 'history';
 const history = createMemoryHistory();
 
 describe('PublicLayout', () => {
-  it('renders correctly with unsupported browser alert', () => {
+  it('renders correctly with environment tag and unsupported browser alert', () => {
+    process.env.REACT_APP_NODE_ENV = 'local';
+
     const { asFragment } = render(
       <Router history={history}>
         <PublicLayout>

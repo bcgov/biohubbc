@@ -40,8 +40,10 @@ const request = require('request');
   app.use('/config', (_, resp) => {
     const config = {
       API_HOST: process.env.REACT_APP_API_HOST || 'localhost',
+      N8N_HOST: process.env.REACT_APP_N8N_HOST,
       CHANGE_VERSION: process.env.CHANGE_VERSION || 'NA',
       NODE_ENV: process.env.NODE_ENV || 'development',
+      REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
       VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
       KEYCLOAK_CONFIG: {
         url: process.env.SSO_URL || 'https://dev.oidc.gov.bc.ca/auth',
@@ -49,7 +51,9 @@ const request = require('request');
         clientId: process.env.SSO_CLIENT_ID || 'biohubbc'
       },
       SITEMINDER_LOGOUT_URL:
-        process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi'
+        process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi',
+      MAX_UPLOAD_NUM_FILES: process.env.REACT_APP_MAX_UPLOAD_NUM_FILES,
+      MAX_UPLOAD_FILE_SIZE: process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE
     };
     resp.status(200).json(config);
   });

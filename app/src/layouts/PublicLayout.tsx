@@ -4,11 +4,9 @@ import Alert from '@material-ui/lab/Alert';
 import Footer from 'components/layout/Footer';
 import Header from 'components/layout/Header';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import React, { useState } from 'react';
+import React from 'react';
 
 const PublicLayout: React.FC = (props) => {
-  const [showUnsupportedBrowserAlert, setShowUnsupportedBrowserAlert] = useState<boolean>(true);
-
   function isSupportedBrowser() {
     if (
       navigator.userAgent.indexOf('Chrome') != -1 ||
@@ -26,10 +24,8 @@ const PublicLayout: React.FC = (props) => {
     <Box height="100vh" display="flex" flexDirection="column">
       <CssBaseline />
       <DialogContextProvider>
-        {!isSupportedBrowser() && showUnsupportedBrowserAlert && (
-          <Alert onClose={() => setShowUnsupportedBrowserAlert(false)} severity="error">
-            This is an unsupported browser. Some functionality may not work as expected.
-          </Alert>
+        {!isSupportedBrowser() && (
+          <Alert severity="error">This is an unsupported browser. Some functionality may not work as expected.</Alert>
         )}
 
         <Header />

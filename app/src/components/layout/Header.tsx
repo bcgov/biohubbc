@@ -11,6 +11,7 @@ import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 import { isAuthenticated } from 'utils/authUtils';
@@ -98,6 +99,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const Header: React.FC = () => {
   const classes = useStyles();
+  const config = useContext(ConfigContext);
 
   const { keycloakWrapper } = useContext(AuthStateContext);
 
@@ -168,6 +170,13 @@ const Header: React.FC = () => {
                   aria-label="This application is currently in beta phase of development">
                   Beta
                 </sup>
+                {config?.REACT_APP_NODE_ENV !== 'prod' && (
+                  <sup
+                    className={classes.appPhaseTag}
+                    aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
+                    & {config?.REACT_APP_NODE_ENV}
+                  </sup>
+                )}
               </span>
             </Link>
             {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}

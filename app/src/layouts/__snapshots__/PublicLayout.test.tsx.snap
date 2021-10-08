@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PublicLayout renders correctly with unsupported browser alert 1`] = `
+exports[`PublicLayout renders correctly with environment tag and unsupported browser alert 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-1"
@@ -27,35 +27,6 @@ exports[`PublicLayout renders correctly with unsupported browser alert 1`] = `
         class="MuiAlert-message"
       >
         This is an unsupported browser. Some functionality may not work as expected.
-      </div>
-      <div
-        class="MuiAlert-action"
-      >
-        <button
-          aria-label="Close"
-          class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorInherit MuiIconButton-sizeSmall"
-          tabindex="0"
-          title="Close"
-          type="button"
-        >
-          <span
-            class="MuiIconButton-label"
-          >
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-              focusable="false"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-              />
-            </svg>
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
       </div>
     </div>
     <header
@@ -97,6 +68,12 @@ exports[`PublicLayout renders correctly with unsupported browser alert 1`] = `
                   class="makeStyles-appPhaseTag-6"
                 >
                   Beta
+                </sup>
+                <sup
+                  aria-label="This application is currently being run in the  environment"
+                  class="makeStyles-appPhaseTag-6"
+                >
+                  & 
                 </sup>
               </span>
             </a>

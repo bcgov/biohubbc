@@ -138,6 +138,19 @@ const useObservationApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Initiate the transformation process for the submitted observation template.
+   *
+   * @param {number} submissionId
+   */
+  const initiateXLSXSubmissionTransform = async (submissionId: number) => {
+    const { data } = await axios.post(`/api/xlsx/transform`, {
+      occurrence_submission_id: submissionId
+    });
+
+    return data;
+  };
+
+  /**
    * Initiate the scraping process for the submitted DWC observations
    * @param {number} submissionId
    */
@@ -156,6 +169,7 @@ const useObservationApi = (axios: AxiosInstance) => {
     deleteObservationSubmission,
     initiateDwCSubmissionValidation,
     initiateXLSXSubmissionValidation,
+    initiateXLSXSubmissionTransform,
     initiateScrapeOccurrences,
     getOccurrencesForView
   };

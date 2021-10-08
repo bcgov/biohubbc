@@ -51,7 +51,7 @@ export class MediaFile implements IMediaFile {
   }
 }
 
-export type MediaValidator = (mediaFile: IMediaFile, ...rest: any) => IMediaFile;
+export type MediaValidator = (mediaFile: IMediaFile) => IMediaFile;
 
 /**
  * A generic wrapper for any archive file.
@@ -102,7 +102,7 @@ export class ArchiveFile implements IMediaFile {
   }
 }
 
-export type ArchiveValidator = (archiveFile: ArchiveFile, ...rest: any) => ArchiveFile;
+export type ArchiveValidator = (archiveFile: ArchiveFile) => ArchiveFile;
 
 export interface IMediaState {
   fileName: string;

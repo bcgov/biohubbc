@@ -1,17 +1,19 @@
 import xlsx from 'xlsx';
 import { IMediaState, MediaValidation } from '../media-file';
 
+export type CSVWorksheets = { [name: string]: CSVWorksheet };
+
 export class CSVWorkBook {
-  workbook: xlsx.WorkBook;
+  rawWorkbook: xlsx.WorkBook;
 
-  worksheets: { [name: string]: CSVWorksheet };
+  worksheets: CSVWorksheets;
 
-  constructor(rawWorkbook?: xlsx.WorkBook) {
-    this.workbook = rawWorkbook || xlsx.utils.book_new();
+  constructor(workbook?: xlsx.WorkBook) {
+    this.rawWorkbook = workbook || xlsx.utils.book_new();
 
     const worksheets = {};
 
-    Object.entries(this.workbook.Sheets).forEach(([key, value]) => {
+    Object.entries(this.rawWorkbook.Sheets).forEach(([key, value]) => {
       worksheets[key] = new CSVWorksheet(key, value);
     });
 
@@ -25,17 +27,19 @@ export class CSVWorksheet {
   worksheet: xlsx.WorkSheet;
 
   _headers: string[];
-  _rows: (string | number)[][];
+  _headersLowerCase: string[];
+  _rows: string[][];
   _rowObjects: object[];
 
   csvValidation: CSVValidation;
 
-  constructor(name: string, worksheet: xlsx.WorkSheet) {
+  constructor(name: string, worksheet?: xlsx.WorkSheet) {
     this.name = name;
 
-    this.worksheet = worksheet;
+    this.worksheet = worksheet || xlsx.utils.aoa_to_sheet([]);
 
     this._headers = [];
+    this._headersLowerCase = [];
     this._rows = [];
     this._rowObjects = [];
 
@@ -73,11 +77,21 @@ export class CSVWorksheet {
         range: customRange
       });
 
-      // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
-      this._headers = aoaHeaders[0].map((header: any) => header.trim().toLowerCase());
+      if (aoaHeaders.length > 0) {
+        // Parse the headers array from the array of arrays produced by calling `xlsx.utils.sheet_to_json`
+        this._headers = aoaHeaders[0].map((item) => item?.trim());
+      }
     }
 
     return this._headers;
+  }
+
+  getHeadersLowerCase(): string[] {
+    if (!this._headersLowerCase.length) {
+      this._headersLowerCase = this.getHeaders().map((item) => item?.toLowerCase());
+    }
+
+    return this._headersLowerCase;
   }
 
   getHeaderIndex(headerName: string): number {
@@ -89,10 +103,10 @@ export class CSVWorksheet {
    *
    * Note: This does not include the first row (header row).
    *
-   * @return {*}  {((string | number)[][])}
+   * @return {*}  {string[][]}
    * @memberof CSVWorksheet
    */
-  getRows(): (string | number)[][] {
+  getRows(): string[][] {
     if (!this.worksheet) {
       return [];
     }
@@ -104,7 +118,7 @@ export class CSVWorksheet {
     }
 
     if (!this._rows.length) {
-      const rowsToReturn: (string | number)[][] = [];
+      const rowsToReturn: string[][] = [];
 
       const originalRange = xlsx.utils.decode_range(ref);
 
@@ -121,11 +135,11 @@ export class CSVWorksheet {
             continue;
           }
 
-          if (cellValue.t === 'n' || cellValue.t === 'd') {
-            row[j] = cellValue.w;
-          } else {
-            row[j] = cellValue.v;
-          }
+          // Some cell types (like dates) store different interpretations of the raw value in different properties of
+          // the `cellValue`. In these cases, always try and return the string version `w`, before returning the
+          // raw version `v`.
+          // See https://www.npmjs.com/package/xlsx -> Cell Object
+          row[j] = cellValue.w || cellValue.v;
 
           rowHasValues = true;
         }
@@ -157,7 +171,7 @@ export class CSVWorksheet {
       const rows = this.getRows();
       const headers = this.getHeaders();
 
-      rows.forEach((row: (string | number)[]) => {
+      rows.forEach((row: string[]) => {
         const rowObject = {};
 
         headers.forEach((header: string, index: number) => {
@@ -171,30 +185,6 @@ export class CSVWorksheet {
     }
 
     return this._rowObjects;
-  }
-
-  buildID(parts: (string | number)[], postfix?: string): string {
-    return parts.join(':') + (postfix && `:${postfix}`);
-  }
-
-  getColumn(headerName: string): (string | number)[] {
-    const headerIndex = this.getHeaderIndex(headerName);
-
-    if (!headerIndex || headerIndex < 0) {
-      return [];
-    }
-
-    const rows = this.getRows();
-
-    const columnValues: (string | number)[] = [];
-
-    rows.forEach((row, rowIndex) => {
-      const columnValue = row[headerIndex];
-
-      columnValues[rowIndex] = columnValue;
-    });
-
-    return columnValues;
   }
 
   getCell(headerName: string, rowIndex: number) {
@@ -215,39 +205,6 @@ export class CSVWorksheet {
     return row[headerIndex];
   }
 
-  /**
-   * Set an entire row.
-   *
-   * Note: will overwrite any existing row data for the specified row number.
-   *
-   * Note: set row to `-1` to append the row to the end.
-   *
-   * @param {number} row the row number (row indexes start at 1)
-   * @param {((string | number)[])} data
-   * @memberof CSVWorksheet
-   */
-  setRow(row: number, data: (string | number)[]) {
-    xlsx.utils.sheet_add_aoa(this.worksheet, [data], { origin: row });
-
-    // Reset _rows so that the worksheet is re-parsed when getRows is called
-    this._rows = [];
-  }
-
-  /**
-   * Set a cell.
-   *
-   * @param {number} row the row number (row indexes start at 1)
-   * @param {number} col the column number (column indexes start at 0)
-   * @param {(string | number)} data
-   * @memberof CSVWorksheet
-   */
-  setCell(row: number, col: number, data: string | number) {
-    xlsx.utils.sheet_add_aoa(this.worksheet, [[data]], { origin: { r: row, c: col } });
-
-    // Reset _rows so that the worksheet is re-parsed when getRows is called
-    this._rows = [];
-  }
-
   validate(validators: CSVValidator[]): CSVValidation {
     validators.forEach((validator) => validator(this));
 
@@ -255,7 +212,7 @@ export class CSVWorksheet {
   }
 }
 
-export type CSVValidator = (csvWorksheet: CSVWorksheet, ...rest: any) => CSVWorksheet;
+export type CSVValidator = (csvWorksheet: CSVWorksheet) => CSVWorksheet;
 
 // ensure these error codes match the 'name' column in the table: submission_message_type
 

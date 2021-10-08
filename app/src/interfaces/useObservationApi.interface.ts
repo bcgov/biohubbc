@@ -43,7 +43,7 @@ export interface IUploadObservationSubmissionResponse {
 }
 
 export interface IGetOccurrencesForViewResponseDetails {
-  geometry: Feature;
+  geometry: Feature | null;
   taxonId: string;
   lifeStage: string;
   vernacularName: string;
