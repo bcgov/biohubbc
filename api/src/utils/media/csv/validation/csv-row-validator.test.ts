@@ -2,7 +2,11 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import xlsx from 'xlsx';
 import { CSVWorksheet } from '../csv-file';
-import { getCodeValueFieldsValidator, getRequiredFieldsValidator } from './csv-row-validator';
+import {
+  getCodeValueFieldsValidator,
+  getRequiredFieldsValidator,
+  getValidRangeFieldsValidator
+} from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {
   it('adds no errors when required fields are not provided', () => {
@@ -177,5 +181,194 @@ describe('getCodeValueFieldsValidator', () => {
     validator(csvWorkSheet);
 
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+});
+
+describe('getValidRangeFieldsValidator', () => {
+  it('adds no errors when no code value range is not provided', () => {
+    const codeValuesRangeByHeader = undefined;
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], []]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when header does not exist', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        min_value: 1,
+        max_value: 10
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when valid value range is provided', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        min_value: 1,
+        max_value: 10
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], [6]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds an out of range error when value provided exceeds range', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        min_value: 1,
+        max_value: 10
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], [11]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Out of Range',
+        message: 'Invalid value: 11. Value must be between 1 and 10 ',
+        row: 2
+      }
+    ]);
+  });
+
+  it('adds an out of range error when value provided is less than the range', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        min_value: 5,
+        max_value: 10
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], [1]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Out of Range',
+        message: 'Invalid value: 1. Value must be between 5 and 10 ',
+        row: 2
+      }
+    ]);
+  });
+
+  it('adds an out of range error when single value provided is greater than the max_value', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        max_value: 10
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], [11]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Out of Range',
+        message: 'Invalid value: 11. Value must be less than 10 ',
+        row: 2
+      }
+    ]);
+  });
+
+  it('adds an out of range error when single value provided is less than the min_value', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        min_value: 5
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], [4]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Out of Range',
+        message: 'Invalid value: 4. Value must be greater than 5 ',
+        row: 2
+      }
+    ]);
+  });
+
+  it('adds an invalue value error when value provided is not a number', () => {
+    const codeValuesRangeByHeader = {
+      columnName: 'Header1',
+      column_range_validator: {
+        min_value: 5,
+        max_vlaue: 10
+      }
+    };
+
+    const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['a']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Invalid Value',
+        message: 'Invalid value: a. Value must be a number ',
+        row: 2
+      }
+    ]);
   });
 });
