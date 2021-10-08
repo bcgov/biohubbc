@@ -127,7 +127,10 @@ describe('updateSurveyOccurrenceSubmissionSQL', () => {
   it('returns non null response when valid params provided', () => {
     const response = updateSurveyOccurrenceSubmissionSQL({
       submissionId: 1,
-      inputKey: 'fileKey'
+      inputKey: 'fileKey',
+      inputFileName: 'fileName',
+      outputFileName: 'outputFileName',
+      outputKey: 'outputKey'
     });
 
     expect(response).to.not.be.null;
