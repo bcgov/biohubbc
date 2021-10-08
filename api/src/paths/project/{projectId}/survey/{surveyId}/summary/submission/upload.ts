@@ -8,13 +8,19 @@ import { PostSummaryDetails } from '../../../../../../../models/summaryresults-c
 import {
   insertSurveySummaryDetailsSQL,
   insertSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL
+  updateSurveySummarySubmissionWithKeySQL,
+  insertSurveySummarySubmissionMessageSQL
 } from '../../../../../../../queries/survey/survey-summary-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../../../../../../utils/path-utils';
 import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
+import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
+import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
+import { IMediaState } from '../../../../../../../utils/media/media-file';
+import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
+import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -22,6 +28,10 @@ export const POST: Operation = [
   logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
   uploadMedia(),
   prepXLSX(),
+  persistSummaryParseErrors(),
+  getValidationRules(),
+  validateXLSX(),
+  persistSummaryValidationResults(),
   parseAndUploadSummarySubmissionInput(),
   returnSummarySubmissionId()
 ];
@@ -94,10 +104,13 @@ export enum SUMMARY_CLASS {
   STANDARD_ERROR = 'se',
   COEFFICIENT_VARIATION = 'cv',
   CONFIDENCE_LEVEL = 'conf.level',
-  UPPER_CONFIDENCE_LIMIT = 'ucl',
   LOWER_CONFIDENCE_LIMIT = 'lcl',
+  UPPER_CONFIDENCE_LIMIT = 'ucl',
+  SIGHTABILITY_MODEL = 'sightability.model',
   AREA = 'area',
-  AREA_FLOWN = 'area.flown'
+  AREA_FLOWN = 'area.flown',
+  OUTLIER_BLOCKS_REMOVED = 'outlier.blocks.removed',
+  ANALYSIS_METHOD = 'analysis.method'
 }
 
 /**
@@ -249,6 +262,274 @@ export const updateSurveySummarySubmissionWithKey = async (
   return updateResponse;
 };
 
+function persistSummaryParseErrors(): RequestHandler {
+  return async (req, res, next) => {
+    const parseError = req['parseError'];
+
+    defaultLog.debug({ label: 'persistSummaryParseErrors', message: 'parseError', parseError });
+
+    if (!parseError) {
+      // no errors to persist, skip to next step
+      return next();
+    }
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const summarySubmissionId = req['summarySubmissionId'];
+      await insertSummarySubmissionMessage(summarySubmissionId, 'Error', parseError, 'Miscellaneous', connection);
+
+      await connection.commit();
+
+      // archive is not parsable, don't continue to next step and return early
+      return res.status(200).json();
+    } catch (error) {
+      defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
+export function getValidationRules(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
+
+    try {
+      const validationSchema = {
+        name: '',
+        description: '',
+        defaultFile: {
+          description: '',
+          columns: [
+            {
+              name: 'Observed',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Estimate',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'SE',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'CV',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Conf.Level',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'LCL',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'UCL',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Area',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Area.Flown',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            }
+          ],
+          validations: [
+            {
+              file_duplicate_columns_validator: {}
+            },
+            {
+              file_required_columns_validator: {
+                required_columns: [
+                  'Survey Area',
+                  'Statistic',
+                  'Stratum',
+                  'Observed',
+                  'Estimate',
+                  'SE',
+                  'CV',
+                  'Conf.Level',
+                  'LCL',
+                  'UCL',
+                  'Sightability.Model',
+                  'Area',
+                  'Area.Flown',
+                  'Outlier.Blocks.Removed',
+                  'Analysis.Method'
+                ]
+              }
+            }
+          ]
+        },
+        validations: [
+          {
+            mimetype_validator: {
+              reg_exps: ['text\\/csv', 'application\\/vnd.*']
+            }
+          }
+        ]
+      };
+
+      const validationSchemaParser = new ValidationSchemaParser(validationSchema);
+
+      req['validationSchemaParser'] = validationSchemaParser;
+
+      next();
+    } catch (error) {
+      defaultLog.debug({ label: 'getValidationRules', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
+function persistSummaryValidationResults(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
+
+    const mediaState: IMediaState = req['mediaState'];
+    const csvState: ICsvState[] = req['csvState'];
+
+    if (mediaState.isValid && csvState?.every((item) => item.isValid)) {
+      return next();
+    }
+
+    const connection = getDBConnection(req['keycloak_token']);
+
+    try {
+      await connection.open();
+
+      const summarySubmissionId = req['summarySubmissionId'];
+
+      const promises: Promise<any>[] = [];
+
+      mediaState.fileErrors?.forEach((fileError) => {
+        promises.push(
+          insertSummarySubmissionMessage(summarySubmissionId, 'Error', `${fileError}`, 'Miscellaneous', connection)
+        );
+      });
+
+      csvState?.forEach((csvStateItem) => {
+        csvStateItem.headerErrors?.forEach((headerError) => {
+          promises.push(
+            insertSummarySubmissionMessage(
+              summarySubmissionId,
+              'Error',
+              generateHeaderErrorMessage(csvStateItem.fileName, headerError),
+              headerError.errorCode,
+              connection
+            )
+          );
+        });
+
+        csvStateItem.rowErrors?.forEach((rowError) => {
+          promises.push(
+            insertSummarySubmissionMessage(
+              summarySubmissionId,
+              'Error',
+              generateRowErrorMessage(csvStateItem.fileName, rowError),
+              rowError.errorCode,
+              connection
+            )
+          );
+        });
+      });
+
+      await Promise.all(promises);
+
+      await connection.commit();
+
+      return res.status(200).send();
+    } catch (error) {
+      defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
+      await connection.rollback();
+      throw error;
+    } finally {
+      connection.release();
+    }
+  };
+}
+
 export function parseAndUploadSummarySubmissionInput(): RequestHandler {
   return async (req, res, next) => {
     const xlsxCsv: XLSXCSV = req['xlsx'];
@@ -304,11 +585,20 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
               case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
                 summaryObject.confidence_limit_lower = columnValue;
                 break;
+              case SUMMARY_CLASS.SIGHTABILITY_MODEL:
+                summaryObject.sightability_model = columnValue;
+                break;
               case SUMMARY_CLASS.AREA:
-                summaryObject.total_area_surveyed_sqm = columnValue;
+                summaryObject.total_area_survey_sqm = columnValue;
                 break;
               case SUMMARY_CLASS.AREA_FLOWN:
                 summaryObject.kilometres_surveyed = columnValue;
+                break;
+              case SUMMARY_CLASS.OUTLIER_BLOCKS_REMOVED:
+                summaryObject.outlier_blocks_removed = columnValue;
+                break;
+              case SUMMARY_CLASS.ANALYSIS_METHOD:
+                summaryObject.analysis_method = columnValue;
                 break;
               default:
                 break;
@@ -363,5 +653,40 @@ export const uploadScrapedSummarySubmission = async (
 
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to insert summary details data');
+  }
+};
+
+/**
+ * Insert a record into the survey_summary_submission_message table.
+ *
+ * @param {number} submissionStatusId
+ * @param {string} submissionMessageType
+ * @param {string} message
+ * @param {string} errorCode
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<void>}
+ */
+export const insertSummarySubmissionMessage = async (
+  submissionStatusId: number,
+  submissionMessageType: string,
+  message: string,
+  errorCode: string,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = insertSurveySummarySubmissionMessageSQL(
+    submissionStatusId,
+    submissionMessageType,
+    message,
+    errorCode
+  );
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert survey submission message data');
   }
 };

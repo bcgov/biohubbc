@@ -129,7 +129,7 @@ export function getValidationSchema(): RequestHandler {
   };
 }
 
-function validateXLSX(): RequestHandler {
+export function validateXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
 

@@ -101,7 +101,8 @@ describe('getSummarySubmission', () => {
       rows: [
         {
           id: 13,
-          file_name: 'file.xlsx'
+          file_name: 'file.xlsx',
+          messages: []
         }
       ]
     });
@@ -122,7 +123,8 @@ describe('getSummarySubmission', () => {
 
     expect(actualResult).to.be.eql({
       id: 13,
-      fileName: 'file.xlsx'
+      fileName: 'file.xlsx',
+      messages: []
     });
   });
 
