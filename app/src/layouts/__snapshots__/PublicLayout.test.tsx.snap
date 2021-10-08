@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`PublicLayout renders correctly 1`] = `
+exports[`PublicLayout renders correctly with environment tag 1`] = `
 <DocumentFragment>
   <div
     class="MuiBox-root MuiBox-root-1"
@@ -44,6 +44,12 @@ exports[`PublicLayout renders correctly 1`] = `
                   class="makeStyles-appPhaseTag-6"
                 >
                   Beta
+                </sup>
+                <sup
+                  aria-label="This application is currently being run in the  environment"
+                  class="makeStyles-appPhaseTag-6"
+                >
+                  & 
                 </sup>
               </span>
             </a>

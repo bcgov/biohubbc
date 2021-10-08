@@ -8,9 +8,12 @@ export interface IConfig {
   N8N_HOST: string;
   CHANGE_VERSION: string;
   NODE_ENV: string;
+  REACT_APP_NODE_ENV: string;
   VERSION: string;
   KEYCLOAK_CONFIG: KeycloakConfig;
   SITEMINDER_LOGOUT_URL: string;
+  MAX_UPLOAD_NUM_FILES: number;
+  MAX_UPLOAD_FILE_SIZE: number;
 }
 
 export const ConfigContext = React.createContext<IConfig | undefined>({
@@ -18,13 +21,16 @@ export const ConfigContext = React.createContext<IConfig | undefined>({
   N8N_HOST: '',
   CHANGE_VERSION: '',
   NODE_ENV: '',
+  REACT_APP_NODE_ENV: '',
   VERSION: '',
   KEYCLOAK_CONFIG: {
     url: '',
     realm: '',
     clientId: ''
   },
-  SITEMINDER_LOGOUT_URL: ''
+  SITEMINDER_LOGOUT_URL: '',
+  MAX_UPLOAD_NUM_FILES: 10,
+  MAX_UPLOAD_FILE_SIZE: 52428800
 });
 
 /**
@@ -46,6 +52,7 @@ const getLocalConfig = (): IConfig => {
     N8N_HOST: ensureProtocol(N8N_URL, 'http://'),
     CHANGE_VERSION: process.env.CHANGE_VERSION || 'NA',
     NODE_ENV: process.env.NODE_ENV,
+    REACT_APP_NODE_ENV: process.env.REACT_APP_NODE_ENV || 'dev',
     VERSION: `${process.env.VERSION || 'NA'}(build #${process.env.CHANGE_VERSION || 'NA'})`,
     KEYCLOAK_CONFIG: {
       url: process.env.SSO_URL || 'https://dev.oidc.gov.bc.ca/auth',
@@ -53,7 +60,9 @@ const getLocalConfig = (): IConfig => {
       clientId: process.env.SSO_CLIENT_ID || 'biohubbc'
     },
     SITEMINDER_LOGOUT_URL:
-      process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi'
+      process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi',
+    MAX_UPLOAD_NUM_FILES: Number(process.env.MAX_UPLOAD_NUM_FILES) || 10,
+    MAX_UPLOAD_FILE_SIZE: Number(process.env.MAX_UPLOAD_FILE_SIZE) || 52428800
   };
 };
 

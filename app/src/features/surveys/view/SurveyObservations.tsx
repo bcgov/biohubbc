@@ -22,6 +22,7 @@ import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -79,6 +80,7 @@ const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
+  const config = useContext(ConfigContext);
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
@@ -96,9 +98,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             return;
           }
 
-          if (process.env.REACT_APP_N8N_PORT) {
+          if (config?.N8N_HOST) {
             biohubApi.n8n.initiateOccurrenceSubmissionProcessing(result.submissionId, file.type);
-
             return;
           }
 

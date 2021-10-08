@@ -32,6 +32,11 @@
     "test": "api-test-biohubbc.apps.silver.devops.gov.bc.ca",
     "prod": "api-biohubbc.apps.silver.devops.gov.bc.ca"
   },
+  "staticUrlsN8N": {
+    "dev": "n8n-af2668-dev.apps.silver.devops.gov.bc.ca",
+    "test": "n8n-af2668-test.apps.silver.devops.gov.bc.ca",
+    "prod": "n8n-af2668-prod.apps.silver.devops.gov.bc.ca"
+  },
   "certificateURL": {
     "dev": "https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
     "test": "https://test.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs",
