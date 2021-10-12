@@ -11,6 +11,7 @@ import * as survey_update_queries from '../../../../../queries/survey/survey-upd
 import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../../../../constants/status';
+import { getMockDBConnection } from '../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -19,26 +20,7 @@ describe('getSurveyForUpdate', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
@@ -330,26 +312,7 @@ describe('updateSurvey', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
@@ -630,26 +593,11 @@ describe('updateSurveyProprietorData', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const surveyId = 2;
   const entities: update.IUpdateSurvey = {
@@ -740,26 +688,11 @@ describe('updateSurveyDetailsData', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const projectId = 1;
   const surveyId = 2;
@@ -989,26 +922,11 @@ describe('unassociatePermitFromSurvey', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const surveyId = 1;
 
@@ -1048,26 +966,11 @@ describe('getSurveyDetailsData', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const surveyId = 1;
 
@@ -1107,26 +1010,11 @@ describe('getSurveyProprietorData', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const surveyId = 1;
 
