@@ -149,7 +149,7 @@ export function updateAccessRequest(): RequestHandler {
 
       const userObject = new UserObject(userData);
 
-      if (!userObject) {
+      if (!userObject.id || !userObject.user_identifier) {
         throw new HTTP500('Failed to get or add system user');
       }
 

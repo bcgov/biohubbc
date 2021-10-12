@@ -168,4 +168,39 @@ describe('updateAccessRequest', () => {
       expect(actualError.message).to.equal('Failed to identify system user ID');
     }
   });
+
+  it('should throw a 500 error when userId but no userObject', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rows: [
+        {
+          id: null,
+          user_identifier: 'identifier',
+          role_ids: [1, 2],
+          role_name: ['System Admin', 'Project Lead']
+        }
+      ],
+      rowCount: 1
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return null;
+      },
+      query: mockQuery
+    });
+    sinon.stub(user_queries, 'getUserByUserIdentifierSQL').returns(SQL`something`);
+
+    try {
+      const result = access_request.updateAccessRequest();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(500);
+      expect(actualError.message).to.equal('Failed to get or add system user');
+    }
+  });
 });
