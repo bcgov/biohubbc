@@ -7,7 +7,9 @@ import {
   updateSurveySummarySubmissionWithKeySQL,
   getSurveySummarySubmissionSQL,
   insertSurveySummaryDetailsSQL,
-  deleteSummarySubmissionSQL
+  deleteSummarySubmissionSQL,
+  insertSurveySummarySubmissionMessageSQL,
+  getSummarySubmissionMessagesSQL
 } from './survey-summary-queries';
 
 describe('deleteSummarySubmissionSQL', () => {
@@ -19,6 +21,57 @@ describe('deleteSummarySubmissionSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = deleteSummarySubmissionSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSummarySubmissionMessagesSQL', () => {
+  it('returns null response when null summarySubmissionId provided', () => {
+    const response = getSummarySubmissionMessagesSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = getSummarySubmissionMessagesSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('insertSurveySummarySubmissionMessageSQL', () => {
+  it('returns null response when null summarySubmissionId provided', () => {
+    const response = insertSurveySummarySubmissionMessageSQL(
+      (null as unknown) as number,
+      'type',
+      'message',
+      'errorCode'
+    );
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null summarySubmissionMessageType provided', () => {
+    const response = insertSurveySummarySubmissionMessageSQL(1, (null as unknown) as string, 'message', 'errorCode');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null summarySubmissionMessage provided', () => {
+    const response = insertSurveySummarySubmissionMessageSQL(1, 'type', (null as unknown) as string, 'errorCode');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null errorCode provided', () => {
+    const response = insertSurveySummarySubmissionMessageSQL(1, 'type', 'message', (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = insertSurveySummarySubmissionMessageSQL(1, 'type', 'message', 'errorCode');
 
     expect(response).to.not.be.null;
   });
