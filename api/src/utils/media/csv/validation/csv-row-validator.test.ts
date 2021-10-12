@@ -96,11 +96,41 @@ describe('getRequiredFieldsValidator', () => {
 });
 
 describe('getCodeValueFieldsValidator', () => {
-  it('adds no errors when no required code values are not provided', () => {
+  it('adds no errors when header does not exist', () => {
+    const requiredCodeValuesByHeader = {
+      columnName: 'Header1',
+      column_code_validator: { allowed_code_values: [{ name: 'Code1' }, { name: 'Code2' }] }
+    };
+
+    const validator = getCodeValueFieldsValidator(requiredCodeValuesByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when code values are empty', () => {
     const requiredCodeValuesByHeader = {
       columnName: 'Header1',
       column_code_validator: { allowed_code_values: [] }
     };
+
+    const validator = getCodeValueFieldsValidator(requiredCodeValuesByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+  it('adds no errors when no required code values are provided', () => {
+    const requiredCodeValuesByHeader = undefined;
 
     const validator = getCodeValueFieldsValidator(requiredCodeValuesByHeader);
 
