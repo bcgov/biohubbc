@@ -3,10 +3,12 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as search from './search';
-import * as db from '../../database/db';
-import * as search_queries from '../../queries/public/search-queries';
+import * as db from '../database/db';
+import * as search_queries from '../queries/search-queries';
 import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../../__mocks__/db';
+import * as auth_utils from '../security/auth-utils';
+import { SYSTEM_ROLE } from '../constants/roles';
+import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -14,7 +16,10 @@ describe('search', () => {
   const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
-    keycloak_token: {}
+    keycloak_token: {},
+    system_user: {
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+    }
   } as any;
 
   let actualResult: any = null;
@@ -41,7 +46,8 @@ describe('search', () => {
           return 20;
         }
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(null);
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(null);
 
       try {
         const result = search.getSearchResults();
@@ -54,7 +60,7 @@ describe('search', () => {
       }
     });
 
-    it('should return null when no response returned from getPublicSpatialSearchResultsSQL', async () => {
+    it('should return null when no response returned from getSpatialSearchResultsSQL', async () => {
       const mockQuery = sinon.stub();
 
       mockQuery.resolves({ rows: null });
@@ -66,7 +72,8 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
 
@@ -87,7 +94,8 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
 
@@ -116,7 +124,8 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
 

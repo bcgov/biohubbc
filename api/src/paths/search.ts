@@ -72,13 +72,11 @@ export function getSearchResults(): RequestHandler {
 
       await connection.commit();
 
-      let rows: any[] = [];
-
-      if (response && response.rows) {
-        rows = response.rows;
+      if (!response || !response.rows) {
+        return res.status(200).json(null);
       }
 
-      const result: any[] = _extractResults(rows);
+      const result: any[] = _extractResults(response.rows);
 
       return res.status(200).json(result);
     } catch (error) {
