@@ -293,7 +293,7 @@ describe('getValidRangeFieldsValidator', () => {
     ]);
   });
 
-  it('adds an out of range error when single value provided is greater than the max_value', () => {
+  it('adds an out of range error when value provided is greater than the max_value, and only max_value is provided', () => {
     const codeValuesRangeByHeader = {
       columnName: 'Header1',
       column_range_validator: {
@@ -319,7 +319,7 @@ describe('getValidRangeFieldsValidator', () => {
     ]);
   });
 
-  it('adds an out of range error when single value provided is less than the min_value', () => {
+  it('adds an out of range error when value provided is less than the min_value, and only the min-value is specified', () => {
     const codeValuesRangeByHeader = {
       columnName: 'Header1',
       column_range_validator: {
