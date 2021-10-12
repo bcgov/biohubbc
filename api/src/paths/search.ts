@@ -56,8 +56,14 @@ export function getSearchResults(): RequestHandler {
     try {
       await connection.open();
 
+      console.log('comoneeee');
+
       const systemUserId = connection.systemUserId();
       const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+
+      console.log('yoooo');
+      console.log(systemUserId);
+      console.log(isUserAdmin);
 
       const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 
@@ -72,13 +78,11 @@ export function getSearchResults(): RequestHandler {
 
       await connection.commit();
 
-      let rows: any[] = [];
-
-      if (response && response.rows) {
-        rows = response.rows;
+      if (!response || !response.rows) {
+        return res.status(200).json(null);
       }
 
-      const result: any[] = _extractResults(rows);
+      const result: any[] = _extractResults(response.rows);
 
       return res.status(200).json(result);
     } catch (error) {

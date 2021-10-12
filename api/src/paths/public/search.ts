@@ -6,6 +6,7 @@ import { searchResponseObject } from '../../openapi/schemas/search';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 import { getPublicSpatialSearchResultsSQL } from '../../queries/public/search-queries';
+import { _extractResults } from '../search';
 
 const defaultLog = getLogger('paths/public/search');
 
@@ -76,31 +77,4 @@ export function getSearchResults(): RequestHandler {
       connection.release();
     }
   };
-}
-
-/**
- * Extract an array of search result data from DB query.
- *
- * @export
- * @param {any[]} rows DB query result rows
- * @return {any[]} An array of search result data
- */
-export function _extractResults(rows: any[]): any[] {
-  if (!rows || !rows.length) {
-    return [];
-  }
-
-  const searchResults: any[] = [];
-
-  rows.forEach((row) => {
-    const result: any = {
-      id: row.id,
-      name: row.name,
-      geometry: row.geometry && [JSON.parse(row.geometry)]
-    };
-
-    searchResults.push(result);
-  });
-
-  return searchResults;
 }
