@@ -276,7 +276,7 @@ PUT.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getUpdateAdministrativeActivityHandler(): RequestHandler {
+export function getUpdateAdministrativeActivityHandler(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'updateAdministrativeActivity',

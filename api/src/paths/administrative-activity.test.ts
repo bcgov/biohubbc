@@ -272,3 +272,45 @@ describe('getPendingAccessRequestsCount', () => {
     expect(actualResult).to.equal(23);
   });
 });
+
+describe('getUpdateAdministrativeActivityHandler', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const sampleReq = {
+    keycloak_token: {},
+    body: {
+      id: null,
+      status: null
+    }
+  } as any;
+
+  it('should throw a 400 error when no administrativeActivityId', async () => {
+    try {
+      const result = administrative_activity.getUpdateAdministrativeActivityHandler();
+
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body parameter: id');
+    }
+  });
+
+  it('should throw a 400 error when no administrativeActivityStatusTypeId', async () => {
+    try {
+      const result = administrative_activity.getUpdateAdministrativeActivityHandler();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, id: 2 } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body parameter: status');
+    }
+  });
+});
