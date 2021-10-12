@@ -105,10 +105,7 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
       s.start_date,
       s.end_date,
       s.publish_timestamp,
-      CASE
-        WHEN wtu.english_name IS NULL THEN wtu.unit_name2
-        ELSE CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
-      END as species
+      CONCAT_WS(' - ', wtu.english_name, CONCAT_WS(' ', wtu.unit_name1, wtu.unit_name2, wtu.unit_name3)) as species
     FROM
       wldtaxonomic_units as wtu
     LEFT OUTER JOIN
@@ -174,12 +171,12 @@ export const getSurveyForViewSQL = (surveyId: number): SQLStatement | null => {
       os.occurrence_submission_id,
       sss.survey_summary_submission_id,
       CASE
-        WHEN wtu.english_name IS NULL and ss.is_focal = TRUE THEN wtu.unit_name2
-        WHEN wtu.english_name IS NOT NULL and ss.is_focal = TRUE THEN CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
+        WHEN ss.is_focal = TRUE
+        THEN CONCAT_WS(' - ', wtu.english_name, CONCAT_WS(' ', wtu.unit_name1, wtu.unit_name2, wtu.unit_name3))
       END as focal_species,
       CASE
-        WHEN wtu.english_name IS NULL and ss.is_focal = FALSE THEN wtu.unit_name2
-        WHEN wtu.english_name IS NOT NULL and ss.is_focal = FALSE THEN CONCAT(wtu.english_name, ' - ', wtu.unit_name2)
+        WHEN ss.is_focal = FALSE
+        THEN CONCAT_WS(' - ', wtu.english_name, CONCAT_WS(' ', wtu.unit_name1, wtu.unit_name2, wtu.unit_name3))
       END as ancillary_species
     FROM
       wldtaxonomic_units as wtu
