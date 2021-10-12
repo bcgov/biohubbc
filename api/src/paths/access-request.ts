@@ -94,7 +94,7 @@ PUT.apiDoc = {
  *
  * @return {*}  {RequestHandler}
  */
-function updateAccessRequest(): RequestHandler {
+export function updateAccessRequest(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'updateAccessRequest', message: 'params', req_body: req.body });
 

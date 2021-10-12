@@ -1,0 +1,120 @@
+import chai, { expect } from 'chai';
+import { describe } from 'mocha';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import * as access_request from './access-request';
+// import * as db from '../database/db';
+
+chai.use(sinonChai);
+
+describe('updateAccessRequest', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  // const dbConnectionObj = {
+  //   systemUserId: () => {
+  //     return null;
+  //   },
+  //   open: async () => {
+  //     // do nothing
+  //   },
+  //   release: () => {
+  //     // do nothing
+  //   },
+  //   commit: async () => {
+  //     // do nothing
+  //   },
+  //   rollback: async () => {
+  //     // do nothing
+  //   },
+  //   query: async () => {
+  //     // do nothing
+  //   }
+  // };
+
+  const sampleReq = {
+    keycloak_token: {},
+    body: {
+      userIdentifier: 1,
+      identitySource: 'identitySource',
+      requestId: 1
+    }
+  } as any;
+
+  // let actualResult: any = null;
+
+  // const sampleRes = {
+  //   status: () => {
+  //     return {
+  //       json: (result: any) => {
+  //         actualResult = result;
+  //       }
+  //     };
+  //   }
+  // };
+
+  it('should throw a 400 error when no user identifier body param', async () => {
+    try {
+      const result = access_request.updateAccessRequest();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, userIdentifier: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body param: userIdentifier');
+    }
+  });
+
+  it('should throw a 400 error when no identity source body param', async () => {
+    try {
+      const result = access_request.updateAccessRequest();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, identitySource: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body param: identitySource');
+    }
+  });
+
+  it('should throw a 400 error when no request id body param', async () => {
+    try {
+      const result = access_request.updateAccessRequest();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, requestId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body param: requestId');
+    }
+  });
+
+  it('should throw a 400 error when no request status type id body param', async () => {
+    try {
+      const result = access_request.updateAccessRequest();
+
+      await result(
+        { ...sampleReq, body: { ...sampleReq.body, requestStatusTypeId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Missing required body param: requestStatusTypeId');
+    }
+  });
+});
