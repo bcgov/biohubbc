@@ -124,7 +124,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getAdministrativeActivities(): RequestHandler {
+export function getAdministrativeActivities(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
