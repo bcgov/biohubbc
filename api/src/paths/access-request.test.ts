@@ -175,8 +175,8 @@ describe('updateAccessRequest', () => {
     mockQuery.resolves({
       rows: [
         {
-          id: null,
-          user_identifier: 'identifier',
+          id: 1,
+          user_identifier: null,
           role_ids: [1, 2],
           role_name: ['System Admin', 'Project Lead']
         }
