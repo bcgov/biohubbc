@@ -56,14 +56,8 @@ export function getSearchResults(): RequestHandler {
     try {
       await connection.open();
 
-      console.log('comoneeee');
-
       const systemUserId = connection.systemUserId();
       const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
-
-      console.log('yoooo');
-      console.log(systemUserId);
-      console.log(isUserAdmin);
 
       const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 

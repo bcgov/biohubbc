@@ -27,18 +27,6 @@ describe('updateAccessRequest', () => {
     }
   } as any;
 
-  // let actualResult: any = null;
-
-  // const sampleRes = {
-  //   status: () => {
-  //     return {
-  //       json: (result: any) => {
-  //         actualResult = result;
-  //       }
-  //     };
-  //   }
-  // };
-
   it('should throw a 400 error when no user identifier body param', async () => {
     try {
       const result = access_request.updateAccessRequest();
