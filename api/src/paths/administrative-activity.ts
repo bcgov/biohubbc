@@ -124,7 +124,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function createAdministrativeActivity(): RequestHandler {
+export function createAdministrativeActivity(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
@@ -134,7 +134,7 @@ function createAdministrativeActivity(): RequestHandler {
       const systemUserId = connection.systemUserId();
 
       if (!systemUserId) {
-        throw new HTTP400('Failed to identify system user ID');
+        throw new HTTP500('Failed to identify system user ID');
       }
 
       const postAdministrativeActivitySQLStatement = postAdministrativeActivitySQL(systemUserId, req?.body);
@@ -178,7 +178,7 @@ function createAdministrativeActivity(): RequestHandler {
  *
  * @returns {RequestHandler}
  */
-function getPendingAccessRequestsCount(): RequestHandler {
+export function getPendingAccessRequestsCount(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
@@ -186,7 +186,7 @@ function getPendingAccessRequestsCount(): RequestHandler {
       const userIdentifier = getUserIdentifier(req['keycloak_token']);
 
       if (!userIdentifier) {
-        throw new HTTP400('Missing required query param : userIdentifier ');
+        throw new HTTP400('Missing required userIdentifier');
       }
 
       const sqlStatement = countPendingAdministrativeActivitiesSQL(userIdentifier);
@@ -276,7 +276,7 @@ PUT.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getUpdateAdministrativeActivityHandler(): RequestHandler {
+export function getUpdateAdministrativeActivityHandler(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'updateAdministrativeActivity',

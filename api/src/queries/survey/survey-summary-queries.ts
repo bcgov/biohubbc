@@ -290,9 +290,10 @@ export const insertSurveySummaryDetailsSQL = (
 /**
  * SQL query to insert the occurrence submission message.
  *
- * @param {number} occurrenceSubmissionId
- * @param {string} submissionStatusType
- * @param {string} submissionMessage
+ * @param {number} summarySubmissionId
+ * @param {string} summarySubmissionMessageType
+ * @param {string} summarySubmissionMessage
+ * @param {string} errorCode
  * @returns {SQLStatement} sql query object
  */
 export const insertSurveySummarySubmissionMessageSQL = (
