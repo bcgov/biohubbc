@@ -336,14 +336,8 @@ const CreateSurveyPage = () => {
             </Breadcrumbs>
           </Box>
 
-          <Box mb={3}>
-            <Typography variant="h1">Create Survey</Typography>
-          </Box>
           <Box mb={5}>
-            <Typography variant="body1">
-              Lorem Ipsum dolor sit amet, consecteur, Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit
-              amet, consecteur. Lorem Ipsum dolor sit amet, consecteur. Lorem Ipsum dolor sit amet, consecteur
-            </Typography>
+            <Typography variant="h1">Create Survey</Typography>
           </Box>
           <Box component={Paper} display="block">
             <Formik
