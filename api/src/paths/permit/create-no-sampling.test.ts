@@ -6,30 +6,12 @@ import * as create_no_sampling from './create-no-sampling';
 import * as permit_create_queries from '../../queries/permit/permit-create-queries';
 import * as db from '../../database/db';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../__mocks__/db';
 
 chai.use(sinonChai);
 
 describe('create-no-sampling', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
@@ -141,26 +123,11 @@ describe('insertNoSamplePermit', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const permitData = {
     permit_number: 'number',

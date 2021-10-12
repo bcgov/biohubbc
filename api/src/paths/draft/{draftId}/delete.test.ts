@@ -6,30 +6,12 @@ import * as deleteDraftProject from './delete';
 import * as db from '../../../database/db';
 import * as deleteDraft_queries from '../../../queries/draft-queries';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../../__mocks__/db';
 
 chai.use(sinonChai);
 
 describe('delete a draft project', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

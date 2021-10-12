@@ -10,31 +10,13 @@ import * as file_utils from '../../../../../../../../utils/file-utils';
 import { ArchiveFile, MediaFile } from '../../../../../../../../utils/media/media-file';
 import * as media_utils from '../../../../../../../../utils/media/media-utils';
 import * as xlsx_file from '../../../../../../../../utils/media/xlsx/xlsx-file';
+import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
 import * as view from './view';
 
 chai.use(sinonChai);
 
 describe('getObservationSubmissionCSVForView', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

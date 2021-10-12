@@ -5,30 +5,12 @@ import sinonChai from 'sinon-chai';
 import * as codes from './codes';
 import * as db from '../database/db';
 import * as code_utils from '../utils/code-utils';
+import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
 describe('codes', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {}

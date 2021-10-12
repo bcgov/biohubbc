@@ -7,6 +7,7 @@ import * as db from '../../../database/db';
 import * as user_queries from '../../../queries/users/user-queries';
 import * as system_role_queries from '../../../queries/users/system-role-queries';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -15,26 +16,7 @@ describe('getAddSystemRolesHandler', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
@@ -208,26 +190,7 @@ describe('addSystemRoles', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const userId = 1;
   const roles = [1, 2];
@@ -285,26 +248,7 @@ describe('removeSystemRoles', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

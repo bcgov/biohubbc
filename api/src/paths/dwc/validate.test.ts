@@ -8,29 +8,15 @@ import * as survey_occurrence_queries from '../../queries/survey/survey-occurren
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../utils/file-utils';
 import { GetObjectOutput } from 'aws-sdk/clients/s3';
+import { getMockDBConnection } from '../../__mocks__/db';
 
 chai.use(sinonChai);
 
-const dbConnectionObj = {
+const dbConnectionObj = getMockDBConnection({
   systemUserId: () => {
     return 20;
-  },
-  open: async () => {
-    // do nothing
-  },
-  release: () => {
-    // do nothing
-  },
-  commit: async () => {
-    // do nothing
-  },
-  rollback: async () => {
-    // do nothing
-  },
-  query: async () => {
-    // do nothing
   }
-};
+});
 
 const sampleReq = {
   keycloak_token: {},

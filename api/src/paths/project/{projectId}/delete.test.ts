@@ -9,6 +9,7 @@ import * as db from '../../../database/db';
 import * as project_attachments_queries from '../../../queries/project/project-attachments-queries';
 import * as project_queries from '../../../queries/project/project-view-queries';
 import * as survey_view_queries from '../../../queries/survey/survey-view-queries';
+import { getMockDBConnection } from '../../../__mocks__/db';
 import * as delete_project from './delete';
 
 chai.use(sinonChai);
@@ -18,26 +19,7 @@ describe('deleteProject', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

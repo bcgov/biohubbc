@@ -7,6 +7,7 @@ import * as db from '../../../../../../database/db';
 import * as file_utils from '../../../../../../utils/file-utils';
 import * as survey_attachment_queries from '../../../../../../queries/survey/survey-attachments-queries';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -15,26 +16,7 @@ describe('uploadMedia', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
@@ -215,26 +197,11 @@ describe('upsertSurveyAttachment', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const file = {
     fieldname: 'media',
