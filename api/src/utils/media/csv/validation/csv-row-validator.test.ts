@@ -5,7 +5,8 @@ import { CSVWorksheet } from '../csv-file';
 import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
-  getValidRangeFieldsValidator
+  getValidRangeFieldsValidator,
+  getNumericFieldsValidator
 } from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {
@@ -398,6 +399,63 @@ describe('getValidRangeFieldsValidator', () => {
     };
 
     const validator = getValidRangeFieldsValidator(codeValuesRangeByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['a']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Invalid Value',
+        message: 'Invalid value: a. Value must be a number ',
+        row: 2
+      }
+    ]);
+  });
+});
+
+describe('getNumericFieldsValidator', () => {
+  it('adds no errors when configuration is not provided', () => {
+    const columnNumericValidatorConfig = undefined;
+
+    const validator = getNumericFieldsValidator(columnNumericValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], []]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when header does not exist', () => {
+    const columnNumericValidatorConfig = {
+      columnName: 'Header 1',
+      column_numeric_validator: {}
+    };
+
+    const validator = getNumericFieldsValidator(columnNumericValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds an error when row value is not numeric', () => {
+    const columnNumericValidatorConfig = {
+      columnName: 'Header1',
+      column_numeric_validator: {}
+    };
+
+    const validator = getNumericFieldsValidator(columnNumericValidatorConfig);
 
     const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['a']]);
 
