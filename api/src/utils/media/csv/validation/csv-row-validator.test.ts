@@ -556,6 +556,4 @@ describe('getValidFormatFieldsValidator', () => {
       }
     ]);
   });
-
-  
 });
