@@ -178,7 +178,7 @@ export function createAdministrativeActivity(): RequestHandler {
  *
  * @returns {RequestHandler}
  */
-function getPendingAccessRequestsCount(): RequestHandler {
+export function getPendingAccessRequestsCount(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
@@ -186,7 +186,7 @@ function getPendingAccessRequestsCount(): RequestHandler {
       const userIdentifier = getUserIdentifier(req['keycloak_token']);
 
       if (!userIdentifier) {
-        throw new HTTP400('Missing required query param : userIdentifier ');
+        throw new HTTP400('Missing required userIdentifier');
       }
 
       const sqlStatement = countPendingAdministrativeActivitiesSQL(userIdentifier);
