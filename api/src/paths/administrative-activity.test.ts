@@ -21,6 +21,18 @@ describe('updateAccessRequest', () => {
     keycloak_token: {}
   } as any;
 
+  let actualResult: any = null;
+
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
+
   it('should throw a 400 error when no system user id', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -117,5 +129,36 @@ describe('updateAccessRequest', () => {
       expect(actualError.status).to.equal(500);
       expect(actualError.message).to.equal('Failed to submit administrative activity');
     }
+  });
+
+  it('should throw a 400 error when failed to submit administrative activity due to row id being null', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rows: [
+        {
+          id: 1,
+          create_date: '2020/04/04'
+        }
+      ]
+    });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+    sinon.stub(administrative_queries, 'postAdministrativeActivitySQL').returns(SQL`some`);
+
+    const result = administrative_activity.createAdministrativeActivity();
+
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+    expect(actualResult).to.eql({
+      id: 1,
+      date: '2020/04/04'
+    });
   });
 });
