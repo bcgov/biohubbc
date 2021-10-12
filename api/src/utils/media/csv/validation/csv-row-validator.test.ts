@@ -6,7 +6,8 @@ import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
   getValidRangeFieldsValidator,
-  getNumericFieldsValidator
+  getNumericFieldsValidator,
+  getValidFormatFieldsValidator
 } from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {
@@ -472,4 +473,89 @@ describe('getNumericFieldsValidator', () => {
       }
     ]);
   });
+});
+
+describe('getValidFormatFieldsValidator', () => {
+  it('adds no errors when configuration is not provided', () => {
+    const columnFormatValidatorConfig = undefined;
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WPT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when regular expression is not provided', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '',
+        expected_format: ''
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WPT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when header is not provided', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '^wpt [0-9]+$',
+        expected_format: ''
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header2'], ['WPT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds an error when row value does not match regular expression', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '^wpt [0-9]+$',
+        expected_format: ''
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WXT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Unexpected Format',
+        message: 'Unexpected Format: WXT1. ',
+        row: 2
+      }
+    ]);
+  });
+
+  
 });
