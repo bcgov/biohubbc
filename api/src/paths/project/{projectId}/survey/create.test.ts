@@ -7,6 +7,7 @@ import * as db from '../../../../database/db';
 import * as survey_create_queries from '../../../../queries/survey/survey-create-queries';
 import * as survey_update_queries from '../../../../queries/survey/survey-update-queries';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -15,26 +16,7 @@ describe('createSurvey', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
@@ -407,26 +389,11 @@ describe('insertFocalSpecies', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const focalSpeciesId = 1;
   const surveyId = 2;
@@ -498,26 +465,11 @@ describe('insertAncillarySpecies', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const ancillarySpeciesId = 1;
   const surveyId = 2;
@@ -592,26 +544,11 @@ describe('insertSurveyPermit', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
+  });
 
   const permitNumber = '123';
   const projectId = 1;
@@ -693,27 +630,11 @@ describe('insertSurveyFundingSource', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
+  const dbConnectionObj = getMockDBConnection({
     systemUserId: () => {
       return 20;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
     }
-  };
-
+  });
   const fundingSourceId = 1;
   const surveyId = 2;
 

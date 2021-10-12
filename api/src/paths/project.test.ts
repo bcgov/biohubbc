@@ -5,6 +5,7 @@ import sinonChai from 'sinon-chai';
 import * as project from './project';
 import * as db from '../database/db';
 import * as project_create_queries from '../queries/project/project-create-queries';
+import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -13,26 +14,7 @@ describe('createProject', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
