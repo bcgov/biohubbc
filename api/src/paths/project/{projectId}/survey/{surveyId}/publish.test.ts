@@ -7,30 +7,12 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
 import * as survey_occurrence_queries from '../../../../../queries/survey/survey-occurrence-queries';
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
+import { getMockDBConnection } from '../../../../../__mocks__/db';
 import * as publish from './publish';
 
 chai.use(sinonChai);
 
-const dbConnectionObj = {
-  systemUserId: () => {
-    return null;
-  },
-  open: async () => {
-    // do nothing
-  },
-  release: () => {
-    // do nothing
-  },
-  commit: async () => {
-    // do nothing
-  },
-  rollback: async () => {
-    // do nothing
-  },
-  query: async () => {
-    // do nothing
-  }
-};
+const dbConnectionObj = getMockDBConnection();
 
 const sampleReq = {
   keycloak_token: {},

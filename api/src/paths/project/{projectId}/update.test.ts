@@ -7,6 +7,7 @@ import * as db from '../../../database/db';
 import { IUpdateProject } from './update';
 import * as project_delete_queries from '../../../queries/project/project-delete-queries';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -15,26 +16,7 @@ describe('updateProjectPermitData', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const projectId = 1;
   const entities = {

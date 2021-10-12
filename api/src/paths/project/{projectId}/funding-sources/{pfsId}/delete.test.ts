@@ -7,30 +7,12 @@ import * as db from '../../../../../database/db';
 import * as project_delete_queries from '../../../../../queries/project/project-delete-queries';
 import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
 describe('delete a funding source', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
