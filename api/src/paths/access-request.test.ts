@@ -6,6 +6,7 @@ import * as access_request from './access-request';
 import * as user_queries from '../queries/users/user-queries';
 import * as db from '../database/db';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -14,26 +15,7 @@ describe('updateAccessRequest', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

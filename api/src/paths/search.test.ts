@@ -8,30 +8,12 @@ import * as search_queries from '../queries/search-queries';
 import SQL from 'sql-template-strings';
 import * as auth_utils from '../security/auth-utils';
 import { SYSTEM_ROLE } from '../constants/roles';
+import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
 describe('search', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
