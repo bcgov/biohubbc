@@ -26,6 +26,19 @@ describe('getRequiredFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
   });
 
+  it('adds no errors when header does not exist', () => {
+    const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
+    const validator = getRequiredFieldsValidator(requiredFieldsByHeader);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
   it('adds errors for every field if required fields are provided and there are zero data rows in the worksheet', () => {
     const requiredFieldsByHeader: string[] = ['Header1', 'Header2']; // fields for these headers are required
 
