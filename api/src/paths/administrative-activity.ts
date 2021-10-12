@@ -124,7 +124,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function createAdministrativeActivity(): RequestHandler {
+export function createAdministrativeActivity(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 
@@ -134,7 +134,7 @@ function createAdministrativeActivity(): RequestHandler {
       const systemUserId = connection.systemUserId();
 
       if (!systemUserId) {
-        throw new HTTP400('Failed to identify system user ID');
+        throw new HTTP500('Failed to identify system user ID');
       }
 
       const postAdministrativeActivitySQLStatement = postAdministrativeActivitySQL(systemUserId, req?.body);
