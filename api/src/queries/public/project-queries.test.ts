@@ -11,8 +11,38 @@ import {
   getStakeholderPartnershipsByPublicProjectSQL,
   getPublicProjectListSQL,
   getPublicProjectAttachmentsSQL,
-  getPublicProjectAttachmentS3KeySQL
+  getPublicProjectAttachmentS3KeySQL,
+  getPublicProjectReportAttachmentsSQL,
+  getPublicProjectReportAttachmentS3KeySQL
 } from './project-queries';
+
+describe('getPublicProjectReportAttachmentS3KeySQL', () => {
+  it('returns null when null attachment id param provided', () => {
+    const response = getPublicProjectReportAttachmentS3KeySQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid attachment id param provided', () => {
+    const response = getPublicProjectReportAttachmentS3KeySQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getPublicProjectReportAttachmentsSQL', () => {
+  it('returns null when null project id param provided', () => {
+    const response = getPublicProjectReportAttachmentsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid project id param provided', () => {
+    const response = getPublicProjectReportAttachmentsSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
 
 describe('getPublicProjectSQL', () => {
   it('returns null when null project id param provided', () => {

@@ -2,7 +2,6 @@
   "compilerOptions": {
     "module": "commonjs",
     "lib": ["es2018"],
-    "baseUrl": "src",
     "outDir": "dist",
     "target": "es5",
     "sourceMap": true,
@@ -21,11 +20,10 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "noFallthroughCasesInSwitch": true,
-    "strict": true,
-    "typeRoots": ["src/types", "node_modules/@types"],
-    "paths": {
-      "*": ["types/*"]
-    }
+    "strict": true
   },
-  "include": ["src"]
+  "include": ["src"],
+  "ts-node": {
+    "files": true
+  }
 }

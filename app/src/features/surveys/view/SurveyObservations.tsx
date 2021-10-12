@@ -22,6 +22,7 @@ import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -79,6 +80,7 @@ const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
+  const config = useContext(ConfigContext);
 
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
@@ -96,14 +98,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             return;
           }
 
-          if (process.env.REACT_APP_N8N_PORT) {
-            biohubApi.n8n.initiateSubmissionValidation(result.submissionId, file.type).then(() => {
-              if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-                biohubApi.n8n.initiateScrapeOccurrences(result.submissionId).then(() => {
-                  props.refresh();
-                });
-              }
-            });
+          if (config?.N8N_HOST) {
+            biohubApi.n8n.initiateOccurrenceSubmissionProcessing(result.submissionId, file.type);
             return;
           }
 
@@ -114,7 +110,13 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               });
             });
           } else {
-            biohubApi.observation.initiateXLSXSubmissionValidation(result.submissionId);
+            biohubApi.observation.initiateXLSXSubmissionValidation(result.submissionId).then(() => {
+              biohubApi.observation.initiateXLSXSubmissionTransform(result.submissionId).then(() => {
+                biohubApi.observation.initiateScrapeOccurrences(result.submissionId).then(() => {
+                  props.refresh();
+                });
+              });
+            });
           }
         });
     };

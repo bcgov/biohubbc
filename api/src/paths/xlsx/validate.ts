@@ -1,6 +1,8 @@
-import { getDBConnection, IDBConnection } from '../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { getDBConnection, IDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/CustomError';
+import { getTemplateMethodologySpeciesSQL } from '../../queries/survey/survey-occurrence-queries';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../../utils/media/media-file';
@@ -9,30 +11,32 @@ import { ValidationSchemaParser } from '../../utils/media/validation/validation-
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import { logRequest } from '../../utils/path-utils';
 import {
-  getSubmissionFileFromS3,
-  getSubmissionS3Key,
+  getOccurrenceSubmission,
+  getOccurrenceSubmissionInputS3Key,
+  getS3File,
   getValidateAPIDoc,
   getValidationRules,
   insertSubmissionMessage,
   insertSubmissionStatus,
   persistParseErrors,
-  persistValidationResults
+  persistValidationResults,
+  sendResponse
 } from '../dwc/validate';
-import { HTTP400 } from '../../errors/CustomError';
-import { getValidationSchemaSQL } from '../../queries/survey/survey-occurrence-queries';
 
 const defaultLog = getLogger('paths/xlsx/validate');
 
 export const POST: Operation = [
   logRequest('paths/xlsx/validate', 'POST'),
-  getSubmissionS3Key(),
-  getSubmissionFileFromS3(),
+  getOccurrenceSubmission(),
+  getOccurrenceSubmissionInputS3Key(),
+  getS3File(),
   prepXLSX(),
   persistParseErrors(),
   getValidationSchema(),
   getValidationRules(),
   validateXLSX(),
-  persistValidationResults({ initialSubmissionStatusType: 'Template Validated' })
+  persistValidationResults({ initialSubmissionStatusType: 'Template Validated' }),
+  sendResponse()
 ];
 
 POST.apiDoc = {
@@ -83,7 +87,12 @@ export function getValidationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      const validationSchema = await getValidationSchemaJSON(req.body.occurrence_submission_id, connection);
+      const templateMethodologySpeciesRecord = await getTemplateMethodologySpecies(
+        req.body.occurrence_submission_id,
+        connection
+      );
+
+      const validationSchema = templateMethodologySpeciesRecord?.validation;
 
       if (!validationSchema) {
         // no schema to validate the template, generate error
@@ -104,7 +113,7 @@ export function getValidationSchema(): RequestHandler {
 
         await connection.commit();
 
-        return res.status(200).json();
+        return res.status(200).json({ status: 'failed' });
       }
 
       req['validationSchema'] = validationSchema;
@@ -112,7 +121,7 @@ export function getValidationSchema(): RequestHandler {
       next();
     } catch (error) {
       defaultLog.error({ label: 'getValidationSchema', message: 'error', error });
-      connection.rollback();
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -120,9 +129,9 @@ export function getValidationSchema(): RequestHandler {
   };
 }
 
-function validateXLSX(): RequestHandler {
+export function validateXLSX(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'validateXLSX', message: 'dwcArchive' });
+    defaultLog.debug({ label: 'validateXLSX', message: 'xlsx' });
 
     try {
       const xlsxCsv: XLSXCSV = req['xlsx'];
@@ -151,17 +160,17 @@ function validateXLSX(): RequestHandler {
 }
 
 /**
- * Get a validation schema from the template table.
+ * Get a template_methodology_species record from the template table.
  *
  * @param {number} occurrenceSubmissionId
  * @param {IDBConnection} connection
  * @return {*}  {Promise<any>}
  */
-export const getValidationSchemaJSON = async (
+export const getTemplateMethodologySpecies = async (
   occurrenceSubmissionId: number,
   connection: IDBConnection
 ): Promise<any> => {
-  const sqlStatement = getValidationSchemaSQL(occurrenceSubmissionId);
+  const sqlStatement = getTemplateMethodologySpeciesSQL(occurrenceSubmissionId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -169,5 +178,5 @@ export const getValidationSchemaJSON = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return (response && response.rows && response.rows[0]).validation || null;
+  return (response && response.rows && response.rows[0]) || null;
 };
