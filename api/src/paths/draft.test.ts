@@ -1,36 +1,18 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as draft from './draft';
+import SQL from 'sql-template-strings';
 import * as db from '../database/db';
 import * as draft_queries from '../queries/draft-queries';
-import { QueryResult } from 'pg';
-import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../__mocks__/db';
+import * as draft from './draft';
 
 chai.use(sinonChai);
 
 describe('draft', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

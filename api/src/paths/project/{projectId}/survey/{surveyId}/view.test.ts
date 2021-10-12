@@ -8,6 +8,7 @@ import * as db from '../../../../../database/db';
 import * as survey_view_queries from '../../../../../queries/survey/survey-view-queries';
 import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import * as view from './view';
+import { getMockDBConnection } from '../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -16,26 +17,7 @@ describe('getSurveyForView', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
