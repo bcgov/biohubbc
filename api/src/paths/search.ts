@@ -1,19 +1,26 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getAPIUserDBConnection } from '../database/db';
+import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { searchResponseObject } from '../openapi/schemas/search';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 import { getSpatialSearchResultsSQL } from '../queries/search-queries';
+import { SYSTEM_ROLE } from '../constants/roles';
+import { userHasValidSystemRoles } from '../security/auth-utils';
 
-const defaultLog = getLogger('paths/searchString');
+const defaultLog = getLogger('paths/search');
 
 export const GET: Operation = [logRequest('paths/search', 'GET'), getSearchResults()];
 
 GET.apiDoc = {
-  description: 'Gets a list of published project geometries',
+  description: 'Gets a list of published project geometries for given systemUserId',
   tags: ['projects'],
+  security: [
+    {
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+    }
+  ],
   responses: {
     200: {
       description: 'Spatial search response object.',
@@ -38,22 +45,25 @@ GET.apiDoc = {
 };
 
 /**
- * Get search results (spatially based on boundary).
+ * Get search results by system user id (spatially based on boundary).
  *
  * @returns {RequestHandler}
  */
 export function getSearchResults(): RequestHandler {
   return async (req, res) => {
-    const connection = getAPIUserDBConnection();
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL();
+      await connection.open();
+
+      const systemUserId = connection.systemUserId();
+      const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+
+      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 
       if (!getSpatialSearchResultsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
-
-      await connection.open();
 
       const response = await connection.query(
         getSpatialSearchResultsSQLStatement.text,
@@ -62,17 +72,15 @@ export function getSearchResults(): RequestHandler {
 
       await connection.commit();
 
-      let rows: any[] = [];
-
-      if (response && response.rows) {
-        rows = response.rows;
+      if (!response || !response.rows) {
+        return res.status(200).json(null);
       }
 
-      const result: any[] = _extractResults(rows);
+      const result: any[] = _extractResults(response.rows);
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getSearchResults', message: 'error', error });
+      defaultLog.error({ label: 'getSearchResults', message: 'error', error });
       throw error;
     } finally {
       connection.release();

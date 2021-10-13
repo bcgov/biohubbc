@@ -52,6 +52,12 @@ describe('parseUTMString', () => {
     expect(result).to.be.null;
   });
 
+  it('returns parsed UTM when UTM string is valid, but zone letter is lowercase', async () => {
+    const result = parseUTMString('9n 573674 6114170');
+
+    expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: 'N', zone_number: 9, zone_srid: 32609 });
+  });
+
   it('returns parsed UTM when UTM string is valid', async () => {
     const result = parseUTMString('9N 573674 6114170');
 

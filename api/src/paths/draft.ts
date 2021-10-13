@@ -161,7 +161,7 @@ export function createDraft(): RequestHandler {
 
       return res.status(200).json({ id: draftResult.id, date: draftResult.update_date || draftResult.create_date });
     } catch (error) {
-      defaultLog.debug({ label: 'createProject', message: 'error', error });
+      defaultLog.error({ label: 'createProject', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -212,7 +212,7 @@ export function updateDraft(): RequestHandler {
 
       return res.status(200).json({ id: draftResult.id, date: draftResult.update_date || draftResult.create_date });
     } catch (error) {
-      defaultLog.debug({ label: 'createProject', message: 'error', error });
+      defaultLog.error({ label: 'createProject', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

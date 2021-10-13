@@ -1,5 +1,13 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
+import {
+  AppendSQLColumn,
+  appendSQLColumns,
+  AppendSQLColumnsEqualValues,
+  appendSQLColumnsEqualValues,
+  AppendSQLValue,
+  appendSQLValues
+} from '../../utils/sql-utils';
 
 const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 
@@ -12,40 +20,75 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
  * @param {(number | null)} templateMethodologyId
  * @return {*}  {(SQLStatement | null)}
  */
-export const insertSurveyOccurrenceSubmissionSQL = (
-  surveyId: number,
-  source: string,
-  inputFileName: string,
-  templateMethodologyId: number | null
-): SQLStatement | null => {
+export const insertSurveyOccurrenceSubmissionSQL = (data: {
+  surveyId: number;
+  source: string;
+  templateMethodologyId: number | null;
+  inputFileName?: string;
+  inputKey?: string;
+  outputFileName?: string;
+  outputKey?: string;
+}): SQLStatement | null => {
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
     message: 'params',
-    surveyId,
-    source,
-    inputFileName
+    data
   });
 
-  if (!surveyId || !source || !inputFileName) {
+  if (!data || !data.surveyId || !data.source) {
     return null;
+  }
+
+  const dataKeys = Object.keys(data);
+
+  const columnItems: AppendSQLColumn[] = [];
+  const valueItems: AppendSQLValue[] = [];
+
+  if (dataKeys.includes('inputFileName')) {
+    columnItems.push({ columnName: 'input_file_name' });
+    valueItems.push({ columnValue: data.inputFileName });
+  }
+
+  if (dataKeys.includes('inputKey')) {
+    columnItems.push({ columnName: 'input_key' });
+    valueItems.push({ columnValue: data.inputKey });
+  }
+
+  if (dataKeys.includes('outputFileName')) {
+    columnItems.push({ columnName: 'output_file_name' });
+    valueItems.push({ columnValue: data.outputFileName });
+  }
+
+  if (dataKeys.includes('outputKey')) {
+    columnItems.push({ columnName: 'output_key' });
+    valueItems.push({ columnValue: data.outputKey });
   }
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO occurrence_submission (
       survey_id,
-      template_methodology_species_id,
       source,
-      input_file_name,
-      event_timestamp
-    ) VALUES (
-      ${surveyId},
-      ${templateMethodologyId},
-      ${source},
-      ${inputFileName},
-      now()
-    )
-    RETURNING occurrence_submission_id as id;
+      template_methodology_species_id,
+      event_timestamp,
   `;
+
+  appendSQLColumns(sqlStatement, columnItems);
+
+  sqlStatement.append(SQL`
+    ) VALUES (
+      ${data.surveyId},
+      ${data.source},
+      ${data.templateMethodologyId},
+      now(),
+  `);
+
+  appendSQLValues(sqlStatement, valueItems);
+
+  sqlStatement.append(SQL`
+    )
+    RETURNING
+      occurrence_submission_id as id;
+  `);
 
   defaultLog.debug({
     label: 'insertSurveyOccurrenceSubmissionSQL',
@@ -102,39 +145,68 @@ export const getTemplateMethodologySpeciesIdSQLStatement = (surveyId: number): S
 };
 
 /**
- * SQL query to insert a survey occurrence submission row.
+ * SQL query to update a survey occurrence submission row.
  *
- * @param {number} surveyId
- * @param {string} source
- * @param {string} inputKey
+ * @param {{
+ *   submissionId: number;
+ *   inputKey?: string;
+ *   outputFileName?: string;
+ *   outputKey?: string;
+ * }} data
  * @return {*}  {(SQLStatement | null)}
  */
-export const updateSurveyOccurrenceSubmissionWithKeySQL = (
-  submissionId: number,
-  inputKey: string
-): SQLStatement | null => {
+export const updateSurveyOccurrenceSubmissionSQL = (data: {
+  submissionId: number;
+  inputFileName?: string;
+  inputKey?: string;
+  outputFileName?: string;
+  outputKey?: string;
+}): SQLStatement | null => {
   defaultLog.debug({
-    label: 'uodateSurveyOccurrenceSubmissionWithKeySQL',
+    label: 'updateSurveyOccurrenceSubmissionSQL',
     message: 'params',
-    submissionId,
-    inputKey
+    data
   });
 
-  if (!submissionId || !inputKey) {
+  if (!data.submissionId || (!data.inputFileName && !data.inputKey && !data.outputFileName && !data.outputKey)) {
     return null;
+  }
+
+  const dataKeys = Object.keys(data);
+
+  const items: AppendSQLColumnsEqualValues[] = [];
+
+  if (dataKeys.includes('inputFileName')) {
+    items.push({ columnName: 'input_file_name', columnValue: data.inputFileName });
+  }
+
+  if (dataKeys.includes('inputKey')) {
+    items.push({ columnName: 'input_key', columnValue: data.inputKey });
+  }
+
+  if (dataKeys.includes('outputFileName')) {
+    items.push({ columnName: 'output_file_name', columnValue: data.outputFileName });
+  }
+
+  if (dataKeys.includes('outputKey')) {
+    items.push({ columnName: 'output_key', columnValue: data.outputKey });
   }
 
   const sqlStatement: SQLStatement = SQL`
     UPDATE occurrence_submission
     SET
-      input_key = ${inputKey}
-    WHERE
-      occurrence_submission_id = ${submissionId}
-    RETURNING occurrence_submission_id as id;
   `;
 
+  appendSQLColumnsEqualValues(sqlStatement, items);
+
+  sqlStatement.append(SQL`
+    WHERE
+      occurrence_submission_id = ${data.submissionId}
+    RETURNING occurrence_submission_id as id;
+  `);
+
   defaultLog.debug({
-    label: 'updateSurveyOccurrenceSubmissionWithKeySQL',
+    label: 'updateSurveyOccurrenceSubmissionSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -486,14 +558,14 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
 };
 
 /**
- * SQL query to get validation schema for a submission based on the occurrence_submission_id.
+ * SQL query to get a template_methodology_species record for a submission based on the occurrence_submission_id.
  *
  * @param {number} occurrenceId
  * @returns {SQLStatement} sql query object
  */
-export const getValidationSchemaSQL = (occurrenceId: number): SQLStatement | null => {
+export const getTemplateMethodologySpeciesSQL = (occurrenceId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getValidationSchemaSQL',
+    label: 'getTemplateMethodologySpeciesSQL',
     message: 'params',
     occurrenceId
   });
@@ -504,7 +576,7 @@ export const getValidationSchemaSQL = (occurrenceId: number): SQLStatement | nul
 
   const sqlStatement = SQL`
     SELECT
-      tms.validation
+      tms.*
     FROM
       occurrence_submission os
     LEFT OUTER JOIN
@@ -516,7 +588,7 @@ export const getValidationSchemaSQL = (occurrenceId: number): SQLStatement | nul
   `;
 
   defaultLog.debug({
-    label: 'getValidationSchemaSQL',
+    label: 'getTemplateMethodologySpeciesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

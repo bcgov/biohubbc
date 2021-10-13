@@ -133,7 +133,7 @@ export function uploadMedia(): RequestHandler {
 
       return res.status(200).json(result.Key);
     } catch (error) {
-      defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

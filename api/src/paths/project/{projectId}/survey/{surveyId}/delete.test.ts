@@ -9,6 +9,7 @@ import * as survey_delete_queries from '../../../../../queries/survey/survey-del
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../utils/file-utils';
 import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
+import { getMockDBConnection } from '../../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -17,26 +18,7 @@ describe('deleteSurvey', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

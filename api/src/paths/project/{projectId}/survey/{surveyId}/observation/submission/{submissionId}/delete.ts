@@ -118,7 +118,7 @@ export function deleteOccurrenceSubmission(): RequestHandler {
 
       return res.status(200).json(deleteResponse);
     } catch (error) {
-      defaultLog.debug({ label: 'deleteOccurrenceSubmission', message: 'error', error });
+      defaultLog.error({ label: 'deleteOccurrenceSubmission', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

@@ -181,7 +181,7 @@ export function getSummarySubmissionCSVForView(): RequestHandler {
 
       return res.status(200).json({ data });
     } catch (error) {
-      defaultLog.debug({ label: 'getSummarySubmissionCSVForView', message: 'error', error });
+      defaultLog.error({ label: 'getSummarySubmissionCSVForView', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

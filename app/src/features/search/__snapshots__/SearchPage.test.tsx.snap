@@ -14,7 +14,7 @@ exports[`SearchPage matches the snapshot 1`] = `
         <h1
           class="MuiTypography-root MuiTypography-h1"
         >
-          Search
+          Map
         </h1>
       </div>
       <div

@@ -94,7 +94,7 @@ PUT.apiDoc = {
  *
  * @return {*}  {RequestHandler}
  */
-function updateAccessRequest(): RequestHandler {
+export function updateAccessRequest(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'updateAccessRequest', message: 'params', req_body: req.body });
 
@@ -149,7 +149,7 @@ function updateAccessRequest(): RequestHandler {
 
       const userObject = new UserObject(userData);
 
-      if (!userObject) {
+      if (!userObject.id || !userObject.user_identifier) {
         throw new HTTP500('Failed to get or add system user');
       }
 
@@ -168,7 +168,7 @@ function updateAccessRequest(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'updateAccessRequest', message: 'error', error });
+      defaultLog.error({ label: 'updateAccessRequest', message: 'error', error });
       throw error;
     } finally {
       connection.release();

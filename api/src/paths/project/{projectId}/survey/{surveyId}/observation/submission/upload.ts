@@ -6,7 +6,7 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
-  updateSurveyOccurrenceSubmissionWithKeySQL,
+  updateSurveyOccurrenceSubmissionSQL,
   getTemplateMethodologySpeciesIdSQLStatement
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
@@ -165,7 +165,7 @@ export function uploadMedia(): RequestHandler {
 
       return res.status(200).send({ submissionId });
     } catch (error) {
-      defaultLog.debug({ label: 'uploadMedia', message: 'error', error });
+      defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -191,12 +191,12 @@ export const insertSurveyOccurrenceSubmission = async (
   templateMethodologyId: number | null,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL(
+  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL({
     surveyId,
     source,
     inputFileName,
     templateMethodologyId
-  );
+  });
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -249,7 +249,7 @@ export const updateSurveyOccurrenceSubmissionWithKey = async (
   inputKey: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const updateSqlStatement = updateSurveyOccurrenceSubmissionWithKeySQL(submissionId, inputKey);
+  const updateSqlStatement = updateSurveyOccurrenceSubmissionSQL({ submissionId, inputKey });
 
   if (!updateSqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

@@ -1,0 +1,459 @@
+{
+  "id": 4,
+  "name": "Process Occurrence Submission",
+  "active": true,
+  "nodes": [
+    {
+      "parameters": {},
+      "name": "Start",
+      "type": "n8n-nodes-base.start",
+      "typeVersion": 1,
+      "position": [
+        510,
+        -40
+      ]
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "process-occurrence-submission",
+        "options": {
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Access-Control-Allow-Origin",
+                "value": "*"
+              },
+              {
+                "name": "Access-Control-Allow-Methods",
+                "value": "GET, POST, OPTIONS, HEAD"
+              },
+              {
+                "name": "Access-Control-Allow-Headers",
+                "value": "Authorization, Origin, X-Requested-With, Content-Type, Accept, sessionid, responseType"
+              }
+            ]
+          },
+          "rawBody": true
+        }
+      },
+      "name": "Webhook",
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 1,
+      "position": [
+        510,
+        130
+      ],
+      "webhookId": "a346c2c5-d43e-4bc8-8dd1-dbcee88e1638"
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_HOST}"
+      },
+      "name": "Get N8N API Host",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        680,
+        130
+      ]
+    },
+    {
+      "parameters": {
+        "command": "echo ${N8N_API_PORT}"
+      },
+      "name": "Get N8N API Port",
+      "type": "n8n-nodes-base.executeCommand",
+      "typeVersion": 1,
+      "position": [
+        850,
+        130
+      ]
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/xlsx/validate",
+        "responseFormat": "string",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+      },
+      "name": "XLSX Validate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1210,
+        250
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/xlsx/transform",
+        "responseFormat": "string",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+      },
+      "name": "XLSX Transform",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1620,
+        230
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/scrape-occurrences",
+        "responseFormat": "string",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+      },
+      "name": "Scrape Occurrences",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        2020,
+        70
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
+    },
+    {
+      "parameters": {
+        "authentication": "headerAuth",
+        "requestMethod": "POST",
+        "url": "=http://{{$node[\"Get N8N API Host\"].json[\"stdout\"]}}:{{$node[\"Get N8N API Port\"].json[\"stdout\"]}}/api/dwc/validate",
+        "responseFormat": "string",
+        "jsonParameters": true,
+        "options": {},
+        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+      },
+      "name": "DWC Validate",
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 1,
+      "position": [
+        1210,
+        -20
+      ],
+      "credentials": {
+        "httpHeaderAuth": "Bearer Token"
+      }
+    },
+    {
+      "parameters": {
+        "functionCode": "throw Error(JSON.stringify(items));\n"
+      },
+      "name": "Throw Error",
+      "type": "n8n-nodes-base.function",
+      "typeVersion": 1,
+      "position": [
+        2450,
+        300
+      ],
+      "notes": "The previous steps always return a \"200\" (unless a run-time exception occurs) and so the workflow will indicate it succeeded even if the response from one of the steps returns \"status: failed\".  This step throws an Error, so that the workflow will be marked as having failed."
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"DWC Validate\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "If DWC Validate Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1410,
+        -20
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"XLSX Validate\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "If XLSX Validate Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1410,
+        250
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"XLSX Transform\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "If XLSX Transform Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1820,
+        230
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "string": [
+            {
+              "value1": "={{$node[\"Scrape Occurrences\"].json[\"data\"][\"status\"]}}",
+              "value2": "success"
+            }
+          ]
+        }
+      },
+      "name": "If Scrape Occurrences Success",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        2230,
+        70
+      ]
+    },
+    {
+      "parameters": {},
+      "name": "Complete",
+      "type": "n8n-nodes-base.noOp",
+      "typeVersion": 1,
+      "position": [
+        2450,
+        50
+      ]
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "boolean": [
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/x-zip-compressed"
+            },
+            {
+              "value1": "={{$node[\"Webhook\"].json[\"body\"][\"file_type\"]}}",
+              "value2": "=application/zip"
+            }
+          ]
+        },
+        "combineOperation": "any"
+      },
+      "name": "If Zip",
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 1,
+      "position": [
+        1020,
+        130
+      ]
+    }
+  ],
+  "connections": {
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Get N8N API Host",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get N8N API Host": {
+      "main": [
+        [
+          {
+            "node": "Get N8N API Port",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get N8N API Port": {
+      "main": [
+        [
+          {
+            "node": "If Zip",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XLSX Validate": {
+      "main": [
+        [
+          {
+            "node": "If XLSX Validate Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "DWC Validate": {
+      "main": [
+        [
+          {
+            "node": "If DWC Validate Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "XLSX Transform": {
+      "main": [
+        [
+          {
+            "node": "If XLSX Transform Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Scrape Occurrences": {
+      "main": [
+        [
+          {
+            "node": "If Scrape Occurrences Success",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If DWC Validate Success": {
+      "main": [
+        [
+          {
+            "node": "Scrape Occurrences",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If XLSX Validate Success": {
+      "main": [
+        [
+          {
+            "node": "XLSX Transform",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If XLSX Transform Success": {
+      "main": [
+        [
+          {
+            "node": "Scrape Occurrences",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If Scrape Occurrences Success": {
+      "main": [
+        [
+          {
+            "node": "Complete",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Throw Error",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Throw Error": {
+      "main": [
+        []
+      ]
+    },
+    "If Zip": {
+      "main": [
+        [
+          {
+            "node": "DWC Validate",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "XLSX Validate",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "createdAt": "2021-09-29T15:30:03.805Z",
+  "updatedAt": "2021-10-07T18:01:07.427Z",
+  "settings": {},
+  "staticData": null
+}

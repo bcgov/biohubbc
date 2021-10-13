@@ -9,6 +9,7 @@ import { projectIdResponseObject } from '../openapi/schemas/project';
 import { getProjectListSQL } from '../queries/project/project-view-queries';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
+import { userHasValidSystemRoles } from '../security/auth-utils';
 
 const defaultLog = getLogger('paths/projects');
 
@@ -127,13 +128,16 @@ function getProjectList(): RequestHandler {
     const filterFields = req.body || null;
 
     try {
-      const getProjectListSQLStatement = getProjectListSQL(filterFields);
+      await connection.open();
+
+      const systemUserId = connection.systemUserId();
+      const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+
+      const getProjectListSQLStatement = getProjectListSQL(isUserAdmin, systemUserId, filterFields);
 
       if (!getProjectListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
-
-      await connection.open();
 
       const getProjectListResponse = await connection.query(
         getProjectListSQLStatement.text,
@@ -152,7 +156,7 @@ function getProjectList(): RequestHandler {
 
       return res.status(200).json(result);
     } catch (error) {
-      defaultLog.debug({ label: 'getProjectList', message: 'error', error });
+      defaultLog.error({ label: 'getProjectList', message: 'error', error });
       throw error;
     } finally {
       connection.release();

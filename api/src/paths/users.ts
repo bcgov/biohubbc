@@ -60,7 +60,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getUserList(): RequestHandler {
+export function getUserList(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -79,7 +79,7 @@ function getUserList(): RequestHandler {
 
       return res.status(200).json(getUserListResponse && getUserListResponse.rows);
     } catch (error) {
-      defaultLog.debug({ label: 'getUserList', message: 'error', error });
+      defaultLog.error({ label: 'getUserList', message: 'error', error });
       throw error;
     } finally {
       connection.release();

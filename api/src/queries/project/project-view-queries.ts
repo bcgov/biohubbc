@@ -61,11 +61,21 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 /**
  * SQL query to get all projects.
  *
+ * @param {boolean} isUserAdmin
+ * @param {number | null} systemUserId
  * @param {any} filterFields
  * @returns {SQLStatement} sql query object
  */
-export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectListSQL', message: 'params', filterFields });
+export const getProjectListSQL = (
+  isUserAdmin: boolean,
+  systemUserId: number | null,
+  filterFields?: any
+): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectListSQL', message: 'params', isUserAdmin, systemUserId, filterFields });
+
+  if (!systemUserId) {
+    return null;
+  }
 
   const sqlStatement = SQL`
     SELECT
@@ -95,8 +105,13 @@ export const getProjectListSQL = (filterFields?: any): SQLStatement | null => {
       on sp.survey_id = s.survey_id
     left outer join wldtaxonomic_units as wu
       on wu.wldtaxonomic_units_id = sp.wldtaxonomic_units_id
-    where 1 = 1
   `;
+
+  if (!isUserAdmin) {
+    sqlStatement.append(SQL` where p.create_user = ${systemUserId}`);
+  } else {
+    sqlStatement.append(SQL` where 1 = 1`);
+  }
 
   if (filterFields && Object.keys(filterFields).length !== 0 && filterFields.constructor === Object) {
     if (filterFields.coordinator_agency) {

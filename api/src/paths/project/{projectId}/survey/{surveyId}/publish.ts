@@ -121,7 +121,7 @@ export function publishSurveyAndOccurrences(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'publishSurveyAndOccurrences', message: 'error', error });
+      defaultLog.error({ label: 'publishSurveyAndOccurrences', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

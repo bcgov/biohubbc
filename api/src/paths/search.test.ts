@@ -5,34 +5,34 @@ import sinonChai from 'sinon-chai';
 import * as search from './search';
 import * as db from '../database/db';
 import * as search_queries from '../queries/search-queries';
+import SQL from 'sql-template-strings';
+import * as auth_utils from '../security/auth-utils';
+import { SYSTEM_ROLE } from '../constants/roles';
+import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
 describe('search', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
-    keycloak_token: {}
+    keycloak_token: {},
+    system_user: {
+      role_names: [SYSTEM_ROLE.SYSTEM_ADMIN]
+    }
   } as any;
+
+  let actualResult: any = null;
+
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          actualResult = result;
+        }
+      };
+    }
+  };
 
   describe('getSearchResults', () => {
     afterEach(() => {
@@ -46,6 +46,7 @@ describe('search', () => {
           return 20;
         }
       });
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
       sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(null);
 
       try {
@@ -57,6 +58,91 @@ describe('search', () => {
         expect(actualError.status).to.equal(400);
         expect(actualError.message).to.equal('Failed to build SQL get statement');
       }
+    });
+
+    it('should return null when no response returned from getSpatialSearchResultsSQL', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery.resolves({ rows: null });
+
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        },
+        query: mockQuery
+      });
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
+
+      const result = search.getSearchResults();
+
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+      expect(actualResult).to.equal(null);
+    });
+
+    it('should return rows on success when result is empty', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery.resolves({ rows: [] });
+
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        },
+        query: mockQuery
+      });
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
+
+      const result = search.getSearchResults();
+
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+      expect(actualResult).to.eql([]);
+    });
+
+    it('should return rows on success', async () => {
+      const searchList = [
+        {
+          id: 1,
+          name: 'name',
+          geometry: '{"type":"Point","coordinates":[50.7,60.9]}'
+        }
+      ];
+
+      const mockQuery = sinon.stub();
+
+      mockQuery.resolves({ rows: searchList });
+
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        },
+        query: mockQuery
+      });
+      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
+
+      const result = search.getSearchResults();
+
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+      expect(actualResult).to.eql([
+        {
+          id: searchList[0].id,
+          name: searchList[0].name,
+          geometry: [
+            {
+              type: 'Point',
+              coordinates: [50.7, 60.9]
+            }
+          ]
+        }
+      ]);
     });
   });
 });

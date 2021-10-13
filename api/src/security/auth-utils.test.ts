@@ -8,6 +8,7 @@ import * as user_queries from '../queries/users/user-queries';
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { HTTP401, HTTP403 } from '../errors/CustomError';
+import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -130,26 +131,7 @@ describe('getSystemUser', function () {
     key: 'value'
   };
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   it('should return null when no system user id', async function () {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);

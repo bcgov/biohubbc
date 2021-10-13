@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../database/db';
 import * as survey_occurrence_queries from '../../../../../../../queries/survey/survey-occurrence-queries';
 import * as file_utils from '../../../../../../../utils/file-utils';
+import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
 
 chai.use(sinonChai);
@@ -15,26 +16,7 @@ describe('uploadObservationSubmission', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const mockReq = {
     keycloak_token: {},
@@ -205,7 +187,7 @@ describe('uploadObservationSubmission', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(null);
 
     const result = upload.uploadMedia();
 
@@ -234,7 +216,7 @@ describe('uploadObservationSubmission', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     const result = upload.uploadMedia();
 
@@ -262,7 +244,7 @@ describe('uploadObservationSubmission', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
     const result = upload.uploadMedia();
@@ -290,7 +272,7 @@ describe('uploadObservationSubmission', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
@@ -318,7 +300,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
@@ -358,7 +340,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
@@ -398,7 +380,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
@@ -438,7 +420,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
@@ -478,7 +460,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
@@ -518,7 +500,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 

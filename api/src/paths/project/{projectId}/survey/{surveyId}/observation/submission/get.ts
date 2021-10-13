@@ -61,11 +61,11 @@ GET.apiDoc = {
                 type: 'string'
               },
               messages: {
-                description: 'The validation status messages of the submission',
+                description: 'The validation status messages of the observation submission',
                 type: 'array',
                 items: {
                   type: 'object',
-                  description: 'A validation status message of the submission'
+                  description: 'A validation status message of the observation submission'
                 }
               }
             }
@@ -161,7 +161,7 @@ export function getOccurrenceSubmission(): RequestHandler {
 
       return res.status(200).json(getOccurrenceSubmissionData);
     } catch (error) {
-      defaultLog.debug({ label: 'getOccurrenceSubmission', message: 'error', error });
+      defaultLog.error({ label: 'getOccurrenceSubmission', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

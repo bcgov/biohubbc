@@ -103,7 +103,7 @@ export function getOccurrencesForView(): RequestHandler {
 
       return res.status(200).json(result.occurrences);
     } catch (error) {
-      defaultLog.debug({ label: 'getOccurrencesForView', message: 'error', error });
+      defaultLog.error({ label: 'getOccurrencesForView', message: 'error', error });
       throw error;
     } finally {
       connection.release();

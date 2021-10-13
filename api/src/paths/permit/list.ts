@@ -84,7 +84,7 @@ export function getAllPermits(): RequestHandler {
 
       return res.status(200).json(getPermitsData);
     } catch (error) {
-      defaultLog.debug({ label: 'getAllPermits', message: 'error', error });
+      defaultLog.error({ label: 'getAllPermits', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
