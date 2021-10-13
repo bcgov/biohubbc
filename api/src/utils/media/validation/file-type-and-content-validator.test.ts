@@ -236,8 +236,6 @@ describe('checkRequiredFieldsInDWCArchive', () => {
     //force worksheets to be empty
     xlsxCSV.workbook.worksheets = {};
 
-    console.log('xlsxCSV contains', xlsxCSV);
-
     validator(xlsxCSV);
     expect(xlsxCSV.mediaValidation.fileErrors).to.eql(['Missing required sheet: sheet2']);
   });
