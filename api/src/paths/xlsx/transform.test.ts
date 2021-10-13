@@ -98,7 +98,7 @@ describe('getTransformationSchema', () => {
     });
 
     const result = transform.getTransformationSchema();
-    await result(sampleReq, (null as unknown) as any, (nextSpy) as any);
+    await result(sampleReq, (null as unknown) as any, nextSpy as any);
 
     expect(sampleReq.transformationSchema).to.eql('transform');
     expect(nextSpy).to.have.been.called;
