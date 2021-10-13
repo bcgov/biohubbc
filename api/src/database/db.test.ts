@@ -30,6 +30,16 @@ describe('db', () => {
   });
 
   describe('getDBConnection', () => {
+    it('throws an error if keycloak token is undefined', () => {
+      try {
+        getDBConnection((null as unknown) as object);
+
+        expect.fail();
+      } catch (actualError) {
+        expect(actualError.message).to.equal('Keycloak token is undefined');
+      }
+    });
+
     it('returns a database connection instance', () => {
       const connection = getDBConnection({});
 
