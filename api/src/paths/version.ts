@@ -38,7 +38,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getVersionInformation(): RequestHandler {
+export function getVersionInformation(): RequestHandler {
   return (req, res) => {
     const versionInfo = {
       version: process.env.VERSION,

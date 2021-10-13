@@ -6,30 +6,12 @@ import * as listAttachments from './list';
 import * as db from '../../../../database/db';
 import * as project_attachments_queries from '../../../../queries/project/project-attachments-queries';
 import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
 describe('lists the project attachments', () => {
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},

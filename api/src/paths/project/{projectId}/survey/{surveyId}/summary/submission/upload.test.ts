@@ -6,6 +6,7 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../database/db';
 import * as survey_summary_queries from '../../../../../../../queries/survey/survey-summary-queries';
 import * as file_utils from '../../../../../../../utils/file-utils';
+import { getMockDBConnection } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
 
 chai.use(sinonChai);
@@ -15,26 +16,7 @@ describe('uploadSummarySubmission', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const mockReq = {
     keycloak_token: {},

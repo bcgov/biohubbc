@@ -6,6 +6,7 @@ import * as upload from './upload';
 import * as project from '../../../project';
 import * as db from '../../../../database/db';
 import * as file_utils from '../../../../utils/file-utils';
+import { getMockDBConnection } from '../../../../__mocks__/db';
 
 chai.use(sinonChai);
 
@@ -14,26 +15,7 @@ describe('uploadMedia', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = {
-    systemUserId: () => {
-      return null;
-    },
-    open: async () => {
-      // do nothing
-    },
-    release: () => {
-      // do nothing
-    },
-    commit: async () => {
-      // do nothing
-    },
-    rollback: async () => {
-      // do nothing
-    },
-    query: async () => {
-      // do nothing
-    }
-  };
+  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
