@@ -279,7 +279,7 @@ PUT.apiDoc = {
 export function getUpdateAdministrativeActivityHandler(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'updateAdministrativeActivity',
+      label: 'getUpdateAdministrativeActivityHandler',
       message: 'params',
       req_body: req.body
     });
@@ -306,7 +306,7 @@ export function getUpdateAdministrativeActivityHandler(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'updateAdministrativeActivity', message: 'error', error });
+      defaultLog.error({ label: 'getUpdateAdministrativeActivityHandler', message: 'error', error });
       throw error;
     } finally {
       connection.release();

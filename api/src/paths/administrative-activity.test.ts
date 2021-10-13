@@ -314,3 +314,54 @@ describe('getUpdateAdministrativeActivityHandler', () => {
     }
   });
 });
+
+describe('updateAdministrativeActivity', () => {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  const dbConnectionObj = getMockDBConnection();
+
+  it('should throw a 400 error when failed to build putAdministrativeActivitySQL statement', async () => {
+    sinon.stub(administrative_queries, 'putAdministrativeActivitySQL').returns(null);
+
+    try {
+      await administrative_activity.updateAdministrativeActivity(1, 2, {
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        }
+      });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(400);
+      expect(actualError.message).to.equal('Failed to build SQL put statement');
+    }
+  });
+
+  it('should throw a 500 error when failed to update administrative activity', async () => {
+    sinon.stub(administrative_queries, 'putAdministrativeActivitySQL').returns(SQL`some`);
+
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({
+      rowCount: null
+    });
+
+    try {
+      await administrative_activity.updateAdministrativeActivity(1, 2, {
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        },
+        query: mockQuery
+      });
+
+      expect.fail();
+    } catch (actualError) {
+      expect(actualError.status).to.equal(500);
+      expect(actualError.message).to.equal('Failed to update administrative activity');
+    }
+  });
+});

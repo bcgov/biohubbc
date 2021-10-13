@@ -5,7 +5,9 @@ import { CSVWorksheet } from '../csv-file';
 import {
   getCodeValueFieldsValidator,
   getRequiredFieldsValidator,
-  getValidRangeFieldsValidator
+  getValidRangeFieldsValidator,
+  getNumericFieldsValidator,
+  getValidFormatFieldsValidator
 } from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {
@@ -410,6 +412,146 @@ describe('getValidRangeFieldsValidator', () => {
         col: 'Header1',
         errorCode: 'Invalid Value',
         message: 'Invalid value: a. Value must be a number ',
+        row: 2
+      }
+    ]);
+  });
+});
+
+describe('getNumericFieldsValidator', () => {
+  it('adds no errors when configuration is not provided', () => {
+    const columnNumericValidatorConfig = undefined;
+
+    const validator = getNumericFieldsValidator(columnNumericValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], []]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when header does not exist', () => {
+    const columnNumericValidatorConfig = {
+      columnName: 'Header 1',
+      column_numeric_validator: {}
+    };
+
+    const validator = getNumericFieldsValidator(columnNumericValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([[], [5]]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds an error when row value is not numeric', () => {
+    const columnNumericValidatorConfig = {
+      columnName: 'Header1',
+      column_numeric_validator: {}
+    };
+
+    const validator = getNumericFieldsValidator(columnNumericValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['a']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Invalid Value',
+        message: 'Invalid value: a. Value must be a number ',
+        row: 2
+      }
+    ]);
+  });
+});
+
+describe('getValidFormatFieldsValidator', () => {
+  it('adds no errors when configuration is not provided', () => {
+    const columnFormatValidatorConfig = undefined;
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WPT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when regular expression is not provided', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '',
+        expected_format: ''
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WPT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds no errors when header is not provided', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '^wpt [0-9]+$',
+        expected_format: ''
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header2'], ['WPT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds an error when row value does not match regular expression', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '^wpt [0-9]+$',
+        expected_format: 'Must be in the format WPT X , ie WPT 11.'
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WXT1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Unexpected Format',
+        message: 'Unexpected Format: WXT1. Must be in the format WPT X , ie WPT 11.',
         row: 2
       }
     ]);
