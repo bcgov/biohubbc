@@ -162,3 +162,21 @@ describe('getS3File', () => {
     expect(nextSpy).to.have.been.called;
   });
 });
+
+describe('getOccurrenceSubmissionInputS3Key', () => {
+  it('sets the occurrence submission input key and calls next', async () => {
+    const nextSpy = sinon.spy();
+
+    const sampleRequest = {
+      occurrence_submission: {
+        input_key: 'key'
+      }
+    } as any;
+
+    const result = validate.getOccurrenceSubmissionInputS3Key();
+    await result(sampleRequest, (null as unknown) as any, nextSpy as any);
+
+    expect(sampleRequest.s3Key).to.eql(sampleRequest.occurrence_submission.input_key);
+    expect(nextSpy).to.have.been.called;
+  });
+});
