@@ -99,24 +99,24 @@ const checkRequiredFieldsInDWCArchive = (dwcArchive: DWCArchive, config: Submiss
   });
 };
 
-const checkRequiredFieldsInXLSXCSV = (dwcArchive: XLSXCSV, config: SubmissionRequiredFilesValidatorConfig) => {
+const checkRequiredFieldsInXLSXCSV = (xlsxCsv: XLSXCSV, config: SubmissionRequiredFilesValidatorConfig) => {
   // If there are no sheets in the excel file, then add errors for all required sheets
 
-  if (!dwcArchive.workbook || !dwcArchive.workbook.worksheets || !Object.keys(dwcArchive.workbook.worksheets).length) {
-    dwcArchive.mediaValidation.addFileErrors(
+  if (!xlsxCsv.workbook || !xlsxCsv.workbook.worksheets || !Object.keys(xlsxCsv.workbook.worksheets).length) {
+    xlsxCsv.mediaValidation.addFileErrors(
       config.submission_required_files_validator.required_files.map((requiredFile) => {
         return `Missing required sheet: ${requiredFile}`;
       })
     );
 
-    return dwcArchive;
+    return xlsxCsv;
   }
 
-  const worksheetNames = Object.keys(dwcArchive.workbook.worksheets).map((item) => item.toLowerCase());
+  const worksheetNames = Object.keys(xlsxCsv.workbook.worksheets).map((item) => item.toLowerCase());
 
   config.submission_required_files_validator.required_files.forEach((requiredFile) => {
     if (!worksheetNames.includes(requiredFile.toLowerCase())) {
-      dwcArchive.mediaValidation.addFileErrors([`Missing required sheet: ${requiredFile}`]);
+      xlsxCsv.mediaValidation.addFileErrors([`Missing required sheet: ${requiredFile}`]);
     }
   });
 };
