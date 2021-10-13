@@ -1,6 +1,5 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-//import { CSVWorkBook, CSVWorksheet } from '../csv/csv-file';
 import xlsx from 'xlsx';
 import { DEFAULT_XLSX_SHEET, DWCArchive, DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { ArchiveFile, IMediaFile, MediaFile, MediaValidation } from '../media-file';
