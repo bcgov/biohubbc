@@ -26,7 +26,7 @@ describe('PublicProjectsListPage', () => {
     cleanup();
   });
 
-  test('renders with a proper list of projects when published', async () => {
+  test('renders with a proper list of projects when completed', async () => {
     mockBiohubApi().public.project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -36,7 +36,7 @@ describe('PublicProjectsListPage', () => {
         coordinator_agency: 'coordinator agency',
         project_type: 'project type',
         permits_list: '1, 2, 3',
-        publish_status: 'Published'
+        completion_status: 'Completed'
       }
     ]);
 
@@ -52,7 +52,7 @@ describe('PublicProjectsListPage', () => {
     });
   });
 
-  test('renders with a proper list of projects when unpublished', async () => {
+  test('renders with a proper list of projects when active', async () => {
     mockBiohubApi().public.project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -62,7 +62,7 @@ describe('PublicProjectsListPage', () => {
         coordinator_agency: 'coordinator agency',
         project_type: 'project type',
         permits_list: '1, 2, 3',
-        publish_status: 'Unpublished'
+        completion_status: 'Active'
       }
     ]);
 
