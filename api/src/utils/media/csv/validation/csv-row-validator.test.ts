@@ -535,7 +535,7 @@ describe('getValidFormatFieldsValidator', () => {
       columnName: 'Header1',
       column_format_validator: {
         reg_exp: '^wpt [0-9]+$',
-        expected_format: ''
+        expected_format: 'Must be in the format WPT X , ie WPT 11.'
       }
     };
 
@@ -551,7 +551,7 @@ describe('getValidFormatFieldsValidator', () => {
       {
         col: 'Header1',
         errorCode: 'Unexpected Format',
-        message: 'Unexpected Format: WXT1. ',
+        message: 'Unexpected Format: WXT1. Must be in the format WPT X , ie WPT 11.',
         row: 2
       }
     ]);
