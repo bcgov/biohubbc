@@ -374,7 +374,7 @@ $$;
       ALTER FUNCTION ${DB_SCHEMA}.api_secure_attachment_record(integer, character varying, integer)
           OWNER TO postgres;
 
-      CREATE OR REPLACE FUNCTION ${DB_SCHEMA}.api_unsecure_attachment_record(__table_name character varying, __security_token uuid)
+          CREATE OR REPLACE FUNCTION ${DB_SCHEMA}.api_unsecure_attachment_record(__table_name character varying, __security_token uuid)
           RETURNS boolean
           LANGUAGE 'plpgsql'
           COST 100
@@ -396,8 +396,8 @@ $$;
 
         begin
 
-          execute format('delete from ${DB_SCHEMA}.security where security_token = ''%1$s'' and security_rule_id in (select security_rule_id from ${DB_SCHEMA}.security_rule where system_rule = true)', __security_token);
           execute format('update ${DB_SCHEMA}.%1$s set security_token = null where security_token = (select security_token from ${DB_SCHEMA}.security where security_token = ''%2$s'' group by security_token having count(*) = 1)', __table_name, __security_token);
+          execute format('delete from ${DB_SCHEMA}.security where security_token = ''%1$s'' and security_rule_id in (select security_rule_id from ${DB_SCHEMA}.security_rule where system_rule = true)', __security_token);
 
           return true;
         end;
