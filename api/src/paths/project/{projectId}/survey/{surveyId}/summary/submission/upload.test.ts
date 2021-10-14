@@ -36,11 +36,26 @@ describe('uploadSummarySubmission', () => {
     ]
   } as any;
 
+  let actualResult: any = null;
+
+  // const sampleRes = {
+  //   status: () => {
+  //     return {
+  //       json: (result: any) => {
+  //         actualResult = result;
+  //       }
+  //     };
+  //   }
+  // };
+
   const mockRes = {
     status: () => {
       return {
         send: () => {
           //do nothing
+        },
+        json: (result: any) => {
+          actualResult = result;
         }
       };
     }
@@ -283,5 +298,76 @@ describe('uploadSummarySubmission', () => {
     );
 
     expect(nextSpy).to.have.been.called;
+  });
+
+  it('should return with a 200 if errors messages exist and they are persisted', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
+
+    const result = upload.persistSummaryParseErrors();
+
+    await result({ ...mockReq, parseError: 'some error exists' }, mockRes as any, (null as unknown) as any);
+
+    expect(actualResult.message).to.eql('success');
+  });
+
+  it('should move on the next step is there are no errors to be persisted', async () => {
+    const mockQuery = sinon.stub();
+    const nextSpy = sinon.spy();
+
+    mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    const result = upload.persistSummaryParseErrors();
+
+    await result(mockReq, mockRes as any, nextSpy);
+
+    expect(nextSpy).to.have.been.called;
+  });
+
+  it('should throw an error if there are errors when persisting error messages', async () => {
+    const mockQuery = sinon.stub();
+
+    mockQuery.resolves({});
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
+
+    const result = upload.persistSummaryParseErrors();
+
+    try {
+      await result({ ...mockReq, parseError: 'some error exists' }, mockRes as any, (null as unknown) as any);
+      expect.fail();
+    } catch (actualError) {
+      console.log('actual error is: ', actualError);
+
+      expect(actualError.message).to.equal('Failed to insert summary submission message data');
+      expect(actualError.status).to.equal(400);
+    }
   });
 });
