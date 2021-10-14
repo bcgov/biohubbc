@@ -108,12 +108,18 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         open={openUploadBoundary}
         dialogTitle="Upload Boundary"
         onClose={() => setOpenUploadBoundary(false)}>
-        <FileUpload
-          uploadHandler={boundaryUploadHandler()}
-          dropZoneProps={{
-            acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.SPATIAL
-          }}
-        />
+        <Box>
+          <Typography style={{ marginBottom: '1rem' }}>
+            We currently support the upload of spatial files for KML files with .kml, GPX files with .gpx, and
+            Shapefiles using the .zip format.
+          </Typography>
+          <FileUpload
+            uploadHandler={boundaryUploadHandler()}
+            dropZoneProps={{
+              acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.SPATIAL
+            }}
+          />
+        </Box>
       </ComponentDialog>
       <Grid item xs={12}>
         <Typography className={classes.bold}>{title}</Typography>
