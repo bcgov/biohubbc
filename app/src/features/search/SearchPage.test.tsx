@@ -9,13 +9,13 @@ const history = createMemoryHistory();
 jest.spyOn(console, 'debug').mockImplementation(() => {});
 
 describe('SearchPage', () => {
-  it('matches the snapshot', () => {
-    const { asFragment } = render(
+  it('renders correctly', () => {
+    const { getByText } = render(
       <Router history={history}>
         <SearchPage />
       </Router>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('Map')).toBeInTheDocument();
   });
 });
