@@ -284,7 +284,7 @@ export function persistSummaryParseErrors(): RequestHandler {
       await connection.commit();
 
       // archive is not parsable, don't continue to next step and return early
-      return res.status(200).json({ message: 'success' });
+      return res.send(200);
     } catch (error) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
       await connection.rollback();

@@ -41,13 +41,13 @@ describe('uploadSummarySubmission', () => {
   const mockRes = {
     status: () => {
       return {
-        send: () => {
-          //do nothing
-        },
         json: (result: any) => {
           actualResult = result;
         }
       };
+    },
+    send: (status: number) => {
+      actualResult = status;
     }
   } as any;
 
@@ -309,7 +309,7 @@ describe('uploadSummarySubmission', () => {
 
     await result({ ...mockReq, parseError: 'some error exists' }, mockRes as any, (null as unknown) as any);
 
-    expect(actualResult.message).to.eql('success');
+    expect(actualResult).to.equal(200);
   });
 
   it('should move on the next step is there are no errors to be persisted', async () => {
@@ -354,8 +354,6 @@ describe('uploadSummarySubmission', () => {
       await result({ ...mockReq, parseError: 'some error exists' }, mockRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      console.log('actual error is: ', actualError);
-
       expect(actualError.message).to.equal('Failed to insert summary submission message data');
       expect(actualError.status).to.equal(400);
     }
