@@ -262,7 +262,7 @@ export const updateSurveySummarySubmissionWithKey = async (
   return updateResponse;
 };
 
-function persistSummaryParseErrors(): RequestHandler {
+export function persistSummaryParseErrors(): RequestHandler {
   return async (req, res, next) => {
     const parseError = req['parseError'];
 
@@ -284,7 +284,7 @@ function persistSummaryParseErrors(): RequestHandler {
       await connection.commit();
 
       // archive is not parsable, don't continue to next step and return early
-      return res.status(200).json();
+      return res.send(200);
     } catch (error) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
       await connection.rollback();
@@ -463,7 +463,7 @@ export function getValidationRules(): RequestHandler {
   };
 }
 
-function persistSummaryValidationResults(): RequestHandler {
+export function persistSummaryValidationResults(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'persistValidationResults', message: 'validationResults' });
 
@@ -687,6 +687,6 @@ export const insertSummarySubmissionMessage = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert survey submission message data');
+    throw new HTTP400('Failed to insert summary submission message data');
   }
 };

@@ -14,8 +14,8 @@ import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
+import { useParams, useLocation, useHistory } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import { ProjectStatusType } from 'constants/misc';
@@ -23,6 +23,8 @@ import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';
 import PublicProjectDetails from './PublicProjectDetails';
 import PublicProjectAttachments from './components/PublicProjectAttachments';
+import { isAuthenticated } from 'utils/authUtils';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -67,6 +69,8 @@ const PublicProjectPage = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
   const location = useLocation();
+  const { keycloakWrapper } = useContext(AuthStateContext);
+  const history = useHistory();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -103,6 +107,10 @@ const PublicProjectPage = () => {
 
     return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
+
+  if (isAuthenticated(keycloakWrapper)) {
+    history.push(`/admin/projects/${urlParams['id']}/details`);
+  }
 
   if (!projectWithDetails) {
     return <CircularProgress className="pageProgress" size={40} />;
