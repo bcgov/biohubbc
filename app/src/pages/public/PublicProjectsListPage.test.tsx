@@ -40,7 +40,7 @@ describe('PublicProjectsListPage', () => {
       }
     ]);
 
-    const { asFragment, getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <MemoryRouter>
         <PublicProjectsListPage />
       </MemoryRouter>
@@ -48,7 +48,7 @@ describe('PublicProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('COMPLETED')).toBeInTheDocument();
     });
   });
 
@@ -66,7 +66,7 @@ describe('PublicProjectsListPage', () => {
       }
     ]);
 
-    const { asFragment, getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <MemoryRouter>
         <PublicProjectsListPage />
       </MemoryRouter>
@@ -74,7 +74,7 @@ describe('PublicProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('ACTIVE')).toBeInTheDocument();
     });
   });
 });
