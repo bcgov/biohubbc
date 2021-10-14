@@ -38,16 +38,6 @@ describe('uploadSummarySubmission', () => {
 
   let actualResult: any = null;
 
-  // const sampleRes = {
-  //   status: () => {
-  //     return {
-  //       json: (result: any) => {
-  //         actualResult = result;
-  //       }
-  //     };
-  //   }
-  // };
-
   const mockRes = {
     status: () => {
       return {
