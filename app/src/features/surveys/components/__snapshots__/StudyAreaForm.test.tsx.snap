@@ -73,71 +73,34 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         <div
           class="MuiBox-root MuiBox-root-8"
         >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
-            role="button"
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
             tabindex="0"
-            title="Will only accept kml files, kmz files not accepted."
+            type="button"
           >
             <span
               class="MuiButton-label"
             >
-              <input
-                data-testid="kml-file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload KML
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Upload Boundary
             </span>
             <span
               class="MuiTouchRipple-root"
             />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept gpx files."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="gpx-file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload GPX
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-6 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept zipped shapefiles of a known projection."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="shp-upload"
-                hidden=""
-                type="file"
-              />
-              Upload Shapefile
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
+          </button>
           <div
             class="MuiBox-root MuiBox-root-9"
           >
@@ -548,71 +511,34 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         <div
           class="MuiBox-root MuiBox-root-19"
         >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
-            role="button"
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
             tabindex="0"
-            title="Will only accept kml files, kmz files not accepted."
+            type="button"
           >
             <span
               class="MuiButton-label"
             >
-              <input
-                data-testid="kml-file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload KML
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Upload Boundary
             </span>
             <span
               class="MuiTouchRipple-root"
             />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept gpx files."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="gpx-file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload GPX
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept zipped shapefiles of a known projection."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="shp-upload"
-                hidden=""
-                type="file"
-              />
-              Upload Shapefile
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
+          </button>
           <div
             class="MuiBox-root MuiBox-root-20"
           >
@@ -1064,71 +990,34 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         <div
           class="MuiBox-root MuiBox-root-31"
         >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
-            role="button"
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
             tabindex="0"
-            title="Will only accept kml files, kmz files not accepted."
+            type="button"
           >
             <span
               class="MuiButton-label"
             >
-              <input
-                data-testid="kml-file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload KML
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Upload Boundary
             </span>
             <span
               class="MuiTouchRipple-root"
             />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept gpx files."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="gpx-file-upload"
-                hidden=""
-                type="file"
-              />
-              Upload GPX
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
-            role="button"
-            style="margin-left: 1rem;"
-            tabindex="0"
-            title="Will only accept zipped shapefiles of a known projection."
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <input
-                data-testid="shp-upload"
-                hidden=""
-                type="file"
-              />
-              Upload Shapefile
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
+          </button>
           <div
             class="MuiBox-root MuiBox-root-32"
           >

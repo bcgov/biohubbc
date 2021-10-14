@@ -32,7 +32,6 @@ const ProjectLocationForm = () => {
   const { values, handleSubmit, setFieldValue, errors } = formikProps;
 
   const [uploadError, setUploadError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -47,8 +46,6 @@ const ProjectLocationForm = () => {
         <MapBoundary
           title="Project Boundary"
           mapId="project_location_form_map"
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
           uploadError={uploadError}
           setUploadError={setUploadError}
           values={values}
