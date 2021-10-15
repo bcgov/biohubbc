@@ -85,7 +85,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getProjectForView(): RequestHandler {
+export function getProjectForView(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
