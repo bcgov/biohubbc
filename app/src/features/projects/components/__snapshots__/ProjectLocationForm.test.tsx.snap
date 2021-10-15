@@ -67,6 +67,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
           >
@@ -506,6 +507,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
           >
@@ -972,6 +974,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
           >

@@ -1321,6 +1321,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
           >

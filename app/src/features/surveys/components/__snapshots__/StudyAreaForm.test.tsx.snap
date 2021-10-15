@@ -75,6 +75,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
           >
@@ -513,6 +514,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
           >
@@ -992,6 +994,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="boundary_file-upload"
             tabindex="0"
             type="button"
           >

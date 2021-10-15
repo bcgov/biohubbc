@@ -1097,6 +1097,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <button
                       class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+                      data-testid="boundary_file-upload"
                       tabindex="0"
                       type="button"
                     >

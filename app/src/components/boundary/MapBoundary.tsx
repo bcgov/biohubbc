@@ -109,9 +109,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         dialogTitle="Upload Boundary"
         onClose={() => setOpenUploadBoundary(false)}>
         <Box>
-          <Typography style={{ marginBottom: '1rem' }}>
-            Accepted file types:  .gpx, .klm, .zip (shapefiles)
-          </Typography>
+          <Typography style={{ marginBottom: '1rem' }}>Accepted file types: .gpx, .klm, .zip (shapefiles)</Typography>
           <FileUpload
             uploadHandler={boundaryUploadHandler()}
             dropZoneProps={{
@@ -133,6 +131,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         <Box display="flex" mt={3}>
           <Button
             color="primary"
+            data-testid="boundary_file-upload"
             variant="outlined"
             startIcon={<Icon path={mdiUploadOutline} size={1} />}
             onClick={() => setOpenUploadBoundary(true)}>
