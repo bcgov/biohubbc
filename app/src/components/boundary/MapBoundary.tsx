@@ -110,8 +110,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         onClose={() => setOpenUploadBoundary(false)}>
         <Box>
           <Typography style={{ marginBottom: '1rem' }}>
-            We currently support the upload of spatial files for KML files with .kml, GPX files with .gpx, and
-            Shapefiles using the .zip format.
+            Accepted file types:  .gpx, .klm, .zip (shapefiles)
           </Typography>
           <FileUpload
             uploadHandler={boundaryUploadHandler()}
