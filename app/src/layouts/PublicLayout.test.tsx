@@ -7,10 +7,10 @@ import { createMemoryHistory } from 'history';
 const history = createMemoryHistory();
 
 describe('PublicLayout', () => {
-  it('renders correctly with environment tag and unsupported browser alert', () => {
+  it('renders correctly', () => {
     process.env.REACT_APP_NODE_ENV = 'local';
 
-    const { asFragment } = render(
+    const { getByText } = render(
       <Router history={history}>
         <PublicLayout>
           <div>
@@ -20,6 +20,9 @@ describe('PublicLayout', () => {
       </Router>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(
+      getByText('This is an unsupported browser. Some functionality may not work as expected.')
+    ).toBeInTheDocument();
+    expect(getByText('The public layout content')).toBeInTheDocument();
   });
 });
