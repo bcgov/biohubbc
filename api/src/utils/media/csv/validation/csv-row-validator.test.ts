@@ -530,12 +530,60 @@ describe('getValidFormatFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
   });
 
-  it('adds an error when row value does not match regular expression', () => {
+  it('adds no errors when row value matches regular expression and regex is case insensitive', () => {
     const columnFormatValidatorConfig = {
       columnName: 'Header1',
       column_format_validator: {
         reg_exp: '^wpt [0-9]+$',
-        expected_format: 'Must be in the format WPT X , ie WPT 11.'
+        reg_exp_flags: 'i',
+        expected_format: ''
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WPT 1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
+  });
+
+  it('adds an error when row value does not match regular expression because regex is case sensitive', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '^wpt [0-9]+$',
+        expected_format: 'Must be in the format "WPT X": WPT 11 (case sensitive)'
+      }
+    };
+
+    const validator = getValidFormatFieldsValidator(columnFormatValidatorConfig);
+
+    const xlsxWorkSheet = xlsx.utils.aoa_to_sheet([['Header1'], ['WPT 1']]);
+
+    const csvWorkSheet = new CSVWorksheet('Sheet1', xlsxWorkSheet);
+
+    validator(csvWorkSheet);
+
+    expect(csvWorkSheet.csvValidation.rowErrors).to.eql([
+      {
+        col: 'Header1',
+        errorCode: 'Unexpected Format',
+        message: 'Unexpected Format: WPT 1. Must be in the format "WPT X": WPT 11 (case sensitive)',
+        row: 2
+      }
+    ]);
+  });
+
+  it('adds an error when row value does not match regular expression', () => {
+    const columnFormatValidatorConfig = {
+      columnName: 'Header1',
+      column_format_validator: {
+        reg_exp: '/^wpt [0-9]+$/i',
+        expected_format: 'Must be in the format "WPT X": WPT 11 (case sensitive)'
       }
     };
 
@@ -551,7 +599,7 @@ describe('getValidFormatFieldsValidator', () => {
       {
         col: 'Header1',
         errorCode: 'Unexpected Format',
-        message: 'Unexpected Format: WXT1. Must be in the format WPT X , ie WPT 11.',
+        message: 'Unexpected Format: WXT1. Must be in the format "WPT X": WPT 11 (case sensitive)',
         row: 2
       }
     ]);

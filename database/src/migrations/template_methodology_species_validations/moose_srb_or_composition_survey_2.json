@@ -426,7 +426,7 @@
               "column_format_validator": {
                 "reg_exp": "^wpt [0-9]+$",
                 "reg_exp_flags": "i",
-                "expected_format": "Must be in the format WPT X , ie WPT 11."
+                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
               }
             }
           ]
@@ -692,7 +692,7 @@
               "column_format_validator": {
                 "reg_exp": "^wpt [0-9]+$",
                 "reg_exp_flags": "i",
-                "expected_format": "Must be in the format WPT X , ie WPT 11."
+                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
               }
             }
           ]
@@ -829,10 +829,10 @@
           "description": "",
           "validations": [
             {
-              "column_code_validator": {
-                "name": "",
-                "description": "",
-                "allowed_code_values": [{ "name": "8N" }, { "name": "9N" }, { "name": "10N" }, { "name": "11N" }]
+              "column_format_validator": {
+                "reg_exp": "^[1-9]{0,1}[0-9][NPQRSTUVWXCDEFGHJKLM]{0,1}$",
+                "reg_exp_flags": "i",
+                "expected_format": "Must be a number from 1-60, and may include an optional zone letter: 9, 9U"
               }
             }
           ]
@@ -858,7 +858,7 @@
               "column_format_validator": {
                 "reg_exp": "^wpt [0-9]+$",
                 "reg_exp_flags": "i",
-                "expected_format": "Must be in the format WPT X , ie WPT 11."
+                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
               }
             }
           ]

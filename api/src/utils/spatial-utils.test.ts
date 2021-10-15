@@ -11,9 +11,9 @@ describe('parseUTMString', () => {
   it('returns null when provided UTM string has invalid format', () => {
     expect(parseUTMString('invalid format')).to.be.null;
     expect(parseUTMString('123 123 123')).to.be.null;
-    expect(parseUTMString('9 573674 6114170')).to.be.null;
     expect(parseUTMString('573674 6114170')).to.be.null;
     expect(parseUTMString('9N 573674 6114170 Extra')).to.be.null;
+    expect(parseUTMString('9NN 573674 6114170')).to.be.null;
   });
 
   it('returns null when UTM easting is too small', async () => {
@@ -52,15 +52,27 @@ describe('parseUTMString', () => {
     expect(result).to.be.null;
   });
 
+  it('returns parsed UTM when UTM string is valid, but zone letter is missing', async () => {
+    const result = parseUTMString('9 573674 6114170');
+
+    expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: '', zone_number: 9, zone_srid: 32609 });
+  });
+
   it('returns parsed UTM when UTM string is valid, but zone letter is lowercase', async () => {
     const result = parseUTMString('9n 573674 6114170');
 
     expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: 'N', zone_number: 9, zone_srid: 32609 });
   });
 
-  it('returns parsed UTM when UTM string is valid', async () => {
+  it('returns parsed UTM when UTM string is valid for northern hemisphere', async () => {
     const result = parseUTMString('9N 573674 6114170');
 
     expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: 'N', zone_number: 9, zone_srid: 32609 });
+  });
+
+  it('returns parsed UTM when UTM string is valid for southern hemisphere', async () => {
+    const result = parseUTMString('9C 573674 6114170');
+
+    expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: 'C', zone_number: 9, zone_srid: 32709 });
   });
 });

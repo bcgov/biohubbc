@@ -1,0 +1,512 @@
+{
+  "name": "",
+  "description": "",
+  "files": [
+    {
+      "name": "Effort and Site Conditions",
+      "description": "",
+      "columns": [
+        {
+          "name": "Aircraft Type",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Bell JetRanger", "description": "" },
+                  { "name": "Bell LongRanger", "description": "" },
+                  { "name": "Hiller 12E4", "description": "" },
+                  { "name": "Hughes 500D", "description": "" },
+                  { "name": "Cessna 172", "description": "" },
+                  { "name": "Cessna 180", "description": "" },
+                  { "name": "Cessna 182", "description": "" },
+                  { "name": "Cessna 185", "description": "" },
+                  { "name": "Cessna 206", "description": "" },
+                  { "name": "SuperCub", "description": "" },
+                  { "name": "Beaver", "description": "" },
+                  { "name": "Single Otter", "description": "" },
+                  { "name": "Twin Otter", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "GPS Units",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "UTM", "description": "" },
+                  { "name": "Decimal Degrees", "description": "" },
+                  { "name": "Degrees Decimal Minutes", "description": "" },
+                  { "name": "Degrees Minutes Seconds", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Light",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Bright", "description": "" },
+                  { "name": "Flat", "description": "" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Hours of Total Flight Time",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Survey Area",
+              "Date",
+              "Start Time",
+              "End Time",
+              "Hours of Total Flight Time",
+              "Aircraft Company",
+              "Aircraft Type",
+              "Aircraft Call Sign",
+              "GPS Model",
+              "GPS Units",
+              "Pilot",
+              "Navigator",
+              "Rear Left Observer",
+              "Rear Right Observer",
+              "Light",
+              "Weather Description",
+              "Comments"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Observations",
+      "description": "",
+      "columns": [
+        {
+          "name": "Collar Serial Number",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Collar VHF Frequency",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "WPT",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Cow Tick Load",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Calf Count",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Calf Tick Load",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Survey Area",
+              "WLHID",
+              "Collar Serial Number",
+              "Collar VHF Frequency",
+              "Date Captured",
+              "WPT",
+              "Cow Status",
+              "Cow Tick Load",
+              "Calf Count",
+              "Calf Tick Load",
+              "Timing",
+              "Comments"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Incidental Observations",
+      "description": "",
+      "columns": [
+        {
+          "name": "Activity",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Alert" },
+                  { "name": "Avoiding" },
+                  { "name": "Avoiding Pests" },
+                  { "name": "Basking" },
+                  { "name": "Bedding" },
+                  { "name": "Building" },
+                  { "name": "Casting" },
+                  { "name": "Courting" },
+                  { "name": "Denning" },
+                  { "name": "Disturbed" },
+                  { "name": "Drinking" },
+                  { "name": "Excreting" },
+                  { "name": "Feeding" },
+                  { "name": "Fleeing" },
+                  { "name": "Feeding Salmonid" },
+                  { "name": "Grooming" },
+                  { "name": "Hibernating" },
+                  { "name": "Hunting" },
+                  { "name": "Ingesting" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_format_validator": {
+                "reg_exp": "^wpt [0-9]+$",
+                "reg_exp_flags": "i",
+                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Adult Males",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Adult Females",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Adults - Unclassified Sex",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Juvenile Males",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Juvenile Females",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Juveniles - Unclassified Sex",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Unknown Age/Sex",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Study Area Name",
+              "Waypoint",
+              "Species",
+              "Total Count",
+              "Adult Males",
+              "Adult Females",
+              "Adults - Unclassified Sex",
+              "Juvenile Males",
+              "Juvenile Females",
+              "Juveniles - Unclassified Sex",
+              "Unknown Age/Sex",
+              "Activity",
+              "Comments"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "UTM_LatLong",
+      "description": "",
+      "columns": [
+        {
+          "name": "UTM Zone",
+          "description": "",
+          "validations": [
+            {
+              "column_format_validator": {
+                "reg_exp": "^[1-9]{0,1}[0-9][NPQRSTUVWXCDEFGHJKLM]{0,1}$",
+                "reg_exp_flags": "i",
+                "expected_format": "Must be a number from 1-60, and may include an optional zone letter: 9, 9U"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_format_validator": {
+                "reg_exp": "^wpt [0-9]+$",
+                "reg_exp_flags": "i",
+                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
+              }
+            }
+          ]
+        },
+        {
+          "name": "Easting",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Northing",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Lat (DD)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Long (DD)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Survey Area",
+              "Waypoint",
+              "UTM Zone",
+              "Easting",
+              "Northing",
+              "Lat (DD)",
+              "Long (DD)",
+              "Comments"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Photos",
+      "description": "",
+      "columns": [
+        {
+          "name": "",
+          "description": "",
+          "validations": []
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": ["ID", "Photo File Name", "Comments"]
+          }
+        }
+      ]
+    }
+  ],
+  "validations": [
+    {
+      "submission_required_files_validator": {
+        "required_files": [
+          "Effort and Site Conditions",
+          "Observations",
+          "Incidental Observations",
+          "UTM_LatLong",
+          "Photos"
+        ]
+      }
+    },
+    {
+      "mimetype_validator": {
+        "reg_exps": ["application\\/vnd.*"]
+      }
+    }
+  ]
+}

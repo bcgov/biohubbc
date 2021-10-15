@@ -32,7 +32,7 @@ export const getFileMimeTypeValidator = (config?: MimetypeValidatorConfig): DWCA
 
     if (
       !config.mimetype_validator.reg_exps.some((regexString) => {
-        const regex = new RegExp(regexString);
+        const regex = new RegExp(regexString, 'i');
 
         return regex.test(file.rawFile.mimetype);
       })

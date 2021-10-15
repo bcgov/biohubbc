@@ -12,7 +12,7 @@ const SOPUTH_UTM_BASE_ZONE_NUMBER = 32700;
 const NORTH_UTM_ZONE_LETTERS = ['N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
 const SOUTH_UTM_ZONE_LETTERS = ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'];
 
-const UTM_STRING_FORMAT = RegExp(/^[1-9]{0,1}[0-9][NPQRSTUVWXCDEFGHJKLM] [0-9]+ [0-9]+$/i);
+const UTM_STRING_FORMAT = RegExp(/^[1-9]{0,1}[0-9][NPQRSTUVWXCDEFGHJKLM]{0,1} [0-9]+ [0-9]+$/i);
 
 /**
  * Parses a UTM string of the form: `9N 573674 6114170`
@@ -43,20 +43,17 @@ export function parseUTMString(utm: string): IUTM | null {
     return null;
   }
 
-  const zone_letter = utmParts[0].slice(-1).toUpperCase();
-  if (!zone_letter) {
-    // utm zone letter is invalid
-    return null;
-  }
+  const zone_letter = utmParts[0].slice(1).toUpperCase();
 
-  const zone_number = Number(utmParts[0].slice(0, -1));
+  const zone_number = Number(utmParts[0].slice(0, 1));
   if (zone_number < 1 || zone_number > 60) {
     // utm zone number is invalid
     return null;
   }
 
   let zone_srid;
-  if (NORTH_UTM_ZONE_LETTERS.includes(zone_letter)) {
+  if (!zone_letter || NORTH_UTM_ZONE_LETTERS.includes(zone_letter)) {
+    // If `zone_letter` is not defined, then assume northern hemisphere
     zone_srid = NORTH_UTM_BASE_ZONE_NUMBER + zone_number;
   } else if (SOUTH_UTM_ZONE_LETTERS.includes(zone_letter)) {
     zone_srid = SOPUTH_UTM_BASE_ZONE_NUMBER + zone_number;

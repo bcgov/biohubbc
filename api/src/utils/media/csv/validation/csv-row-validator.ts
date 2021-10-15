@@ -290,6 +290,7 @@ export type ColumnFormatValidatorConfig = {
     name?: string;
     description?: string;
     reg_exp: string;
+    reg_exp_flags?: string;
     expected_format: string;
   };
 };
@@ -330,7 +331,9 @@ export const getValidFormatFieldsValidator = (config?: ColumnFormatValidatorConf
         return csvWorksheet;
       }
 
-      const regex = new RegExp(config.column_format_validator.reg_exp);
+      const regexFlags = config.column_format_validator.reg_exp_flags || '';
+
+      const regex = new RegExp(config.column_format_validator.reg_exp, regexFlags);
 
       // Add an error if the cell value is not in the correct range provided in the array
       if (!regex.test(rowValueForColumn)) {
