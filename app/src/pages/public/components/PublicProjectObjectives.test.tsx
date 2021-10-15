@@ -7,10 +7,11 @@ const mockRefresh = jest.fn();
 
 describe('PublicProjectObjectives', () => {
   it('renders correctly', () => {
-    const { asFragment } = render(
+    const { getByText } = render(
       <PublicProjectObjectives projectForViewData={getProjectForViewResponse} refresh={mockRefresh} />
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('Objectives')).toBeInTheDocument();
+    expect(getByText('Caveats')).toBeInTheDocument();
   });
 });
