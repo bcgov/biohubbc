@@ -830,7 +830,7 @@
           "validations": [
             {
               "column_format_validator": {
-                "reg_exp": "^[1-9]{0,1}[0-9][NPQRSTUVWXCDEFGHJKLM]{0,1}$",
+                "reg_exp": "^[1-9]?[0-9][NPQRSTUVWXCDEFGHJKLM]?$",
                 "reg_exp_flags": "i",
                 "expected_format": "Must be a number from 1-60, and may include an optional zone letter: 9, 9U"
               }
