@@ -425,7 +425,6 @@
             {
               "column_format_validator": {
                 "reg_exp": "^wpt [0-9]+$",
-                "reg_exp_flags": "i",
                 "expected_format": "Must be in the format WPT X , ie WPT 11."
               }
             }
@@ -691,7 +690,6 @@
             {
               "column_format_validator": {
                 "reg_exp": "^wpt [0-9]+$",
-                "reg_exp_flags": "i",
                 "expected_format": "Must be in the format WPT X , ie WPT 11."
               }
             }
@@ -857,7 +855,6 @@
             {
               "column_format_validator": {
                 "reg_exp": "^wpt [0-9]+$",
-                "reg_exp_flags": "i",
                 "expected_format": "Must be in the format WPT X , ie WPT 11."
               }
             }
