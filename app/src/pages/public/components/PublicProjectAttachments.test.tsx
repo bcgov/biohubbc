@@ -30,7 +30,7 @@ describe('PublicProjectAttachments', () => {
     cleanup();
   });
 
-  it('renders correctly with no attachments', () => {
+  it('renders correctly with no attachments', async () => {
     mockBiohubApi().public.project.getProjectAttachments.mockResolvedValue({
       attachmentsList: []
     });
@@ -41,7 +41,9 @@ describe('PublicProjectAttachments', () => {
       </Router>
     );
 
-    expect(getByText('No Attachments')).toBeInTheDocument();
+    await waitFor(() => {
+      expect(getByText('No Attachments')).toBeInTheDocument();
+    });
   });
 
   it('renders correctly with attachments', async () => {

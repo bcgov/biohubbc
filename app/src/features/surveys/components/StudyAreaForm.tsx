@@ -29,7 +29,6 @@ const StudyAreaForm = () => {
   const { values, setFieldValue } = useFormikContext<IStudyAreaForm>();
 
   const [uploadError, setUploadError] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
 
   return (
     <form>
@@ -46,8 +45,6 @@ const StudyAreaForm = () => {
         <MapBoundary
           title="Study Area Boundary"
           mapId="study_area_form_map"
-          isLoading={isLoading}
-          setIsLoading={setIsLoading}
           uploadError={uploadError}
           setUploadError={setUploadError}
           values={values}

@@ -68,6 +68,11 @@ export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   return null;
 };
 
+/*
+  Because different OpenMaps layers are identified using different keys
+  - Parks and NRM regions use the key SHAPE
+  - ENV regions and WMU use the key GEOMETRY
+*/
 const layerGeoFilterTypeMappings = {
   'pub:WHSE_TANTALIS.TA_PARK_ECORES_PA_SVW': 'SHAPE',
   'pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG': 'SHAPE',
@@ -82,6 +87,10 @@ const layersToInfer = [
   'pub:WHSE_WILDLIFE_MANAGEMENT.WAA_WILDLIFE_MGMT_UNITS_SVW'
 ];
 
+/*
+  Because there is not a 1:1 mapping between the ENV and NRM regions
+  As can be seen, there are 2 ENV regions that map to the same NRM region
+*/
 export const envToNrmRegionsMapping = {
   '1- Vancouver Island': 'West Coast Natural Resource Region',
   '2- Lower Mainland': 'South Coast Natural Resource Region',
@@ -271,6 +280,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
 
   /**
    * Generate the coordinates string for the reprojected geometries based on geometry type
+   *
+   * This is needed because the query for filtering results by geometry and layer(s) intersection
+   * is done using CQL_FILTER (https://docs.geoserver.org/master/en/user/services/wfs/vendor.html)
+   * and this function takes our projected geometry and converts it into a valid CQL-compatible coordinates string
    *
    * @param {Feature} projectedGeometry
    * @returns {string} formatted coordinates string

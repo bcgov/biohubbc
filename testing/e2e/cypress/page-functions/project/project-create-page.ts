@@ -65,18 +65,22 @@ export function add_locations(description, kml_file) {
   cy.get("span.MuiStepLabel-iconContainer").eq(4).click(); // Click on the Navigation bar
   cy.contains("Locations").should("be.visible");
   cy.get("#location_description").type(description || faker.lorem.paragraph());
-  cy.get('[data-testid="kml-file-upload"]').attachFile(
+  cy.get('[data-testid="boundary_file-upload"]').click();
+  cy.get('[data-testid="drop-zone-input"]').attachFile(
     kml_file || faker.random.number({ min: 1, max: 7 }) + ".kml"
   );
   cy.wait(5000);
+  cy.get('button').contains('Close').click();
 }
 
 export function add_gpx(gpx_file) {
   // GPX Flight Path upload
-  cy.get('[data-testid="gpx-file-upload"]').attachFile(
+  cy.get('[data-testid="boundary_file-upload"]').click();
+  cy.get('[data-testid="drop-zone-input"]').attachFile(
     gpx_file || faker.random.number({ min: 1, max: 4 }) + ".gpx"
   );
   cy.wait(5000);
+  cy.get('button').contains('Close').click();
 }
 
 export function add_project_info(
