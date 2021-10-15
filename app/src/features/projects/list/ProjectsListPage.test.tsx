@@ -81,7 +81,7 @@ describe('ProjectsListPage', () => {
       }
     ]);
 
-    const { asFragment, getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <MemoryRouter>
         <ProjectsListPage />
       </MemoryRouter>
@@ -89,7 +89,8 @@ describe('ProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('PUBLISHED')).toBeInTheDocument();
+      expect(getByText('COMPLETED')).toBeInTheDocument();
     });
   });
 
@@ -108,7 +109,7 @@ describe('ProjectsListPage', () => {
       }
     ]);
 
-    const { asFragment, getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <MemoryRouter>
         <ProjectsListPage />
       </MemoryRouter>
@@ -116,7 +117,8 @@ describe('ProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('UNPUBLISHED')).toBeInTheDocument();
+      expect(getByText('ACTIVE')).toBeInTheDocument();
     });
   });
 
@@ -129,7 +131,7 @@ describe('ProjectsListPage', () => {
     ]);
     mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
 
-    const { asFragment, getByTestId } = render(
+    const { getByText, getByTestId } = render(
       <MemoryRouter>
         <ProjectsListPage />
       </MemoryRouter>
@@ -137,7 +139,7 @@ describe('ProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('Draft 1')).toBeInTheDocument();
     });
   });
 
