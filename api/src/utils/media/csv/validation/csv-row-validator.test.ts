@@ -530,7 +530,7 @@ describe('getValidFormatFieldsValidator', () => {
     expect(csvWorkSheet.csvValidation.rowErrors).to.eql([]);
   });
 
-  it('adds no errors when row value matches regular expression and regex is case insensitive', () => {
+  it('adds no errors when row value matches regular expression because regex is case insensitive', () => {
     const columnFormatValidatorConfig = {
       columnName: 'Header1',
       column_format_validator: {
