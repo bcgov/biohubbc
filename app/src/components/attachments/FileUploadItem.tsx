@@ -67,13 +67,15 @@ export interface IUploadFile {
 export type IUploadHandler = (
   file: File,
   cancelToken: CancelTokenSource,
-  handleFileUploadProgress: (progressEvent: ProgressEvent) => void
+  handleFileUploadProgress: (progressEvent: ProgressEvent) => void,
+  fileType?: string
 ) => Promise<any>;
 
 export interface IFileUploadItemProps {
   uploadHandler: IUploadHandler;
   onSuccess?: (response: any) => void;
   file: File;
+  fileType?: string;
   error?: string;
   onCancel: () => void;
 }
@@ -86,6 +88,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
+  const [fileType] = useState<string>(props.fileType || '');
 
   const [status, setStatus] = useState<UploadFileStatus>(UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
@@ -139,7 +142,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       onSuccess?.(response);
     };
 
-    uploadHandler(file, cancelToken, handleFileUploadProgress)
+    uploadHandler(file, cancelToken, handleFileUploadProgress, fileType)
       .then(handleFileUploadSuccess, (error: APIError) => {
         setError(error?.message);
       })

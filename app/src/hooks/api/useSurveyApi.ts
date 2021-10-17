@@ -112,14 +112,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     file: File,
-    attachmentType: string,
+    attachmentType?: string,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<string> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
-    req_message.append('attachmentType', attachmentType);
+    attachmentType && req_message.append('attachmentType', attachmentType);
 
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
