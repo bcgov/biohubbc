@@ -153,6 +153,26 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
     removeFile(fileToRemove);
   }, [fileToRemove, fileUploadItems, files]);
 
+  const fileUploadUI = <Box>
+    <Box mb={2} className={classes.dropZone}>
+      <DropZone
+        onFiles={onFiles}
+        acceptedFileExtensions={
+          ProjectSurveyAttachmentValidExtensions[getKeyByValue(ProjectSurveyAttachmentType, fileType) || 'OTHER']
+        }
+      />
+    </Box>
+    <Box>
+      <List>{fileUploadItems}</List>
+    </Box>
+  </Box>;
+
+  const reportMetaUI = <Box>
+      <FormControl>
+        <InputLabel id="report_title-label">Title</InputLabel>
+      </FormControl>
+    </Box>
+
   return (
     <Box>
       <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%', marginBottom: '1rem' }}>
@@ -174,19 +194,15 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
         </Select>
       </FormControl>
 
-      {fileType && (
-        <Box>
-          <Box mb={2} className={classes.dropZone}>
-            <DropZone
-              onFiles={onFiles}
-              acceptedFileExtensions={
-                ProjectSurveyAttachmentValidExtensions[getKeyByValue(ProjectSurveyAttachmentType, fileType) || 'OTHER']
-              }
-            />
-          </Box>
-          <Box>
-            <List>{fileUploadItems}</List>
-          </Box>
+      {fileType && (fileType != 'Report') && (
+        fileUploadUI
+      )}
+
+      {fileType && (fileType == 'Report') && (
+        <Box width="100%" display="flex" flexWrap="nowrap">
+          <Box width="47%">{reportMetaUI}</Box>
+          <Box width="6%"></Box>
+          <Box width="47%">{fileUploadUI}</Box>
         </Box>
       )}
     </Box>
