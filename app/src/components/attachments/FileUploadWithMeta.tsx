@@ -1,17 +1,31 @@
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
+//import FormHelperText from '@material-ui/core/FormHelperText';
+//import Grid from '@material-ui/core/Grid';
+//import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import List from '@material-ui/core/List';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import React, { useEffect, useState } from 'react';
+//import Typography from '@material-ui/core/Typography';
+//import { mdiTrashCanOutline } from '@mdi/js';
+//import Icon from '@mdi/react';
+//import CustomTextField from 'components/fields/CustomTextField';
+//import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { ProjectSurveyAttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+//import { FieldArray } from 'formik';
+import { default as React, useEffect, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
+import { getKeyByValue } from 'utils/Utils';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
 import { IUploadHandler, MemoizedFileUploadItem } from './FileUploadItem';
-import { getKeyByValue } from 'utils/Utils';
-import { ProjectSurveyAttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+//import { useFormikContext } from 'formik';
+//import yup from 'utils/YupSchema';
+
+import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
@@ -153,26 +167,53 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
     removeFile(fileToRemove);
   }, [fileToRemove, fileUploadItems, files]);
 
-  const fileUploadUI = <Box>
-    <Box mb={2} className={classes.dropZone}>
-      <DropZone
-        onFiles={onFiles}
-        acceptedFileExtensions={
-          ProjectSurveyAttachmentValidExtensions[getKeyByValue(ProjectSurveyAttachmentType, fileType) || 'OTHER']
-        }
-      />
-    </Box>
+  const fileUploadUI = (
     <Box>
-      <List>{fileUploadItems}</List>
+      <Box mb={2} className={classes.dropZone}>
+        <DropZone
+          onFiles={onFiles}
+          acceptedFileExtensions={
+            ProjectSurveyAttachmentValidExtensions[getKeyByValue(ProjectSurveyAttachmentType, fileType) || 'OTHER']
+          }
+        />
+      </Box>
+      <Box>
+        <List>{fileUploadItems}</List>
+      </Box>
     </Box>
-  </Box>;
+  );
 
-  const reportMetaUI = <Box>
+  const reportMetaUI = (
+    <Box>
       <FormControl>
-        <InputLabel id="report_title-label">Title</InputLabel>
+        <TextField id="upload-report-title" label="Title" variant="outlined" fullWidth={true} required={true} />
+        <TextField
+          id="upload-report-author-first-name"
+          label="Author First Name"
+          variant="outlined"
+          fullWidth={true}
+          required={true}
+        />
+        <TextField
+          id="upload-report-author-last-name"
+          label="Author Last Name"
+          variant="outlined"
+          fullWidth={true}
+          required={true}
+        />
+
+        <Button variant="outlined">Add new author</Button>
+        <TextField id="upload-report-abstract" label="Abstract" variant="outlined" fullWidth={true} required={true} />
+        <TextField
+          id="upload-report-year-published"
+          label="Year Published - YYYY"
+          variant="outlined"
+          fullWidth={true}
+          required={true}
+        />
       </FormControl>
     </Box>
-
+  );
   return (
     <Box>
       <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%', marginBottom: '1rem' }}>
@@ -194,11 +235,9 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
         </Select>
       </FormControl>
 
-      {fileType && (fileType != 'Report') && (
-        fileUploadUI
-      )}
+      {fileType && fileType != 'Report' && fileUploadUI}
 
-      {fileType && (fileType == 'Report') && (
+      {fileType && fileType == 'Report' && (
         <Box width="100%" display="flex" flexWrap="nowrap">
           <Box width="47%">{reportMetaUI}</Box>
           <Box width="6%"></Box>
