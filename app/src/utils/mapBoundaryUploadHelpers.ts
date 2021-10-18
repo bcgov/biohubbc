@@ -7,22 +7,19 @@ import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Convert a zipped shapefile to geojson
- * @param e The file upload event
+ * @param file The file to upload
  * @param values current form values
  * @param setFieldValue change form values
  * @param setUploadError change state of upload error
  */
 export const handleShapefileUpload = (
-  e: any,
+  file: File,
   values: any,
   setFieldValue: (key: string, value: any) => void,
   setUploadError: (uploadError: string) => void
 ) => {
-  // Only accept one file
-  const file = e.target.files[0];
-
   // Back out if not a zipped file
-  if (!file?.type.match(/zip/)) {
+  if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
     setUploadError('You must upload a valid shapefile (.zip format). Please try again.');
     return;
   }
@@ -51,29 +48,23 @@ export const handleShapefileUpload = (
 /**
  * Function to handle GPX file spatial boundary uploads
  *
- * @param e The file upload event
- * @param setIsLoading change state of isLoading
+ * @param file The file to upload
  * @param setUploadError change state of upload error
  * @param values current form values
  * @param setFieldValue change form values
  */
 export const handleGPXUpload = async (
-  e: any,
-  setIsLoading: (isLoading: boolean) => void,
+  file: File,
   setUploadError: (uploadError: string) => void,
   values: any,
   setFieldValue: (key: string, value: any) => void
 ) => {
-  setIsLoading(true);
-
-  const file = e.target.files[0];
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (!file?.type.includes('gpx') && !fileAsString?.includes('</gpx>')) {
     setUploadError('You must upload a GPX file, please try again.');
-    setIsLoading(false);
     return;
   }
 
@@ -91,7 +82,6 @@ export const handleGPXUpload = async (
     setFieldValue('geometry', [...sanitizedGeoJSON, ...values.geometry]);
   } catch (error) {
     setUploadError('Error uploading your GPX file, please check the file and try again.');
-    setIsLoading(false);
     return;
   }
 };
@@ -99,29 +89,23 @@ export const handleGPXUpload = async (
 /**
  * Function to handle KML file spatial boundary uploads
  *
- * @param e The file upload event
- * @param setIsLoading change state of isLoading
+ * @param file The file to upload
  * @param setUploadError change state of upload error
  * @param values current form values
  * @param setFieldValue change form values
  */
 export const handleKMLUpload = async (
-  e: any,
-  setIsLoading: (isLoading: boolean) => void,
+  file: File,
   setUploadError: (uploadError: string) => void,
   values: any,
   setFieldValue: (key: string, value: any) => void
 ) => {
-  setIsLoading(true);
-
-  const file = e.target.files[0];
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (file?.type !== 'application/vnd.google-earth.kml+xml' && !fileAsString?.includes('</kml>')) {
     setUploadError('You must upload a KML file, please try again.');
-    setIsLoading(false);
     return;
   }
 

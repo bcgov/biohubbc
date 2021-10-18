@@ -1,6 +1,7 @@
-import React from 'react';
-import { Route, RouteProps } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Route, RouteProps, Redirect } from 'react-router-dom';
 import PrivateRoute from 'utils/PrivateRoute';
+import { AuthStateContext } from 'contexts/authStateContext';
 
 export type IAppRouteProps = RouteProps & {
   /**
@@ -46,12 +47,18 @@ const AppRoute: React.FC<IAppRouteProps> = ({
   validRoles,
   ...rest
 }) => {
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
   const Layout = layout === undefined ? (props: any) => <>{props.children}</> : layout;
 
   document.title = title;
 
   if (!!usePrivateRoute) {
     return <PrivateRoute {...rest} validRoles={validRoles} component={Component} layout={Layout} />;
+  }
+
+  if (keycloakWrapper?.keycloak?.authenticated) {
+    return <Redirect to="/admin/projects" />;
   }
 
   return (
