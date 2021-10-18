@@ -112,7 +112,10 @@
         840
       ],
       "credentials": {
-        "httpHeaderAuth": "Bearer Token"
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Bearer Token"
+        }
       }
     },
     {

@@ -88,7 +88,10 @@
         250
       ],
       "credentials": {
-        "httpHeaderAuth": "Bearer Token"
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Bearer Token"
+        }
       }
     },
     {
@@ -130,7 +133,10 @@
         70
       ],
       "credentials": {
-        "httpHeaderAuth": "Bearer Token"
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Bearer Token"
+        }
       }
     },
     {
@@ -151,7 +157,10 @@
         -20
       ],
       "credentials": {
-        "httpHeaderAuth": "Bearer Token"
+        "httpHeaderAuth": {
+          "id": "1",
+          "name": "Bearer Token"
+        }
       }
     },
     {

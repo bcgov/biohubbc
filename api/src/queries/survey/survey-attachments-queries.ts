@@ -410,6 +410,8 @@ export const putSurveyReportAttachmentSQL = (surveyId: number, fileName: string)
       survey_id = ${surveyId};
   `;
 
+
+
   defaultLog.debug({
     label: 'putSurveyReportAttachmentSQL',
     message: 'sql',
