@@ -61,7 +61,7 @@ export class TransformationSchemaParser {
   }
 
   getParseSchemas(): ParseSchema[] {
-    return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || null;
+    return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || [];
   }
 
   getFlattenJsonPath(fileName: string): string {
