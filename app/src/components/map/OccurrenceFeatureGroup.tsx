@@ -54,7 +54,7 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
           return (
             <Marker
               key={occurrence.occurrenceId}
-              position={[(geometry!.geometry as Point).coordinates[1], (geometry!.geometry as Point).coordinates[0]]}>
+              position={[(geometry.geometry as Point).coordinates[1], (geometry.geometry as Point).coordinates[0]]}>
               <OccurrenceFeaturePopup featureData={featureData} />
             </Marker>
           );
