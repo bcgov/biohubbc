@@ -67,7 +67,7 @@ export function add_locations(description, kml_file) {
   cy.get("#location_description").type(description || faker.lorem.paragraph());
   cy.get('[data-testid="boundary_file-upload"]').click();
   cy.get('[data-testid="drop-zone-input"]').attachFile(
-    ("shapes/" + kml_file) || ("shapes/" + faker.random.number({ min: 1, max: 9 }) + ".kml")
+    "shapes/" + (kml_file || faker.random.number({ min: 1, max: 9 })) + ".kml"
   );
   cy.wait(5000);
   cy.get('button').contains('Close').click();
@@ -77,7 +77,7 @@ export function add_gpx(gpx_file) {
   // GPX Flight Path upload
   cy.get('[data-testid="boundary_file-upload"]').click();
   cy.get('[data-testid="drop-zone-input"]').attachFile(
-    ("shapes/" + gpx_file) || ("shapes/" + faker.random.number({ min: 1, max: 8 }) + ".gpx")
+    "shapes/" + (gpx_file || faker.random.number({ min: 1, max: 8 })) + ".gpx"
   );
   cy.wait(5000);
   cy.get('button').contains('Close').click();
@@ -87,7 +87,7 @@ export function add_zip(zip_file) {
   // Shapefile zip upload
   cy.get('[data-testid="boundary_file-upload"]').click();
   cy.get('[data-testid="drop-zone-input"]').attachFile(
-    ("shapes/" + zip_file) || ("shapes/" + faker.random.number({ min: 1, max: 1 }) + ".zip")
+    "shapes/" + (zip_file || faker.random.number({ min: 1, max: 1 })) + ".zip"
   );
   cy.wait(5000);
   cy.get('button').contains('Close').click();
