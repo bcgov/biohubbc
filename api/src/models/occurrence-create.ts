@@ -11,6 +11,7 @@ const defaultLog = getLogger('models/occurrence-create');
 export class PostOccurrence {
   associatedTaxa: string;
   lifeStage: string;
+  sex: string;
   data: object;
   verbatimCoordinates: string;
   individualCount: number;
@@ -24,6 +25,7 @@ export class PostOccurrence {
 
     this.associatedTaxa = obj?.associatedTaxa || null;
     this.lifeStage = obj?.lifeStage || null;
+    this.sex = obj?.sex || null;
     this.data = obj?.data || null;
     this.verbatimCoordinates = obj?.verbatimCoordinates || null;
     this.individualCount = obj?.individualCount || null;

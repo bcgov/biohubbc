@@ -1,0 +1,200 @@
+{
+  "flatten": [
+    {
+      "fileName": "Effort & Site Conditions",
+      "uniqueId": ["Survey Area"]
+    },
+    {
+      "fileName": "Observations",
+      "uniqueId": ["Waypoint"],
+      "parent": {
+        "fileName": "Effort & Site Conditions",
+        "uniqueId": ["Survey Area"]
+      }
+    },
+    {
+      "fileName": "UTM_LatLong",
+      "uniqueId": ["Waypoint"],
+      "parent": {
+        "fileName": "Observations",
+        "uniqueId": ["Waypoint"]
+      }
+    }
+  ],
+  "transform": [
+    {
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "value": 1
+            },
+            "vernacularName": {
+              "value": "Moose"
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Female"
+            },
+            "resourceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ",
+              "condition": {
+                "if": {
+                  "columns": ["Calf Count"]
+                }
+              }
+            },
+            "relatedResourceID": {
+              "value": "",
+              "condition": {
+                "if": {
+                  "columns": ["Calf Count"]
+                }
+              }
+            },
+            "relationshipOfResource": {
+              "value": "mother of",
+              "condition": {
+                "if": {
+                  "columns": ["Calf Count"]
+                }
+              }
+            }
+          }
+        },
+        {
+          "condition": {
+            "if": {
+              "columns": ["Calf Count"]
+            }
+          },
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Calf Count"]
+            },
+            "vernacularName": {
+              "value": "Moose"
+            },
+            "lifeStage": {
+              "value": "Juvenile"
+            },
+            "sex": {
+              "value": "Unknown"
+            },
+            "resourceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "relatedResourceID": {
+              "value": ""
+            },
+            "relationshipOfResource": {
+              "value": "offspring of"
+            }
+          }
+        }
+      ],
+      "postTransformations": [
+        {
+          "condition": {
+            "if": {
+              "columns": ["Calf Count"]
+            }
+          },
+          "relationship": {
+            "spreadColumn": "individualCount",
+            "uniqueIdColumn": "occurrenceID"
+          }
+        }
+      ]
+    }
+  ],
+  "parse": [
+    {
+      "fileName": "event",
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "eventID", "target": "eventID" },
+        { "source": "eventDate", "target": "eventDate" },
+        { "source": "verbatimCoordinates", "target": "verbatimCoordinates" }
+      ]
+    },
+    {
+      "fileName": "occurrence",
+      "condition": {
+        "if": {
+          "columns": ["individualCount"]
+        }
+      },
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "occurrenceID", "target": "occurrenceID" },
+        { "source": "individualCount", "target": "individualCount" },
+        { "source": "vernacularName", "target": "associatedTaxa" },
+        { "source": "lifeStage", "target": "lifeStage" },
+        { "source": "sex", "target": "sex" }
+      ]
+    },
+    {
+      "fileName": "taxon",
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "occurrenceID", "target": "occurrenceID" },
+        { "source": "vernacularName", "target": "vernacularName" }
+      ]
+    },
+    {
+      "fileName": "resourcerelationship",
+      "condition": {
+        "if": {
+          "columns": ["resourceID"]
+        }
+      },
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "resourceID", "target": "resourceID" },
+        { "source": "relatedResourceID", "target": "relatedResourceID" },
+        { "source": "relationshipOfResource", "target": "relationshipOfResource" }
+      ]
+    }
+  ]
+}

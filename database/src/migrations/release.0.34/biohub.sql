@@ -2,7 +2,7 @@
 -- ER/Studio Data Architect SQL Code Generation
 -- Project :      BioHub.DM1
 --
--- Date Created : Tuesday, October 12, 2021 13:51:48
+-- Date Created : Tuesday, October 19, 2021 11:05:37
 -- Target DBMS : PostgreSQL 10.x-12.x
 --
 
@@ -679,6 +679,7 @@ CREATE TABLE occurrence(
     occurrence_submission_id    integer                     NOT NULL,
     taxonid                     varchar(3000),
     lifestage                   varchar(3000),
+    sex                         varchar(3000),
     vernacularname              varchar(3000),
     eventdate                   TIMESTAMPTZ                 NOT NULL,
     individualcount             varchar(3000),
@@ -705,6 +706,8 @@ COMMENT ON COLUMN occurrence.occurrence_submission_id IS 'System generated surro
 COMMENT ON COLUMN occurrence.taxonid IS 'A string representation of the value provided for the given Darwin Core term.'
 ;
 COMMENT ON COLUMN occurrence.lifestage IS 'A string representation of the value provided for the given Darwin Core term.'
+;
+COMMENT ON COLUMN occurrence.sex IS 'A string representation of the value provided for the given Darwin Core term.'
 ;
 COMMENT ON COLUMN occurrence.vernacularname IS 'A string representation of the value provided for the given Darwin Core term.'
 ;
@@ -3312,16 +3315,16 @@ CREATE INDEX "Ref185170" ON occurrence_data_package(data_package_id)
 CREATE INDEX "Ref169174" ON occurrence_data_package(occurrence_id)
 ;
 -- 
--- INDEX: "Ref153160" 
---
-
-CREATE INDEX "Ref153160" ON occurrence_submission(survey_id)
-;
--- 
 -- INDEX: "Ref192188" 
 --
 
 CREATE INDEX "Ref192188" ON occurrence_submission(template_methodology_species_id)
+;
+-- 
+-- INDEX: "Ref153160" 
+--
+
+CREATE INDEX "Ref153160" ON occurrence_submission(survey_id)
 ;
 -- 
 -- INDEX: occurrence_submission_data_package_uk1 
@@ -3678,16 +3681,16 @@ CREATE UNIQUE INDEX summary_submission_message_type_nuk1 ON summary_submission_m
 CREATE INDEX "Ref215206" ON summary_submission_message_type(summary_submission_message_class_id)
 ;
 -- 
--- INDEX: "Ref45147" 
---
-
-CREATE INDEX "Ref45147" ON survey(project_id)
-;
--- 
 -- INDEX: "Ref190190" 
 --
 
 CREATE INDEX "Ref190190" ON survey(common_survey_methodology_id)
+;
+-- 
+-- INDEX: "Ref45147" 
+--
+
+CREATE INDEX "Ref45147" ON survey(project_id)
 ;
 -- 
 -- INDEX: "Ref153168" 
@@ -3971,14 +3974,14 @@ ALTER TABLE occurrence_data_package ADD CONSTRAINT "Refoccurrence174"
 -- TABLE: occurrence_submission 
 --
 
-ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey160" 
-    FOREIGN KEY (survey_id)
-    REFERENCES survey(survey_id)
-;
-
 ALTER TABLE occurrence_submission ADD CONSTRAINT "Reftemplate_methodology_species188" 
     FOREIGN KEY (template_methodology_species_id)
     REFERENCES template_methodology_species(template_methodology_species_id)
+;
+
+ALTER TABLE occurrence_submission ADD CONSTRAINT "Refsurvey160" 
+    FOREIGN KEY (survey_id)
+    REFERENCES survey(survey_id)
 ;
 
 
@@ -4266,14 +4269,14 @@ ALTER TABLE summary_submission_message_type ADD CONSTRAINT "Refsummary_submissio
 -- TABLE: survey 
 --
 
-ALTER TABLE survey ADD CONSTRAINT "Refproject147" 
-    FOREIGN KEY (project_id)
-    REFERENCES project(project_id)
-;
-
 ALTER TABLE survey ADD CONSTRAINT "Refcommon_survey_methodology190" 
     FOREIGN KEY (common_survey_methodology_id)
     REFERENCES common_survey_methodology(common_survey_methodology_id)
+;
+
+ALTER TABLE survey ADD CONSTRAINT "Refproject147" 
+    FOREIGN KEY (project_id)
+    REFERENCES project(project_id)
 ;
 
 

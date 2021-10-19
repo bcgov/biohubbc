@@ -304,6 +304,9 @@ export const submissionValidationSchema = {
             reg_exp: {
               type: 'string'
             },
+            reg_exp_flags: {
+              type: 'string'
+            },
             expected_format: {
               type: 'string'
             }

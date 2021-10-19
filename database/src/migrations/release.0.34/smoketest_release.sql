@@ -153,7 +153,7 @@ begin
   insert into occurrence_submission (survey_id, source, event_timestamp) values (_survey_id, 'BIOHUB BATCH', now()-interval '1 day') returning occurrence_submission_id into _occurrence_submission_id;
   select count(1) into _count from occurrence_submission;
   assert _count = 1, 'FAIL occurrence_submission';
-  insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '10 day');
+  insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate, sex) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '10 day', 'male');
   select count(1) into _count from occurrence;
   assert _count = 1, 'FAIL occurrence';
   insert into submission_status (occurrence_submission_id, submission_status_type_id, event_timestamp) values (_occurrence_submission_id, (select submission_status_type_id from submission_status_type where name = 'Submitted'), now()-interval '1 day') returning submission_status_id into _submission_status_id;
@@ -166,7 +166,7 @@ begin
   insert into occurrence_submission (survey_id, source, event_timestamp) values (_survey_id, 'BIOHUB BATCH', now()) returning occurrence_submission_id into _occurrence_submission_id;
   select count(1) into _count from occurrence_submission;
   assert _count = 2, 'FAIL occurrence_submission';
-  insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '5 day');
+  insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate, sex) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '5 day', 'female');
   select count(1) into _count from occurrence;
   assert _count = 2, 'FAIL occurrence';
   insert into submission_status (occurrence_submission_id, submission_status_type_id, event_timestamp) values (_occurrence_submission_id, (select submission_status_type_id from submission_status_type where name = 'Submitted'), now()) returning submission_status_id into _submission_status_id;

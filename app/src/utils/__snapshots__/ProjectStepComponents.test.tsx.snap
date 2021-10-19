@@ -7,9 +7,6 @@ exports[`ProjectStepComponents renders the project IUCN with the codes values 1`
       class="MuiBox-root MuiBox-root-32"
     >
       <div
-        class="MuiGrid-root MuiGrid-container"
-      />
-      <div
         class="MuiBox-root MuiBox-root-33"
       >
         <button
@@ -21,6 +18,20 @@ exports[`ProjectStepComponents renders the project IUCN with the codes values 1`
           <span
             class="MuiButton-label"
           >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
             Add Classification
           </span>
           <span
@@ -40,9 +51,6 @@ exports[`ProjectStepComponents renders the project IUCN without the codes values
       class="MuiBox-root MuiBox-root-36"
     >
       <div
-        class="MuiGrid-root MuiGrid-container"
-      />
-      <div
         class="MuiBox-root MuiBox-root-37"
       >
         <button
@@ -54,6 +62,20 @@ exports[`ProjectStepComponents renders the project IUCN without the codes values
           <span
             class="MuiButton-label"
           >
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
             Add Classification
           </span>
           <span

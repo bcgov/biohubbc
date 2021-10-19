@@ -20,6 +20,7 @@ export const getOccurrencesForViewSQL = (occurrenceSubmissionId: number): SQLSta
       o.taxonid,
       o.occurrence_id,
       o.lifestage,
+      o.sex,
       o.vernacularname,
       o.individualcount,
       o.organismquantity,

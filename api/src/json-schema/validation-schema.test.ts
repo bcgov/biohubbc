@@ -43,7 +43,7 @@ describe('example submission validation schema', () => {
             validations: [
               {
                 column_format_validator: {
-                  reg_exp: '^9N [0-9]{6} [0-9]{7}$',
+                  reg_exp: '^9N \\d{6} \\d{7}$',
                   expected_format: '9N 12345 123456'
                 }
               }
@@ -158,7 +158,7 @@ describe('example submission validation schema', () => {
                 column_format_validator: {
                   name: '',
                   description: '',
-                  reg_exp: '^[0-9].*$',
+                  reg_exp: '^\\d.*$',
                   expected_format: 'A positive integer'
                 }
               }
