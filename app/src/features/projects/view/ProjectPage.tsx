@@ -240,7 +240,7 @@ const ProjectPage: React.FC = () => {
       chipStatusClass = classes.chipCompleted;
     }
 
-    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
   if (!codes || !projectWithDetails) {

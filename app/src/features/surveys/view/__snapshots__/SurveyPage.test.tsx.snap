@@ -156,10 +156,10 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
               survey name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-62 makeStyles-chipActive-63"
+              class="MuiChip-root makeStyles-chip-62 makeStyles-chipActive-63 MuiChip-sizeSmall"
             >
               <span
-                class="MuiChip-label"
+                class="MuiChip-label MuiChip-labelSmall"
               >
                 ACTIVE
               </span>
@@ -464,10 +464,10 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
               survey name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-45 makeStyles-chipActive-46"
+              class="MuiChip-root makeStyles-chip-45 makeStyles-chipActive-46 MuiChip-sizeSmall"
             >
               <span
-                class="MuiChip-label"
+                class="MuiChip-label MuiChip-labelSmall"
               >
                 ACTIVE
               </span>
