@@ -42,24 +42,28 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  const markersToRender: React.ReactNode[] = [];
+
+  occurrences &&
+    occurrences.forEach((occurrence: IGetOccurrencesForViewResponseDetails) => {
+      const { geometry, ...featureData } = occurrence;
+
+      if (!geometry || !geometry.geometry) {
+        return;
+      }
+
+      markersToRender.push(
+        <Marker
+          key={occurrence.occurrenceId}
+          position={[(geometry?.geometry as Point).coordinates[1], (geometry?.geometry as Point).coordinates[0]]}>
+          <OccurrenceFeaturePopup featureData={featureData} />
+        </Marker>
+      );
+    });
+
   return (
     <FeatureGroup>
-      <MarkerClusterGroup chunkedLoading>
-        {occurrences.forEach((occurrence) => {
-          const { geometry, ...featureData } = occurrence;
-
-          if (geometry && geometry?.geometry) {
-            // Only render occurrences that have a non-null geometry
-            return (
-              <Marker
-                key={occurrence.occurrenceId}
-                position={[(geometry.geometry as Point).coordinates[1], (geometry.geometry as Point).coordinates[0]]}>
-                <OccurrenceFeaturePopup featureData={featureData} />
-              </Marker>
-            );
-          }
-        })}
-      </MarkerClusterGroup>
+      <MarkerClusterGroup chunkedLoading>{markersToRender}</MarkerClusterGroup>
     </FeatureGroup>
   );
 };

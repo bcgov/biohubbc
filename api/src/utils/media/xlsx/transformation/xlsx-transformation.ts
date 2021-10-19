@@ -92,14 +92,14 @@ export class XLSXTransformation {
       } else {
         // Handle child records, that have a parent record
 
-        const parentFileName = fileStructure.parent.fileName;
+        const parentFileName = fileStructure.parent.fileName.toLowerCase();
         const parentUniqueIdColumns = fileStructure.parent.uniqueId;
 
         const fileName = fileStructure.fileName;
         const uniqueIdColumns = fileStructure.uniqueId;
 
         rowObjects.forEach((rowObject, rowIndex) => {
-          const parentUniqueId = this._buildMultiColumnID(worksheet, rowIndex, parentUniqueIdColumns);
+          const parentUniqueId = this._buildMultiColumnID(worksheet, rowIndex, parentUniqueIdColumns).toLowerCase();
 
           const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, uniqueIdColumns);
 
@@ -132,8 +132,8 @@ export class XLSXTransformation {
              *  - mark this child array index
              */
             rowsBySourceFile.forEach((rowBySourceFile, rowBySourceFileIndex) => {
-              const existingRowFileName = rowBySourceFile.sourceFile;
-              const existingRowUniqueId = rowBySourceFile.uniqueId;
+              const existingRowFileName = rowBySourceFile.sourceFile.toLowerCase();
+              const existingRowUniqueId = rowBySourceFile.uniqueId.toLowerCase();
 
               if (existingRowFileName === parentFileName && existingRowUniqueId === parentUniqueId) {
                 // This array may need a copy of `newRecord`
@@ -143,7 +143,7 @@ export class XLSXTransformation {
                 };
 
                 foundRecordToModify = true;
-              } else if (existingRowFileName === fileName) {
+              } else if (existingRowFileName === fileName.toLowerCase()) {
                 // This array already contains a record from the same file as `newRecord` and will need to be duplicated
                 recordsToModify[recordsToModifyIndex] = {
                   ...recordsToModify[recordsToModifyIndex],
