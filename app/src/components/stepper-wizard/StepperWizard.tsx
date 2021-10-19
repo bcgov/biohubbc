@@ -148,7 +148,7 @@ const StepperWizard: React.FC<IStepperWizardProps> = (props) => {
 
     return (
       <>
-        <Box mb={4}>
+        <Box mb={3}>
           <Typography variant="h2" className={classes.stepTitle}>
             {steps[activeStep].stepTitle}
           </Typography>
@@ -159,7 +159,7 @@ const StepperWizard: React.FC<IStepperWizardProps> = (props) => {
         </Typography>
 
         <Box>
-          <Box mt={6}>
+          <Box mt={5}>
             <Formik
               key={steps[activeStep].stepTitle}
               innerRef={innerRef}
