@@ -310,8 +310,7 @@ export class XLSXTransformation {
     rowObjectIndex: number,
     transformationSchemaIndex: number
   ): object[] {
-    const isConditionMet = this._isConditionMet(rowObject, transformationSchema?.condition);
-    if (!isConditionMet) {
+    if (!this._isConditionMet(rowObject, transformationSchema?.condition)) {
       // condition not met, return an empty array (contains no new records)
       return [];
     }
@@ -321,14 +320,12 @@ export class XLSXTransformation {
     transformationSchema.transformations.forEach((transformation) => {
       const newDWCRowObject = {};
 
-      const isConditionMet = this._isConditionMet(rowObject, transformation?.condition);
-      if (!isConditionMet) {
+      if (!this._isConditionMet(rowObject, transformation?.condition)) {
         return;
       }
 
       Object.entries(transformation.fields).forEach(([dwcField, config]) => {
-        const isConditionMet = this._isConditionMet(rowObject, config?.condition);
-        if (!isConditionMet) {
+        if (!this._isConditionMet(rowObject, config?.condition)) {
           return;
         }
 
@@ -346,8 +343,7 @@ export class XLSXTransformation {
     });
 
     transformationSchema?.postTransformations?.forEach((postTransformation) => {
-      const isConditionMet = this._isConditionMet(rowObject, postTransformation.condition);
-      if (!isConditionMet) {
+      if (!this._isConditionMet(rowObject, postTransformation.condition)) {
         return;
       }
 
@@ -516,8 +512,7 @@ export class XLSXTransformation {
       }
 
       transformedMergedFlattenedData.forEach((rowObject) => {
-        const isConditionMet = this._isConditionMet(rowObject, parseSchema?.condition);
-        if (!isConditionMet) {
+        if (!this._isConditionMet(rowObject, parseSchema?.condition)) {
           // A conditional field was undefined or null, skip this record
           return;
         }
