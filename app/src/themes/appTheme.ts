@@ -21,6 +21,10 @@ const appTheme = createMuiTheme({
       main: '#003366', // BC ID: corporate blue
       dark: '#001949',
       contrastText: '#ffffff'
+    },
+    text: {
+      primary: '#313132',
+      secondary: '#7f7f81'
     }
   },
   typography: {

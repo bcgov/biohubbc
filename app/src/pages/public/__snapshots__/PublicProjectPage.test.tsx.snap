@@ -47,10 +47,10 @@ exports[`PublicProjectPage renders correctly with no end date 1`] = `
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-31 makeStyles-chipActive-32"
+              class="MuiChip-root makeStyles-chip-31 makeStyles-chipActive-32 MuiChip-sizeSmall"
             >
               <span
-                class="MuiChip-label"
+                class="MuiChip-label MuiChip-labelSmall"
               >
                 ACTIVE
               </span>
@@ -181,10 +181,10 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-7 makeStyles-chipActive-8"
+              class="MuiChip-root makeStyles-chip-7 makeStyles-chipActive-8 MuiChip-sizeSmall"
             >
               <span
-                class="MuiChip-label"
+                class="MuiChip-label MuiChip-labelSmall"
               >
                 ACTIVE
               </span>
@@ -312,10 +312,10 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-19 makeStyles-chipCompleted-21"
+              class="MuiChip-root makeStyles-chip-19 makeStyles-chipCompleted-21 MuiChip-sizeSmall"
             >
               <span
-                class="MuiChip-label"
+                class="MuiChip-label MuiChip-labelSmall"
               >
                 COMPLETED
               </span>
