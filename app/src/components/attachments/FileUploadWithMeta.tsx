@@ -1,31 +1,20 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
-//import FormHelperText from '@material-ui/core/FormHelperText';
-//import Grid from '@material-ui/core/Grid';
-//import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import List from '@material-ui/core/List';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-//import Typography from '@material-ui/core/Typography';
-//import { mdiTrashCanOutline } from '@mdi/js';
-//import Icon from '@mdi/react';
-//import CustomTextField from 'components/fields/CustomTextField';
-//import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { ProjectSurveyAttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
-//import { FieldArray } from 'formik';
-import { default as React, useEffect, useState } from 'react';
+import { Formik, FormikProps } from 'formik';
+import { default as React, useEffect, useRef, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
 import { getKeyByValue } from 'utils/Utils';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
 import { IUploadHandler, MemoizedFileUploadItem } from './FileUploadItem';
-//import { useFormikContext } from 'formik';
-//import yup from 'utils/YupSchema';
+import ReportMetaForm, { ReportMetaFormInitialValues, ReportMetaFormYupSchema } from './ReportMetaForm';
 
-import TextField from '@material-ui/core/TextField';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
@@ -60,6 +49,8 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
   const [fileToRemove, setFileToRemove] = useState<string>('');
 
   const [fileType, setFileType] = useState<string>('');
+
+  const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   /**
    * Handles files which are added (via either drag/drop or browsing).
@@ -167,6 +158,20 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
     removeFile(fileToRemove);
   }, [fileToRemove, fileUploadItems, files]);
 
+  /**
+   * Handle creation of permits.
+   */
+  const handleChange = async () => {
+    if (!formikRef?.current) {
+      return;
+    }
+
+    const meta = formikRef.current?.values;
+
+    console.log('meta is', meta);
+  };
+
+
   const fileUploadUI = (
     <Box>
       <Box mb={2} className={classes.dropZone}>
@@ -183,37 +188,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
     </Box>
   );
 
-  const reportMetaUI = (
-    <Box>
-      <FormControl>
-        <TextField id="upload-report-title" label="Title" variant="outlined" fullWidth={true} required={true} />
-        <TextField
-          id="upload-report-author-first-name"
-          label="Author First Name"
-          variant="outlined"
-          fullWidth={true}
-          required={true}
-        />
-        <TextField
-          id="upload-report-author-last-name"
-          label="Author Last Name"
-          variant="outlined"
-          fullWidth={true}
-          required={true}
-        />
 
-        <Button variant="outlined">Add new author</Button>
-        <TextField id="upload-report-abstract" label="Abstract" variant="outlined" fullWidth={true} required={true} />
-        <TextField
-          id="upload-report-year-published"
-          label="Year Published - YYYY"
-          variant="outlined"
-          fullWidth={true}
-          required={true}
-        />
-      </FormControl>
-    </Box>
-  );
   return (
     <Box>
       <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%', marginBottom: '1rem' }}>
@@ -235,11 +210,25 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
         </Select>
       </FormControl>
 
-      {fileType && fileType != 'Report' && fileUploadUI}
+      {fileType && fileType !== 'Report' && fileUploadUI}
 
-      {fileType && fileType == 'Report' && (
+      {fileType && fileType === 'Report' && (
         <Box width="100%" display="flex" flexWrap="nowrap">
-          <Box width="47%">{reportMetaUI}</Box>
+          <Box width="47%">
+            <Formik
+              innerRef={formikRef}
+              initialValues={ReportMetaFormInitialValues}
+              validationSchema={ReportMetaFormYupSchema}
+              validateOnBlur={true}
+              validateOnChange={false}
+              onSubmit={() => {
+                handleChange();
+              }}>
+              <>
+                <ReportMetaForm />
+              </>
+            </Formik>
+          </Box>
           <Box width="6%"></Box>
           <Box width="47%">{fileUploadUI}</Box>
         </Box>
