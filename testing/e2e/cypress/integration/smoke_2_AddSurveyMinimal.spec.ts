@@ -30,6 +30,8 @@ afterEach(() => {
 });
 
 var n = 0;
+let sdate = '';
+let edate ='';
 while (n < 1) {
   /* for future iterations */
   it("Add SurveytoProject", function () {
@@ -38,6 +40,12 @@ while (n < 1) {
     cy.wait(5000);
     cy.get("h1").should("be.visible");
 
+    cy.get('button[title="Edit General Information"]').click();
+    cy.get('input#start_date').invoke('val').as('sdate');
+    cy.get('input#end_date').invoke('val').as('edate');
+    cy.log('sdate', this.sdate);
+    cy.log('edate', this.edate);
+
     cy.visit("/admin/projects/1/surveys");
     cy.get("h2").contains("Surveys").should("be.visible");
 
@@ -45,27 +53,32 @@ while (n < 1) {
     cy.get("h1").contains("Create Survey").should("be.visible");
 
     cy.get("#survey_name").clear().type(faker.lorem.words());
-    cy.get("#start_date").type(
-        "20" +
-          faker.random.number({ min: 19, max: 21 }) +
-          "-" +
-          faker.random.number({ min: 10, max: 12 }) +
-          "-" +
-          faker.random.number({ min: 10, max: 28 })
-    );
-    cy.get("#end_date").type(
-        "20" +
-          faker.random.number({ min: 22, max: 30 }) +
-          "-" +
-          faker.random.number({ min: 10, max: 12 }) +
-          "-" +
-          faker.random.number({ min: 10, max: 28 })
-    );
+
+    cy.get("#start_date").type( this.sdate );
+    cy.get("#end_date").type( this.edate );
 
     cy.get("#focal_species").focus().click().type("{downArrow}{enter}");
 
     cy.get("#ancillary_species").focus().click().type("{downArrow}{downArrow}{enter}");
-    cy.get("#common_survey_methodology_id").focus().type("{enter}").find('li[data-value="' + faker.random.number({ min: 1, max: 3 }) + '"]').click();
+    cy.get("#common_survey_methodology_id").focus().type("{enter}{downArrow}{enter}");
+    cy.get("#survey_purpose").type(faker.lorem.text());
+    cy.get("#permit_number").click().type("{downArrow}{enter}");
+
+    cy.get("#funding_sources").click().type("{enter}");
+    cy.get("#biologist_first_name").type(faker.name.firstName());
+    cy.get("#biologist_last_name").type(faker.name.lastName());
+
+    cy.get("#survey_area_name").clear().type(faker.lorem.words());
+    cy.get('[data-testid="boundary_file-upload"]').click();
+    cy.get('[data-testid="drop-zone-input"]').attachFile(
+      "shapes/" + (faker.random.number({ min: 1, max: 9 })) + ".kml"
+    );
+    cy.wait(5000);
+    cy.get('button').contains('Close').click();
+
+    cy.get('input[name="sedis_procedures_accepted"]').click();
+    cy.get('input[name="foippa_requirements_accepted"]').click();
+    cy.get('button').contains("Save and Exit").click();
 
     cy.wait(5000);
 
