@@ -17,6 +17,10 @@ export const OccurrenceFeaturePopup: React.FC<{ featureData: any }> = (props) =>
         {`: ${featureData.lifeStage}`}
       </div>
       <div>
+        <b>Sex</b>
+        {`: ${featureData.sex}`}
+      </div>
+      <div>
         <b>Count</b>
         {`: ${
           featureData.organismQuantity
