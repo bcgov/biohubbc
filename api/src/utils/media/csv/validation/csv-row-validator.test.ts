@@ -514,7 +514,7 @@ describe('getValidFormatFieldsValidator', () => {
     const columnFormatValidatorConfig = {
       columnName: 'Header1',
       column_format_validator: {
-        reg_exp: '^wpt [0-9]+$',
+        reg_exp: '^wpt \\d+$',
         expected_format: ''
       }
     };
@@ -534,7 +534,7 @@ describe('getValidFormatFieldsValidator', () => {
     const columnFormatValidatorConfig = {
       columnName: 'Header1',
       column_format_validator: {
-        reg_exp: '^wpt [0-9]+$',
+        reg_exp: '^wpt \\d+$',
         reg_exp_flags: 'i',
         expected_format: ''
       }
@@ -555,7 +555,7 @@ describe('getValidFormatFieldsValidator', () => {
     const columnFormatValidatorConfig = {
       columnName: 'Header1',
       column_format_validator: {
-        reg_exp: '^wpt [0-9]+$',
+        reg_exp: '^wpt \\d+$',
         expected_format: 'Must be in the format "WPT X": WPT 11 (case sensitive)'
       }
     };
@@ -582,7 +582,7 @@ describe('getValidFormatFieldsValidator', () => {
     const columnFormatValidatorConfig = {
       columnName: 'Header1',
       column_format_validator: {
-        reg_exp: '/^wpt [0-9]+$/i',
+        reg_exp: '^wpt \\d+$',
         expected_format: 'Must be in the format "WPT X": WPT 11 (case sensitive)'
       }
     };

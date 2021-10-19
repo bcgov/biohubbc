@@ -12,8 +12,8 @@ const SOPUTH_UTM_BASE_ZONE_NUMBER = 32700;
 const NORTH_UTM_ZONE_LETTERS = ['N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
 const SOUTH_UTM_ZONE_LETTERS = ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'];
 
-const UTM_STRING_FORMAT = RegExp(/^[1-9][0-9]?[NPQRSTUVWXCDEFGHJKLM]? [0-9]+ [0-9]+$/i);
-const UTM_ZONE_WITH_LETTER_FORMAT = RegExp(/^[1-9][0-9]?[NPQRSTUVWXCDEFGHJKLM]$/i);
+const UTM_STRING_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]? \d+ \d+$/i);
+const UTM_ZONE_WITH_LETTER_FORMAT = RegExp(/^[1-9]\d?[NPQRSTUVWXCDEFGHJKLM]$/i);
 
 /**
  * Parses a UTM string of the form: `9N 573674 6114170`

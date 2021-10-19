@@ -55,7 +55,13 @@ describe('parseUTMString', () => {
   it('returns parsed UTM when UTM string is valid, but zone letter is missing', async () => {
     const result = parseUTMString('9 573674 6114170');
 
-    expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: '', zone_number: 9, zone_srid: 32609 });
+    expect(result).to.eql({
+      easting: 573674,
+      northing: 6114170,
+      zone_letter: undefined,
+      zone_number: 9,
+      zone_srid: 32609
+    });
   });
 
   it('returns parsed UTM when UTM string is valid, but zone letter is lowercase', async () => {
@@ -71,8 +77,8 @@ describe('parseUTMString', () => {
   });
 
   it('returns parsed UTM when UTM string is valid for southern hemisphere', async () => {
-    const result = parseUTMString('18S 573674 6114170');
+    const result = parseUTMString('18C 573674 6114170');
 
-    expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: 'S', zone_number: 18, zone_srid: 32709 });
+    expect(result).to.eql({ easting: 573674, northing: 6114170, zone_letter: 'C', zone_number: 18, zone_srid: 32718 });
   });
 });
