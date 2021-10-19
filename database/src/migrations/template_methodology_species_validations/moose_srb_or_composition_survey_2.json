@@ -105,7 +105,14 @@
         },
         {
           "file_required_columns_validator": {
-            "required_columns": ["Survey Area", "Block ID/SU ID", "Area (km2)", "Stratum", "Sampled (Y/N)", "Comments"]
+            "required_columns": [
+              "Survey Area",
+              "Block ID/SU ID",
+              "Area (km2)",
+              "Stratum",
+              "Sampled (Y/N)",
+              "Block Summary Comments"
+            ]
           }
         }
       ]
@@ -389,7 +396,8 @@
               "Snow Depth",
               "Days Since Snowfall",
               "Weather Description",
-              "Habitat Description"
+              "Habitat Description",
+              "Effort & Site Comments"
             ]
           }
         }
@@ -493,7 +501,7 @@
           ]
         },
         {
-          "name": "Bulls Unclassified",
+          "name": "Bulls - Unclassified",
           "description": "",
           "validations": [
             {
@@ -630,7 +638,7 @@
               "Sub-Prime Bulls",
               "Prime Bulls",
               "Senior Bulls",
-              "Bulls Unclassified",
+              "Bulls - Unclassified",
               "Spike/Fork Bulls",
               "Lone Cows",
               "Cow W/1 calf",
@@ -641,14 +649,14 @@
               "Activity",
               "% Veg Cover",
               "% Snow Cover",
-              "Comments"
+              "Observation Comments"
             ]
           }
         }
       ]
     },
     {
-      "name": "NonTargetted Observations",
+      "name": "NonTargeted Observations",
       "description": "",
       "columns": [
         {
@@ -801,7 +809,7 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Study Area Name",
+              "Study Area",
               "Block ID/SU ID",
               "Waypoint",
               "Species",
@@ -814,7 +822,7 @@
               "Juveniles - Unclassified Sex",
               "Unknown Age/Sex",
               "Activity",
-              "Comments"
+              "NonTargeted Observation Comments"
             ]
           }
         }
@@ -830,9 +838,9 @@
           "validations": [
             {
               "column_format_validator": {
-                "reg_exp": "^[1-9]?[0-9][NPQRSTUVWXCDEFGHJKLM]?$",
+                "reg_exp": "^[1-9][0-9]{0,1}[NPQRSTUVWXCDEFGHJKLM]{0,1}$",
                 "reg_exp_flags": "i",
-                "expected_format": "Must be a number from 1-60, and may include an optional zone letter: 9, 9U"
+                "expected_format": "Must be a number from 1-60, and may include an optional zone letter: 9, 9N"
               }
             }
           ]
@@ -948,12 +956,12 @@
               "Easting",
               "Northing",
               "GPS Datum",
-              "Lat",
-              "Long",
-              "Lat/Long Units",
               "Elevation (m)",
               "Elevation(-65m)",
-              "Comments"
+              "Lat/Long Units",
+              "Lat",
+              "Long",
+              "Location Comments"
             ]
           }
         }
@@ -975,7 +983,7 @@
         },
         {
           "file_required_columns_validator": {
-            "required_columns": ["ID", "Photo File Name", "Comments"]
+            "required_columns": ["ID", "Photo File Name", "Photo Comments"]
           }
         }
       ]
@@ -989,7 +997,7 @@
           "Block Summary",
           "Effort & Site Conditions",
           "Observations",
-          "NonTargetted Observations",
+          "NonTargeted Observations",
           "UTM_LatLong",
           "Photos"
         ]

@@ -99,6 +99,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         associatedTaxaHeader,
         eventRows,
         lifeStageHeader,
+        sexHeader,
         individualCountHeader,
         organismQuantityHeader,
         organismQuantityTypeHeader,
@@ -115,6 +116,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         const occurrenceId = row[occurrenceIdHeader];
         const associatedTaxa = row[associatedTaxaHeader];
         const lifeStage = row[lifeStageHeader];
+        const sex = row[sexHeader];
         const individualCount = row[individualCountHeader];
         const organismQuantity = row[organismQuantityHeader];
         const organismQuantityType = row[organismQuantityTypeHeader];
@@ -142,6 +144,7 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         return new PostOccurrence({
           associatedTaxa: associatedTaxa,
           lifeStage: lifeStage,
+          sex: sex,
           individualCount: individualCount,
           vernacularName: vernacularName,
           data,
@@ -211,6 +214,7 @@ const getHeadersAndRowsFromFile = (dwcArchive: DWCArchive) => {
   const occurrenceIdHeader = occurrenceHeaders?.indexOf('id') as number;
   const associatedTaxaHeader = occurrenceHeaders?.indexOf('associatedTaxa') as number;
   const lifeStageHeader = occurrenceHeaders?.indexOf('lifeStage') as number;
+  const sexHeader = occurrenceHeaders?.indexOf('sex') as number;
   const individualCountHeader = occurrenceHeaders?.indexOf('individualCount') as number;
   const organismQuantityHeader = occurrenceHeaders?.indexOf('organismQuantity') as number;
   const organismQuantityTypeHeader = occurrenceHeaders?.indexOf('organismQuantityType') as number;
@@ -226,6 +230,7 @@ const getHeadersAndRowsFromFile = (dwcArchive: DWCArchive) => {
     associatedTaxaHeader,
     eventRows,
     lifeStageHeader,
+    sexHeader,
     individualCountHeader,
     organismQuantityHeader,
     organismQuantityTypeHeader,

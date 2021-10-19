@@ -42,25 +42,23 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
+  // Filter out any occurrences with no geometry (as they can't be rendered on the map)
+  const occurrencesToRender = (occurrences && occurrences.filter((occurrence) => occurrence.geometry)) || [];
+
   return (
     <FeatureGroup>
       <MarkerClusterGroup chunkedLoading>
-        {occurrences &&
-          occurrences.map((occurrence: IGetOccurrencesForViewResponseDetails) => {
-            const { geometry, ...featureData } = occurrence;
+        {occurrencesToRender.map((occurrence: IGetOccurrencesForViewResponseDetails) => {
+          const { geometry, ...featureData } = occurrence;
 
-            if (!geometry) {
-              return <></>;
-            }
-
-            return (
-              <Marker
-                key={occurrence.occurrenceId}
-                position={[(geometry.geometry as Point).coordinates[1], (geometry.geometry as Point).coordinates[0]]}>
-                <OccurrenceFeaturePopup featureData={featureData} />
-              </Marker>
-            );
-          })}
+          return (
+            <Marker
+              key={occurrence.occurrenceId}
+              position={[(geometry!.geometry as Point).coordinates[1], (geometry!.geometry as Point).coordinates[0]]}>
+              <OccurrenceFeaturePopup featureData={featureData} />
+            </Marker>
+          );
+        })}
       </MarkerClusterGroup>
     </FeatureGroup>
   );

@@ -33,6 +33,7 @@ export class GetOccurrencesViewData {
         occurrenceId: occurrence.occurrence_id,
         individualCount: Number(occurrence.individualcount),
         lifeStage: occurrence.lifestage,
+        sex: occurrence.sex,
         organismQuantity: Number(occurrence.organismquantity),
         organismQuantityType: occurrence.organismquantitytype,
         vernacularName: occurrence.vernacularname,

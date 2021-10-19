@@ -1,7 +1,7 @@
 export interface IUTM {
   easting: number;
   northing: number;
-  zone_letter: string;
+  zone_letter: string | undefined;
   zone_number: number;
   zone_srid: number;
 }
@@ -12,7 +12,8 @@ const SOPUTH_UTM_BASE_ZONE_NUMBER = 32700;
 const NORTH_UTM_ZONE_LETTERS = ['N', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X'];
 const SOUTH_UTM_ZONE_LETTERS = ['C', 'D', 'E', 'F', 'G', 'H', 'J', 'K', 'L', 'M'];
 
-const UTM_STRING_FORMAT = RegExp(/^[1-9]?[0-9][NPQRSTUVWXCDEFGHJKLM]? [0-9]+ [0-9]+$/i);
+const UTM_STRING_FORMAT = RegExp(/^[1-9][0-9]?[NPQRSTUVWXCDEFGHJKLM]? [0-9]+ [0-9]+$/i);
+const UTM_ZONE_WITH_LETTER_FORMAT = RegExp(/^[1-9][0-9]?[NPQRSTUVWXCDEFGHJKLM]$/i);
 
 /**
  * Parses a UTM string of the form: `9N 573674 6114170`
@@ -30,7 +31,6 @@ export function parseUTMString(utm: string): IUTM | null {
   }
 
   const utmParts = utm.split(' ');
-
   const easting = Number(utmParts[1]);
   if (easting < 166640 || easting > 833360) {
     // utm easting is invalid
@@ -43,9 +43,18 @@ export function parseUTMString(utm: string): IUTM | null {
     return null;
   }
 
-  const zone_letter = utmParts[0].slice(1).toUpperCase();
+  const hasZoneLetter = UTM_ZONE_WITH_LETTER_FORMAT.test(utmParts[0]);
 
-  const zone_number = Number(utmParts[0].slice(0, 1));
+  let zone_letter = undefined;
+  let zone_number = undefined;
+
+  if (hasZoneLetter) {
+    zone_letter = utmParts[0].slice(-1).toUpperCase();
+    zone_number = Number(utmParts[0].slice(0, -1));
+  } else {
+    zone_number = Number(utmParts[0]);
+  }
+
   if (zone_number < 1 || zone_number > 60) {
     // utm zone number is invalid
     return null;

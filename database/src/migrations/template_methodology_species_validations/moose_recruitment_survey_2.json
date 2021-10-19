@@ -3,7 +3,7 @@
   "description": "",
   "files": [
     {
-      "name": "Effort and Site Conditions",
+      "name": "Effort & Site Conditions",
       "description": "",
       "columns": [
         {
@@ -103,7 +103,7 @@
               "Rear Right Observer",
               "Light",
               "Weather Description",
-              "Comments"
+              "Effort & Site Comments"
             ]
           }
         }
@@ -138,13 +138,14 @@
           ]
         },
         {
-          "name": "WPT",
+          "name": "Waypoint",
           "description": "",
           "validations": [
             {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
+              "column_format_validator": {
+                "reg_exp": "^wpt [0-9]+$",
+                "reg_exp_flags": "i",
+                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
               }
             }
           ]
@@ -198,20 +199,20 @@
               "Collar Serial Number",
               "Collar VHF Frequency",
               "Date Captured",
-              "WPT",
+              "Waypoint",
               "Cow Status",
               "Cow Tick Load",
               "Calf Count",
               "Calf Tick Load",
               "Timing",
-              "Comments"
+              "Observation Comments"
             ]
           }
         }
       ]
     },
     {
-      "name": "Incidental Observations",
+      "name": "NonTargeted Observations",
       "description": "",
       "columns": [
         {
@@ -352,7 +353,7 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Study Area Name",
+              "Study Area",
               "Waypoint",
               "Species",
               "Total Count",
@@ -364,7 +365,7 @@
               "Juveniles - Unclassified Sex",
               "Unknown Age/Sex",
               "Activity",
-              "Comments"
+              "NonTargeted Observation Comments"
             ]
           }
         }
@@ -380,9 +381,9 @@
           "validations": [
             {
               "column_format_validator": {
-                "reg_exp": "^[1-9]?[0-9][NPQRSTUVWXCDEFGHJKLM]?$",
+                "reg_exp": "^[1-9][0-9]{0,1}[NPQRSTUVWXCDEFGHJKLM]{0,1}$",
                 "reg_exp_flags": "i",
-                "expected_format": "Must be a number from 1-60, and may include an optional zone letter: 9, 9U"
+                "expected_format": "Must be a number from 1-60, and may include an optional zone letter: 9, 9N"
               }
             }
           ]
@@ -425,7 +426,7 @@
           ]
         },
         {
-          "name": "Lat (DD)",
+          "name": "Lat",
           "description": "",
           "validations": [
             {
@@ -437,7 +438,7 @@
           ]
         },
         {
-          "name": "Long (DD)",
+          "name": "Long",
           "description": "",
           "validations": [
             {
@@ -461,9 +462,10 @@
               "UTM Zone",
               "Easting",
               "Northing",
-              "Lat (DD)",
-              "Long (DD)",
-              "Comments"
+              "Lat/Long Units",
+              "Lat",
+              "Long",
+              "Location Comments"
             ]
           }
         }
@@ -485,7 +487,7 @@
         },
         {
           "file_required_columns_validator": {
-            "required_columns": ["ID", "Photo File Name", "Comments"]
+            "required_columns": ["ID", "Photo File Name", "Photo Comments"]
           }
         }
       ]
@@ -495,9 +497,9 @@
     {
       "submission_required_files_validator": {
         "required_files": [
-          "Effort and Site Conditions",
+          "Effort & Site Conditions",
           "Observations",
-          "Incidental Observations",
+          "NonTargeted Observations",
           "UTM_LatLong",
           "Photos"
         ]

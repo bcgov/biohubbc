@@ -75,11 +75,6 @@ export async function up(knex: Knex): Promise<void> {
       )}
     `);
   }
-
-  await knex.raw(`
-    set role postgres;
-    set search_path = biohub;
-  `);
 }
 
 export async function down(knex: Knex): Promise<void> {
@@ -94,16 +89,16 @@ export async function down(knex: Knex): Promise<void> {
  * 2) species name
  * 3) template name
  *
- * @param {string} schema validation rules config
+ * @param {string} validationJSON validation rules config
  * @param {string} csm common survey methodology needed for the query
  * @param {string} species species `english name` from the wldtaxonomic_units table needed for the query
  * @param {string} template name of the template
  */
-const updateValidation = (schema: string, csm: string, species: string, template: string) => `
+const updateValidation = (validationJSON: string, csm: string, species: string, template: string) => `
   UPDATE
     biohub.template_methodology_species tms
   SET
-    validation = '${schema}'
+    validation = '${validationJSON}'
   WHERE
     tms.template_methodology_species_id =
     (SELECT
@@ -127,6 +122,6 @@ const updateValidation = (schema: string, csm: string, species: string, template
     AND
       wu.english_name = '${species}'
     AND
-      t.name= '${template}'
+      t.name = '${template}'
     );
 `;
