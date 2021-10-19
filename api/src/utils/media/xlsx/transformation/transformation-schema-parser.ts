@@ -11,13 +11,21 @@ export type TransformationFieldSchema = {
   separator?: string;
   value?: any;
   unique?: string;
+  condition?: Condition;
 };
 
 export type TransformationFieldsSchema = {
   [key: string]: TransformationFieldSchema;
 };
 
+export type Condition = {
+  if: {
+    columns: string[];
+  };
+};
+
 export type PostTransformationRelatopnshipSchema = {
+  condition?: Condition;
   relationship: {
     spreadColumn: string;
     uniqueIdColumn: 'string';
@@ -25,10 +33,9 @@ export type PostTransformationRelatopnshipSchema = {
 };
 
 export type TransformSchema = {
-  condition?: {
-    if?: TransformationFieldSchema;
-  };
+  condition?: Condition;
   transformations: {
+    condition?: Condition;
     fields: TransformationFieldsSchema;
   }[];
   postTransformations?: PostTransformationRelatopnshipSchema[];
@@ -39,7 +46,7 @@ export type ParseColumnSchema = { source: string; target: string };
 export type ParseSchema = {
   fileName: string;
   columns: ParseColumnSchema[];
-  conditionalFields?: string[];
+  condition?: Condition;
 };
 export class TransformationSchemaParser {
   transformationSchema: object;
@@ -61,7 +68,7 @@ export class TransformationSchemaParser {
   }
 
   getParseSchemas(): ParseSchema[] {
-    return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || null;
+    return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || [];
   }
 
   getFlattenJsonPath(fileName: string): string {

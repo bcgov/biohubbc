@@ -3,6 +3,7 @@ import xlsx from 'xlsx';
 import { CSVWorksheet } from '../../csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
 import {
+  Condition,
   PostTransformationRelatopnshipSchema,
   TransformationFieldSchema,
   TransformationSchemaParser,
@@ -91,14 +92,14 @@ export class XLSXTransformation {
       } else {
         // Handle child records, that have a parent record
 
-        const parentFileName = fileStructure.parent.fileName;
+        const parentFileName = fileStructure.parent.fileName.toLowerCase();
         const parentUniqueIdColumns = fileStructure.parent.uniqueId;
 
         const fileName = fileStructure.fileName;
         const uniqueIdColumns = fileStructure.uniqueId;
 
         rowObjects.forEach((rowObject, rowIndex) => {
-          const parentUniqueId = this._buildMultiColumnID(worksheet, rowIndex, parentUniqueIdColumns);
+          const parentUniqueId = this._buildMultiColumnID(worksheet, rowIndex, parentUniqueIdColumns).toLowerCase();
 
           const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, uniqueIdColumns);
 
@@ -110,11 +111,17 @@ export class XLSXTransformation {
 
           // An array of indexes that tracks which records to add `newRecord` to, and which records should be duplicated
           // before adding `newRecord` to them.
-          const recordsToModify: { rowsBySourceFileIndex: number; rowBySourceFileIndex: number }[] = [];
+          const recordsToModify: { matchingParentIndex: number; matchingChildIndex: number }[] = [];
           let recordsToModifyIndex = 0;
+
+          let foundRowToModify = false;
 
           // For each parent array of child arrays of objects
           rowsBySourceFileArray.forEach((rowsBySourceFile, rowsBySourceFileIndex) => {
+            if (foundRowToModify) {
+              return;
+            }
+
             let foundRecordToModify = false;
 
             /*
@@ -125,22 +132,22 @@ export class XLSXTransformation {
              *  - mark this child array index
              */
             rowsBySourceFile.forEach((rowBySourceFile, rowBySourceFileIndex) => {
-              const existingRowFileName = rowBySourceFile.sourceFile;
-              const existingRowUniqueId = rowBySourceFile.uniqueId;
+              const existingRowFileName = rowBySourceFile.sourceFile.toLowerCase();
+              const existingRowUniqueId = rowBySourceFile.uniqueId.toLowerCase();
 
               if (existingRowFileName === parentFileName && existingRowUniqueId === parentUniqueId) {
                 // This array may need a copy of `newRecord`
                 recordsToModify[recordsToModifyIndex] = {
                   ...recordsToModify[recordsToModifyIndex],
-                  rowsBySourceFileIndex
+                  matchingParentIndex: rowsBySourceFileIndex
                 };
 
                 foundRecordToModify = true;
-              } else if (existingRowFileName === fileName) {
+              } else if (existingRowFileName === fileName.toLowerCase()) {
                 // This array already contains a record from the same file as `newRecord` and will need to be duplicated
                 recordsToModify[recordsToModifyIndex] = {
                   ...recordsToModify[recordsToModifyIndex],
-                  rowBySourceFileIndex
+                  matchingChildIndex: rowBySourceFileIndex
                 };
 
                 foundRecordToModify = true;
@@ -148,6 +155,13 @@ export class XLSXTransformation {
             });
 
             if (foundRecordToModify) {
+              if (
+                recordsToModify[recordsToModifyIndex].matchingParentIndex >= 0 &&
+                recordsToModify[recordsToModifyIndex].matchingChildIndex >= 0
+              ) {
+                // A matching parent row with matching child was found, don't continue checking other rows
+                foundRowToModify = true;
+              }
               // A record was found after iterating over the previous array, increase the index before we loop over
               // the next array.
               recordsToModifyIndex++;
@@ -157,7 +171,7 @@ export class XLSXTransformation {
           // For each `recordsToModify`
           // Apply updates to the existing records based on the `recordsToModify` array.
           recordsToModify.forEach((recordToModify) => {
-            if (recordToModify.rowsBySourceFileIndex >= 0 && recordToModify.rowBySourceFileIndex >= 0) {
+            if (recordToModify.matchingParentIndex >= 0 && recordToModify.matchingChildIndex >= 0) {
               /*
                * `recordToModify` indicates that a matching parent was found AND a matching child from the same
                * sourceFile was found. Duplicate the array, and in the duplicated array, overwrite the existing
@@ -191,16 +205,16 @@ export class XLSXTransformation {
                */
 
               // Copy the existing items into a new array
-              const newRowRecord = [...rowsBySourceFileArray[recordToModify.rowsBySourceFileIndex]];
+              const newRowRecord = [...rowsBySourceFileArray[recordToModify.matchingParentIndex]];
 
-              // Overwrite the matching item at index `rowBySourceFileIndex` with our new record
-              newRowRecord[recordToModify.rowBySourceFileIndex] = newRecord;
+              // Overwrite the matching item at index `matchingChildIndex` with our new record
+              newRowRecord[recordToModify.matchingChildIndex] = newRecord;
 
               // Append this new duplicated record to the parent array
               rowsBySourceFileArray.push(newRowRecord);
-            } else if (recordToModify.rowsBySourceFileIndex >= 0) {
+            } else if (recordToModify.matchingParentIndex >= 0) {
               /*
-               * `recordToModify` indicates that a matching parent was found.  Add the `newRecord` to this existing
+               * `recordToModify` indicates that a matching parent was found. Add the `newRecord` to this existing
                * array.
                *
                * Example:
@@ -224,7 +238,7 @@ export class XLSXTransformation {
                *     ]
                *   ]
                */
-              rowsBySourceFileArray[recordToModify.rowsBySourceFileIndex].push(newRecord);
+              rowsBySourceFileArray[recordToModify.matchingParentIndex].push(newRecord);
             }
           });
         });
@@ -296,10 +310,7 @@ export class XLSXTransformation {
     rowObjectIndex: number,
     transformationSchemaIndex: number
   ): object[] {
-    const condition = transformationSchema?.condition;
-    const conditionalColumnValue = this._getColumnValue(rowObject, condition?.if);
-
-    if (!conditionalColumnValue) {
+    if (!this._isConditionMet(rowObject, transformationSchema?.condition)) {
       // condition not met, return an empty array (contains no new records)
       return [];
     }
@@ -309,7 +320,15 @@ export class XLSXTransformation {
     transformationSchema.transformations.forEach((transformation) => {
       const newDWCRowObject = {};
 
+      if (!this._isConditionMet(rowObject, transformation?.condition)) {
+        return;
+      }
+
       Object.entries(transformation.fields).forEach(([dwcField, config]) => {
+        if (!this._isConditionMet(rowObject, config?.condition)) {
+          return;
+        }
+
         let columnValue = this._getColumnValue(rowObject, config);
 
         if (config.unique) {
@@ -324,6 +343,10 @@ export class XLSXTransformation {
     });
 
     transformationSchema?.postTransformations?.forEach((postTransformation) => {
+      if (!this._isConditionMet(rowObject, postTransformation.condition)) {
+        return;
+      }
+
       if (postTransformation.relationship) {
         newDWCRowObjects = this._postTransformRelationships(
           postTransformation as PostTransformationRelatopnshipSchema,
@@ -397,20 +420,10 @@ export class XLSXTransformation {
     let columnValue = undefined;
 
     if (config.columns) {
-      if (config.columns.length === 1) {
-        columnValue = rowObject[config.columns[0]];
-      } else if (config.columns.length > 1) {
-        const columnValueParts: any[] = [];
+      const columnsValues = this._getColumnValueParts(rowObject, config.columns);
 
-        config.columns.forEach((columnName) => {
-          columnValue = rowObject[columnName];
-
-          if (columnValue !== undefined && columnValue !== null) {
-            columnValueParts.push(columnValue);
-          }
-        });
-
-        columnValue = columnValueParts.join(config?.separator || ' ');
+      if (columnsValues && columnsValues.length) {
+        columnValue = columnsValues.join(config?.separator || ' ');
       }
     }
 
@@ -419,6 +432,62 @@ export class XLSXTransformation {
     }
 
     return columnValue;
+  }
+
+  /**
+   * Given an array of column names, return an array of matching column values.
+   *
+   * @param {object} rowObject
+   * @param {string[]} columnNames
+   * @return {*}  {((string | number)[] | undefined)}
+   * @memberof XLSXTransformation
+   */
+  _getColumnValueParts(rowObject: object, columnNames: string[]): (string | number)[] | undefined {
+    if (!rowObject || !columnNames || !columnNames.length) {
+      return undefined;
+    }
+
+    const columnValueParts: any[] = [];
+
+    columnNames.forEach((columnName) => {
+      const columnValue = rowObject[columnName];
+
+      if (columnValue !== undefined && columnValue !== null && columnValue !== '') {
+        columnValueParts.push(columnValue);
+      }
+    });
+
+    return columnValueParts;
+  }
+
+  /**
+   * Returns true if the `condition` is met.
+   *
+   * @param {object} rowObject
+   * @param {(Condition | undefined)} condition
+   * @return {*}  {boolean}
+   * @memberof XLSXTransformation
+   */
+  _isConditionMet(rowObject: object, condition?: Condition): boolean {
+    if (!condition) {
+      // no conditions specified
+      return true;
+    }
+
+    const columnValueParts = this._getColumnValueParts(rowObject, condition.if.columns);
+
+    if (!columnValueParts || !columnValueParts.length) {
+      return false;
+    }
+
+    for (const columnValuePart in columnValueParts) {
+      if (columnValuePart === undefined || columnValuePart === null || columnValuePart === '') {
+        return false;
+      }
+    }
+
+    // all conditions met
+    return true;
   }
 
   /**
@@ -436,7 +505,6 @@ export class XLSXTransformation {
     parseSchemas.forEach((parseSchema) => {
       const fileName = parseSchema.fileName;
       const columns = parseSchema.columns;
-      const conditions = parseSchema.conditionalFields || [];
 
       if (!parsedDWCData[fileName]) {
         // initialize an empty array for the current fileName if one does not yet exist
@@ -444,7 +512,10 @@ export class XLSXTransformation {
       }
 
       transformedMergedFlattenedData.forEach((rowObject) => {
-        let skipRecord = false;
+        if (!this._isConditionMet(rowObject, parseSchema?.condition)) {
+          // A conditional field was undefined or null, skip this record
+          return;
+        }
 
         const newRowObject = {};
 
@@ -455,19 +526,16 @@ export class XLSXTransformation {
               break;
             }
           }
-
-          if (conditions.includes(dwcField) && (value === undefined || value === null)) {
-            skipRecord = true;
-          }
         });
 
-        if (skipRecord) {
-          // A conditional field was undefined or null, skip this record
-          return;
-        }
-
         const newRowObjectKeys = Object.keys(newRowObject);
-        if (!conditions.every((conditionalFields) => newRowObjectKeys.includes(conditionalFields))) {
+
+        if (
+          parseSchema?.condition &&
+          !parseSchema?.condition?.if?.columns.every((conditionalFields) =>
+            newRowObjectKeys.includes(conditionalFields)
+          )
+        ) {
           // If the `newRowObject` is missing any of the conditional fields, skip this record
           return;
         }

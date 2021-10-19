@@ -18,6 +18,10 @@ describe('PostOccurrence', () => {
       expect(data.lifeStage).to.equal(null);
     });
 
+    it('sets sex', () => {
+      expect(data.sex).to.equal(null);
+    });
+
     it('sets data', () => {
       expect(data.data).to.eql(null);
     });
@@ -54,6 +58,7 @@ describe('PostOccurrence', () => {
       data = new PostOccurrence({
         associatedTaxa: 'associatedTaxa',
         lifeStage: 'lifeStage',
+        sex: 'sex',
         data: 'data',
         verbatimCoordinates: 'verbatimCoordinates',
         individualCount: 'individualCount',
@@ -70,6 +75,10 @@ describe('PostOccurrence', () => {
 
     it('sets lifeStage', () => {
       expect(data.lifeStage).to.equal('lifeStage');
+    });
+
+    it('sets sex', () => {
+      expect(data.sex).to.equal('sex');
     });
 
     it('sets data', () => {
