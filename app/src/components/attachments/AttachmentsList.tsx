@@ -216,15 +216,15 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 <TableCell>Type</TableCell>
                 <TableCell>Last Modified</TableCell>
                 <TableCell>File Size</TableCell>
-                <TableCell>Security Status</TableCell>
-                <TableCell></TableCell>
+                <TableCell width="150px">Security Status</TableCell>
+                <TableCell width="50px"></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {props.attachmentsList.length > 0 &&
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow key={row.fileName}>
-                    <TableCell component="th" scope="row">
+                    <TableCell scope="row">
                       <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
                         {row.fileName}
                       </Link>

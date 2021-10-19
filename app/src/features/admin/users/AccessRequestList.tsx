@@ -153,7 +153,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
       chipStatusClass = classes.chipPending;
     }
 
-    return <Chip className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
+    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
   return (

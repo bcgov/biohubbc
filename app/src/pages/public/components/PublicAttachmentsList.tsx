@@ -1,6 +1,12 @@
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,30 +15,23 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import { mdiLockOutline, mdiLockOpenVariantOutline } from '@mdi/js';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
-import React, { useState, useContext } from 'react';
+import React, { useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import Box from '@material-ui/core/Box';
-import { DialogContext } from 'contexts/dialogContext';
 
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650
-  },
-  heading: {
-    fontWeight: 'bold'
-  },
-  tableCellBorderTop: {
-    borderTop: '1px solid rgba(224, 224, 224, 1)'
-  },
-  spacingRight: {
-    marginRight: '0.5rem'
+const useStyles = makeStyles((theme: Theme) => ({
+  attachmentsTable: {
+    '& .MuiTableCell-root': {
+      verticalAlign: 'middle'
+    }
   }
-});
+}));
 
 export interface IPublicAttachmentsListProps {
   projectId: number;
@@ -42,23 +41,19 @@ export interface IPublicAttachmentsListProps {
 
 const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => {
   const classes = useStyles();
+  const [open, setOpen] = React.useState(false);
   const biohubApi = useBiohubApi();
+  const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
 
-  const dialogContext = useContext(DialogContext);
-
   const showRequestAccessDialog = () => {
-    dialogContext.setErrorDialog({
-      dialogTitle: 'Access Denied',
-      dialogText: 'This attachment is secured. Please contact SPI_Mail@gov.bc.ca to request access.',
-      onClose: () => dialogContext.setErrorDialog({ open: false }),
-      open: true,
-      onOk: () => {
-        dialogContext.setErrorDialog({ open: false });
-      }
-    });
+    setOpen(true);
+  };
+
+  const hideRequestAccessDialog = () => {
+    setOpen(false);
   };
 
   const viewFileContents = async (attachment: IGetProjectAttachment) => {
@@ -84,21 +79,21 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
     <>
       <Paper>
         <TableContainer>
-          <Table className={classes.table} aria-label="attachments-list-table">
+          <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
             <TableHead>
               <TableRow>
-                <TableCell className={classes.heading}>Name</TableCell>
-                <TableCell className={classes.heading}>Type</TableCell>
-                <TableCell className={classes.heading}>Last Modified</TableCell>
-                <TableCell className={classes.heading}>File Size</TableCell>
-                <TableCell className={classes.heading}>Security Status</TableCell>
+                <TableCell>Name</TableCell>
+                <TableCell>Type</TableCell>
+                <TableCell>Last Modified</TableCell>
+                <TableCell>File Size</TableCell>
+                <TableCell width="150px">Security Status</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               {props.attachmentsList.length > 0 &&
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow key={row.fileName}>
-                    <TableCell component="th" scope="row">
+                    <TableCell scope="row">
                       <Link
                         underline="always"
                         component="button"
@@ -117,13 +112,9 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                     <TableCell>{getFormattedFileSize(row.size)}</TableCell>
                     <TableCell>
-                      <Box display="flex">
-                        <Icon
-                          path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline}
-                          size={1}
-                          className={classes.spacingRight}
-                        />
-                        {row.securityToken ? 'Secured' : 'Unsecured'}
+                      <Box display="flex" alignItems="center">
+                        <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                        <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -152,6 +143,27 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
           />
         )}
       </Paper>
+
+      <Dialog open={open}>
+        <DialogTitle>Access Denied</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" color="textSecondary">
+            To access secure documents, please submit your request to{' '}
+            <Link
+              href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
+              underline="always"
+              onClick={preventDefault}>
+              biohub@gov.bc.ca
+            </Link>
+            . A data manager will review your request and contact you as soon as possible.
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="primary" onClick={hideRequestAccessDialog}>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
     </>
   );
 };
