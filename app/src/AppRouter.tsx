@@ -29,12 +29,19 @@ const AppRouter: React.FC = (props: any) => {
       <AppRoute path="/projects" title={getTitle('Projects')} component={PublicProjectsRouter} />
       <AppRoute path="/search" title={getTitle('Search')} component={SearchPage} layout={PublicLayout} />
       <AppRoute
+        anyAuth
         path="/page-not-found"
         title={getTitle('Page Not Found')}
         component={NotFoundPage}
         layout={PublicLayout}
       />
-      <AppRoute path="/forbidden" title={getTitle('Forbidden')} component={AccessDenied} layout={PublicLayout} />
+      <AppRoute
+        anyAuth
+        path="/forbidden"
+        title={getTitle('Forbidden')}
+        component={AccessDenied}
+        layout={PublicLayout}
+      />
 
       <AppRoute
         protected

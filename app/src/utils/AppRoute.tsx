@@ -29,6 +29,15 @@ export type IAppRouteProps = RouteProps & {
    */
   protected?: boolean;
   /**
+   * Indicates that both authenticated and un-authenticated users can access this route.
+   *
+   * Typically, logged in users should be re-directed to the authenticated side of the site, away from the public side.
+   * However, some pages have no opinion on the authenticated state of the user.
+   *
+   * @type {boolean}
+   */
+  anyAuth?: boolean;
+  /**
    * Indicates the sufficient roles needed to access this route, if any.
    *
    * Note: Will do nothing if `protected` is false.
@@ -43,6 +52,7 @@ const AppRoute: React.FC<IAppRouteProps> = ({
   component: Component,
   layout,
   protected: usePrivateRoute,
+  anyAuth,
   title,
   validRoles,
   ...rest
@@ -57,8 +67,12 @@ const AppRoute: React.FC<IAppRouteProps> = ({
     return <PrivateRoute {...rest} validRoles={validRoles} component={Component} layout={Layout} />;
   }
 
-  if (keycloakWrapper?.keycloak?.authenticated) {
-    return <Redirect to="/admin/projects" />;
+  if (!anyAuth) {
+    // This route should only be accessed by un-authenticated users
+    if (keycloakWrapper?.keycloak?.authenticated) {
+      // User is logged in
+      return <Redirect to="/admin/projects" />;
+    }
   }
 
   return (
