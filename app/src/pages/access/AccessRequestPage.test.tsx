@@ -158,7 +158,7 @@ describe('AccessRequestPage', () => {
       id: 1
     });
 
-    const { getByText, getAllByRole, getByRole, getByTestId } = renderContainer();
+    const { getByText, getAllByRole, getByRole } = renderContainer();
 
     fireEvent.mouseDown(getAllByRole('button')[0]);
 
@@ -225,7 +225,7 @@ describe('AccessRequestPage', () => {
 
     mockBiohubApi().admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = renderContainer();
+    const { getByText, getAllByRole, getByRole, queryByText } = renderContainer();
 
     fireEvent.mouseDown(getAllByRole('button')[0]);
 
@@ -260,7 +260,7 @@ describe('AccessRequestPage', () => {
       id: null
     });
 
-    const { getByText, getAllByRole, getByRole, getByTestId, queryByText } = renderContainer();
+    const { getByText, getAllByRole, getByRole, queryByText } = renderContainer();
 
     fireEvent.mouseDown(getAllByRole('button')[0]);
 
