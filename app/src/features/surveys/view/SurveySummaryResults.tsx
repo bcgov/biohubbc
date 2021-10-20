@@ -115,7 +115,7 @@ const SurveySummaryResults = () => {
     } catch (error) {
       return error;
     }
-  }, [biohubApi.project, biohubApi.survey, surveyId, projectId, hasErrorMessages]);
+  }, [biohubApi.survey, surveyId, projectId]);
 
   useEffect(() => {
     if (isLoading) {
