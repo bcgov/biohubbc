@@ -34,10 +34,10 @@ export const IDIRRequestFormInitialValues: IIDIRRequestForm = {
 
 export const IDIRRequestFormYupSchema = yup.object().shape({
   role: yup.string().required('Required'),
-  work_from_regional_office: yup.string().required('Required'),
-  regional_offices: yup
-    .array()
-    .when('work_from_regional_office', { is: 'true', then: yup.array().min(1, 'Required').required('Required') }),
+  // work_from_regional_office: yup.string().required('Required'), // TODO Release 1 Patch: Remove field validation
+  // regional_offices: yup
+  //   .array()
+  //   .when('work_from_regional_office', { is: 'true', then: yup.array().min(1, 'Required').required('Required') }), // TODO Release 1 Patch: Remove field validation
   comments: yup.string().max(300, 'Maximum 300 characters')
 });
 
@@ -82,52 +82,56 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
               error={touched.role && Boolean(errors.role)}
               displayEmpty
               inputProps={{ 'aria-label': 'Role' }}>
-              {codes?.system_roles.map((item) => (
-                <MenuItem key={item.id} value={item.id}>
-                  {item.name}
-                </MenuItem>
-              ))}
+              {codes?.system_roles
+                .filter((item) => item.id <= 2) // TODO Release 1 Patch: remove other roles from dropdown
+                .map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
             </Select>
             <FormHelperText>{errors.role}</FormHelperText>
           </FormControl>
         </Grid>
 
-        <Grid item xs={12}>
-          <FormControl
-            required={true}
-            component="fieldset"
-            onChange={(event: any) => {
-              if (event.target.value === 'false') {
-                setFieldValue('regional_offices', []);
-              }
-            }}
-            error={touched.work_from_regional_office && Boolean(errors.work_from_regional_office)}>
-            <FormLabel component="legend" className={classes.legend}>
-              Do you work for a Regional Office?
-            </FormLabel>
-            <Box mt={2}>
-              <RadioGroup
-                name="work_from_regional_office"
-                aria-label="work_from_regional_office"
-                value={values.work_from_regional_office}
-                onChange={handleChange}>
-                <FormControlLabel
-                  value="true"
-                  data-testid="yes-regional-office"
-                  control={<Radio required={true} color="primary" />}
-                  label="Yes"
-                />
-                <FormControlLabel
-                  value="false"
-                  data-testid="no-regional-office"
-                  control={<Radio required={true} color="primary" />}
-                  label="No"
-                />
-                <FormHelperText>{errors.work_from_regional_office}</FormHelperText>
-              </RadioGroup>
-            </Box>
-          </FormControl>
-        </Grid>
+        {false && ( // TODO Release 1 Patch: Remove regional offices section
+          <Grid item xs={12}>
+            <FormControl
+              required={true}
+              component="fieldset"
+              onChange={(event: any) => {
+                if (event.target.value === 'false') {
+                  setFieldValue('regional_offices', []);
+                }
+              }}
+              error={touched.work_from_regional_office && Boolean(errors.work_from_regional_office)}>
+              <FormLabel component="legend" className={classes.legend}>
+                Do you work for a Regional Office?
+              </FormLabel>
+              <Box mt={2}>
+                <RadioGroup
+                  name="work_from_regional_office"
+                  aria-label="work_from_regional_office"
+                  value={values.work_from_regional_office}
+                  onChange={handleChange}>
+                  <FormControlLabel
+                    value="true"
+                    data-testid="yes-regional-office"
+                    control={<Radio required={true} color="primary" />}
+                    label="Yes"
+                  />
+                  <FormControlLabel
+                    value="false"
+                    data-testid="no-regional-office"
+                    control={<Radio required={true} color="primary" />}
+                    label="No"
+                  />
+                  <FormHelperText>{errors.work_from_regional_office}</FormHelperText>
+                </RadioGroup>
+              </Box>
+            </FormControl>
+          </Grid>
+        )}
 
         {values.work_from_regional_office === 'true' && (
           <Grid item xs={12}>
