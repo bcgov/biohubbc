@@ -35,13 +35,10 @@ export const ReportMetaFormYupSchema = yup.object().shape({
  * @return {*}
  */
 
-
-
-
 const ReportMetaForm: React.FC = (props) => {
   const formikProps = useFormikContext<IReportMetaForm>();
 
-  const {  handleSubmit} = formikProps;
+  const { handleSubmit } = formikProps;
   return (
     <Box>
       <form onSubmit={handleSubmit}>

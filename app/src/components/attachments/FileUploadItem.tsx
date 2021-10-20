@@ -11,6 +11,8 @@ import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
 import useIsMounted from 'hooks/useIsMounted';
 import React, { useCallback, useEffect, useState } from 'react';
+import { ReportMetaFormInitialValues } from './ReportMetaForm';
+import { IReportMetaForm } from './ReportMetaForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadListItem: {
@@ -69,7 +71,7 @@ export type IUploadHandler = (
   cancelToken: CancelTokenSource,
   handleFileUploadProgress: (progressEvent: ProgressEvent) => void,
   fileType?: string,
-  fileMeta?: string
+  fileMeta?: IReportMetaForm
 ) => Promise<any>;
 
 export interface IFileUploadItemProps {
@@ -77,7 +79,7 @@ export interface IFileUploadItemProps {
   onSuccess?: (response: any) => void;
   file: File;
   fileType?: string;
-  fileMeta?: string;
+  fileMeta?: IReportMetaForm;
   error?: string;
   onCancel: () => void;
 }
@@ -91,7 +93,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
   const [fileType] = useState<string>(props.fileType || '');
-  const [fileMeta] = useState<string>(props.fileMeta || '');
+  const [fileMeta, setFileMeta] = useState<IReportMetaForm>(props.fileMeta || ReportMetaFormInitialValues);
 
   const [status, setStatus] = useState<UploadFileStatus>(UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
@@ -152,7 +154,20 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       .catch();
 
     setStatus(UploadFileStatus.UPLOADING);
-  }, [file, status, cancelToken, uploadHandler, onSuccess, isMounted, initiateCancel, error, handleFileUploadError]);
+    setFileMeta(fileMeta);
+  }, [
+    file,
+    status,
+    cancelToken,
+    uploadHandler,
+    onSuccess,
+    isMounted,
+    initiateCancel,
+    error,
+    handleFileUploadError,
+    fileType,
+    fileMeta
+  ]);
 
   useEffect(() => {
     if (!isMounted()) {

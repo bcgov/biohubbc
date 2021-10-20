@@ -10,6 +10,8 @@ import {
   IUpdateProjectRequest,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
+
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import qs from 'qs';
 
 /**
@@ -163,7 +165,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     file: File,
     attachmentType?: string,
-    attachmentMeta?: string,
+    attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<string> => {
@@ -171,7 +173,9 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
     attachmentType && req_message.append('attachmentType', attachmentType);
-    attachmentMeta && req_message.append('attachmentMeta', attachmentMeta);
+    attachmentMeta && req_message.append('attachmentMeta', JSON.stringify(attachmentMeta));
+
+    console.log('attachmentMeta at upload time', JSON.stringify(attachmentMeta));
 
     const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,

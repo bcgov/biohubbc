@@ -110,13 +110,13 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
     setFileUploadItems(
       fileUploadItems.concat([
-        ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.error)),
-        ...newRejectedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.error))
+        ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.fileMeta, item.error)),
+        ...newRejectedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.fileMeta, item.error))
       ])
     );
   };
 
-  const getFileUploadItem = (file: File, fileType?: string, error?: string) => {
+  const getFileUploadItem = (file: File, fileType?: string, fileMeta?: IReportMetaForm, error?: string) => {
     return (
       <MemoizedFileUploadItem
         key={file.name}
@@ -124,6 +124,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
         onSuccess={props.onSuccess}
         file={file}
         fileType={fileType}
+        fileMeta={fileMeta}
         error={error}
         onCancel={() => setFileToRemove(file.name)}
       />
@@ -172,8 +173,6 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
     removeFile(fileToRemove);
   }, [fileToRemove, fileUploadItems, files]);
 
-
-
   /**
    * Handle creation of permits.
    */
@@ -185,7 +184,6 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
     await formikRef.current?.submitForm();
 
     setReportMeta(formikRef.current.values);
-
   };
 
   const fileUploadUI = (
