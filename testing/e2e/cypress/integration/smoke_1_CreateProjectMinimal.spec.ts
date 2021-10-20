@@ -61,7 +61,6 @@ while (n < 1) {
     next_page_project();
 
     add_partnerships();
-
     submit_project();
   });
   n++;
