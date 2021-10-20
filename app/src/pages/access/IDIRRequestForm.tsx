@@ -34,10 +34,10 @@ export const IDIRRequestFormInitialValues: IIDIRRequestForm = {
 
 export const IDIRRequestFormYupSchema = yup.object().shape({
   role: yup.string().required('Required'),
-  // work_from_regional_office: yup.string().required('Required'), // TODO Release 1 Patch: Remove field validation
+  // work_from_regional_office: yup.string().required('Required'), // TODO Release 1 Patch (BHBC-1442): Remove field validation
   // regional_offices: yup
   //   .array()
-  //   .when('work_from_regional_office', { is: 'true', then: yup.array().min(1, 'Required').required('Required') }), // TODO Release 1 Patch: Remove field validation
+  //   .when('work_from_regional_office', { is: 'true', then: yup.array().min(1, 'Required').required('Required') }), // TODO Release 1 Patch (BHBC-1442): Remove field validation
   comments: yup.string().max(300, 'Maximum 300 characters')
 });
 
@@ -83,7 +83,7 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
               displayEmpty
               inputProps={{ 'aria-label': 'Role' }}>
               {codes?.system_roles
-                .filter((item) => item.id <= 2) // TODO Release 1 Patch: remove other roles from dropdown
+                .filter((item) => item.id <= 2) // TODO Release 1 Patch (BHBC-1442): remove other roles from dropdown
                 .map((item) => (
                   <MenuItem key={item.id} value={item.id}>
                     {item.name}
@@ -94,7 +94,7 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
           </FormControl>
         </Grid>
 
-        {false && ( // TODO Release 1 Patch: Remove regional offices section
+        {false && ( // TODO Release 1 Patch (BHBC-1442): Remove regional offices section
           <Grid item xs={12}>
             <FormControl
               required={true}

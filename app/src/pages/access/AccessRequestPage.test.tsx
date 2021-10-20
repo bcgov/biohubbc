@@ -126,7 +126,7 @@ describe('AccessRequestPage', () => {
     });
   });
 
-  // TODO Release 1 Patch: Remove regional offices
+  // TODO Release 1 Patch (BHBC-1442): Remove regional offices
   // it('shows and hides the regional offices section when the regional offices radio button is selected (respectively)', async () => {
   //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
   //     system_roles: [{ id: 1, name: 'Role 1' }],
@@ -169,7 +169,7 @@ describe('AccessRequestPage', () => {
     });
 
     fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
-    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch: Remove regional offices
+    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch (BHBC-1442): Remove regional offices
     fireEvent.click(getByText('Submit Request'));
 
     await waitFor(() => {
@@ -236,7 +236,7 @@ describe('AccessRequestPage', () => {
     });
 
     fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
-    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch: Remove regional offices
+    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch (BHBC-1442): Remove regional offices
     fireEvent.click(getByText('Submit Request'));
 
     await waitFor(() => {
@@ -271,7 +271,7 @@ describe('AccessRequestPage', () => {
     });
 
     fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
-    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch: Remove regional offices
+    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch (BHBC-1442): Remove regional offices
     fireEvent.click(getByText('Submit Request'));
 
     await waitFor(() => {
