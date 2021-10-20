@@ -10,6 +10,10 @@ const moose_srb_or_composition = fs.readFileSync(
   path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'moose_srb_or_composition_survey_3.json')
 );
 
+const moose_recruitment_survey = fs.readFileSync(
+  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'moose_recruitment_survey_3.json')
+);
+
 enum COMMON_SURVEY_METHODOLOGY {
   STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block',
   COMPOSITION = 'Composition',
@@ -38,6 +42,13 @@ const validationSchemas = [
     cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
     species: SPECIES_NAME.MOOSE,
     template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY
+  },
+  // Common Survey Methodology: Recruitment
+  {
+    schema: moose_recruitment_survey.toString(),
+    cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT,
+    species: SPECIES_NAME.MOOSE,
+    template: TEMPLATE_NAME.MOOSE_RECRUITMENT_SURVEY
   }
 ];
 
