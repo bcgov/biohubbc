@@ -198,7 +198,7 @@ export const AccessRequestPage: React.FC = () => {
           {({ handleSubmit }) => (
             <>
               <Box>
-                <h1>Request Access to BioHub</h1>
+                <h1>Request Access to SIMS</h1>
                 <Typography variant="subtitle1" className={classes.spacingBottom}>
                   You will need to provide some additional details before accessing this application. Complete the form
                   below to request access.

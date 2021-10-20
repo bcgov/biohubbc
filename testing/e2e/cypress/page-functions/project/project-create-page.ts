@@ -57,7 +57,7 @@ export function add_permits(navloc, permit_nr, permit_type, sampling) {
     permit_nr || faker.random.number()
   );
   cy.get("#permits\\.\\[0\\]\\.permit_type").focus().type("{enter}");
-  cy.get('li[data-value="Wildlife Permit - General"]').click();
+  cy.get('div.MuiPaper-root > ul.MuiList-root > li.MuiButtonBase-root',{ includeShadowDom: true }).eq(faker.random.number({ min: 0, max: 2 })).click({ force: true });
 }
 
 export function add_locations(description, kml_file) {
@@ -67,7 +67,7 @@ export function add_locations(description, kml_file) {
   cy.get("#location_description").type(description || faker.lorem.paragraph());
   cy.get('[data-testid="boundary_file-upload"]').click();
   cy.get('[data-testid="drop-zone-input"]').attachFile(
-    kml_file || faker.random.number({ min: 1, max: 7 }) + ".kml"
+    "shapes/" + (kml_file || faker.random.number({ min: 1, max: 9 })) + ".kml"
   );
   cy.wait(5000);
   cy.get('button').contains('Close').click();
@@ -77,7 +77,17 @@ export function add_gpx(gpx_file) {
   // GPX Flight Path upload
   cy.get('[data-testid="boundary_file-upload"]').click();
   cy.get('[data-testid="drop-zone-input"]').attachFile(
-    gpx_file || faker.random.number({ min: 1, max: 4 }) + ".gpx"
+    "shapes/" + (gpx_file || faker.random.number({ min: 1, max: 8 })) + ".gpx"
+  );
+  cy.wait(5000);
+  cy.get('button').contains('Close').click();
+}
+
+export function add_zip(zip_file) {
+  // Shapefile zip upload
+  cy.get('[data-testid="boundary_file-upload"]').click();
+  cy.get('[data-testid="drop-zone-input"]').attachFile(
+    "shapes/" + (zip_file || faker.random.number({ min: 1, max: 1 })) + ".zip"
   );
   cy.wait(5000);
   cy.get('button').contains('Close').click();
@@ -107,9 +117,11 @@ export function add_project_info(
     ).click();
   }
   cy.get("#project_activities").click();
-  cy.get("#project_activities-option-1").click();
-  cy.get("#project_activities-option-2").click();
-  cy.get("#project_activities-option-3").click();
+  var i = 0;
+    while (i < faker.random.number({ min: 1, max: 4 })) {
+        cy.get("#project_activities-option-" + faker.random.number({ min: 1, max: 7 })).click();
+        i++;
+    }
   cy.get("#start_date").type(
     start_date ||
       "20" +

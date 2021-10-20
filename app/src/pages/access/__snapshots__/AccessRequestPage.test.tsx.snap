@@ -12,7 +12,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
         class="MuiBox-root MuiBox-root-10"
       >
         <h1>
-          Request Access to BioHub
+          Request Access to SIMS
         </h1>
         <h6
           class="MuiTypography-root makeStyles-spacingBottom-7 MuiTypography-subtitle1"
@@ -113,144 +113,6 @@ exports[`AccessRequestPage renders correctly 1`] = `
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                   >
-                    <fieldset
-                      class="MuiFormControl-root"
-                    >
-                      <legend
-                        class="MuiFormLabel-root makeStyles-legend-12 Mui-required"
-                      >
-                        Do you work for a Regional Office?
-                        <span
-                          aria-hidden="true"
-                          class="MuiFormLabel-asterisk"
-                        >
-                           *
-                        </span>
-                      </legend>
-                      <div
-                        class="MuiBox-root MuiBox-root-18"
-                      >
-                        <div
-                          aria-label="work_from_regional_office"
-                          class="MuiFormGroup-root"
-                          role="radiogroup"
-                        >
-                          <label
-                            class="MuiFormControlLabel-root"
-                            data-testid="yes-regional-office"
-                          >
-                            <span
-                              aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-19 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
-                            >
-                              <span
-                                class="MuiIconButton-label"
-                              >
-                                <input
-                                  class="PrivateSwitchBase-input-22"
-                                  name="work_from_regional_office"
-                                  required=""
-                                  type="radio"
-                                  value="true"
-                                />
-                                <div
-                                  class="PrivateRadioButtonIcon-root-23"
-                                >
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                    />
-                                  </svg>
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-24"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                    />
-                                  </svg>
-                                </div>
-                              </span>
-                              <span
-                                class="MuiTouchRipple-root"
-                              />
-                            </span>
-                            <span
-                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                            >
-                              Yes
-                            </span>
-                          </label>
-                          <label
-                            class="MuiFormControlLabel-root"
-                            data-testid="no-regional-office"
-                          >
-                            <span
-                              aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-19 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
-                            >
-                              <span
-                                class="MuiIconButton-label"
-                              >
-                                <input
-                                  class="PrivateSwitchBase-input-22"
-                                  name="work_from_regional_office"
-                                  required=""
-                                  type="radio"
-                                  value="false"
-                                />
-                                <div
-                                  class="PrivateRadioButtonIcon-root-23"
-                                >
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                    />
-                                  </svg>
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-24"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                    />
-                                  </svg>
-                                </div>
-                              </span>
-                              <span
-                                class="MuiTouchRipple-root"
-                              />
-                            </span>
-                            <span
-                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                            >
-                              No
-                            </span>
-                          </label>
-                          <p
-                            class="MuiFormHelperText-root Mui-required"
-                          />
-                        </div>
-                      </div>
-                    </fieldset>
-                  </div>
-                  <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                  >
                     <h3>
                       Additional comments
                     </h3>
@@ -293,17 +155,17 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-26"
+                class="MuiBox-root MuiBox-root-18"
               >
                 <hr
                   class="MuiDivider-root"
                 />
               </div>
               <div
-                class="MuiBox-root MuiBox-root-27"
+                class="MuiBox-root MuiBox-root-19"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-28 buttonWrapper"
+                  class="MuiBox-root MuiBox-root-20 buttonWrapper"
                 >
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
