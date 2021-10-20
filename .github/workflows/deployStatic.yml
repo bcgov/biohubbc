@@ -518,6 +518,7 @@ jobs:
 
   cypress-run:
     runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false && github.base_ref != 'prod' }}
     env:
       CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
       CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
