@@ -35,6 +35,14 @@ const ResourcesPage: React.FC = () => {
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '36 KB'
+    },
+    {
+      id: '3',
+      name: 'Moose Summary Statistics',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '10 KB'
     }
   ];
 

@@ -77,7 +77,7 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
-  }, [biohubApi.search, showFilterErrorDialog]);
+  }, [biohubApi.search, biohubApi.public.search, showFilterErrorDialog, keycloakWrapper]);
 
   useEffect(() => {
     if (performSearch) {

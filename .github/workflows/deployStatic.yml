@@ -579,7 +579,6 @@ jobs:
       - deployAPP
       - deployAPI
       - deployDatabaseSetup
-      - cypress-run
     steps:
       - name: Notify
         uses: nobrayner/discord-webhook@v1

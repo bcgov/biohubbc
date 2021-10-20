@@ -1,11 +1,17 @@
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
+import DialogActions from '@material-ui/core/DialogActions';
+import DialogContent from '@material-ui/core/DialogContent';
+import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
+import IconButton from '@material-ui/core/IconButton';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
-import { mdiAccountCircle, mdiLoginVariant } from '@mdi/js';
+import Typography from '@material-ui/core/Typography';
+import { mdiAccountCircle, mdiHelpCircle, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
@@ -14,6 +20,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import OtherLink from '@material-ui/core/Link';
 import { isAuthenticated } from 'utils/authUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -77,6 +84,9 @@ const useStyles = makeStyles((theme: Theme) => ({
       textDecoration: 'underline'
     }
   },
+  govHeaderIconButton: {
+    color: '#ffffff'
+  },
   mainNav: {
     backgroundColor: '#38598a'
   },
@@ -94,6 +104,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& a:first-child': {
       marginLeft: theme.spacing(-2)
     }
+  },
+  '.MuiDialogContent-root': {
+    '& p + p': {
+      marginTop: theme.spacing(2)
+    }
   }
 }));
 
@@ -109,7 +124,7 @@ const Header: React.FC = () => {
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
-        <Icon path={mdiAccountCircle} size={1.25} />
+        <Icon path={mdiAccountCircle} size={1.12} />
         <Box ml={1}>{loggedInUserDisplayName}</Box>
         <Box px={2}>
           <Divider orientation="vertical" />
@@ -117,6 +132,12 @@ const Header: React.FC = () => {
         <Link to="/logout" data-testid="menu_log_out">
           Log Out
         </Link>
+        <Box pl={2}>
+          <Divider orientation="vertical" />
+        </Box>
+        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
+          <Icon path={mdiHelpCircle} size={1.12} />
+        </IconButton>
       </Box>
     );
   };
@@ -132,10 +153,16 @@ const Header: React.FC = () => {
           variant="contained"
           color="primary"
           disableElevation
-          startIcon={<Icon path={mdiLoginVariant} size={1} />}
+          startIcon={<Icon path={mdiLoginVariant} size={1.12} />}
           data-testid="login">
           Log In
         </Button>
+        <Box pl={2}>
+          <Divider orientation="vertical" />
+        </Box>
+        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
+          <Icon path={mdiHelpCircle} size={1.12} />
+        </IconButton>
       </Box>
     );
   };
@@ -152,81 +179,116 @@ const Header: React.FC = () => {
     );
   };
 
+  const [open, setOpen] = React.useState(false);
+  const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
+
+  const showSupportDialog = () => {
+    setOpen(true);
+  };
+
+  const hideSupportDialog = () => {
+    setOpen(false);
+  };
+
   return (
-    <AppBar position="sticky" style={{ boxShadow: 'none' }}>
-      <Box className={classes.govHeader}>
-        <Toolbar className={classes.govHeaderToolbar}>
-          <Box display="flex" justifyContent="space-between" width="100%">
-            <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-              <picture>
-                <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                <img src={headerImageSmall} alt={'Government of British Columbia'} />
-              </picture>
-              <span>
-                Species Inventory Management System
-                <sup
-                  className={classes.appPhaseTag}
-                  aria-label="This application is currently in beta phase of development">
-                  Beta
-                </sup>
-                {config?.REACT_APP_NODE_ENV !== 'prod' && (
+    <>
+      <AppBar position="sticky" style={{ boxShadow: 'none' }}>
+        <Box className={classes.govHeader}>
+          <Toolbar className={classes.govHeaderToolbar}>
+            <Box display="flex" justifyContent="space-between" width="100%">
+              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+                <picture>
+                  <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                  <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                  <img src={headerImageSmall} alt={'Government of British Columbia'} />
+                </picture>
+                <span>
+                  Species Inventory Management System
                   <sup
                     className={classes.appPhaseTag}
-                    aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
-                    & {config?.REACT_APP_NODE_ENV}
+                    aria-label="This application is currently in beta phase of development">
+                    Beta
                   </sup>
-                )}
-              </span>
-            </Link>
-            {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
-            {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
-          </Box>
-        </Toolbar>
-      </Box>
-      <Box className={classes.mainNav}>
-        <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-          {isAuthenticated(keycloakWrapper) && (
+                  {config?.REACT_APP_NODE_ENV !== 'prod' && (
+                    <sup
+                      className={classes.appPhaseTag}
+                      aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
+                      & {config?.REACT_APP_NODE_ENV}
+                    </sup>
+                  )}
+                </span>
+              </Link>
+              {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
+              {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
+            </Box>
+          </Toolbar>
+        </Box>
+        <Box className={classes.mainNav}>
+          <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
+            {isAuthenticated(keycloakWrapper) && (
+              <SecureLink
+                to="/admin/projects"
+                label="Projects"
+                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                id="menu_projects"
+              />
+            )}
+            {!isAuthenticated(keycloakWrapper) && (
+              <>
+                <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+                <SecureLink to="/search" label="Map" validRoles={[]} id="menu_search" />
+              </>
+            )}
             <SecureLink
-              to="/admin/projects"
-              label="Projects"
+              to="/admin/permits"
+              label="Permits"
               validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_projects"
+              id="menu_permits"
             />
-          )}
-          {!isAuthenticated(keycloakWrapper) && (
-            <>
-              <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
-              <SecureLink to="/search" label="Map" validRoles={[]} id="menu_search" />
-            </>
-          )}
-          <SecureLink
-            to="/admin/permits"
-            label="Permits"
-            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-            id="menu_permits"
-          />
-          <SecureLink
-            to="/admin/users"
-            label="Manage Users"
-            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
-            id="menu_admin_users"
-          />
-          <SecureLink
-            to="/admin/search"
-            label="Map"
-            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-            id="menu_search"
-          />
-          <SecureLink
-            to="/admin/resources"
-            label="Resources"
-            validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-            id="menu_resources"
-          />
-        </Toolbar>
-      </Box>
-    </AppBar>
+            <SecureLink
+              to="/admin/users"
+              label="Manage Users"
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
+              id="menu_admin_users"
+            />
+            <SecureLink
+              to="/admin/search"
+              label="Map"
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+              id="menu_search"
+            />
+            <SecureLink
+              to="/admin/resources"
+              label="Resources"
+              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+              id="menu_resources"
+            />
+          </Toolbar>
+        </Box>
+      </AppBar>
+
+      <Dialog open={open}>
+        <DialogTitle>Need Help?</DialogTitle>
+        <DialogContent>
+          <Typography variant="body1" gutterBottom>
+            For technical support or questions about this application, please contact:{' '}
+            <OtherLink
+              href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
+              underline="always"
+              onClick={preventDefault}>
+              biohub@gov.bc.ca
+            </OtherLink>
+            .<Box></Box>
+          </Typography>
+          <Typography variant="body1">A support representative will respond to your request shortly.</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button variant="contained" color="primary" onClick={hideSupportDialog}>
+            OK
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </>
   );
 };
 
