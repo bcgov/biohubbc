@@ -163,6 +163,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     file: File,
     attachmentType?: string,
+    attachmentMeta?: string,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<string> => {
@@ -170,6 +171,7 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
     attachmentType && req_message.append('attachmentType', attachmentType);
+    attachmentMeta && req_message.append('attachmentMeta', attachmentMeta);
 
     const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,

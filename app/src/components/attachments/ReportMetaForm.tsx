@@ -34,25 +34,17 @@ export const ReportMetaFormYupSchema = yup.object().shape({
  *
  * @return {*}
  */
-// const ReportMetaForm = () => {
-//   const formikProps = useFormikContext<IReportMetaForm>();
 
-//   const { handleSubmit } = formikProps;
+
+
 
 const ReportMetaForm: React.FC = (props) => {
   const formikProps = useFormikContext<IReportMetaForm>();
 
-  const { values, touched, errors, handleChange } = formikProps;
-
-  if (values || touched || errors) {
-    console.log('values: ', values);
-    console.log('touched: ', touched);
-    console.log('errors: ', errors);
-  }
-
+  const {  handleSubmit} = formikProps;
   return (
     <Box>
-      <form onSubmit={handleChange}>
+      <form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <CustomTextField

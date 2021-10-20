@@ -51,11 +51,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   );
 
   const getUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress, fileType) => {
+    return (file, cancelToken, handleFileUploadProgress, fileType, fileMeta) => {
       return biohubApi.project.uploadProjectAttachments(
         projectId,
         file,
         fileType,
+        fileMeta,
         cancelToken,
         handleFileUploadProgress
       );
