@@ -160,15 +160,7 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
 
-    if (!req.body || !req.body.attachment_type) {
-      throw new HTTP400('Missing required body param `attachment_type`');
-    }
-
-    if (!req.body || !req.body.attachment_type) {
-      throw new HTTP400('Missing required body param `attachment_type`');
-    }
-
-    if (!Object.values(ATTACHMENT_TYPE).includes(req.body.attachment_type)) {
+    if (!Object.values(ATTACHMENT_TYPE).includes(req?.body?.attachment_type)) {
       throw new HTTP400('Invalid body param `attachment_type`');
     }
 
