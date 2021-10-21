@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
+import { HTTP400, HTTP403 } from '../errors/CustomError';
 import {
   IPostExistingPermit,
   IPostIUCN,
@@ -21,19 +21,20 @@ import {
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
+import { postProjectRolesByRoleNameSQL } from '../queries/users/system-role-queries';
+import { AuthorizationScheme, authorizeRequest } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/project');
 
-export const POST: Operation = [logRequest('paths/project', 'POST'), createProject()];
+export const POST: Operation = [authorize(), createProject()];
 
 POST.apiDoc = {
   description: 'Create a new Project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -74,6 +75,29 @@ POST.apiDoc = {
     }
   }
 };
+
+export function authorize(): RequestHandler {
+  return async (req, res, next) => {
+    const authorizationScheme = {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    } as AuthorizationScheme;
+
+    req['authorization_scheme'] = authorizationScheme;
+
+    const isAuthorized = await authorizeRequest(req);
+
+    if (!isAuthorized) {
+      throw new HTTP403('Access Denied');
+    }
+
+    next();
+  };
+}
 
 /**
  * Creates a new project record.
@@ -185,6 +209,9 @@ export function createProject(): RequestHandler {
 
         await Promise.all(promises);
 
+        // The user that creates a project is automatically assigned a project lead role, for this project
+        await insertProjectParticipantRoles(projectId, PROJECT_ROLE.PROJECT_LEAD, connection);
+
         await connection.commit();
       } catch (error) {
         await connection.rollback();
@@ -275,6 +302,10 @@ export const insertPermit = async (
 ): Promise<number> => {
   const systemUserId = connection.systemUserId();
 
+  if (!systemUserId) {
+    throw new HTTP400('Failed to identify system user ID');
+  }
+
   const sqlStatement = postProjectPermitSQL(permitNumber, permitType, projectId, systemUserId);
 
   if (!sqlStatement) {
@@ -354,4 +385,28 @@ export const insertProjectActivity = async (
   }
 
   return result.id;
+};
+
+export const insertProjectParticipantRoles = async (
+  projectId: number,
+  projectParticipantRole: string,
+  connection: IDBConnection
+): Promise<void> => {
+  const systemUserId = connection.systemUserId();
+
+  if (!systemUserId) {
+    throw new HTTP400('Failed to identify system user ID');
+  }
+
+  const sqlStatement = postProjectRolesByRoleNameSQL(projectId, systemUserId, projectParticipantRole);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert project participant records');
+  }
 };

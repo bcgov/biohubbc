@@ -96,6 +96,36 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
 };
 
 /**
+ * SQL to fetch the owner of a specified project.
+ *
+ * @param {number} projectId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getProjectOwner = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectOwner', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      p.create_user
+    FROM
+      project p;
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectOwner',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to get all users.
  *
  * @returns {SQLStatement} sql query object

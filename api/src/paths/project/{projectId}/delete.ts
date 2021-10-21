@@ -1,27 +1,31 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
+import { HTTP400, HTTP403 } from '../../../errors/CustomError';
 import { getProjectAttachmentsSQL } from '../../../queries/project/project-attachments-queries';
-import { getLogger } from '../../../utils/logger';
-import { getSurveyIdsSQL } from '../../../queries/survey/survey-view-queries';
-import { getSurveyAttachmentS3Keys } from './survey/{surveyId}/delete';
 import { deleteProjectSQL } from '../../../queries/project/project-delete-queries';
-import { deleteFileFromS3 } from '../../../utils/file-utils';
 import { getProjectSQL } from '../../../queries/project/project-view-queries';
-import { userHasValidSystemRoles } from '../../../security/auth-utils';
+import { getSurveyIdsSQL } from '../../../queries/survey/survey-view-queries';
+import {
+  AuthorizationScheme,
+  authorizeRequest,
+  userHasValidRole
+} from '../../../request-handlers/security/authorization';
+import { deleteFileFromS3 } from '../../../utils/file-utils';
+import { getLogger } from '../../../utils/logger';
+import { getSurveyAttachmentS3Keys } from './survey/{surveyId}/delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/delete');
 
-export const DELETE: Operation = [deleteProject()];
+export const DELETE: Operation = [authorize(), deleteProject()];
 
 DELETE.apiDoc = {
   description: 'Delete a project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -55,6 +59,30 @@ DELETE.apiDoc = {
   }
 };
 
+export function authorize(): RequestHandler {
+  return async (req, res, next) => {
+    const authorizationScheme = {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    } as AuthorizationScheme;
+
+    req['authorization_scheme'] = authorizationScheme;
+
+    const isAuthorized = await authorizeRequest(req);
+
+    if (!isAuthorized) {
+      throw new HTTP403('Access Denied');
+    }
+
+    next();
+  };
+}
+
 export function deleteProject(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({ label: 'Delete project', message: 'params', req_params: req.params });
@@ -72,7 +100,6 @@ export function deleteProject(): RequestHandler {
        * Check that user is a project administrator - can delete a project (unpublished only)
        *
        */
-
       const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
 
       if (!getProjectSQLStatement) {
@@ -91,7 +118,10 @@ export function deleteProject(): RequestHandler {
 
       if (
         projectResult.publish_date &&
-        userHasValidSystemRoles([SYSTEM_ROLE.PROJECT_ADMIN], req['system_user']['role_names'])
+        userHasValidRole(
+          [SYSTEM_ROLE.PROJECT_ADMIN, PROJECT_ROLE.PROJECT_LEAD],
+          [...req['system_user']['role_names'], ...req['project_user']['project_role_names']]
+        )
       ) {
         throw new HTTP400('Cannot delete a published project if you are not a system administrator.');
       }

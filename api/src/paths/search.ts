@@ -7,7 +7,7 @@ import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 import { getSpatialSearchResultsSQL } from '../queries/search-queries';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { userHasValidSystemRoles } from '../security/auth-utils';
+import { userHasValidRole } from '../request-handlers/security/authorization';
 
 const defaultLog = getLogger('paths/search');
 
@@ -57,7 +57,7 @@ export function getSearchResults(): RequestHandler {
       await connection.open();
 
       const systemUserId = connection.systemUserId();
-      const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+      const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
 
       const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 

@@ -4,11 +4,10 @@ import { getAPIUserDBConnection } from '../database/db';
 import { HTTP500 } from '../errors/CustomError';
 import { getAllCodeSets } from '../utils/code-utils';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/code');
 
-export const GET: Operation = [logRequest('paths/code', 'GET'), getAllCodes()];
+export const GET: Operation = [getAllCodes()];
 
 GET.apiDoc = {
   description: 'Get all Codes.',

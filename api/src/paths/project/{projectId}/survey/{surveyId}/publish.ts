@@ -1,30 +1,27 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
+import { HTTP400, HTTP403, HTTP500 } from '../../../../../errors/CustomError';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
 import {
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL
 } from '../../../../../queries/survey/survey-occurrence-queries';
 import { updateSurveyPublishStatusSQL } from '../../../../../queries/survey/survey-update-queries';
+import { AuthorizationScheme, authorizeRequest } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
-import { logRequest } from '../../../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish');
 
-export const PUT: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/publish', 'PUT'),
-  publishSurveyAndOccurrences()
-];
+export const PUT: Operation = [authorize(), publishSurveyAndOccurrences()];
 
 PUT.apiDoc = {
   description: 'Publish or unpublish a survey.',
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -84,6 +81,30 @@ PUT.apiDoc = {
     }
   }
 };
+
+export function authorize(): RequestHandler {
+  return async (req, res, next) => {
+    const authorizationScheme = {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    } as AuthorizationScheme;
+
+    req['authorization_scheme'] = authorizationScheme;
+
+    const isAuthorized = await authorizeRequest(req);
+
+    if (!isAuthorized) {
+      throw new HTTP403('Access Denied');
+    }
+
+    next();
+  };
+}
 
 /**
  * Publish survey and occurrences.

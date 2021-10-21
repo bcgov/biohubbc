@@ -1,23 +1,23 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400, HTTP500 } from '../../../errors/CustomError';
+import { HTTP400, HTTP403, HTTP500 } from '../../../errors/CustomError';
 import { projectIdResponseObject } from '../../../openapi/schemas/project';
-import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
 import { updateProjectPublishStatusSQL } from '../../../queries/project/project-update-queries';
+import { AuthorizationScheme, authorizeRequest } from '../../../request-handlers/security/authorization';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/publish');
 
-export const PUT: Operation = [logRequest('paths/project/{projectId}/publish', 'PUT'), publishProject()];
+export const PUT: Operation = [authorize(), publishProject()];
 
 PUT.apiDoc = {
   description: 'Publish or unpublish a project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -77,6 +77,30 @@ PUT.apiDoc = {
     }
   }
 };
+
+export function authorize(): RequestHandler {
+  return async (req, res, next) => {
+    const authorizationScheme = {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    } as AuthorizationScheme;
+
+    req['authorization_scheme'] = authorizationScheme;
+
+    const isAuthorized = await authorizeRequest(req);
+
+    if (!isAuthorized) {
+      throw new HTTP403('Access Denied');
+    }
+
+    next();
+  };
+}
 
 /**
  * Update a project.
