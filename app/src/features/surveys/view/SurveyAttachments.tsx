@@ -16,6 +16,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
+export enum ATTACHMENT_TYPE {
+  REPORT = 'Report',
+  OTHER = 'Other'
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
     marginTop: theme.spacing(1)
@@ -102,7 +107,14 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   }, []);
 
   const handleReportMeta = (fileMeta: IReportMetaForm) => {
-    return biohubApi.survey.updateSurveyAttachmentMetadata(projectId, surveyId, fileMeta.attachmentId, fileMeta);
+    return biohubApi.survey.updateSurveyAttachmentMetadata(
+      projectId,
+      surveyId,
+      fileMeta.attachmentId,
+      ATTACHMENT_TYPE.REPORT,
+      fileMeta,
+      fileMeta.revision_count
+    );
   };
 
   return (

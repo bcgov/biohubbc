@@ -6,6 +6,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { ProjectSurveyAttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { default as React, useEffect, useState } from 'react';
+
 import { FileError, FileRejection } from 'react-dropzone';
 import { getKeyByValue } from 'utils/Utils';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
@@ -43,6 +44,11 @@ export interface IFileUploadWithMetaProps {
   dropZoneProps?: Partial<IDropZoneConfigProps>;
 }
 
+export enum ATTACHMENT_TYPE {
+  REPORT = 'Report',
+  OTHER = 'Other'
+}
+
 export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) => {
   const { setFieldValue } = useFormikContext<IReportMetaForm>();
 
@@ -54,7 +60,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
   const [fileToRemove, setFileToRemove] = useState<string>('');
 
-  const [fileType] = useState<string>(props.isUploadingReport ? 'Report' : 'Image');
+  const [fileType] = useState<string>(props.isUploadingReport ? ATTACHMENT_TYPE.REPORT : ATTACHMENT_TYPE.OTHER);
   //const [showFinishButton, setShowFinishButton] = useState<boolean>(false);
 
   /**

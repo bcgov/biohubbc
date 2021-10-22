@@ -63,8 +63,8 @@ describe('uploadMedia', () => {
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
@@ -79,7 +79,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: [] }, null as unknown as any, null as unknown as any);
+      await result({ ...sampleReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -93,7 +93,11 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, body: { attachmentType: null } }, null as unknown as any, null as unknown as any);
+      await result(
+        { ...sampleReq, body: { attachmentType: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -114,7 +118,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, null as unknown as any, null as unknown as any);
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -137,7 +141,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, sampleRes as any, null as unknown as any);
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -159,7 +163,7 @@ describe('uploadMedia', () => {
 
     const result = upload.uploadMedia();
 
-    await result(sampleReq, sampleRes as any, null as unknown as any);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
@@ -181,7 +185,7 @@ describe('uploadMedia', () => {
     await result(
       { ...sampleReq, auth_payload: { ...sampleReq.auth_payload, preferred_username: null, email: null } },
       sampleRes as any,
-      null as unknown as any
+      (null as unknown) as any
     );
 
     expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });

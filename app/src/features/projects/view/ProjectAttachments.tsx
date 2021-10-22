@@ -15,6 +15,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
+export enum ATTACHMENT_TYPE {
+  REPORT = 'Report',
+  OTHER = 'Other'
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
     marginTop: theme.spacing(1)
@@ -101,7 +106,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     return biohubApi.project.updateProjectAttachmentMetadata(
       projectId,
       fileMeta.attachmentId,
-      'Report',
+      ATTACHMENT_TYPE.REPORT,
       fileMeta,
       fileMeta.revision_count
     );

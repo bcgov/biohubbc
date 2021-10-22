@@ -12,7 +12,7 @@ import {
   SurveyPermits,
   SurveyFundingSources
 } from 'interfaces/useSurveyApi.interface';
-
+import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
@@ -116,7 +116,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     attachmentType?: string,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string> => {
+  ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
@@ -144,25 +144,29 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     attachmentId: number,
-    attachmentMeta: IReportMetaForm
+    attachmentType: string,
+    attachmentMeta: IReportMetaForm,
+    revision_count: number
   ): Promise<number> => {
-    const req_message = new FormData();
-
-    console.log('survey metadata', attachmentMeta);
-    req_message.append('attachment_type', 'Report');
-    req_message.append(
-      'attachment_metadata',
-      JSON.stringify({
+    const obj = {
+      attachment_type: attachmentType,
+      attachment_meta: {
         title: attachmentMeta.title,
         year_published: attachmentMeta.year_published,
         authors: attachmentMeta.authors,
         description: attachmentMeta.description
-      })
-    );
+      },
+      revision_count: revision_count
+    };
+
+    console.log('object being sent to udpate survey attachment meta', obj);
+
     const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
-      req_message
+      obj
     );
+
+    console.log('response from udpate survey attachment meta', data);
     return data;
   };
 
