@@ -31,7 +31,7 @@ export interface IReportMetaForm {
 
 export const ReportMetaFormInitialValues: IReportMetaForm = {
   title: '',
-  authors: [ReportMetaFormArrayItemInitialValues, ReportMetaFormArrayItemInitialValues],
+  authors: [ReportMetaFormArrayItemInitialValues],
   description: '',
   year_published: '',
   attachmentId: 0
