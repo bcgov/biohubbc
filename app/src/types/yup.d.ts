@@ -116,5 +116,7 @@ declare module 'yup' {
     isUniqueFocalAncillarySpecies(
       message: string
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
+
+    isUniqueAuthor(message: string): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
 }

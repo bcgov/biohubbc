@@ -1,15 +1,15 @@
-import { FieldArray, useFormikContext } from 'formik';
-import React from 'react';
-import Button from '@material-ui/core/Button';
-import yup from 'utils/YupSchema';
-import CustomTextField from 'components/fields/CustomTextField';
 import { Box } from '@material-ui/core';
+import Button from '@material-ui/core/Button';
+import FormLabel from '@material-ui/core/FormLabel';
 import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
+import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import FormLabel from '@material-ui/core/FormLabel';
-import Typography from '@material-ui/core/Typography';
+import CustomTextField from 'components/fields/CustomTextField';
+import { FieldArray, useFormikContext } from 'formik';
+import React from 'react';
+import yup from 'utils/YupSchema';
 
 export interface IReportMetaFormArrayItem {
   first_name: string;
@@ -38,15 +38,22 @@ export const ReportMetaFormInitialValues: IReportMetaForm = {
 };
 
 export const ReportMetaFormYupSchema = yup.object().shape({
-  title: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-  description: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-  year_published: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-  attachmentId: yup.number().min(1, 'Must have a file uploaded').required('Required')
-});
-
-export const ReportMetaFormArrayItemYupSchema = yup.object().shape({
-  first_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-  last_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required')
+  title: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
+  description: yup.string().max(300, 'Cannot exceed 50 characters').required('Required'),
+  year_published: yup
+    .number()
+    .min(1900, 'year must be between 1900 and 2199')
+    .max(2199, 'Year must be between 1900 and 2199'),
+  attachmentId: yup.number().min(1, 'Must have a file uploaded').required('Required'),
+  authors: yup
+    .array()
+    .of(
+      yup.object().shape({
+        first_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
+        last_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required')
+      })
+    )
+    .isUniqueAuthor('Authors must be unique')
 });
 
 /**

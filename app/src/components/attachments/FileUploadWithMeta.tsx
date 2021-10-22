@@ -57,7 +57,6 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
   const [fileType] = useState<string>(props.isUploadingReport ? 'Report' : 'Image');
   //const [showFinishButton, setShowFinishButton] = useState<boolean>(false);
 
-
   /**
    * Handles files which are added (via either drag/drop or browsing).
    *
@@ -112,7 +111,9 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
       <MemoizedFileUploadItem
         key={file.name}
         uploadHandler={props.uploadHandler}
-        onSuccess={(response: any) => { setFieldValue('attachmentId', response, true); }}
+        onSuccess={(response: any) => {
+          setFieldValue('attachmentId', response, true);
+        }}
         file={file}
         fileType={fileType}
         error={error}
@@ -165,11 +166,11 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
   const fileUploadUI = (
     <Box component="fieldset" mt={3}>
-        {props.isUploadingReport &&
-          <FormLabel id="report_details" component="legend">
-            Attach File
-          </FormLabel>
-        }
+      {props.isUploadingReport && (
+        <FormLabel id="report_details" component="legend">
+          Attach File
+        </FormLabel>
+      )}
       <Box mt={3} className={classes.dropZone}>
         <DropZone
           onFiles={onFiles}

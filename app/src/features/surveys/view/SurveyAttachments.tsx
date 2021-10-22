@@ -85,8 +85,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}
-        uploadHandler={getUploadHandler()}>
-      </FileUploadWithMetaDialog>
+        uploadHandler={getUploadHandler()}></FileUploadWithMetaDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">
           <Box>
