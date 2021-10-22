@@ -72,7 +72,8 @@ describe('lists the project attachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'type',
-            security_token: 'token123'
+            security_token: 'token123',
+            revision_count: 0
           }
         ]
       })
@@ -85,7 +86,8 @@ describe('lists the project attachments', () => {
             create_date: '2020-01-01',
             update_date: '',
             file_size: 50,
-            security_token: 'token123'
+            security_token: 'token123',
+            revision_count: 0
           }
         ]
       });
@@ -112,7 +114,8 @@ describe('lists the project attachments', () => {
           id: 13,
           lastModified: '2020-01-01',
           size: 50,
-          securityToken: 'token123'
+          securityToken: 'token123',
+          revision_count: 0
         },
         {
           fileName: 'name2',
@@ -120,7 +123,8 @@ describe('lists the project attachments', () => {
           id: 134,
           lastModified: '2020-01-01',
           size: 50,
-          securityToken: 'token123'
+          securityToken: 'token123',
+          revision_count: 0
         }
       ]
     });
@@ -140,7 +144,8 @@ describe('lists the project attachments', () => {
             update_date: '2020-01-02',
             file_size: 50,
             file_type: 'type',
-            security_token: 'token123'
+            security_token: 'token123',
+            revision_count: 0
           }
         ]
       })
@@ -153,7 +158,8 @@ describe('lists the project attachments', () => {
             create_date: '2020-01-01',
             update_date: '2020-01-02',
             file_size: 50,
-            security_token: 'token123'
+            security_token: 'token123',
+            revision_count: 0
           }
         ]
       });
@@ -180,7 +186,8 @@ describe('lists the project attachments', () => {
           id: 13,
           lastModified: '2020-01-02',
           size: 50,
-          securityToken: 'token123'
+          securityToken: 'token123',
+          revision_count: 0
         },
         {
           fileName: 'name2',
@@ -188,7 +195,8 @@ describe('lists the project attachments', () => {
           id: 134,
           lastModified: '2020-01-02',
           size: 50,
-          securityToken: 'token123'
+          securityToken: 'token123',
+          revision_count: 0
         }
       ]
     });

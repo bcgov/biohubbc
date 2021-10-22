@@ -90,7 +90,8 @@ describe('lists the survey attachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'type',
-            security_token: 'sometoken'
+            security_token: 'sometoken',
+            revision_count: 0
           }
         ]
       })
@@ -104,7 +105,8 @@ describe('lists the survey attachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'type',
-            security_token: 'sometoken'
+            security_token: 'sometoken',
+            revision_count: 0
           }
         ]
       });
@@ -131,7 +133,8 @@ describe('lists the survey attachments', () => {
           securityToken: 'sometoken',
           id: 13,
           lastModified: '2020-01-01',
-          size: 50
+          size: 50,
+          revision_count: 0
         },
         {
           fileName: 'name2',
@@ -139,7 +142,8 @@ describe('lists the survey attachments', () => {
           securityToken: 'sometoken',
           id: 14,
           lastModified: '2020-01-01',
-          size: 50
+          size: 50,
+          revision_count: 0
         }
       ]
     });
@@ -159,7 +163,8 @@ describe('lists the survey attachments', () => {
             update_date: '2020-04-04',
             file_size: 50,
             file_type: 'type',
-            security_token: 'sometoken'
+            security_token: 'sometoken',
+            revision_count: 0
           }
         ]
       })
@@ -173,7 +178,8 @@ describe('lists the survey attachments', () => {
             update_date: '2020-04-04',
             file_size: 50,
             file_type: 'type',
-            security_token: 'sometoken'
+            security_token: 'sometoken',
+            revision_count: 0
           }
         ]
       });
@@ -200,7 +206,8 @@ describe('lists the survey attachments', () => {
           securityToken: 'sometoken',
           id: 13,
           lastModified: '2020-04-04',
-          size: 50
+          size: 50,
+          revision_count: 0
         },
         {
           fileName: 'name2',
@@ -208,7 +215,8 @@ describe('lists the survey attachments', () => {
           securityToken: 'sometoken',
           id: 14,
           lastModified: '2020-04-04',
-          size: 50
+          size: 50,
+          revision_count: 0
         }
       ]
     });

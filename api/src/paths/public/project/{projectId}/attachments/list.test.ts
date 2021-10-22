@@ -89,7 +89,8 @@ describe('getPublicProjectAttachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'Image',
-            is_secured: false
+            is_secured: false,
+            revision_count: 0
           }
         ]
       })
@@ -103,7 +104,8 @@ describe('getPublicProjectAttachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'Report',
-            is_secured: false
+            is_secured: false,
+            revision_count: 0
           }
         ]
       });

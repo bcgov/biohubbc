@@ -23,7 +23,8 @@ export class GetAttachmentsData {
             fileType: item.file_type || 'Report',
             lastModified: item.update_date || item.create_date,
             size: item.file_size,
-            securityToken: item.security_token
+            securityToken: item.security_token,
+            revision_count: item.revision_count
           };
         })) ||
       [];

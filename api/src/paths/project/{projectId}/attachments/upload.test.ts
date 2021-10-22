@@ -159,6 +159,6 @@ describe('uploadMedia', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql('1/1/test.txt');
+    expect(actualResult).to.eql(1);
   });
 });
