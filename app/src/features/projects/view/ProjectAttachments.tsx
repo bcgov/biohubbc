@@ -122,6 +122,8 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             anchorEl={anchorEl}
             open={open}
             onClose={handleClose}
+            getContentAnchorEl={null}
+            anchorOrigin={{ vertical: 'bottom', horizontal: 'center' }}
             MenuListProps={{
               'aria-labelledby': 'basic-button'
             }}>
