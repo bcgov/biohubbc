@@ -1,16 +1,26 @@
+import { Menu, MenuItem } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiUploadOutline } from '@mdi/js';
+import { mdiMenuDown, mdiUpload } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+
+const useStyles = makeStyles((theme: Theme) => ({
+  uploadMenu: {
+    marginTop: theme.spacing(1)
+  }
+}));
 
 export interface ISurveyAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -23,13 +33,34 @@ export interface ISurveyAttachmentsProps {
  * @return {*}
  */
 const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
+  const classes = useStyles();
   const urlParams = useParams();
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
+  const [isUploadingReport, setIsUploadingReport] = useState(false);
   const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+  const handleUploadReportClick = (event: any) => {
+    setAnchorEl(null);
+    setIsUploadingReport(true);
+    setOpenUploadAttachments(true);
+  };
+  const handleUploadAttachmentClick = (event: any) => {
+    setAnchorEl(null);
+    setIsUploadingReport(false);
+    setOpenUploadAttachments(true);
+  };
 
   const getAttachments = useCallback(
     async (forceFetch: boolean) => {
@@ -70,33 +101,59 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleReportMeta = () => {
-    console.log('FileUploadWithMetaDialog: onFinish()');
+  //TODO: need a hook for survey attachments
+
+  const handleReportMeta = (fileMeta: IReportMetaForm) => {
+    return biohubApi.project.updateProjectAttachmentMetadata(projectId, fileMeta.attachmentId, fileMeta);
   };
 
   return (
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle="Upload Attachments"
-        isUploadingReport={true}
+        dialogTitle={isUploadingReport ? 'Upload Report' : 'Upload Attachment'}
+        isUploadingReport={isUploadingReport}
         onFinish={handleReportMeta}
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}
         uploadHandler={getUploadHandler()}></FileUploadWithMetaDialog>
-      <Box mb={5}>
-        <Box display="flex" justifyContent="space-between">
-          <Box>
-            <Typography variant="h2">Survey Attachments</Typography>
-          </Box>
-          <Box>
-            <Button variant="outlined" onClick={() => setOpenUploadAttachments(true)}>
-              <Icon path={mdiUploadOutline} size={1} />
-              <Typography>Upload</Typography>
-            </Button>
-          </Box>
+      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
+        <Typography variant="h2">Project Attachments</Typography>
+        <Box my={-1}>
+          <Button
+            color="primary"
+            variant="outlined"
+            aria-controls="basic-menu"
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
+            startIcon={<Icon path={mdiUpload} size={1} />}
+            endIcon={<Icon path={mdiMenuDown} size={1} />}
+            onClick={handleClick}>
+            Upload
+          </Button>
+          <Menu
+            className={classes.uploadMenu}
+            getContentAnchorEl={null}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button'
+            }}>
+            <MenuItem onClick={handleUploadReportClick}>Upload Report</MenuItem>
+            <MenuItem onClick={handleUploadAttachmentClick}>Upload Attachments</MenuItem>
+          </Menu>
         </Box>
       </Box>
       <Box mb={3}>

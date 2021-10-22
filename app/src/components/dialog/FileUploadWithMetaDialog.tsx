@@ -80,8 +80,6 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
     return <></>;
   }
 
-  console.log('props.children', props.children);
-
   const validateAndFinish = async () => {
     if (!formikRef?.current) {
       return;

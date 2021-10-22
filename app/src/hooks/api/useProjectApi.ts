@@ -164,7 +164,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     file: File,
     attachmentType?: string,
-    //attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<number> => {
@@ -172,9 +171,6 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
     attachmentType && req_message.append('attachmentType', attachmentType);
-    //attachmentMeta && req_message.append('attachmentMeta', JSON.stringify(attachmentMeta));
-
-    //console.log('attachmentMeta at upload time', JSON.stringify(attachmentMeta));
 
     const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
