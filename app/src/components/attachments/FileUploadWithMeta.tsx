@@ -1,24 +1,17 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
+import FormLabel from '@material-ui/core/FormLabel';
+import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { ProjectSurveyAttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
-import { Formik, FormikProps } from 'formik';
-import { default as React, useEffect, useRef, useState } from 'react';
+import { default as React, useEffect, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
 import { getKeyByValue } from 'utils/Utils';
+import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
 import { IUploadHandler, MemoizedFileUploadItem } from './FileUploadItem';
-import ReportMetaForm, {
-  ReportMetaFormInitialValues,
-  ReportMetaFormYupSchema,
-  IReportMetaForm
-} from './ReportMetaForm';
+import { useFormikContext } from 'formik';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
@@ -36,7 +29,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IUploadFile {
   file: File;
   fileType: string;
-  fileMeta: IReportMetaForm;
   error?: string;
 }
 
@@ -45,12 +37,15 @@ export interface IUploadFileListProps {
 }
 
 export interface IFileUploadWithMetaProps {
+  isUploadingReport: boolean;
   uploadHandler: IUploadHandler;
-  onSuccess?: (response: any) => void; // currently only supports single file uploads (multiple will overwrite each other)
+  onSuccess?: (response: any) => void;
   dropZoneProps?: Partial<IDropZoneConfigProps>;
 }
 
 export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) => {
+  const { setFieldValue } = useFormikContext<IReportMetaForm>();
+
   const classes = useStyles();
 
   const [files, setFiles] = useState<IUploadFile[]>([]);
@@ -59,11 +54,9 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
   const [fileToRemove, setFileToRemove] = useState<string>('');
 
-  const [fileType, setFileType] = useState<string>('');
+  const [fileType] = useState<string>(props.isUploadingReport ? 'Report' : 'Image');
+  //const [showFinishButton, setShowFinishButton] = useState<boolean>(false);
 
-  const [formikRef] = useState(useRef<FormikProps<any>>(null));
-
-  const [reportMeta, setReportMeta] = useState<IReportMetaForm>();
 
   /**
    * Handles files which are added (via either drag/drop or browsing).
@@ -85,8 +78,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
       newAcceptedFiles.push({
         file: item,
-        fileType: fileType,
-        fileMeta: reportMeta || ReportMetaFormInitialValues
+        fileType: fileType
       });
     });
 
@@ -101,7 +93,6 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
       newRejectedFiles.push({
         file: item.file,
         fileType: fileType,
-        fileMeta: reportMeta || ReportMetaFormInitialValues,
         error: getErrorCodeMessage(item.errors[0])
       });
     });
@@ -110,21 +101,20 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
     setFileUploadItems(
       fileUploadItems.concat([
-        ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.fileMeta, item.error)),
-        ...newRejectedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.fileMeta, item.error))
+        ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.error)),
+        ...newRejectedFiles.map((item) => getFileUploadItem(item.file, item.fileType, item.error))
       ])
     );
   };
 
-  const getFileUploadItem = (file: File, fileType?: string, fileMeta?: IReportMetaForm, error?: string) => {
+  const getFileUploadItem = (file: File, fileType?: string, error?: string) => {
     return (
       <MemoizedFileUploadItem
         key={file.name}
         uploadHandler={props.uploadHandler}
-        onSuccess={props.onSuccess}
+        onSuccess={(response: any) => { setFieldValue('attachmentId', response, true); }}
         file={file}
         fileType={fileType}
-        fileMeta={fileMeta}
         error={error}
         onCancel={() => setFileToRemove(file.name)}
       />
@@ -173,22 +163,14 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
     removeFile(fileToRemove);
   }, [fileToRemove, fileUploadItems, files]);
 
-  /**
-   * Handle creation of permits.
-   */
-  const handleSubmit = async () => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    await formikRef.current?.submitForm();
-
-    setReportMeta(formikRef.current.values);
-  };
-
   const fileUploadUI = (
-    <Box>
-      <Box mb={2} className={classes.dropZone}>
+    <Box component="fieldset" mt={3}>
+        {props.isUploadingReport &&
+          <FormLabel id="report_details" component="legend">
+            Attach File
+          </FormLabel>
+        }
+      <Box mt={3} className={classes.dropZone}>
         <DropZone
           onFiles={onFiles}
           acceptedFileExtensions={
@@ -204,54 +186,18 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
   return (
     <Box>
-      <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%', marginBottom: '1rem' }}>
-        <InputLabel id="attachment_type-label">Attachment Type</InputLabel>
-        <Select
-          id="attachment_type"
-          name="attachment_type"
-          labelId="attachment_type-label"
-          label="Attachment Type"
-          value={fileType}
-          onChange={(e) => setFileType(e.target.value as string)}
-          displayEmpty
-          inputProps={{ 'aria-label': 'Attachment Type' }}>
-          {Object.keys(ProjectSurveyAttachmentType).map((key) => (
-            <MenuItem key={key} value={ProjectSurveyAttachmentType[key]}>
-              {ProjectSurveyAttachmentType[key]}
-            </MenuItem>
-          ))}
-        </Select>
-      </FormControl>
-
       {fileType && fileType !== 'Report' && fileUploadUI}
 
       {fileType && fileType === 'Report' && (
-        <Box width="100%" display="flex" flexWrap="nowrap">
-          <Box width="47%">
-            <Formik
-              innerRef={formikRef}
-              initialValues={ReportMetaFormInitialValues}
-              validationSchema={ReportMetaFormYupSchema}
-              validateOnBlur={false}
-              validateOnChange={true}
-              onSubmit={() => {}}
-              onChange={() => {}}>
-              <>
-                <ReportMetaForm />
-                <Button
-                  type="submit"
-                  variant="contained"
-                  color="primary"
-                  onClick={handleSubmit}
-                  className={classes.actionButton}>
-                  Save and Exit
-                </Button>
-              </>
-            </Formik>
-          </Box>
-          <Box width="6%"></Box>
-          <Box width="47%">{fileUploadUI}</Box>
-        </Box>
+        <Grid container spacing={2}>
+          <Grid item xs={12}>
+            <ReportMetaForm />
+          </Grid>
+
+          <Grid item xs={12}>
+            {fileUploadUI}
+          </Grid>
+        </Grid>
       )}
     </Box>
   );

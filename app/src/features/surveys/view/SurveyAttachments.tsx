@@ -5,8 +5,7 @@ import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
-import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
-import ComponentDialog from 'components/dialog/ComponentDialog';
+import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
@@ -71,19 +70,23 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
+  const handleReportMeta = () => {
+    console.log('FileUploadWithMetaDialog: onFinish()');
+  };
+
   return (
     <>
-      <ComponentDialog
+      <FileUploadWithMetaDialog
         open={openUploadAttachments}
         dialogTitle="Upload Attachments"
+        isUploadingReport={true}
+        onFinish={handleReportMeta}
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);
-        }}>
-        <Box>
-          <FileUploadWithMeta uploadHandler={getUploadHandler()} />
-        </Box>
-      </ComponentDialog>
+        }}
+        uploadHandler={getUploadHandler()}>
+      </FileUploadWithMetaDialog>
       <Box mb={5}>
         <Box display="flex" justifyContent="space-between">
           <Box>

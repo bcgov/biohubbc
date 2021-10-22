@@ -1,16 +1,17 @@
+import { Menu, MenuItem } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import { mdiUploadOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
-import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
-import ComponentDialog from 'components/dialog/ComponentDialog';
+import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
 export interface IProjectAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -27,7 +28,28 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
+  const [isUploadingReport, setIsUploadingReport] = useState(false);
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  }
+  const handleClose = () => {
+    setAnchorEl(null);
+  }
+  const handleUploadReportClick = (event: any) => {
+    setAnchorEl(null);
+    setIsUploadingReport(true);
+    setOpenUploadAttachments(true);
+  }
+  const handleUploadAttachmentClick = (event: any) => {
+    setAnchorEl(null);
+    setIsUploadingReport(false);
+    setOpenUploadAttachments(true);
+  }
+
 
   const getAttachments = useCallback(
     async (forceFetch: boolean) => {
@@ -51,12 +73,11 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   );
 
   const getUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress, fileType, fileMeta) => {
+    return (file, cancelToken, handleFileUploadProgress, fileType) => {
       return biohubApi.project.uploadProjectAttachments(
         projectId,
         file,
         fileType,
-        fileMeta,
         cancelToken,
         handleFileUploadProgress
       );
@@ -68,29 +89,53 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
+  const handleReportMeta = (fileMeta: IReportMetaForm) => {
+    //return biohubApi.project.
+    return biohubApi.project.updateProjectAttachmentMetadata(
+      projectId, fileMeta.attachmentId, fileMeta
+    );
+  };
+
+
+
   return (
     <>
-      <ComponentDialog
+      <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle="Upload Attachments"
+        dialogTitle={isUploadingReport ? "Upload Report" : "Upload Attachment"}
+        isUploadingReport={isUploadingReport}
+        onFinish={handleReportMeta}
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);
-        }}>
-        <Box>
-          <FileUploadWithMeta uploadHandler={getUploadHandler()} />
-        </Box>
-      </ComponentDialog>
+        }}
+        uploadHandler={getUploadHandler()}>
+      </FileUploadWithMetaDialog>
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h2">Project Attachments</Typography>
         <Box my={-1}>
           <Button
             color="primary"
             variant="outlined"
+            aria-controls="basic-menu"
+            aria-haspopup="true"
+            aria-expanded={open ? 'true' : undefined}
             startIcon={<Icon path={mdiUploadOutline} size={1} />}
-            onClick={() => setOpenUploadAttachments(true)}>
+            onClick={handleClick}>
             Upload
           </Button>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button'
+            }}
+          >
+            <MenuItem onClick={handleUploadReportClick}>Upload Report</MenuItem>
+            <MenuItem onClick={handleUploadAttachmentClick}>Upload Attachment</MenuItem>
+          </Menu>
         </Box>
       </Box>
       <Box mb={3}>

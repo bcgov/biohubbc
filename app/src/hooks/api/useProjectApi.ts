@@ -10,7 +10,6 @@ import {
   IUpdateProjectRequest,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
-
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import qs from 'qs';
 
@@ -165,23 +164,49 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     file: File,
     attachmentType?: string,
-    attachmentMeta?: IReportMetaForm,
+    //attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string> => {
+  ): Promise<number> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
     attachmentType && req_message.append('attachmentType', attachmentType);
-    attachmentMeta && req_message.append('attachmentMeta', JSON.stringify(attachmentMeta));
+    //attachmentMeta && req_message.append('attachmentMeta', JSON.stringify(attachmentMeta));
 
-    console.log('attachmentMeta at upload time', JSON.stringify(attachmentMeta));
+    //console.log('attachmentMeta at upload time', JSON.stringify(attachmentMeta));
 
     const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
 
+    return data;
+  };
+
+  /**
+   * Update project attachment metadata.
+   *
+   * @param {number} projectId
+   * @param {string} attachmentType
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+  const updateProjectAttachmentMetadata = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentMeta: IReportMetaForm
+  ): Promise<number> => {
+    const req_message = new FormData();
+    req_message.append('attachment_type', 'Report');
+    req_message.append('attachment_metadata', JSON.stringify({
+      title: attachmentMeta.title,
+      year_published: attachmentMeta.year_published,
+      authors: attachmentMeta.authors,
+      description: attachmentMeta.description
+    }));
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`, req_message);
     return data;
   };
 
@@ -270,6 +295,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     createProject,
     getProjectForView,
     uploadProjectAttachments,
+    updateProjectAttachmentMetadata,
     getProjectForUpdate,
     updateProject,
     getProjectAttachments,

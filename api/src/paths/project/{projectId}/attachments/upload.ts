@@ -111,7 +111,12 @@ export function uploadMedia(): RequestHandler {
       }
 
       // Insert file metadata into project_attachment or project_report_attachment table
-      await upsertProjectAttachment(rawMediaFile, Number(req.params.projectId), req.body.attachmentType, connection);
+      const attachmentId = await upsertProjectAttachment(
+        rawMediaFile,
+        Number(req.params.projectId),
+        req.body.attachmentType,
+        connection
+      );
 
       // Upload file to S3
       const key = generateS3FileKey({
@@ -131,7 +136,7 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(result.Key);
+      return res.status(200).json(attachmentId);
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
