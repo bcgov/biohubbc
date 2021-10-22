@@ -3,11 +3,17 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection } from '../../../../database/db';
+import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
+import {
+  getProjectAttachmentByFileNameSQL,
+  postProjectAttachmentSQL,
+  postProjectReportAttachmentSQL,
+  putProjectAttachmentSQL,
+  putProjectReportAttachmentSQL
+} from '../../../../queries/project/project-attachments-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
-import { upsertProjectAttachment } from '../../../project';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
 
@@ -111,7 +117,7 @@ export function uploadMedia(): RequestHandler {
       }
 
       // Insert file metadata into project_attachment or project_report_attachment table
-      const attachmentId = await upsertProjectAttachment(
+      const { id, revision_count } = await upsertProjectAttachment(
         rawMediaFile,
         Number(req.params.projectId),
         req.body.attachmentType,
@@ -136,7 +142,7 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(attachmentId);
+      return res.status(200).json({ attachmentId: id, revision_count });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
@@ -146,3 +152,76 @@ export function uploadMedia(): RequestHandler {
     }
   };
 }
+
+export const upsertProjectAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  attachmentType: string,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
+
+  if (!getSqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
+
+  if (getResponse && getResponse.rowCount > 0) {
+    // Existing attachment with matching name found, update it
+    return updateProjectAttachment(file, projectId, attachmentType, connection);
+  }
+
+  // No matching attachment found, insert new attachment
+  return insertProjectAttachment(file, projectId, attachmentType, connection);
+};
+
+export const insertProjectAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  attachmentType: string,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
+
+  const sqlStatement =
+    attachmentType === 'Report'
+      ? postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key)
+      : postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to insert project attachment data');
+  }
+
+  return response.rows[0];
+};
+
+export const updateProjectAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  attachmentType: string,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const sqlStatement =
+    attachmentType === 'Report'
+      ? putProjectReportAttachmentSQL(projectId, file.originalname)
+      : putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to update project attachment data');
+  }
+
+  return response.rows[0];
+};

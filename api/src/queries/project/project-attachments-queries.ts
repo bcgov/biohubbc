@@ -26,8 +26,7 @@ export const getProjectAttachmentsSQL = (projectId: number): SQLStatement | null
       create_date,
       file_size,
       key,
-      security_token,
-      revision_count
+      security_token
     from
       project_attachment
     where
@@ -65,8 +64,7 @@ export const getProjectReportAttachmentsSQL = (projectId: number): SQLStatement 
       create_date,
       file_size,
       key,
-      security_token,
-      revision_count
+      security_token
     from
       project_report_attachment
     where
@@ -228,7 +226,8 @@ export const postProjectAttachmentSQL = (
       ${key}
     )
     RETURNING
-      project_attachment_id as id;
+      project_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -293,7 +292,8 @@ export const postProjectReportAttachmentSQL = (
       ${key}
     )
     RETURNING
-      project_report_attachment_id as id;
+      project_report_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -370,6 +370,9 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string, fil
       file_name = ${fileName}
     AND
       project_id = ${projectId};
+    RETURNING
+      project_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -404,7 +407,10 @@ export const putProjectReportAttachmentSQL = (projectId: number, fileName: strin
     WHERE
       file_name = ${fileName}
     AND
-      project_id = ${projectId};
+      project_id = ${projectId}
+    RETURNING
+      project_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({

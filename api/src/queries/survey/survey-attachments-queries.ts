@@ -25,8 +25,7 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
       file_size,
       file_type,
       key,
-      security_token,
-      revision_count
+      security_token
     from
       survey_attachment
     where
@@ -64,8 +63,7 @@ export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | 
       create_date,
       file_size,
       key,
-      security_token,
-      revision_count
+      security_token
     from
       survey_report_attachment
     where
@@ -230,7 +228,8 @@ export const postSurveyAttachmentSQL = (
       ${key}
     )
     RETURNING
-      survey_attachment_id as id;
+      survey_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -298,7 +297,8 @@ export const postSurveyReportAttachmentSQL = (
       ${description}
     )
     RETURNING
-      survey_report_attachment_id as id;
+      survey_report_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -374,7 +374,11 @@ export const putSurveyAttachmentSQL = (surveyId: number, fileName: string, fileT
     WHERE
       file_name = ${fileName}
     AND
-      survey_id = ${surveyId};
+      survey_id = ${surveyId}
+    RETURNING
+      survey_attachment_id as id,
+      revision_count;
+
   `;
 
   defaultLog.debug({
@@ -409,7 +413,10 @@ export const putSurveyReportAttachmentSQL = (surveyId: number, fileName: string)
     WHERE
       file_name = ${fileName}
     AND
-      survey_id = ${surveyId};
+      survey_id = ${surveyId}
+    RETURNING
+      survey_report_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({

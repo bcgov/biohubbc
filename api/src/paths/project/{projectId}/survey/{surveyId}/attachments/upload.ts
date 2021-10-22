@@ -121,7 +121,7 @@ export function uploadMedia(): RequestHandler {
       }
 
       // Insert file metadata into survey_attachment or survey_report_attachment table
-      await upsertSurveyAttachment(
+      const { id, revision_count } = await upsertSurveyAttachment(
         rawMediaFile,
         Number(req.params.projectId),
         Number(req.params.surveyId),
@@ -148,7 +148,7 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(result.Key);
+      return res.status(200).json({ attachmentId: id, revision_count });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
@@ -165,7 +165,7 @@ export const upsertSurveyAttachment = async (
   surveyId: number,
   attachmentType: string,
   connection: IDBConnection
-): Promise<number> => {
+): Promise<{ id: number; revision_count: number }> => {
   const getSqlStatement = getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
 
   if (!getSqlStatement) {
@@ -175,42 +175,61 @@ export const upsertSurveyAttachment = async (
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
 
   if (getResponse && getResponse.rowCount > 0) {
-    const updateSqlStatement =
-      attachmentType === 'Report'
-        ? putSurveyReportAttachmentSQL(surveyId, file.originalname)
-        : putSurveyAttachmentSQL(surveyId, file.originalname, attachmentType);
-
-    if (!updateSqlStatement) {
-      throw new HTTP400('Failed to build SQL update statement');
-    }
-
-    const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
-    const updateResult = (updateResponse && updateResponse.rowCount) || null;
-
-    if (!updateResult) {
-      throw new HTTP400('Failed to update survey attachment data');
-    }
-
-    return updateResult;
+    // Existing attachment with matching name found, update it
+    return updateSurveyAttachment(file, surveyId, attachmentType, connection);
   }
 
+  // No matching attachment found, insert new attachment
+  return insertSurveyAttachment(file, projectId, surveyId, attachmentType, connection);
+};
+
+export const insertSurveyAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  surveyId: number,
+  attachmentType: string,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
   const key = generateS3FileKey({ projectId: projectId, surveyId: surveyId, fileName: file.originalname });
 
-  const insertSqlStatement =
+  const sqlStatement =
     attachmentType === 'Report'
       ? postSurveyReportAttachmentSQL(file.originalname, file.size, projectId, surveyId, key)
       : postSurveyAttachmentSQL(file.originalname, file.size, attachmentType, projectId, surveyId, key);
 
-  if (!insertSqlStatement) {
+  if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
   }
 
-  const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
-  const insertResult = (insertResponse && insertResponse.rows && insertResponse.rows[0]) || null;
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!insertResult || !insertResult.id) {
+  if (!response || !response?.rows?.[0]) {
     throw new HTTP400('Failed to insert survey attachment data');
   }
 
-  return insertResult.id;
+  return response.rows[0];
+};
+
+export const updateSurveyAttachment = async (
+  file: Express.Multer.File,
+  surveyId: number,
+  attachmentType: string,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const sqlStatement =
+    attachmentType === 'Report'
+      ? putSurveyReportAttachmentSQL(surveyId, file.originalname)
+      : putSurveyAttachmentSQL(surveyId, file.originalname, attachmentType);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to update survey attachment data');
+  }
+
+  return response.rows[0];
 };

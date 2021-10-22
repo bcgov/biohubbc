@@ -25,8 +25,7 @@ describe('GetAttachmentsData', () => {
         create_date: '2020/04/04',
         file_size: 24,
         file_type: 'Video',
-        security_token: 'token123',
-        revision_count: 0
+        security_token: 'token123'
       }
     ];
 
@@ -42,8 +41,7 @@ describe('GetAttachmentsData', () => {
           lastModified: '2020/04/04',
           size: 24,
           fileType: 'Video',
-          securityToken: 'token123',
-          revision_count: 0
+          securityToken: 'token123'
         }
       ]);
     });

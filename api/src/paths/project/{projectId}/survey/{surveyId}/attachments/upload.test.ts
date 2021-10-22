@@ -63,8 +63,8 @@ describe('uploadMedia', () => {
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, surveyId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
+        null as unknown as any,
+        null as unknown as any
       );
       expect.fail();
     } catch (actualError) {
@@ -79,7 +79,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...sampleReq, files: [] }, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -93,11 +93,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(
-        { ...sampleReq, body: { attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
+      await result({ ...sampleReq, body: { attachmentType: null } }, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -118,7 +114,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await result(sampleReq, null as unknown as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -135,13 +131,13 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0 });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(sampleReq, sampleRes as any, null as unknown as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -149,7 +145,7 @@ describe('uploadMedia', () => {
     }
   });
 
-  it('should return file key on success (with username and email)', async () => {
+  it('should return id and revision_count on success (with username and email)', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -158,17 +154,17 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0 });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const result = upload.uploadMedia();
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    await result(sampleReq, sampleRes as any, null as unknown as any);
 
-    expect(actualResult).to.eql('1/1/test.txt');
+    expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
 
-  it('should return file key on success (without username and email)', async () => {
+  it('should return id and revision_count on success (without username and email)', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -177,7 +173,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0 });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const result = upload.uploadMedia();
@@ -185,10 +181,10 @@ describe('uploadMedia', () => {
     await result(
       { ...sampleReq, auth_payload: { ...sampleReq.auth_payload, preferred_username: null, email: null } },
       sampleRes as any,
-      (null as unknown) as any
+      null as unknown as any
     );
 
-    expect(actualResult).to.eql('1/1/test.txt');
+    expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
 });
 
@@ -280,7 +276,7 @@ describe('upsertSurveyAttachment', () => {
     }
   });
 
-  it('should return the rowCount of records updated on success (update)', async () => {
+  it('should return the id and revision_count of records updated on success (update)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -290,7 +286,8 @@ describe('upsertSurveyAttachment', () => {
       })
       .onSecondCall()
       .resolves({
-        rowCount: 1
+        rowCount: 1,
+        rows: [{ id: 1, revision_count: 0 }]
       });
 
     sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
@@ -301,7 +298,7 @@ describe('upsertSurveyAttachment', () => {
       query: mockQuery
     });
 
-    expect(result).to.equal(1);
+    expect(result).to.eql({ id: 1, revision_count: 0 });
   });
 
   it('should throw an error when failed to generate SQL insert statement', async () => {
@@ -327,7 +324,7 @@ describe('upsertSurveyAttachment', () => {
     }
   });
 
-  it('should throw an error when insert result has no id', async () => {
+  it('should throw an error when insert result has no rows', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -337,7 +334,7 @@ describe('upsertSurveyAttachment', () => {
       })
       .onSecondCall()
       .resolves({
-        rows: [{ id: null }]
+        rows: []
       });
 
     sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
@@ -356,7 +353,7 @@ describe('upsertSurveyAttachment', () => {
     }
   });
 
-  it('should return the id of record inserted on success (insert)', async () => {
+  it('should return the id and revision_count of record inserted on success (insert)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -366,7 +363,7 @@ describe('upsertSurveyAttachment', () => {
       })
       .onSecondCall()
       .resolves({
-        rows: [{ id: 12 }]
+        rows: [{ id: 12, revision_count: 0 }]
       });
 
     sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
@@ -377,6 +374,6 @@ describe('upsertSurveyAttachment', () => {
       query: mockQuery
     });
 
-    expect(result).to.equal(12);
+    expect(result).to.eql({ id: 12, revision_count: 0 });
   });
 });
