@@ -351,6 +351,45 @@ export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: str
 };
 
 /**
+ * SQL query to get an attachment for a single survey by survey id and filename.
+ *
+ * @param {number} surveyId
+ * @param {string} fileName
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyReportAttachmentByFileNameSQL = (surveyId: number, fileName: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyReportAttachmentByFileNameSQL', message: 'params', surveyId });
+
+  if (!surveyId || !fileName) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      survey_report_attachment_id as id,
+      file_name,
+      update_date,
+      create_date,
+      file_size
+    from
+      survey_report_attachment
+    where
+      survey_id = ${surveyId}
+    and
+      file_name = ${fileName};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyReportAttachmentByFileNameSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to update an attachment for a single survey by survey id and filename.
  *
  * @param {number} surveyId

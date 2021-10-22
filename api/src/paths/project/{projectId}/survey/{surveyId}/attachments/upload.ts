@@ -6,6 +6,7 @@ import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import {
   getSurveyAttachmentByFileNameSQL,
+  getSurveyReportAttachmentByFileNameSQL,
   postSurveyAttachmentSQL,
   postSurveyReportAttachmentSQL,
   putSurveyAttachmentSQL,
@@ -166,7 +167,12 @@ export const upsertSurveyAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const getSqlStatement = getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
+  let getSqlStatement;
+  if (attachmentType === 'Report') {
+    getSqlStatement = getSurveyReportAttachmentByFileNameSQL(projectId, file.originalname);
+  } else {
+    getSqlStatement = getSurveyAttachmentByFileNameSQL(projectId, file.originalname);
+  }
 
   if (!getSqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');

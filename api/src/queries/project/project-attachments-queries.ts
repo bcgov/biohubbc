@@ -346,6 +346,45 @@ export const getProjectAttachmentByFileNameSQL = (projectId: number, fileName: s
 };
 
 /**
+ * SQL query to get an attachment for a single project by project id and filename.
+ *
+ * @param {number} projectId
+ * @param {string} fileName
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectReportAttachmentByFileNameSQL = (projectId: number, fileName: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectReportAttachmentByFileNameSQL', message: 'params', projectId });
+
+  if (!projectId || !fileName) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      project_report_attachment_id as id,
+      file_name,
+      update_date,
+      create_date,
+      file_size
+    from
+      project_report_attachment
+    where
+      project_id = ${projectId}
+    and
+      file_name = ${fileName};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectReportAttachmentByFileNameSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to update an attachment for a single project by project id and filename and filetype.
  *
  * @param {number} projectId
@@ -409,7 +448,7 @@ export const putProjectReportAttachmentSQL = (projectId: number, fileName: strin
     AND
       project_id = ${projectId}
     RETURNING
-      project_attachment_id as id,
+      project_report_attachment_id as id,
       revision_count;
   `;
 
