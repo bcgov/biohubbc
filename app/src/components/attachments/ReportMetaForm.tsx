@@ -27,6 +27,7 @@ export interface IReportMetaForm {
   description: string;
   year_published: string;
   attachmentId: number;
+  revision_count: number;
 }
 
 export const ReportMetaFormInitialValues: IReportMetaForm = {
@@ -34,7 +35,8 @@ export const ReportMetaFormInitialValues: IReportMetaForm = {
   authors: [ReportMetaFormArrayItemInitialValues],
   description: '',
   year_published: '',
-  attachmentId: 0
+  attachmentId: 0,
+  revision_count: 0
 };
 
 export const ReportMetaFormYupSchema = yup.object().shape({
@@ -45,6 +47,7 @@ export const ReportMetaFormYupSchema = yup.object().shape({
     .min(1900, 'year must be between 1900 and 2199')
     .max(2199, 'Year must be between 1900 and 2199'),
   attachmentId: yup.number().min(1, 'Must have a file uploaded').required('Required'),
+  revision_count: yup.number().min(0, 'Must have a revision number').required('Required'),
   authors: yup
     .array()
     .of(
@@ -181,6 +184,11 @@ const ReportMetaForm: React.FC = (props) => {
                 {errors?.attachmentId && (
                   <Box pt={4}>
                     <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentId}</Typography>
+                  </Box>
+                )}
+                {errors?.revision_count && (
+                  <Box pt={4}>
+                    <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.revision_count}</Typography>
                   </Box>
                 )}
               </Box>

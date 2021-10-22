@@ -14,6 +14,7 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 
 import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
 import qs from 'qs';
 
@@ -126,6 +127,42 @@ const useSurveyApi = (axios: AxiosInstance) => {
       onUploadProgress: onProgress
     });
 
+    return data;
+  };
+
+  /**
+   * Update survey attachment metadata.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string} attachmentType
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+  const updateSurveyAttachmentMetadata = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    attachmentMeta: IReportMetaForm
+  ): Promise<number> => {
+    const req_message = new FormData();
+
+    console.log('survey metadata', attachmentMeta);
+    req_message.append('attachment_type', 'Report');
+    req_message.append(
+      'attachment_metadata',
+      JSON.stringify({
+        title: attachmentMeta.title,
+        year_published: attachmentMeta.year_published,
+        authors: attachmentMeta.authors,
+        description: attachmentMeta.description
+      })
+    );
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
+      req_message
+    );
     return data;
   };
 
@@ -419,6 +456,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    updateSurveyAttachmentMetadata,
     uploadSurveySummaryResults,
     getSurveySummarySubmission,
     getSurveyAttachments,

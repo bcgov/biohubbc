@@ -112,7 +112,8 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
         key={file.name}
         uploadHandler={props.uploadHandler}
         onSuccess={(response: any) => {
-          setFieldValue('attachmentId', response, true);
+          setFieldValue('attachmentId', response.attachmentId, true);
+          setFieldValue('revision_count', response.revision_count, true);
         }}
         file={file}
         fileType={fileType}

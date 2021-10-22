@@ -101,10 +101,8 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  //TODO: need a hook for survey attachments
-
   const handleReportMeta = (fileMeta: IReportMetaForm) => {
-    return biohubApi.project.updateProjectAttachmentMetadata(projectId, fileMeta.attachmentId, fileMeta);
+    return biohubApi.survey.updateSurveyAttachmentMetadata(projectId, surveyId, fileMeta.attachmentId, fileMeta);
   };
 
   return (

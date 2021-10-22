@@ -8,6 +8,7 @@ import {
   IGetProjectsListResponse,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
+  IUploadAttachmentResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
@@ -166,7 +167,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     attachmentType?: string,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<number> => {
+  ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
@@ -176,6 +177,8 @@ const useProjectApi = (axios: AxiosInstance) => {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
+
+    console.log('uploadProjectAttachments response', data);
 
     return data;
   };
@@ -192,23 +195,26 @@ const useProjectApi = (axios: AxiosInstance) => {
   const updateProjectAttachmentMetadata = async (
     projectId: number,
     attachmentId: number,
-    attachmentMeta: IReportMetaForm
+    attachmentType: string,
+    attachmentMeta: IReportMetaForm,
+    revision_count: number
   ): Promise<number> => {
-    const req_message = new FormData();
-    req_message.append('attachment_type', 'Report');
-    req_message.append(
-      'attachment_metadata',
-      JSON.stringify({
+    const obj = {
+      attachment_type: attachmentType,
+      attachment_meta: {
         title: attachmentMeta.title,
         year_published: attachmentMeta.year_published,
         authors: attachmentMeta.authors,
         description: attachmentMeta.description
-      })
-    );
-    const { data } = await axios.put(
-      `/api/project/${projectId}/attachments/${attachmentId}/metadata/update`,
-      req_message
-    );
+      },
+      revision_count: revision_count
+    };
+
+    console.log('object is', obj);
+
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`, {
+      obj
+    });
     return data;
   };
 

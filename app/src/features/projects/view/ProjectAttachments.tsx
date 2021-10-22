@@ -98,7 +98,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   }, []);
 
   const handleReportMeta = (fileMeta: IReportMetaForm) => {
-    return biohubApi.project.updateProjectAttachmentMetadata(projectId, fileMeta.attachmentId, fileMeta);
+    return biohubApi.project.updateProjectAttachmentMetadata(
+      projectId,
+      fileMeta.attachmentId,
+      'Report',
+      fileMeta,
+      fileMeta.revision_count
+    );
   };
 
   return (
