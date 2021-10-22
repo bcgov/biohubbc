@@ -132,11 +132,11 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             getContentAnchorEl={null}
             anchorOrigin={{
               vertical: 'bottom',
-              horizontal: 'right',
+              horizontal: 'right'
             }}
             transformOrigin={{
               vertical: 'top',
-              horizontal: 'right',
+              horizontal: 'right'
             }}
             id="basic-menu"
             anchorEl={anchorEl}
