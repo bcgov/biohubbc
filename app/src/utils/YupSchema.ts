@@ -155,4 +155,19 @@ yup.addMethod(
   }
 );
 
+yup.addMethod(yup.array, 'isUniqueAuthor', function (message: string) {
+  return this.test('is-unique-author', message, (values) => {
+    if (!values || !values.length) {
+      return true;
+    }
+
+    let seen = new Set();
+    const hasDuplicates = values.some((author) => {
+      return seen.size === seen.add(author.last_name).size;
+    });
+
+    return !hasDuplicates;
+  });
+});
+
 export default yup;

@@ -200,13 +200,19 @@ const useProjectApi = (axios: AxiosInstance) => {
   ): Promise<number> => {
     const req_message = new FormData();
     req_message.append('attachment_type', 'Report');
-    req_message.append('attachment_metadata', JSON.stringify({
-      title: attachmentMeta.title,
-      year_published: attachmentMeta.year_published,
-      authors: attachmentMeta.authors,
-      description: attachmentMeta.description
-    }));
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`, req_message);
+    req_message.append(
+      'attachment_metadata',
+      JSON.stringify({
+        title: attachmentMeta.title,
+        year_published: attachmentMeta.year_published,
+        authors: attachmentMeta.authors,
+        description: attachmentMeta.description
+      })
+    );
+    const { data } = await axios.put(
+      `/api/project/${projectId}/attachments/${attachmentId}/metadata/update`,
+      req_message
+    );
     return data;
   };
 

@@ -10,9 +10,7 @@ import React, { useState, useRef } from 'react';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import { IUploadHandler } from '../attachments/FileUploadItem';
 import { Formik, FormikProps } from 'formik';
-import { ReportMetaFormInitialValues,
-  ReportMetaFormYupSchema
-} from '../attachments/ReportMetaForm';
+import { ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
 import { IReportMetaForm } from '../attachments/ReportMetaForm';
 
 /**
@@ -119,11 +117,11 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
         </Box>
       </DialogContent>
       <DialogActions>
-        {props.isUploadingReport &&
+        {props.isUploadingReport && (
           <Button onClick={validateAndFinish} color="primary" variant="contained" autoFocus>
             Finish
           </Button>
-        }
+        )}
         <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
           Close
         </Button>

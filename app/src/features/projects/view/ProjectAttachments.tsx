@@ -35,21 +35,20 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const open = Boolean(anchorEl);
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
-  }
+  };
   const handleClose = () => {
     setAnchorEl(null);
-  }
+  };
   const handleUploadReportClick = (event: any) => {
     setAnchorEl(null);
     setIsUploadingReport(true);
     setOpenUploadAttachments(true);
-  }
+  };
   const handleUploadAttachmentClick = (event: any) => {
     setAnchorEl(null);
     setIsUploadingReport(false);
     setOpenUploadAttachments(true);
-  }
-
+  };
 
   const getAttachments = useCallback(
     async (forceFetch: boolean) => {
@@ -90,27 +89,21 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   }, []);
 
   const handleReportMeta = (fileMeta: IReportMetaForm) => {
-    //return biohubApi.project.
-    return biohubApi.project.updateProjectAttachmentMetadata(
-      projectId, fileMeta.attachmentId, fileMeta
-    );
+    return biohubApi.project.updateProjectAttachmentMetadata(projectId, fileMeta.attachmentId, fileMeta);
   };
-
-
 
   return (
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle={isUploadingReport ? "Upload Report" : "Upload Attachment"}
+        dialogTitle={isUploadingReport ? 'Upload Report' : 'Upload Attachment'}
         isUploadingReport={isUploadingReport}
         onFinish={handleReportMeta}
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}
-        uploadHandler={getUploadHandler()}>
-      </FileUploadWithMetaDialog>
+        uploadHandler={getUploadHandler()}></FileUploadWithMetaDialog>
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h2">Project Attachments</Typography>
         <Box my={-1}>
@@ -131,8 +124,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             onClose={handleClose}
             MenuListProps={{
               'aria-labelledby': 'basic-button'
-            }}
-          >
+            }}>
             <MenuItem onClick={handleUploadReportClick}>Upload Report</MenuItem>
             <MenuItem onClick={handleUploadAttachmentClick}>Upload Attachment</MenuItem>
           </Menu>
