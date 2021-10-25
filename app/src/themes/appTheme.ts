@@ -1,5 +1,5 @@
-import { createMuiTheme } from '@material-ui/core';
 import 'styles.scss';
+import { createMuiTheme } from '@material-ui/core';
 
 const appTheme = createMuiTheme({
   breakpoints: {
@@ -87,14 +87,6 @@ const appTheme = createMuiTheme({
     MuiDialogActions: {
       root: {
         padding: '20px 24px'
-      }
-    },
-    MuiFormLabel: {
-      asterisk: {
-        color: '#db3131',
-        '&.Mui-error': {
-          color: '#db3131'
-        }
       }
     },
     MuiLink: {
