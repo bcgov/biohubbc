@@ -10,16 +10,10 @@ fieldset {
   min-width: 0;
 }
 
-legend {
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-legend.MuiFormLabel-root {
-  margin-bottom: 0;
+legend.MuiTypography-root {
+  margin-bottom: 0.25rem;
   float: left;
   font-weight: 700;
-  letter-spacing: -0.01rem;
 }
 
 .MuiDialogActions-root {
