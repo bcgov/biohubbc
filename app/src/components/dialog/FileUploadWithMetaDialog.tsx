@@ -118,8 +118,8 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
                   <strong>Finish</strong>
                 </Button>
               )}
-              <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
-                Close
+              <Button onClick={props.onClose} color="primary" variant="outlined" autoFocus>
+                Cancel
               </Button>
             </DialogActions>
           </>
