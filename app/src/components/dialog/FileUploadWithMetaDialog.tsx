@@ -1,5 +1,4 @@
 import Button from '@material-ui/core/Button';
-import Box from '@material-ui/core/Box';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -28,12 +27,12 @@ export interface IFileUploadWithMetaDialogProps {
    */
   dialogTitle: string;
   /**
+   * The type of attachment.
    *
-   *
-   * @type {boolean}
+   * @type {('Report' | 'Other')}
    * @memberof IFileUploadWithMetaDialogProps
    */
-  isUploadingReport: boolean;
+  attachmentType: 'Report' | 'Other';
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -46,7 +45,7 @@ export interface IFileUploadWithMetaDialogProps {
    *
    * @memberof IFileUploadWithMetaDialogProps
    */
-  onFinish: (fileMeta: IReportMetaForm) => void;
+  onFinish: (fileMeta: IReportMetaForm, revisionCount: number) => void;
   /**
    * Callback fired if the dialog is closed.
    *
@@ -76,19 +75,17 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
+  const [revisionCount, setRevisionCount] = useState<number>(0);
+
+  const onSuccess = (response: any) => {
+    if (response.revision_count) {
+      setRevisionCount(response.revision_count);
+    }
+  };
+
   if (!props.open) {
     return <></>;
   }
-
-  const validateAndFinish = async () => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    await formikRef.current?.submitForm();
-
-    props.onFinish(formikRef.current.values);
-  };
 
   return (
     <Dialog
@@ -97,33 +94,38 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
       open={props.open}
       aria-labelledby="component-dialog-title"
       aria-describedby="component-dialog-description">
-      <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
-      <DialogContent>
-        <Box>
-          <Formik
-            innerRef={formikRef}
-            initialValues={ReportMetaFormInitialValues}
-            validationSchema={ReportMetaFormYupSchema}
-            validateOnBlur={false}
-            validateOnChange={true}
-            onSubmit={() => {}}
-            onChange={() => {}}>
-            <>
-              <FileUploadWithMeta isUploadingReport={props.isUploadingReport} uploadHandler={props.uploadHandler} />
-            </>
-          </Formik>
-        </Box>
-      </DialogContent>
-      <DialogActions>
-        {props.isUploadingReport && (
-          <Button onClick={validateAndFinish} color="primary" variant="contained" autoFocus>
-            Finish
-          </Button>
+      <Formik
+        innerRef={formikRef}
+        initialValues={ReportMetaFormInitialValues}
+        validationSchema={ReportMetaFormYupSchema}
+        validateOnBlur={true}
+        validateOnChange={false}
+        onSubmit={(values) => {
+          props.onFinish(values, revisionCount);
+        }}>
+        {(formikProps) => (
+          <>
+            <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
+            <DialogContent>
+              <FileUploadWithMeta
+                attachmentType={props.attachmentType}
+                uploadHandler={props.uploadHandler}
+                onSuccess={onSuccess}
+              />
+            </DialogContent>
+            <DialogActions>
+              {props.attachmentType === 'Report' && (
+                <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
+                  Finish
+                </Button>
+              )}
+              <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
+                Close
+              </Button>
+            </DialogActions>
+          </>
         )}
-        <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
-          Close
-        </Button>
-      </DialogActions>
+      </Formik>
     </Dialog>
   );
 };

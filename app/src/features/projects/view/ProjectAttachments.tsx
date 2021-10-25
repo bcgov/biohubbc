@@ -10,7 +10,11 @@ import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import {
+  IGetProjectAttachment,
+  IGetProjectForViewResponse,
+  IUploadAttachmentResponse
+} from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
@@ -37,7 +41,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [isUploadingReport, setIsUploadingReport] = useState(false);
+  const [attachmentType, setAttachmentType] = useState<'Report' | 'Other'>('Other');
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -50,12 +54,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
   const handleUploadReportClick = (event: any) => {
     setAnchorEl(null);
-    setIsUploadingReport(true);
+    setAttachmentType('Report');
     setOpenUploadAttachments(true);
   };
   const handleUploadAttachmentClick = (event: any) => {
     setAnchorEl(null);
-    setIsUploadingReport(false);
+    setAttachmentType('Other');
     setOpenUploadAttachments(true);
   };
 
@@ -80,12 +84,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     [biohubApi.project, projectId, attachmentsList.length]
   );
 
-  const getUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress, fileType) => {
+  const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
+    return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.project.uploadProjectAttachments(
         projectId,
         file,
-        fileType,
+        'Report',
         cancelToken,
         handleFileUploadProgress
       );
@@ -97,13 +101,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleReportMeta = (fileMeta: IReportMetaForm) => {
+  const handleReportMeta = (fileMeta: IReportMetaForm, revisionCount: number) => {
     return biohubApi.project.updateProjectAttachmentMetadata(
       projectId,
       fileMeta.attachmentId,
-      'Report',
+      attachmentType,
       fileMeta,
-      fileMeta.revision_count
+      revisionCount
     );
   };
 
@@ -111,14 +115,15 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle={isUploadingReport ? 'Upload Report' : 'Upload Attachment'}
-        isUploadingReport={isUploadingReport}
+        dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachment'}
+        attachmentType={attachmentType}
         onFinish={handleReportMeta}
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}
-        uploadHandler={getUploadHandler()}></FileUploadWithMetaDialog>
+        uploadHandler={getUploadHandler()}
+      />
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
         <Typography variant="h2">Project Attachments</Typography>
         <Box my={-1}>

@@ -40,7 +40,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [isUploadingReport, setIsUploadingReport] = useState(false);
+  const [attachmentType, setAttachmentType] = useState<'Report' | 'Other'>('Other');
   const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -53,12 +53,12 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   };
   const handleUploadReportClick = (event: any) => {
     setAnchorEl(null);
-    setIsUploadingReport(true);
+    setAttachmentType('Report');
     setOpenUploadAttachments(true);
   };
   const handleUploadAttachmentClick = (event: any) => {
     setAnchorEl(null);
-    setIsUploadingReport(false);
+    setAttachmentType('Other');
     setOpenUploadAttachments(true);
   };
 
@@ -84,12 +84,12 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   );
 
   const getUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress, fileType) => {
+    return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.survey.uploadSurveyAttachments(
         projectId,
         surveyId,
         file,
-        fileType,
+        attachmentType,
         cancelToken,
         handleFileUploadProgress
       );
@@ -109,8 +109,8 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle={isUploadingReport ? 'Upload Report' : 'Upload Attachment'}
-        isUploadingReport={isUploadingReport}
+        dialogTitle={attachmentType ? 'Upload Report' : 'Upload Attachment'}
+        attachmentType={attachmentType}
         onFinish={handleReportMeta}
         onClose={() => {
           getAttachments(true);

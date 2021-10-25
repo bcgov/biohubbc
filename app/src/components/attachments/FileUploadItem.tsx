@@ -64,18 +64,18 @@ export interface IUploadFile {
   error?: string;
 }
 
-export type IUploadHandler = (
+export type IUploadHandler<T = any> = (
   file: File,
   cancelToken: CancelTokenSource,
-  handleFileUploadProgress: (progressEvent: ProgressEvent) => void,
-  fileType?: string
-) => Promise<any>;
+  handleFileUploadProgress: (progressEvent: ProgressEvent) => void
+) => Promise<T>;
+
+export type IOnUploadSuccess = (response: any) => void;
 
 export interface IFileUploadItemProps {
   uploadHandler: IUploadHandler;
-  onSuccess?: (response: any) => void;
+  onSuccess?: IOnUploadSuccess;
   file: File;
-  fileType?: string;
   error?: string;
   onCancel: () => void;
 }
@@ -88,7 +88,6 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
-  const [fileType] = useState<string>(props.fileType || '');
 
   const [status, setStatus] = useState<UploadFileStatus>(UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
@@ -142,25 +141,14 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       onSuccess?.(response);
     };
 
-    uploadHandler(file, cancelToken, handleFileUploadProgress, fileType)
+    uploadHandler(file, cancelToken, handleFileUploadProgress)
       .then(handleFileUploadSuccess, (error: APIError) => {
         setError(error?.message);
       })
       .catch();
 
     setStatus(UploadFileStatus.UPLOADING);
-  }, [
-    file,
-    status,
-    cancelToken,
-    uploadHandler,
-    onSuccess,
-    isMounted,
-    initiateCancel,
-    error,
-    handleFileUploadError,
-    fileType
-  ]);
+  }, [file, status, cancelToken, uploadHandler, onSuccess, isMounted, initiateCancel, error, handleFileUploadError]);
 
   useEffect(() => {
     if (!isMounted()) {

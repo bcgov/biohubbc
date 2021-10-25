@@ -27,7 +27,6 @@ export interface IReportMetaForm {
   description: string;
   year_published: string;
   attachmentId: number;
-  revision_count: number;
 }
 
 export const ReportMetaFormInitialValues: IReportMetaForm = {
@@ -35,8 +34,7 @@ export const ReportMetaFormInitialValues: IReportMetaForm = {
   authors: [ReportMetaFormArrayItemInitialValues],
   description: '',
   year_published: '',
-  attachmentId: 0,
-  revision_count: 0
+  attachmentId: 0
 };
 
 export const ReportMetaFormYupSchema = yup.object().shape({
@@ -45,11 +43,12 @@ export const ReportMetaFormYupSchema = yup.object().shape({
   year_published: yup
     .number()
     .min(1900, 'year must be between 1900 and 2199')
-    .max(2199, 'Year must be between 1900 and 2199'),
+    .max(2199, 'Year must be between 1900 and 2199')
+    .required('Required'),
   attachmentId: yup.number().min(1, 'Must have a file uploaded').required('Required'),
-  revision_count: yup.number().min(0, 'Must have a revision number').required('Required'),
   authors: yup
     .array()
+    .min(1, 'Required')
     .of(
       yup.object().shape({
         first_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
@@ -64,12 +63,11 @@ export const ReportMetaFormYupSchema = yup.object().shape({
  *
  * @return {*}
  */
-
-const ReportMetaForm: React.FC = (props) => {
-  const { values, handleSubmit, getFieldMeta, errors } = useFormikContext<IReportMetaForm>();
+const ReportMetaForm: React.FC = () => {
+  const { values, getFieldMeta, errors } = useFormikContext<IReportMetaForm>();
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
       <Box component="fieldset">
         <FormLabel id="report_details" component="legend">
           Report Details
@@ -107,7 +105,7 @@ const ReportMetaForm: React.FC = (props) => {
         <FormLabel id="report_details" component="legend">
           Author(s)
         </FormLabel>
-
+        <br />
         <Grid>
           <FieldArray
             name="authors"
@@ -147,17 +145,15 @@ const ReportMetaForm: React.FC = (props) => {
                             />
                           </Box>
 
-                          {
-                            <Box pt={0.5} pl={1}>
-                              <IconButton
-                                color="primary"
-                                data-testid="delete-author-icon"
-                                aria-label="remove author"
-                                onClick={() => arrayHelpers.remove(index)}>
-                                <Icon path={mdiTrashCanOutline} size={1} />
-                              </IconButton>
-                            </Box>
-                          }
+                          <Box pt={0.5} pl={1}>
+                            <IconButton
+                              color="primary"
+                              data-testid="delete-author-icon"
+                              aria-label="remove author"
+                              onClick={() => arrayHelpers.remove(index)}>
+                              <Icon path={mdiTrashCanOutline} size={1} />
+                            </IconButton>
+                          </Box>
                         </Box>
                       </Grid>
                     );
@@ -186,17 +182,12 @@ const ReportMetaForm: React.FC = (props) => {
                     <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentId}</Typography>
                   </Box>
                 )}
-                {errors?.revision_count && (
-                  <Box pt={4}>
-                    <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.revision_count}</Typography>
-                  </Box>
-                )}
               </Box>
             )}
           />
         </Grid>
       </Box>
-    </form>
+    </>
   );
 };
 

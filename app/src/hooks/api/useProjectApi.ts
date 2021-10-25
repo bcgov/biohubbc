@@ -197,7 +197,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     attachmentId: number,
     attachmentType: string,
     attachmentMeta: IReportMetaForm,
-    revision_count: number
+    revisionCount: number
   ): Promise<number> => {
     const obj = {
       attachment_type: attachmentType,
@@ -207,14 +207,12 @@ const useProjectApi = (axios: AxiosInstance) => {
         authors: attachmentMeta.authors,
         description: attachmentMeta.description
       },
-      revision_count: revision_count
+      revision_count: revisionCount
     };
 
     console.log('object is', obj);
 
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`, {
-      obj
-    });
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`, obj);
     return data;
   };
 
