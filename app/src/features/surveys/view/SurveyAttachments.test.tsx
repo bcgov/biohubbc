@@ -52,11 +52,13 @@ describe('SurveyAttachments', () => {
       expect(getByText('Upload Attachments')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Close'));
+    fireEvent.click(getByText('Upload Attachments'));
 
     await waitFor(() => {
       expect(queryByText('Upload Attachments')).toBeNull();
     });
+
+    expect(getByText('Close')).toBeInTheDocument();
   });
 
   it('renders correctly with no attachments', () => {
