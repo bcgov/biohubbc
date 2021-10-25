@@ -19,6 +19,11 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
+export enum ATTACHMENT_TYPE {
+  REPORT = 'Report',
+  OTHER = 'Other'
+}
+
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
     marginTop: theme.spacing(1)

@@ -1,6 +1,8 @@
-import { Menu, MenuItem } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { mdiMenuDown, mdiUpload } from '@mdi/js';
@@ -14,7 +16,6 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
@@ -101,8 +102,15 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleReportMeta = (fileMeta: IReportMetaForm) => {
-    return biohubApi.survey.updateSurveyAttachmentMetadata(projectId, surveyId, fileMeta.attachmentId, fileMeta);
+  const handleReportMeta = (fileMeta: IReportMetaForm, revisionCount: number) => {
+    return biohubApi.survey.updateSurveyAttachmentMetadata(
+      projectId,
+      surveyId,
+      fileMeta.attachmentId,
+      attachmentType,
+      fileMeta,
+      revisionCount
+    );
   };
 
   return (

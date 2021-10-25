@@ -1,4 +1,5 @@
-import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
+import Typography from '@material-ui/core/Typography';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
@@ -28,17 +29,17 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
   return (
     <form onSubmit={handleSubmit}>
-      <Grid container spacing={2}>
-        {props.attachmentType === 'Report' && (
-          <Grid item xs={12}>
-            <ReportMetaForm />
-          </Grid>
-        )}
-
-        <Grid item xs={12}>
-          <FileUpload uploadHandler={props.uploadHandler} onSuccess={onSuccess} />
-        </Grid>
-      </Grid>
+      <Box>
+        {props.attachmentType === 'Report' && <ReportMetaForm />}
+        <Box mt={3}>
+          <Box component="fieldset">
+            <Typography component="legend" variant="body1" id="report_details">
+              Attach File
+            </Typography>
+            <FileUpload uploadHandler={props.uploadHandler} onSuccess={onSuccess} />
+          </Box>
+        </Box>
+      </Box>
     </form>
   );
 };

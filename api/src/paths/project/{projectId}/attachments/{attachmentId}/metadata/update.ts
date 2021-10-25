@@ -51,74 +51,49 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          oneOf: [
-            {
-              type: 'object',
-              description: 'Attachment metadata for attachments of type: Report.',
-              required: ['attachment_type', 'attachment_meta', 'revision_count'],
-              properties: {
-                attachment_type: {
-                  type: 'string',
-                  enum: ['Report']
-                },
-                attachment_meta: {
-                  type: 'object',
-                  required: ['title', 'year_published', 'authors', 'description'],
-                  properties: {
-                    title: {
-                      type: 'string'
-                    },
-                    year_published: {
-                      type: 'string'
-                    },
-                    authors: {
-                      type: 'array',
-                      items: {
-                        type: 'object',
-                        properties: {
-                          first_name: {
-                            type: 'string'
-                          },
-                          last_name: {
-                            type: 'string'
-                          }
-                        }
-                      }
-                    },
-                    description: {
-                      type: 'string'
-                    }
-                  }
-                },
-                revision_count: {
-                  type: 'number'
-                }
-              }
-            },
-            {
-              type: 'object',
-              description: 'Attachment metadata for attachments of type: Other.',
-              required: ['attachment_type', 'attachment_meta'],
-              properties: {
-                attachment_type: {
-                  type: 'string',
-                  enum: ['Other']
-                },
-                attachment_meta: {
-                  type: 'object',
-                  properties: {
-                    title: {
-                      type: 'string'
-                    },
-                    description: {
-                      type: 'string'
-                    }
-                  }
-                }
-              }
-            }
-          ]
+          type: 'object',
+          description: 'Attachment metadata for attachments of type: Report.',
+          //required: ['attachment_type', 'attachment_meta', 'revision_count'],
+          properties: {
+            // attachment_type: {
+            //   type: 'string',
+            //   enum: ['Report']
+            // },
+            // attachment_meta: {
+            //   type: 'object',
+            //   required: ['title', 'year_published', 'authors', 'description'],
+            //   properties: {
+            //     title: {
+            //       type: 'string'
+            //     },
+            //     year_published: {
+            //       type: 'string'
+            //     },
+            //     authors: {
+            //       type: 'array',
+            //       items: {
+            //         type: 'object',
+            //         properties: {
+            //           first_name: {
+            //             type: 'string'
+            //           },
+            //           last_name: {
+            //             type: 'string'
+            //           }
+            //         }
+            //       }
+            //     },
+            //     description: {
+            //       type: 'string'
+            //     }
+            //   }
+            // },
+            // revision_count: {
+            //   type: 'number'
+            // }
+          }
         }
+
       }
     }
   },
@@ -149,8 +124,11 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
     defaultLog.debug({
       label: 'updateProjectAttachmentMetadata',
       message: 'params',
-      req_params: req.params
+      req_params: req.params,
+      req_body: req.body
     });
+
+    console.log('req.body is', req.body);
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
@@ -159,6 +137,11 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
     if (!req.params.attachmentId) {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
+
+
+    console.log('Object.values(ATTACHMENT_TYPE)', Object.values(ATTACHMENT_TYPE));
+
+    console.log('attachment_type ', req.body.attachment_type);
 
     if (!Object.values(ATTACHMENT_TYPE).includes(req.body?.attachment_type)) {
       throw new HTTP400('Invalid body param `attachment_type`');
@@ -221,6 +204,8 @@ const updateProjectReportAttachmentMetadata = async (
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  console.log('updateProjectReportAttachmentMetadataSQL ', response);
 
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to update attachment report record');

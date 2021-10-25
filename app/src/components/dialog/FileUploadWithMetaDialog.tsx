@@ -3,14 +3,13 @@ import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import useMediaQuery from '@material-ui/core/useMediaQuery';
 import useTheme from '@material-ui/core/styles/useTheme';
-import React, { useState, useRef } from 'react';
+import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
-import { IUploadHandler } from '../attachments/FileUploadItem';
 import { Formik, FormikProps } from 'formik';
-import { ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
-import { IReportMetaForm } from '../attachments/ReportMetaForm';
+import React, { useRef, useState } from 'react';
+import { IUploadHandler } from '../attachments/FileUploadItem';
+import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
 
 /**
  *
@@ -116,7 +115,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
             <DialogActions>
               {props.attachmentType === 'Report' && (
                 <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
-                  Finish
+                  <strong>Finish</strong>
                 </Button>
               )}
               <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>

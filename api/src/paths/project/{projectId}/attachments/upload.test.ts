@@ -56,8 +56,8 @@ describe('uploadMedia', () => {
 
       await result(
         { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
@@ -74,8 +74,8 @@ describe('uploadMedia', () => {
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
@@ -90,7 +90,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: [] }, null as unknown as any, null as unknown as any);
+      await result({ ...sampleReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -111,7 +111,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: ['file1'] }, null as unknown as any, null as unknown as any);
+      await result({ ...sampleReq, files: ['file1'] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -134,7 +134,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, sampleRes as any, null as unknown as any);
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
@@ -156,7 +156,7 @@ describe('uploadMedia', () => {
 
     const result = upload.uploadMedia();
 
-    await result(sampleReq, sampleRes as any, null as unknown as any);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });

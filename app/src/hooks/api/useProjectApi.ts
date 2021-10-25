@@ -1,4 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import {
   ICreateProjectRequest,
   ICreateProjectResponse,
@@ -11,7 +12,6 @@ import {
   IUploadAttachmentResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
-import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import qs from 'qs';
 
 /**
