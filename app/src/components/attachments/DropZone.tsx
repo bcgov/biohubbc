@@ -10,19 +10,6 @@ import { ConfigContext } from 'contexts/configContext';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  dropZoneContainer: {
-    margin: '-4px',
-    borderRadius: '4px',
-    borderStyle: 'dashed',
-    borderWidth: '2px',
-    borderColor: theme.palette.text.disabled,
-    background: '#ffffff',
-    cursor: 'pointer',
-    '&:hover, &:focus': {
-      borderColor: theme.palette.primary.main,
-      transition: 'all ease-out 0.2s'
-    }
-  },
   dropZoneTitle: {
     marginBottom: theme.spacing(1),
     fontSize: '1.125rem',
@@ -84,7 +71,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
         onDrop={props.onFiles}
         accept={props.acceptedFileExtensions}>
         {({ getRootProps, getInputProps }) => (
-          <Box {...getRootProps({ className: classes.dropZoneContainer })}>
+          <Box {...getRootProps()}>
             <input {...getInputProps()} data-testid="drop-zone-input" />
             <Box m={2} display="flex" flexDirection="column" alignItems="center">
               <Icon className={classes.dropZoneIcon} path={mdiUpload} size={1.5} />

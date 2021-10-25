@@ -1,6 +1,4 @@
 import Box from '@material-ui/core/Box';
-import FormLabel from '@material-ui/core/FormLabel';
-import Grid from '@material-ui/core/Grid';
 import List from '@material-ui/core/List';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -13,11 +11,21 @@ import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
 import { IUploadHandler, MemoizedFileUploadItem } from './FileUploadItem';
 import { useFormikContext } from 'formik';
+import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
-    border: '2px dashed grey',
-    cursor: 'default'
+    clear: 'both',
+    borderRadius: '4px',
+    borderStyle: 'dashed',
+    borderWidth: '2px',
+    borderColor: theme.palette.text.disabled,
+    background: '#ffffff',
+    cursor: 'pointer',
+    '&:hover, &:focus': {
+      borderColor: theme.palette.primary.main,
+      transition: 'all ease-out 0.2s'
+    }
   },
   actionButton: {
     minWidth: '6rem',
@@ -172,13 +180,13 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
   }, [fileToRemove, fileUploadItems, files]);
 
   const fileUploadUI = (
-    <Box component="fieldset" mt={3}>
+    <Box component="fieldset">
       {props.isUploadingReport && (
-        <FormLabel id="report_details" component="legend">
+        <Typography component="legend" variant="body1" id="report_details">
           Attach File
-        </FormLabel>
+        </Typography>
       )}
-      <Box mt={3} className={classes.dropZone}>
+      <Box className={classes.dropZone}>
         <DropZone
           onFiles={onFiles}
           acceptedFileExtensions={
@@ -193,21 +201,15 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
   );
 
   return (
-    <Box>
+    <>
       {fileType && fileType !== 'Report' && fileUploadUI}
-
       {fileType && fileType === 'Report' && (
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <ReportMetaForm />
-          </Grid>
-
-          <Grid item xs={12}>
-            {fileUploadUI}
-          </Grid>
-        </Grid>
+        <Box>
+          <ReportMetaForm />
+          <Box mt={3}>{fileUploadUI}</Box>
+        </Box>
       )}
-    </Box>
+    </>
   );
 };
 
