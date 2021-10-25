@@ -498,9 +498,7 @@ export const updateProjectReportAttachmentMetadataSQL = (
       project_report_attachment
     SET
       title = ${metadata.title},
-    SET
       year = ${metadata.year_published},
-    SET
       description = ${metadata.description}
     WHERE
       project_id = ${projectId}
@@ -547,7 +545,6 @@ export const insertProjectReportAttachmentAuthorSQL = (
       project_report_author
     SET
       first_name = ${author.first_name},
-    SET
       last_name = ${author.last_name}
     WHERE
       project_report_attachment_id = ${attachmentId};

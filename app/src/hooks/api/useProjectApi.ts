@@ -212,9 +212,7 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     console.log('object is', obj);
 
-    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`, {
-      obj
-    });
+    const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`, obj);
     return data;
   };
 
