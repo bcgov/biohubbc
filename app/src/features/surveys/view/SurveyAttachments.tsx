@@ -98,25 +98,20 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     };
   };
 
+  const getFinishHandler = () => {
+    return (fileMeta: IReportMetaForm) => {
+      return biohubApi.survey
+        .uploadSurveyAttachments(projectId, surveyId, fileMeta.attachmentFile, attachmentType, fileMeta)
+        .finally(() => {
+          setOpenUploadAttachments(false);
+        });
+    };
+  };
+
   useEffect(() => {
     getAttachments(false);
     // eslint-disable-next-line
   }, []);
-
-  const getFinishHandler = () => {
-    return (fileMeta: IReportMetaForm) => {
-      return biohubApi.project
-        .uploadProjectAttachments(projectId, fileMeta.attachmentFile, attachmentType, fileMeta)
-        .then(
-          () => {
-            setOpenUploadAttachments(false);
-          },
-          () => {
-            // TODO handle errors?
-          }
-        );
-    };
-  };
 
   return (
     <>
@@ -124,11 +119,10 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         open={openUploadAttachments}
         dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachment'}
         attachmentType={attachmentType}
-        //onFinish={handleReportMeta}
         onFinish={getFinishHandler()}
         onClose={() => {
-          getAttachments(true);
           setOpenUploadAttachments(false);
+          getAttachments(true);
         }}
         uploadHandler={getUploadHandler()}
       />
