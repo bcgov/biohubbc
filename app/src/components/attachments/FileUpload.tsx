@@ -15,8 +15,18 @@ import {
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
-    border: '2px dashed grey',
-    cursor: 'default'
+    clear: 'both',
+    borderRadius: '4px',
+    borderStyle: 'dashed',
+    borderWidth: '2px',
+    borderColor: theme.palette.text.disabled,
+    background: '#ffffff',
+    cursor: 'pointer',
+    transition: 'all ease-out 0.2s',
+    '&:hover, &:focus': {
+      borderColor: theme.palette.primary.main,
+      backgroundColor: '#f7f8fa'
+    }
   }
 }));
 
@@ -153,11 +163,11 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
 
   return (
     <Box>
-      <Box mb={2} className={classes.dropZone}>
+      <Box className={classes.dropZone}>
         <DropZone onFiles={onFiles} {...props.dropZoneProps} />
       </Box>
       <Box>
-        <List>{fileUploadItems}</List>
+        <Box component={List} pb={0}>{fileUploadItems}</Box>
       </Box>
     </Box>
   );

@@ -24,25 +24,21 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
   return (
     <form onSubmit={handleSubmit}>
-      <Box>
-        {props.attachmentType === 'Report' && <ReportMetaForm />}
-        <Box mt={3}>
-          <Box component="fieldset">
-            <Typography component="legend" variant="body1" id="report_details">
-              Attach File
-            </Typography>
-            {(props.attachmentType === 'Report' && (
-              <FileUpload
-                uploadHandler={props.uploadHandler}
-                fileHandler={fileHandler}
-                onSuccess={props.onSuccess}
-                dropZoneProps={{ maxNumFiles: 1 }}
-                status={UploadFileStatus.STAGED}
-              />
-            )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
-          </Box>
+    {props.attachmentType === 'Report' && <Box mb={3}><ReportMetaForm /></Box>}
+      {(props.attachmentType === 'Report' && (
+        <Box component="fieldset">
+          <Typography component="legend" variant="body1" id="report_details">
+            Attach File
+          </Typography>
+          <FileUpload
+            uploadHandler={props.uploadHandler}
+            fileHandler={fileHandler}
+            onSuccess={props.onSuccess}
+            dropZoneProps={{ maxNumFiles: 1 }}
+            status={UploadFileStatus.STAGED}
+          />
         </Box>
-      </Box>
+      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
     </form>
   );
 };
