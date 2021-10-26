@@ -2,11 +2,10 @@ import Box from '@material-ui/core/Box';
 import IconButton from '@material-ui/core/IconButton';
 import LinearProgress from '@material-ui/core/LinearProgress';
 import ListItem from '@material-ui/core/ListItem';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiCheck, mdiTrashCanOutline, mdiWindowClose } from '@mdi/js';
+import { mdiCheck, mdiTrashCanOutline, mdiWindowClose, mdiFileOutline  } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
@@ -17,8 +16,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   uploadProgress: {
     marginTop: theme.spacing(0.5)
   },
-  uploadListItemPaper: {
-    width: '100%'
+  uploadListItemBox: {
+    width: '100%',
+    borderWidth: '1px',
+    borderStyle: 'solid',
+    borderColor: theme.palette.action.disabled,
+    borderRadius: '4px'
   },
   uploadingColor: {
     color: theme.palette.primary.main
@@ -34,6 +37,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   errorBgColor: {
     background: theme.palette.error.main + '44'
+  },
+  fileIconColor: {
+    color: theme.palette.action.disabled
   }
 }));
 
@@ -181,9 +187,11 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
   return (
     <ListItem key={file.name} disableGutters>
-      <Paper className={classes.uploadListItemPaper}>
-        <Box p={2} width="100%">
-          <Box display="flex" flexDirection="row" alignItems="center" height="3rem">
+      <Box className={classes.uploadListItemBox}>
+        <Box display="flex" flexDirection="row" alignItems="center" p={2} width="100%">
+          <Icon path={mdiFileOutline} size={1.5} className={error ? classes.errorColor : classes.fileIconColor}
+          />
+          <Box pl={1.5} display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" height="3rem">
             <Box flex="1 1 auto">
               <Typography variant="body2" component="div">
                 <strong>{file.name}</strong>
@@ -200,7 +208,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
             <MemoizedProgressBar status={status} progress={progress} />
           </Box>
         </Box>
-      </Paper>
+      </Box>
     </ListItem>
   );
 };
@@ -233,7 +241,7 @@ const ActionButton: React.FC<IActionButtonProps> = (props) => {
     props.status === UploadFileStatus.UPLOADING
   ) {
     return (
-      <IconButton title="Cancel Upload" aria-label="cancel upload" onClick={() => props.onCancel()}>
+      <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()}>
         <Icon path={mdiWindowClose} size={1} />
       </IconButton>
     );
