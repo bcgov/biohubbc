@@ -105,7 +105,16 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
   const getFinishHandler = () => {
     return (fileMeta: IReportMetaForm) => {
-      return biohubApi.project.uploadProjectAttachments(projectId, fileMeta.attachmentFile, attachmentType, fileMeta);
+      return biohubApi.project
+        .uploadProjectAttachments(projectId, fileMeta.attachmentFile, attachmentType, fileMeta)
+        .then(
+          () => {
+            setOpenUploadAttachments(false);
+          },
+          () => {
+            // TODO handle errors?
+          }
+        );
     };
   };
 

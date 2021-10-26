@@ -15,7 +15,10 @@ import {
 } from '../../../../../../queries/survey/survey-attachments-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
-import { PostAttachmentMetadata, PutAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
+import {
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata
+} from '../../../../../../models/project-survey-attachments';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
 
@@ -298,7 +301,7 @@ export const upsertSurveyReportAttachment = async (
 
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
-    return updateSurveyReportAttachment(file, surveyId, new PutAttachmentMetadata(attachmentMeta), connection);
+    return updateSurveyReportAttachment(file, surveyId, new PutReportAttachmentMetadata(attachmentMeta), connection);
   }
 
   // No matching attachment found, insert new attachment
@@ -306,7 +309,7 @@ export const upsertSurveyReportAttachment = async (
     file,
     projectId,
     surveyId,
-    new PostAttachmentMetadata(attachmentMeta),
+    new PostReportAttachmentMetadata(attachmentMeta),
     connection
   );
 };
@@ -315,7 +318,7 @@ export const insertSurveyReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
   surveyId: number,
-  attachmentMeta: PostAttachmentMetadata,
+  attachmentMeta: PostReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
   const key = generateS3FileKey({
@@ -343,7 +346,7 @@ export const insertSurveyReportAttachment = async (
 export const updateSurveyReportAttachment = async (
   file: Express.Multer.File,
   surveyId: number,
-  attachmentMeta: PutAttachmentMetadata,
+  attachmentMeta: PutReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
   const sqlStatement = putSurveyReportAttachmentSQL(surveyId, file.originalname, attachmentMeta);

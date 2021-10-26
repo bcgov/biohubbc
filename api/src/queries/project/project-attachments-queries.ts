@@ -549,7 +549,7 @@ export const insertProjectReportAttachmentAuthorSQL = (
 
   const sqlStatement: SQLStatement = SQL`
     INSERT
-      project_report_author
+      INTO project_report_author
     SET
       first_name = ${author.first_name},
       last_name = ${author.last_name}
@@ -586,7 +586,7 @@ export const deleteProjectReportAttachmentAuthorsSQL = (attachmentId: number): S
 
   const sqlStatement: SQLStatement = SQL`
     DELETE
-      project_report_author
+      FROM project_report_author
     WHERE
       project_report_attachment_id = ${attachmentId};
   `;

@@ -95,6 +95,12 @@ const appTheme = createMuiTheme({
         color: '#1a5a96'
       }
     },
+    MuiLinearProgress: {
+      root: {
+        height: '6px',
+        borderRadius: '3px'
+      }
+    },
     MuiOutlinedInput: {
       root: {
         background: '#ffffff'

@@ -257,7 +257,6 @@ export const postSurveyAttachmentSQL = (
 export const postSurveyReportAttachmentSQL = (
   fileName: string,
   fileSize: number,
-  projectId: number,
   surveyId: number,
   key: string,
   attachmentMeta: PostAttachmentMetadata
@@ -267,12 +266,11 @@ export const postSurveyReportAttachmentSQL = (
     message: 'params',
     fileName,
     fileSize,
-    projectId,
     surveyId,
     key
   });
 
-  if (!fileName || !fileSize || !projectId || !surveyId || !key) {
+  if (!fileName || !fileSize || !surveyId || !key) {
     return null;
   }
 

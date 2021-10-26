@@ -38,20 +38,20 @@ export const ReportMetaFormInitialValues: IReportMetaForm = {
 
 export const ReportMetaFormYupSchema = yup.object().shape({
   title: yup.string().max(300, 'Cannot exceed 300 characters').required('A report title is required'),
-  description: yup.string().max(300, 'Cannot exceed 50 characters').required('A summary is required'),
+  description: yup.string().max(300, 'Cannot exceed 50 characters').required('A report summary is required'),
   year_published: yup
     .number()
     .min(1900, 'year must be between 1900 and 2199')
     .max(2199, 'Year must be between 1900 and 2199')
-    .required('Required'),
-  attachmentFile: yup.mixed().required('Must have a file uploaded'),
+    .required('Year published required'),
+  attachmentFile: yup.mixed().required('A file is required'),
   authors: yup
     .array()
-    .min(1, 'Required')
+    .min(1, 'An author is required')
     .of(
       yup.object().shape({
-        first_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
-        last_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required')
+        first_name: yup.string().max(300, 'Cannot exceed 300 characters').required('First name required'),
+        last_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Last name required')
       })
     )
     .isUniqueAuthor('Author names must be unique')
@@ -69,7 +69,7 @@ const ReportMetaForm: React.FC = () => {
     <>
       <Box component="fieldset">
         <Typography component="legend" variant="body1" id="report_details">
-          Details
+          Report Details
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} md={8}>
@@ -96,7 +96,7 @@ const ReportMetaForm: React.FC = () => {
             <CustomTextField
               name="description"
               label="Report Summary"
-              other={{ required: true, multiline: true, rows: 3 }}
+              other={{ required: true, multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
@@ -106,7 +106,6 @@ const ReportMetaForm: React.FC = () => {
         <Typography component="legend" variant="body1" id="report_details">
           Author(s)
         </Typography>
-        <br />
         <FieldArray
           name="authors"
           render={(arrayHelpers) => (
@@ -178,12 +177,6 @@ const ReportMetaForm: React.FC = () => {
                   <strong>Add Author</strong>
                 </Button>
               </Box>
-
-              {errors?.attachmentFile && (
-                <Box pt={4}>
-                  <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile}</Typography>
-                </Box>
-              )}
             </Box>
           )}
         />
