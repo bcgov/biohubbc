@@ -161,6 +161,7 @@ export function uploadMedia(): RequestHandler {
       // Insert file metadata into project_attachment or project_report_attachment table
       let upsertResult;
       if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
+        // Upsert a report attachment
         upsertResult = await upsertProjectReportAttachment(
           rawMediaFile,
           Number(req.params.projectId),
@@ -168,6 +169,7 @@ export function uploadMedia(): RequestHandler {
           connection
         );
       } else {
+        // Upsert a attachment
         upsertResult = await upsertProjectAttachment(
           rawMediaFile,
           Number(req.params.projectId),
@@ -176,15 +178,14 @@ export function uploadMedia(): RequestHandler {
         );
       }
 
+      // Upload file to S3
       const metadata = {
         filename: rawMediaFile.originalname,
         username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
 
-      const result = await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
-
-      defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
+      await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
 
       await connection.commit();
 
@@ -211,25 +212,30 @@ export const upsertProjectAttachment = async (
     throw new HTTP400('Failed to build SQL get statement');
   }
 
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
+
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
+
+  let attachmentResult: { id: number; revision_count: number };
 
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
-    return updateProjectAttachment(file, projectId, attachmentType, connection);
+    attachmentResult = await updateProjectAttachment(file, projectId, attachmentType, connection);
   }
 
   // No matching attachment found, insert new attachment
-  return insertProjectAttachment(file, projectId, attachmentType, connection);
+  attachmentResult = await insertProjectAttachment(file, projectId, attachmentType, key, connection);
+
+  return { ...attachmentResult, key };
 };
 
 export const insertProjectAttachment = async (
   file: Express.Multer.File,
   projectId: number,
   attachmentType: string,
+  key: string,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number; key: string }> => {
-  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
-
+): Promise<{ id: number; revision_count: number }> => {
   const sqlStatement = postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
 
   if (!sqlStatement) {
@@ -242,7 +248,7 @@ export const insertProjectAttachment = async (
     throw new HTTP400('Failed to insert project attachment data');
   }
 
-  return { ...response.rows[0], key };
+  return response.rows[0];
 };
 
 export const updateProjectAttachment = async (
@@ -250,7 +256,7 @@ export const updateProjectAttachment = async (
   projectId: number,
   attachmentType: string,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number; key: string }> => {
+): Promise<{ id: number; revision_count: number }> => {
   const sqlStatement = putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
 
   if (!sqlStatement) {
@@ -278,10 +284,12 @@ export const upsertProjectReportAttachment = async (
     throw new HTTP400('Failed to build SQL get statement');
   }
 
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
+
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
 
   let metadata;
-  let attachmentResult: { id: number; revision_count: number; key: string };
+  let attachmentResult: { id: number; revision_count: number };
 
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
@@ -294,6 +302,7 @@ export const upsertProjectReportAttachment = async (
       file,
       projectId,
       new PostReportAttachmentMetadata(attachmentMeta),
+      key,
       connection
     );
   }
@@ -310,17 +319,16 @@ export const upsertProjectReportAttachment = async (
 
   await Promise.all(promises);
 
-  return attachmentResult;
+  return { ...attachmentResult, key };
 };
 
 export const insertProjectReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
   attachmentMeta: PostReportAttachmentMetadata,
+  key: string,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number; key: string }> => {
-  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
-
+): Promise<{ id: number; revision_count: number }> => {
   const sqlStatement = postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key, attachmentMeta);
 
   if (!sqlStatement) {
@@ -333,7 +341,7 @@ export const insertProjectReportAttachment = async (
     throw new HTTP400('Failed to insert project attachment data');
   }
 
-  return { ...response.rows[0], key };
+  return response.rows[0];
 };
 
 export const updateProjectReportAttachment = async (
@@ -341,7 +349,7 @@ export const updateProjectReportAttachment = async (
   projectId: number,
   attachmentMeta: PutReportAttachmentMetadata,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number; key: string }> => {
+): Promise<{ id: number; revision_count: number }> => {
   const sqlStatement = putProjectReportAttachmentSQL(projectId, file.originalname, attachmentMeta);
 
   if (!sqlStatement) {

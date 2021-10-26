@@ -10,7 +10,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import { Formik, FormikProps } from 'formik';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { IFileHandler, IUploadHandler } from '../attachments/FileUploadItem';
 import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
 
@@ -61,7 +61,7 @@ export interface IFileUploadWithMetaDialogProps {
    *
    * @memberof IFileUploadWithMetaDialogProps
    */
-  onFinish: (fileMeta: IReportMetaForm) => void;
+  onFinish: (fileMeta: IReportMetaForm) => Promise<any>;
   /**
    * Callback fired if the dialog is closed.
    *
@@ -102,18 +102,6 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
 
   const [isFinishing, setIsFinishing] = useState(false);
 
-  useEffect(() => {
-    if (!isFinishing) {
-      return;
-    }
-
-    if (props.open) {
-      return;
-    }
-
-    setIsFinishing(false);
-  }, [isFinishing, props.open]);
-
   if (!props.open) {
     return <></>;
   }
@@ -133,7 +121,10 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
         validateOnChange={false}
         onSubmit={(values) => {
           setIsFinishing(true);
-          props.onFinish(values);
+          props.onFinish(values).finally(() => {
+            setIsFinishing(false);
+            props.onClose();
+          });
         }}>
         {(formikProps) => (
           <>
@@ -156,7 +147,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
                 </Box>
               )}
               {(props.attachmentType === 'Report' && (
-                <Button onClick={props.onClose} color="primary" variant="outlined" autoFocus>
+                <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isFinishing}>
                   Cancel
                 </Button>
               )) || (
