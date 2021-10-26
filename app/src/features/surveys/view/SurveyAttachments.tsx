@@ -105,13 +105,16 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   const getFinishHandler = () => {
     return (fileMeta: IReportMetaForm) => {
-      return biohubApi.survey.uploadSurveyAttachments(
-        projectId,
-        surveyId,
-        fileMeta.attachmentFile,
-        attachmentType,
-        fileMeta
-      );
+      return biohubApi.project
+        .uploadProjectAttachments(projectId, fileMeta.attachmentFile, attachmentType, fileMeta)
+        .then(
+          () => {
+            setOpenUploadAttachments(false);
+          },
+          () => {
+            // TODO handle errors?
+          }
+        );
     };
   };
 

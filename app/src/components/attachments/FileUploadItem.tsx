@@ -5,7 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiCheck, mdiTrashCanOutline, mdiWindowClose, mdiFileOutline } from '@mdi/js';
+import { mdiCheck, mdiTrashCanOutline, mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
@@ -252,7 +252,7 @@ const ActionButton: React.FC<IActionButtonProps> = (props) => {
   ) {
     return (
       <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()}>
-        <Icon path={mdiWindowClose} size={1} />
+        <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     );
   }
