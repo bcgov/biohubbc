@@ -223,7 +223,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableBody>
               {props.attachmentsList.length > 0 &&
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow key={row.fileName}>
+                  <TableRow key={`${row.fileName}-${index}`}>
                     <TableCell scope="row">
                       <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
                         {row.fileName}

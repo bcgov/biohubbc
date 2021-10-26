@@ -586,7 +586,7 @@ export const deleteProjectReportAttachmentAuthorsSQL = (attachmentId: number): S
 
   const sqlStatement: SQLStatement = SQL`
     DELETE
-      project_report_author
+      from project_report_author
     WHERE
       project_report_attachment_id = ${attachmentId};
   `;

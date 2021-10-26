@@ -8,11 +8,14 @@ import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import {
   PostReportAttachmentMetadata,
-  PutReportAttachmentMetadata
+  PutReportAttachmentMetadata,
+  ReportAttachmentAuthor
 } from '../../../../models/project-survey-attachments';
 import {
+  deleteProjectReportAttachmentAuthorsSQL,
   getProjectAttachmentByFileNameSQL,
   getProjectReportAttachmentByFileNameSQL,
+  insertProjectReportAttachmentAuthorSQL,
   postProjectAttachmentSQL,
   postProjectReportAttachmentSQL,
   putProjectAttachmentSQL,
@@ -283,13 +286,37 @@ export const upsertProjectReportAttachment = async (
 
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
 
+  let metadata;
+  let attachmentResult: { id: number; revision_count: number };
+
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
-    return updateProjectReportAttachment(file, projectId, new PutReportAttachmentMetadata(attachmentMeta), connection);
+    metadata = new PutReportAttachmentMetadata(attachmentMeta);
+    attachmentResult = await updateProjectReportAttachment(file, projectId, metadata, connection);
+  } else {
+    // No matching attachment found, insert new attachment
+    metadata = new PostReportAttachmentMetadata(attachmentMeta);
+    attachmentResult = await insertProjectReportAttachment(
+      file,
+      projectId,
+      new PostReportAttachmentMetadata(attachmentMeta),
+      connection
+    );
   }
 
-  // No matching attachment found, insert new attachment
-  return insertProjectReportAttachment(file, projectId, new PostReportAttachmentMetadata(attachmentMeta), connection);
+  // Delete any existing attachment author records
+  await deleteProjectReportAttachmentAuthors(attachmentResult.id, connection);
+
+  const promises = [];
+
+  // Insert any new attachment author records
+  promises.push(
+    metadata.authors.map((author) => insertProjectReportAttachmentAuthor(attachmentResult.id, author, connection))
+  );
+
+  await Promise.all(promises);
+
+  return attachmentResult;
 };
 
 export const insertProjectReportAttachment = async (
@@ -334,4 +361,39 @@ export const updateProjectReportAttachment = async (
   }
 
   return response.rows[0];
+};
+
+export const deleteProjectReportAttachmentAuthors = async (
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = deleteProjectReportAttachmentAuthorsSQL(attachmentId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete attachment report authors statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to delete attachment report authors records');
+  }
+};
+
+export const insertProjectReportAttachmentAuthor = async (
+  attachmentId: number,
+  author: ReportAttachmentAuthor,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = insertProjectReportAttachmentAuthorSQL(attachmentId, author);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert attachment report author statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert attachment report author record');
+  }
 };

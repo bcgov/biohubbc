@@ -6,16 +6,10 @@ import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
-import {
-  PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
-} from '../../../../../../models/project-survey-attachments';
-import {
-  insertProjectReportAttachmentAuthorSQL,
-  deleteProjectReportAttachmentAuthorsSQL,
-  updateProjectReportAttachmentMetadataSQL
-} from '../../../../../../queries/project/project-attachments-queries';
+import { PutReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
+import { updateProjectReportAttachmentMetadataSQL } from '../../../../../../queries/project/project-attachments-queries';
 import { getLogger } from '../../../../../../utils/logger';
+import { deleteProjectReportAttachmentAuthors, insertProjectReportAttachmentAuthor } from '../../upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 
@@ -202,37 +196,5 @@ const updateProjectReportAttachmentMetadata = async (
 
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to update attachment report record');
-  }
-};
-
-const deleteProjectReportAttachmentAuthors = async (attachmentId: number, connection: IDBConnection): Promise<void> => {
-  const sqlStatement = deleteProjectReportAttachmentAuthorsSQL(attachmentId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete attachment report authors statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to update attachment report authors records');
-  }
-};
-
-const insertProjectReportAttachmentAuthor = async (
-  attachmentId: number,
-  author: ReportAttachmentAuthor,
-  connection: IDBConnection
-): Promise<void> => {
-  const sqlStatement = insertProjectReportAttachmentAuthorSQL(attachmentId, author);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert attachment report author statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert attachment report author record');
   }
 };
