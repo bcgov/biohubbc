@@ -144,7 +144,18 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       .catch();
 
     setStatus(UploadFileStatus.UPLOADING);
-  }, [file, status, cancelToken, uploadHandler, onSuccess, isMounted, initiateCancel, error, handleFileUploadError]);
+  }, [
+    file,
+    status,
+    cancelToken,
+    uploadHandler,
+    fileHandler,
+    onSuccess,
+    isMounted,
+    initiateCancel,
+    error,
+    handleFileUploadError
+  ]);
 
   useEffect(() => {
     if (!isMounted()) {
