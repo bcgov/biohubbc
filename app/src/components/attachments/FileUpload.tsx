@@ -167,7 +167,9 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         <DropZone onFiles={onFiles} {...props.dropZoneProps} />
       </Box>
       <Box>
-        <Box component={List} pb={0}>{fileUploadItems}</Box>
+        <Box component={List} pb={0}>
+          {fileUploadItems}
+        </Box>
       </Box>
     </Box>
   );

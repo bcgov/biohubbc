@@ -42,8 +42,6 @@ export class PostReportAttachmentMetadata {
   description: string;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutReportAttachmentMetadata', message: 'params', obj });
-
     this.title = (obj && obj?.title) || null;
     this.year_published = (obj && obj?.year_published) || null;
     this.authors = (obj?.authors?.length && obj.authors) || [];

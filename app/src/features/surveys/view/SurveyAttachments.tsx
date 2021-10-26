@@ -1,4 +1,3 @@
-// @ts-nocheck
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
@@ -13,10 +12,10 @@ import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
@@ -85,13 +84,14 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     [biohubApi.survey, projectId, surveyId, attachmentsList.length]
   );
 
-  const getUploadHandler = (): IUploadHandler => {
+  const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
     return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.survey.uploadSurveyAttachments(
         projectId,
         surveyId,
         file,
         attachmentType,
+        undefined,
         cancelToken,
         handleFileUploadProgress
       );
@@ -103,31 +103,34 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleReportMeta = (fileMeta: IReportMetaForm, revisionCount: number) => {
-    return biohubApi.survey.updateSurveyAttachmentMetadata(
-      projectId,
-      surveyId,
-      fileMeta.attachmentFile,
-      attachmentType,
-      fileMeta,
-      revisionCount
-    );
+  const getFinishHandler = () => {
+    return (fileMeta: IReportMetaForm) => {
+      return biohubApi.survey.uploadSurveyAttachments(
+        projectId,
+        surveyId,
+        fileMeta.attachmentFile,
+        attachmentType,
+        fileMeta
+      );
+    };
   };
 
   return (
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle={attachmentType ? 'Upload Report' : 'Upload Attachment'}
+        dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachment'}
         attachmentType={attachmentType}
-        onFinish={handleReportMeta}
+        //onFinish={handleReportMeta}
+        onFinish={getFinishHandler()}
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);
         }}
-        uploadHandler={getUploadHandler()}></FileUploadWithMetaDialog>
+        uploadHandler={getUploadHandler()}
+      />
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Project Attachments</Typography>
+        <Typography variant="h2">Survey Attachments</Typography>
         <Box my={-1}>
           <Button
             color="primary"

@@ -114,6 +114,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     file: File,
     attachmentType?: string,
+    attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
@@ -121,6 +122,16 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
     attachmentType && req_message.append('attachmentType', attachmentType);
+
+    if (attachmentMeta) {
+      req_message.append('attachmentMeta[title]', attachmentMeta.title);
+      req_message.append('attachmentMeta[year_published]', attachmentMeta.year_published);
+      req_message.append('attachmentMeta[description]', attachmentMeta.description);
+      attachmentMeta.authors.forEach((authorObj, index) => {
+        req_message.append(`attachmentMeta[authors][${index}][first_name]`, authorObj.first_name);
+        req_message.append(`attachmentMeta[authors][${index}][last_name]`, authorObj.last_name);
+      });
+    }
 
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
