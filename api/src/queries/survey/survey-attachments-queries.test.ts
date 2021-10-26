@@ -13,6 +13,31 @@ import {
   putSurveyReportAttachmentSQL
 } from './survey-attachments-queries';
 
+const post_sample_attachment_meta = {
+  title: 'title',
+  year_published: '2000',
+  authors: [
+    {
+      first_name: 'John',
+      last_name: 'Smith'
+    }
+  ],
+  description: 'description'
+};
+
+const put_sample_attachment_meta = {
+  title: 'title',
+  year_published: '2000',
+  authors: [
+    {
+      first_name: 'John',
+      last_name: 'Smith'
+    }
+  ],
+  description: 'description',
+  revision_count: 0
+};
+
 describe('getSurveyAttachmentsSQL', () => {
   it('returns null response when null surveyId provided', () => {
     const response = getSurveyAttachmentsSQL((null as unknown) as number);
@@ -43,19 +68,19 @@ describe('deleteSurveyAttachmentSQL', () => {
 
 describe('putSurveyReportAttachmentSQL', () => {
   it('returns null response when null fileName provided', () => {
-    const response = putSurveyReportAttachmentSQL(1, (null as unknown) as string);
+    const response = putSurveyReportAttachmentSQL(1, (null as unknown) as string, put_sample_attachment_meta);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null surveyId provided', () => {
-    const response = putSurveyReportAttachmentSQL((null as unknown) as number, 'name');
+    const response = putSurveyReportAttachmentSQL((null as unknown) as number, 'name', put_sample_attachment_meta);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = putSurveyReportAttachmentSQL(1, 'name');
+    const response = putSurveyReportAttachmentSQL(1, 'name', put_sample_attachment_meta);
 
     expect(response).to.not.be.null;
   });
@@ -63,37 +88,43 @@ describe('putSurveyReportAttachmentSQL', () => {
 
 describe('postSurveyReportAttachmentSQL', () => {
   it('returns null response when null fileName provided', () => {
-    const response = postSurveyReportAttachmentSQL((null as unknown) as string, 30, 1, 2, 'key');
+    const response = postSurveyReportAttachmentSQL(
+      (null as unknown) as string,
+      30,
+      1,
+      'key',
+      post_sample_attachment_meta
+    );
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileSize provided', () => {
-    const response = postSurveyReportAttachmentSQL('name', (null as unknown) as number, 1, 2, 'key');
+    const response = postSurveyReportAttachmentSQL(
+      'name',
+      (null as unknown) as number,
+      1,
+      'key',
+      post_sample_attachment_meta
+    );
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null projectId provided', () => {
-    const response = postSurveyReportAttachmentSQL('name', 30, (null as unknown) as number, 2, 'key');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null surveyId provided', () => {
-    const response = postSurveyReportAttachmentSQL('name', 30, 1, (null as unknown) as number, 'key');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null key provided', () => {
-    const response = postSurveyReportAttachmentSQL('name', 30, 1, 2, (null as unknown) as string);
+    const response = postSurveyReportAttachmentSQL(
+      'name',
+      30,
+      (null as unknown) as number,
+      'key',
+      post_sample_attachment_meta
+    );
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = postSurveyReportAttachmentSQL('name', 30, 1, 2, 'key');
+    const response = postSurveyReportAttachmentSQL('name', 30, 1, 'key', post_sample_attachment_meta);
 
     expect(response).to.not.be.null;
   });
@@ -148,44 +179,44 @@ describe('getSurveyAttachmentS3KeySQL', () => {
 });
 
 describe('postSurveyAttachmentSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = postSurveyAttachmentSQL('name', 20, 'type', (null as unknown) as number, 1, 'key');
+  it('returns null response when null surveyId provided', () => {
+    const response = postSurveyAttachmentSQL('name', 20, 'type', (null as unknown) as number, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileName provided', () => {
-    const response = postSurveyAttachmentSQL((null as unknown) as string, 20, 'type', 1, 1, 'key');
+    const response = postSurveyAttachmentSQL((null as unknown) as string, 20, 'type', 1, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileSize provided', () => {
-    const response = postSurveyAttachmentSQL('name', (null as unknown) as number, 'type', 1, 1, 'key');
+    const response = postSurveyAttachmentSQL('name', (null as unknown) as number, 'type', 1, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null surveyId provided', () => {
-    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, (null as unknown) as number, 'key');
+    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null key provided', () => {
-    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, 3, (null as unknown) as any);
+    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null fileType provided', () => {
-    const response = postSurveyAttachmentSQL('name', 20, (null as unknown) as string, 1, 2, 'key');
+    const response = postSurveyAttachmentSQL('name', 20, (null as unknown) as string, 1, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, 1, 'key');
+    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, 'key');
 
     expect(response).to.not.be.null;
   });
