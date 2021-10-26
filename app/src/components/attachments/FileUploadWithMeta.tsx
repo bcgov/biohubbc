@@ -30,11 +30,11 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           <ReportMetaForm />
         </Box>
       )}
-      <Box component="fieldset">
-        <Typography component="legend" variant="body1" id="report_upload">
-          Attach File
-        </Typography>
-        {(props.attachmentType === 'Report' && (
+      {(props.attachmentType === 'Report' && (
+        <Box component="fieldset">
+          <Typography component="legend" variant="body1" id="report_upload">
+            Attach File
+          </Typography>
           <FileUpload
             uploadHandler={props.uploadHandler}
             fileHandler={fileHandler}
@@ -42,13 +42,13 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.REPORT }}
             status={UploadFileStatus.STAGED}
           />
-        )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
-        {errors?.attachmentFile && (
-          <Box>
-            <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile}</Typography>
-          </Box>
-        )}
-      </Box>
+          {errors?.attachmentFile && (
+            <Box>
+              <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile}</Typography>
+            </Box>
+          )}
+        </Box>
+      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
     </form>
   );
 };

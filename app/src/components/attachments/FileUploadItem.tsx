@@ -21,19 +21,19 @@ const useStyles = makeStyles((theme: Theme) => ({
     width: '100%'
   },
   uploadingColor: {
-    color: theme.palette.primary.main,
+    color: theme.palette.primary.main
   },
   completeColor: {
-    color: theme.palette.success.main,
+    color: theme.palette.success.main
   },
   completeBgColor: {
-    background: theme.palette.success.main,
+    background: theme.palette.success.main
   },
   errorColor: {
-    color: theme.palette.error.main,
+    color: theme.palette.error.main
   },
   errorBgColor: {
-    background: theme.palette.error.main + '44',
+    background: theme.palette.error.main + '44'
   }
 }));
 
@@ -185,8 +185,12 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
         <Box p={2} width="100%">
           <Box display="flex" flexDirection="row" alignItems="center" height="3rem">
             <Box flex="1 1 auto">
-              <Typography variant="body2" component="div"><strong>{file.name}</strong></Typography>
-              <Typography variant="caption" component="div">{error || status}</Typography>
+              <Typography variant="body2" component="div">
+                <strong>{file.name}</strong>
+              </Typography>
+              <Typography variant="caption" component="div">
+                {error || status}
+              </Typography>
             </Box>
             <Box display="flex" alignItems="center">
               <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
@@ -223,7 +227,11 @@ interface IActionButtonProps {
 const ActionButton: React.FC<IActionButtonProps> = (props) => {
   const classes = useStyles();
 
-  if (props.status === UploadFileStatus.PENDING || props.status === UploadFileStatus.UPLOADING) {
+  if (
+    props.status === UploadFileStatus.PENDING ||
+    props.status === UploadFileStatus.STAGED ||
+    props.status === UploadFileStatus.UPLOADING
+  ) {
     return (
       <IconButton title="Cancel Upload" aria-label="cancel upload" onClick={() => props.onCancel()}>
         <Icon path={mdiWindowClose} size={1} />
@@ -241,7 +249,11 @@ const ActionButton: React.FC<IActionButtonProps> = (props) => {
 
   if (props.status === UploadFileStatus.FAILED) {
     return (
-      <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()} className={classes.errorColor}>
+      <IconButton
+        title="Remove File"
+        aria-label="remove file"
+        onClick={() => props.onCancel()}
+        className={classes.errorColor}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     );

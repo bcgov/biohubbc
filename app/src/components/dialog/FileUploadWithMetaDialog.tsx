@@ -1,8 +1,11 @@
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
@@ -10,6 +13,21 @@ import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState } from 'react';
 import { IFileHandler, IUploadHandler } from '../attachments/FileUploadItem';
 import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
+
+const useStyles = makeStyles((theme) => ({
+  wrapper: {
+    margin: theme.spacing(1),
+    position: 'relative'
+  },
+  buttonProgress: {
+    color: '#212332',
+    position: 'absolute',
+    top: '50%',
+    left: '50%',
+    marginTop: -12,
+    marginLeft: -12
+  }
+}));
 
 /**
  *
@@ -77,9 +95,13 @@ export interface IFileUploadWithMetaDialogProps {
 const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (props) => {
   const theme = useTheme();
 
+  const classes = useStyles();
+
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
+
+  const [isFinishing, setIsFinishing] = useState(false);
 
   if (!props.open) {
     return <></>;
@@ -99,6 +121,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={(values) => {
+          setIsFinishing(true);
           props.onFinish(values);
         }}>
         {(formikProps) => (
@@ -109,9 +132,20 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
             </DialogContent>
             <DialogActions>
               {props.attachmentType === 'Report' && (
-                <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
-                  <strong>Finish</strong>
-                </Button>
+                // <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
+                //   <strong>Finish</strong>
+                // </Button>
+                <Box className={classes.wrapper}>
+                  <Button
+                    onClick={formikProps.submitForm}
+                    color="primary"
+                    variant="contained"
+                    disabled={isFinishing}
+                    autoFocus>
+                    <strong>Finish</strong>
+                  </Button>
+                  {isFinishing && <CircularProgress size={24} className={classes.buttonProgress} />}
+                </Box>
               )}
               {(props.attachmentType === 'Report' && (
                 <Button onClick={props.onClose} color="primary" variant="outlined" autoFocus>
