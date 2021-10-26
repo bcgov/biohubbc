@@ -144,9 +144,6 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
             </DialogContent>
             <DialogActions>
               {props.attachmentType === 'Report' && (
-                // <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
-                //   <strong>Finish</strong>
-                // </Button>
                 <Box className={classes.wrapper}>
                   <Button
                     onClick={formikProps.submitForm}
