@@ -266,7 +266,7 @@ export const insertSurveyAttachment = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to insert project attachment data');
+    throw new HTTP400('Failed to insert survey attachment data');
   }
 
   return response.rows[0];
@@ -287,7 +287,7 @@ export const updateSurveyAttachment = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to update project attachment data');
+    throw new HTTP400('Failed to update survey attachment data');
   }
 
   return response.rows[0];
@@ -386,7 +386,7 @@ export const updateSurveyReportAttachment = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to update project attachment data');
+    throw new HTTP400('Failed to update survey attachment data');
   }
 
   return response.rows[0];
