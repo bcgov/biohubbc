@@ -278,16 +278,14 @@ export const postSurveyReportAttachmentSQL = (
     INSERT INTO survey_report_attachment (
       survey_id,
       file_name,
-      file_size,
-      key,
       title,
       year,
-      description
+      description,
+      file_size,
+      key
     ) VALUES (
       ${surveyId},
       ${fileName},
-      ${fileSize},
-      ${key},
       ${attachmentMeta.title},
       ${attachmentMeta.year_published},
       ${attachmentMeta.description},

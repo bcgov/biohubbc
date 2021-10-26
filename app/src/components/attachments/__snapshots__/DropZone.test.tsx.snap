@@ -2,9 +2,11 @@
 
 exports[`DropZone matches the snapshot 1`] = `
 <DocumentFragment>
-  <section>
+  <div
+    class="MuiBox-root MuiBox-root-4 dropZoneContainer"
+  >
     <div
-      class="MuiBox-root MuiBox-root-3"
+      class="MuiBox-root MuiBox-root-5"
       tabindex="0"
     >
       <input
@@ -17,46 +19,58 @@ exports[`DropZone matches the snapshot 1`] = `
         type="file"
       />
       <div
-        class="MuiBox-root MuiBox-root-4"
+        class="MuiBox-root MuiBox-root-6"
       >
         <svg
-          class="makeStyles-textSpacing-1"
+          class="makeStyles-dropZoneIcon-2"
           role="presentation"
-          style="width: 3rem; height: 3rem;"
+          style="width: 2.25rem; height: 2.25rem;"
           viewBox="0 0 24 24"
         >
           <path
-            d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
+            d="M9,16V10H5L12,3L19,10H15V16H9M5,20V18H19V20H5Z"
             style="fill: currentColor;"
           />
         </svg>
-        <h3
-          class="MuiTypography-root makeStyles-textSpacing-1 MuiTypography-h3"
+        <div
+          class="MuiBox-root MuiBox-root-7 makeStyles-dropZoneTitle-1"
         >
           Drag your files here, or 
           <a
-            class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-2 MuiTypography-colorPrimary"
+            class="MuiTypography-root MuiLink-root MuiLink-underlineAlways MuiTypography-colorPrimary"
           >
             Browse Files
           </a>
-        </h3>
-        <span
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-8"
         >
-          Accepted file types: .txt
-        </span>
-        <span
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-        >
-          Maximum file size: 50 MB
-        </span>
-        <span
-          class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-        >
-          Maximum file count: 10
-        </span>
+          <div
+            class="MuiBox-root MuiBox-root-9"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+            >
+              Accepted file types: .txt
+            </span>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-10"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+            >
+              Maximum file size: 50 MB
+            </span>
+            <span
+              class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+            >
+               | Maximum file count: 10
+            </span>
+          </div>
+        </div>
       </div>
     </div>
-  </section>
+  </div>
 </DocumentFragment>
 `;
