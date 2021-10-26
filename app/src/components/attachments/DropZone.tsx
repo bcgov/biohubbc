@@ -16,7 +16,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     fontWeight: 700
   },
   dropZoneIcon: {
-    color: theme.palette.text.disabled
+    color: theme.palette.text.primary + '55'
   },
   dropZoneRequirements: {
     textAlign: 'center'
@@ -73,7 +73,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
         {({ getRootProps, getInputProps }) => (
           <Box {...getRootProps()}>
             <input {...getInputProps()} data-testid="drop-zone-input" />
-            <Box m={2} display="flex" flexDirection="column" alignItems="center">
+            <Box p={2} display="flex" flexDirection="column" alignItems="center">
               <Icon className={classes.dropZoneIcon} path={mdiUpload} size={1.5} />
               <Box mt={0.5} className={classes.dropZoneTitle}>
                 Drag your files here, or <Link underline="always">Browse Files</Link>

@@ -69,7 +69,7 @@ const ReportMetaForm: React.FC = () => {
     <>
       <Box component="fieldset">
         <Typography component="legend" variant="body1" id="report_details">
-          Details
+          Report Details
         </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} md={8}>
@@ -96,7 +96,7 @@ const ReportMetaForm: React.FC = () => {
             <CustomTextField
               name="description"
               label="Report Summary"
-              other={{ required: true, multiline: true, rows: 3 }}
+              other={{ required: true, multiline: true, rows: 2 }}
             />
           </Grid>
         </Grid>
@@ -106,7 +106,6 @@ const ReportMetaForm: React.FC = () => {
         <Typography component="legend" variant="body1" id="report_details">
           Author(s)
         </Typography>
-        <br />
         <FieldArray
           name="authors"
           render={(arrayHelpers) => (
