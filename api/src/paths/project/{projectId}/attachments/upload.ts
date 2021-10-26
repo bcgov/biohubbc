@@ -176,19 +176,13 @@ export function uploadMedia(): RequestHandler {
         );
       }
 
-      // Upload file to S3
-      const key = generateS3FileKey({
-        projectId: Number(req.params.projectId),
-        fileName: rawMediaFile.originalname
-      });
-
       const metadata = {
         filename: rawMediaFile.originalname,
         username: (req['auth_payload'] && req['auth_payload'].preferred_username) || '',
         email: (req['auth_payload'] && req['auth_payload'].email) || ''
       };
 
-      const result = await uploadFileToS3(rawMediaFile, key, metadata);
+      const result = await uploadFileToS3(rawMediaFile, upsertResult.key, metadata);
 
       defaultLog.debug({ label: 'uploadMedia', message: 'result', result });
 
@@ -210,7 +204,7 @@ export const upsertProjectAttachment = async (
   projectId: number,
   attachmentType: string,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
+): Promise<{ id: number; revision_count: number; key: string }> => {
   const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
 
   if (!getSqlStatement) {
@@ -233,8 +227,8 @@ export const insertProjectAttachment = async (
   projectId: number,
   attachmentType: string,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
-  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
+): Promise<{ id: number; revision_count: number; key: string }> => {
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
 
   const sqlStatement = postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
 
@@ -248,7 +242,7 @@ export const insertProjectAttachment = async (
     throw new HTTP400('Failed to insert project attachment data');
   }
 
-  return response.rows[0];
+  return { ...response.rows[0], key };
 };
 
 export const updateProjectAttachment = async (
@@ -256,7 +250,7 @@ export const updateProjectAttachment = async (
   projectId: number,
   attachmentType: string,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
+): Promise<{ id: number; revision_count: number; key: string }> => {
   const sqlStatement = putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
 
   if (!sqlStatement) {
@@ -277,7 +271,7 @@ export const upsertProjectReportAttachment = async (
   projectId: number,
   attachmentMeta: any,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
+): Promise<{ id: number; revision_count: number; key: string }> => {
   const getSqlStatement = getProjectReportAttachmentByFileNameSQL(projectId, file.originalname);
 
   if (!getSqlStatement) {
@@ -287,7 +281,7 @@ export const upsertProjectReportAttachment = async (
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
 
   let metadata;
-  let attachmentResult: { id: number; revision_count: number };
+  let attachmentResult: { id: number; revision_count: number; key: string };
 
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
@@ -324,7 +318,7 @@ export const insertProjectReportAttachment = async (
   projectId: number,
   attachmentMeta: PostReportAttachmentMetadata,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
+): Promise<{ id: number; revision_count: number; key: string }> => {
   const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
 
   const sqlStatement = postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key, attachmentMeta);
@@ -339,7 +333,7 @@ export const insertProjectReportAttachment = async (
     throw new HTTP400('Failed to insert project attachment data');
   }
 
-  return response.rows[0];
+  return { ...response.rows[0], key };
 };
 
 export const updateProjectReportAttachment = async (
@@ -347,7 +341,7 @@ export const updateProjectReportAttachment = async (
   projectId: number,
   attachmentMeta: PutReportAttachmentMetadata,
   connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
+): Promise<{ id: number; revision_count: number; key: string }> => {
   const sqlStatement = putProjectReportAttachmentSQL(projectId, file.originalname, attachmentMeta);
 
   if (!sqlStatement) {

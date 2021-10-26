@@ -269,7 +269,15 @@ export const postProjectReportAttachmentSQL = (
     key
   });
 
-  if (!fileName || !fileSize || !projectId || !key) {
+  if (
+    !fileName ||
+    !fileSize ||
+    !projectId ||
+    !key ||
+    !attachmentMeta?.title ||
+    !attachmentMeta?.year_published ||
+    !attachmentMeta?.description
+  ) {
     return null;
   }
 
@@ -438,7 +446,13 @@ export const putProjectReportAttachmentSQL = (
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'putProjectReportAttachmentSQL', message: 'params', projectId, fileName });
 
-  if (!projectId || !fileName) {
+  if (
+    !projectId ||
+    !fileName ||
+    !attachmentMeta?.title ||
+    !attachmentMeta?.year_published ||
+    !attachmentMeta?.description
+  ) {
     return null;
   }
 
@@ -548,13 +562,15 @@ export const insertProjectReportAttachmentAuthorSQL = (
   }
 
   const sqlStatement: SQLStatement = SQL`
-    INSERT
-      INTO project_report_author
-    SET
-      first_name = ${author.first_name},
-      last_name = ${author.last_name}
-    WHERE
-      project_report_attachment_id = ${attachmentId};
+    INSERT INTO project_report_author (
+      project_report_attachment_id,
+      first_name,
+      last_name
+    ) VALUES (
+      ${attachmentId},
+      ${author.first_name},
+      ${author.last_name}
+    );
   `;
 
   defaultLog.debug({
