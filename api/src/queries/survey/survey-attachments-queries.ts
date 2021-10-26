@@ -1,8 +1,8 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { getLogger } from '../../utils/logger';
 import {
-  PostAttachmentMetadata,
-  PutAttachmentMetadata,
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata,
   ReportAttachmentAuthor
 } from '../../models/project-survey-attachments';
 
@@ -259,7 +259,7 @@ export const postSurveyReportAttachmentSQL = (
   fileSize: number,
   surveyId: number,
   key: string,
-  attachmentMeta: PostAttachmentMetadata
+  attachmentMeta: PostReportAttachmentMetadata
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postSurveyReportAttachmentSQL',
@@ -438,7 +438,7 @@ export const putSurveyAttachmentSQL = (surveyId: number, fileName: string, fileT
 export const putSurveyReportAttachmentSQL = (
   surveyId: number,
   fileName: string,
-  attachmentMeta: PutAttachmentMetadata
+  attachmentMeta: PutReportAttachmentMetadata
 ): SQLStatement | null => {
   defaultLog.debug({ label: 'putSurveyReportAttachmentSQL', message: 'params', surveyId, fileName });
 
@@ -490,7 +490,7 @@ export interface ReportAttachmentMeta {
 export const updateProjectReportAttachmentMetadataSQL = (
   projectId: number,
   attachmentId: number,
-  metadata: PutAttachmentMetadata
+  metadata: PutReportAttachmentMetadata
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'updateProjectReportAttachmentMetadataSQL',
