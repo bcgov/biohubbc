@@ -6,10 +6,7 @@ import { ATTACHMENT_TYPE } from '../../../../constants/attachments';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import {
-  PostReportAttachmentMetadata,
-  PutReportAttachmentMetadata
-} from '../../../../models/project-survey-attachments';
+import { PostAttachmentMetadata, PutAttachmentMetadata } from '../../../../models/project-survey-attachments';
 import {
   getProjectAttachmentByFileNameSQL,
   getProjectReportAttachmentByFileNameSQL,
@@ -285,17 +282,17 @@ export const upsertProjectReportAttachment = async (
 
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
-    return updateProjectReportAttachment(file, projectId, new PutReportAttachmentMetadata(attachmentMeta), connection);
+    return updateProjectReportAttachment(file, projectId, new PutAttachmentMetadata(attachmentMeta), connection);
   }
 
   // No matching attachment found, insert new attachment
-  return insertProjectReportAttachment(file, projectId, new PostReportAttachmentMetadata(attachmentMeta), connection);
+  return insertProjectReportAttachment(file, projectId, new PostAttachmentMetadata(attachmentMeta), connection);
 };
 
 export const insertProjectReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
-  attachmentMeta: PostReportAttachmentMetadata,
+  attachmentMeta: PostAttachmentMetadata,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
   const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
@@ -318,7 +315,7 @@ export const insertProjectReportAttachment = async (
 export const updateProjectReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
-  attachmentMeta: PutReportAttachmentMetadata,
+  attachmentMeta: PutAttachmentMetadata,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
   const sqlStatement = putProjectReportAttachmentSQL(projectId, file.originalname, attachmentMeta);

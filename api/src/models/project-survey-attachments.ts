@@ -35,14 +35,14 @@ export interface ReportAttachmentAuthor {
   last_name: string;
 }
 
-export class PostReportAttachmentMetadata {
+export class PostAttachmentMetadata {
   title: string;
   year_published: string;
   authors: ReportAttachmentAuthor[];
   description: string;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PutReportAttachmentMetadata', message: 'params', obj });
+    defaultLog.debug({ label: 'PutAttachmentMetadata', message: 'params', obj });
 
     this.title = (obj && obj?.title) || null;
     this.year_published = (obj && obj?.year_published) || null;
@@ -51,7 +51,7 @@ export class PostReportAttachmentMetadata {
   }
 }
 
-export class PutReportAttachmentMetadata extends PostReportAttachmentMetadata {
+export class PutAttachmentMetadata extends PostAttachmentMetadata {
   revision_count: number;
 
   constructor(obj?: any) {
