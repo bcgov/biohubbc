@@ -19,7 +19,7 @@ const useStyles = makeStyles((theme) => ({
     position: 'relative'
   },
   buttonProgress: {
-    color: '#212332',
+    color: theme.palette.primary.main,
     position: 'absolute',
     top: '50%',
     left: '50%',
