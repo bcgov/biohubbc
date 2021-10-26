@@ -16,7 +16,6 @@ import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema }
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
-    margin: theme.spacing(1),
     position: 'relative'
   },
   buttonProgress: {
