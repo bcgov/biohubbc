@@ -53,47 +53,46 @@ PUT.apiDoc = {
         schema: {
           type: 'object',
           description: 'Attachment metadata for attachments of type: Report.',
-          //required: ['attachment_type', 'attachment_meta', 'revision_count'],
+          required: ['attachment_type', 'attachment_meta', 'revision_count'],
           properties: {
-            // attachment_type: {
-            //   type: 'string',
-            //   enum: ['Report']
-            // },
-            // attachment_meta: {
-            //   type: 'object',
-            //   required: ['title', 'year_published', 'authors', 'description'],
-            //   properties: {
-            //     title: {
-            //       type: 'string'
-            //     },
-            //     year_published: {
-            //       type: 'string'
-            //     },
-            //     authors: {
-            //       type: 'array',
-            //       items: {
-            //         type: 'object',
-            //         properties: {
-            //           first_name: {
-            //             type: 'string'
-            //           },
-            //           last_name: {
-            //             type: 'string'
-            //           }
-            //         }
-            //       }
-            //     },
-            //     description: {
-            //       type: 'string'
-            //     }
-            //   }
-            // },
-            // revision_count: {
-            //   type: 'number'
-            // }
+            attachment_type: {
+              type: 'string',
+              enum: ['Report']
+            },
+            attachment_meta: {
+              type: 'object',
+              required: ['title', 'year_published', 'authors', 'description'],
+              properties: {
+                title: {
+                  type: 'string'
+                },
+                year_published: {
+                  type: 'string'
+                },
+                authors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      first_name: {
+                        type: 'string'
+                      },
+                      last_name: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                },
+                description: {
+                  type: 'string'
+                }
+              }
+            },
+            revision_count: {
+              type: 'number'
+            }
           }
         }
-
       }
     }
   },
@@ -128,8 +127,6 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
       req_body: req.body
     });
 
-    console.log('req.body is', req.body);
-
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
@@ -137,11 +134,6 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
     if (!req.params.attachmentId) {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
-
-
-    console.log('Object.values(ATTACHMENT_TYPE)', Object.values(ATTACHMENT_TYPE));
-
-    console.log('attachment_type ', req.body.attachment_type);
 
     if (!Object.values(ATTACHMENT_TYPE).includes(req.body?.attachment_type)) {
       throw new HTTP400('Invalid body param `attachment_type`');
@@ -153,7 +145,10 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
       await connection.open();
 
       if (req.body.attachment_type === ATTACHMENT_TYPE.REPORT) {
-        const metadata = new PutReportAttachmentMetadata(req.body.attachment_meta);
+        const metadata = new PutReportAttachmentMetadata({
+          ...req.body.attachment_meta,
+          revision_count: req.body.revision_count
+        });
 
         // Update the metadata fields of the attachment record
         await updateProjectReportAttachmentMetadata(
@@ -204,8 +199,6 @@ const updateProjectReportAttachmentMetadata = async (
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  console.log('updateProjectReportAttachmentMetadataSQL ', response);
 
   if (!response || !response.rowCount) {
     throw new HTTP400('Failed to update attachment report record');

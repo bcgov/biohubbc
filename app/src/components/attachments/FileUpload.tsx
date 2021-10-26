@@ -5,7 +5,13 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
-import { IOnUploadSuccess, IUploadHandler, MemoizedFileUploadItem } from './FileUploadItem';
+import {
+  IFileHandler,
+  IOnUploadSuccess,
+  IUploadHandler,
+  MemoizedFileUploadItem,
+  UploadFileStatus
+} from './FileUploadItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
@@ -25,7 +31,9 @@ export interface IUploadFileListProps {
 
 export interface IFileUploadProps {
   uploadHandler: IUploadHandler;
+  fileHandler?: IFileHandler;
   onSuccess?: IOnUploadSuccess;
+  status?: UploadFileStatus;
   dropZoneProps?: Partial<IDropZoneConfigProps>;
 }
 
@@ -94,6 +102,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         file={file}
         error={error}
         onCancel={() => setFileToRemove(file.name)}
+        fileHandler={props.fileHandler}
+        status={props.status}
       />
     );
   };

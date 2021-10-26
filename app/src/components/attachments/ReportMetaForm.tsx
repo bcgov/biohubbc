@@ -25,7 +25,7 @@ export interface IReportMetaForm {
   authors: IReportMetaFormArrayItem[];
   description: string;
   year_published: string;
-  attachmentId: number;
+  attachmentFile: File;
 }
 
 export const ReportMetaFormInitialValues: IReportMetaForm = {
@@ -33,7 +33,7 @@ export const ReportMetaFormInitialValues: IReportMetaForm = {
   authors: [ReportMetaFormArrayItemInitialValues],
   description: '',
   year_published: '',
-  attachmentId: 0
+  attachmentFile: (undefined as unknown) as File
 };
 
 export const ReportMetaFormYupSchema = yup.object().shape({
@@ -44,7 +44,7 @@ export const ReportMetaFormYupSchema = yup.object().shape({
     .min(1900, 'year must be between 1900 and 2199')
     .max(2199, 'Year must be between 1900 and 2199')
     .required('Required'),
-  attachmentId: yup.number().min(1, 'Must have a file uploaded').required('Required'),
+  attachmentFile: yup.mixed().required('Must have a file uploaded'),
   authors: yup
     .array()
     .min(1, 'Required')
@@ -179,9 +179,9 @@ const ReportMetaForm: React.FC = () => {
                 </Button>
               </Box>
 
-              {errors?.attachmentId && (
+              {errors?.attachmentFile && (
                 <Box pt={4}>
-                  <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentId}</Typography>
+                  <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile}</Typography>
                 </Box>
               )}
             </Box>

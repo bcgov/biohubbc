@@ -8,7 +8,7 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState } from 'react';
-import { IUploadHandler } from '../attachments/FileUploadItem';
+import { IFileHandler, IUploadHandler } from '../attachments/FileUploadItem';
 import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
 
 /**
@@ -44,7 +44,7 @@ export interface IFileUploadWithMetaDialogProps {
    *
    * @memberof IFileUploadWithMetaDialogProps
    */
-  onFinish: (fileMeta: IReportMetaForm, revisionCount: number) => void;
+  onFinish: (fileMeta: IReportMetaForm) => void;
   /**
    * Callback fired if the dialog is closed.
    *
@@ -57,6 +57,13 @@ export interface IFileUploadWithMetaDialogProps {
    * @memberof IFileUploadWithMetaDialogProps
    */
   uploadHandler: IUploadHandler;
+  /**
+   * Callback fired if a file is added (via browser or drag/drop).
+   *
+   * @type {IFileHandler}
+   * @memberof IFileUploadWithMetaDialogProps
+   */
+  fileHandler?: IFileHandler;
 }
 
 /**
@@ -73,14 +80,6 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
 
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
-
-  const [revisionCount, setRevisionCount] = useState<number>(0);
-
-  const onSuccess = (response: any) => {
-    if (response.revision_count) {
-      setRevisionCount(response.revision_count);
-    }
-  };
 
   if (!props.open) {
     return <></>;
@@ -100,17 +99,13 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={(values) => {
-          props.onFinish(values, revisionCount);
+          props.onFinish(values);
         }}>
         {(formikProps) => (
           <>
             <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
             <DialogContent>
-              <FileUploadWithMeta
-                attachmentType={props.attachmentType}
-                uploadHandler={props.uploadHandler}
-                onSuccess={onSuccess}
-              />
+              <FileUploadWithMeta attachmentType={props.attachmentType} uploadHandler={props.uploadHandler} />
             </DialogContent>
             <DialogActions>
               {props.attachmentType === 'Report' && (
@@ -118,9 +113,15 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
                   <strong>Finish</strong>
                 </Button>
               )}
-              <Button onClick={props.onClose} color="primary" variant="outlined" autoFocus>
-                Cancel
-              </Button>
+              {(props.attachmentType === 'Report' && (
+                <Button onClick={props.onClose} color="primary" variant="outlined" autoFocus>
+                  Cancel
+                </Button>
+              )) || (
+                <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
+                  <strong>Close</strong>
+                </Button>
+              )}
             </DialogActions>
           </>
         )}

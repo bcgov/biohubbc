@@ -49,6 +49,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export enum UploadFileStatus {
+  STAGED = 'Staged',
   PENDING = 'Pending',
   UPLOADING = 'Uploading',
   FINISHING_UPLOAD = 'Finishing Upload',
@@ -70,6 +71,8 @@ export type IUploadHandler<T = any> = (
   handleFileUploadProgress: (progressEvent: ProgressEvent) => void
 ) => Promise<T>;
 
+export type IFileHandler = (file: File) => void;
+
 export type IOnUploadSuccess = (response: any) => void;
 
 export interface IFileUploadItemProps {
@@ -78,18 +81,20 @@ export interface IFileUploadItemProps {
   file: File;
   error?: string;
   onCancel: () => void;
+  fileHandler?: IFileHandler;
+  status?: UploadFileStatus;
 }
 
 const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
   const isMounted = useIsMounted();
   const classes = useStyles();
 
-  const { uploadHandler, onSuccess } = props;
+  const { uploadHandler, fileHandler, onSuccess } = props;
 
   const [file] = useState<File>(props.file);
   const [error, setError] = useState<string | undefined>(props.error);
 
-  const [status, setStatus] = useState<UploadFileStatus>(UploadFileStatus.PENDING);
+  const [status, setStatus] = useState<UploadFileStatus>(props.status || UploadFileStatus.PENDING);
   const [progress, setProgress] = useState<number>(0);
   const [cancelToken] = useState<CancelTokenSource>(axios.CancelToken.source());
 
@@ -108,6 +113,8 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       handleFileUploadError();
       return;
     }
+
+    fileHandler?.(file);
 
     if (status !== UploadFileStatus.PENDING) {
       return;
@@ -276,6 +283,10 @@ interface IProgressBarProps {
  */
 const ProgressBar: React.FC<IProgressBarProps> = (props) => {
   const classes = useStyles();
+
+  if (props.status === UploadFileStatus.STAGED) {
+    return <></>;
+  }
 
   if (props.status === UploadFileStatus.FINISHING_UPLOAD) {
     return (

@@ -1,3 +1,4 @@
+// @ts-nocheck
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
@@ -106,7 +107,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     return biohubApi.survey.updateSurveyAttachmentMetadata(
       projectId,
       surveyId,
-      fileMeta.attachmentId,
+      fileMeta.attachmentFile,
       attachmentType,
       fileMeta,
       revisionCount

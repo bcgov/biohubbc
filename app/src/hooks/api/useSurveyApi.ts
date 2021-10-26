@@ -159,14 +159,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
       revision_count: revisionCount
     };
 
-    console.log('object being sent to udpate survey attachment meta', obj);
-
     const { data } = await axios.put(
       `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
       obj
     );
 
-    console.log('response from udpate survey attachment meta', data);
     return data;
   };
 

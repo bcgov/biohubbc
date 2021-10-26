@@ -1,5 +1,9 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PutReportAttachmentMetadata, ReportAttachmentAuthor } from '../../models/project-survey-attachments';
+import {
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata,
+  ReportAttachmentAuthor
+} from '../../models/project-survey-attachments';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('queries/project/project-attachments-queries');
@@ -253,7 +257,8 @@ export const postProjectReportAttachmentSQL = (
   fileName: string,
   fileSize: number,
   projectId: number,
-  key: string
+  key: string,
+  attachmentMeta: PostReportAttachmentMetadata
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectReportAttachmentSQL',
@@ -268,26 +273,21 @@ export const postProjectReportAttachmentSQL = (
     return null;
   }
 
-  // TODO: Replace hard-coded title, year and description
-  const title = 'Test Report';
-  const year = '2021';
-  const description = 'Test description';
-
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO project_report_attachment (
       project_id,
+      file_name,
       title,
       year,
       description,
-      file_name,
       file_size,
       key
     ) VALUES (
       ${projectId},
-      ${title},
-      ${year},
-      ${description},
       ${fileName},
+      ${attachmentMeta.title},
+      ${attachmentMeta.year_published},
+      ${attachmentMeta.description},
       ${fileSize},
       ${key}
     )
@@ -408,7 +408,7 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string, fil
     WHERE
       file_name = ${fileName}
     AND
-      project_id = ${projectId};
+      project_id = ${projectId}
     RETURNING
       project_attachment_id as id,
       revision_count;
@@ -431,7 +431,11 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string, fil
  * @param {string} fileName
  * @returns {SQLStatement} sql query object
  */
-export const putProjectReportAttachmentSQL = (projectId: number, fileName: string): SQLStatement | null => {
+export const putProjectReportAttachmentSQL = (
+  projectId: number,
+  fileName: string,
+  attachmentMeta: PutReportAttachmentMetadata
+): SQLStatement | null => {
   defaultLog.debug({ label: 'putProjectReportAttachmentSQL', message: 'params', projectId, fileName });
 
   if (!projectId || !fileName) {
@@ -442,7 +446,10 @@ export const putProjectReportAttachmentSQL = (projectId: number, fileName: strin
     UPDATE
       project_report_attachment
     SET
-      file_name = ${fileName}
+      file_name = ${fileName},
+      title = ${attachmentMeta.title},
+      year = ${attachmentMeta.year_published},
+      description = ${attachmentMeta.description}
     WHERE
       file_name = ${fileName}
     AND

@@ -1,13 +1,15 @@
-import { Menu, MenuItem } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { mdiMenuDown, mdiUpload } from '@mdi/js';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
@@ -17,7 +19,6 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
 export enum ATTACHMENT_TYPE {
   REPORT = 'Report',
@@ -94,10 +95,17 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       return biohubApi.project.uploadProjectAttachments(
         projectId,
         file,
-        'Report',
+        attachmentType,
+        undefined,
         cancelToken,
         handleFileUploadProgress
       );
+    };
+  };
+
+  const getFinishHandler = () => {
+    return (fileMeta: IReportMetaForm) => {
+      return biohubApi.project.uploadProjectAttachments(projectId, fileMeta.attachmentFile, attachmentType, fileMeta);
     };
   };
 
@@ -106,23 +114,13 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
     // eslint-disable-next-line
   }, []);
 
-  const handleReportMeta = (fileMeta: IReportMetaForm, revisionCount: number) => {
-    return biohubApi.project.updateProjectAttachmentMetadata(
-      projectId,
-      fileMeta.attachmentId,
-      attachmentType,
-      fileMeta,
-      revisionCount
-    );
-  };
-
   return (
     <>
       <FileUploadWithMetaDialog
         open={openUploadAttachments}
         dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachment'}
         attachmentType={attachmentType}
-        onFinish={handleReportMeta}
+        onFinish={getFinishHandler()}
         onClose={() => {
           getAttachments(true);
           setOpenUploadAttachments(false);

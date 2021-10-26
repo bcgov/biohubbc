@@ -4,27 +4,22 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
 import FileUpload from './FileUpload';
-import { IOnUploadSuccess, IUploadHandler } from './FileUploadItem';
+import { IFileHandler, IOnUploadSuccess, IUploadHandler, UploadFileStatus } from './FileUploadItem';
 
 export interface IFileUploadWithMetaProps {
   attachmentType: 'Report' | 'Other';
   uploadHandler: IUploadHandler;
-  onSuccess: IOnUploadSuccess;
+  fileHandler?: IFileHandler;
+  onSuccess?: IOnUploadSuccess;
 }
 
 export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) => {
   const { handleSubmit, setFieldValue } = useFormikContext<IReportMetaForm>();
 
-  const onSuccess: IOnUploadSuccess = (response: any) => {
-    console.log(response);
-    if (!response) {
-    }
+  const fileHandler: IFileHandler = (file: File) => {
+    setFieldValue('attachmentFile', file);
 
-    if (response.attachmentId) {
-      setFieldValue('attachmentId', response.attachmentId);
-    }
-
-    props.onSuccess(response);
+    props.fileHandler?.(file);
   };
 
   return (
@@ -36,7 +31,15 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             <Typography component="legend" variant="body1" id="report_details">
               Attach File
             </Typography>
-            <FileUpload uploadHandler={props.uploadHandler} onSuccess={onSuccess} />
+            {(props.attachmentType === 'Report' && (
+              <FileUpload
+                uploadHandler={props.uploadHandler}
+                fileHandler={fileHandler}
+                onSuccess={props.onSuccess}
+                dropZoneProps={{ maxNumFiles: 1 }}
+                status={UploadFileStatus.STAGED}
+              />
+            )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
           </Box>
         </Box>
       </Box>

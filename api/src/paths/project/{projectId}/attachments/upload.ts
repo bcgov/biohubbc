@@ -2,9 +2,14 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { ATTACHMENT_TYPE } from '../../../../constants/attachments';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
+import {
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata
+} from '../../../../models/project-survey-attachments';
 import {
   getProjectAttachmentByFileNameSQL,
   getProjectReportAttachmentByFileNameSQL,
@@ -44,6 +49,39 @@ POST.apiDoc = {
             media: {
               type: 'string',
               format: 'binary'
+            },
+            attachmentType: {
+              type: 'string',
+              enum: ['Report', 'Other']
+            },
+            attachmentMeta: {
+              type: 'object',
+              required: ['title', 'year_published', 'authors', 'description'],
+              properties: {
+                title: {
+                  type: 'string'
+                },
+                year_published: {
+                  type: 'string'
+                },
+                authors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    properties: {
+                      first_name: {
+                        type: 'string'
+                      },
+                      last_name: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                },
+                description: {
+                  type: 'string'
+                }
+              }
             }
           }
         }
@@ -84,6 +122,10 @@ export function uploadMedia(): RequestHandler {
   return async (req, res) => {
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
+    if (!req.params.projectId) {
+      throw new HTTP400('Missing projectId');
+    }
+
     if (!rawMediaArray || !rawMediaArray.length) {
       // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
@@ -101,10 +143,6 @@ export function uploadMedia(): RequestHandler {
       file: { ...rawMediaFile, buffer: 'Too big to print' }
     });
 
-    if (!req.params.projectId) {
-      throw new HTTP400('Missing projectId');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -118,12 +156,22 @@ export function uploadMedia(): RequestHandler {
       }
 
       // Insert file metadata into project_attachment or project_report_attachment table
-      const { id, revision_count } = await upsertProjectAttachment(
-        rawMediaFile,
-        Number(req.params.projectId),
-        req.body.attachmentType,
-        connection
-      );
+      let upsertResult;
+      if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
+        upsertResult = await upsertProjectReportAttachment(
+          rawMediaFile,
+          Number(req.params.projectId),
+          req.body.attachmentMeta,
+          connection
+        );
+      } else {
+        upsertResult = await upsertProjectAttachment(
+          rawMediaFile,
+          Number(req.params.projectId),
+          req.body.attachmentType,
+          connection
+        );
+      }
 
       // Upload file to S3
       const key = generateS3FileKey({
@@ -143,7 +191,7 @@ export function uploadMedia(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json({ attachmentId: id, revision_count });
+      return res.status(200).json({ attachmentId: upsertResult.id, revision_count: upsertResult.revision_count });
     } catch (error) {
       defaultLog.error({ label: 'uploadMedia', message: 'error', error });
       await connection.rollback();
@@ -160,12 +208,7 @@ export const upsertProjectAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  let getSqlStatement;
-  if (attachmentType === 'Report') {
-    getSqlStatement = getProjectReportAttachmentByFileNameSQL(projectId, file.originalname);
-  } else {
-    getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
-  }
+  const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
 
   if (!getSqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -188,12 +231,9 @@ export const insertProjectAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
 
-  const sqlStatement =
-    attachmentType === 'Report'
-      ? postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key)
-      : postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
+  const sqlStatement = postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -214,10 +254,74 @@ export const updateProjectAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement =
-    attachmentType === 'Report'
-      ? putProjectReportAttachmentSQL(projectId, file.originalname)
-      : putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
+  const sqlStatement = putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to update project attachment data');
+  }
+
+  return response.rows[0];
+};
+
+export const upsertProjectReportAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  attachmentMeta: any,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const getSqlStatement = getProjectReportAttachmentByFileNameSQL(projectId, file.originalname);
+
+  if (!getSqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
+
+  if (getResponse && getResponse.rowCount > 0) {
+    // Existing attachment with matching name found, update it
+    return updateProjectReportAttachment(file, projectId, new PutReportAttachmentMetadata(attachmentMeta), connection);
+  }
+
+  // No matching attachment found, insert new attachment
+  return insertProjectReportAttachment(file, projectId, new PostReportAttachmentMetadata(attachmentMeta), connection);
+};
+
+export const insertProjectReportAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  attachmentMeta: PostReportAttachmentMetadata,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
+
+  const sqlStatement = postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key, attachmentMeta);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to insert project attachment data');
+  }
+
+  return response.rows[0];
+};
+
+export const updateProjectReportAttachment = async (
+  file: Express.Multer.File,
+  projectId: number,
+  attachmentMeta: PutReportAttachmentMetadata,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const sqlStatement = putProjectReportAttachmentSQL(projectId, file.originalname, attachmentMeta);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
