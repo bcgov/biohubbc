@@ -550,15 +550,16 @@ export const insertSurveyReportAttachmentAuthorSQL = (
   }
 
   const sqlStatement: SQLStatement = SQL`
-    INSERT
-      survey_report_author
-    SET
-      first_name = ${author.first_name},
-      last_name = ${author.last_name}
-    WHERE
-      survey_report_attachment_id = ${attachmentId};
+    INSERT INTO survey_report_author (
+      survey_report_attachment_id,
+      first_name,
+      last_name
+    ) VALUES (
+      ${attachmentId},
+      ${author.first_name},
+      ${author.last_name}
+    );
   `;
-
   defaultLog.debug({
     label: 'createSurveyReportAttachmentAuthorSQL',
     message: 'sql',
@@ -587,7 +588,7 @@ export const deleteSurveyReportAttachmentAuthorsSQL = (attachmentId: number): SQ
   }
 
   const sqlStatement: SQLStatement = SQL`
-    DELETE
+    DELETE FROM
       survey_report_author
     WHERE
       survey_report_attachment_id = ${attachmentId};

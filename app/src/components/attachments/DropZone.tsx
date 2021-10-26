@@ -79,13 +79,13 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
                 Drag your files here, or <Link underline="always">Browse Files</Link>
               </Box>
               <Box textAlign="center">
-                  {acceptedFileExtensions && (
-                    <Box>
-                      <Typography component="span" variant="subtitle2" color="textSecondary">
-                        {`Accepted files: ${acceptedFileExtensions}`}
-                      </Typography>
-                    </Box>
-                  )}
+                {acceptedFileExtensions && (
+                  <Box>
+                    <Typography component="span" variant="subtitle2" color="textSecondary">
+                      {`Accepted files: ${acceptedFileExtensions}`}
+                    </Typography>
+                  </Box>
+                )}
                 {!!maxFileSize && maxFileSize !== Infinity && (
                   <Box>
                     <Typography component="span" variant="subtitle2" color="textSecondary">
