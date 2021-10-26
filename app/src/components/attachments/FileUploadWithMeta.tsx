@@ -15,7 +15,7 @@ export interface IFileUploadWithMetaProps {
 }
 
 export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) => {
-  const { handleSubmit, setFieldValue } = useFormikContext<IReportMetaForm>();
+  const { handleSubmit, setFieldValue, errors } = useFormikContext<IReportMetaForm>();
 
   const fileHandler: IFileHandler = (file: File) => {
     setFieldValue('attachmentFile', file);
@@ -30,11 +30,11 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           <ReportMetaForm />
         </Box>
       )}
-      {(props.attachmentType === 'Report' && (
-        <Box component="fieldset">
-          <Typography component="legend" variant="body1" id="report_details">
-            Attach File
-          </Typography>
+      <Box component="fieldset">
+        <Typography component="legend" variant="body1" id="report_upload">
+          Attach File
+        </Typography>
+        {(props.attachmentType === 'Report' && (
           <FileUpload
             uploadHandler={props.uploadHandler}
             fileHandler={fileHandler}
@@ -42,8 +42,13 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.REPORT }}
             status={UploadFileStatus.STAGED}
           />
-        </Box>
-      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
+        )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
+        {errors?.attachmentFile && (
+          <Box>
+            <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.attachmentFile}</Typography>
+          </Box>
+        )}
+      </Box>
     </form>
   );
 };
