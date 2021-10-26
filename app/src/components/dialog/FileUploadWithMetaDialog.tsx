@@ -10,7 +10,7 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import { Formik, FormikProps } from 'formik';
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IFileHandler, IUploadHandler } from '../attachments/FileUploadItem';
 import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
 
@@ -103,6 +103,18 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
 
   const [isFinishing, setIsFinishing] = useState(false);
 
+  useEffect(() => {
+    if (!isFinishing) {
+      return;
+    }
+
+    if (props.open) {
+      return;
+    }
+
+    setIsFinishing(false);
+  }, [isFinishing, props.open]);
+
   if (!props.open) {
     return <></>;
   }
@@ -132,9 +144,6 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
             </DialogContent>
             <DialogActions>
               {props.attachmentType === 'Report' && (
-                // <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
-                //   <strong>Finish</strong>
-                // </Button>
                 <Box className={classes.wrapper}>
                   <Button
                     onClick={formikProps.submitForm}

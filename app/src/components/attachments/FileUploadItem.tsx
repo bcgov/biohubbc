@@ -5,7 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiCheck, mdiTrashCanOutline, mdiWindowClose, mdiFileOutline } from '@mdi/js';
+import { mdiCheck, mdiTrashCanOutline, mdiFileOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';
@@ -150,7 +150,18 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       .catch();
 
     setStatus(UploadFileStatus.UPLOADING);
-  }, [file, status, cancelToken, uploadHandler, onSuccess, isMounted, initiateCancel, error, handleFileUploadError]);
+  }, [
+    file,
+    status,
+    cancelToken,
+    uploadHandler,
+    fileHandler,
+    onSuccess,
+    isMounted,
+    initiateCancel,
+    error,
+    handleFileUploadError
+  ]);
 
   useEffect(() => {
     if (!isMounted()) {
@@ -190,20 +201,20 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
       <Box className={classes.uploadListItemBox}>
         <Box display="flex" flexDirection="row" alignItems="center" p={2} width="100%">
           <Icon path={mdiFileOutline} size={1.5} className={error ? classes.errorColor : classes.fileIconColor} />
-          <Box pl={1.5} display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" height="3rem">
-            <Box flex="1 1 auto">
-              <Typography variant="body2" component="div">
-                <strong>{file.name}</strong>
-              </Typography>
-              <Typography variant="caption" component="div">
-                {error || status}
-              </Typography>
+          <Box pl={1.5} flex="1 1 auto">
+            <Box display="flex" flexDirection="row" flex="1 1 auto" alignItems="center" height="3rem">
+              <Box flex="1 1 auto">
+                <Typography variant="body2" component="div">
+                  <strong>{file.name}</strong>
+                </Typography>
+                <Typography variant="caption" component="div">
+                  {error || status}
+                </Typography>
+              </Box>
+              <Box display="flex" alignItems="center">
+                <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
+              </Box>
             </Box>
-            <Box display="flex" alignItems="center">
-              <MemoizedActionButton status={status} onCancel={() => setInitiateCancel(true)} />
-            </Box>
-          </Box>
-          <Box>
             <MemoizedProgressBar status={status} progress={progress} />
           </Box>
         </Box>
@@ -241,7 +252,7 @@ const ActionButton: React.FC<IActionButtonProps> = (props) => {
   ) {
     return (
       <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()}>
-        <Icon path={mdiWindowClose} size={1} />
+        <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     );
   }
