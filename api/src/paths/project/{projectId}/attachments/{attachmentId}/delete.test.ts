@@ -42,7 +42,6 @@ describe('deleteAttachment', () => {
         },
         send: () => {
           // do nothing
-
         }
       };
     }
