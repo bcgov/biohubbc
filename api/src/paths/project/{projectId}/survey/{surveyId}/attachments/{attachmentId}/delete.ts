@@ -95,6 +95,7 @@ export function deleteAttachment(): RequestHandler {
       }
 
       await connection.commit();
+
       const deleteFileResult = await deleteFileFromS3(deleteResult.key);
 
       if (!deleteFileResult) {
@@ -149,7 +150,7 @@ export const deleteSurveyAttachment = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete project attachment record');
+    throw new HTTP400('Failed to delete survey attachment record');
   }
 
   return response.rows[0];
@@ -168,7 +169,7 @@ export const deleteSurveyReportAttachment = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to delete project attachment report record');
+    throw new HTTP400('Failed to delete survey attachment report record');
   }
 
   return response.rows[0];

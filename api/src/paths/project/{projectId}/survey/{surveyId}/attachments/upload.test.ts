@@ -192,7 +192,7 @@ describe('uploadMedia', () => {
   });
 });
 
-describe.only('upsertSurveyAttachment', () => {
+describe('upsertSurveyAttachment', () => {
   afterEach(() => {
     sinon.restore();
   });

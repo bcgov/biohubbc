@@ -39,6 +39,9 @@ describe('deleteAttachment', () => {
       return {
         json: (result: any) => {
           actualResult = result;
+        },
+        send: () => {
+          // do nothing
         }
       };
     }
@@ -168,7 +171,7 @@ describe('deleteAttachment', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect(actualError.message).to.equal('Failed to build SQL delete project attachment statement');
     }
   });
 
@@ -179,7 +182,7 @@ describe('deleteAttachment', () => {
       .onFirstCall()
       .resolves({ rowCount: 1 })
       .onSecondCall()
-      .resolves({ rows: [{ key: 's3Key' }] });
+      .resolves({ rowCount: 1, rows: [{ key: 's3Key' }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -200,7 +203,7 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.equal(null);
   });
 
-  it('should return the rowCount response on success when type is not Report', async () => {
+  it('should return null on success when type is not Report', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -225,16 +228,18 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.equal(1);
+    expect(actualResult).to.equal(null);
   });
 
-  it('should return the rowCount response on success when type is Report', async () => {
+  it('should return null on success when type is Report', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
       .onFirstCall()
       .resolves({ rowCount: 1 })
       .onSecondCall()
+      .resolves({ rowCount: 1 })
+      .onThirdCall()
       .resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -257,6 +262,6 @@ describe('deleteAttachment', () => {
       (null as unknown) as any
     );
 
-    expect(actualResult).to.equal(1);
+    expect(actualResult).to.equal(null);
   });
 });
