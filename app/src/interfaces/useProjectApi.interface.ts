@@ -292,3 +292,14 @@ export interface IGetProjectMediaListResponse {
   file_name: string;
   encoded_file: string;
 }
+
+/**
+ * A  file upload response.
+ *
+ * @export
+ * @interface IUploadAttachmentResponse
+ */
+export interface IUploadAttachmentResponse {
+  attachmentId: number;
+  revision_count: number;
+}

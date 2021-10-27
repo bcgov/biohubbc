@@ -61,8 +61,8 @@ const getLocalConfig = (): IConfig => {
     },
     SITEMINDER_LOGOUT_URL:
       process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest.gov.bc.ca/clp-cgi/logoff.cgi',
-    MAX_UPLOAD_NUM_FILES: Number(process.env.MAX_UPLOAD_NUM_FILES) || 10,
-    MAX_UPLOAD_FILE_SIZE: Number(process.env.MAX_UPLOAD_FILE_SIZE) || 52428800
+    MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
+    MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800
   };
 };
 
