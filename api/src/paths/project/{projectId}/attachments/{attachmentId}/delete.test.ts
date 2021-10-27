@@ -42,6 +42,7 @@ describe('deleteAttachment', () => {
         },
         send: () => {
           // do nothing
+
         }
       };
     }
@@ -203,7 +204,7 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.equal(null);
   });
 
-  it('should return null on success when type is not Report', async () => {
+  it('should return null response on success when type is not Report', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -231,7 +232,7 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.equal(null);
   });
 
-  it('should return null on success when type is Report', async () => {
+  it('should return null response on success when type is Report', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery

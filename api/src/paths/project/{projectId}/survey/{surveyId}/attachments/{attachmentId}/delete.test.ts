@@ -40,6 +40,9 @@ describe('deleteAttachment', () => {
       return {
         json: (result: any) => {
           actualResult = result;
+        },
+        send: () => {
+          //do nothing
         }
       };
     }
@@ -169,7 +172,7 @@ describe('deleteAttachment', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect(actualError.message).to.equal('Failed to build SQL delete project attachment statement');
     }
   });
 
