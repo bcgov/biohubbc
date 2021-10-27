@@ -1,288 +1,373 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { PutReportAttachmentMetadata, ReportAttachmentAuthor } from '../../models/project-survey-attachments';
 import {
-  deleteSurveyOccurrencesSQL,
-  getLatestSurveyOccurrenceSubmissionSQL,
-  getOccurrenceSubmissionMessagesSQL,
-  getSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesIdSQLStatement,
-  getTemplateMethodologySpeciesSQL,
-  insertSurveyOccurrenceSubmissionSQL,
-  insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL,
-  updateSurveyOccurrenceSubmissionSQL,
-  deleteOccurrenceSubmissionSQL
-} from './survey-occurrence-queries';
+  getSurveyAttachmentsSQL,
+  deleteSurveyAttachmentSQL,
+  getSurveyAttachmentS3KeySQL,
+  postSurveyAttachmentSQL,
+  getSurveyAttachmentByFileNameSQL,
+  getSurveyReportAttachmentByFileNameSQL,
+  putSurveyAttachmentSQL,
+  getSurveyReportAttachmentsSQL,
+  deleteSurveyReportAttachmentSQL,
+  postSurveyReportAttachmentSQL,
+  putSurveyReportAttachmentSQL,
+  updateProjectReportAttachmentMetadataSQL,
+  insertSurveyReportAttachmentAuthorSQL,
+  deleteSurveyReportAttachmentAuthorsSQL
+} from './survey-attachments-queries';
 
-describe('insertSurveyOccurrenceSubmissionSQL', () => {
+const post_sample_attachment_meta = {
+  title: 'title',
+  year_published: '2000',
+  authors: [
+    {
+      first_name: 'John',
+      last_name: 'Smith'
+    }
+  ],
+  description: 'description'
+};
+
+const put_sample_attachment_meta = {
+  title: 'title',
+  year_published: '2000',
+  authors: [
+    {
+      first_name: 'John',
+      last_name: 'Smith'
+    }
+  ],
+  description: 'description',
+  revision_count: 0
+};
+
+describe('getSurveyAttachmentsSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: (null as unknown) as number,
-      source: 'fileSource',
-      inputKey: 'fileKey',
-      templateMethodologyId: 1
-    });
+    const response = getSurveyAttachmentsSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
-  it('returns null response when null source provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: (null as unknown) as string,
-      inputKey: 'fileKey',
-      templateMethodologyId: 1
-    });
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when null templateMethodologyId provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputKey: 'fileKey',
-      templateMethodologyId: null
-    });
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when all valid params provided without inputKey', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputFileName: 'inputFileName',
-      outputFileName: 'outputFileName',
-      outputKey: 'outputfileKey',
-      templateMethodologyId: 1
-    });
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when all valid params provided with inputKey', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputFileName: 'inputFileName',
-      inputKey: 'inputfileKey',
-      outputFileName: 'outputFileName',
-      outputKey: 'outputfileKey',
-      templateMethodologyId: 1
-    });
+  it('returns non null response when valid surveyId provided', () => {
+    const response = getSurveyAttachmentsSQL(1);
 
     expect(response).to.not.be.null;
   });
 });
 
-describe('deleteOccurrenceSubmissionSQL', () => {
-  it('returns null response when null submissionId provided', () => {
-    const response = deleteOccurrenceSubmissionSQL((null as unknown) as number);
+describe('deleteSurveyAttachmentSQL', () => {
+  it('returns null response when null attachmentId provided', () => {
+    const response = deleteSurveyAttachmentSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid attachmentId provided', () => {
+    const response = deleteSurveyAttachmentSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('putSurveyReportAttachmentSQL', () => {
+  it('returns null response when null fileName provided', () => {
+    const response = putSurveyReportAttachmentSQL(1, (null as unknown) as string, put_sample_attachment_meta);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null surveyId provided', () => {
+    const response = putSurveyReportAttachmentSQL((null as unknown) as number, 'name', put_sample_attachment_meta);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = deleteOccurrenceSubmissionSQL(1);
+    const response = putSurveyReportAttachmentSQL(1, 'name', put_sample_attachment_meta);
 
     expect(response).to.not.be.null;
   });
 });
 
-describe('getLatestSurveyOccurrenceSubmission', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = getLatestSurveyOccurrenceSubmissionSQL((null as unknown) as number);
+describe('postSurveyReportAttachmentSQL', () => {
+  it('returns null response when null fileName provided', () => {
+    const response = postSurveyReportAttachmentSQL(
+      (null as unknown) as string,
+      30,
+      1,
+      'key',
+      post_sample_attachment_meta
+    );
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileSize provided', () => {
+    const response = postSurveyReportAttachmentSQL(
+      'name',
+      (null as unknown) as number,
+      1,
+      'key',
+      post_sample_attachment_meta
+    );
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null projectId provided', () => {
+    const response = postSurveyReportAttachmentSQL(
+      'name',
+      30,
+      (null as unknown) as number,
+      'key',
+      post_sample_attachment_meta
+    );
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getLatestSurveyOccurrenceSubmissionSQL(1);
+    const response = postSurveyReportAttachmentSQL('name', 30, 1, 'key', post_sample_attachment_meta);
 
     expect(response).to.not.be.null;
   });
 });
 
-describe('deleteSurveyOccurrencesSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = deleteSurveyOccurrencesSQL((null as unknown) as number);
+describe('deleteSurveyReportAttachmentSQL', () => {
+  it('returns null response when null attachmentId provided', () => {
+    const response = deleteSurveyReportAttachmentSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid params provided', () => {
-    const response = deleteSurveyOccurrencesSQL(1);
+  it('returns non null response when valid attachmentId provided', () => {
+    const response = deleteSurveyReportAttachmentSQL(1);
 
     expect(response).to.not.be.null;
   });
 });
 
-describe('updateSurveyOccurrenceSubmissionSQL', () => {
+describe('getSurveyReportAttachmentsSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = updateSurveyOccurrenceSubmissionSQL({
-      submissionId: (null as unknown) as number,
-      inputKey: 'fileKey'
-    });
+    const response = getSurveyReportAttachmentsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid surveyId provided', () => {
+    const response = getSurveyReportAttachmentsSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSurveyAttachmentS3KeySQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getSurveyAttachmentS3KeySQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId provided', () => {
+    const response = getSurveyAttachmentS3KeySQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid surveyId and attachmentId provided', () => {
+    const response = getSurveyAttachmentS3KeySQL(1, 2);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postSurveyAttachmentSQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = postSurveyAttachmentSQL('name', 20, 'type', (null as unknown) as number, 'key');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileName provided', () => {
+    const response = postSurveyAttachmentSQL((null as unknown) as string, 20, 'type', 1, 'key');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileSize provided', () => {
+    const response = postSurveyAttachmentSQL('name', (null as unknown) as number, 'type', 1, 'key');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null surveyId provided', () => {
+    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null key provided', () => {
-    const response = updateSurveyOccurrenceSubmissionSQL({
-      submissionId: 1,
-      inputKey: (null as unknown) as string
-    });
+    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileType provided', () => {
+    const response = postSurveyAttachmentSQL('name', 20, (null as unknown) as string, 1, 'key');
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = updateSurveyOccurrenceSubmissionSQL({
-      submissionId: 1,
-      inputKey: 'fileKey',
-      inputFileName: 'fileName',
-      outputFileName: 'outputFileName',
-      outputKey: 'outputKey'
-    });
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when valid params provided without inputKey', () => {
-    const response = updateSurveyOccurrenceSubmissionSQL({
-      submissionId: 1,
-      inputKey: 'fileKey'
-    });
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when valid params provided without inputFileName', () => {
-    const response = updateSurveyOccurrenceSubmissionSQL({
-      submissionId: 1,
-      inputFileName: 'fileName'
-    });
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when valid params provided without outputFileName', () => {
-    const response = updateSurveyOccurrenceSubmissionSQL({
-      submissionId: 1,
-      outputFileName: 'outputFileName'
-    });
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when valid params provided without outputKey', () => {
-    const response = updateSurveyOccurrenceSubmissionSQL({
-      submissionId: 1,
-      outputKey: 'outputKey'
-    });
+    const response = postSurveyAttachmentSQL('name', 20, 'type', 1, 'key');
 
     expect(response).to.not.be.null;
   });
 });
 
-describe('getSurveyOccurrenceSubmissionSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = getSurveyOccurrenceSubmissionSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid params provided', () => {
-    const response = getSurveyOccurrenceSubmissionSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('insertSurveySubmissionStatusSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = insertOccurrenceSubmissionStatusSQL((null as unknown) as number, 'type');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null submissionStatusType provided', () => {
-    const response = insertOccurrenceSubmissionStatusSQL(1, (null as unknown) as string);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid params provided', () => {
-    const response = insertOccurrenceSubmissionStatusSQL(1, 'type');
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('insertSurveySubmissionMessageSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message', 'errorcode');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null submissionStatusType provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message', 'errorcode');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null submissionMessage provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string, 'errorcode');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid params provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message', 'errorcode');
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getOccurrenceSubmissionMessagesSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = getOccurrenceSubmissionMessagesSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid params provided', () => {
-    const response = getOccurrenceSubmissionMessagesSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getTemplateMethodologySpeciesIdSQLStatement', () => {
+describe('getSurveyAttachmentByFileNameSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQLStatement((null as unknown) as number);
+    const response = getSurveyAttachmentByFileNameSQL((null as unknown) as number, 'name');
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQLStatement(1);
+  it('returns null response when null fileName provided', () => {
+    const response = getSurveyAttachmentByFileNameSQL(1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid surveyId and fileName provided', () => {
+    const response = getSurveyAttachmentByFileNameSQL(1, 'name');
 
     expect(response).to.not.be.null;
   });
 });
 
-describe('getTemplateMethodologySpeciesSQL', () => {
-  it('returns null response when null occurrenceId provided', () => {
-    const response = getTemplateMethodologySpeciesSQL((null as unknown) as number);
+describe('getSurveyReportAttachmentByFileNameSQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getSurveyReportAttachmentByFileNameSQL((null as unknown) as number, 'name');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileName provided', () => {
+    const response = getSurveyReportAttachmentByFileNameSQL(1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid surveyId and fileName provided', () => {
+    const response = getSurveyReportAttachmentByFileNameSQL(1, 'name');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('putSurveyAttachmentSQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = putSurveyAttachmentSQL((null as unknown) as number, 'name', 'type');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileName provided', () => {
+    const response = putSurveyAttachmentSQL(1, (null as unknown) as string, 'type');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileType provided', () => {
+    const response = putSurveyAttachmentSQL(1, 'name', (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesSQL(1);
+    const response = putSurveyAttachmentSQL(1, 'name', 'type');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('updateProjectReportAttachmentMetadataSQL', () => {
+  const report_metadata = {
+    title: 'title',
+    year_published: '2000',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'description',
+    revision_count: 0
+  };
+  it('returns null response when null surveyId provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL((null as unknown) as number, 1, report_metadata);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, (null as unknown) as number, report_metadata);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null report metadata provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, 1, (null as unknown) as PutReportAttachmentMetadata);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, 1, report_metadata);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('insertSurveyReportAttachmentAuthorSQL', () => {
+  const report_attachment_author = {
+    first_name: 'John',
+    last_name: 'Smith'
+  };
+  it('returns null response when null attachmentId provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL((null as unknown) as number, report_attachment_author);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null author provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL(1, (null as unknown) as ReportAttachmentAuthor);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId and null author provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL(
+      (null as unknown) as number,
+      (null as unknown) as ReportAttachmentAuthor
+    );
+
+    expect(response).to.be.null;
+  });
+
+  it('returns not null response when valid params are provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL(1, report_attachment_author);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteSurveyReportAttachmentAuthorSQL', () => {
+  it('returns null response when null attachmentId provided', () => {
+    const response = deleteSurveyReportAttachmentAuthorsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns not null response when valid params are provided', () => {
+    const response = deleteSurveyReportAttachmentAuthorsSQL(1);
 
     expect(response).to.not.be.null;
   });
