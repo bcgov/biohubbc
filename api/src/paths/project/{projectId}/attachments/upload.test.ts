@@ -128,7 +128,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0 });
+    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {
@@ -152,7 +152,7 @@ describe('uploadMedia', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0 });
+    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
 
     const result = upload.uploadMedia();
 
