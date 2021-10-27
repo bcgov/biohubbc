@@ -25,10 +25,10 @@ parameters:
     value: ''
   - name: REACT_APP_MAX_UPLOAD_NUM_FILES
     description: Default maximum number of files that can be uploaded at a time vai the upload component UI.
-    value: 10
+    value: '10'
   - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
     description: Default maximum size of a single file that can be uploaded by the upload component UI.
-    value: 52428800
+    value: '52428800'
   - name: NODE_ENV
     description: NODE_ENV specification variable
     value: 'dev'
