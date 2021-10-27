@@ -5,12 +5,28 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import React, { useEffect, useState } from 'react';
 import { FileError, FileRejection } from 'react-dropzone';
 import DropZone, { IDropZoneConfigProps } from './DropZone';
-import { IUploadHandler, MemoizedFileUploadItem } from './FileUploadItem';
+import {
+  IFileHandler,
+  IOnUploadSuccess,
+  IUploadHandler,
+  MemoizedFileUploadItem,
+  UploadFileStatus
+} from './FileUploadItem';
 
 const useStyles = makeStyles((theme: Theme) => ({
   dropZone: {
-    border: '2px dashed grey',
-    cursor: 'default'
+    clear: 'both',
+    borderRadius: '4px',
+    borderStyle: 'dashed',
+    borderWidth: '2px',
+    borderColor: theme.palette.text.disabled,
+    background: theme.palette.primary.main + '11',
+    transition: 'all ease-out 0.2s',
+    '&:hover, &:focus': {
+      borderColor: theme.palette.primary.main,
+      backgroundColor: theme.palette.primary.main + '22'
+    },
+    cursor: 'pointer'
   }
 }));
 
@@ -25,7 +41,9 @@ export interface IUploadFileListProps {
 
 export interface IFileUploadProps {
   uploadHandler: IUploadHandler;
-  onSuccess?: (response: any) => void; // currently only supports single file uploads (multiple will overwrite each other)
+  fileHandler?: IFileHandler;
+  onSuccess?: IOnUploadSuccess;
+  status?: UploadFileStatus;
   dropZoneProps?: Partial<IDropZoneConfigProps>;
 }
 
@@ -94,6 +112,8 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
         file={file}
         error={error}
         onCancel={() => setFileToRemove(file.name)}
+        fileHandler={props.fileHandler}
+        status={props.status}
       />
     );
   };
@@ -143,7 +163,7 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
 
   return (
     <Box>
-      <Box mb={2} className={classes.dropZone}>
+      <Box className={classes.dropZone}>
         <DropZone onFiles={onFiles} {...props.dropZoneProps} />
       </Box>
       <Box>

@@ -11,15 +11,8 @@ import {
   PostProjectObject
 } from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
-import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
 import { postProjectPermitSQL } from '../queries/permit/permit-create-queries';
-import {
-  getProjectAttachmentByFileNameSQL,
-  postProjectAttachmentSQL,
-  postProjectReportAttachmentSQL,
-  putProjectAttachmentSQL,
-  putProjectReportAttachmentSQL
-} from '../queries/project/project-attachments-queries';
+import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
 import {
   postProjectActivitySQL,
   postProjectFundingSourceSQL,
@@ -28,7 +21,6 @@ import {
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
-import { generateS3FileKey } from '../utils/file-utils';
 import { getLogger } from '../utils/logger';
 import { logRequest } from '../utils/path-utils';
 
@@ -362,59 +354,4 @@ export const insertProjectActivity = async (
   }
 
   return result.id;
-};
-
-export const upsertProjectAttachment = async (
-  file: Express.Multer.File,
-  projectId: number,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<number> => {
-  const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
-
-  if (!getSqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
-
-  if (getResponse && getResponse.rowCount > 0) {
-    const updateSqlStatement =
-      attachmentType === 'Report'
-        ? putProjectReportAttachmentSQL(projectId, file.originalname)
-        : putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
-
-    if (!updateSqlStatement) {
-      throw new HTTP400('Failed to build SQL update statement');
-    }
-
-    const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
-    const updateResult = (updateResponse && updateResponse.rowCount) || null;
-
-    if (!updateResult) {
-      throw new HTTP400('Failed to update project attachment data');
-    }
-
-    return updateResult;
-  }
-
-  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
-
-  const insertSqlStatement =
-    attachmentType === 'Report'
-      ? postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key)
-      : postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
-
-  if (!insertSqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
-  const insertResult = (insertResponse && insertResponse.rows && insertResponse.rows[0]) || null;
-
-  if (!insertResult || !insertResult.id) {
-    throw new HTTP400('Failed to insert project attachment data');
-  }
-
-  return insertResult.id;
 };
