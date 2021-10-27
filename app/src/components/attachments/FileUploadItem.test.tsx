@@ -25,13 +25,12 @@ describe('FileUploadItem', () => {
       uploadHandler: mockUploadHandler.mockResolvedValue(mockUploadPromise),
       onSuccess: mockOnSuccess,
       file: testFile,
-      fileType: 'Report',
       error: '',
       onCancel: mockOnCancel
     });
 
     await waitFor(() => {
-      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function), 'Report');
+      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -72,13 +71,12 @@ describe('FileUploadItem', () => {
       uploadHandler: mockUploadHandler.mockResolvedValue(mockUploadPromise),
       onSuccess: mockOnSuccess,
       file: testFile,
-      fileType: 'Report',
       error: '',
       onCancel: mockOnCancel
     });
 
     await waitFor(() => {
-      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function), 'Report');
+      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -115,13 +113,12 @@ describe('FileUploadItem', () => {
       uploadHandler: mockUploadHandler.mockResolvedValue(mockUploadPromise),
       onSuccess: mockOnSuccess,
       file: testFile,
-      fileType: 'Report',
       error: '',
       onCancel: mockOnCancel
     });
 
     await waitFor(() => {
-      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function), 'Report');
+      expect(mockUploadHandler).toHaveBeenCalledWith(testFile, expect.any(Object), expect.any(Function));
 
       expect(getByText('testpng.txt')).toBeVisible();
 
@@ -152,7 +149,6 @@ describe('FileUploadItem', () => {
       uploadHandler: mockUploadHandler,
       onSuccess: mockOnSuccess,
       file: testFile,
-      fileType: 'Report',
       error: 'initial error message',
       onCancel: mockOnCancel
     });

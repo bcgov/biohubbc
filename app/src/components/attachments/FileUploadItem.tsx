@@ -245,13 +245,17 @@ interface IActionButtonProps {
 const ActionButton: React.FC<IActionButtonProps> = (props) => {
   const classes = useStyles();
 
-  if (
-    props.status === UploadFileStatus.PENDING ||
-    props.status === UploadFileStatus.STAGED ||
-    props.status === UploadFileStatus.UPLOADING
-  ) {
+  if (props.status === UploadFileStatus.PENDING || props.status === UploadFileStatus.STAGED) {
     return (
       <IconButton title="Remove File" aria-label="remove file" onClick={() => props.onCancel()}>
+        <Icon path={mdiTrashCanOutline} size={1} />
+      </IconButton>
+    );
+  }
+
+  if (props.status === UploadFileStatus.UPLOADING) {
+    return (
+      <IconButton title="Cancel Upload" aria-label="cancel upload" onClick={() => props.onCancel()}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     );
