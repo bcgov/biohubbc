@@ -221,10 +221,10 @@ export const upsertProjectAttachment = async (
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
     attachmentResult = await updateProjectAttachment(file, projectId, attachmentType, connection);
+  } else {
+    // No matching attachment found, insert new attachment
+    attachmentResult = await insertProjectAttachment(file, projectId, attachmentType, key, connection);
   }
-
-  // No matching attachment found, insert new attachment
-  attachmentResult = await insertProjectAttachment(file, projectId, attachmentType, key, connection);
 
   return { ...attachmentResult, key };
 };
