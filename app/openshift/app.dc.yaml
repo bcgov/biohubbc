@@ -128,6 +128,10 @@ objects:
                   value: ${REACT_APP_N8N_HOST}
                 - name: REACT_APP_SITEMINDER_LOGOUT_URL
                   value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
+                - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+                  value: ${REACT_APP_MAX_UPLOAD_NUM_FILES}
+                - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+                  value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: REACT_APP_NODE_ENV
