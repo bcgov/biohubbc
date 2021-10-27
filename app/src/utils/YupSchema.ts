@@ -163,7 +163,8 @@ yup.addMethod(yup.array, 'isUniqueAuthor', function (message: string) {
 
     let seen = new Set();
     const hasDuplicates = values.some((author) => {
-      return seen.size === seen.add(author.last_name).size;
+      const authorName = `${author.first_name?.trim()} ${author.last_name?.trim()}`;
+      return seen.size === seen.add(authorName).size;
     });
 
     return !hasDuplicates;

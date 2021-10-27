@@ -117,6 +117,13 @@ declare module 'yup' {
       message: string
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
 
+    /**
+     * Determine if the author array contains unique `first_name`/`last_name` pairs.
+     *
+     * @param {string} message
+     * @return {*}  {(yup.StringSchema<string | undefined, Record<string, any>, string | undefined>)}
+     * @memberof ArraySchema
+     */
     isUniqueAuthor(message: string): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
   }
 }
