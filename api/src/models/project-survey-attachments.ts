@@ -29,3 +29,32 @@ export class GetAttachmentsData {
       [];
   }
 }
+
+export interface ReportAttachmentAuthor {
+  first_name: string;
+  last_name: string;
+}
+
+export class PostReportAttachmentMetadata {
+  title: string;
+  year_published: string;
+  authors: ReportAttachmentAuthor[];
+  description: string;
+
+  constructor(obj?: any) {
+    this.title = (obj && obj?.title) || null;
+    this.year_published = (obj && obj?.year_published) || null;
+    this.authors = (obj?.authors?.length && obj.authors) || [];
+    this.description = (obj && obj?.description) || null;
+  }
+}
+
+export class PutReportAttachmentMetadata extends PostReportAttachmentMetadata {
+  revision_count: number;
+
+  constructor(obj?: any) {
+    super(obj);
+
+    this.revision_count = (obj && obj?.revision_count) || null;
+  }
+}

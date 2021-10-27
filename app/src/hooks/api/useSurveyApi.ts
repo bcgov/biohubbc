@@ -12,8 +12,9 @@ import {
   SurveyPermits,
   SurveyFundingSources
 } from 'interfaces/useSurveyApi.interface';
-
+import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
 import qs from 'qs';
 
@@ -112,19 +113,67 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     file: File,
-    attachmentType: string,
+    attachmentType?: string,
+    attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string> => {
+  ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
-    req_message.append('attachmentType', attachmentType);
+    attachmentType && req_message.append('attachmentType', attachmentType);
+
+    if (attachmentMeta) {
+      req_message.append('attachmentMeta[title]', attachmentMeta.title);
+      req_message.append('attachmentMeta[year_published]', attachmentMeta.year_published);
+      req_message.append('attachmentMeta[description]', attachmentMeta.description);
+      attachmentMeta.authors.forEach((authorObj, index) => {
+        req_message.append(`attachmentMeta[authors][${index}][first_name]`, authorObj.first_name);
+        req_message.append(`attachmentMeta[authors][${index}][last_name]`, authorObj.last_name);
+      });
+    }
 
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
+
+    return data;
+  };
+
+  /**
+   * Update survey attachment metadata.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string} attachmentType
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+  const updateSurveyAttachmentMetadata = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    attachmentType: string,
+    attachmentMeta: IReportMetaForm,
+    revisionCount: number
+  ): Promise<number> => {
+    const obj = {
+      attachment_type: attachmentType,
+      attachment_meta: {
+        title: attachmentMeta.title,
+        year_published: attachmentMeta.year_published,
+        authors: attachmentMeta.authors,
+        description: attachmentMeta.description
+      },
+      revision_count: revisionCount
+    };
+
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
+      obj
+    );
 
     return data;
   };
@@ -419,6 +468,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    updateSurveyAttachmentMetadata,
     uploadSurveySummaryResults,
     getSurveySummarySubmission,
     getSurveyAttachments,

@@ -1,5 +1,5 @@
-import { createMuiTheme } from '@material-ui/core';
 import 'styles.scss';
+import { createMuiTheme } from '@material-ui/core';
 
 const appTheme = createMuiTheme({
   breakpoints: {
@@ -89,18 +89,16 @@ const appTheme = createMuiTheme({
         padding: '20px 24px'
       }
     },
-    MuiFormLabel: {
-      asterisk: {
-        color: '#db3131',
-        '&.Mui-error': {
-          color: '#db3131'
-        }
-      }
-    },
     MuiLink: {
       root: {
         textAlign: 'left',
         color: '#1a5a96'
+      }
+    },
+    MuiLinearProgress: {
+      root: {
+        height: '6px',
+        borderRadius: '3px'
       }
     },
     MuiOutlinedInput: {

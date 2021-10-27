@@ -92,27 +92,21 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
 
     try {
-      let response;
-
       if (!props.surveyId) {
-        response = await biohubApi.project.deleteProjectAttachment(
+        await biohubApi.project.deleteProjectAttachment(
           props.projectId,
           attachment.id,
           attachment.fileType,
           attachment.securityToken
         );
       } else if (props.surveyId) {
-        response = await biohubApi.survey.deleteSurveyAttachment(
+        await biohubApi.survey.deleteSurveyAttachment(
           props.projectId,
           props.surveyId,
           attachment.id,
           attachment.fileType,
           attachment.securityToken
         );
-      }
-
-      if (!response) {
-        return;
       }
 
       props.getAttachments(true);
@@ -223,7 +217,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             <TableBody>
               {props.attachmentsList.length > 0 &&
                 props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow key={row.fileName}>
+                  <TableRow key={`${row.fileName}-${index}`}>
                     <TableCell scope="row">
                       <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
                         {row.fileName}
