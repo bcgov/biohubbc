@@ -235,10 +235,10 @@ export const upsertSurveyAttachment = async (
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
     attachmentResult = await updateSurveyAttachment(file, surveyId, attachmentType, connection);
+  } else {
+    // No matching attachment found, insert new attachment
+    attachmentResult = await insertSurveyAttachment(file, projectId, surveyId, attachmentType, connection);
   }
-
-  // No matching attachment found, insert new attachment
-  attachmentResult = await insertSurveyAttachment(file, projectId, surveyId, attachmentType, connection);
 
   return { ...attachmentResult, key };
 };

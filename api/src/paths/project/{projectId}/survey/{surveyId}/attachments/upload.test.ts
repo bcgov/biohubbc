@@ -135,7 +135,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0 });
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0, key: '1/1/test.txt' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {
@@ -158,7 +158,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0 });
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0, key: '1/1/test.txt' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const result = upload.uploadMedia();
@@ -177,7 +177,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0 });
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0, key: '1/1/test.txt' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const result = upload.uploadMedia();
@@ -192,7 +192,7 @@ describe('uploadMedia', () => {
   });
 });
 
-describe('upsertSurveyAttachment', () => {
+describe.only('upsertSurveyAttachment', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -280,7 +280,7 @@ describe('upsertSurveyAttachment', () => {
     }
   });
 
-  it('should return the id and revision_count of records updated on success (update)', async () => {
+  it('should return the id, revision_count of records updated on success (update)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -302,7 +302,7 @@ describe('upsertSurveyAttachment', () => {
       query: mockQuery
     });
 
-    expect(result).to.eql({ id: 1, revision_count: 0 });
+    expect(result).to.eql({ id: 1, revision_count: 0, key: 'projects/1/surveys/2/test.txt' });
   });
 
   it('should throw an error when failed to generate SQL insert statement', async () => {
@@ -367,7 +367,7 @@ describe('upsertSurveyAttachment', () => {
       })
       .onSecondCall()
       .resolves({
-        rows: [{ id: 12, revision_count: 0 }]
+        rows: [{ id: 12, revision_count: 0, key: 'projects/1/surveys/2/test.txt' }]
       });
 
     sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
@@ -378,6 +378,6 @@ describe('upsertSurveyAttachment', () => {
       query: mockQuery
     });
 
-    expect(result).to.eql({ id: 12, revision_count: 0 });
+    expect(result).to.eql({ id: 12, revision_count: 0, key: 'projects/1/surveys/2/test.txt' });
   });
 });
