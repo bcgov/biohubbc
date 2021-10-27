@@ -1,16 +1,21 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { PutReportAttachmentMetadata, ReportAttachmentAuthor } from '../../models/project-survey-attachments';
 import {
   getSurveyAttachmentsSQL,
   deleteSurveyAttachmentSQL,
   getSurveyAttachmentS3KeySQL,
   postSurveyAttachmentSQL,
   getSurveyAttachmentByFileNameSQL,
+  getSurveyReportAttachmentByFileNameSQL,
   putSurveyAttachmentSQL,
   getSurveyReportAttachmentsSQL,
   deleteSurveyReportAttachmentSQL,
   postSurveyReportAttachmentSQL,
-  putSurveyReportAttachmentSQL
+  putSurveyReportAttachmentSQL,
+  updateProjectReportAttachmentMetadataSQL,
+  insertSurveyReportAttachmentAuthorSQL,
+  deleteSurveyReportAttachmentAuthorsSQL
 } from './survey-attachments-queries';
 
 const post_sample_attachment_meta = {
@@ -242,6 +247,26 @@ describe('getSurveyAttachmentByFileNameSQL', () => {
   });
 });
 
+describe('getSurveyReportAttachmentByFileNameSQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getSurveyReportAttachmentByFileNameSQL((null as unknown) as number, 'name');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileName provided', () => {
+    const response = getSurveyReportAttachmentByFileNameSQL(1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid surveyId and fileName provided', () => {
+    const response = getSurveyReportAttachmentByFileNameSQL(1, 'name');
+
+    expect(response).to.not.be.null;
+  });
+});
+
 describe('putSurveyAttachmentSQL', () => {
   it('returns null response when null surveyId provided', () => {
     const response = putSurveyAttachmentSQL((null as unknown) as number, 'name', 'type');
@@ -263,6 +288,86 @@ describe('putSurveyAttachmentSQL', () => {
 
   it('returns non null response when valid params provided', () => {
     const response = putSurveyAttachmentSQL(1, 'name', 'type');
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('updateProjectReportAttachmentMetadataSQL', () => {
+  const report_metadata = {
+    title: 'title',
+    year_published: '2000',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'description',
+    revision_count: 0
+  };
+  it('returns null response when null surveyId provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL((null as unknown) as number, 1, report_metadata);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, (null as unknown) as number, report_metadata);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null report metadata provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, 1, (null as unknown) as PutReportAttachmentMetadata);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, 1, report_metadata);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('insertSurveyReportAttachmentAuthorSQL', () => {
+  const report_attachment_author = {
+    first_name: 'John',
+    last_name: 'Smith'
+  };
+  it('returns null response when null attachmentId provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL((null as unknown) as number, report_attachment_author);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null author provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL(1, (null as unknown) as ReportAttachmentAuthor);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId and null author provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL(
+      (null as unknown) as number,
+      (null as unknown) as ReportAttachmentAuthor
+    );
+
+    expect(response).to.be.null;
+  });
+
+  it('returns not null response when valid params are provided', () => {
+    const response = insertSurveyReportAttachmentAuthorSQL(1, report_attachment_author);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteSurveyReportAttachmentAuthorSQL', () => {
+  it('returns null response when null attachmentId provided', () => {
+    const response = deleteSurveyReportAttachmentAuthorsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns not null response when valid params are provided', () => {
+    const response = deleteSurveyReportAttachmentAuthorsSQL(1);
 
     expect(response).to.not.be.null;
   });
