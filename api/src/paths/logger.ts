@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
+import { HTTP400 } from '../errors/CustomError';
 import { getLogger } from '../utils/logger';
 
 export const GET: Operation = [updateLoggerLevel()];
@@ -52,7 +53,7 @@ GET.apiDoc = {
 export function updateLoggerLevel(): RequestHandler {
   return (req, res) => {
     if (!req.query?.level) {
-      res.status(400).send('Missing required query param `level`');
+      throw new HTTP400('Missing required query param `level`');
     }
 
     // Update default logger log level
