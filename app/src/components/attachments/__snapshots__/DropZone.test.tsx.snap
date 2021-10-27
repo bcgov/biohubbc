@@ -49,23 +49,27 @@ exports[`DropZone matches the snapshot 1`] = `
             class="MuiBox-root MuiBox-root-9"
           >
             <span
-              class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
-              Accepted file types: .txt
+              Accepted files: .txt
             </span>
           </div>
           <div
             class="MuiBox-root MuiBox-root-10"
           >
             <span
-              class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
               Maximum file size: 50 MB
             </span>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-11"
+          >
             <span
-              class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
-               | Maximum file count: 10
+              Maximum files: 10
             </span>
           </div>
         </div>
