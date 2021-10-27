@@ -9,6 +9,7 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Tooltip from '@material-ui/core/Tooltip';
 import {
   mdiClipboardCheckMultipleOutline,
   mdiTrashCanOutline,
@@ -37,7 +38,6 @@ import { DeleteProjectI18N, PublishProjectI18N } from 'constants/i18n';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { APIError } from 'hooks/api/useAxios';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { Tooltip } from '@material-ui/core';
 import { ProjectStatusType } from 'constants/misc';
 import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';

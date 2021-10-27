@@ -51,7 +51,14 @@ export interface IDropZoneConfigProps {
    * @memberof IDropZoneProps
    */
   maxNumFiles?: number;
-
+  /**
+   * Comma separated list of allowed file extensions.
+   *
+   * Example: `'.pdf, .txt'`
+   *
+   * @type {string}
+   * @memberof IDropZoneConfigProps
+   */
   acceptedFileExtensions?: string;
 }
 
