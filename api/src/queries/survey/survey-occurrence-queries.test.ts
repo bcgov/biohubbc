@@ -259,7 +259,7 @@ describe('getOccurrenceSubmissionMessagesSQL', () => {
   });
 });
 
-describe('getTemplateMethodologySpeciesIdSQLStatement', () => {
+describe('getTemplateMethodologySpeciesSQL', () => {
   it('returns null response when null surveyId provided', () => {
     const response = getTemplateMethodologySpeciesSQL((null as unknown) as number);
 

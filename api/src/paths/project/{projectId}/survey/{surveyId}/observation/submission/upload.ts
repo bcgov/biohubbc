@@ -7,7 +7,7 @@ import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesIdSQL
+  getTemplateMethodologySpeciesSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -219,7 +219,7 @@ export const getTemplateMethodologySpeciesId = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<number | null> => {
-  const sqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId);
+  const sqlStatement = getTemplateMethodologySpeciesSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get template methodology species id sql statement');

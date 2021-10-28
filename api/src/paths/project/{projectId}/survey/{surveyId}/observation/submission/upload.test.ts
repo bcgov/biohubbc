@@ -218,7 +218,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
@@ -249,7 +249,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
@@ -280,7 +280,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQL').returns(SQL`some query`);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'insertSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_occurrence_queries, 'updateSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
@@ -339,7 +339,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(null);
 
     const result = upload.uploadMedia();
 
