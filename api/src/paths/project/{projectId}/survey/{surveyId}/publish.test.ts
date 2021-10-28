@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
+import { CustomError } from '../../../../../errors/CustomError';
 import * as survey_occurrence_queries from '../../../../../queries/survey/survey-occurrence-queries';
 import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
@@ -63,8 +64,8 @@ describe('publishSurveyAndOccurrences', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Missing required path parameter: surveyId');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path parameter: surveyId');
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 
@@ -82,8 +83,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: (null as unknown) as any }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Missing request body');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing request body');
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 
@@ -101,8 +102,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { ...sampleReq.body, publish: undefined } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Missing publish flag in request body');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing publish flag in request body');
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 
@@ -122,8 +123,10 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to build get survey occurrence submission SQL statement');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal(
+        'Failed to build get survey occurrence submission SQL statement'
+      );
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 
@@ -147,8 +150,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to get survey occurrence submissions');
-      expect(actualError.status).to.equal(500);
+      expect((actualError as CustomError).message).to.equal('Failed to get survey occurrence submissions');
+      expect((actualError as CustomError).status).to.equal(500);
     }
   });
 
@@ -170,8 +173,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to build delete survey occurrences SQL statement');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build delete survey occurrences SQL statement');
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 
@@ -197,8 +200,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to delete survey occurrences');
-      expect(actualError.status).to.equal(500);
+      expect((actualError as CustomError).message).to.equal('Failed to delete survey occurrences');
+      expect((actualError as CustomError).status).to.equal(500);
     }
   });
 
@@ -218,8 +221,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result(sampleReq, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to build survey publish SQL statement');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build survey publish SQL statement');
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 
@@ -243,8 +246,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result(sampleReq, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to update survey publish status');
-      expect(actualError.status).to.equal(500);
+      expect((actualError as CustomError).message).to.equal('Failed to update survey publish status');
+      expect((actualError as CustomError).status).to.equal(500);
     }
   });
 

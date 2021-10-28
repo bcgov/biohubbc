@@ -10,6 +10,7 @@ import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../utils/file-utils';
 import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
+import { CustomError } from '../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -60,8 +61,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -78,8 +79,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -96,8 +97,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `attachmentType`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required body param `attachmentType`');
     }
   });
 
@@ -117,8 +118,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL unsecure record statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL unsecure record statement');
     }
   });
 
@@ -143,8 +144,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to unsecure record');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to unsecure record');
     }
   });
 
@@ -170,8 +171,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete project attachment statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete project attachment statement');
     }
   });
 

@@ -7,6 +7,7 @@ import * as permit_create_queries from '../../queries/permit/permit-create-queri
 import * as db from '../../database/db';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { CustomError } from '../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -66,8 +67,8 @@ describe('create-no-sampling', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect(actualError.status).to.equal(400);
-        expect(actualError.message).to.equal('Missing request body param `permit`');
+        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as CustomError).message).to.equal('Missing request body param `permit`');
       }
     });
 
@@ -84,8 +85,8 @@ describe('create-no-sampling', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect(actualError.status).to.equal(400);
-        expect(actualError.message).to.equal('Missing request body param `coordinator`');
+        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as CustomError).message).to.equal('Missing request body param `coordinator`');
       }
     });
 
@@ -112,7 +113,7 @@ describe('create-no-sampling', () => {
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect(actualError.message).to.equal(expectedError.message);
+        expect((actualError as CustomError).message).to.equal(expectedError.message);
       }
     });
   });
@@ -152,8 +153,8 @@ describe('insertNoSamplePermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -172,8 +173,8 @@ describe('insertNoSamplePermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert non-sampling permit data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert non-sampling permit data');
     }
   });
 
@@ -192,8 +193,8 @@ describe('insertNoSamplePermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert non-sampling permit data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert non-sampling permit data');
     }
   });
 

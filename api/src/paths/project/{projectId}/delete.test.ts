@@ -14,6 +14,7 @@ import { getMockDBConnection } from '../../../__mocks__/db';
 import * as delete_project from './delete';
 import * as survey_delete from './survey/{surveyId}/delete';
 import * as file_utils from '../../../utils/file-utils';
+import { CustomError } from '../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -59,8 +60,8 @@ describe('deleteProject', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param: `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param: `projectId`');
     }
   });
 
@@ -80,8 +81,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -106,8 +107,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get the project');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get the project');
     }
   });
 
@@ -136,8 +137,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get the project');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get the project');
     }
   });
 
@@ -170,8 +171,10 @@ describe('deleteProject', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Cannot delete a published project if you are not a system administrator.');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal(
+        'Cannot delete a published project if you are not a system administrator.'
+      );
     }
   });
 
@@ -202,8 +205,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -240,8 +243,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get project attachments');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get project attachments');
     }
   });
 
@@ -281,8 +284,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get survey ids associated to project');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get survey ids associated to project');
     }
   });
 
@@ -324,8 +327,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 

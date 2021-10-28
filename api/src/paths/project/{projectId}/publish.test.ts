@@ -8,6 +8,7 @@ import * as project_update_queries from '../../../queries/project/project-update
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../__mocks__/db';
+import { CustomError } from '../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -60,8 +61,8 @@ describe('project/{projectId}/publish', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path parameter: projectId');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path parameter: projectId');
     }
   });
 
@@ -83,8 +84,8 @@ describe('project/{projectId}/publish', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing request body');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing request body');
     }
   });
 
@@ -106,8 +107,8 @@ describe('project/{projectId}/publish', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing publish flag in request body');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing publish flag in request body');
     }
   });
 
@@ -126,8 +127,8 @@ describe('project/{projectId}/publish', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
     }
   });
 
@@ -152,8 +153,8 @@ describe('project/{projectId}/publish', () => {
       await result(sampleReq, sampleRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to update project publish status');
+      expect((actualError as CustomError).status).to.equal(500);
+      expect((actualError as CustomError).message).to.equal('Failed to update project publish status');
     }
   });
 
