@@ -7,7 +7,7 @@ import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesSQL
+  getTemplateMethodologySpeciesIdSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -219,18 +219,18 @@ export const getTemplateMethodologySpeciesId = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<number | null> => {
-  const sqlStatement = getTemplateMethodologySpeciesSQL(surveyId);
+  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId);
 
-  if (!sqlStatement) {
+  if (!getIdSqlStatement) {
     throw new HTTP400('Failed to build SQL get template methodology species id sql statement');
   }
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
 
-  if (!response) {
+  if (!getIdResponse) {
     throw new HTTP400('Failed to query template methodology species table');
   }
 
-  return response.rows?.[0]?.template_methodology_species_id || null;
+  return getIdResponse?.rows?.[0]?.template_methodology_species_id || null;
 };
 
 /**

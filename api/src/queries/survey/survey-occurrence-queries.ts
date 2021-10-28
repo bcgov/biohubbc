@@ -552,3 +552,47 @@ export const getTemplateMethodologySpeciesSQL = (occurrenceId: number): SQLState
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get a template methodology species id.
+ *
+ * @param {number} surveyId
+ * @param {string} source
+ * @param {string} inputKey
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getTemplateMethodologySpeciesIdSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getTemplateMethodologySpeciesIdSQLStatement',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      tms.template_methodology_species_id
+    FROM
+      template_methodology_species tms
+    LEFT OUTER JOIN
+      template t on tms.template_id = t.template_id
+    LEFT OUTER JOIN
+      common_survey_methodology csm  on tms.common_survey_methodology_id = csm.common_survey_methodology_id
+    LEFT OUTER JOIN
+      survey s on csm.common_survey_methodology_id = s.common_survey_methodology_id
+    WHERE
+      s.survey_id = ${surveyId};
+    `;
+
+  defaultLog.debug({
+    label: 'getTemplateMethodologySpeciesIdSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

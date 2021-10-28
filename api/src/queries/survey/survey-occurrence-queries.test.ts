@@ -6,6 +6,7 @@ import {
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
   getTemplateMethodologySpeciesSQL,
+  getTemplateMethodologySpeciesIdSQL,
   insertSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
@@ -259,15 +260,15 @@ describe('getOccurrenceSubmissionMessagesSQL', () => {
   });
 });
 
-describe('getTemplateMethodologySpeciesSQL', () => {
+describe('getTemplateMethodologySpeciesIdSQL', () => {
   it('returns null response when null surveyId provided', () => {
-    const response = getTemplateMethodologySpeciesSQL((null as unknown) as number);
+    const response = getTemplateMethodologySpeciesIdSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesSQL(1);
+    const response = getTemplateMethodologySpeciesIdSQL(1);
 
     expect(response).to.not.be.null;
   });

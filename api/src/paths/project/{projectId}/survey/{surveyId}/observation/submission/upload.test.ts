@@ -339,7 +339,7 @@ describe('uploadObservationSubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesIdSQL').returns(null);
 
     const result = upload.uploadMedia();
 
