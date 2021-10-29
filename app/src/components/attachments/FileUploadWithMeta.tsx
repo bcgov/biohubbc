@@ -58,7 +58,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             </Box>
           )}
         </Box>
-      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} replace={true} />}
+      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
     </form>
   );
 };
