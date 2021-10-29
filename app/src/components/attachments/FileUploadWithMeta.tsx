@@ -4,7 +4,7 @@ import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
-import FileUpload from './FileUpload';
+import FileUpload, { IReplaceHandler } from './FileUpload';
 import { IFileHandler, IOnUploadSuccess, IUploadHandler, UploadFileStatus } from './FileUploadItem';
 
 export interface IFileUploadWithMetaProps {
@@ -17,10 +17,14 @@ export interface IFileUploadWithMetaProps {
 export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) => {
   const { handleSubmit, setFieldValue, errors } = useFormikContext<IReportMetaForm>();
 
-  const fileHandler: IFileHandler = (file: File) => {
+  const fileHandler: IFileHandler = (file) => {
     setFieldValue('attachmentFile', file);
 
     props.fileHandler?.(file);
+  };
+
+  const replaceHandler: IReplaceHandler = () => {
+    setFieldValue('attachmentFile', null);
   };
 
   return (
@@ -38,9 +42,15 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
           <FileUpload
             uploadHandler={props.uploadHandler}
             fileHandler={fileHandler}
+            onReplace={replaceHandler}
             onSuccess={props.onSuccess}
-            dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.REPORT }}
+            dropZoneProps={{
+              maxNumFiles: 1,
+              multiple: false,
+              acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.REPORT
+            }}
             status={UploadFileStatus.STAGED}
+            replace={true}
           />
           {errors?.attachmentFile && (
             <Box>
@@ -48,7 +58,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             </Box>
           )}
         </Box>
-      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} />}
+      )) || <FileUpload uploadHandler={props.uploadHandler} onSuccess={props.onSuccess} replace={true} />}
     </form>
   );
 };

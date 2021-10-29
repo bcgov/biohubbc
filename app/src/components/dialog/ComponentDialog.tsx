@@ -1,5 +1,5 @@
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+import Dialog, { DialogProps } from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -28,6 +28,13 @@ export interface IComponentDialogProps {
    * @memberof IComponentDialogProps
    */
   onClose: () => void;
+  /**
+   * `Dialog` props passthrough.
+   *
+   * @type {Partial<DialogProps>}
+   * @memberof IComponentDialogProps
+   */
+  dialogProps?: Partial<DialogProps>;
 }
 
 /**
@@ -53,7 +60,8 @@ const ComponentDialog: React.FC<IComponentDialogProps> = (props) => {
       maxWidth="xl"
       open={props.open}
       aria-labelledby="component-dialog-title"
-      aria-describedby="component-dialog-description">
+      aria-describedby="component-dialog-description"
+      {...props.dialogProps}>
       <DialogTitle id="component-dialog-title">{props.dialogTitle}</DialogTitle>
       <DialogContent>{props.children}</DialogContent>
       <DialogActions>

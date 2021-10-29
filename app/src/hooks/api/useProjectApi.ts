@@ -71,11 +71,22 @@ const useProjectApi = (axios: AxiosInstance) => {
   /**
    * Get project attachment S3 url based on project and attachment ID
    *
-   * @param {AxiosInstance} axios
-   * @returns {*} {Promise<string>}
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @return {*}  {Promise<string>}
    */
-  const getAttachmentSignedURL = async (projectId: number, attachmentId: number): Promise<string> => {
-    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`);
+  const getAttachmentSignedURL = async (
+    projectId: number,
+    attachmentId: number,
+    attachmentType: string
+  ): Promise<string> => {
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+      params: { attachmentType: attachmentType },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
 
     return data;
   };
@@ -381,8 +392,11 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
     attachmentId: number,
     attachmentType: string
   ): Promise<string> => {
-    const { data } = await axios.post(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
-      attachmentType
+    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+      params: { attachmentType: attachmentType },
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
     });
 
     return data;

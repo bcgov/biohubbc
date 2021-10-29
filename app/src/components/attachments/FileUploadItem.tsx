@@ -66,7 +66,7 @@ export type IUploadHandler<T = any> = (
   handleFileUploadProgress: (progressEvent: ProgressEvent) => void
 ) => Promise<T>;
 
-export type IFileHandler = (file: File) => void;
+export type IFileHandler = (file: File | null) => void;
 
 export type IOnUploadSuccess = (response: any) => void;
 
@@ -194,6 +194,7 @@ const FileUploadItem: React.FC<IFileUploadItemProps> = (props) => {
 
     // trigger the parents onCancel hook, as this component is in a state where it can be safely cancelled
     props.onCancel();
+    props.fileHandler?.(null);
   }, [initiateCancel, isSafeToCancel, props]);
 
   return (

@@ -52,6 +52,16 @@ export interface IDropZoneConfigProps {
    */
   maxNumFiles?: number;
   /**
+   * Allow selecting multiple files while browsing.
+   * Default: true
+   *
+   * Note: Does not impact drag/drop.
+   *
+   * @type {boolean}
+   * @memberof IDropZoneProps
+   */
+  multiple?: boolean;
+  /**
    * Comma separated list of allowed file extensions.
    *
    * Example: `'.pdf, .txt'`
@@ -68,6 +78,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
 
   const maxNumFiles = props.maxNumFiles || config?.MAX_UPLOAD_NUM_FILES;
   const maxFileSize = props.maxFileSize || config?.MAX_UPLOAD_FILE_SIZE;
+  const multiple = props.multiple ?? true;
   const acceptedFileExtensions = props.acceptedFileExtensions;
 
   return (
@@ -75,6 +86,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
       <Dropzone
         maxFiles={maxNumFiles}
         maxSize={maxFileSize}
+        multiple={multiple}
         onDrop={props.onFiles}
         accept={props.acceptedFileExtensions}>
         {({ getRootProps, getInputProps }) => (
@@ -83,7 +95,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
             <Box p={2} display="flex" flexDirection="column" alignItems="center">
               <Icon className={classes.dropZoneIcon} path={mdiUpload} size={1.5} />
               <Box mt={0.5} className={classes.dropZoneTitle}>
-                Drag your files here, or <Link underline="always">Browse Files</Link>
+                Drag your {(multiple && 'files') || 'file'} here, or <Link underline="always">Browse Files</Link>
               </Box>
               <Box textAlign="center">
                 {acceptedFileExtensions && (
