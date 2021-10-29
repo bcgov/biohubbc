@@ -185,6 +185,41 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
 };
 
 /**
+ * SQL query to get S3 key of a report attachment for a single project.
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectReportAttachmentS3KeySQL = (projectId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectReportAttachmentS3KeySQL', message: 'params', projectId });
+
+  if (!projectId || !attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      key
+    FROM
+      project_report_attachment
+    WHERE
+      project_id = ${projectId}
+    AND
+      project_report_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectReportAttachmentS3KeySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to insert a project attachment row.
  *
  * @param fileName

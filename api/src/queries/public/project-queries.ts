@@ -512,13 +512,14 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
 /**
  * SQL query to get S3 key of an attachment for a single public (published) project.
  *
+ * @param {number} projectId
  * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
-export const getPublicProjectAttachmentS3KeySQL = (attachmentId: number): SQLStatement | null => {
+export const getPublicProjectAttachmentS3KeySQL = (projectId: number, attachmentId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getPublicProjectAttachmentS3KeySQL', message: 'params', attachmentId });
 
-  if (!attachmentId) {
+  if (!projectId || !attachmentId) {
     return null;
   }
 
@@ -529,6 +530,8 @@ export const getPublicProjectAttachmentS3KeySQL = (attachmentId: number): SQLSta
     FROM
       project_attachment
     WHERE
+      project_id = ${projectId}
+    AND
       project_attachment_id = ${attachmentId};
   `;
 
@@ -545,13 +548,17 @@ export const getPublicProjectAttachmentS3KeySQL = (attachmentId: number): SQLSta
 /**
  * SQL query to get S3 key of a report attachment for a single public (published) project.
  *
+ * @param {number} projectId
  * @param {number} attachmentId
  * @returns {SQLStatement} sql query object
  */
-export const getPublicProjectReportAttachmentS3KeySQL = (attachmentId: number): SQLStatement | null => {
+export const getPublicProjectReportAttachmentS3KeySQL = (
+  projectId: number,
+  attachmentId: number
+): SQLStatement | null => {
   defaultLog.debug({ label: 'getPublicProjectReportAttachmentS3KeySQL', message: 'params', attachmentId });
 
-  if (!attachmentId) {
+  if (!projectId || !attachmentId) {
     return null;
   }
 
@@ -562,6 +569,8 @@ export const getPublicProjectReportAttachmentS3KeySQL = (attachmentId: number): 
     FROM
       project_report_attachment
     WHERE
+      project_id = ${projectId}
+    AND
       project_report_attachment_id = ${attachmentId};
   `;
 

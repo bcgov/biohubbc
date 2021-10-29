@@ -185,6 +185,41 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
 };
 
 /**
+ * SQL query to get S3 key of a report attachment for a single survey.
+ *
+ * @param {number} surveyId
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyReportAttachmentS3KeySQL = (surveyId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getSurveyReportAttachmentS3KeySQL', message: 'params', surveyId });
+
+  if (!surveyId || !attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      key
+    FROM
+      survey_report_attachment
+    WHERE
+      survey_id = ${surveyId}
+    AND
+      survey_report_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyReportAttachmentS3KeySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to insert a survey attachment row.
  *
  * @param {string} fileName

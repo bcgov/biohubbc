@@ -129,10 +129,12 @@ describe('useSurveyApi', () => {
     const signedUrl = 'url.com';
 
     mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`)
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`, {
+        query: { attachmentType: 'Report' }
+      })
       .reply(200, signedUrl);
 
-    const result = await useSurveyApi(axios).getSurveyAttachmentSignedURL(projectId, surveyId, attachmentId);
+    const result = await useSurveyApi(axios).getSurveyAttachmentSignedURL(projectId, surveyId, attachmentId, 'Report');
 
     expect(result).toEqual(signedUrl);
   });

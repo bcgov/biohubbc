@@ -39,11 +39,66 @@ export interface IUploadFileListProps {
   files: IUploadFile[];
 }
 
+export type IReplaceHandler = () => void;
+
 export interface IFileUploadProps {
+  /**
+   * Callback fired for each file in the list
+   *
+   * @type {IUploadHandler}
+   * @memberof IFileUploadProps
+   */
   uploadHandler: IUploadHandler;
+  /**
+   * Callback fired for each accepted file in the list (that do not have any `DropZone` errors (size, count, extension).
+   *
+   * @type {IFileHandler}
+   * @memberof IFileUploadProps
+   */
   fileHandler?: IFileHandler;
+  /**
+   * Callback fired when `uploadHandler` runs successfully fora  given file. Will run once for each file that is
+   * uploaded.
+   *
+   * @type {IOnUploadSuccess}
+   * @memberof IFileUploadProps
+   */
   onSuccess?: IOnUploadSuccess;
+  /**
+   * Manually dictate the status.
+   *
+   * Note: some component events are automatically triggered based on a change of status.
+   *
+   * @type {UploadFileStatus}
+   * @memberof IFileUploadProps
+   */
   status?: UploadFileStatus;
+  /**
+   * If the component should replace the selected files, rather than appending them.
+   * Default: false
+   *
+   * Example:
+   * - WIth replace=false, selecting FileA and then selecting FileB will result in both FileA and FileB in the upload
+   * list.
+   * - With replace=true, selecting FileA and then selecting FileB will result in only FileB in the upload list.
+   *
+   * Note: This will not change how many files are uploaded, only how many files appear in the list. So if
+   * a file is in the middle of uploading when it is replaced, that file will still continue to upload even though it
+   * is not visible in the upload list.
+   *
+   * @type {boolean}
+   * @memberof IFileUploadProps
+   */
+  replace?: boolean;
+  /**
+   * Callback fired when files are replaced.
+   *
+   * Note: Does nothing if `replace` is not set to `true`.
+   *
+   * @type {IReplaceHandler}
+   * @memberof IFileUploadProps
+   */
+  onReplace?: IReplaceHandler;
   dropZoneProps?: Partial<IDropZoneConfigProps>;
 }
 
@@ -93,14 +148,24 @@ export const FileUpload: React.FC<IFileUploadProps> = (props) => {
       });
     });
 
-    setFiles((currentFiles) => [...currentFiles, ...newAcceptedFiles, ...newRejectedFiles]);
-
-    setFileUploadItems(
-      fileUploadItems.concat([
+    if (props.replace) {
+      // Replace current files with new files
+      setFiles([...newAcceptedFiles, ...newRejectedFiles]);
+      setFileUploadItems([
         ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.error)),
         ...newRejectedFiles.map((item) => getFileUploadItem(item.file, item.error))
-      ])
-    );
+      ]);
+      props.onReplace?.();
+    } else {
+      // Append new files to current files
+      setFiles((currentFiles) => [...currentFiles, ...newAcceptedFiles, ...newRejectedFiles]);
+      setFileUploadItems(
+        fileUploadItems.concat([
+          ...newAcceptedFiles.map((item) => getFileUploadItem(item.file, item.error)),
+          ...newRejectedFiles.map((item) => getFileUploadItem(item.file, item.error))
+        ])
+      );
+    }
   };
 
   const getFileUploadItem = (file: File, error?: string) => {

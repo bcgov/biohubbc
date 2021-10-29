@@ -115,14 +115,19 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const viewFileContents = async (attachment: any) => {
+  const viewFileContents = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     try {
       let response;
 
       if (props.surveyId) {
-        response = await biohubApi.survey.getSurveyAttachmentSignedURL(props.projectId, props.surveyId, attachment.id);
+        response = await biohubApi.survey.getSurveyAttachmentSignedURL(
+          props.projectId,
+          props.surveyId,
+          attachment.id,
+          attachment.fileType
+        );
       } else {
-        response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id);
+        response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id, attachment.fileType);
       }
 
       if (!response) {

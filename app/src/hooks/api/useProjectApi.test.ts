@@ -67,14 +67,6 @@ describe('useProjectApi', () => {
     expect(result).toEqual(1);
   });
 
-  it('getAttachmentSignedURL works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`).reply(200, 'www.signedurl.com');
-
-    const result = await useProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId);
-
-    expect(result).toEqual('www.signedurl.com');
-  });
-
   it('getProjectsList works as expected', async () => {
     const response = [
       {
@@ -263,10 +255,12 @@ describe('useProjectApi', () => {
 
   it('getAttachmentSignedURL works as expected', async () => {
     mock
-      .onPost(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`)
+      .onGet(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+        query: { attachmentType: 'Other' }
+      })
       .reply(200, 'www.signedurl.com');
 
-    const result = await usePublicProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Image');
+    const result = await usePublicProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Other');
 
     expect(result).toEqual('www.signedurl.com');
   });

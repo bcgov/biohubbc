@@ -313,16 +313,26 @@ const useSurveyApi = (axios: AxiosInstance) => {
   /**
    * Get survey attachment S3 url based on survey and attachment ID
    *
-   * @param {AxiosInstance} axios
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
    * @returns {*} {Promise<string>}
    */
   const getSurveyAttachmentSignedURL = async (
     projectId: number,
     surveyId: number,
-    attachmentId: number
+    attachmentId: number,
+    attachmentType: string
   ): Promise<string> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`,
+      {
+        params: { attachmentType: attachmentType },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      }
     );
 
     return data;

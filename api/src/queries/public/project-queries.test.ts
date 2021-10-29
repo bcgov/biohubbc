@@ -17,14 +17,20 @@ import {
 } from './project-queries';
 
 describe('getPublicProjectReportAttachmentS3KeySQL', () => {
+  it('returns null when null project id param provided', () => {
+    const response = getPublicProjectReportAttachmentS3KeySQL((null as unknown) as number, 2);
+
+    expect(response).to.be.null;
+  });
+
   it('returns null when null attachment id param provided', () => {
-    const response = getPublicProjectReportAttachmentS3KeySQL((null as unknown) as number);
+    const response = getPublicProjectReportAttachmentS3KeySQL(1, (null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid attachment id param provided', () => {
-    const response = getPublicProjectReportAttachmentS3KeySQL(1);
+    const response = getPublicProjectReportAttachmentS3KeySQL(1, 2);
 
     expect(response).to.not.be.null;
   });
@@ -179,14 +185,20 @@ describe('getPublicProjectAttachmentsSQL', () => {
 });
 
 describe('getPublicProjectAttachmentS3KeySQL', () => {
-  it('returns null when null attachment id param provided', () => {
-    const response = getPublicProjectAttachmentS3KeySQL((null as unknown) as number);
+  it('returns null when null project id param provided', () => {
+    const response = getPublicProjectAttachmentS3KeySQL((null as unknown) as number, 2);
 
     expect(response).to.be.null;
   });
 
-  it('returns non null response when valid attachment id param provided', () => {
-    const response = getPublicProjectAttachmentS3KeySQL(1);
+  it('returns null when null attachment id param provided', () => {
+    const response = getPublicProjectAttachmentS3KeySQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid params provided', () => {
+    const response = getPublicProjectAttachmentS3KeySQL(1, 2);
 
     expect(response).to.not.be.null;
   });

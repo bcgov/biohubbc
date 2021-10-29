@@ -32,20 +32,26 @@ describe('AttachmentsList', () => {
     {
       id: 1,
       fileName: 'filename.test',
+      fileType: 'Other',
       lastModified: '2021-04-09 11:53:53',
-      size: 3028
+      size: 3028,
+      securityToken: null
     },
     {
       id: 20,
       fileName: 'filename20.test',
+      fileType: 'Report',
       lastModified: '2021-04-09 11:53:53',
-      size: 30280000
+      size: 30280000,
+      securityToken: null
     },
     {
       id: 30,
       fileName: 'filename30.test',
+      fileType: 'Other',
       lastModified: '2021-04-09 11:53:53',
-      size: 30280000000
+      size: 30280000000,
+      securityToken: null
     }
   ];
 

@@ -1,23 +1,28 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
+import { SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { getAPIUserDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
-import { getLogger } from '../../../../../../utils/logger';
-import { getAPIUserDBConnection } from '../../../../../../database/db';
-import { getS3SignedURL } from '../../../../../../utils/file-utils';
 import {
   getPublicProjectAttachmentS3KeySQL,
   getPublicProjectReportAttachmentS3KeySQL
 } from '../../../../../../queries/public/project-queries';
+import { getS3SignedURL } from '../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/public/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
-export const POST: Operation = [getSingleAttachmentURL()];
+export const GET: Operation = [getAttachmentSignedURL()];
 
-POST.apiDoc = {
-  description: 'Retrieves the signed url of an attachment in a public (published) project by its file name.',
+GET.apiDoc = {
+  description: 'Retrieves the signed url of a public project attachment.',
   tags: ['attachment'],
+  security: [
+    {
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+    }
+  ],
   parameters: [
     {
       in: 'path',
@@ -34,18 +39,17 @@ POST.apiDoc = {
         type: 'number'
       },
       required: true
+    },
+    {
+      in: 'query',
+      name: 'attachmentType',
+      schema: {
+        type: 'string',
+        enum: ['Report', 'Other']
+      },
+      required: true
     }
   ],
-  requestBody: {
-    description: 'Current attachment type for public (published) project attachment.',
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object'
-        }
-      }
-    }
-  },
   responses: {
     200: {
       description: 'Response containing the signed url of an attachment.',
@@ -57,8 +61,17 @@ POST.apiDoc = {
         }
       }
     },
+    400: {
+      $ref: '#/components/responses/400'
+    },
     401: {
       $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
     },
     default: {
       $ref: '#/components/responses/default'
@@ -66,9 +79,14 @@ POST.apiDoc = {
   }
 };
 
-export function getSingleAttachmentURL(): RequestHandler {
+export function getAttachmentSignedURL(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get single attachment url', message: 'params', req_params: req.params });
+    defaultLog.debug({
+      label: 'getAttachmentSignedURL',
+      message: 'params',
+      req_params: req.params,
+      req_query: req.query
+    });
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
@@ -78,32 +96,30 @@ export function getSingleAttachmentURL(): RequestHandler {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
 
-    if (!req.body || !req.body.attachmentType) {
-      throw new HTTP400('Missing required body param `attachmentType`');
+    if (!req.query.attachmentType) {
+      throw new HTTP400('Missing required query param `attachmentType`');
     }
 
     const connection = getAPIUserDBConnection();
 
     try {
-      const getProjectAttachmentS3KeySQLStatement =
-        req.body.attachmentType === 'Report'
-          ? getPublicProjectReportAttachmentS3KeySQL(Number(req.params.attachmentId))
-          : getPublicProjectAttachmentS3KeySQL(Number(req.params.attachmentId));
+      let s3Key;
 
-      if (!getProjectAttachmentS3KeySQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
+      if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {
+        s3Key = await getProjectReportAttachmentS3Key(
+          Number(req.params.projectId),
+          Number(req.params.attachmentId),
+          connection
+        );
+      } else {
+        s3Key = await getPublicProjectAttachmentS3Key(
+          Number(req.params.projectId),
+          Number(req.params.attachmentId),
+          connection
+        );
       }
 
-      await connection.open();
-
-      const result = await connection.query(
-        getProjectAttachmentS3KeySQLStatement.text,
-        getProjectAttachmentS3KeySQLStatement.values
-      );
-
       await connection.commit();
-
-      const s3Key = result && result.rows.length && result.rows[0].key;
 
       const s3SignedUrl = s3Key && (await getS3SignedURL(s3Key));
 
@@ -113,7 +129,7 @@ export function getSingleAttachmentURL(): RequestHandler {
 
       return res.status(200).json(s3SignedUrl);
     } catch (error) {
-      defaultLog.error({ label: 'getSingleAttachmentURL', message: 'error', error });
+      defaultLog.error({ label: 'getAttachmentSignedURL', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -121,3 +137,43 @@ export function getSingleAttachmentURL(): RequestHandler {
     }
   };
 }
+
+export const getPublicProjectAttachmentS3Key = async (
+  projectId: number,
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<string> => {
+  const sqlStatement = getPublicProjectAttachmentS3KeySQL(projectId, attachmentId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build attachment S3 key SQLstatement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to get attachment S3 key');
+  }
+
+  return response.rows[0].key;
+};
+
+export const getProjectReportAttachmentS3Key = async (
+  projectId: number,
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<string> => {
+  const sqlStatement = getPublicProjectReportAttachmentS3KeySQL(projectId, attachmentId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build report attachment S3 key SQLstatement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to get attachment S3 key');
+  }
+
+  return response.rows[0].key;
+};
