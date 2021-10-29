@@ -6,6 +6,7 @@ import * as codes from './codes';
 import * as db from '../database/db';
 import * as code_utils from '../utils/code-utils';
 import { getMockDBConnection } from '../__mocks__/db';
+import { CustomError } from '../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -45,8 +46,8 @@ describe('codes', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect(actualError.status).to.equal(500);
-        expect(actualError.message).to.equal('Failed to fetch codes');
+        expect((actualError as CustomError).status).to.equal(500);
+        expect((actualError as CustomError).message).to.equal('Failed to fetch codes');
       }
     });
 
@@ -75,7 +76,7 @@ describe('codes', () => {
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect(actualError.message).to.equal(expectedError.message);
+        expect((actualError as CustomError).message).to.equal(expectedError.message);
       }
     });
   });

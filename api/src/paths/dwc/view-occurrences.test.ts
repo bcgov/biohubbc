@@ -7,6 +7,7 @@ import * as db from '../../database/db';
 import * as occurrence_view_queries from '../../queries/occurrence/occurrence-view-queries';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../__mocks__/db';
+import { CustomError } from '../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -50,8 +51,10 @@ describe('getOccurrencesForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required request body param `occurrence_submission_id`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal(
+        'Missing required request body param `occurrence_submission_id`'
+      );
     }
   });
 
@@ -75,8 +78,8 @@ describe('getOccurrencesForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get occurrences for view statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get occurrences for view statement');
     }
   });
 
@@ -107,8 +110,8 @@ describe('getOccurrencesForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get occurrences view data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get occurrences view data');
     }
   });
 

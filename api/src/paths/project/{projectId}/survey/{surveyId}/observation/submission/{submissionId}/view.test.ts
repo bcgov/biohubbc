@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
+import { CustomError } from '../../../../../../../../errors/CustomError';
 import * as survey_occurrence_queries from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { ArchiveFile, MediaFile } from '../../../../../../../../utils/media/media-file';
@@ -55,8 +56,8 @@ describe('getObservationSubmissionCSVForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -72,8 +73,8 @@ describe('getObservationSubmissionCSVForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -89,8 +90,8 @@ describe('getObservationSubmissionCSVForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `submissionId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `submissionId`');
     }
   });
 
@@ -110,8 +111,8 @@ describe('getObservationSubmissionCSVForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -145,8 +146,8 @@ describe('getObservationSubmissionCSVForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to retrieve file from S3');
+      expect((actualError as CustomError).status).to.equal(500);
+      expect((actualError as CustomError).message).to.equal('Failed to retrieve file from S3');
     }
   });
 
@@ -181,8 +182,8 @@ describe('getObservationSubmissionCSVForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to parse submission, file was empty');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to parse submission, file was empty');
     }
   });
 

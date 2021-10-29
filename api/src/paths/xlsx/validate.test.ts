@@ -8,6 +8,7 @@ import * as survey_occurrence_queries from '../../queries/survey/survey-occurren
 import { ArchiveFile } from '../../utils/media/media-file';
 import { getMockDBConnection } from '../../__mocks__/db';
 import SQL from 'sql-template-strings';
+import { CustomError } from '../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -67,8 +68,8 @@ describe('getTemplateMethodologySpecies', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 

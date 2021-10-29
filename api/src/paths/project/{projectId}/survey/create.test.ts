@@ -8,6 +8,7 @@ import * as survey_create_queries from '../../../../queries/survey/survey-create
 import * as survey_update_queries from '../../../../queries/survey/survey-update-queries';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../__mocks__/db';
+import { CustomError } from '../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -69,8 +70,8 @@ describe('createSurvey', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -88,8 +89,8 @@ describe('createSurvey', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing survey data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing survey data');
     }
   });
 
@@ -109,8 +110,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build survey SQL insert statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build survey SQL insert statement');
     }
   });
 
@@ -135,8 +136,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey data');
     }
   });
 
@@ -161,8 +162,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey data');
     }
   });
 
@@ -188,8 +189,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -347,8 +348,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey proprietor data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey proprietor data');
     }
   });
 
@@ -378,8 +379,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey proprietor data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey proprietor data');
     }
   });
 });
@@ -408,8 +409,8 @@ describe('insertFocalSpecies', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -425,8 +426,8 @@ describe('insertFocalSpecies', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert focal species data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert focal species data');
     }
   });
 
@@ -442,8 +443,8 @@ describe('insertFocalSpecies', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert focal species data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert focal species data');
     }
   });
 
@@ -484,8 +485,8 @@ describe('insertAncillarySpecies', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -501,8 +502,8 @@ describe('insertAncillarySpecies', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert ancillary species data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert ancillary species data');
     }
   });
 
@@ -518,8 +519,8 @@ describe('insertAncillarySpecies', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert ancillary species data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert ancillary species data');
     }
   });
 
@@ -564,8 +565,8 @@ describe('insertSurveyPermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement for insertSurveyPermit');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement for insertSurveyPermit');
     }
   });
 
@@ -579,8 +580,8 @@ describe('insertSurveyPermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement for insertSurveyPermit');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement for insertSurveyPermit');
     }
   });
 
@@ -599,8 +600,8 @@ describe('insertSurveyPermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey permit number data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey permit number data');
     }
   });
 
@@ -619,8 +620,8 @@ describe('insertSurveyPermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey permit number data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey permit number data');
     }
   });
 });
@@ -648,8 +649,10 @@ describe('insertSurveyFundingSource', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement for insertSurveyFundingSource');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal(
+        'Failed to build SQL statement for insertSurveyFundingSource'
+      );
     }
   });
 
@@ -665,8 +668,8 @@ describe('insertSurveyFundingSource', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey funding source data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey funding source data');
     }
   });
 });

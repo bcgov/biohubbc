@@ -7,7 +7,7 @@ import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesIdSQLStatement
+  getTemplateMethodologySpeciesIdSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -128,10 +128,7 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const templateMethodologyId = await getTemplateMethodologySpeciesIdStatement(
-        Number(req.params.surveyId),
-        connection
-      );
+      const templateMethodologyId = await getTemplateMethodologySpeciesId(Number(req.params.surveyId), connection);
 
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),
@@ -218,11 +215,11 @@ export const insertSurveyOccurrenceSubmission = async (
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
-export const getTemplateMethodologySpeciesIdStatement = async (
+export const getTemplateMethodologySpeciesId = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<number | null> => {
-  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQLStatement(surveyId);
+  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId);
 
   if (!getIdSqlStatement) {
     throw new HTTP400('Failed to build SQL get template methodology species id sql statement');

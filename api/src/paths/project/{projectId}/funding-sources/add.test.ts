@@ -7,6 +7,7 @@ import * as db from '../../../../database/db';
 import * as addFundingSource_queries from '../../../../queries/project/project-create-queries';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../__mocks__/db';
+import { CustomError } from '../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -57,8 +58,8 @@ describe('add a funding source', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -76,8 +77,8 @@ describe('add a funding source', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing funding source data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing funding source data');
     }
   });
 
@@ -102,8 +103,8 @@ describe('add a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert project funding source data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert project funding source data');
     }
   });
 
@@ -123,8 +124,8 @@ describe('add a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build addFundingSourceSQLStatement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build addFundingSourceSQLStatement');
     }
   });
 
@@ -149,8 +150,8 @@ describe('add a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert project funding source data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert project funding source data');
     }
   });
 

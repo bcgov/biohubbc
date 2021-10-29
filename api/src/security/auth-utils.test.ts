@@ -7,7 +7,7 @@ import * as db from '../database/db';
 import * as user_queries from '../queries/users/user-queries';
 import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
-import { HTTP401, HTTP403 } from '../errors/CustomError';
+import { CustomError, HTTP401, HTTP403 } from '../errors/CustomError';
 import { getMockDBConnection } from '../__mocks__/db';
 
 chai.use(sinonChai);
@@ -272,8 +272,8 @@ describe('authorize', function () {
       await auth_utils.authorize({ keycloak_token: 'any token' }, ['abc']);
       expect.fail();
     } catch (actualError) {
-      expect(actualError).instanceOf(HTTP403);
-      expect(actualError.message).to.equal('Access Denied');
+      expect(actualError as CustomError).instanceOf(HTTP403);
+      expect((actualError as CustomError).message).to.equal('Access Denied');
     }
   });
 
