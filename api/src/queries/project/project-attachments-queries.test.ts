@@ -1,16 +1,21 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { PutReportAttachmentMetadata, ReportAttachmentAuthor } from '../../models/project-survey-attachments';
 import {
   getProjectAttachmentsSQL,
   deleteProjectAttachmentSQL,
   getProjectAttachmentS3KeySQL,
   postProjectAttachmentSQL,
   getProjectAttachmentByFileNameSQL,
+  getProjectReportAttachmentByFileNameSQL,
   putProjectAttachmentSQL,
   postProjectReportAttachmentSQL,
   getProjectReportAttachmentsSQL,
   putProjectReportAttachmentSQL,
-  deleteProjectReportAttachmentSQL
+  deleteProjectReportAttachmentSQL,
+  updateProjectReportAttachmentMetadataSQL,
+  insertProjectReportAttachmentAuthorSQL,
+  deleteProjectReportAttachmentAuthorsSQL
 } from './project-attachments-queries';
 
 const post_sample_attachment_meta = {
@@ -227,6 +232,25 @@ describe('getProjectAttachmentByFileNameSQL', () => {
     expect(response).to.not.be.null;
   });
 });
+describe('getProjectReportAttachmentByFileNameSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = getProjectReportAttachmentByFileNameSQL((null as unknown) as number, 'name');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null fileName provided', () => {
+    const response = getProjectReportAttachmentByFileNameSQL(1, (null as unknown) as string);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectId and fileName provided', () => {
+    const response = getProjectReportAttachmentByFileNameSQL(1, 'name');
+
+    expect(response).to.not.be.null;
+  });
+});
 
 describe('putProjectAttachmentSQL', () => {
   it('returns null response when null projectId provided', () => {
@@ -269,6 +293,86 @@ describe('putProjectReportAttachmentSQL', () => {
 
   it('returns non null response when valid projectId and fileName provided', () => {
     const response = putProjectReportAttachmentSQL(1, 'name', put_sample_attachment_meta);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('updateProjectReportAttachmentMetadataSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(
+      (null as unknown) as number,
+      1,
+      put_sample_attachment_meta
+    );
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(
+      1,
+      (null as unknown) as number,
+      put_sample_attachment_meta
+    );
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null metadata provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, 1, (null as unknown) as PutReportAttachmentMetadata);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns not null response when valid parameters are provided', () => {
+    const response = updateProjectReportAttachmentMetadataSQL(1, 1, put_sample_attachment_meta);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('insertProjectReportAttachmentAuthorSQL', () => {
+  const report_attachment_author: ReportAttachmentAuthor = {
+    first_name: 'John',
+    last_name: 'Smith'
+  };
+  it('returns null response when null attachmentId provided', () => {
+    const response = insertProjectReportAttachmentAuthorSQL((null as unknown) as number, report_attachment_author);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null report author provided', () => {
+    const response = insertProjectReportAttachmentAuthorSQL(1, (null as unknown) as ReportAttachmentAuthor);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmmentId and null report author are provided', () => {
+    const response = insertProjectReportAttachmentAuthorSQL(
+      (null as unknown) as number,
+      (null as unknown) as ReportAttachmentAuthor
+    );
+    expect(response).to.be.null;
+  });
+
+  it('returns not null response when valid parameters are provided', () => {
+    const response = insertProjectReportAttachmentAuthorSQL(1, report_attachment_author);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deleteProjectReportAttachmentAuthorsSQL', () => {
+  it('returns null response when null attachmentId provided', () => {
+    const response = deleteProjectReportAttachmentAuthorsSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns not null response when valid params are provided', () => {
+    const response = deleteProjectReportAttachmentAuthorsSQL(1);
 
     expect(response).to.not.be.null;
   });

@@ -8,6 +8,7 @@ import * as project_delete_queries from '../../../../../queries/project/project-
 import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
+import { CustomError } from '../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -51,8 +52,8 @@ describe('delete a funding source', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -68,8 +69,8 @@ describe('delete a funding source', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `pfsId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `pfsId`');
     }
   });
 
@@ -90,8 +91,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -112,8 +113,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -162,8 +163,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to delete survey funding source');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to delete survey funding source');
     }
   });
 
@@ -189,8 +190,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to delete project funding source');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to delete project funding source');
     }
   });
 });

@@ -7,6 +7,7 @@ import * as db from '../../../../../../../database/db';
 import * as survey_summary_queries from '../../../../../../../queries/survey/survey-summary-queries';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import { CustomError } from '../../../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -50,8 +51,8 @@ describe('getSummarySubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -71,8 +72,10 @@ describe('getSummarySubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build getLatestSurveySummarySubmissionSQLStatement statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal(
+        'Failed to build getLatestSurveySummarySubmissionSQLStatement statement'
+      );
     }
   });
 
