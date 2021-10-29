@@ -8,6 +8,7 @@ import * as project_attachments_queries from '../../../../../queries/project/pro
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
+import { CustomError } from '../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -54,8 +55,8 @@ describe('getAttachmentSignedURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -72,8 +73,8 @@ describe('getAttachmentSignedURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -93,8 +94,8 @@ describe('getAttachmentSignedURL', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build attachment S3 key SQLstatement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build attachment S3 key SQLstatement');
     }
   });
 

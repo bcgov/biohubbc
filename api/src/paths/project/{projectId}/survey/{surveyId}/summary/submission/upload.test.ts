@@ -4,6 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../database/db';
+import { CustomError } from '../../../../../../../errors/CustomError';
 import * as survey_summary_queries from '../../../../../../../queries/survey/survey-summary-queries';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
@@ -62,8 +63,8 @@ describe('uploadSummarySubmission', () => {
       await result({ ...mockReq, files: [] }, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing upload data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing upload data');
     }
   });
 
@@ -76,8 +77,8 @@ describe('uploadSummarySubmission', () => {
       await result({ ...mockReq, files: ['file1', 'file2'] }, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Too many files uploaded, expected 1');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Too many files uploaded, expected 1');
     }
   });
 
@@ -90,8 +91,8 @@ describe('uploadSummarySubmission', () => {
       await result({ ...mockReq, params: { ...mockReq.params, projectId: null } }, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param: projectId');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param: projectId');
     }
   });
 
@@ -104,8 +105,8 @@ describe('uploadSummarySubmission', () => {
       await result({ ...mockReq, params: { ...mockReq.params, surveyId: null } }, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param: surveyId');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param: surveyId');
     }
   });
 
@@ -121,8 +122,8 @@ describe('uploadSummarySubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -142,8 +143,8 @@ describe('uploadSummarySubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Malicious content detected, upload cancelled');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Malicious content detected, upload cancelled');
     }
   });
 
@@ -169,8 +170,8 @@ describe('uploadSummarySubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey summary submission record');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert survey summary submission record');
     }
   });
 
@@ -197,8 +198,8 @@ describe('uploadSummarySubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL update statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -226,8 +227,8 @@ describe('uploadSummarySubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to update survey summary submission record');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to update survey summary submission record');
     }
   });
 
@@ -255,7 +256,7 @@ describe('uploadSummarySubmission', () => {
       await result(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.name).to.equal('Failed to insert occurrence submission data');
+      expect((actualError as CustomError).name).to.equal('Failed to insert occurrence submission data');
     }
   });
 
@@ -354,8 +355,8 @@ describe('uploadSummarySubmission', () => {
       await result({ ...mockReq, parseError: 'some error exists' }, mockRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to insert summary submission message data');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to insert summary submission message data');
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 });

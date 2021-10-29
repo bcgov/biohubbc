@@ -11,6 +11,7 @@ import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as media_utils from '../../utils/media/media-utils';
 import { ArchiveFile } from '../../utils/media/media-file';
+import { CustomError } from '../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -51,8 +52,8 @@ describe('getOccurrenceSubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `occurrence_submission_id`.');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required body param `occurrence_submission_id`.');
     }
   });
 
@@ -66,8 +67,8 @@ describe('getOccurrenceSubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -91,8 +92,8 @@ describe('getOccurrenceSubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get survey occurrence submission');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get survey occurrence submission');
     }
   });
 
@@ -138,8 +139,8 @@ describe('getS3File', () => {
       await result(updatedSampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to get file from S3');
+      expect((actualError as CustomError).status).to.equal(500);
+      expect((actualError as CustomError).message).to.equal('Failed to get file from S3');
     }
   });
 

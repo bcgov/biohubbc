@@ -12,6 +12,7 @@ import * as survey_delete_queries from '../../../../../queries/survey/survey-del
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../../../../constants/status';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
+import { CustomError } from '../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -63,8 +64,8 @@ describe('getSurveyForUpdate', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path parameter: surveyId');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path parameter: surveyId');
     }
   });
 
@@ -84,8 +85,8 @@ describe('getSurveyForUpdate', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build survey details SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build survey details SQL get statement');
     }
   });
 
@@ -366,8 +367,8 @@ describe('updateSurvey', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path parameter: projectId');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path parameter: projectId');
     }
   });
 
@@ -389,8 +390,8 @@ describe('updateSurvey', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path parameter: surveyId');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path parameter: surveyId');
     }
   });
 
@@ -408,8 +409,8 @@ describe('updateSurvey', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required request body');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required request body');
     }
   });
 
@@ -431,8 +432,8 @@ describe('updateSurvey', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to parse request body');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to parse request body');
     }
   });
 
@@ -452,8 +453,8 @@ describe('updateSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL update statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -478,8 +479,8 @@ describe('updateSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(409);
-      expect(actualError.message).to.equal('Failed to update stale survey data');
+      expect((actualError as CustomError).status).to.equal(409);
+      expect((actualError as CustomError).message).to.equal('Failed to update stale survey data');
     }
   });
 
@@ -582,8 +583,8 @@ describe('updateSurvey', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
     }
   });
 });
@@ -622,8 +623,8 @@ describe('updateSurveyProprietorData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
     }
   });
 
@@ -639,8 +640,8 @@ describe('updateSurveyProprietorData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(409);
-      expect(actualError.message).to.equal('Failed to update survey proprietor data');
+      expect((actualError as CustomError).status).to.equal(409);
+      expect((actualError as CustomError).message).to.equal('Failed to update survey proprietor data');
     }
   });
 
@@ -656,8 +657,8 @@ describe('updateSurveyProprietorData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
     }
   });
 
@@ -677,8 +678,8 @@ describe('updateSurveyProprietorData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(409);
-      expect(actualError.message).to.equal('Failed to update survey proprietor data');
+      expect((actualError as CustomError).status).to.equal(409);
+      expect((actualError as CustomError).message).to.equal('Failed to update survey proprietor data');
     }
   });
 });
@@ -718,8 +719,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to parse request body');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to parse request body');
     }
   });
 
@@ -731,8 +732,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL update statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -748,8 +749,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(409);
-      expect(actualError.message).to.equal('Failed to update stale survey data');
+      expect((actualError as CustomError).status).to.equal(409);
+      expect((actualError as CustomError).message).to.equal('Failed to update stale survey data');
     }
   });
 
@@ -767,8 +768,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -786,8 +787,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -805,8 +806,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(409);
-      expect(actualError.message).to.equal('Failed to delete survey focal species data');
+      expect((actualError as CustomError).status).to.equal(409);
+      expect((actualError as CustomError).message).to.equal('Failed to delete survey focal species data');
     }
   });
 
@@ -824,8 +825,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(409);
-      expect(actualError.message).to.equal('Failed to delete survey ancillary species data');
+      expect((actualError as CustomError).status).to.equal(409);
+      expect((actualError as CustomError).message).to.equal('Failed to delete survey ancillary species data');
     }
   });
 
@@ -847,8 +848,8 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(409);
-      expect(actualError.message).to.equal('Failed to delete survey funding sources data');
+      expect((actualError as CustomError).status).to.equal(409);
+      expect((actualError as CustomError).message).to.equal('Failed to delete survey funding sources data');
     }
   });
 
@@ -938,8 +939,8 @@ describe('unassociatePermitFromSurvey', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL update statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -955,8 +956,8 @@ describe('unassociatePermitFromSurvey', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to update survey permit number data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to update survey permit number data');
     }
   });
 });
@@ -982,8 +983,8 @@ describe('getSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build survey details SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build survey details SQL get statement');
     }
   });
 
@@ -999,8 +1000,8 @@ describe('getSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get project survey details data');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to get project survey details data');
     }
   });
 });
@@ -1026,8 +1027,8 @@ describe('getSurveyProprietorData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build survey proprietor SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build survey proprietor SQL get statement');
     }
   });
 
