@@ -115,7 +115,7 @@ Result of running `make env` for the first time:
 
 ## Start all BioHub Applications
 
-Starts all applications (database, api, and web app).
+Starts all applications (database, api, app, and n8n).
 
 ```
 make web
@@ -133,6 +133,10 @@ api:
 app:
 
 - `localhost:7100`
+
+n8n:
+
+- `localhost:5100`
 
 # Helpful Makefile Commands
 

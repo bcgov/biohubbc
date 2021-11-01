@@ -10,7 +10,7 @@
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help
-.PHONY : setup close clean build run run-debug build-backend run-backend run-backend-debug build-web run-web run-web-debug database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav install test lint lint-fix format help
+.PHONY : setup close clean build-backend run-backend build-web run-web database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav install test lint lint-fix format help
 
 ## ------------------------------------------------------------------------------
 ## Alias Commands
@@ -19,22 +19,14 @@ export $(shell sed 's/=.*//' .env)
 
 # Running the docker build
 # 1. Run `make env`
-# 2. Edit the `.env` file as needed to update variables and  secrets
-# 3. Run `make local` or `make local-debug`
+# 2. Edit the `.env` file as needed to update variables and secrets
+# 3. Run `make web`
 
 env: | setup ## Copies the default ./env_config/env.docker to ./.env
 
-all: | close build run ## Performs all commands necessary to run all projects in docker
-all-debug: | close build run-debug ## Performs all commands necessary to run all projects in docker in debug mode
-
-postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres db project in docker
-postgres-debug: | close build-postgres run-postgres-debug ## Performs all commands necessary to run the postgres db project in docker in debug mode
-
-backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects in docker
-backend-debug: | close build-backend run-backend-debug ## Performs all commands necessary to run all backend projects in docker in debug mode
-
-web: | close build-web run-web ## Performs all commands necessary to run all backend+web projects in docker
-web-debug: | close build-web run-web-debug ## Performs all commands necessary to run all backend+web projects in docker in debug mode
+postgres: | close build-postgres run-postgres ## Performs all commands necessary to run the postgres project (db) in docker
+backend: | close build-backend run-backend ## Performs all commands necessary to run all backend projects (db, api) in docker
+web: | close build-web run-web ## Performs all commands necessary to run all backend+web projects (db, api, app, n8n) in docker
 
 db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
 db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
@@ -68,29 +60,6 @@ clean: ## Closes and cleans (removes) all project containers
 	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
 
 ## ------------------------------------------------------------------------------
-## Build/Run Backend+Frontend Commands
-## - Builds all of the biohub projects (db, db_setup, api, app)
-## ------------------------------------------------------------------------------
-
-build: ## Builds all project containers
-	@echo "==============================================="
-	@echo "Make: build - building all project images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build
-
-run: ## Runs all project containers
-	@echo "==============================================="
-	@echo "Make: run - running all project images"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d
-
-run-debug: ## Runs all project containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-debug - running all project images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up
-
-## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands
 ## - Builds all of the biohub postgres db projects (db, db_setup)
 ## ------------------------------------------------------------------------------
@@ -106,12 +75,6 @@ run-postgres: ## Runs the postgres db containers
 	@echo "Make: run-postgres - running postgres db  images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up -d db db_setup
-
-run-postgres-debug: ## Runs the postgres db containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-postgres-debug - running postgres db images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend Commands
@@ -129,12 +92,6 @@ run-backend: ## Runs all backend containers
 	@echo "Make: run-backend - running backend images"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up -d db db_setup api
-
-run-backend-debug: ## Runs all backend containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-backend-debug - running backend images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
@@ -154,12 +111,6 @@ run-web: ## Runs all backend+web containers
 	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup
   ## Restart n8n as a workaround to resolve this known issue: https://github.com/n8n-io/n8n/issues/2155
 	@docker-compose restart n8n
-
-run-web-debug: ## Runs all backend+web containers in debug mode, where all container output is printed to the console
-	@echo "==============================================="
-	@echo "Make: run-web-debug - running web images in debug mode"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up db db_setup api app n8n n8n_nginx n8n_setup
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container
