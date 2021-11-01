@@ -135,7 +135,6 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                       resetField('category_rationale');
                       resetField('data_sharing_agreement_required');
                     }
-
                     handleChange(event);
                   }}>
                   <FormControlLabel value="false" control={<Radio required={true} color="primary" />} label="No" />
