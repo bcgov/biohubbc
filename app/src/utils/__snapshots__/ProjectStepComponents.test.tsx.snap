@@ -1333,13 +1333,22 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           class="MuiBox-root MuiBox-root-74"
         >
           <p
-            class="MuiTypography-root MuiTypography-body2"
+            class="MuiTypography-root MuiTypography-body1"
           >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
+          <div
+            class="MuiBox-root MuiBox-root-75"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
+            </p>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-75"
+          class="MuiBox-root MuiBox-root-76"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1371,7 +1380,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-76"
+            class="MuiBox-root MuiBox-root-77"
           >
             <div
               class="MuiFormControl-root"
@@ -1434,10 +1443,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-77"
+          class="MuiBox-root MuiBox-root-78"
         />
         <div
-          class="MuiBox-root MuiBox-root-78"
+          class="MuiBox-root MuiBox-root-79"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"

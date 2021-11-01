@@ -56,6 +56,12 @@ const appTheme = createMuiTheme({
         fontWeight: 700
       }
     },
+    MuiAlert: {
+      root: {
+        alignItems: 'center',
+        fontSize: '1rem'
+      }
+    },
     MuiButton: {
       root: {
         textTransform: 'none'

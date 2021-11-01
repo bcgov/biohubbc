@@ -57,13 +57,22 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           class="MuiBox-root MuiBox-root-7"
         >
           <p
-            class="MuiTypography-root MuiTypography-body2"
+            class="MuiTypography-root MuiTypography-body1"
           >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
+          <div
+            class="MuiBox-root MuiBox-root-8"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
+            </p>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-9"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -95,7 +104,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-9"
+            class="MuiBox-root MuiBox-root-10"
           >
             <div
               class="MuiFormControl-root"
@@ -158,10 +167,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-11"
         />
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-12"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -466,10 +475,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-26 PrivateNotchedOutline-legendNotched-27"
+                class="PrivateNotchedOutline-legendLabelled-28 PrivateNotchedOutline-legendNotched-29"
               >
                 <span>
                   Location Description
@@ -489,21 +498,30 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-28 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-30 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-30"
+          class="MuiBox-root MuiBox-root-32"
         >
           <p
-            class="MuiTypography-root MuiTypography-body2"
+            class="MuiTypography-root MuiTypography-body1"
           >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
+          <div
+            class="MuiBox-root MuiBox-root-33"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
+            </p>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-31"
+          class="MuiBox-root MuiBox-root-34"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -535,7 +553,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-32"
+            class="MuiBox-root MuiBox-root-35"
           >
             <div
               class="MuiFormControl-root"
@@ -583,10 +601,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-26 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-26"
+                    class="PrivateNotchedOutline-legendLabelled-28"
                   >
                     <span>
                       Select Layer
@@ -598,10 +616,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-33"
+          class="MuiBox-root MuiBox-root-36"
         />
         <div
-          class="MuiBox-root MuiBox-root-34"
+          class="MuiBox-root MuiBox-root-37"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -881,11 +899,11 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-35"
+          class="MuiBox-root MuiBox-root-38"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-31 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
           >
@@ -939,10 +957,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
               >
                 <span>
                   Location Description
@@ -956,21 +974,30 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-16 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-17 MuiTypography-body1"
         >
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiBox-root MuiBox-root-19"
         >
           <p
-            class="MuiTypography-root MuiTypography-body2"
+            class="MuiTypography-root MuiTypography-body1"
           >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
+          <div
+            class="MuiBox-root MuiBox-root-20"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
+            </p>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-19"
+          class="MuiBox-root MuiBox-root-21"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1002,7 +1029,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-20"
+            class="MuiBox-root MuiBox-root-22"
           >
             <div
               class="MuiFormControl-root"
@@ -1050,10 +1077,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-14"
+                    class="PrivateNotchedOutline-legendLabelled-15"
                   >
                     <span>
                       Select Layer
@@ -1065,10 +1092,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-23"
         />
         <div
-          class="MuiBox-root MuiBox-root-22"
+          class="MuiBox-root MuiBox-root-24"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1348,11 +1375,11 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-25"
         >
           <label
             aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-18 MuiButton-outlinedPrimary"
             role="button"
             tabindex="0"
           >

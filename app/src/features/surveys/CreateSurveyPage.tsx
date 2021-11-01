@@ -339,7 +339,7 @@ const CreateSurveyPage = () => {
           <Box mb={5}>
             <Typography variant="h1">Create Survey</Typography>
           </Box>
-          <Box component={Paper} display="block">
+          <Box py="3" component={Paper} display="block">
             <Formik
               innerRef={formikRef}
               initialValues={surveyInitialValues}
@@ -350,7 +350,7 @@ const CreateSurveyPage = () => {
               <>
                 <HorizontalSplitFormComponent
                   title="General Information"
-                  summary="General Information Summary (to be completed)"
+                  summary=""
                   component={
                     <GeneralInformationForm
                       species={
@@ -386,17 +386,19 @@ const CreateSurveyPage = () => {
                       projectEndDate={projectWithDetails.project.end_date}
                     />
                   }></HorizontalSplitFormComponent>
+
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
                   title="Study Area"
-                  summary="Study Area Summary (to be completed)"
+                  summary=""
                   component={<StudyAreaForm />}></HorizontalSplitFormComponent>
+
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
                   title="Proprietary Data"
-                  summary="Proprietary Data Summary (to be completed)"
+                  summary=""
                   component={
                     <ProprietaryDataForm
                       proprietary_data_category={
@@ -411,15 +413,17 @@ const CreateSurveyPage = () => {
                       }
                     />
                   }></HorizontalSplitFormComponent>
+
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
                   title="Agreements"
-                  summary="Agreements Summary (to be completed)"
+                  summary=""
                   component={<AgreementsForm />}></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
               </>
             </Formik>
+
             <Box p={3} display="flex" justifyContent="flex-end">
               <Button
                 type="submit"
