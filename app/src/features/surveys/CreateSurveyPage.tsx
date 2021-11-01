@@ -320,7 +320,6 @@ const CreateSurveyPage = () => {
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <Box my={3}>
         <Container maxWidth="xl">
-
           <Box mb={3}>
             <Breadcrumbs>
               <Link
@@ -438,7 +437,6 @@ const CreateSurveyPage = () => {
                 Cancel
               </Button>
             </Box>
-
           </Box>
         </Container>
       </Box>

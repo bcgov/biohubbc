@@ -111,9 +111,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         onClose={() => setOpenUploadBoundary(false)}>
         <Box>
           <Box mb={3}>
-            <Alert severity="info">
-              If uploading a shapefile, it must be configured with a valid projection.
-            </Alert>
+            <Alert severity="info">If uploading a shapefile, it must be configured with a valid projection.</Alert>
           </Box>
           <FileUpload
             uploadHandler={boundaryUploadHandler()}
@@ -130,9 +128,10 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </Typography>
           <Box mt={2}>
-          <Typography variant="body1">
-            To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
-          </Typography>
+            <Typography variant="body1">
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map
+              and click 'Add Boundary'.
+            </Typography>
           </Box>
         </Box>
         <Box display="flex" mt={3}>

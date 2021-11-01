@@ -184,7 +184,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           </FormControl>
         </Grid>
       </Grid>
-      
+
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Lead Biologist</Typography>
         <Grid container spacing={2}>
@@ -211,10 +211,12 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Permits</Typography>
-        
+
         {props.permit_numbers.length > 0 && !showAddPermitRow && (
           <>
-            <Typography variant="body1">If a permit is required for this survey, select a permit or add new one.</Typography>
+            <Typography variant="body1">
+              If a permit is required for this survey, select a permit or add new one.
+            </Typography>
             <Box mt={2} display="flex" alignItems="center">
               <Box flex="1 1 auto">
                 <AutocompleteField
@@ -232,13 +234,9 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                 />
               </Box>
               <Box mx={2}>
-                <Typography variant="body1">
-                  OR
-                </Typography>
+                <Typography variant="body1">OR</Typography>
               </Box>
-              <Box flex="0 0 auto">
-                {addNewPermitButton()}
-              </Box>
+              <Box flex="0 0 auto">{addNewPermitButton()}</Box>
             </Box>
           </>
         )}
@@ -246,64 +244,61 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         {props.permit_numbers.length === 0 && !showAddPermitRow && (
           <>
             <Typography variant="body1">Add a permit if one is required for this survey.</Typography>
-            <Box mt={2}>
-              {addNewPermitButton()}
-            </Box>
+            <Box mt={2}>{addNewPermitButton()}</Box>
           </>
         )}
 
-          {showAddPermitRow && (
-            <Box display="flex">
-              <Box flexBasis="50%" pr={1}>
-                <CustomTextField
-                  name="permit_number"
-                  label="Permit Number"
-                  other={{
-                    required: false,
-                    value: formikProps.values.permit_number,
-                    error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
-                    helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
-                  }}
-                />
-              </Box>
-              <Box flexBasis="50%" pl={1}>
-                <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
-                  <InputLabel id="permit_type">Permit Type</InputLabel>
-                  <Select
-                    id="permit_type"
-                    name="permit_type"
-                    labelId="permit_type"
-                    label="Permit Type"
-                    value={formikProps.values.permit_type}
-                    onChange={formikProps.handleChange}
-                    error={formikProps.touched.permit_type && Boolean(formikProps.errors.permit_type)}
-                    displayEmpty
-                    inputProps={{ 'aria-label': 'Permit Type' }}>
-                    <MenuItem key={1} value="Park Use Permit">
-                      Park Use Permit
-                    </MenuItem>
-                    <MenuItem key={2} value="Wildlife Permit - General">
-                      Wildlife Permit - General
-                    </MenuItem>
-                    <MenuItem key={3} value="Scientific Fish Collection Permit">
-                      Scientific Fish Collection Permit
-                    </MenuItem>
-                  </Select>
-                  <FormHelperText>{formikProps.touched.permit_type && formikProps.errors.permit_type}</FormHelperText>
-                </FormControl>
-              </Box>
-              <Box pt={0.5} pl={1}>
-                <IconButton
-                  color="primary"
-                  data-testid="delete-icon"
-                  aria-label="remove-permit"
-                  onClick={() => setShowAddPermitRow(false)}>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </IconButton>
-              </Box>
+        {showAddPermitRow && (
+          <Box display="flex">
+            <Box flexBasis="50%" pr={1}>
+              <CustomTextField
+                name="permit_number"
+                label="Permit Number"
+                other={{
+                  required: false,
+                  value: formikProps.values.permit_number,
+                  error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
+                  helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
+                }}
+              />
             </Box>
-          )}
-
+            <Box flexBasis="50%" pl={1}>
+              <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
+                <InputLabel id="permit_type">Permit Type</InputLabel>
+                <Select
+                  id="permit_type"
+                  name="permit_type"
+                  labelId="permit_type"
+                  label="Permit Type"
+                  value={formikProps.values.permit_type}
+                  onChange={formikProps.handleChange}
+                  error={formikProps.touched.permit_type && Boolean(formikProps.errors.permit_type)}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Permit Type' }}>
+                  <MenuItem key={1} value="Park Use Permit">
+                    Park Use Permit
+                  </MenuItem>
+                  <MenuItem key={2} value="Wildlife Permit - General">
+                    Wildlife Permit - General
+                  </MenuItem>
+                  <MenuItem key={3} value="Scientific Fish Collection Permit">
+                    Scientific Fish Collection Permit
+                  </MenuItem>
+                </Select>
+                <FormHelperText>{formikProps.touched.permit_type && formikProps.errors.permit_type}</FormHelperText>
+              </FormControl>
+            </Box>
+            <Box pt={0.5} pl={1}>
+              <IconButton
+                color="primary"
+                data-testid="delete-icon"
+                aria-label="remove-permit"
+                onClick={() => setShowAddPermitRow(false)}>
+                <Icon path={mdiTrashCanOutline} size={1} />
+              </IconButton>
+            </Box>
+          </Box>
+        )}
       </Box>
 
       <Box component="fieldset" mt={4}>

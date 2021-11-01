@@ -8,17 +8,13 @@ exports[`HorizontalSplitFormComponent renders correctly 1`] = `
     <div
       class="MuiBox-root MuiBox-root-2"
     >
+      <h2
+        class="MuiTypography-root MuiTypography-h2"
+      >
+        Section title
+      </h2>
       <div
         class="MuiBox-root MuiBox-root-3"
-      >
-        <h2
-          class="MuiTypography-root MuiTypography-h2"
-        >
-          Section title
-        </h2>
-      </div>
-      <div
-        class="MuiBox-root MuiBox-root-4"
       >
         <p
           class="MuiTypography-root MuiTypography-body2"
@@ -28,10 +24,10 @@ exports[`HorizontalSplitFormComponent renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-5"
+      class="MuiBox-root MuiBox-root-4"
     >
       <div
-        class="MuiBox-root MuiBox-root-6"
+        class="MuiBox-root MuiBox-root-5"
       >
         <p
           class="MuiTypography-root MuiTypography-body1"
