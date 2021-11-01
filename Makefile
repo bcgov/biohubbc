@@ -1,7 +1,7 @@
 #!make
 
 # ------------------------------------------------------------------------------
-# Makefile -- BioHubBC
+# Makefile -- SIMS
 # ------------------------------------------------------------------------------
 
 -include .env
@@ -61,7 +61,7 @@ clean: ## Closes and cleans (removes) all project containers
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands
-## - Builds all of the biohub postgres db projects (db, db_setup)
+## - Builds all of the SIMS postgres db projects (db, db_setup)
 ## ------------------------------------------------------------------------------
 
 build-postgres: ## Builds the postgres db containers
@@ -78,7 +78,7 @@ run-postgres: ## Runs the postgres db containers
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend Commands
-## - Builds all of the biohub backend projects (db, db_setup, api)
+## - Builds all of the SIMS backend projects (db, db_setup, api)
 ## ------------------------------------------------------------------------------
 
 build-backend: ## Builds all backend containers
@@ -95,7 +95,7 @@ run-backend: ## Runs all backend containers
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Backend+Web Commands (backend + web frontend)
-## - Builds all of the biohub backend+web projects (db, db_setup, api, app, n8n, n8n_nginx, n8n_setup)
+## - Builds all of the SIMS backend+web projects (db, db_setup, api, app, n8n, n8n_nginx, n8n_setup)
 ## ------------------------------------------------------------------------------
 
 build-web: ## Builds all backend+web containers

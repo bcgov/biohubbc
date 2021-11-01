@@ -1,7 +1,7 @@
 {
-  "name": "biohubbc-api",
+  "name": "sims-api",
   "version": "0.0.0",
-  "description": "API for BioHubBC App",
+  "description": "API for SIMS Web App",
   "license": "Apache-2.0",
   "main": "app",
   "repository": {
