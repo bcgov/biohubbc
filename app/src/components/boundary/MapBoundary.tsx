@@ -1,3 +1,4 @@
+import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
@@ -109,7 +110,9 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         dialogTitle="Upload Boundary"
         onClose={() => setOpenUploadBoundary(false)}>
         <Box>
-          <Typography style={{ marginBottom: '1rem' }}>Accepted file types: .gpx, .klm, .zip (shapefiles)</Typography>
+          <Box mb={3}>
+            <Alert severity="info">If uploading a shapefile, it must be configured with a valid projection.</Alert>
+          </Box>
           <FileUpload
             uploadHandler={boundaryUploadHandler()}
             dropZoneProps={{
@@ -121,12 +124,15 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
       <Grid item xs={12}>
         <Typography className={classes.bold}>{title}</Typography>
         <Box mt={2}>
-          <Typography variant="body2">
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be
-            accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from
-            an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary.
-            When done, press the hide layer button.
+          <Typography variant="body1">
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </Typography>
+          <Box mt={2}>
+            <Typography variant="body1">
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map
+              and click 'Add Boundary'.
+            </Typography>
+          </Box>
         </Box>
         <Box display="flex" mt={3}>
           <Button
