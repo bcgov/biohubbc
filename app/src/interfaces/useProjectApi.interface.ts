@@ -15,6 +15,7 @@ export interface IGetProjectAttachment {
   lastModified: string;
   size: number;
   securityToken: any;
+  revisionCount: number;
 }
 
 /**
@@ -302,4 +303,19 @@ export interface IGetProjectMediaListResponse {
 export interface IUploadAttachmentResponse {
   attachmentId: number;
   revision_count: number;
+}
+
+export interface IGetReportMetaData {
+  attachment_id: number;
+  title: string;
+  year_published: string;
+  description: string;
+  last_modified: string;
+  revision_count: number;
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetReportAuthors {
+  first_name: string;
+  last_name: string;
 }

@@ -20,7 +20,7 @@ import { getLogger } from '../../../../../../utils/logger';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
+  IReportAttachmentAuthor
 } from '../../../../../../models/project-survey-attachments';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
@@ -411,7 +411,7 @@ export const deleteSurveyReportAttachmentAuthors = async (
 
 export const insertSurveyReportAttachmentAuthor = async (
   attachmentId: number,
-  author: ReportAttachmentAuthor,
+  author: IReportAttachmentAuthor,
   connection: IDBConnection
 ): Promise<void> => {
   const sqlStatement = insertSurveyReportAttachmentAuthorSQL(attachmentId, author);

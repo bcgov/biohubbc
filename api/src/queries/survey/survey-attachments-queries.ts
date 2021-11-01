@@ -3,7 +3,7 @@ import { getLogger } from '../../utils/logger';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
+  IReportAttachmentAuthor
 } from '../../models/project-survey-attachments';
 
 const defaultLog = getLogger('queries/survey/survey-attachments-queries');
@@ -566,12 +566,12 @@ export const updateProjectReportAttachmentMetadataSQL = (
  * Insert a new survey report attachment author record, for the specified `attachmentId`
  *
  * @param {number} attachmentId
- * @param {ReportAttachmentAuthor} author
+ * @param {IReportAttachmentAuthor} author
  * @return {*}  {(SQLStatement | null)}
  */
 export const insertSurveyReportAttachmentAuthorSQL = (
   attachmentId: number,
-  author: ReportAttachmentAuthor
+  author: IReportAttachmentAuthor
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'createSurveyReportAttachmentAuthorSQL',

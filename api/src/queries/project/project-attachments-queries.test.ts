@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutReportAttachmentMetadata, ReportAttachmentAuthor } from '../../models/project-survey-attachments';
+import { PutReportAttachmentMetadata, IReportAttachmentAuthor } from '../../models/project-survey-attachments';
 import {
   getProjectAttachmentsSQL,
   deleteProjectAttachmentSQL,
@@ -333,7 +333,7 @@ describe('updateProjectReportAttachmentMetadataSQL', () => {
 });
 
 describe('insertProjectReportAttachmentAuthorSQL', () => {
-  const report_attachment_author: ReportAttachmentAuthor = {
+  const report_attachment_author: IReportAttachmentAuthor = {
     first_name: 'John',
     last_name: 'Smith'
   };
@@ -344,7 +344,7 @@ describe('insertProjectReportAttachmentAuthorSQL', () => {
   });
 
   it('returns null response when null report author provided', () => {
-    const response = insertProjectReportAttachmentAuthorSQL(1, (null as unknown) as ReportAttachmentAuthor);
+    const response = insertProjectReportAttachmentAuthorSQL(1, (null as unknown) as IReportAttachmentAuthor);
 
     expect(response).to.be.null;
   });
@@ -352,7 +352,7 @@ describe('insertProjectReportAttachmentAuthorSQL', () => {
   it('returns null response when null attachmmentId and null report author are provided', () => {
     const response = insertProjectReportAttachmentAuthorSQL(
       (null as unknown) as number,
-      (null as unknown) as ReportAttachmentAuthor
+      (null as unknown) as IReportAttachmentAuthor
     );
     expect(response).to.be.null;
   });

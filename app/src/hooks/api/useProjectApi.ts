@@ -1,4 +1,5 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import {
   ICreateProjectRequest,
@@ -7,6 +8,7 @@ import {
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
   IGetProjectsListResponse,
+  IGetReportMetaData,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
   IUploadAttachmentResponse,
@@ -217,7 +219,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     attachmentId: number,
     attachmentType: string,
-    attachmentMeta: IReportMetaForm,
+    attachmentMeta: IEditReportMetaForm,
     revisionCount: number
   ): Promise<number> => {
     const obj = {
@@ -315,6 +317,25 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get project report metadata based on project ID, attachment ID, and attachmentType
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @returns {*} {Promise<string>}
+   */
+  const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportMetaData> => {
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
+      params: {},
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -331,7 +352,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProject,
     publishProject,
     makeAttachmentSecure,
-    makeAttachmentUnsecure
+    makeAttachmentUnsecure,
+    getProjectReportMetadata
   };
 };
 

@@ -17,11 +17,14 @@ import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
-import React, { useContext, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
+import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
+import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
+import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -45,6 +48,12 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
 
+  const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
+  const [showViewFileWithMetaDialog, setShowViewFileWithMetaDialog] = useState<boolean>(false);
+  const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
+
+  const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
+
   const dialogContext = useContext(DialogContext);
 
   const defaultYesNoDialogProps = {
@@ -55,6 +64,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
     onYes: () => dialogContext.setYesNoDialog({ open: false })
   };
+
+  useEffect(() => {
+    console.log('reportmetadata = in useEffect', reportMetaData);
+    if (reportMetaData && currentAttachment) {
+      setShowViewFileWithMetaDialog(true);
+    }
+  }, [reportMetaData, currentAttachment]);
 
   const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     dialogContext.setYesNoDialog({
@@ -115,7 +131,33 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const viewFileContents = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const getReportMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    try {
+      let response;
+
+      // if (props.surveyId) {
+      //   response = await biohubApi.survey.getSurveyReportMetadata(
+      //     props.projectId,
+      //     props.surveyId,
+      //     attachment.id,
+      //     attachment.fileType
+      //   );
+      // } else {
+      response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
+
+      // }
+
+      if (!response) {
+        return;
+      }
+
+      setReportMetaData(response);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const openAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     try {
       let response;
 
@@ -138,6 +180,27 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     } catch (error) {
       return error;
     }
+  };
+
+  const viewFileContents = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    setCurrentAttachment(attachment);
+
+    if (attachment.fileType === 'Report') {
+      getReportMeta(attachment);
+    } else {
+      openAttachment(attachment);
+    }
+  };
+
+  const openAttachmentFromReportMetaDialog = async () => {
+    if (currentAttachment) {
+      openAttachment(currentAttachment);
+    }
+  };
+
+  const openEditReportMetaDialog = async () => {
+    setShowViewFileWithMetaDialog(false);
+    setShowEditFileWithMetaDialog(true);
   };
 
   const makeAttachmentSecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
@@ -204,8 +267,47 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
+  const getSaveHandler = () => {
+    return (fileMeta: IEditReportMetaForm) => {
+      if (!reportMetaData) {
+        return Promise.resolve({});
+      }
+
+      return biohubApi.project
+        .updateProjectAttachmentMetadata(
+          props.projectId,
+          reportMetaData.attachment_id,
+          'Report',
+          fileMeta,
+          reportMetaData.revision_count
+        )
+        .finally(() => {
+          setShowEditFileWithMetaDialog(false);
+        });
+    };
+  };
+
   return (
     <>
+      <ViewFileWithMetaDialog
+        open={showViewFileWithMetaDialog}
+        onEdit={openEditReportMetaDialog}
+        onClose={() => {
+          setShowViewFileWithMetaDialog(false);
+        }}
+        onDownload={openAttachmentFromReportMetaDialog}
+        reportMetaData={reportMetaData}
+        attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
+      />
+      <EditFileWithMetaDialog
+        open={showEditFileWithMetaDialog}
+        dialogTitle={'Edit Upload Report'}
+        reportMetaData={reportMetaData}
+        onClose={() => {
+          setShowEditFileWithMetaDialog(false);
+        }}
+        onSave={getSaveHandler()}
+      />
       <Paper>
         <TableContainer>
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">

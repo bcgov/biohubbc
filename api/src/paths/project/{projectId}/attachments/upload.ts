@@ -9,7 +9,7 @@ import { HTTP400 } from '../../../../errors/CustomError';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
+  IReportAttachmentAuthor
 } from '../../../../models/project-survey-attachments';
 import {
   deleteProjectReportAttachmentAuthorsSQL,
@@ -384,7 +384,7 @@ export const deleteProjectReportAttachmentAuthors = async (
 
 export const insertProjectReportAttachmentAuthor = async (
   attachmentId: number,
-  author: ReportAttachmentAuthor,
+  author: IReportAttachmentAuthor,
   connection: IDBConnection
 ): Promise<void> => {
   const sqlStatement = insertProjectReportAttachmentAuthorSQL(attachmentId, author);
