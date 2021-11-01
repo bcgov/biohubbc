@@ -1,29 +1,36 @@
+import Alert from '@material-ui/lab/Alert';
 import Grid from '@material-ui/core/Grid';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FormLabel from '@material-ui/core/FormLabel';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
 import Typography from '@material-ui/core/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
-import React from 'react';
+import React, { useState } from 'react';
 import yup from 'utils/YupSchema';
-import Link from '@material-ui/core/Link';
 import CustomTextField from 'components/fields/CustomTextField';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 
-const useStyles = makeStyles(() => ({
-  legend: {
-    marginTop: '1rem',
-    float: 'left',
-    marginBottom: '0.75rem',
-    letterSpacing: '-0.01rem'
+const useStyles = makeStyles((theme: Theme) => ({
+  alignCenter: {
+    display: 'flex',
+    alignItems: 'center'
   },
-  bold: {
-    fontWeight: 'bold'
+  learnMoreBtn: {
+    textDecoration: 'underline',
+    lineHeight: 'auto',
+    '&:hover': {
+      textDecoration: 'underline'
+    }
+  },
+  dialogText: {
+    maxWidth: '72ch'
   }
 }));
 
@@ -77,6 +84,7 @@ export interface IProprietaryDataFormProps {
  * @return {*}
  */
 const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
+  const [openDialog, setOpenDialog] = useState(false);
   const classes = useStyles();
 
   const {
@@ -96,29 +104,17 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
   };
 
   return (
+    <>
     <form>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <FormControl
-            required={true}
             component="fieldset"
             error={touched.survey_data_proprietary && Boolean(errors.survey_data_proprietary)}>
-            <FormLabel component="legend" className={classes.legend}>
-              Is the data captured in this survey proprietary?
-            </FormLabel>
-            <Box pt={2}>
-              <Link
-                component="button"
-                variant="body2"
-                onClick={(event: React.SyntheticEvent) => {
-                  event.preventDefault();
-                  window.open(
-                    'https://www2.gov.bc.ca/gov/content/environment/natural-resource-stewardship/laws-policies-standards-guidance/data-information-security'
-                  );
-                }}>
-                Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
-              </Link>
-            </Box>
+            <Typography variant="body1" className={classes.alignCenter}>
+              <span>Is the data captured in this survey proprietary?</span>
+              <Button color="primary" className={classes.learnMoreBtn} data-testid="prop-dialog-btn" onClick={() => setOpenDialog(true)}><Typography component="span">Learn more</Typography></Button>
+            </Typography>
             <Box mt={2}>
               <RadioGroup
                 name="survey_data_proprietary"
@@ -146,7 +142,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
         {values.survey_data_proprietary === 'true' && (
           <>
             <Grid item xs={12}>
-              <Typography className={classes.bold}>Proprietary Information</Typography>
+              <Typography>Proprietary Information</Typography>
             </Grid>
             <Grid item xs={12}>
               <AutocompleteField
@@ -214,9 +210,9 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 required={true}
                 component="fieldset"
                 error={touched.data_sharing_agreement_required && Boolean(errors.data_sharing_agreement_required)}>
-                <FormLabel component="legend" className={classes.legend}>
+                <Typography component="legend">
                   Data and Information Sharing Agreement (DISA)
-                </FormLabel>
+                </Typography>
                 <Typography>Do you require a data and information sharing agreement?</Typography>
                 <Box mt={2}>
                   <RadioGroup
@@ -235,6 +231,24 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
         )}
       </Grid>
     </form>
+
+    <ComponentDialog
+      open={openDialog}
+      dialogTitle="Proprietary Data"
+      onClose={() => setOpenDialog(false)}>
+      <Typography variant="body1">
+        Proprietary data is information and data that has been collected under the following conditions:
+        <ul>
+          <li>Collection required access to private or First Nations lands, and the landowner has specified that the collected information is not to be distributed <em>OR</em></li>
+          <li>The data or information collected is restricted on a time-limited basis (e.g., the data owner is awaiting publication or awaiting permit approval).</li>
+        </ul>
+        <Alert severity="warning">
+          The Province of British Columbia will not retroactively secure data and information for proprietary reasons.
+        </Alert>
+      </Typography>
+    </ComponentDialog>
+
+    </>
   );
 };
 

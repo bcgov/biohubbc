@@ -1,4 +1,4 @@
-import Grid from '@material-ui/core/Grid';
+import Box from '@material-ui/core/Box';
 import { useFormikContext } from 'formik';
 import { Feature } from 'geojson';
 import React, { useState } from 'react';
@@ -32,26 +32,24 @@ const StudyAreaForm = () => {
 
   return (
     <form>
-      <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="survey_area_name"
-            label="Survey Area Name"
-            other={{
-              required: true
-            }}
-          />
-        </Grid>
-        <MapBoundary
-          title="Study Area Boundary"
-          mapId="study_area_form_map"
-          uploadError={uploadError}
-          setUploadError={setUploadError}
-          values={values}
-          bounds={[]}
-          setFieldValue={setFieldValue}
+      <Box mb={4}>
+        <CustomTextField
+          name="survey_area_name"
+          label="Survey Area Name"
+          other={{
+            required: true
+          }}
         />
-      </Grid>
+      </Box>
+      <MapBoundary
+        title="Study Area Boundary"
+        mapId="study_area_form_map"
+        uploadError={uploadError}
+        setUploadError={setUploadError}
+        values={values}
+        bounds={[]}
+        setFieldValue={setFieldValue}
+      />
     </form>
   );
 };
