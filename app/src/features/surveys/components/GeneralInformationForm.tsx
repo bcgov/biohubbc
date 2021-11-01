@@ -6,7 +6,6 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -18,24 +17,9 @@ import { useFormikContext } from 'formik';
 import React, { useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import { mdiTrashCanOutline } from '@mdi/js';
+import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@material-ui/core/IconButton';
-
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold'
-  },
-  center: {
-    alignSelf: 'center'
-  },
-  buttonPadding: {
-    padding: 14
-  },
-  bottomSpacing: {
-    paddingBottom: 14
-  }
-});
 
 export interface IGeneralInformationForm {
   survey_name: string;
@@ -99,19 +83,15 @@ export interface IGeneralInformationFormProps {
  * @return {*}
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
-  const classes = useStyles();
-
   const formikProps = useFormikContext<IGeneralInformationForm>();
-
   const [showAddPermitRow, setShowAddPermitRow] = useState<boolean>(false);
 
   const addNewPermitButton = () => {
     return (
       <Button
-        className={classes.buttonPadding}
-        type="button"
         variant="outlined"
         color="primary"
+        startIcon={<Icon path={mdiPlus} size={1} />}
         aria-label="add-permit"
         onClick={() => {
           formikProps.setFieldValue('permit_number', '');
@@ -119,7 +99,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
           setShowAddPermitRow(true);
         }}>
-        Add New Permit
+        <strong>Add Permit</strong>
       </Button>
     );
   };
@@ -134,6 +114,13 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             other={{
               required: true
             }}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <CustomTextField
+            name="survey_purpose"
+            label="Purpose of Survey"
+            other={{ multiline: true, required: true, rows: 2 }}
           />
         </Grid>
         <StartEndDateFields
@@ -196,129 +183,11 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             </FormHelperText>
           </FormControl>
         </Grid>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="survey_purpose"
-            label="Purpose of Survey"
-            other={{ multiline: true, required: true, rows: 4 }}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Box pt={2}>
-            <Typography className={classes.bold}>Permit</Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          {props.permit_numbers.length > 0 && !showAddPermitRow && (
-            <Grid container direction="row">
-              <Grid item xs={12}>
-                <Box display="flex">
-                  <Box flexBasis="100%" pr={2}>
-                    <AutocompleteField
-                      id="permit_number"
-                      name="permit_number"
-                      label="Select Existing Permit"
-                      options={props.permit_numbers}
-                      onChange={(event, option) => {
-                        if (!option) {
-                          formikProps.setFieldValue('permit_number', '');
-                        } else {
-                          formikProps.setFieldValue('permit_number', option.value);
-                        }
-                      }}
-                    />
-                  </Box>
-                  <Typography className={classes.center} variant="body2">
-                    OR
-                  </Typography>
-                  <Box flexBasis="50%" pl={2} className={classes.center}>
-                    {addNewPermitButton()}
-                  </Box>
-                </Box>
-              </Grid>
-            </Grid>
-          )}
-          {props.permit_numbers.length === 0 && !showAddPermitRow && (
-            <>
-              <Typography variant="body2" className={classes.bottomSpacing}>
-                You do not have any permits to select from for this survey, please add a new permit.
-              </Typography>
-              {addNewPermitButton()}
-            </>
-          )}
-          {showAddPermitRow && (
-            <Grid item xs={12}>
-              <Box display="flex">
-                <Box flexBasis="50%" pr={1}>
-                  <CustomTextField
-                    name="permit_number"
-                    label="Permit Number"
-                    other={{
-                      required: false,
-                      value: formikProps.values.permit_number,
-                      error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
-                      helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
-                    }}
-                  />
-                </Box>
-                <Box flexBasis="50%" pl={1}>
-                  <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
-                    <InputLabel id="permit_type">Permit Type</InputLabel>
-                    <Select
-                      id="permit_type"
-                      name="permit_type"
-                      labelId="permit_type"
-                      label="Permit Type"
-                      value={formikProps.values.permit_type}
-                      onChange={formikProps.handleChange}
-                      error={formikProps.touched.permit_type && Boolean(formikProps.errors.permit_type)}
-                      displayEmpty
-                      inputProps={{ 'aria-label': 'Permit Type' }}>
-                      <MenuItem key={1} value="Park Use Permit">
-                        Park Use Permit
-                      </MenuItem>
-                      <MenuItem key={2} value="Wildlife Permit - General">
-                        Wildlife Permit - General
-                      </MenuItem>
-                      <MenuItem key={3} value="Scientific Fish Collection Permit">
-                        Scientific Fish Collection Permit
-                      </MenuItem>
-                    </Select>
-                    <FormHelperText>{formikProps.touched.permit_type && formikProps.errors.permit_type}</FormHelperText>
-                  </FormControl>
-                </Box>
-                <Box pt={0.5} pl={1}>
-                  <IconButton
-                    color="primary"
-                    data-testid="delete-icon"
-                    aria-label="remove-permit"
-                    onClick={() => setShowAddPermitRow(false)}>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </IconButton>
-                </Box>
-              </Box>
-            </Grid>
-          )}
-        </Grid>
-        <Grid item xs={12}>
-          <Box pt={2}>
-            <Typography className={classes.bold}>Funding Sources</Typography>
-          </Box>
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id="funding_sources"
-            label="Select Funding Sources"
-            options={props.funding_sources}
-            required={false}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <Box pt={2}>
-            <Typography className={classes.bold}>Lead biologist for this survey</Typography>
-          </Box>
-        </Grid>
-        <Grid container item spacing={3}>
+      </Grid>
+
+      <Box component="fieldset" mt={4}>
+        <Typography component="legend">Lead Biologist</Typography>
+        <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <CustomTextField
               name="biologist_first_name"
@@ -338,7 +207,109 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             />
           </Grid>
         </Grid>
-      </Grid>
+      </Box>
+
+      <Box component="fieldset" mt={4}>
+        <Typography component="legend">Permits</Typography>
+
+        {props.permit_numbers.length > 0 && !showAddPermitRow && (
+          <>
+            <Typography variant="body1">
+              If a permit is required for this survey, select a permit or add new one.
+            </Typography>
+            <Box mt={2} display="flex" alignItems="center">
+              <Box flex="1 1 auto">
+                <AutocompleteField
+                  id="permit_number"
+                  name="permit_number"
+                  label="Select Permit"
+                  options={props.permit_numbers}
+                  onChange={(event, option) => {
+                    if (!option) {
+                      formikProps.setFieldValue('permit_number', '');
+                    } else {
+                      formikProps.setFieldValue('permit_number', option.value);
+                    }
+                  }}
+                />
+              </Box>
+              <Box mx={2}>
+                <Typography variant="body1">OR</Typography>
+              </Box>
+              <Box flex="0 0 auto">{addNewPermitButton()}</Box>
+            </Box>
+          </>
+        )}
+
+        {props.permit_numbers.length === 0 && !showAddPermitRow && (
+          <>
+            <Typography variant="body1">Add a permit if one is required for this survey.</Typography>
+            <Box mt={2}>{addNewPermitButton()}</Box>
+          </>
+        )}
+
+        {showAddPermitRow && (
+          <Box display="flex">
+            <Box flexBasis="50%" pr={1}>
+              <CustomTextField
+                name="permit_number"
+                label="Permit Number"
+                other={{
+                  required: false,
+                  value: formikProps.values.permit_number,
+                  error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
+                  helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
+                }}
+              />
+            </Box>
+            <Box flexBasis="50%" pl={1}>
+              <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
+                <InputLabel id="permit_type">Permit Type</InputLabel>
+                <Select
+                  id="permit_type"
+                  name="permit_type"
+                  labelId="permit_type"
+                  label="Permit Type"
+                  value={formikProps.values.permit_type}
+                  onChange={formikProps.handleChange}
+                  error={formikProps.touched.permit_type && Boolean(formikProps.errors.permit_type)}
+                  displayEmpty
+                  inputProps={{ 'aria-label': 'Permit Type' }}>
+                  <MenuItem key={1} value="Park Use Permit">
+                    Park Use Permit
+                  </MenuItem>
+                  <MenuItem key={2} value="Wildlife Permit - General">
+                    Wildlife Permit - General
+                  </MenuItem>
+                  <MenuItem key={3} value="Scientific Fish Collection Permit">
+                    Scientific Fish Collection Permit
+                  </MenuItem>
+                </Select>
+                <FormHelperText>{formikProps.touched.permit_type && formikProps.errors.permit_type}</FormHelperText>
+              </FormControl>
+            </Box>
+            <Box pt={0.5} pl={1}>
+              <IconButton
+                color="primary"
+                data-testid="delete-icon"
+                aria-label="remove-permit"
+                onClick={() => setShowAddPermitRow(false)}>
+                <Icon path={mdiTrashCanOutline} size={1} />
+              </IconButton>
+            </Box>
+          </Box>
+        )}
+      </Box>
+
+      <Box component="fieldset" mt={4}>
+        <Typography component="legend">Funding Sources</Typography>
+        <MultiAutocompleteFieldVariableSize
+          id="funding_sources"
+          label="Select Funding Sources"
+          options={props.funding_sources}
+          required={false}
+        />
+      </Box>
     </form>
   );
 };

@@ -35,17 +35,13 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
           <div
             class="MuiBox-root MuiBox-root-18"
           >
+            <h2
+              class="MuiTypography-root MuiTypography-h2"
+            >
+              Coordinator Information
+            </h2>
             <div
               class="MuiBox-root MuiBox-root-19"
-            >
-              <h2
-                class="MuiTypography-root MuiTypography-h2"
-              >
-                Coordinator Information
-              </h2>
-            </div>
-            <div
-              class="MuiBox-root MuiBox-root-20"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -55,7 +51,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-21"
+            class="MuiBox-root MuiBox-root-20"
           >
             <form>
               <div
@@ -95,10 +91,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-25"
+                          class="PrivateNotchedOutline-legendLabelled-24"
                         >
                           <span>
                             First Name *
@@ -142,10 +138,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-25"
+                          class="PrivateNotchedOutline-legendLabelled-24"
                         >
                           <span>
                             Last Name *
@@ -189,10 +185,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-25"
+                          class="PrivateNotchedOutline-legendLabelled-24"
                         >
                           <span>
                             Business Email Address *
@@ -274,10 +270,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                         </div>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-25"
+                            class="PrivateNotchedOutline-legendLabelled-24"
                           >
                             <span>
                               Coordinator Agency *
@@ -290,13 +286,13 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-27"
+                class="MuiBox-root MuiBox-root-26"
               >
                 <fieldset
                   class="MuiFormControl-root"
                 >
                   <legend
-                    class="MuiBox-root MuiBox-root-28 makeStyles-legend-22"
+                    class="MuiBox-root MuiBox-root-27 makeStyles-legend-21"
                   >
                     Share Contact Details
                   </legend>
@@ -306,7 +302,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                     Do you want the project coordinator contact information visible to the public?
                   </p>
                   <div
-                    class="MuiBox-root MuiBox-root-29"
+                    class="MuiBox-root MuiBox-root-28"
                   >
                     <div
                       aria-label="Share Contact Details"
@@ -318,21 +314,21 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       >
                         <span
                           aria-disabled="false"
-                          class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-30 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-31 Mui-checked MuiIconButton-colorPrimary"
+                          class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-29 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-30 Mui-checked MuiIconButton-colorPrimary"
                         >
                           <span
                             class="MuiIconButton-label"
                           >
                             <input
                               checked=""
-                              class="PrivateSwitchBase-input-33"
+                              class="PrivateSwitchBase-input-32"
                               name="share_contact_details"
                               required=""
                               type="radio"
                               value="false"
                             />
                             <div
-                              class="PrivateRadioButtonIcon-root-34 PrivateRadioButtonIcon-checked-36"
+                              class="PrivateRadioButtonIcon-root-33 PrivateRadioButtonIcon-checked-35"
                             >
                               <svg
                                 aria-hidden="true"
@@ -346,7 +342,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                               </svg>
                               <svg
                                 aria-hidden="true"
-                                class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-35 MuiSvgIcon-fontSizeSmall"
+                                class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-34 MuiSvgIcon-fontSizeSmall"
                                 focusable="false"
                                 viewBox="0 0 24 24"
                               >
@@ -371,20 +367,20 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       >
                         <span
                           aria-disabled="false"
-                          class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-30 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                          class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-29 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                         >
                           <span
                             class="MuiIconButton-label"
                           >
                             <input
-                              class="PrivateSwitchBase-input-33"
+                              class="PrivateSwitchBase-input-32"
                               name="share_contact_details"
                               required=""
                               type="radio"
                               value="true"
                             />
                             <div
-                              class="PrivateRadioButtonIcon-root-34"
+                              class="PrivateRadioButtonIcon-root-33"
                             >
                               <svg
                                 aria-hidden="true"
@@ -398,7 +394,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                               </svg>
                               <svg
                                 aria-hidden="true"
-                                class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-35 MuiSvgIcon-fontSizeSmall"
+                                class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-34 MuiSvgIcon-fontSizeSmall"
                                 focusable="false"
                                 viewBox="0 0 24 24"
                               >
@@ -432,22 +428,18 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-37"
+          class="MuiBox-root MuiBox-root-36"
         >
           <div
-            class="MuiBox-root MuiBox-root-38"
+            class="MuiBox-root MuiBox-root-37"
           >
-            <div
-              class="MuiBox-root MuiBox-root-39"
+            <h2
+              class="MuiTypography-root MuiTypography-h2"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2"
-              >
-                Non-Sampling Permits
-              </h2>
-            </div>
+              Non-Sampling Permits
+            </h2>
             <div
-              class="MuiBox-root MuiBox-root-40"
+              class="MuiBox-root MuiBox-root-38"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -457,11 +449,11 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-41"
+            class="MuiBox-root MuiBox-root-39"
           >
             <form>
               <div
-                class="MuiBox-root MuiBox-root-42"
+                class="MuiBox-root MuiBox-root-40"
               >
                 <div
                   class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -470,10 +462,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root-43"
+                      class="MuiBox-root MuiBox-root-41"
                     >
                       <div
-                        class="MuiBox-root MuiBox-root-44"
+                        class="MuiBox-root MuiBox-root-42"
                       >
                         <div
                           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -506,10 +498,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                             />
                             <fieldset
                               aria-hidden="true"
-                              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                              class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
                             >
                               <legend
-                                class="PrivateNotchedOutline-legendLabelled-25"
+                                class="PrivateNotchedOutline-legendLabelled-24"
                               >
                                 <span>
                                   Permit Number *
@@ -520,7 +512,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                         </div>
                       </div>
                       <div
-                        class="MuiBox-root MuiBox-root-45"
+                        class="MuiBox-root MuiBox-root-43"
                       >
                         <div
                           class="MuiFormControl-root"
@@ -575,10 +567,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                             </svg>
                             <fieldset
                               aria-hidden="true"
-                              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
+                              class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
                             >
                               <legend
-                                class="PrivateNotchedOutline-legendLabelled-25"
+                                class="PrivateNotchedOutline-legendLabelled-24"
                               >
                                 <span>
                                   Permit Type
@@ -592,7 +584,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                         </div>
                       </div>
                       <div
-                        class="MuiBox-root MuiBox-root-46"
+                        class="MuiBox-root MuiBox-root-44"
                       >
                         <button
                           aria-label="remove permit"
@@ -624,7 +616,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                   </div>
                 </div>
                 <div
-                  class="MuiBox-root MuiBox-root-47"
+                  class="MuiBox-root MuiBox-root-45"
                 >
                   <button
                     aria-label="add permit"
@@ -650,7 +642,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
         <div
-          class="MuiBox-root MuiBox-root-48"
+          class="MuiBox-root MuiBox-root-46"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-7 MuiButton-containedPrimary"
