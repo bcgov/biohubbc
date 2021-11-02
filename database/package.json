@@ -1,7 +1,7 @@
 {
-  "name": "biohubbc-db",
+  "name": "sims-db",
   "version": "0.0.0",
-  "description": "Database migrations/seeding for BioHubBC API",
+  "description": "Database migrations/seeding for SIMS",
   "license": "Apache-2.0",
   "repository": {
     "type": "git",

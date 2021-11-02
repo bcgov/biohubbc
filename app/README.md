@@ -1,6 +1,6 @@
 # bcgov/biohubbc/app
 
-A standard React web-app for BioHub management activities.
+A standard React web-app for SIMS management activities.
 
 ## Documenation
 
