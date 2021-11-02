@@ -568,7 +568,7 @@ export interface ReportAttachmentMeta {
  * @param {PutReportAttachmentMetadata} metadata
  * @return {*}  {(SQLStatement | null)}
  */
-export const updateProjectReportAttachmentMetadataSQL = (
+export const updateSurveyReportAttachmentMetadataSQL = (
   surveyId: number,
   attachmentId: number,
   metadata: PutReportAttachmentMetadata
@@ -717,56 +717,6 @@ export const getSurveyReportAuthorsSQL = (surveyReportAttachmentId: number): SQL
 
   defaultLog.debug({
     label: 'getSurveyReportAuthorsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * Update the metadata fields of  project report attachment, for tjhe specified `projectId` and `attachmentId`.
- *
- * @param {number} projectId
- * @param {number} attachmentId
- * @param {PutReportAttachmentMetadata} metadata
- * @return {*}  {(SQLStatement | null)}
- */
-export const updateSurveyReportAttachmentMetadataSQL = (
-  surveyId: number,
-  attachmentId: number,
-  metadata: PutReportAttachmentMetadata
-): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'updateSurveyReportAttachmentMetadataSQL',
-    message: 'params',
-    surveyId,
-    attachmentId,
-    metadata
-  });
-
-  if (!surveyId || !attachmentId || !metadata) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    UPDATE
-      survey_report_attachment
-    SET
-      title = ${metadata.title},
-      year = ${metadata.year_published},
-      description = ${metadata.description}
-    WHERE
-      survey_id = ${surveyId}
-    AND
-      survey_report_attachment_id = ${attachmentId}
-    AND
-      revision_count = ${metadata.revision_count};
-  `;
-
-  defaultLog.debug({
-    label: 'updateSurveyReportAttachmentMetadataSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

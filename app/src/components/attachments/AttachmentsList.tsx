@@ -296,8 +296,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           fileMeta,
           reportMetaData.revision_count
         );
-
-        //TODO: update
       } else {
         await biohubApi.project.updateProjectAttachmentMetadata(
           props.projectId,

@@ -104,8 +104,6 @@ export function getSurveyReportMetaData(): RequestHandler {
         throw new HTTP400('Failed to build metadata SQLStatement');
       }
 
-      const connection = getDBConnection(req['keycloak_token']);
-
       await connection.open();
 
       const reportMetaData = await connection.query(
