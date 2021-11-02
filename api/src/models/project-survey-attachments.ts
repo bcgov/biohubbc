@@ -86,3 +86,13 @@ export class GetReportAttachmentMetadata {
       [];
   }
 }
+
+export class GetReportAttachmentAuthor {
+  first_name: string;
+  last_name: string;
+
+  constructor(authorObj?: any) {
+    this.first_name = (authorObj && authorObj?.first_name) || null;
+    this.last_name = (authorObj && authorObj?.last_name) || null;
+  }
+}
