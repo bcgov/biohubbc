@@ -3,6 +3,8 @@ import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -10,21 +12,22 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { mdiLockOutline, mdiLockOpenVariantOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiLockOpenVariantOutline, mdiLockOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
-import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
-import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
 import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
+import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
+import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
+import { EditReportMetaDataI18N } from 'constants/i18n';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -56,6 +59,22 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const dialogContext = useContext(DialogContext);
 
+  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+    dialogTitle: EditReportMetaDataI18N.editErrorTitle,
+    dialogText: EditReportMetaDataI18N.editErrorText,
+    open: false,
+    onClose: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    },
+    onOk: () => {
+      setErrorDialogProps({ ...errorDialogProps, open: false });
+    }
+  });
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+  };
+
   const defaultYesNoDialogProps = {
     dialogTitle: 'Delete Attachment',
     dialogText: 'Are you sure you want to delete the selected attachment?',
@@ -66,7 +85,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   useEffect(() => {
-    console.log('reportmetadata = in useEffect', reportMetaData);
     if (reportMetaData && currentAttachment) {
       setShowViewFileWithMetaDialog(true);
     }
@@ -135,17 +153,11 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     try {
       let response;
 
-      // if (props.surveyId) {
-      //   response = await biohubApi.survey.getSurveyReportMetadata(
-      //     props.projectId,
-      //     props.surveyId,
-      //     attachment.id,
-      //     attachment.fileType
-      //   );
-      // } else {
-      response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
-
-      // }
+      if (props.surveyId) {
+        response = await biohubApi.survey.getSurveyReportMetadata(props.projectId, props.surveyId, attachment.id);
+      } else {
+        response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
+      }
 
       if (!response) {
         return;
@@ -267,24 +279,41 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const getSaveHandler = () => {
-    return (fileMeta: IEditReportMetaForm) => {
-      if (!reportMetaData) {
-        return Promise.resolve({});
-      }
+  const handleDialogEditSave = async (values: IEditReportMetaForm) => {
+    if (!reportMetaData) {
+      return Promise.resolve({});
+    }
 
-      return biohubApi.project
-        .updateProjectAttachmentMetadata(
+    const fileMeta = values;
+
+    try {
+      if (props.surveyId) {
+        await biohubApi.survey.updateSurveyAttachmentMetadata(
+          props.projectId,
+          props.surveyId,
+          reportMetaData.attachment_id,
+          'Report',
+          fileMeta,
+          reportMetaData.revision_count
+        );
+
+        //TODO: update
+      } else {
+        await biohubApi.project.updateProjectAttachmentMetadata(
           props.projectId,
           reportMetaData.attachment_id,
           'Report',
           fileMeta,
           reportMetaData.revision_count
-        )
-        .finally(() => {
-          setShowEditFileWithMetaDialog(false);
-        });
-    };
+        );
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+      return;
+    } finally {
+      setShowEditFileWithMetaDialog(false);
+    }
   };
 
   return (
@@ -306,7 +335,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         onClose={() => {
           setShowEditFileWithMetaDialog(false);
         }}
-        onSave={getSaveHandler()}
+        onSave={handleDialogEditSave}
       />
       <Paper>
         <TableContainer>

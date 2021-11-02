@@ -1,18 +1,18 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import {
-  getProjectReportAttachmentSQL,
-  getProjectReportAuthorsSQL
-} from '../../../../../../queries/project/project-attachments-queries';
-import { getLogger } from '../../../../../../utils/logger';
-import { GetReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
+  getSurveyReportAttachmentSQL,
+  getSurveyReportAuthorsSQL
+} from '../../../../../../../../queries/survey/survey-attachments-queries';
+import { getLogger } from '../../../../../../../../utils/logger';
+import { GetReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
-export const GET: Operation = [getProjectReportMetaData()];
+export const GET: Operation = [getSurveyReportMetaData()];
 
 GET.apiDoc = {
   description: 'Retrieves the report metadata of a project attachment if filetype is Report.',
@@ -26,6 +26,14 @@ GET.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
       schema: {
         type: 'number'
       },
@@ -62,10 +70,10 @@ GET.apiDoc = {
   }
 };
 
-export function getProjectReportMetaData(): RequestHandler {
+export function getSurveyReportMetaData(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'getProjectReportMetaData',
+      label: 'getSurveyReportMetaData',
       message: 'params',
       req_params: req.params,
       req_query: req.query
@@ -73,6 +81,9 @@ export function getProjectReportMetaData(): RequestHandler {
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
+    }
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
     }
 
     if (!req.params.attachmentId) {
@@ -82,12 +93,12 @@ export function getProjectReportMetaData(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectReportAttachmentSQLStatement = getProjectReportAttachmentSQL(
+      const getProjectReportAttachmentSQLStatement = getSurveyReportAttachmentSQL(
         Number(req.params.projectId),
         Number(req.params.attachmentId)
       );
 
-      const getProjectReportAuthorsSQLStatement = getProjectReportAuthorsSQL(Number(req.params.attachmentId));
+      const getProjectReportAuthorsSQLStatement = getSurveyReportAuthorsSQL(Number(req.params.attachmentId));
 
       if (!getProjectReportAttachmentSQLStatement || !getProjectReportAuthorsSQLStatement) {
         throw new HTTP400('Failed to build metadata SQLStatement');

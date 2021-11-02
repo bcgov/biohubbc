@@ -69,7 +69,7 @@ export class GetReportAttachmentMetadata {
   authors: IReportAttachmentAuthor[];
 
   constructor(metaObj?: any, authorObj?: any) {
-    this.attachment_id = (metaObj && metaObj?.project_report_attachment_id) || null;
+    this.attachment_id = (metaObj && metaObj?.attachment_id) || null;
     this.title = (metaObj && metaObj?.title) || null;
     this.last_modified = (metaObj && metaObj?.update_date) || null;
     this.description = (metaObj && metaObj?.description) || null;

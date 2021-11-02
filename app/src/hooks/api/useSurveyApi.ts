@@ -1,21 +1,21 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
+import { IGetReportMetaData, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
+  IGetSurveyAttachmentsResponse,
+  IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   IGetSurveysListResponse,
   IUpdateSurveyRequest,
-  IGetSurveyForUpdateResponse,
-  UPDATE_GET_SURVEY_ENTITIES,
-  IGetSurveyAttachmentsResponse,
+  SurveyFundingSources,
   SurveyPermits,
-  SurveyFundingSources
+  UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
-import { IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
-import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-
 import qs from 'qs';
 
 /**
@@ -156,7 +156,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     attachmentId: number,
     attachmentType: string,
-    attachmentMeta: IReportMetaForm,
+    attachmentMeta: IEditReportMetaForm,
     revisionCount: number
   ): Promise<number> => {
     const obj = {
@@ -471,6 +471,33 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get survey report metadata based on project ID, surveyID, attachment ID, and attachmentType
+   *
+   * @param {number} projectId
+   * @params {number} surveyId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @returns {*} {Promise<string>}
+   */
+  const getSurveyReportMetadata = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number
+  ): Promise<IGetReportMetaData> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`,
+      {
+        params: {},
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      }
+    );
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -479,6 +506,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     updateSurvey,
     uploadSurveyAttachments,
     updateSurveyAttachmentMetadata,
+    getSurveyReportMetadata,
     uploadSurveySummaryResults,
     getSurveySummarySubmission,
     getSurveyAttachments,

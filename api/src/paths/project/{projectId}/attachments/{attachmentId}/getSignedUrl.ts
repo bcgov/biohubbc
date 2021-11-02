@@ -13,7 +13,7 @@ import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
-export const GET: Operation = [getAttachmentSignedURL()];
+export const GET: Operation = [getProjectAttachmentSignedURL()];
 
 GET.apiDoc = {
   description: 'Retrieves the signed url of a project attachment.',
@@ -79,13 +79,14 @@ GET.apiDoc = {
   }
 };
 
-export function getAttachmentSignedURL(): RequestHandler {
+export function getProjectAttachmentSignedURL(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'getAttachmentSignedURL',
+      label: 'getProjectAttachmentSignedURL',
       message: 'params',
       req_params: req.params,
-      req_query: req.query
+      req_query: req.query,
+      req_body: req.body
     });
 
     if (!req.params.projectId) {
@@ -131,7 +132,7 @@ export function getAttachmentSignedURL(): RequestHandler {
 
       return res.status(200).json(s3SignedUrl);
     } catch (error) {
-      defaultLog.error({ label: 'getAttachmentSignedURL', message: 'error', error });
+      defaultLog.error({ label: 'getProjectAttachmentSignedURL', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

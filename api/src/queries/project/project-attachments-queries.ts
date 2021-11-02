@@ -674,7 +674,17 @@ export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: n
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
-      project_report_attachment.*
+      project_report_attachment_id as attachment_id,
+      file_name,
+      title,
+      description,
+      year,
+      update_date,
+      create_date,
+      file_size,
+      key,
+      security_token,
+      revision_count
     FROM
       project_report_attachment
     where
@@ -703,7 +713,7 @@ export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: n
  */
 export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getProjectReportAttachmentSQL',
+    label: 'getProjectReportAuthorsSQL',
     message: 'params',
     projectReportAttachmentId
   });

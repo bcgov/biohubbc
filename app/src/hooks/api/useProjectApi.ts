@@ -1,6 +1,6 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
-import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import {
   ICreateProjectRequest,
   ICreateProjectResponse,
