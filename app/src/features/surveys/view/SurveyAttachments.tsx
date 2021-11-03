@@ -16,6 +16,7 @@ import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useS
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
+import { AttachmentType } from '../../../constants/misc';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
@@ -41,7 +42,9 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [attachmentType, setAttachmentType] = useState<'Report' | 'Other'>('Other');
+  const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(
+    AttachmentType.OTHER
+  );
   const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -54,12 +57,12 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   };
   const handleUploadReportClick = (event: any) => {
     setAnchorEl(null);
-    setAttachmentType('Report');
+    setAttachmentType(AttachmentType.REPORT);
     setOpenUploadAttachments(true);
   };
   const handleUploadAttachmentClick = (event: any) => {
     setAnchorEl(null);
-    setAttachmentType('Other');
+    setAttachmentType(AttachmentType.OTHER);
     setOpenUploadAttachments(true);
   };
 

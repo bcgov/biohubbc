@@ -1,11 +1,11 @@
-export enum ProjectSurveyAttachmentType {
-  AUDIO = 'Audio',
-  DATA = 'Data File',
-  IMAGE = 'Image',
-  REPORT = 'Report',
-  SPATIAL = 'Spatial File',
-  VIDEO = 'Video'
-}
+// export enum ProjectSurveyAttachmentType {
+//   AUDIO = 'Audio',
+//   DATA = 'Data File',
+//   IMAGE = 'Image',
+//   REPORT = 'Report',
+//   SPATIAL = 'Spatial File',
+//   VIDEO = 'Video'
+// }
 
 export enum ProjectSurveyAttachmentValidExtensions {
   AUDIO = '.wav, .mp3, .mp4, .wma',

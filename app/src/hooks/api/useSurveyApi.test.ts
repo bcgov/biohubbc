@@ -3,6 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { ICreateSurveyRequest, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import useSurveyApi from './useSurveyApi';
+import { AttachmentType } from '../../constants/misc';
 
 describe('useSurveyApi', () => {
   let mock: any;
@@ -130,11 +131,16 @@ describe('useSurveyApi', () => {
 
     mock
       .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`, {
-        query: { attachmentType: 'Report' }
+        query: { attachmentType: AttachmentType.REPORT }
       })
       .reply(200, signedUrl);
 
-    const result = await useSurveyApi(axios).getSurveyAttachmentSignedURL(projectId, surveyId, attachmentId, 'Report');
+    const result = await useSurveyApi(axios).getSurveyAttachmentSignedURL(
+      projectId,
+      surveyId,
+      attachmentId,
+      AttachmentType.REPORT
+    );
 
     expect(result).toEqual(signedUrl);
   });

@@ -22,3 +22,8 @@ export enum SurveyStatusType {
   COMPLETED = 'Completed',
   ACTIVE = 'Active'
 }
+
+export enum AttachmentType {
+  REPORT = 'Report',
+  OTHER = 'Other'
+}

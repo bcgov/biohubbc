@@ -19,6 +19,7 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
+import { AttachmentType } from '../../../constants/misc';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
@@ -42,7 +43,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
-  const [attachmentType, setAttachmentType] = useState<'Report' | 'Other'>('Other');
+  const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(
+    AttachmentType.OTHER
+  );
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
 
   const [anchorEl, setAnchorEl] = useState(null);
@@ -55,12 +58,12 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   };
   const handleUploadReportClick = (event: any) => {
     setAnchorEl(null);
-    setAttachmentType('Report');
+    setAttachmentType(AttachmentType.REPORT);
     setOpenUploadAttachments(true);
   };
   const handleUploadAttachmentClick = (event: any) => {
     setAnchorEl(null);
-    setAttachmentType('Other');
+    setAttachmentType(AttachmentType.OTHER);
     setOpenUploadAttachments(true);
   };
 

@@ -6,9 +6,10 @@ import React from 'react';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
 import FileUpload, { IReplaceHandler } from './FileUpload';
 import { IFileHandler, IOnUploadSuccess, IUploadHandler, UploadFileStatus } from './FileUploadItem';
+import { AttachmentType } from '../../constants/misc';
 
 export interface IFileUploadWithMetaProps {
-  attachmentType: 'Report' | 'Other';
+  attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;
   uploadHandler: IUploadHandler;
   fileHandler?: IFileHandler;
   onSuccess?: IOnUploadSuccess;
@@ -29,12 +30,12 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
 
   return (
     <form onSubmit={handleSubmit}>
-      {props.attachmentType === 'Report' && (
+      {props.attachmentType === AttachmentType.REPORT && (
         <Box mb={3}>
           <ReportMetaForm />
         </Box>
       )}
-      {(props.attachmentType === 'Report' && (
+      {(props.attachmentType === AttachmentType.REPORT && (
         <Box component="fieldset">
           <Typography component="legend" variant="body1" id="report_upload">
             Attach File

@@ -12,7 +12,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { mdiLockOpenVariantOutline, mdiLockOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiLockOpenVariantOutline, mdiLockOutline, mdiDotsVertical } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -28,12 +28,18 @@ import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
 import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
 import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
 import { EditReportMetaDataI18N } from 'constants/i18n';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { AttachmentType } from '../../constants/misc';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
     '& .MuiTableCell-root': {
       verticalAlign: 'middle'
     }
+  },
+  uploadMenu: {
+    marginTop: theme.spacing(1)
   }
 }));
 
@@ -56,6 +62,21 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
 
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
+
+  const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    setCurrentAttachment(attachment);
+    openAttachment(attachment);
+  };
+  const handleDeleteFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    setCurrentAttachment(attachment);
+
+    showDeleteAttachmentDialog(attachment);
+  };
+
+  const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+    setCurrentAttachment(attachment);
+    getReportMeta(attachment);
+  };
 
   const dialogContext = useContext(DialogContext);
 
@@ -194,16 +215,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const viewFileContents = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    setCurrentAttachment(attachment);
-
-    if (attachment.fileType === 'Report') {
-      getReportMeta(attachment);
-    } else {
-      openAttachment(attachment);
-    }
-  };
-
   const openAttachmentFromReportMetaDialog = async () => {
     if (currentAttachment) {
       openAttachment(currentAttachment);
@@ -292,7 +303,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           props.projectId,
           props.surveyId,
           reportMetaData.attachment_id,
-          'Report',
+          AttachmentType.REPORT,
           fileMeta,
           reportMetaData.revision_count
         );
@@ -300,7 +311,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         await biohubApi.project.updateProjectAttachmentMetadata(
           props.projectId,
           reportMetaData.attachment_id,
-          'Report',
+          AttachmentType.REPORT,
           fileMeta,
           reportMetaData.revision_count
         );
@@ -350,44 +361,44 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             </TableHead>
             <TableBody>
               {props.attachmentsList.length > 0 &&
-                props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow key={`${row.fileName}-${index}`}>
-                    <TableCell scope="row">
-                      <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents(row)}>
-                        {row.fileName}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{row.fileType}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
-                    <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                    <TableCell>
-                      <Box my={-1}>
-                        <Button
-                          color="primary"
-                          variant="text"
-                          startIcon={
-                            <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                          }
-                          aria-label="toggle attachment security status"
-                          data-testid="toggle-attachment-security-status"
-                          onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
-                          {row.securityToken ? 'Secured' : 'Unsecured'}
-                        </Button>
-                      </Box>
-                    </TableCell>
-                    <TableCell align="right">
-                      <Box my={-1}>
-                        <IconButton
-                          color="primary"
-                          aria-label="delete attachment"
-                          data-testid="delete-attachment"
-                          onClick={() => showDeleteAttachmentDialog(row)}>
-                          <Icon path={mdiTrashCanOutline} size={1} />
-                        </IconButton>
-                      </Box>
-                    </TableCell>
-                  </TableRow>
-                ))}
+                props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
+                  return (
+                    <TableRow key={`${row.fileName}-${index}`}>
+                      <TableCell scope="row">
+                        <Link underline="always" component="button" variant="body2" onClick={() => openAttachment(row)}>
+                          {row.fileName}
+                        </Link>
+                      </TableCell>
+                      <TableCell>{row.fileType}</TableCell>
+                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
+                      <TableCell>{getFormattedFileSize(row.size)}</TableCell>
+                      <TableCell>
+                        <Box my={-1}>
+                          <Button
+                            color="primary"
+                            variant="text"
+                            startIcon={
+                              <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                            }
+                            aria-label="toggle attachment security status"
+                            data-testid="toggle-attachment-security-status"
+                            onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
+                            {row.securityToken ? 'Secured' : 'Unsecured'}
+                          </Button>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell align="right">
+                        <AttachmentItemMenuButton
+                          attachment={row}
+                          handleDownloadFileClick={handleDownloadFileClick}
+                          handleDeleteFileClick={handleDeleteFileClick}
+                          handleViewDetailsClick={handleViewDetailsClick}
+                        />
+                      </TableCell>
+                    </TableRow>
+                  );
+                })}
               {!props.attachmentsList.length && (
                 <TableRow>
                   <TableCell colSpan={5} align="center">
@@ -417,3 +428,82 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 };
 
 export default AttachmentsList;
+
+interface IAttachmentItemMenuButtonProps {
+  attachment: IGetProjectAttachment | IGetSurveyAttachment;
+  handleDownloadFileClick: (attachment: IGetProjectAttachment | IGetSurveyAttachment) => void;
+  handleDeleteFileClick: (attachment: IGetProjectAttachment | IGetSurveyAttachment) => void;
+  handleViewDetailsClick: (attachment: IGetProjectAttachment | IGetSurveyAttachment) => void;
+}
+
+const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (props) => {
+  const classes = useStyles();
+
+  const [anchorEl, setAnchorEl] = useState(null);
+  const open = Boolean(anchorEl);
+
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  return (
+    <>
+      <Box my={-1}>
+        <Box>
+          <IconButton
+            color="primary"
+            aria-label="delete attachment"
+            data-testid="delete-attachment"
+            onClick={handleClick}>
+            <Icon path={mdiDotsVertical} size={1} />
+          </IconButton>
+          <Menu
+            className={classes.uploadMenu}
+            getContentAnchorEl={null}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right'
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right'
+            }}
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button'
+            }}>
+            <MenuItem
+              onClick={() => {
+                props.handleDownloadFileClick(props.attachment);
+                setAnchorEl(null);
+              }}>
+              Download File
+            </MenuItem>
+            <MenuItem
+              onClick={() => {
+                props.handleDeleteFileClick(props.attachment);
+                setAnchorEl(null);
+              }}>
+              Delete File
+            </MenuItem>
+            {props.attachment.fileType === AttachmentType.REPORT && (
+              <MenuItem
+                onClick={() => {
+                  props.handleViewDetailsClick(props.attachment);
+                  setAnchorEl(null);
+                }}>
+                View Details
+              </MenuItem>
+            )}
+          </Menu>
+        </Box>
+      </Box>
+    </>
+  );
+};

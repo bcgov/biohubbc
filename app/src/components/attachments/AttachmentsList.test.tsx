@@ -2,6 +2,7 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import AttachmentsList from './AttachmentsList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { AttachmentType } from '../../constants/misc';
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -32,7 +33,7 @@ describe('AttachmentsList', () => {
     {
       id: 1,
       fileName: 'filename.test',
-      fileType: 'Other',
+      fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 3028,
       securityToken: null
@@ -40,7 +41,7 @@ describe('AttachmentsList', () => {
     {
       id: 20,
       fileName: 'filename20.test',
-      fileType: 'Report',
+      fileType: AttachmentType.REPORT,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000,
       securityToken: null
@@ -48,7 +49,7 @@ describe('AttachmentsList', () => {
     {
       id: 30,
       fileName: 'filename30.test',
-      fileType: 'Other',
+      fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000000,
       securityToken: null

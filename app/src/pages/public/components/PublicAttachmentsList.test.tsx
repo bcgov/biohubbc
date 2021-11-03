@@ -2,6 +2,7 @@ import { fireEvent, render, cleanup, waitFor } from '@testing-library/react';
 import React from 'react';
 import PublicAttachmentsList from './PublicAttachmentsList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { AttachmentType } from '../../../constants/misc';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -38,7 +39,7 @@ describe('PublicAttachmentsList', () => {
     {
       id: 20,
       fileName: 'filename20.test',
-      fileType: 'Report',
+      fileType: AttachmentType.REPORT,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000,
       securityToken: true
