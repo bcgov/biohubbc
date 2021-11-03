@@ -16,7 +16,9 @@ import {
   updateSurveyReportAttachmentMetadataSQL,
   insertSurveyReportAttachmentAuthorSQL,
   deleteSurveyReportAttachmentAuthorsSQL,
-  getSurveyReportAuthorsSQL
+  getSurveyReportAuthorsSQL,
+  getSurveyReportAttachmentSQL,
+  getSurveyReportAttachmentS3KeySQL
 } from './survey-attachments-queries';
 
 const post_sample_attachment_meta = {
@@ -383,6 +385,46 @@ describe('getSurveyReportAuthorSQL', () => {
 
   it('returns non null response when valid projectReportAttachmentId provided', () => {
     const response = getSurveyReportAuthorsSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSurveyReportAttachmentSQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getSurveyReportAttachmentSQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId provided', () => {
+    const response = getSurveyReportAttachmentSQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectReportAttachmentId provided', () => {
+    const response = getSurveyReportAttachmentSQL(1, 2);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSurveyReportAttachmentS3KeySQL', () => {
+  it('returns null response when null surveyId provided', () => {
+    const response = getSurveyReportAttachmentS3KeySQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null attachmentId provided', () => {
+    const response = getSurveyReportAttachmentS3KeySQL(1, (null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid projectReportAttachmentId provided', () => {
+    const response = getSurveyReportAttachmentS3KeySQL(1, 2);
 
     expect(response).to.not.be.null;
   });
