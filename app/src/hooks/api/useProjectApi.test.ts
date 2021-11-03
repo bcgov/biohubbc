@@ -1,5 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -8,7 +10,7 @@ import { IProjectLocationForm } from 'features/projects/components/ProjectLocati
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { IGetReportMetaData, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import useProjectApi, { usePublicProjectApi } from './useProjectApi';
 
@@ -26,6 +28,23 @@ describe('useProjectApi', () => {
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
+  const attachmentMeta: IReportMetaForm = {
+    title: 'upload file',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'file abstract',
+    year_published: '2000',
+    attachmentFile: new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    })
+  };
+
+  const attachmentMetaForUpdate: IEditReportMetaForm = {
+    title: 'upload file',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'file abstract',
+    year_published: '2000',
+    revision_count: 1
+  };
 
   it('getProjectAttachments works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/attachments/list`).reply(200, {
@@ -217,7 +236,7 @@ describe('useProjectApi', () => {
 
     mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file, attachmentType);
+    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file, attachmentType, attachmentMeta);
 
     expect(result).toEqual('result 1');
   });
@@ -253,7 +272,7 @@ describe('useProjectApi', () => {
     expect(result).toEqual({ id: 1 });
   });
 
-  it('getAttachmentSignedURL works as expected', async () => {
+  it('getAttachmentSignedURL works as expected for public access', async () => {
     mock
       .onGet(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
         query: { attachmentType: 'Other' }
@@ -261,6 +280,18 @@ describe('useProjectApi', () => {
       .reply(200, 'www.signedurl.com');
 
     const result = await usePublicProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Other');
+
+    expect(result).toEqual('www.signedurl.com');
+  });
+
+  it('getAttachmentSignedURL works as expected for authenticated access', async () => {
+    mock
+      .onGet(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+        query: { attachmentType: 'Other' }
+      })
+      .reply(200, 'www.signedurl.com');
+
+    const result = await useProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Other');
 
     expect(result).toEqual('www.signedurl.com');
   });
@@ -287,5 +318,19 @@ describe('useProjectApi', () => {
         size: 3028
       }
     ]);
+  });
+
+  it('updateProjectAttachmentMetadata works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`).reply(200, 'result 1');
+
+    const result = await useProjectApi(axios).updateProjectAttachmentMetadata(
+      projectId,
+      attachmentId,
+      attachmentType,
+      attachmentMetaForUpdate,
+      attachmentMetaForUpdate.revision_count
+    );
+
+    expect(result).toEqual('result 1');
   });
 });
