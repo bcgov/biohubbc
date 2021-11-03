@@ -19,7 +19,7 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { AttachmentType } from '../../../constants/misc';
+import { AttachmentType } from '../../../constants/attachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {
@@ -140,6 +140,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             aria-expanded={open ? 'true' : undefined}
             startIcon={<Icon path={mdiUpload} size={1} />}
             endIcon={<Icon path={mdiMenuDown} size={1} />}
+            data-testid="click-ellipsis"
             onClick={handleClick}>
             Upload
           </Button>

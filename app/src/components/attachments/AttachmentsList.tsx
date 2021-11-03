@@ -30,7 +30,7 @@ import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
 import { EditReportMetaDataI18N } from 'constants/i18n';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import { AttachmentType } from '../../constants/misc';
+import { AttachmentType } from '../../constants/attachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -453,11 +453,7 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
     <>
       <Box my={-1}>
         <Box>
-          <IconButton
-            color="primary"
-            aria-label="delete attachment"
-            data-testid="delete-attachment"
-            onClick={handleClick}>
+          <IconButton color="primary" aria-label="delete attachment" onClick={handleClick}>
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu

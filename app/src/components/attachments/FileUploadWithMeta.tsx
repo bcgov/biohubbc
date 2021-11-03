@@ -6,7 +6,7 @@ import React from 'react';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
 import FileUpload, { IReplaceHandler } from './FileUpload';
 import { IFileHandler, IOnUploadSuccess, IUploadHandler, UploadFileStatus } from './FileUploadItem';
-import { AttachmentType } from '../../constants/misc';
+import { AttachmentType } from '../../constants/attachments';
 
 export interface IFileUploadWithMetaProps {
   attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;

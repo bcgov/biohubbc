@@ -96,14 +96,20 @@ describe('ProjectAttachments', () => {
   //     attachmentsList: [
   //       {
   //         id: 1,
-  //         fileName: 'filename.test',
+  //         fileName: 'filename1.test',
+  //         lastModified: '2021-04-09 11:53:53',
+  //         size: 3028
+  //       },
+  //       {
+  //         id: 2,
+  //         fileName: 'filename2.test',
   //         lastModified: '2021-04-09 11:53:53',
   //         size: 3028
   //       }
   //     ]
   //   });
 
-  //   const { queryByText, getByTestId } = render(
+  //   const { queryByText, getByTestId, getAllByRole } = render(
   //     <DialogContextProvider>
   //       <Router history={history}>
   //         <ProjectAttachments projectForViewData={getProjectForViewResponse} />
@@ -112,14 +118,24 @@ describe('ProjectAttachments', () => {
   //   );
 
   //   await waitFor(() => {
-  //     expect(queryByText('filename.test')).toBeInTheDocument();
+  //     expect(queryByText('filename1.test')).toBeInTheDocument();
+  //     expect(queryByText('filename2.test')).toBeInTheDocument();
   //   });
 
   //   mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
   //     attachmentsList: []
   //   });
 
-  //   fireEvent.click(getByTestId('delete-attachment'));
+  //   fireEvent.click(getByTestId('click-ellipsis'));
+
+  //   fireEvent.mouseDown(
+  //     getByTestId('click-ellipsis'),
+  //     fireEvent.change(getByTestId('click-ellipsis'), { target: { value: 'delete-file' } })
+  //   );
+
+  //   // Get the backdrop, then get the firstChild because this is where the event listener is attached
+  // //@ts-ignore
+  //   fireEvent.click(getAllByRole('dialog'));
 
   //   await waitFor(() => {
   //     expect(queryByText('Delete Attachment')).toBeInTheDocument();
@@ -128,8 +144,8 @@ describe('ProjectAttachments', () => {
   //   fireEvent.click(getByTestId('yes-button'));
 
   //   await waitFor(() => {
-  //     expect(queryByText('Delete Attachment')).not.toBeInTheDocument();
-  //     expect(queryByText('filename.test')).not.toBeInTheDocument();
+  //     expect(getByTestId('click-ellipsis')).not.toBeInTheDocument();
+  //     expect(queryByText('filename2.test')).not.toBeInTheDocument();
   //   });
   // });
 
@@ -162,10 +178,12 @@ describe('ProjectAttachments', () => {
   //     attachmentsList: []
   //   });
 
+  //   fireEvent.click(getByTestId('click-ellipsis'));
+
   //   fireEvent.click(getByTestId('delete-attachment'));
 
   //   await waitFor(() => {
-  //     expect(queryByText('Delete Attachment')).toBeInTheDocument();
+  //     expect(queryByText('Delete File')).toBeInTheDocument();
   //   });
 
   //   fireEvent.click(getByText('No'));

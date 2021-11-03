@@ -16,7 +16,7 @@ import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useS
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
-import { AttachmentType } from '../../../constants/misc';
+import { AttachmentType } from '../../../constants/attachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   uploadMenu: {

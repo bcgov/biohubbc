@@ -3,7 +3,7 @@ import MockAdapter from 'axios-mock-adapter';
 import { ICreateSurveyRequest, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import useSurveyApi from './useSurveyApi';
-import { AttachmentType } from '../../constants/misc';
+import { AttachmentType } from '../../constants/attachments';
 
 describe('useSurveyApi', () => {
   let mock: any;
