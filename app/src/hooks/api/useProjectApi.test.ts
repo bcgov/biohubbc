@@ -10,7 +10,7 @@ import { IProjectLocationForm } from 'features/projects/components/ProjectLocati
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
 import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
-import { IGetReportMetaData, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
+import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import useProjectApi, { usePublicProjectApi } from './useProjectApi';
 
@@ -330,6 +330,14 @@ describe('useProjectApi', () => {
       attachmentMetaForUpdate,
       attachmentMetaForUpdate.revision_count
     );
+
+    expect(result).toEqual('result 1');
+  });
+
+  it('getProjectReportMetadata works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`).reply(200, 'result 1');
+
+    const result = await useProjectApi(axios).getProjectReportMetadata(projectId, attachmentId);
 
     expect(result).toEqual('result 1');
   });

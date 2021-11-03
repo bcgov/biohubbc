@@ -4,6 +4,8 @@ import { ICreateSurveyRequest, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/use
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import useSurveyApi from './useSurveyApi';
 import { AttachmentType } from '../../constants/attachments';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 
 describe('useSurveyApi', () => {
   let mock: any;
@@ -20,6 +22,23 @@ describe('useSurveyApi', () => {
   const surveyId = 2;
   const attachmentId = 3;
   const attachmentType = 'type';
+  const attachmentMeta: IReportMetaForm = {
+    title: 'upload file',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'file abstract',
+    year_published: '2000',
+    attachmentFile: new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    })
+  };
+
+  const attachmentMetaForUpdate: IEditReportMetaForm = {
+    title: 'upload file',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'file abstract',
+    year_published: '2000',
+    revision_count: 1
+  };
 
   it('getObservationSubmissionSignedURL works as expected', async () => {
     const submissionId = 4;
@@ -171,7 +190,13 @@ describe('useSurveyApi', () => {
 
     mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file, attachmentType);
+    const result = await useSurveyApi(axios).uploadSurveyAttachments(
+      projectId,
+      surveyId,
+      file,
+      attachmentType,
+      attachmentMeta
+    );
 
     expect(result).toEqual('result 1');
   });
@@ -329,5 +354,32 @@ describe('useSurveyApi', () => {
     const result = await useSurveyApi(axios).makeAttachmentSecure(projectId, surveyId, attachmentId, 'Image');
 
     expect(result).toEqual(true);
+  });
+
+  it('updateSurveyAttachmentMetadata works as expected', async () => {
+    mock
+      .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`)
+      .reply(200, 'result 1');
+
+    const result = await useSurveyApi(axios).updateSurveyAttachmentMetadata(
+      projectId,
+      surveyId,
+      attachmentId,
+      attachmentType,
+      attachmentMetaForUpdate,
+      attachmentMetaForUpdate.revision_count
+    );
+
+    expect(result).toEqual('result 1');
+  });
+
+  it('getSurveyReportMetadata works as expected', async () => {
+    mock
+      .onGet(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`)
+      .reply(200, 'result 1');
+
+    const result = await useSurveyApi(axios).getSurveyReportMetadata(projectId, surveyId, attachmentId);
+
+    expect(result).toEqual('result 1');
   });
 });
