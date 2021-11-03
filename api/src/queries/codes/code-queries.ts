@@ -114,4 +114,6 @@ export const getTaxonsSQL = (): SQLStatement =>
     FROM
       wldtaxonomic_units
     WHERE
-      tty_name = 'SPECIES';`;
+      tty_name = 'SPECIES'
+    ORDER BY
+      name;`;
