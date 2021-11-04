@@ -30,7 +30,7 @@ export const getFundingSourceSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getProprietorTypeSQL = (): SQLStatement =>
-  SQL`SELECT proprietor_type_id as id, name from proprietor_type;`;
+  SQL`SELECT proprietor_type_id as id, name, is_first_nation from proprietor_type;`;
 
 /**
  * SQL query to fetch activity codes.
