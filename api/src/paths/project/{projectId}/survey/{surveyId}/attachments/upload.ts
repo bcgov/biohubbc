@@ -154,10 +154,6 @@ export function uploadMedia(): RequestHandler {
       files: { ...rawMediaFile, buffer: 'Too big to print' }
     });
 
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing surveyId');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {

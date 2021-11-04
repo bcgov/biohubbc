@@ -23,8 +23,7 @@ describe('uploadMedia', () => {
     keycloak_token: {},
     params: {
       projectId: 1,
-      surveyId: 1,
-      attachmentId: 2
+      surveyId: 1
     },
     files: [
       {
@@ -36,7 +35,7 @@ describe('uploadMedia', () => {
       }
     ],
     body: {
-      attachmentType: 'Image'
+      attachmentType: 'Other'
     },
     auth_payload: {
       preferred_username: 'user',
@@ -55,6 +54,24 @@ describe('uploadMedia', () => {
       };
     }
   };
+
+  it('should throw an error when projectId is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = upload.uploadMedia();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing projectId');
+    }
+  });
 
   it('should throw an error when surveyId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
