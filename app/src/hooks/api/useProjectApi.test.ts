@@ -32,7 +32,7 @@ describe('useProjectApi', () => {
     title: 'upload file',
     authors: [{ first_name: 'John', last_name: 'Smith' }],
     description: 'file abstract',
-    year_published: '2000',
+    year_published: 2000,
     attachmentFile: new File(['foo'], 'foo.txt', {
       type: 'text/plain'
     })
@@ -42,7 +42,7 @@ describe('useProjectApi', () => {
     title: 'upload file',
     authors: [{ first_name: 'John', last_name: 'Smith' }],
     description: 'file abstract',
-    year_published: '2000',
+    year_published: 2000,
     revision_count: 1
   };
 

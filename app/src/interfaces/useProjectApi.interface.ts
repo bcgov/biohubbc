@@ -308,7 +308,7 @@ export interface IUploadAttachmentResponse {
 export interface IGetReportMetaData {
   attachment_id: number;
   title: string;
-  year_published: string;
+  year_published: number;
   description: string;
   last_modified: string;
   revision_count: number;

@@ -52,6 +52,7 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
+          required: ['attachmentType', 'attachmentMeta'],
           properties: {
             media: {
               type: 'string',
@@ -75,6 +76,7 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    required: ['first_name', 'last_name'],
                     properties: {
                       first_name: {
                         type: 'string'

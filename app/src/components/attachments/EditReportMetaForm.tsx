@@ -24,7 +24,7 @@ export interface IEditReportMetaForm {
   title: string;
   authors: IEditReportMetaFormArrayItem[];
   description: string;
-  year_published: string;
+  year_published: number;
   revision_count: number;
 }
 
@@ -32,7 +32,7 @@ export const EditReportMetaFormInitialValues: IEditReportMetaForm = {
   title: '',
   authors: [EditReportMetaFormArrayItemInitialValues],
   description: '',
-  year_published: '',
+  year_published: ('' as unknown) as number,
   revision_count: 0
 };
 
