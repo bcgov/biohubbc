@@ -64,7 +64,7 @@ export class GetReportAttachmentMetadata {
   title: string;
   last_modified: string;
   description: string;
-  year_published: string;
+  year_published: number;
   revision_count: number;
   authors: IReportAttachmentAuthor[];
 

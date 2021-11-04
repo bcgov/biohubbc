@@ -21,7 +21,7 @@ describe('updates metadata for a project report', () => {
       revision_count: 1,
       attachment_meta: {
         title: 'My report',
-        year_published: '2000',
+        year_published: 2000,
         description: 'report abstract',
         authors: [
           {

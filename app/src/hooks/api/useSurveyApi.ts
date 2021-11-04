@@ -125,7 +125,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
 
     if (attachmentMeta) {
       req_message.append('attachmentMeta[title]', attachmentMeta.title);
-      req_message.append('attachmentMeta[year_published]', attachmentMeta.year_published);
+      req_message.append('attachmentMeta[year_published]', String(attachmentMeta.year_published));
       req_message.append('attachmentMeta[description]', attachmentMeta.description);
       attachmentMeta.authors.forEach((authorObj, index) => {
         req_message.append(`attachmentMeta[authors][${index}][first_name]`, authorObj.first_name);
