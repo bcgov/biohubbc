@@ -64,12 +64,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
 
   const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    setCurrentAttachment(attachment);
     openAttachment(attachment);
   };
   const handleDeleteFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    setCurrentAttachment(attachment);
-
     showDeleteAttachmentDialog(attachment);
   };
 
