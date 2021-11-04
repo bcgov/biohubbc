@@ -64,12 +64,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
 
   const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    setCurrentAttachment(attachment);
     openAttachment(attachment);
   };
-  const handleDeleteFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
-    setCurrentAttachment(attachment);
 
+  const handleDeleteFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
     showDeleteAttachmentDialog(attachment);
   };
 
@@ -292,7 +290,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const handleDialogEditSave = async (values: IEditReportMetaForm) => {
     if (!reportMetaData) {
-      return Promise.resolve({});
+      return;
     }
 
     const fileMeta = values;
@@ -319,7 +317,6 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-      return;
     } finally {
       setShowEditFileWithMetaDialog(false);
     }
@@ -453,7 +450,11 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
     <>
       <Box my={-1}>
         <Box>
-          <IconButton color="primary" aria-label="delete attachment" onClick={handleClick}>
+          <IconButton
+            color="primary"
+            aria-label="delete attachment"
+            onClick={handleClick}
+            data-testid="attachment-action-menu">
             <Icon path={mdiDotsVertical} size={1} />
           </IconButton>
           <Menu
@@ -478,14 +479,16 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               onClick={() => {
                 props.handleDownloadFileClick(props.attachment);
                 setAnchorEl(null);
-              }}>
+              }}
+              data-testid="attachment-action-menu-download">
               Download File
             </MenuItem>
             <MenuItem
               onClick={() => {
                 props.handleDeleteFileClick(props.attachment);
                 setAnchorEl(null);
-              }}>
+              }}
+              data-testid="attachment-action-menu-delete">
               Delete File
             </MenuItem>
             {props.attachment.fileType === AttachmentType.REPORT && (
@@ -493,7 +496,8 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
                 onClick={() => {
                   props.handleViewDetailsClick(props.attachment);
                   setAnchorEl(null);
-                }}>
+                }}
+                data-testid="attachment-action-menu-details">
                 View Details
               </MenuItem>
             )}
