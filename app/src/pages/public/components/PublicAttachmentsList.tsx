@@ -1,29 +1,30 @@
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
-import { mdiLockOutline, mdiLockOpenVariantOutline } from '@mdi/js';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { mdiInformationOutline, mdiLockOpenVariantOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -87,6 +88,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                 <TableCell>Last Modified</TableCell>
                 <TableCell>File Size</TableCell>
                 <TableCell width="150px">Security Status</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -116,6 +118,16 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                         <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
                         <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
                       </Box>
+                    </TableCell>
+                    <TableCell>
+                      {' '}
+                      <IconButton
+                        color="primary"
+                        aria-label="get info"
+                        onClick={() => {}}
+                        data-testid="attachment-public-info">
+                        <Icon path={mdiInformationOutline} size={1} />
+                      </IconButton>
                     </TableCell>
                   </TableRow>
                 ))}
