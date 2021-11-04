@@ -13,7 +13,7 @@ import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 
-export const PUT: Operation = [updateProjectAttachmentMetadata()];
+export const PUT: Operation = [updateSurveyAttachmentMetadata()];
 
 PUT.apiDoc = {
   description: 'Update project attachment metadata.',
@@ -112,7 +112,7 @@ PUT.apiDoc = {
   }
 };
 
-export function updateProjectAttachmentMetadata(): RequestHandler {
+export function updateSurveyAttachmentMetadata(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'updateProjectAttachmentMetadata',
