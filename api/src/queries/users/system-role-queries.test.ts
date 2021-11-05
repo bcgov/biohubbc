@@ -4,13 +4,13 @@ import { deleteSystemRolesSQL, postProjectRolesByRoleNameSQL, postSystemRolesSQL
 
 describe('postSystemRolesSQL', () => {
   it('returns null response when null userId provided', () => {
-    const response = postSystemRolesSQL(null as unknown as number, [1]);
+    const response = postSystemRolesSQL((null as unknown) as number, [1]);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null roleIds provided', () => {
-    const response = postSystemRolesSQL(1, null as unknown as number[]);
+    const response = postSystemRolesSQL(1, (null as unknown) as number[]);
 
     expect(response).to.be.null;
   });
@@ -30,13 +30,13 @@ describe('postSystemRolesSQL', () => {
 
 describe('deleteSystemRolesSQL', () => {
   it('returns null response when null userId provided', () => {
-    const response = deleteSystemRolesSQL(null as unknown as number, [1]);
+    const response = deleteSystemRolesSQL((null as unknown) as number, [1]);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null roleIds provided', () => {
-    const response = deleteSystemRolesSQL(1, null as unknown as number[]);
+    const response = deleteSystemRolesSQL(1, (null as unknown) as number[]);
 
     expect(response).to.be.null;
   });
@@ -56,13 +56,13 @@ describe('deleteSystemRolesSQL', () => {
 
 describe('postProjectRolesByRoleNameSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = postProjectRolesByRoleNameSQL(null as unknown as number, 2, 'role');
+    const response = postProjectRolesByRoleNameSQL((null as unknown) as number, 2, 'role');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null systemUserId provided', () => {
-    const response = postProjectRolesByRoleNameSQL(1, null as unknown as number, 'role');
+    const response = postProjectRolesByRoleNameSQL(1, (null as unknown) as number, 'role');
 
     expect(response).to.be.null;
   });

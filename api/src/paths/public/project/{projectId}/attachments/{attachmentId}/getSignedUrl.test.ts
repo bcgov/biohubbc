@@ -51,8 +51,8 @@ describe('getAttachmentSignedURL', () => {
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
@@ -69,8 +69,8 @@ describe('getAttachmentSignedURL', () => {
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
@@ -87,8 +87,8 @@ describe('getAttachmentSignedURL', () => {
 
       await result(
         { ...sampleReq, query: { ...sampleReq.query, attachmentType: null } },
-        null as unknown as any,
-        null as unknown as any
+        (null as unknown) as any,
+        (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
@@ -115,7 +115,7 @@ describe('getAttachmentSignedURL', () => {
 
     const result = get_signed_url.getAttachmentSignedURL();
 
-    await result(sampleReq, sampleRes as any, null as unknown as any);
+    await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.equal(null);
   });
@@ -134,7 +134,7 @@ describe('getAttachmentSignedURL', () => {
       try {
         const result = get_signed_url.getAttachmentSignedURL();
 
-        await result(sampleReq, null as unknown as any, null as unknown as any);
+        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
         expect((actualError as CustomError).status).to.equal(400);
@@ -160,7 +160,7 @@ describe('getAttachmentSignedURL', () => {
 
       const result = get_signed_url.getAttachmentSignedURL();
 
-      await result(sampleReq, sampleRes as any, null as unknown as any);
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
       expect(actualResult).to.eql('myurlsigned.com');
     });
@@ -188,7 +188,7 @@ describe('getAttachmentSignedURL', () => {
             }
           },
           sampleRes as any,
-          null as unknown as any
+          (null as unknown) as any
         );
         expect.fail();
       } catch (actualError) {
@@ -223,7 +223,7 @@ describe('getAttachmentSignedURL', () => {
           }
         },
         sampleRes as any,
-        null as unknown as any
+        (null as unknown) as any
       );
 
       expect(actualResult).to.eql('myurlsigned.com');

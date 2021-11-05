@@ -22,10 +22,10 @@ describe('authorize', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = undefined as unknown as UserObject;
+    const mockSystemUserObject = (undefined as unknown) as UserObject;
     sinon.stub(systemUser, 'getSystemUserObject').resolves(mockSystemUserObject);
 
-    const mockReq = { authorization_scheme: {} } as unknown as Request;
+    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(false);
@@ -35,12 +35,12 @@ describe('authorize', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = { role_names: [] } as unknown as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
     sinon.stub(systemUser, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').returns(true);
 
-    const mockReq = { authorization_scheme: {} } as unknown as Request;
+    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(true);
@@ -50,12 +50,12 @@ describe('authorize', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = { role_names: [] } as unknown as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
     sinon.stub(systemUser, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').returns(false);
 
-    const mockReq = { authorization_scheme: undefined } as unknown as Request;
+    const mockReq = ({ authorization_scheme: undefined } as unknown) as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(true);
@@ -65,14 +65,14 @@ describe('authorize', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = { role_names: [] } as unknown as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
     sinon.stub(systemUser, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').returns(false);
 
     sinon.stub(authorization, 'executeAuthorizationScheme').resolves(true);
 
-    const mockReq = { authorization_scheme: {} } as unknown as Request;
+    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(true);
@@ -82,14 +82,14 @@ describe('authorize', function () {
     const mockDBConnection = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockSystemUserObject = { role_names: [] } as unknown as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
     sinon.stub(systemUser, 'getSystemUserObject').resolves(mockSystemUserObject);
 
     sinon.stub(authorization, 'authorizeSystemAdministrator').returns(false);
 
     sinon.stub(authorization, 'executeAuthorizationScheme').resolves(false);
 
-    const mockReq = { authorization_scheme: {} } as unknown as Request;
+    const mockReq = ({ authorization_scheme: {} } as unknown) as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(false);
@@ -103,7 +103,7 @@ describe('authorize', function () {
     });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    const mockReq = {} as unknown as Request;
+    const mockReq = ({} as unknown) as Request;
     const isAuthorized = await authorization.authorizeRequest(mockReq);
 
     expect(isAuthorized).to.equal(false);
@@ -116,9 +116,9 @@ describe('executeAuthorizationScheme', function () {
   });
 
   it('returns false if any AND authorizationScheme rules return false', async function () {
-    const mockReq = {} as unknown as Request;
-    const mockSystemUserObject = undefined as unknown as UserObject;
-    const mockAuthorizationScheme = { and: [] } as unknown as authorization.AuthorizationScheme;
+    const mockReq = ({} as unknown) as Request;
+    const mockSystemUserObject = (undefined as unknown) as UserObject;
+    const mockAuthorizationScheme = ({ and: [] } as unknown) as authorization.AuthorizationScheme;
     const mockDBConnection = getMockDBConnection();
 
     sinon.stub(authorization, 'executeAuthorizeConfig').resolves([true, false, true]);
@@ -134,9 +134,9 @@ describe('executeAuthorizationScheme', function () {
   });
 
   it('returns true if all AND authorizationScheme rules return true', async function () {
-    const mockReq = {} as unknown as Request;
-    const mockSystemUserObject = undefined as unknown as UserObject;
-    const mockAuthorizationScheme = { and: [] } as unknown as authorization.AuthorizationScheme;
+    const mockReq = ({} as unknown) as Request;
+    const mockSystemUserObject = (undefined as unknown) as UserObject;
+    const mockAuthorizationScheme = ({ and: [] } as unknown) as authorization.AuthorizationScheme;
     const mockDBConnection = getMockDBConnection();
 
     sinon.stub(authorization, 'executeAuthorizeConfig').resolves([true, true, true]);
@@ -152,9 +152,9 @@ describe('executeAuthorizationScheme', function () {
   });
 
   it('returns false if all OR authorizationScheme rules return false', async function () {
-    const mockReq = {} as unknown as Request;
-    const mockSystemUserObject = undefined as unknown as UserObject;
-    const mockAuthorizationScheme = { or: [] } as unknown as authorization.AuthorizationScheme;
+    const mockReq = ({} as unknown) as Request;
+    const mockSystemUserObject = (undefined as unknown) as UserObject;
+    const mockAuthorizationScheme = ({ or: [] } as unknown) as authorization.AuthorizationScheme;
     const mockDBConnection = getMockDBConnection();
 
     sinon.stub(authorization, 'executeAuthorizeConfig').resolves([false, false, false]);
@@ -170,9 +170,9 @@ describe('executeAuthorizationScheme', function () {
   });
 
   it('returns true if any OR authorizationScheme rules return true', async function () {
-    const mockReq = {} as unknown as Request;
-    const mockSystemUserObject = undefined as unknown as UserObject;
-    const mockAuthorizationScheme = { or: [] } as unknown as authorization.AuthorizationScheme;
+    const mockReq = ({} as unknown) as Request;
+    const mockSystemUserObject = (undefined as unknown) as UserObject;
+    const mockAuthorizationScheme = ({ or: [] } as unknown) as authorization.AuthorizationScheme;
     const mockDBConnection = getMockDBConnection();
 
     sinon.stub(authorization, 'executeAuthorizeConfig').resolves([false, true, false]);
@@ -194,8 +194,8 @@ describe('executeAuthorizeConfig', function () {
   });
 
   it('returns an array of authorizeRule results', async function () {
-    const mockReq = {} as unknown as Request;
-    const mockSystemUserObject = undefined as unknown as UserObject;
+    const mockReq = ({} as unknown) as Request;
+    const mockSystemUserObject = (undefined as unknown) as UserObject;
     const mockAuthorizeRules: authorization.AuthorizeRule[] = [
       {
         validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
@@ -229,7 +229,7 @@ describe('authorizeBySystemRole', function () {
   });
 
   it('returns false if `systemUserObject` is null', async function () {
-    const mockSystemUserObject = null as unknown as UserObject;
+    const mockSystemUserObject = (null as unknown) as UserObject;
     const mockAuthorizeSystemRoles: authorization.AuthorizeBySystemRoles = {
       validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
       discriminator: 'SystemRole'
@@ -244,8 +244,8 @@ describe('authorizeBySystemRole', function () {
   });
 
   it('returns false if `authorizeSystemRoles` is null', async function () {
-    const mockSystemUserObject = {} as unknown as UserObject;
-    const mockAuthorizeSystemRoles = null as unknown as authorization.AuthorizeBySystemRoles;
+    const mockSystemUserObject = ({} as unknown) as UserObject;
+    const mockAuthorizeSystemRoles = (null as unknown) as authorization.AuthorizeBySystemRoles;
 
     const isAuthorizedBySystemRole = await authorization.authorizeBySystemRole(
       mockSystemUserObject,
@@ -256,7 +256,7 @@ describe('authorizeBySystemRole', function () {
   });
 
   it('returns true if `authorizeSystemRoles` specifies no valid roles', async function () {
-    const mockSystemUserObject = {} as unknown as UserObject;
+    const mockSystemUserObject = ({} as unknown) as UserObject;
     const mockAuthorizeSystemRoles: authorization.AuthorizeBySystemRoles = {
       validSystemRoles: [],
       discriminator: 'SystemRole'
@@ -271,7 +271,7 @@ describe('authorizeBySystemRole', function () {
   });
 
   it('returns false if the user does not have any valid roles', async function () {
-    const mockSystemUserObject = { role_names: [] } as unknown as UserObject;
+    const mockSystemUserObject = ({ role_names: [] } as unknown) as UserObject;
     const mockAuthorizeSystemRoles: authorization.AuthorizeBySystemRoles = {
       validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
       discriminator: 'SystemRole'
@@ -286,7 +286,7 @@ describe('authorizeBySystemRole', function () {
   });
 
   it('returns true if the user has at least one of the valid roles', async function () {
-    const mockSystemUserObject = { role_names: [SYSTEM_ROLE.PROJECT_ADMIN] } as unknown as UserObject;
+    const mockSystemUserObject = ({ role_names: [SYSTEM_ROLE.PROJECT_ADMIN] } as unknown) as UserObject;
     const mockAuthorizeSystemRoles: authorization.AuthorizeBySystemRoles = {
       validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
       discriminator: 'SystemRole'
@@ -307,8 +307,8 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns false if `authorizeByProjectRole` is null', async function () {
-    const mockReq = {} as unknown as Request;
-    const mockAuthorizeProjectRoles = null as unknown as authorization.AuthorizeByProjectRoles;
+    const mockReq = ({} as unknown) as Request;
+    const mockAuthorizeProjectRoles = (null as unknown) as authorization.AuthorizeByProjectRoles;
     const mockDBConnection = getMockDBConnection();
 
     const isAuthorizedBySystemRole = await authorization.authorizeByProjectRole(
@@ -321,10 +321,10 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns false if `authorizeProjectRoles.projectId` is null', async function () {
-    const mockReq = {} as unknown as Request;
+    const mockReq = ({} as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
       validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
-      projectId: null as unknown as number,
+      projectId: (null as unknown) as number,
       discriminator: 'ProjectRole'
     };
     const mockDBConnection = getMockDBConnection();
@@ -339,7 +339,7 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns true if `authorizeByProjectRole` specifies no valid roles', async function () {
-    const mockReq = {} as unknown as Request;
+    const mockReq = ({} as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
       validProjectRoles: [],
       projectId: 1,
@@ -357,7 +357,7 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns false if it fails to fetch the users project role information', async function () {
-    const mockReq = {} as unknown as Request;
+    const mockReq = ({} as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
       validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
       projectId: 1,
@@ -365,7 +365,7 @@ describe('authorizeByProjectRole', function () {
     };
     const mockDBConnection = getMockDBConnection();
 
-    const mockProjectUserObject = undefined as unknown as ProjectUserObject;
+    const mockProjectUserObject = (undefined as unknown) as ProjectUserObject;
     sinon.stub(projectUser, 'getProjectUserObject').resolves(mockProjectUserObject);
 
     const isAuthorizedBySystemRole = await authorization.authorizeByProjectRole(
@@ -378,8 +378,8 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns false if the user does not have any valid roles', async function () {
-    const mockProjectUserObject = { project_role_names: [] } as unknown as ProjectUserObject;
-    const mockReq = { project_user: mockProjectUserObject } as unknown as Request;
+    const mockProjectUserObject = ({ project_role_names: [] } as unknown) as ProjectUserObject;
+    const mockReq = ({ project_user: mockProjectUserObject } as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
       validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
       projectId: 1,
@@ -397,8 +397,8 @@ describe('authorizeByProjectRole', function () {
   });
 
   it('returns true if the user has at lest one of the valid roles', async function () {
-    const mockProjectUserObject = { project_role_names: [PROJECT_ROLE.PROJECT_LEAD] } as unknown as ProjectUserObject;
-    const mockReq = { project_user: mockProjectUserObject } as unknown as Request;
+    const mockProjectUserObject = ({ project_role_names: [PROJECT_ROLE.PROJECT_LEAD] } as unknown) as ProjectUserObject;
+    const mockReq = ({ project_user: mockProjectUserObject } as unknown) as Request;
     const mockAuthorizeProjectRoles: authorization.AuthorizeByProjectRoles = {
       validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
       projectId: 1,

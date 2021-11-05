@@ -4,13 +4,13 @@ import { getProjectParticipationBySystemUserSQL } from './project-participation-
 
 describe('getProjectParticipationBySystemUserSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = getProjectParticipationBySystemUserSQL(null as unknown as number, 2);
+    const response = getProjectParticipationBySystemUserSQL((null as unknown) as number, 2);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null systemUserId provided', () => {
-    const response = getProjectParticipationBySystemUserSQL(1, null as unknown as number);
+    const response = getProjectParticipationBySystemUserSQL(1, (null as unknown) as number);
 
     expect(response).to.be.null;
   });

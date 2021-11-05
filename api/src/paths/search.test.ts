@@ -53,7 +53,7 @@ describe('search', () => {
       try {
         const result = search.getSearchResults();
 
-        await result(sampleReq, null as unknown as any, null as unknown as any);
+        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
         expect((actualError as CustomError).status).to.equal(400);
@@ -78,7 +78,7 @@ describe('search', () => {
 
       const result = search.getSearchResults();
 
-      await result(sampleReq, sampleRes as any, null as unknown as any);
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
       expect(actualResult).to.equal(null);
     });
@@ -100,7 +100,7 @@ describe('search', () => {
 
       const result = search.getSearchResults();
 
-      await result(sampleReq, sampleRes as any, null as unknown as any);
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
       expect(actualResult).to.eql([]);
     });
@@ -130,7 +130,7 @@ describe('search', () => {
 
       const result = search.getSearchResults();
 
-      await result(sampleReq, sampleRes as any, null as unknown as any);
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
       expect(actualResult).to.eql([
         {

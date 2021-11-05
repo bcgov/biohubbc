@@ -91,7 +91,7 @@ describe('getSystemUserWithRoles', function () {
   });
 
   it('returns null if the query response is null', async function () {
-    const mockQueryResponse = null as unknown as QueryResult<any>;
+    const mockQueryResponse = (null as unknown) as QueryResult<any>;
     const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -105,7 +105,7 @@ describe('getSystemUserWithRoles', function () {
 
   it('returns the first row of the response', async function () {
     const mockResponseRow = { 'Test Column': 'Test Value' };
-    const mockQueryResponse = { rowCount: 1, rows: [mockResponseRow] } as unknown as QueryResult<any>;
+    const mockQueryResponse = ({ rowCount: 1, rows: [mockResponseRow] } as unknown) as QueryResult<any>;
     const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
