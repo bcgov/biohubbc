@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400, HTTP500} from '../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import { getDataPackageEMLSQL, getSurveyOccurrenceSubmissionSQL } from '../../queries/dwc/dwc-queries';
 import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
 import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
@@ -13,12 +13,9 @@ import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/dwc/eml');
 
-export const POST: Operation = [
-  logRequest('paths/dwc/eml', 'POST'),
-  getSurveyDataPackageEML(),
-  sendResponse()
-];
+export const POST: Operation = [logRequest('paths/dwc/eml', 'POST'), getSurveyDataPackageEML(), sendResponse()];
 
+// Nick: Consider moving this out of the function, and just defining it directly in `Post.apiDoc ={...}` below
 export const getOccurrenceSubmissionEMLDoc = (basicDescription: string, successDescription: string, tags: string[]) => {
   return {
     description: basicDescription,
@@ -53,7 +50,7 @@ export const getOccurrenceSubmissionEMLDoc = (basicDescription: string, successD
     },
     responses: {
       200: {
-        description: successDescription,
+        description: successDescription
       },
       400: {
         $ref: '#/components/responses/400'
@@ -93,6 +90,8 @@ export function getSurveyDataPackageEML(): RequestHandler {
     }
 
     try {
+      // Nick: Consider moving each of these SQL queries and their associated error handling into separate functions at the bottom of this file.
+      // Nick: A good reference is `updateSurveyOccurrenceSubmissionWithOutputKey` in `api/paths/dwc/validate`
       const sqlStatementOccurrenceSubmission = getSurveyOccurrenceSubmissionSQL(req.body.data_package_id);
       const sqlStatementDataPackageEML = getDataPackageEMLSQL(req.body.data_package_id, req.body.supplied_title);
 
@@ -106,24 +105,32 @@ export function getSurveyDataPackageEML(): RequestHandler {
       await connection.open();
 
       // get the occurrence submission data
-      const responseOccurrenceSubmission = await connection.query(sqlStatementOccurrenceSubmission.text, sqlStatementOccurrenceSubmission.values);
+      const responseOccurrenceSubmission = await connection.query(
+        sqlStatementOccurrenceSubmission.text,
+        sqlStatementOccurrenceSubmission.values
+      );
 
       if (!responseOccurrenceSubmission || !responseOccurrenceSubmission.rows.length) {
         throw new HTTP400('Failed to get occurrence submission data');
       }
       if (responseOccurrenceSubmission.rowCount > 1) {
         throw new HTTP400('Data package ID returned more than one survey');
-       }
+      }
 
       // get the EML data for the survey
-      const responseDataPackageEML = await connection.query(sqlStatementDataPackageEML.text, sqlStatementDataPackageEML.values);
+      const responseDataPackageEML = await connection.query(
+        sqlStatementDataPackageEML.text,
+        sqlStatementDataPackageEML.values
+      );
 
-      if (!responseDataPackageEML|| !responseDataPackageEML.rows.length) {
+      if (!responseDataPackageEML || !responseDataPackageEML.rows.length) {
         throw new HTTP400('Failed to get data package EML');
       }
 
       // get the archive file from s3
-      const s3Key = responseOccurrenceSubmission.rows[0].output_key + responseOccurrenceSubmission.rows[0].output_file_name;
+      // Nick: `output_key` contains the filename, so appending the `output_file_name` is not necessary
+      const s3Key =
+        responseOccurrenceSubmission.rows[0].output_key + responseOccurrenceSubmission.rows[0].output_file_name;
       const s3File = await getFileFromS3(s3Key);
 
       if (!s3File) {
@@ -133,7 +140,13 @@ export function getSurveyDataPackageEML(): RequestHandler {
       // parse the archive file and add EML file
       const archiveFile = parseS3File(s3File);
       const mediaFiles = parseUnknownZipFile(archiveFile.buffer);
-      mediaFiles.push(new MediaFile('eml.xml', 'application/xml', Buffer.from(responseDataPackageEML.rows[0].api_get_eml_data_package)));
+      mediaFiles.push(
+        new MediaFile(
+          'eml.xml',
+          'application/xml',
+          Buffer.from(responseDataPackageEML.rows[0].api_get_eml_data_package)
+        )
+      );
 
       // build the archive zip file
       const dwcArchiveZip = new AdmZip();
@@ -157,4 +170,3 @@ export function sendResponse(): RequestHandler {
     return res.status(200).send();
   };
 }
-

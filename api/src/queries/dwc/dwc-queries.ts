@@ -3,6 +3,9 @@ import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('queries/dwc/dwc-queries');
 
+// Nick: Run the formatter/linter
+// Nick: See `make format[-fix]` and `make lint[-fix]`.
+
 /**
  * SQL query to get EML for a particular data pacakge.
  *
@@ -10,24 +13,24 @@ const defaultLog = getLogger('queries/dwc/dwc-queries');
  * @param {string} suppliedTitle
  * @returns {SQLStatement} sql query object
  */
- export const getDataPackageEMLSQL = (dataPackageId: number, suppliedTitle?: string): SQLStatement | null => {
-    defaultLog.debug({ label: 'getDataPackageEMLSQL', message: 'params', dataPackageId, suppliedTitle });
-  
-    if (!dataPackageId) {
-      return null;
-    }
-  
-    const sqlStatement: SQLStatement = SQL`SELECT api_get_eml_data_package(${dataPackageId}, ${suppliedTitle});`;
-  
-    defaultLog.debug({
-      label: 'getSurveyOccurrenceSubmissionSQL',
-      message: 'sql',
-      'sqlStatement.text': sqlStatement.text,
-      'sqlStatement.values': sqlStatement.values
-    });
-  
-    return sqlStatement;
-  };
+export const getDataPackageEMLSQL = (dataPackageId: number, suppliedTitle?: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'getDataPackageEMLSQL', message: 'params', dataPackageId, suppliedTitle });
+
+  if (!dataPackageId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`SELECT api_get_eml_data_package(${dataPackageId}, ${suppliedTitle});`;
+
+  defaultLog.debug({
+    label: 'getSurveyOccurrenceSubmissionSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
 
 /**
  * SQL query to get sumbission occurrence record given package ID for a particular survey.
@@ -35,7 +38,7 @@ const defaultLog = getLogger('queries/dwc/dwc-queries');
  * @param {number} dataPackageId
  * @returns {SQLStatement} sql query object
  */
- export const getSurveyOccurrenceSubmissionSQL = (dataPackageId: number): SQLStatement | null => {
+export const getSurveyOccurrenceSubmissionSQL = (dataPackageId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'getDataPackageEMLSQL', message: 'params', dataPackageId });
 
   if (!dataPackageId) {
