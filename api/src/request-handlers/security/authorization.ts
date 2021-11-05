@@ -53,7 +53,7 @@ export const authorizeRequest = async (req: Request): Promise<boolean> => {
   try {
     await connection.open();
 
-    let systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+    const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
 
     req['system_user'] = systemUserObject;
 
