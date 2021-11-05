@@ -8,7 +8,8 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   public: {
     project: {
-      getAttachmentSignedURL: jest.fn()
+      getAttachmentSignedURL: jest.fn(),
+      getPublicProjectReportMetadata: jest.fn()
     }
   }
 };
@@ -34,7 +35,8 @@ describe('PublicAttachmentsList', () => {
       fileType: 'Other',
       lastModified: '2021-04-09 11:53:53',
       size: 3028,
-      securityToken: true
+      securityToken: true,
+      revisionCount: 1
     },
     {
       id: 20,
@@ -42,7 +44,8 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.REPORT,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000,
-      securityToken: true
+      securityToken: true,
+      revisionCount: 1
     },
     {
       id: 30,
@@ -50,7 +53,8 @@ describe('PublicAttachmentsList', () => {
       fileType: 'Other',
       lastModified: '2021-04-09 11:53:53',
       size: 30280000000,
-      securityToken: false
+      securityToken: false,
+      revisionCount: 1
     }
   ];
 
@@ -183,5 +187,31 @@ describe('PublicAttachmentsList', () => {
 
     expect(getByText('filename11.test')).toBeInTheDocument();
     expect(queryByText('filename10.test')).toBeNull();
+  });
+
+  it('viewing reportMetadata in dialog works as expected for project attachments', async () => {
+    const renderContainer = () => {
+      return render(
+        <PublicAttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
+      );
+    };
+
+    // const handleClickOnInfo = jest.fn();
+
+    const {
+      getByText,
+      getByTestId
+      //, asFragment
+    } = renderContainer();
+
+    expect(getByText('filename.test')).toBeInTheDocument();
+
+    //expect(asFragment()).toMatchSnapshot();
+
+    fireEvent.click(getByTestId('attachment-view-meta'));
+
+    await waitFor(() => {
+      expect(mockBiohubApi().public.project.getPublicProjectReportMetadata).toHaveBeenCalledTimes(1);
+    });
   });
 });
