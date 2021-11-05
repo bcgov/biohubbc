@@ -1,29 +1,31 @@
+import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
+import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
-import { mdiLockOutline, mdiLockOpenVariantOutline } from '@mdi/js';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { mdiInformationOutline, mdiLockOpenVariantOutline, mdiLockOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import ViewFileWithMetaDialog from 'components/dialog/ViewFileWithMetaDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { IGetProjectAttachment } from 'interfaces/useProjectApi.interface';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import Box from '@material-ui/core/Box';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -44,6 +46,10 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
   const [open, setOpen] = React.useState(false);
   const biohubApi = useBiohubApi();
   const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
+  const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
+  const [showViewFileWithMetaDialog, setShowViewFileWithMetaDialog] = useState<boolean>(false);
+  //const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
+  const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | null>(null);
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
@@ -54,6 +60,49 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
 
   const hideRequestAccessDialog = () => {
     setOpen(false);
+  };
+
+  const handleClickOnInfo = (attachment: IGetProjectAttachment) => {
+    setCurrentAttachment(attachment);
+    getReportMeta(attachment);
+    setShowViewFileWithMetaDialog(true);
+  };
+
+  const openAttachmentFromReportMetaDialog = async () => {
+    if (currentAttachment) {
+      openAttachment(currentAttachment);
+    }
+  };
+
+  const getReportMeta = async (attachment: IGetProjectAttachment) => {
+    try {
+      const response = await biohubApi.public.project.getPublicProjectReportMetadata(props.projectId, attachment.id);
+      if (!response) {
+        return;
+      }
+
+      setReportMetaData(response);
+    } catch (error) {
+      return error;
+    }
+  };
+
+  const openAttachment = async (attachment: IGetProjectAttachment) => {
+    try {
+      const response = await biohubApi.public.project.getAttachmentSignedURL(
+        props.projectId,
+        attachment.id,
+        attachment.fileType
+      );
+
+      if (!response) {
+        return;
+      }
+
+      window.open(response);
+    } catch (error) {
+      return error;
+    }
   };
 
   const viewFileContents = async (attachment: IGetProjectAttachment) => {
@@ -77,6 +126,15 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
 
   return (
     <>
+      <ViewFileWithMetaDialog
+        open={showViewFileWithMetaDialog}
+        onClose={() => {
+          setShowViewFileWithMetaDialog(false);
+        }}
+        onDownload={openAttachmentFromReportMetaDialog}
+        reportMetaData={reportMetaData}
+        attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
+      />
       <Paper>
         <TableContainer>
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
@@ -87,6 +145,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                 <TableCell>Last Modified</TableCell>
                 <TableCell>File Size</TableCell>
                 <TableCell width="150px">Security Status</TableCell>
+                <TableCell></TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
@@ -116,6 +175,19 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                         <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
                         <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
                       </Box>
+                    </TableCell>
+                    <TableCell>
+                      {!row.securityToken && (
+                        <IconButton
+                          color="primary"
+                          aria-label="view report"
+                          onClick={() => {
+                            handleClickOnInfo(row);
+                          }}
+                          data-testid="attachment-view-meta">
+                          <Icon path={mdiInformationOutline} size={1} />
+                        </IconButton>
+                      )}
                     </TableCell>
                   </TableRow>
                 ))}

@@ -424,10 +424,33 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get project report metadata based on project ID, attachment ID, and attachmentType
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @returns {*} {Promise<string>}
+   */
+  const getPublicProjectReportMetadata = async (
+    projectId: number,
+    attachmentId: number
+  ): Promise<IGetReportMetaData> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
+      params: {},
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
   return {
     getProjectsList,
     getProjectForView,
     getProjectAttachments,
-    getAttachmentSignedURL
+    getAttachmentSignedURL,
+    getPublicProjectReportMetadata
   };
 };
