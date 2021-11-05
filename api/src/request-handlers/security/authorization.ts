@@ -8,30 +8,30 @@ import { getSystemUserObject } from '../user/system-user';
 
 const defaultLog = getLogger('request-handlers/security/authorization');
 
-enum AuthorizeOperator {
+export enum AuthorizeOperator {
   AND = 'and',
   OR = 'or'
 }
 
-interface AuthorizeBySystemRoles {
+export interface AuthorizeBySystemRoles {
   validSystemRoles: SYSTEM_ROLE[];
   discriminator: 'SystemRole';
 }
 
-interface AuthorizeByProjectRoles {
+export interface AuthorizeByProjectRoles {
   validProjectRoles: PROJECT_ROLE[];
   projectId: number;
   discriminator: 'ProjectRole';
 }
 
-type AuthorizeRule = AuthorizeBySystemRoles | AuthorizeByProjectRoles;
+export type AuthorizeRule = AuthorizeBySystemRoles | AuthorizeByProjectRoles;
 
-type AuthorizeConfigOr = {
+export type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;
   [AuthorizeOperator.OR]: AuthorizeRule[];
 };
 
-type AuthorizeConfigAnd = {
+export type AuthorizeConfigAnd = {
   [AuthorizeOperator.AND]: AuthorizeRule[];
   [AuthorizeOperator.OR]?: never;
 };
@@ -85,6 +85,7 @@ export const authorizeRequest = async (req: Request): Promise<boolean> => {
 /**
  * Execute the `authorizationScheme` against the current user, and return `true` if they have access, `false` otherwise.
  *
+ * @param {Request} req
  * @param {UserObject} systemUserObject
  * @param {AuthorizationScheme} authorizationScheme
  * @param {IDBConnection} connection
@@ -110,26 +111,27 @@ export const executeAuthorizationScheme = async (
 /**
  * Execute an array of `AuthorizeRule`, returning an array of boolean results.
  *
+ * @param {Request} req
  * @param {UserObject} systemUserObject
- * @param {AuthorizeRule[]} authorizeConfig
+ * @param {AuthorizeRule[]} authorizeRules
  * @param {IDBConnection} connection
  * @return {*}  {Promise<boolean[]>}
  */
 export const executeAuthorizeConfig = async (
   req: Request,
   systemUserObject: UserObject,
-  authorizeConfig: AuthorizeRule[],
+  authorizeRules: AuthorizeRule[],
   connection: IDBConnection
 ): Promise<boolean[]> => {
   const authorizeResults: boolean[] = [];
 
-  for (const authorizeConfigItem of authorizeConfig) {
-    switch (authorizeConfigItem.discriminator) {
+  for (const authorizeRule of authorizeRules) {
+    switch (authorizeRule.discriminator) {
       case 'SystemRole':
-        authorizeResults.push(authorizeBySystemRole(systemUserObject, authorizeConfigItem));
+        authorizeResults.push(authorizeBySystemRole(systemUserObject, authorizeRule));
         break;
       case 'ProjectRole':
-        authorizeResults.push(await authorizeByProjectRole(req, authorizeConfigItem, connection));
+        authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection));
         break;
     }
   }
@@ -159,12 +161,12 @@ export const authorizeBySystemRole = (
   systemUserObject: UserObject,
   authorizeSystemRoles: AuthorizeBySystemRoles
 ): boolean => {
-  if (!systemUserObject) {
+  if (!authorizeSystemRoles || !systemUserObject) {
     // Cannot verify user roles
     return false;
   }
 
-  if (!authorizeSystemRoles || !authorizeSystemRoles.validSystemRoles.length) {
+  if (!authorizeSystemRoles?.validSystemRoles.length) {
     // No valid roles specified
     return true;
   }
@@ -176,7 +178,7 @@ export const authorizeBySystemRole = (
 /**
  * Check that the user has at least on of the valid project roles specified in `authorizeProjectRoles.validProjectRoles`.
  *
- * @param {UserObject} systemUserObject
+ * @param {Request} req
  * @param {AuthorizeByProjectRoles} authorizeProjectRoles
  * @param {IDBConnection} connection
  * @return {*}  {Promise<boolean>} `Promise<true>` if the user has at least one valid project role, or no valid project
@@ -187,12 +189,12 @@ export const authorizeByProjectRole = async (
   authorizeProjectRoles: AuthorizeByProjectRoles,
   connection: IDBConnection
 ): Promise<boolean> => {
-  if (!authorizeProjectRoles.projectId) {
+  if (!authorizeProjectRoles || !authorizeProjectRoles.projectId) {
     // No project id to verify roles for
     return false;
   }
 
-  if (!authorizeProjectRoles || !authorizeProjectRoles.validProjectRoles.length) {
+  if (!authorizeProjectRoles?.validProjectRoles.length) {
     // No valid rules specified
     return true;
   }

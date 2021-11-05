@@ -4,24 +4,24 @@ import { describe } from 'mocha';
 import { HTTP401 } from '../../errors/CustomError';
 import * as authentication from './authentication';
 
-describe('authenticate', function () {
+describe('authenticateRequest', function () {
   it('throws HTTP401 when authorization headers were null or missing', async function () {
     try {
-      await authentication.authenticate(undefined as unknown as Request);
+      await authentication.authenticateRequest(undefined as unknown as Request);
       expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
 
     try {
-      await authentication.authenticate({});
+      await authentication.authenticateRequest({} as unknown as Request);
       expect.fail();
     } catch (actualError) {
       expect(actualError).instanceOf(HTTP401);
     }
 
     try {
-      await authentication.authenticate({
+      await authentication.authenticateRequest({
         headers: {}
       } as unknown as Request);
       expect.fail();
@@ -32,7 +32,7 @@ describe('authenticate', function () {
 
   it('throws HTTP401 when authorization header contains an invalid bearer token', async function () {
     try {
-      await authentication.authenticate({
+      await authentication.authenticateRequest({
         headers: {
           authorization: 'Not a bearer token'
         }
@@ -43,7 +43,7 @@ describe('authenticate', function () {
     }
 
     try {
-      await authentication.authenticate({
+      await authentication.authenticateRequest({
         headers: {
           authorization: 'Bearer '
         }
@@ -54,7 +54,7 @@ describe('authenticate', function () {
     }
 
     try {
-      await authentication.authenticate({
+      await authentication.authenticateRequest({
         headers: {
           authorization: 'Bearer not-encoded'
         }
@@ -65,7 +65,7 @@ describe('authenticate', function () {
     }
 
     try {
-      await authentication.authenticate({
+      await authentication.authenticateRequest({
         headers: {
           // sample encoded json web token from jwt.io (without kid header)
           authorization:

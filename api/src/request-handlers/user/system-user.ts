@@ -3,43 +3,6 @@ import { HTTP500 } from '../../errors/CustomError';
 import { UserObject } from '../../models/user';
 import { getUserByIdSQL } from '../../queries/users/user-queries';
 
-// /**
-//  * Fetch the current system user, based on `req.keycloak_token`.
-//  *
-//  * Assign the resulting user object to `req.system_user`.
-//  *
-//  * @export
-//  * @return {*}  {RequestHandler}
-//  */
-// export function getSystemUser(): RequestHandler {
-//   return async (req, res, next) => {
-//     const connection = getDBConnection(req['keycloak_token']);
-
-//     try {
-//       await connection.open();
-
-//       let userObject;
-
-//       try {
-//         userObject = await getSystemUserObject(connection);
-//       } catch (error) {
-//         defaultLog.warn({ label: 'getSystemUser', message: 'error', error });
-//         throw new HTTP403('Access Denied');
-//       }
-
-//       req['system_user'] = userObject;
-
-//       return next();
-//     } catch (error) {
-//       defaultLog.error({ label: 'getSystemUser', message: 'error', error });
-//       await connection.rollback();
-//       throw error;
-//     } finally {
-//       connection.release();
-//     }
-//   };
-// }
-
 export const getSystemUserObject = async (connection: IDBConnection): Promise<UserObject> => {
   let systemUserWithRoles;
 
