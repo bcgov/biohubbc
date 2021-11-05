@@ -1,5 +1,4 @@
 import { Request, RequestHandler } from 'express';
-import { HTTP403 } from '../errors/CustomError';
 import { getLogger } from './logger';
 
 /**
@@ -21,27 +20,3 @@ export function logRequest(callingFilePath: string, httpOperation: string): Requ
 }
 
 export type PermissionCheckFunction = (req: Request) => Promise<boolean>;
-
-/**
- * A `RequestHandler` that executes a `PermissionCheckFunction` function, and based on the response, either calls
- * `next()` or throws an `HTTP403` Access Denied error.
- *
- * @export
- * @param {PermissionCheckFunction} permissionCheckFunction
- * @return {*}  {RequestHandler}
- */
-export function checkPermissions(permissionCheckFunction: PermissionCheckFunction): RequestHandler {
-  return async (req, res, next) => {
-    try {
-      const hasPermission = await permissionCheckFunction(req);
-
-      if (!hasPermission) {
-        throw new HTTP403('Access Denied');
-      }
-
-      next();
-    } catch (error) {
-      throw new HTTP403('Access Denied');
-    }
-  };
-}
