@@ -48,7 +48,6 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
   const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
   const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
   const [showViewFileWithMetaDialog, setShowViewFileWithMetaDialog] = useState<boolean>(false);
-  //const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
   const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | null>(null);
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
@@ -104,26 +103,6 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
       return error;
     }
   };
-
-  const viewFileContents = async (attachment: IGetProjectAttachment) => {
-    try {
-      const response = await biohubApi.public.project.getAttachmentSignedURL(
-        props.projectId,
-        attachment.id,
-        attachment.fileType
-      );
-
-      if (!response) {
-        // TODO: handle showing message indicating that no access to view file
-        return;
-      }
-
-      window.open(response);
-    } catch (error) {
-      return error;
-    }
-  };
-
   return (
     <>
       <ViewFileWithMetaDialog
@@ -161,7 +140,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                           if (row.securityToken) {
                             showRequestAccessDialog();
                           } else {
-                            viewFileContents(row);
+                            openAttachment(row);
                           }
                         }}>
                         {row.fileName}
