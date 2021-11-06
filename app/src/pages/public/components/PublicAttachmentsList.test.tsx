@@ -1,4 +1,4 @@
-import { fireEvent, render, cleanup, waitFor } from '@testing-library/react';
+import { fireEvent, render, cleanup, waitFor, getByText as rawGetByText } from '@testing-library/react';
 import React from 'react';
 import PublicAttachmentsList from './PublicAttachmentsList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -9,7 +9,22 @@ const mockUseBiohubApi = {
   public: {
     project: {
       getAttachmentSignedURL: jest.fn(),
-      getPublicProjectReportMetadata: jest.fn()
+      getPublicProjectReportMetadata: jest.fn(() =>
+        Promise.resolve({
+          attachment_id: 1,
+          title: 'Title of my report',
+          year_published: '2000',
+          description: 'my abstract',
+          last_modified: '2020-10-10',
+          revision_count: 1,
+          authors: [
+            {
+              first_name: 'John',
+              last_name: 'Smith'
+            }
+          ]
+        })
+      )
     }
   }
 };
@@ -189,29 +204,42 @@ describe('PublicAttachmentsList', () => {
     expect(queryByText('filename10.test')).toBeNull();
   });
 
-  it('viewing reportMetadata in dialog works as expected for project attachments', async () => {
+  it.only('viewing reportMetadata in dialog works as expected for project attachments', async () => {
     const renderContainer = () => {
       return render(
         <PublicAttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
       );
     };
 
-    // const handleClickOnInfo = jest.fn();
-
-    const {
-      getByText,
-      getByTestId
-      //, asFragment
-    } = renderContainer();
+    const { getByText, getByTestId, baseElement } = renderContainer();
 
     expect(getByText('filename.test')).toBeInTheDocument();
-
-    //expect(asFragment()).toMatchSnapshot();
 
     fireEvent.click(getByTestId('attachment-view-meta'));
 
     await waitFor(() => {
       expect(mockBiohubApi().public.project.getPublicProjectReportMetadata).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().public.project.getPublicProjectReportMetadata()).resolves.toEqual({
+        attachment_id: 1,
+        title: 'Title of my report',
+        year_published: '2000',
+        description: 'my abstract',
+        last_modified: '2020-10-10',
+        revision_count: 1,
+        authors: [
+          {
+            first_name: 'John',
+            last_name: 'Smith'
+          }
+        ]
+      });
     });
+
+    await waitFor(() => {
+      expect(getByTestId('view-meta-dialog')).toBeVisible();
+      expect(getByTestId('view-meta-dialog-title')).toBeVisible();
+    });
+
+    expect(rawGetByText(baseElement as HTMLElement, 'Title of my report')).toBeInTheDocument();
   });
 });

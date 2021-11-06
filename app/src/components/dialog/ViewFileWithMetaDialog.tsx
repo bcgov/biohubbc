@@ -32,13 +32,19 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
 
   const [showEditButton] = useState<boolean>(!!props.onEdit);
 
+  if (!props.open) {
+    return <></>;
+  }
+
   return (
     <>
-      <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps}>
+      <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
         <DialogContent>
           <Box>
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-              <Typography variant="h3">{reportMetaData?.title}</Typography>
+              <Typography data-testid="view-meta-dialog-title" variant="h3">
+                {reportMetaData?.title}
+              </Typography>
               {showEditButton && (
                 <Button
                   variant="text"
@@ -81,16 +87,9 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                     Authors
                   </Typography>
                   <Typography component="dd" variant="body1">
-                    {reportMetaData?.authors.reduce((authorList, author) => {
-                      const authorName = author.first_name + ' ' + author.last_name;
-                      if (!authorList) {
-                        authorList = authorName;
-                      } else {
-                        authorList = authorList + ', ' + authorName;
-                      }
-
-                      return authorList;
-                    }, '')}
+                    {reportMetaData?.authors
+                      ?.map((author) => [author.first_name, author.last_name].join(' '))
+                      .join(', ')}
                   </Typography>
                 </Grid>
               </Grid>

@@ -61,26 +61,23 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
     setOpen(false);
   };
 
-  const handleClickOnInfo = (attachment: IGetProjectAttachment) => {
-    setCurrentAttachment(attachment);
-    getReportMeta(attachment);
-    setShowViewFileWithMetaDialog(true);
-  };
-
   const openAttachmentFromReportMetaDialog = async () => {
     if (currentAttachment) {
       openAttachment(currentAttachment);
     }
   };
 
-  const getReportMeta = async (attachment: IGetProjectAttachment) => {
+  const handleReportMetaDialog = async (attachment: IGetProjectAttachment) => {
+    setCurrentAttachment(attachment);
     try {
       const response = await biohubApi.public.project.getPublicProjectReportMetadata(props.projectId, attachment.id);
+
       if (!response) {
         return;
       }
 
       setReportMetaData(response);
+      setShowViewFileWithMetaDialog(true);
     } catch (error) {
       return error;
     }
@@ -161,7 +158,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                           color="primary"
                           aria-label="view report"
                           onClick={() => {
-                            handleClickOnInfo(row);
+                            handleReportMetaDialog(row);
                           }}
                           data-testid="attachment-view-meta">
                           <Icon path={mdiInformationOutline} size={1} />
