@@ -55,7 +55,7 @@ initialize({
   securityHandlers: {
     // authenticates the request bearer token, for endpoints that specify `Bearer` security
     Bearer: async function (req: any) {
-      return await authenticateRequest(req);
+      return authenticateRequest(req);
     }
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
