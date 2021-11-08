@@ -73,8 +73,12 @@ export const ProprietaryDataYupSchema = yup.object().shape({
     .when('survey_data_proprietary', { is: 'true', then: yup.string().required('Required') })
 });
 
+export interface IProprietaryDataCategoryOption<T extends string | number> extends IAutocompleteFieldOption<T> {
+  is_first_nation: boolean;
+}
+
 export interface IProprietaryDataFormProps {
-  proprietary_data_category: IAutocompleteFieldOption<number>[];
+  proprietary_data_category: IProprietaryDataCategoryOption<number>[];
   first_nations: IAutocompleteFieldOption<number>[];
 }
 
@@ -101,6 +105,12 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
     setFieldValue(name, ProprietaryDataInitialValues[name]);
     setFieldTouched(name, false);
     setFieldError(name, undefined);
+  };
+
+  const isProprietaryDataCategoryAFirstNation = (proprietaryDataCategoryId: number | string | undefined): boolean => {
+    return !!props.proprietary_data_category.find(
+      (item) => item.value === proprietaryDataCategoryId && item.is_first_nation
+    );
   };
 
   return (
@@ -160,7 +170,10 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                     // `First Nations Land` to any other option. This is because the `First Nations Land` category is
                     // based on a dropdown, where as the other options are free-text and only one of `proprietor_name` or
                     // `first_nations_id` should be populated at a time.
-                    if (values.proprietary_data_category === 2 && option?.value !== 2) {
+                    if (
+                      isProprietaryDataCategoryAFirstNation(values.proprietary_data_category) &&
+                      !isProprietaryDataCategoryAFirstNation(option?.value)
+                    ) {
                       resetField('first_nations_id');
                       resetField('proprietor_name');
                     }
@@ -169,7 +182,10 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                     // `First Nations Land`. This is because the other options are free-text, where as the
                     // `First Nations Land` category is based on a dropdown, and only one of `proprietor_name` or
                     // `first_nations_id` should be populated at a time.
-                    if (values.proprietary_data_category !== 2 && option?.value === 2) {
+                    if (
+                      !isProprietaryDataCategoryAFirstNation(values.proprietary_data_category) &&
+                      isProprietaryDataCategoryAFirstNation(option?.value)
+                    ) {
                       resetField('proprietor_name');
                     }
 
@@ -179,7 +195,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                 />
               </Grid>
               <Grid item xs={12}>
-                {values.proprietary_data_category === 2 && (
+                {isProprietaryDataCategoryAFirstNation(values.proprietary_data_category) && (
                   <AutocompleteField
                     id="first_nations_id"
                     name="first_nations_id"
@@ -193,7 +209,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
                     required={true}
                   />
                 )}
-                {values.proprietary_data_category !== 2 && (
+                {!isProprietaryDataCategoryAFirstNation(values.proprietary_data_category) && (
                   <CustomTextField
                     name="proprietor_name"
                     label="Proprietor Name"
