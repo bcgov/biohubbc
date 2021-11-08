@@ -149,7 +149,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
             <ProprietaryDataForm
               proprietary_data_category={
                 codes?.proprietor_type?.map((item) => {
-                  return { value: item.id, label: item.name };
+                  return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
                 }) || []
               }
               first_nations={
