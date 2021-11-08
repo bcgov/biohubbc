@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../../../models/survey-create';
@@ -14,19 +14,32 @@ import {
   postSurveySQL
 } from '../../../../queries/survey/survey-create-queries';
 import { putNewSurveyPermitNumberSQL } from '../../../../queries/survey/survey-update-queries';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
-import { logRequest } from '../../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/create');
 
-export const POST: Operation = [logRequest('paths/project/{projectId}/survey/create', 'POST'), createSurvey()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  createSurvey()
+];
 
 POST.apiDoc = {
   description: 'Create a new Survey.',
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -253,6 +266,11 @@ export const insertSurveyPermit = async (
   connection: IDBConnection
 ): Promise<void> => {
   let sqlStatement;
+
+  console.log('=========================');
+  console.log(permitNumber);
+  console.log(permitType);
+  console.log('=========================');
 
   if (!permitType) {
     sqlStatement = putNewSurveyPermitNumberSQL(surveyId, permitNumber);

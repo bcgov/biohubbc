@@ -1,18 +1,31 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import moment from 'moment';
-import { SYSTEM_ROLE } from '../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { projectIdResponseObject } from '../openapi/schemas/project';
 import { getProjectListSQL } from '../queries/project/project-view-queries';
-import { userHasValidRole } from '../request-handlers/security/authorization';
+import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/projects');
 
-export const POST: Operation = [getProjectList()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getProjectList()
+];
 
 POST.apiDoc = {
   description: 'Gets a list of projects based on search parameters if passed in.',

@@ -2,23 +2,32 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400, HTTP403 } from '../../../errors/CustomError';
+import { HTTP400 } from '../../../errors/CustomError';
 import { getProjectAttachmentsSQL } from '../../../queries/project/project-attachments-queries';
 import { deleteProjectSQL } from '../../../queries/project/project-delete-queries';
 import { getProjectSQL } from '../../../queries/project/project-view-queries';
 import { getSurveyIdsSQL } from '../../../queries/survey/survey-view-queries';
-import {
-  AuthorizationScheme,
-  authorizeRequest,
-  userHasValidRole
-} from '../../../request-handlers/security/authorization';
+import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../utils/file-utils';
 import { getLogger } from '../../../utils/logger';
 import { getSurveyAttachmentS3Keys } from './survey/{surveyId}/delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/delete');
 
-export const DELETE: Operation = [authorize(), deleteProject()];
+export const DELETE: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  deleteProject()
+];
 
 DELETE.apiDoc = {
   description: 'Delete a project.',
@@ -58,30 +67,6 @@ DELETE.apiDoc = {
     }
   }
 };
-
-export function authorize(): RequestHandler {
-  return async (req, res, next) => {
-    const authorizationScheme = {
-      and: [
-        {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
-        }
-      ]
-    } as AuthorizationScheme;
-
-    req['authorization_scheme'] = authorizationScheme;
-
-    const isAuthorized = await authorizeRequest(req);
-
-    if (!isAuthorized) {
-      throw new HTTP403('Access Denied');
-    }
-
-    next();
-  };
-}
 
 export function deleteProject(): RequestHandler {
   return async (req, res) => {

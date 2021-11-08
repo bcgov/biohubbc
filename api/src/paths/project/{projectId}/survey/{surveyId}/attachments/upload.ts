@@ -2,7 +2,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import {
@@ -22,16 +22,30 @@ import {
   PutReportAttachmentMetadata,
   ReportAttachmentAuthor
 } from '../../../../../../models/project-survey-attachments';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
 
-export const POST: Operation = [uploadMedia()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  uploadMedia()
+];
 POST.apiDoc = {
   description: 'Upload a survey-specific attachment.',
   tags: ['attachment'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

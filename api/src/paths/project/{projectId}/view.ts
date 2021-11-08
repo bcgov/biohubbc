@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/CustomError';
 import {
@@ -26,19 +26,32 @@ import {
   getActivitiesByProjectSQL,
   getFundingSourceByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}/view');
 
-export const GET: Operation = [logRequest('paths/project/{projectId}/view', 'GET'), getProjectForView()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getProjectForView()
+];
 
 GET.apiDoc = {
   description: 'Get a project, for view-only purposes.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400, HTTP403 } from '../errors/CustomError';
+import { HTTP400 } from '../errors/CustomError';
 import {
   IPostExistingPermit,
   IPostIUCN,
@@ -22,12 +22,24 @@ import {
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
 import { postProjectRolesByRoleNameSQL } from '../queries/users/system-role-queries';
-import { AuthorizationScheme, authorizeRequest } from '../request-handlers/security/authorization';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/project');
 
-export const POST: Operation = [authorize(), createProject()];
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  createProject()
+];
 
 POST.apiDoc = {
   description: 'Create a new Project.',
@@ -75,29 +87,6 @@ POST.apiDoc = {
     }
   }
 };
-
-export function authorize(): RequestHandler {
-  return async (req, res, next) => {
-    const authorizationScheme = {
-      and: [
-        {
-          validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
-          discriminator: 'SystemRole'
-        }
-      ]
-    } as AuthorizationScheme;
-
-    req['authorization_scheme'] = authorizationScheme;
-
-    const isAuthorized = await authorizeRequest(req);
-
-    if (!isAuthorized) {
-      throw new HTTP403('Access Denied');
-    }
-
-    next();
-  };
-}
 
 /**
  * Creates a new project record.

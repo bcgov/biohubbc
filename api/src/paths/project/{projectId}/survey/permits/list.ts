@@ -2,22 +2,36 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getAllAssignablePermitsForASurveySQL } from '../../../../../queries/survey/survey-view-queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/permits/list');
 
-export const GET: Operation = [getSurveyPermits()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSurveyPermits()
+];
 
 GET.apiDoc = {
   description: 'Fetches a list of permits for a survey based on a project.',
   tags: ['permits'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
@@ -9,6 +9,7 @@ import {
   insertOccurrenceSubmissionStatusSQL,
   updateSurveyOccurrenceSubmissionSQL
 } from '../../queries/survey/survey-occurrence-queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
@@ -16,12 +17,21 @@ import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
-import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/dwc/validate');
 
 export const POST: Operation = [
-  logRequest('paths/dwc/validate', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   getOccurrenceSubmission(),
   getOccurrenceSubmissionInputS3Key(),
   getS3File(),
@@ -41,7 +51,7 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
     tags: tags,
     security: [
       {
-        Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+        Bearer: []
       }
     ],
     requestBody: {

@@ -4,21 +4,37 @@ import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { searchResponseObject } from '../openapi/schemas/search';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 import { getSpatialSearchResultsSQL } from '../queries/search-queries';
-import { SYSTEM_ROLE } from '../constants/roles';
-import { userHasValidRole } from '../request-handlers/security/authorization';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
+import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
 
 const defaultLog = getLogger('paths/search');
 
-export const GET: Operation = [logRequest('paths/search', 'GET'), getSearchResults()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        },
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSearchResults()
+];
 
 GET.apiDoc = {
   description: 'Gets a list of published project geometries for given systemUserId',
   tags: ['projects'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   responses: {
