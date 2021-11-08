@@ -31,7 +31,7 @@ export const POST: Operation = [
   getValidationRules(),
   validateDWCArchive(),
   persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' }),
-  updateOccurrenceSubmission,
+  updateOccurrenceSubmission(),
   sendResponse()
 ];
 

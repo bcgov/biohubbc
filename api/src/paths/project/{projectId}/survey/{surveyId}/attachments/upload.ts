@@ -20,7 +20,7 @@ import { getLogger } from '../../../../../../utils/logger';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
+  IReportAttachmentAuthor
 } from '../../../../../../models/project-survey-attachments';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
@@ -52,6 +52,7 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
+          required: ['attachmentType', 'attachmentMeta'],
           properties: {
             media: {
               type: 'string',
@@ -75,6 +76,7 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    required: ['first_name', 'last_name'],
                     properties: {
                       first_name: {
                         type: 'string'
@@ -153,10 +155,6 @@ export function uploadMedia(): RequestHandler {
       message: 'files',
       files: { ...rawMediaFile, buffer: 'Too big to print' }
     });
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing surveyId');
-    }
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -411,7 +409,7 @@ export const deleteSurveyReportAttachmentAuthors = async (
 
 export const insertSurveyReportAttachmentAuthor = async (
   attachmentId: number,
-  author: ReportAttachmentAuthor,
+  author: IReportAttachmentAuthor,
   connection: IDBConnection
 ): Promise<void> => {
   const sqlStatement = insertSurveyReportAttachmentAuthorSQL(attachmentId, author);

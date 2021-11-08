@@ -2,18 +2,18 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
-import { PutReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
-import { updateProjectReportAttachmentMetadataSQL } from '../../../../../../queries/project/project-attachments-queries';
-import { getLogger } from '../../../../../../utils/logger';
-import { deleteProjectReportAttachmentAuthors, insertProjectReportAttachmentAuthor } from '../../upload';
+import { ATTACHMENT_TYPE } from '../../../../../../../../constants/attachments';
+import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/CustomError';
+import { PutReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
+import { updateSurveyReportAttachmentMetadataSQL } from '../../../../../../../../queries/survey/survey-attachments-queries';
+import { getLogger } from '../../../../../../../../utils/logger';
+import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 
-export const PUT: Operation = [updateProjectAttachmentMetadata()];
+export const PUT: Operation = [updateSurveyAttachmentMetadata()];
 
 PUT.apiDoc = {
   description: 'Update project attachment metadata.',
@@ -119,7 +119,7 @@ PUT.apiDoc = {
   }
 };
 
-export function updateProjectAttachmentMetadata(): RequestHandler {
+export function updateSurveyAttachmentMetadata(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'updateProjectAttachmentMetadata',
@@ -152,7 +152,7 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
         });
 
         // Update the metadata fields of the attachment record
-        await updateProjectReportAttachmentMetadata(
+        await updateSurveyReportAttachmentMetadata(
           Number(req.params.projectId),
           Number(req.params.attachmentId),
           metadata,
@@ -160,14 +160,14 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
         );
 
         // Delete any existing attachment author records
-        await deleteProjectReportAttachmentAuthors(Number(req.params.attachmentId), connection);
+        await deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId), connection);
 
         const promises = [];
 
         // Insert any new attachment author records
         promises.push(
           metadata.authors.map((author) =>
-            insertProjectReportAttachmentAuthor(Number(req.params.attachmentId), author, connection)
+            insertSurveyReportAttachmentAuthor(Number(req.params.attachmentId), author, connection)
           )
         );
 
@@ -187,13 +187,13 @@ export function updateProjectAttachmentMetadata(): RequestHandler {
   };
 }
 
-const updateProjectReportAttachmentMetadata = async (
+const updateSurveyReportAttachmentMetadata = async (
   projectId: number,
   attachmentId: number,
   metadata: PutReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = updateProjectReportAttachmentMetadataSQL(projectId, attachmentId, metadata);
+  const sqlStatement = updateSurveyReportAttachmentMetadataSQL(projectId, attachmentId, metadata);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update attachment report statement');

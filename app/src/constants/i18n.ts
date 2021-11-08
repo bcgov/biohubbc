@@ -171,3 +171,10 @@ export const PublishProjectI18N = {
   publishErrorText:
     'An error has occurred while attempting to publish this project, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const EditReportMetaDataI18N = {
+  editTitle: 'Edit Report Meta Data',
+  editErrorTitle: 'Error Editing Report Meta Data',
+  editErrorText:
+    'An error has occurred while attempting to edit your report meta data, please try again. If the error persists, please contact your system administrator.'
+};
