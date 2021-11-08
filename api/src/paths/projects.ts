@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import moment from 'moment';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
+import { SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
@@ -13,13 +13,11 @@ import { getLogger } from '../utils/logger';
 const defaultLog = getLogger('paths/projects');
 
 export const POST: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'SystemUser'
         }
       ]
     };

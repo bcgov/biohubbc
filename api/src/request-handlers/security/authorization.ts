@@ -26,7 +26,11 @@ export interface AuthorizeByProjectRoles {
   discriminator: 'ProjectRole';
 }
 
-export type AuthorizeRule = AuthorizeBySystemRoles | AuthorizeByProjectRoles;
+export interface AuthorizeBySystemUser {
+  discriminator: 'SystemUser';
+}
+
+export type AuthorizeRule = AuthorizeBySystemRoles | AuthorizeByProjectRoles | AuthorizeBySystemUser;
 
 export type AuthorizeConfigOr = {
   [AuthorizeOperator.AND]?: never;
@@ -149,6 +153,9 @@ export const executeAuthorizeConfig = async (
       case 'ProjectRole':
         authorizeResults.push(await authorizeByProjectRole(req, authorizeRule, connection));
         break;
+      case 'SystemUser':
+        authorizeResults.push(await authorizeBySystemUser(req, connection));
+        break;
     }
   }
 
@@ -203,11 +210,6 @@ export const authorizeBySystemRole = async (
     return false;
   }
 
-  if (!authorizeSystemRoles?.validSystemRoles.length) {
-    // No valid roles specified
-    return true;
-  }
-
   // Check if the user has at least 1 of the valid roles
   return userHasValidRole(authorizeSystemRoles.validSystemRoles, systemUserObject?.role_names);
 };
@@ -248,6 +250,28 @@ export const authorizeByProjectRole = async (
   }
 
   return userHasValidRole(authorizeProjectRoles.validProjectRoles, projectUserObject.project_role_names);
+};
+
+/**
+ * Check if the user is a valid system user.
+ *
+ * @param {Request} req
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<boolean>} `Promise<true>` if the user is a valid system user, `Promise<false>` otherwise.
+ */
+export const authorizeBySystemUser = async (req: Request, connection: IDBConnection): Promise<boolean> => {
+  const systemUserObject: UserObject = req['system_user'] || (await getSystemUserObject(connection));
+
+  // Add the system_user to the request for future use, if needed
+  req['system_user'] = systemUserObject;
+
+  if (!systemUserObject) {
+    // Cannot verify user roles
+    return false;
+  }
+
+  // User is a valid system user
+  return true;
 };
 
 /**

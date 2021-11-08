@@ -5,23 +5,17 @@ import { HTTP400 } from '../errors/CustomError';
 import { searchResponseObject } from '../openapi/schemas/search';
 import { getLogger } from '../utils/logger';
 import { getSpatialSearchResultsSQL } from '../queries/search-queries';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
+import { SYSTEM_ROLE } from '../constants/roles';
 import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
 
 const defaultLog = getLogger('paths/search');
 
 export const GET: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
-      or: [
+      and: [
         {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
-          discriminator: 'SystemRole'
-        },
-        {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'SystemUser'
         }
       ]
     };

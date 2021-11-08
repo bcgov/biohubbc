@@ -267,11 +267,6 @@ export const insertSurveyPermit = async (
 ): Promise<void> => {
   let sqlStatement;
 
-  console.log('=========================');
-  console.log(permitNumber);
-  console.log(permitType);
-  console.log('=========================');
-
   if (!permitType) {
     sqlStatement = putNewSurveyPermitNumberSQL(surveyId, permitNumber);
   } else {
