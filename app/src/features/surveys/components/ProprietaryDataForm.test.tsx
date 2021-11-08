@@ -32,7 +32,7 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return { value: item.id, label: item.name };
+                return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
               }) || []
             }
             first_nations={
@@ -62,7 +62,7 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return { value: item.id, label: item.name };
+                return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
               }) || []
             }
             first_nations={
@@ -92,7 +92,7 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return { value: item.id, label: item.name };
+                return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
               }) || []
             }
             first_nations={
@@ -158,7 +158,7 @@ describe('Proprietary Data Form', () => {
           <ProprietaryDataForm
             proprietary_data_category={
               codes?.proprietor_type?.map((item) => {
-                return { value: item.id, label: item.name };
+                return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
               }) || []
             }
             first_nations={

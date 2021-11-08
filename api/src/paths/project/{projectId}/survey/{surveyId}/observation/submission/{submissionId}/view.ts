@@ -69,10 +69,17 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     headers: {
-                      type: 'array'
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     },
+
                     rows: {
-                      type: 'array'
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     }
                   }
                 }

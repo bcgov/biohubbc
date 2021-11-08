@@ -11,8 +11,8 @@ export const codes: IGetAllCodeSetsResponse = {
   region: [{ id: 1, name: 'Region code' }],
   species: [{ id: 1, name: 'Species code' }],
   proprietor_type: [
-    { id: 1, name: 'Proprietor code 1' },
-    { id: 2, name: 'First Nations Land' }
+    { id: 1, name: 'Proprietor code 1', is_first_nation: false },
+    { id: 2, name: 'First Nations Land', is_first_nation: true }
   ],
   iucn_conservation_action_level_1_classification: [{ id: 1, name: 'IUCN class' }],
   iucn_conservation_action_level_2_subclassification: [{ id: 1, iucn1_id: 1, name: 'IUCN subclass 1' }],
