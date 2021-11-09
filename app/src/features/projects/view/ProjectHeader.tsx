@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
@@ -197,78 +196,76 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !projectWithDetails.project.publish_date);
 
   return (
-    <Paper elevation={2} square={true}>
-      <Container maxWidth="xl">
-        <Box display="flex" justifyContent="space-between">
-          <Box py={4}>
-            <Box mb={1} display="flex">
-              <Typography className={classes.spacingRight} variant="h1">
-                {projectWithDetails.project.project_name}
-              </Typography>
-              {getChipIcon(projectWithDetails.project.completion_status)}
-            </Box>
-            <Box>
-              <Typography variant="subtitle1" color="textSecondary">
-                <span>
-                  {projectWithDetails.project.end_date ? (
-                    <>
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        projectWithDetails.project.start_date,
-                        projectWithDetails.project.end_date
-                      )}
-                    </>
-                  ) : (
-                    <>
-                      <span>Start Date:</span>{' '}
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        projectWithDetails.project.start_date
-                      )}
-                    </>
-                  )}
-                </span>
-              </Typography>
-            </Box>
+    <Container maxWidth="xl">
+      <Box display="flex" justifyContent="space-between">
+        <Box py={4}>
+          <Box mb={1} display="flex">
+            <Typography className={classes.spacingRight} variant="h1">
+              {projectWithDetails.project.project_name}
+            </Typography>
+            {getChipIcon(projectWithDetails.project.completion_status)}
           </Box>
-          <Box ml={4} mt={4} mb={4}>
-            <Button
-              variant="outlined"
-              className={classes.actionButton}
-              color="primary"
-              data-testid="publish-project-button"
-              startIcon={
-                <Icon
-                  path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
-                  size={1}
-                />
-              }
-              onClick={async () => await publishProject(!projectWithDetails.project.publish_date)}>
-              {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
-            </Button>
-            {showDeleteProjectButton && (
-              <Tooltip
-                arrow
-                color="secondary"
-                title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
-                <>
-                  <Button
-                    variant="outlined"
-                    color="primary"
-                    className={classes.actionButton}
-                    data-testid="delete-project-button"
-                    startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
-                    onClick={showDeleteProjectDialog}
-                    disabled={!enableDeleteProjectButton}>
-                    Delete Project
-                  </Button>
-                </>
-              </Tooltip>
-            )}
+          <Box>
+            <Typography variant="subtitle1" color="textSecondary">
+              <span>
+                {projectWithDetails.project.end_date ? (
+                  <>
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      projectWithDetails.project.start_date,
+                      projectWithDetails.project.end_date
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span>Start Date:</span>{' '}
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      projectWithDetails.project.start_date
+                    )}
+                  </>
+                )}
+              </span>
+            </Typography>
           </Box>
         </Box>
-      </Container>
-    </Paper>
+        <Box ml={4} mt={4} mb={4}>
+          <Button
+            variant="outlined"
+            className={classes.actionButton}
+            color="primary"
+            data-testid="publish-project-button"
+            startIcon={
+              <Icon
+                path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
+                size={1}
+              />
+            }
+            onClick={async () => await publishProject(!projectWithDetails.project.publish_date)}>
+            {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+          </Button>
+          {showDeleteProjectButton && (
+            <Tooltip
+              arrow
+              color="secondary"
+              title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
+              <>
+                <Button
+                  variant="outlined"
+                  color="primary"
+                  className={classes.actionButton}
+                  data-testid="delete-project-button"
+                  startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
+                  onClick={showDeleteProjectDialog}
+                  disabled={!enableDeleteProjectButton}>
+                  Delete Project
+                </Button>
+              </>
+            </Tooltip>
+          )}
+        </Box>
+      </Box>
+    </Container>
   );
 };
 

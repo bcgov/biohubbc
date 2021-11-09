@@ -1,3 +1,4 @@
+import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 // import List from '@material-ui/core/List';
@@ -73,13 +74,21 @@ const ProjectPage: React.FC = () => {
 
   return (
     <>
-      <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
+      <Paper elevation={2} square={true}>
+        <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
+      </Paper>
 
       <Paper elevation={2} square={true}>
         <Container maxWidth="xl">
-          <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-          <SurveysListPage projectForViewData={projectWithDetails} />
-          <ProjectAttachments projectForViewData={projectWithDetails} />
+          <Box>
+            <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+          </Box>
+          <Box mt={3}>
+            <SurveysListPage projectForViewData={projectWithDetails} />
+          </Box>
+          <Box mt={3}>
+            <ProjectAttachments projectForViewData={projectWithDetails} />
+          </Box>
         </Container>
       </Paper>
 
