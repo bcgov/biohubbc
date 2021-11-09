@@ -2,11 +2,12 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
@@ -129,47 +130,47 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Documents</Typography>
-        <Box my={-1}>
-          <Button
-            color="primary"
-            variant="outlined"
-            aria-controls="basic-menu"
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-            endIcon={<Icon path={mdiMenuDown} size={1} />}
-            data-testid="click-ellipsis"
-            onClick={handleClick}>
-            Upload
-          </Button>
-          <Menu
-            className={classes.uploadMenu}
-            getContentAnchorEl={null}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button'
-            }}>
-            <MenuItem onClick={handleUploadReportClick}>Upload Report</MenuItem>
-            <MenuItem onClick={handleUploadAttachmentClick}>Upload Attachments</MenuItem>
-          </Menu>
+      <Paper>
+        <Box p={2} display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h2">Documents</Typography>
+          <Box>
+            <Button
+              color="primary"
+              variant="outlined"
+              aria-controls="basic-menu"
+              aria-haspopup="true"
+              aria-expanded={open ? 'true' : undefined}
+              startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+              endIcon={<Icon path={mdiMenuDown} size={1} />}
+              data-testid="click-ellipsis"
+              onClick={handleClick}>
+              Upload
+            </Button>
+            <Menu
+              className={classes.uploadMenu}
+              getContentAnchorEl={null}
+              anchorOrigin={{
+                vertical: 'bottom',
+                horizontal: 'right'
+              }}
+              transformOrigin={{
+                vertical: 'top',
+                horizontal: 'right'
+              }}
+              id="basic-menu"
+              anchorEl={anchorEl}
+              open={open}
+              onClose={handleClose}
+              MenuListProps={{
+                'aria-labelledby': 'basic-button'
+              }}>
+              <MenuItem onClick={handleUploadReportClick}>Upload Report</MenuItem>
+              <MenuItem onClick={handleUploadAttachmentClick}>Upload Attachments</MenuItem>
+            </Menu>
+          </Box>
         </Box>
-      </Box>
-      <Box mb={3}>
         <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
-      </Box>
+      </Paper>
     </>
   );
 };

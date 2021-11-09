@@ -68,9 +68,6 @@ const appTheme = createMuiTheme({
       },
       outlinedPrimary: {
         background: '#ffffff'
-      },
-      startIcon: {
-        marginTop: '-1px'
       }
     },
     MuiContainer: {
@@ -173,6 +170,9 @@ const appTheme = createMuiTheme({
     MuiTableCell: {
       root: {
         verticalAlign: 'top'
+      },
+      head: {
+        backgroundColor: '#f5f5f5'
       }
     },
     MuiTab: {
