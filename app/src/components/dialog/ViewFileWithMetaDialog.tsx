@@ -67,7 +67,7 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
         <DialogContent>
           <Box component="dl" mt={0} mb={2}>
             <Grid container>
-              <Grid item>
+              <Grid item xs={12}>
                 <Typography component="dt" variant="body2" color="textSecondary">
                   Summary
                 </Typography>
