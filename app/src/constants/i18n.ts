@@ -86,10 +86,10 @@ export const EditSurveyProprietorI18N = {
 };
 
 export const EditLocationBoundaryI18N = {
-  editTitle: 'Edit Location / Project Boundary',
-  editErrorTitle: 'Error Editing Location / Project Boundary',
+  editTitle: 'Edit Project Location',
+  editErrorTitle: 'Error Editing Project Location',
   editErrorText:
-    'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to edit your location, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditIUCNI18N = {

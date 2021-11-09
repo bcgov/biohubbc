@@ -42,7 +42,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   chip: {
-    color: '#ffffff',
+    color: '#ffffff'
   },
   chipActive: {
     backgroundColor: theme.palette.success.main
@@ -184,7 +184,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
       chipStatusClass = classes.chipActive;
     } else if (ProjectStatusType.COMPLETED === status_name) {
       chipLabel = 'Complete';
-      chipStatusClass = classes.chipCompleted
+      chipStatusClass = classes.chipCompleted;
     }
 
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;

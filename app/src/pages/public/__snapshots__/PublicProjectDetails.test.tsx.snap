@@ -305,7 +305,7 @@ exports[`PublicProjectDetails renders correctly 1`] = `
           <h3
             class="MuiTypography-root MuiTypography-h3"
           >
-            Location / Project Boundary
+            Project Location
           </h3>
         </div>
         <dl>

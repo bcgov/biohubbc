@@ -11,13 +11,13 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Location / Project Boundary
+        Project Location
       </h3>
       <button
-        aria-label="Edit Location / Project Boundary"
+        aria-label="Edit Project Location"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
-        title="Edit Location / Project Boundary"
+        title="Edit Project Location"
         type="button"
       >
         <span
@@ -44,26 +44,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         />
       </button>
     </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Location Description
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Location description
-          </dd>
-        </div>
-      </div>
-    </dl>
     <div
       class="MuiBox-root MuiBox-root-9"
     >
@@ -255,6 +235,26 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         </div>
       </div>
     </div>
+    <dl>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Location Description
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Location description
+          </dd>
+        </div>
+      </div>
+    </dl>
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
@@ -286,13 +286,13 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Location / Project Boundary
+        Project Location
       </h3>
       <button
-        aria-label="Edit Location / Project Boundary"
+        aria-label="Edit Project Location"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
-        title="Edit Location / Project Boundary"
+        title="Edit Project Location"
         type="button"
       >
         <span
@@ -319,26 +319,6 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         />
       </button>
     </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Location Description
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Location description
-          </dd>
-        </div>
-      </div>
-    </dl>
     <div
       class="MuiBox-root MuiBox-root-6"
     >
@@ -507,6 +487,26 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         </div>
       </div>
     </div>
+    <dl>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Location Description
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Location description
+          </dd>
+        </div>
+      </div>
+    </dl>
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >
@@ -538,13 +538,13 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Location / Project Boundary
+        Project Location
       </h3>
       <button
-        aria-label="Edit Location / Project Boundary"
+        aria-label="Edit Project Location"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
         tabindex="0"
-        title="Edit Location / Project Boundary"
+        title="Edit Project Location"
         type="button"
       >
         <span
@@ -571,26 +571,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
         />
       </button>
     </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Location Description
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            No Description
-          </dd>
-        </div>
-      </div>
-    </dl>
     <div
       class="MuiBox-root MuiBox-root-3"
     >
@@ -759,6 +739,26 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
         </div>
       </div>
     </div>
+    <dl>
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            Location Description
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            No Description
+          </dd>
+        </div>
+      </div>
+    </dl>
     <div
       class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
     >

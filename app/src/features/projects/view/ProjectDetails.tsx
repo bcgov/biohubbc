@@ -6,7 +6,6 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import FundingSource from 'features/projects/view/components/FundingSource';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
-import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import Partnerships from 'features/projects/view/components/Partnerships';
 import ProjectCoordinator from 'features/projects/view/components/ProjectCoordinator';
 import ProjectObjectives from 'features/projects/view/components/ProjectObjectives';
@@ -14,7 +13,6 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import ProjectPermits from './components/ProjectPermits';
-
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -61,12 +59,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
             <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
             <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
             <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          </Box>
-        </Box>
-
-        <Box component={Paper} p={4}>
-          <Box component="section" className={classes.projectDetailsSection}>
-            <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
           </Box>
         </Box>
       </Box>

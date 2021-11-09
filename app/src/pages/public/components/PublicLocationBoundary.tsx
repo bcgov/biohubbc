@@ -44,7 +44,7 @@ const PublicLocationBoundary: React.FC<IPublicLocationBoundaryProps> = (props) =
   return (
     <Box>
       <Box mb={2}>
-        <Typography variant="h3">Location / Project Boundary</Typography>
+        <Typography variant="h3">Project Location</Typography>
       </Box>
       <dl>
         <Grid container spacing={2}>

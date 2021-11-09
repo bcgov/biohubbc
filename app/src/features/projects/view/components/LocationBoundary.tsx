@@ -148,18 +148,40 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-          <Typography variant="h3">Location / Project Boundary</Typography>
+          <Typography variant="h3">Project Location</Typography>
           <Button
             variant="text"
             color="primary"
             className="sectionHeaderButton"
             onClick={() => handleDialogEditOpen()}
-            title="Edit Location / Project Boundary"
-            aria-label="Edit Location / Project Boundary"
+            title="Edit Project Location"
+            aria-label="Edit Project Location"
             startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
             Edit
           </Button>
         </Box>
+        {/* <dl>
+          <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Location Description
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {location.location_description ? <>{location.location_description}</> : 'No Description'}
+              </Typography>
+            </Grid>
+          </Grid>
+        </dl> */}
+        <Box mt={4} mb={4} height={500}>
+          <MapContainer
+            mapId="project_location_form_map"
+            hideDrawControls={true}
+            nonEditableGeometries={nonEditableGeometries}
+            bounds={bounds}
+            setInferredLayersInfo={setInferredLayersInfo}
+          />
+        </Box>
+
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12}>
@@ -172,15 +194,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             </Grid>
           </Grid>
         </dl>
-        <Box mt={4} mb={4} height={500}>
-          <MapContainer
-            mapId="project_location_form_map"
-            hideDrawControls={true}
-            nonEditableGeometries={nonEditableGeometries}
-            bounds={bounds}
-            setInferredLayersInfo={setInferredLayersInfo}
-          />
-        </Box>
         <Grid container spacing={2}>
           <Grid item xs={6}>
             {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}

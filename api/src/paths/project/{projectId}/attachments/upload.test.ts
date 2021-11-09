@@ -198,9 +198,9 @@ describe('uploadMedia', () => {
   //     query: mockQuery
   //   });
 
-    //sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    //sinon.stub(project_attachment_queries, 'getProjectAttachmentByFileNameSQL').returns(SQL`some query`);
-    //sinon.stub(project_attachment_queries, 'postProjectAttachmentSQL').returns(SQL`some query`);
+  //sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
+  //sinon.stub(project_attachment_queries, 'getProjectAttachmentByFileNameSQL').returns(SQL`some query`);
+  //sinon.stub(project_attachment_queries, 'postProjectAttachmentSQL').returns(SQL`some query`);
 
   //   sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 

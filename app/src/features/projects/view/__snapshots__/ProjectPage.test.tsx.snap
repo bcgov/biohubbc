@@ -23,9 +23,3 @@ exports[`ProjectPage renders a spinner if no project is loaded 1`] = `
   </div>
 </DocumentFragment>
 `;
-
-exports[`ProjectPage renders correctly with no end date 1`] = `<DocumentFragment />`;
-
-exports[`ProjectPage renders project page when project is loaded (project is active) 1`] = `<DocumentFragment />`;
-
-exports[`ProjectPage renders project page when project is loaded (project is completed) 1`] = `<DocumentFragment />`;
