@@ -13,7 +13,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import { mdiDownload, mdiLockOpenVariantOutline, mdiLockOutline, mdiDotsVertical, mdiInformationOutline, mdiTrashCanOutline } from '@mdi/js';
+import {
+  mdiDownload,
+  mdiLockOpenVariantOutline,
+  mdiLockOutline,
+  mdiDotsVertical,
+  mdiInformationOutline,
+  mdiTrashCanOutline
+} from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -484,7 +491,7 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               data-testid="attachment-action-menu-download">
               <ListItemIcon>
                 <Icon path={mdiDownload} size={1} />
-              </ListItemIcon> 
+              </ListItemIcon>
               Download File
             </MenuItem>
             {props.attachment.fileType === AttachmentType.REPORT && (
@@ -496,7 +503,7 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
                 data-testid="attachment-action-menu-details">
                 <ListItemIcon>
                   <Icon path={mdiInformationOutline} size={1} />
-                </ListItemIcon> 
+                </ListItemIcon>
                 View Details
               </MenuItem>
             )}
@@ -508,7 +515,7 @@ const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (prop
               data-testid="attachment-action-menu-delete">
               <ListItemIcon>
                 <Icon path={mdiTrashCanOutline} size={1} />
-              </ListItemIcon> 
+              </ListItemIcon>
               Delete File
             </MenuItem>
           </Menu>

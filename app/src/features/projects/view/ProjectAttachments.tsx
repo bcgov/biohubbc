@@ -138,7 +138,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             aria-controls="basic-menu"
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-            startIcon={<Icon path={mdiTrayArrowUp } size={1} />}
+            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
             endIcon={<Icon path={mdiMenuDown} size={1} />}
             data-testid="click-ellipsis"
             onClick={handleClick}>

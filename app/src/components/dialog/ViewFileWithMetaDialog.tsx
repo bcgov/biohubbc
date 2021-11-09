@@ -45,13 +45,10 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
               {reportMetaData?.title}
             </Typography>
             <Box mt={0.5}>
-            <Typography component="span" variant="subtitle2" color="textSecondary">
-              Last modified:{' '}
-              {getFormattedDateRangeString(
-                DATE_FORMAT.ShortMediumDateFormat,
-                reportMetaData?.last_modified || ''
-              )}
-            </Typography>
+              <Typography component="span" variant="subtitle2" color="textSecondary">
+                Last modified:{' '}
+                {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, reportMetaData?.last_modified || '')}
+              </Typography>
             </Box>
           </Box>
           {showEditButton && (
@@ -91,9 +88,7 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
                   Authors
                 </Typography>
                 <Box mt={0.5} component="dd">
-                  {reportMetaData?.authors
-                    ?.map((author) => [author.first_name, author.last_name].join(' '))
-                    .join(', ')}
+                  {reportMetaData?.authors?.map((author) => [author.first_name, author.last_name].join(' ')).join(', ')}
                 </Box>
               </Grid>
             </Grid>
