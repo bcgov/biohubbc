@@ -140,8 +140,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
                     onClick={formikProps.submitForm}
                     color="primary"
                     variant="contained"
-                    disabled={isFinishing}
-                    autoFocus>
+                    disabled={isFinishing}>
                     <strong>Finish</strong>
                   </Button>
                   {isFinishing && <CircularProgress size={24} className={classes.buttonProgress} />}

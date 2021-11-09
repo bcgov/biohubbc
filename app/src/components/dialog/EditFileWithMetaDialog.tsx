@@ -129,8 +129,7 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
                   onClick={formikProps.submitForm}
                   color="primary"
                   variant="contained"
-                  disabled={isSaving}
-                  autoFocus>
+                  disabled={isSaving}>
                   <strong>Save</strong>
                 </Button>
                 {isSaving && <CircularProgress size={24} className={classes.buttonProgress} />}

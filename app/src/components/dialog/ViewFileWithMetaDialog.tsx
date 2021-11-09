@@ -5,7 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { mdiDownload, mdiPencilOutline } from '@mdi/js';
+import { mdiTrayArrowDown, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
@@ -39,61 +39,64 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
   return (
     <>
       <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
-        <DialogContent>
+        <Box p={3} display="flex" flexDirection="row" alignItems="flex-start" justifyContent="space-between">
           <Box>
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-              <Typography data-testid="view-meta-dialog-title" variant="h3">
-                {reportMetaData?.title}
-              </Typography>
-              {showEditButton && (
-                <Button
-                  variant="text"
-                  color="primary"
-                  className="sectionHeaderButton"
-                  onClick={props.onEdit}
-                  title="Edit Report"
-                  aria-label="Edit Report"
-                  startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-                  Edit
-                </Button>
+            <Typography data-testid="view-meta-dialog-title" variant="h3">
+              {reportMetaData?.title}
+            </Typography>
+            <Box mt={0.5}>
+            <Typography component="span" variant="subtitle2" color="textSecondary">
+              Last modified:{' '}
+              {getFormattedDateRangeString(
+                DATE_FORMAT.ShortMediumDateFormat,
+                reportMetaData?.last_modified || ''
               )}
+            </Typography>
             </Box>
-            <dl>
-              <Grid container spacing={2}>
-                <Grid item xs={12} sm={12} md={12}>
-                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Last modified{' '}
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat,
-                      reportMetaData?.last_modified || ''
-                    )}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={12} md={12}>
-                  <Typography component="dd" variant="body1">
-                    {reportMetaData?.description}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6}>
-                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Year Published
-                  </Typography>
-                  <Typography component="dd" variant="body1">
-                    {reportMetaData?.year_published}
-                  </Typography>
-                </Grid>
-                <Grid item xs={12} sm={6} md={6}>
-                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Authors
-                  </Typography>
-                  <Typography component="dd" variant="body1">
-                    {reportMetaData?.authors
-                      ?.map((author) => [author.first_name, author.last_name].join(' '))
-                      .join(', ')}
-                  </Typography>
-                </Grid>
+          </Box>
+          {showEditButton && (
+            <Button
+              variant="text"
+              color="primary"
+              className="sectionHeaderButton"
+              onClick={props.onEdit}
+              title="Edit Report"
+              aria-label="Edit Report"
+              startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
+              Edit
+            </Button>
+          )}
+        </Box>
+        <DialogContent>
+          <Box component="dl" mt={0} mb={2}>
+            <Grid container>
+              <Grid item>
+                <Typography component="dt" variant="body2" color="textSecondary">
+                  Summary
+                </Typography>
+                <Box mt={0.5} mb={3} component="dd">
+                  {reportMetaData?.description}
+                </Box>
               </Grid>
-            </dl>
+              <Grid item xs={12} sm={6}>
+                <Typography component="dt" variant="body2" color="textSecondary">
+                  Year Published
+                </Typography>
+                <Box mt={0.5} component="dd">
+                  {reportMetaData?.year_published}
+                </Box>
+              </Grid>
+              <Grid item xs={12} sm={6}>
+                <Typography component="dt" variant="body2" color="textSecondary">
+                  Authors
+                </Typography>
+                <Box mt={0.5} component="dd">
+                  {reportMetaData?.authors
+                    ?.map((author) => [author.first_name, author.last_name].join(' '))
+                    .join(', ')}
+                </Box>
+              </Grid>
+            </Grid>
           </Box>
         </DialogContent>
         <DialogActions>
@@ -101,11 +104,10 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
             onClick={props.onDownload}
             color="primary"
             variant="contained"
-            autoFocus
-            startIcon={<Icon path={mdiDownload} size={0.875} />}>
+            startIcon={<Icon path={mdiTrayArrowDown} size={0.875} />}>
             Download Report ({props.attachmentSize})
           </Button>
-          <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
+          <Button onClick={props.onClose} color="primary" variant="outlined">
             Close
           </Button>
         </DialogActions>

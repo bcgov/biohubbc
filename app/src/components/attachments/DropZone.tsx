@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiUpload } from '@mdi/js';
+import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useContext } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
@@ -93,7 +93,7 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
           <Box {...getRootProps()}>
             <input {...getInputProps()} data-testid="drop-zone-input" />
             <Box p={2} display="flex" flexDirection="column" alignItems="center">
-              <Icon className={classes.dropZoneIcon} path={mdiUpload} size={1.5} />
+              <Icon className={classes.dropZoneIcon} path={mdiTrayArrowUp} size={1.5} />
               <Box mt={0.5} className={classes.dropZoneTitle}>
                 Drag your {(multiple && 'files') || 'file'} here, or <Link underline="always">Browse Files</Link>
               </Box>

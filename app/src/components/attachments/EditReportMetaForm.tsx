@@ -70,7 +70,7 @@ const EditReportMetaForm: React.FC = () => {
         <Typography component="legend" variant="body1" id="report_details">
           Report Details
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <CustomTextField
               name="title"
@@ -109,7 +109,7 @@ const EditReportMetaForm: React.FC = () => {
           name="authors"
           render={(arrayHelpers) => (
             <Box>
-              <Grid container direction="row" spacing={2}>
+              <Grid container direction="row" spacing={3}>
                 {values.authors?.map((author, index) => {
                   const authorFirstNameMeta = getFieldMeta(`authors.[${index}].first_name`);
                   const authorLastNameMeta = getFieldMeta(`authors.[${index}].last_name`);
