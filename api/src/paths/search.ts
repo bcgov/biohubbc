@@ -4,21 +4,31 @@ import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { searchResponseObject } from '../openapi/schemas/search';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 import { getSpatialSearchResultsSQL } from '../queries/search-queries';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { userHasValidSystemRoles } from '../security/auth-utils';
+import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
 
 const defaultLog = getLogger('paths/search');
 
-export const GET: Operation = [logRequest('paths/search', 'GET'), getSearchResults()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser'
+        }
+      ]
+    };
+  }),
+  getSearchResults()
+];
 
 GET.apiDoc = {
   description: 'Gets a list of published project geometries for given systemUserId',
   tags: ['projects'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   responses: {
@@ -57,7 +67,7 @@ export function getSearchResults(): RequestHandler {
       await connection.open();
 
       const systemUserId = connection.systemUserId();
-      const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+      const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
 
       const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 

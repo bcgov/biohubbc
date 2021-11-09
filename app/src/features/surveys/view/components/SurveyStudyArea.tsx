@@ -126,6 +126,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         const surveyData = {
           survey_details: {
             ...surveyDetailsDataForUpdate.survey_details,
+            permit_type: '', // TODO 20211108: currently permit insert vs update is dictated by permit_type (needs fixing/updating)
             survey_area_name: values.survey_area_name,
             geometry: values.geometry
           }

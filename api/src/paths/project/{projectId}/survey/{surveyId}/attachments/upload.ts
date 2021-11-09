@@ -2,7 +2,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import {
@@ -20,18 +20,32 @@ import { getLogger } from '../../../../../../utils/logger';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
+  IReportAttachmentAuthor
 } from '../../../../../../models/project-survey-attachments';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
 
-export const POST: Operation = [uploadMedia()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  uploadMedia()
+];
 POST.apiDoc = {
   description: 'Upload a survey-specific attachment.',
   tags: ['attachment'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -52,6 +66,7 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
+          required: ['attachmentType', 'attachmentMeta'],
           properties: {
             media: {
               type: 'string',
@@ -75,6 +90,7 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    required: ['first_name', 'last_name'],
                     properties: {
                       first_name: {
                         type: 'string'
@@ -153,10 +169,6 @@ export function uploadMedia(): RequestHandler {
       message: 'files',
       files: { ...rawMediaFile, buffer: 'Too big to print' }
     });
-
-    if (!req.params.surveyId) {
-      throw new HTTP400('Missing surveyId');
-    }
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -411,7 +423,7 @@ export const deleteSurveyReportAttachmentAuthors = async (
 
 export const insertSurveyReportAttachmentAuthor = async (
   attachmentId: number,
-  author: ReportAttachmentAuthor,
+  author: IReportAttachmentAuthor,
   connection: IDBConnection
 ): Promise<void> => {
   const sqlStatement = insertSurveyReportAttachmentAuthorSQL(attachmentId, author);

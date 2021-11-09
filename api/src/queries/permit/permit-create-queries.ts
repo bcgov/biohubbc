@@ -11,14 +11,14 @@ const defaultLog = getLogger('queries/permit/permit-create-queries');
  * @param {string} permitNumber
  * @param {string} permitType
  * @param {number} projectId
- * @param {number | null} systemUserId
+ * @param {number} systemUserId
  * @returns {SQLStatement} sql query object
  */
 export const postProjectPermitSQL = (
   permitNumber: string,
   permitType: string,
   projectId: number,
-  systemUserId: number | null
+  systemUserId: number
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectPermitSQL',

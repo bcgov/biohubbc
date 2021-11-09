@@ -2,16 +2,29 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { HTTP400 } from '../errors/CustomError';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
-export const GET: Operation = [updateLoggerLevel()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  updateLoggerLevel()
+];
 
 GET.apiDoc = {
   description: "Update the log level for the API's default logger",
   tags: ['misc'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

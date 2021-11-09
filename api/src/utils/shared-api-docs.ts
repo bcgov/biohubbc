@@ -1,4 +1,3 @@
-import { SYSTEM_ROLE } from '../constants/roles';
 import { projectFundingSourcePostRequestObject } from '../openapi/schemas/project-funding-source';
 
 export const attachmentApiDocObject = (basicDescription: string, successDescription: string) => {
@@ -7,7 +6,7 @@ export const attachmentApiDocObject = (basicDescription: string, successDescript
     tags: ['attachment'],
     security: [
       {
-        Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+        Bearer: []
       }
     ],
     parameters: [
@@ -55,7 +54,7 @@ export const deleteFundingSourceApiDocObject = (basicDescription: string, succes
     tags: ['funding-sources'],
     security: [
       {
-        Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+        Bearer: []
       }
     ],
     parameters: [
@@ -103,7 +102,7 @@ export const addFundingSourceApiDocObject = (basicDescription: string, successDe
     tags: ['funding-sources'],
     security: [
       {
-        Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+        Bearer: []
       }
     ],
     parameters: [

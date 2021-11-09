@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
+import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
@@ -12,15 +13,28 @@ import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/getSignedUrl');
 
-export const GET: Operation = [getAttachmentSignedURL()];
+export const GET: Operation = [getSurveyAttachmentSignedURL()];
 
 GET.apiDoc = {
   description: 'Retrieves the signed url of a survey attachment.',
   tags: ['attachment'],
+  security: [
+    {
+      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+    }
+  ],
   parameters: [
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
       schema: {
         type: 'number'
       },
@@ -73,13 +87,14 @@ GET.apiDoc = {
   }
 };
 
-export function getAttachmentSignedURL(): RequestHandler {
+export function getSurveyAttachmentSignedURL(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'getAttachmentSignedURL',
+      label: 'getSurveyAttachmentSignedURL',
       message: 'params',
       req_params: req.params,
-      req_query: req.query
+      req_query: req.query,
+      req_body: req.body
     });
 
     if (!req.params.surveyId) {
@@ -97,6 +112,7 @@ export function getAttachmentSignedURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      await connection.open();
       let s3Key;
 
       if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {
@@ -122,7 +138,7 @@ export function getAttachmentSignedURL(): RequestHandler {
 
       return res.status(200).json(s3SignedUrl);
     } catch (error) {
-      defaultLog.error({ label: 'getAttachmentSignedURL', message: 'error', error });
+      defaultLog.error({ label: 'getSurveyAttachmentSignedURL', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

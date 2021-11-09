@@ -13,6 +13,7 @@ import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState } from 'react';
 import { IFileHandler, IUploadHandler } from '../attachments/FileUploadItem';
 import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
+import { AttachmentType } from '../../constants/attachments';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
@@ -48,7 +49,7 @@ export interface IFileUploadWithMetaDialogProps {
    * @type {('Report' | 'Other')}
    * @memberof IFileUploadWithMetaDialogProps
    */
-  attachmentType: 'Report' | 'Other';
+  attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;
   /**
    * Set to `true` to open the dialog, `false` to close the dialog.
    *
@@ -133,7 +134,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
               <FileUploadWithMeta attachmentType={props.attachmentType} uploadHandler={props.uploadHandler} />
             </DialogContent>
             <DialogActions>
-              {props.attachmentType === 'Report' && (
+              {props.attachmentType === AttachmentType.REPORT && (
                 <Box className={classes.wrapper}>
                   <Button
                     onClick={formikProps.submitForm}
@@ -146,7 +147,7 @@ const FileUploadWithMetaDialog: React.FC<IFileUploadWithMetaDialogProps> = (prop
                   {isFinishing && <CircularProgress size={24} className={classes.buttonProgress} />}
                 </Box>
               )}
-              {(props.attachmentType === 'Report' && (
+              {(props.attachmentType === AttachmentType.REPORT && (
                 <Button onClick={props.onClose} color="primary" variant="outlined" disabled={isFinishing}>
                   Cancel
                 </Button>

@@ -30,7 +30,7 @@ export class GetAttachmentsData {
   }
 }
 
-export interface ReportAttachmentAuthor {
+export interface IReportAttachmentAuthor {
   first_name: string;
   last_name: string;
 }
@@ -38,7 +38,7 @@ export interface ReportAttachmentAuthor {
 export class PostReportAttachmentMetadata {
   title: string;
   year_published: string;
-  authors: ReportAttachmentAuthor[];
+  authors: IReportAttachmentAuthor[];
   description: string;
 
   constructor(obj?: any) {
@@ -56,5 +56,43 @@ export class PutReportAttachmentMetadata extends PostReportAttachmentMetadata {
     super(obj);
 
     this.revision_count = (obj && obj?.revision_count) || null;
+  }
+}
+
+export class GetReportAttachmentMetadata {
+  attachment_id: number;
+  title: string;
+  last_modified: string;
+  description: string;
+  year_published: number;
+  revision_count: number;
+  authors: IReportAttachmentAuthor[];
+
+  constructor(metaObj?: any, authorObj?: any) {
+    this.attachment_id = (metaObj && metaObj?.attachment_id) || null;
+    this.title = (metaObj && metaObj?.title) || null;
+    this.last_modified = (metaObj && metaObj?.update_date) || null;
+    this.description = (metaObj && metaObj?.description) || null;
+    this.year_published = (metaObj && metaObj?.year) || null;
+    this.revision_count = (metaObj && metaObj?.revision_count) || null;
+    this.authors =
+      (authorObj &&
+        authorObj?.map((author: any) => {
+          return {
+            first_name: author?.first_name,
+            last_name: author?.last_name
+          };
+        })) ||
+      [];
+  }
+}
+
+export class GetReportAttachmentAuthor {
+  first_name: string;
+  last_name: string;
+
+  constructor(authorObj?: any) {
+    this.first_name = (authorObj && authorObj?.first_name) || null;
+    this.last_name = (authorObj && authorObj?.last_name) || null;
   }
 }

@@ -1,11 +1,11 @@
-import express from 'express';
+import express, { NextFunction, Request, Response } from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
-import { OpenAPI } from 'openapi-types';
-import { initDBPool, defaultPoolConfig } from './database/db';
+import { OpenAPIV3 } from 'openapi-types';
+import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureCustomError } from './errors/CustomError';
 import { rootAPIDoc } from './openapi/root-api-doc';
-import { authenticate, authorize } from './security/auth-utils';
+import { authenticateRequest } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
@@ -24,7 +24,7 @@ const MAX_UPLOAD_FILE_SIZE = Number(process.env.MAX_UPLOAD_FILE_SIZE) || 5242880
 const app: express.Express = express();
 
 // Enable CORS
-app.use(function (req: any, res: any, next: any) {
+app.use(function (req: Request, res: Response, next: NextFunction) {
   defaultLog.info(`${req.method} ${req.url}`);
 
   res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Content-Type, Authorization, responseType');
@@ -37,7 +37,7 @@ app.use(function (req: any, res: any, next: any) {
 
 // Initialize express-openapi framework
 initialize({
-  apiDoc: rootAPIDoc as OpenAPI.Document, // base open api spec
+  apiDoc: rootAPIDoc as OpenAPIV3.Document, // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
   pathsIgnore: new RegExp('.(spec|test)$'), // ignore test files in paths
@@ -53,9 +53,9 @@ initialize({
     'application/x-www-form-urlencoded': express.urlencoded({ limit: MAX_REQ_BODY_SIZE, extended: true })
   },
   securityHandlers: {
-    // applies authentication logic
-    Bearer: async function (req: any, scopes: string[]) {
-      return (await authenticate(req)) && authorize(req, scopes);
+    // authenticates the request bearer token, for endpoints that specify `Bearer` security
+    Bearer: async function (req: any) {
+      return authenticateRequest(req);
     }
   },
   errorTransformer: function (openapiError: object, ajvError: object): object {
