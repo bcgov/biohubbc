@@ -6,7 +6,7 @@ import * as search from './search';
 import * as db from '../database/db';
 import * as search_queries from '../queries/search-queries';
 import SQL from 'sql-template-strings';
-import * as auth_utils from '../security/auth-utils';
+import * as authorization from '../request-handlers/security/authorization';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getMockDBConnection } from '../__mocks__/db';
 import { CustomError } from '../errors/CustomError';
@@ -47,7 +47,7 @@ describe('search', () => {
           return 20;
         }
       });
-      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(authorization, 'userHasValidRole').returns(true);
       sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(null);
 
       try {
@@ -73,7 +73,7 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(authorization, 'userHasValidRole').returns(true);
       sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
@@ -95,7 +95,7 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(authorization, 'userHasValidRole').returns(true);
       sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
@@ -125,7 +125,7 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(auth_utils, 'userHasValidSystemRoles').returns(true);
+      sinon.stub(authorization, 'userHasValidRole').returns(true);
       sinon.stub(search_queries, 'getSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();

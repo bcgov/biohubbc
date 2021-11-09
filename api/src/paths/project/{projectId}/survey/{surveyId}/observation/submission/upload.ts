@@ -1,7 +1,7 @@
 'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
@@ -9,14 +9,24 @@ import {
   updateSurveyOccurrenceSubmissionSQL,
   getTemplateMethodologySpeciesIdSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { logRequest } from '../../../../../../../utils/path-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
 
 export const POST: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/observation/submission/upload', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   uploadMedia()
 ];
 
@@ -25,7 +35,7 @@ POST.apiDoc = {
   tags: ['attachments'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

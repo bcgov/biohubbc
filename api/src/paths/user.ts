@@ -4,19 +4,31 @@ import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/CustomError';
 import { addSystemUserSQL } from '../queries/users/user-queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/user');
 
-export const POST: Operation = [logRequest('paths/user', 'POST'), addUser()];
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  addUser()
+];
 
 POST.apiDoc = {
   description: 'Add a new system user.',
   tags: ['user'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {

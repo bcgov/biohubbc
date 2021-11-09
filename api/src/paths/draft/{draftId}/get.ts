@@ -5,19 +5,31 @@ import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/CustomError';
 import { draftGetResponseObject } from '../../../openapi/schemas/draft';
 import { getDraftSQL } from '../../../queries/draft-queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/draft/{draftId}');
 
-export const GET: Operation = [logRequest('paths/draft/{draftId}', 'GET'), getSingleDraft()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  getSingleDraft()
+];
 
 GET.apiDoc = {
   description: 'Get a draft.',
   tags: ['draft'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

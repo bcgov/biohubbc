@@ -2,22 +2,36 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import { deleteOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/delete');
 
-export const DELETE: Operation = [deleteOccurrenceSubmission()];
+export const DELETE: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  deleteOccurrenceSubmission()
+];
 
 DELETE.apiDoc = {
   description: 'Soft deletes an occurrence submission by ID.',
   tags: ['observation_submission', 'delete'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

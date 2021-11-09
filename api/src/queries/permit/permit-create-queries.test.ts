@@ -62,7 +62,7 @@ describe('postProjectPermitSQL', () => {
   });
 
   it('returns null when no system user id', () => {
-    const response = postProjectPermitSQL('123', 'type', 1, null);
+    const response = postProjectPermitSQL('123', 'type', 1, (null as unknown) as number);
 
     expect(response).to.be.null;
   });

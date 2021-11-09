@@ -99,6 +99,8 @@ export function getAttachmentSignedURL(): RequestHandler {
     await connection.open();
 
     try {
+      await connection.open();
+
       let s3Key;
 
       if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {

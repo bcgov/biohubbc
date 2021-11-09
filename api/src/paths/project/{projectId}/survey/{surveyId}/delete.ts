@@ -1,23 +1,37 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import { getSurveyAttachmentsSQL } from '../../../../../queries/survey/survey-attachments-queries';
 import { deleteSurveySQL } from '../../../../../queries/survey/survey-delete-queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/delete');
 
-export const DELETE: Operation = [deleteSurvey()];
+export const DELETE: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  deleteSurvey()
+];
 
 DELETE.apiDoc = {
   description: 'Delete a survey.',
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

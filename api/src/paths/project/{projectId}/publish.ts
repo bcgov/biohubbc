@@ -1,23 +1,36 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400, HTTP500 } from '../../../errors/CustomError';
 import { projectIdResponseObject } from '../../../openapi/schemas/project';
-import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
 import { updateProjectPublishStatusSQL } from '../../../queries/project/project-update-queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/publish');
 
-export const PUT: Operation = [logRequest('paths/project/{projectId}/publish', 'PUT'), publishProject()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  publishProject()
+];
 
 PUT.apiDoc = {
   description: 'Publish or unpublish a project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

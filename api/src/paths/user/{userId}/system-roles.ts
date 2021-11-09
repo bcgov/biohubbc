@@ -8,19 +8,31 @@ import { HTTP400, HTTP500 } from '../../../errors/CustomError';
 import { UserObject } from '../../../models/user';
 import { deleteSystemRolesSQL, postSystemRolesSQL } from '../../../queries/users/system-role-queries';
 import { getUserByIdSQL } from '../../../queries/users/user-queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/user/{userId}/system-roles');
 
-export const POST: Operation = [logRequest('paths/user/{userId}/system-roles', 'POST'), getAddSystemRolesHandler()];
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  getAddSystemRolesHandler()
+];
 
 POST.apiDoc = {
   description: 'Add system roles to a user.',
   tags: ['user'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -159,14 +171,26 @@ export const addSystemRoles = async (userId: number, roleIds: number[], connecti
   }
 };
 
-export const DELETE: Operation = [logRequest('paths/user/{userId}/system-roles', 'DELETE'), removeSystemRoles()];
+export const DELETE: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  removeSystemRoles()
+];
 
 DELETE.apiDoc = {
   description: 'Remove system roles from a user.',
   tags: ['user'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

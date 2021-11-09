@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
 import {
@@ -30,10 +30,10 @@ import {
   deleteSurveyFundingSourcesBySurveyIdSQL
 } from '../../../../../queries/survey/survey-delete-queries';
 import { getLogger } from '../../../../../utils/logger';
-import { logRequest } from '../../../../../utils/path-utils';
 import { insertAncillarySpecies, insertFocalSpecies, insertSurveyFundingSource, insertSurveyPermit } from '../create';
 import { postSurveyProprietorSQL } from '../../../../../queries/survey/survey-create-queries';
 import { PostSurveyProprietorData } from '../../../../../models/survey-create';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 
 export interface IUpdateSurvey {
   survey_details: object | null;
@@ -43,11 +43,34 @@ export interface IUpdateSurvey {
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
 
 export const GET: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/update', 'GET'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   getSurveyForUpdate()
 ];
 
-export const PUT: Operation = [logRequest('paths/project/{projectId}/survey/{surveyId}/update', 'PUT'), updateSurvey()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  updateSurvey()
+];
 
 export enum GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
@@ -61,7 +84,7 @@ GET.apiDoc = {
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -127,7 +150,7 @@ PUT.apiDoc = {
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -432,7 +455,7 @@ export const updateSurveyDetailsData = async (
     updating an existing record of the permit table and setting the survey id column value
   */
   promises.push(unassociatePermitFromSurvey(surveyId, connection));
-
+  // TODO 20211108: currently permit insert vs update is dictated by permit_type (needs fixing/updating)
   if (putDetailsData.permit_number) {
     promises.push(
       insertSurveyPermit(putDetailsData.permit_number, putDetailsData.permit_type, projectId, surveyId, connection)

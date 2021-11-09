@@ -1,7 +1,7 @@
 'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
@@ -14,18 +14,28 @@ import {
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
-import { logRequest } from '../../../../../../../utils/path-utils';
 import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
 import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
 import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
 import { IMediaState } from '../../../../../../../utils/media/media-file';
 import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
 import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
 export const POST: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   uploadMedia(),
   prepXLSX(),
   persistSummaryParseErrors(),
@@ -41,7 +51,7 @@ POST.apiDoc = {
   tags: ['results'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

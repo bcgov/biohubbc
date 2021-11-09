@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { deleteSystemRolesSQL, postSystemRolesSQL } from './system-role-queries';
+import { deleteSystemRolesSQL, postProjectRolesByRoleNameSQL, postSystemRolesSQL } from './system-role-queries';
 
 describe('postSystemRolesSQL', () => {
   it('returns null response when null userId provided', () => {
@@ -49,6 +49,32 @@ describe('deleteSystemRolesSQL', () => {
 
   it('returns non null response when valid parameters provided', () => {
     const response = deleteSystemRolesSQL(1, [1, 2]);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('postProjectRolesByRoleNameSQL', () => {
+  it('returns null response when null projectId provided', () => {
+    const response = postProjectRolesByRoleNameSQL((null as unknown) as number, 2, 'role');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null systemUserId provided', () => {
+    const response = postProjectRolesByRoleNameSQL(1, (null as unknown) as number, 'role');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null/empty projectParticipantRole provided', () => {
+    const response = postProjectRolesByRoleNameSQL(1, 2, '');
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid parameters provided', () => {
+    const response = postProjectRolesByRoleNameSQL(1, 2, 'role');
 
     expect(response).to.not.be.null;
   });
