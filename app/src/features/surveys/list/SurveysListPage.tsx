@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
-import { mdiUploadOutline } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
@@ -55,7 +55,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
           <Button
             color="primary"
             variant="outlined"
-            startIcon={<Icon path={mdiUploadOutline} size={1} />}
+            startIcon={<Icon path={mdiPlus} size={1} />}
             onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
             Create Survey
           </Button>

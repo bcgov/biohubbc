@@ -5,7 +5,7 @@ import MenuItem from '@material-ui/core/MenuItem';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiMenuDown, mdiUpload } from '@mdi/js';
+import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -138,7 +138,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
             aria-controls="basic-menu"
             aria-haspopup="true"
             aria-expanded={open ? 'true' : undefined}
-            startIcon={<Icon path={mdiUpload} size={1} />}
+            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
             endIcon={<Icon path={mdiMenuDown} size={1} />}
             onClick={handleClick}>
             Upload

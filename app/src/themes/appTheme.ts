@@ -107,6 +107,11 @@ const appTheme = createMuiTheme({
         borderRadius: '3px'
       }
     },
+    MuiListItemIcon: {
+      root: {
+        minWidth: '42px'
+      }
+    },
     MuiOutlinedInput: {
       root: {
         background: '#ffffff'
