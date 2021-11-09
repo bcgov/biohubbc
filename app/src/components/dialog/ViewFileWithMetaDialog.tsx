@@ -101,11 +101,10 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
             onClick={props.onDownload}
             color="primary"
             variant="contained"
-            autoFocus
             startIcon={<Icon path={mdiDownload} size={0.875} />}>
             Download Report ({props.attachmentSize})
           </Button>
-          <Button onClick={props.onClose} color="primary" variant="contained" autoFocus>
+          <Button onClick={props.onClose} color="primary" variant="contained">
             Close
           </Button>
         </DialogActions>

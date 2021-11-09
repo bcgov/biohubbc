@@ -1,12 +1,13 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { mdiToggleSwitch, mdiToggleSwitchOffOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -41,15 +42,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   chip: {
-    padding: '0px 8px',
-    borderRadius: '4px',
-    color: 'white'
+    color: '#ffffff',
   },
   chipActive: {
-    backgroundColor: theme.palette.warning.main
+    backgroundColor: theme.palette.success.main
   },
   chipCompleted: {
-    backgroundColor: theme.palette.success.main
+    backgroundColor: theme.palette.primary.main
   },
   spacingRight: {
     paddingRight: '1rem'
@@ -59,6 +58,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
+  },
+  projectTitle: {
+    fontWeight: 400
   }
 }));
 
@@ -178,11 +180,11 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     let chipStatusClass;
 
     if (ProjectStatusType.ACTIVE === status_name) {
-      chipLabel = 'ACTIVE';
+      chipLabel = 'Active';
       chipStatusClass = classes.chipActive;
     } else if (ProjectStatusType.COMPLETED === status_name) {
-      chipLabel = 'COMPLETED';
-      chipStatusClass = classes.chipCompleted;
+      chipLabel = 'Complete';
+      chipStatusClass = classes.chipCompleted
     }
 
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
@@ -199,50 +201,45 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     <Container maxWidth="xl">
       <Box display="flex" justifyContent="space-between">
         <Box py={4}>
-          <Box mb={1} display="flex">
+          <Box mb={1.5} display="flex">
             <Typography className={classes.spacingRight} variant="h1">
-              {projectWithDetails.project.project_name}
+              Project - <span className={classes.projectTitle}>{projectWithDetails.project.project_name}</span>
             </Typography>
-            {getChipIcon(projectWithDetails.project.completion_status)}
           </Box>
-          <Box>
-            <Typography variant="subtitle1" color="textSecondary">
-              <span>
-                {projectWithDetails.project.end_date ? (
-                  <>
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat,
-                      projectWithDetails.project.start_date,
-                      projectWithDetails.project.end_date
-                    )}
-                  </>
-                ) : (
-                  <>
-                    <span>Start Date:</span>{' '}
-                    {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat,
-                      projectWithDetails.project.start_date
-                    )}
-                  </>
-                )}
-              </span>
+          <Box mb={0.75} display="flex" alignItems="center">
+            {getChipIcon(projectWithDetails.project.completion_status)}
+            &nbsp;&nbsp;
+            <Typography component="span" variant="subtitle1" color="textSecondary">
+              {projectWithDetails.project.end_date ? (
+                <>
+                  <span>Timeline:</span>{' '}
+                  {getFormattedDateRangeString(
+                    DATE_FORMAT.ShortMediumDateFormat,
+                    projectWithDetails.project.start_date,
+                    projectWithDetails.project.end_date
+                  )}
+                </>
+              ) : (
+                <>
+                  <span>Start Date:</span>{' '}
+                  {getFormattedDateRangeString(
+                    DATE_FORMAT.ShortMediumDateFormat,
+                    projectWithDetails.project.start_date
+                  )}
+                </>
+              )}
             </Typography>
           </Box>
         </Box>
         <Box ml={4} mt={4} mb={4}>
           <Button
             variant="outlined"
+            disableElevation
             className={classes.actionButton}
-            color="primary"
             data-testid="publish-project-button"
-            startIcon={
-              <Icon
-                path={projectWithDetails.project.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
-                size={1}
-              />
-            }
+            aria-label={projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
             onClick={async () => await publishProject(!projectWithDetails.project.publish_date)}>
-            {projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+            {projectWithDetails.project.publish_date ? 'Unpublish' : 'Publish'}
           </Button>
           {showDeleteProjectButton && (
             <Tooltip
@@ -250,16 +247,12 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               color="secondary"
               title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
               <>
-                <Button
-                  variant="outlined"
-                  color="primary"
-                  className={classes.actionButton}
+                <IconButton
                   data-testid="delete-project-button"
-                  startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                   onClick={showDeleteProjectDialog}
                   disabled={!enableDeleteProjectButton}>
-                  Delete Project
-                </Button>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </IconButton>
               </>
             </Tooltip>
           )}
