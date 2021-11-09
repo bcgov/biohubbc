@@ -1,5 +1,6 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import {
   ICreateProjectRequest,
   ICreateProjectResponse,
@@ -7,6 +8,7 @@ import {
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
   IGetProjectsListResponse,
+  IGetReportMetaData,
   IProjectAdvancedFilterRequest,
   IUpdateProjectRequest,
   IUploadAttachmentResponse,
@@ -188,7 +190,7 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     if (attachmentMeta) {
       req_message.append('attachmentMeta[title]', attachmentMeta.title);
-      req_message.append('attachmentMeta[year_published]', attachmentMeta.year_published);
+      req_message.append('attachmentMeta[year_published]', String(attachmentMeta.year_published));
       req_message.append('attachmentMeta[description]', attachmentMeta.description);
       attachmentMeta.authors.forEach((authorObj, index) => {
         req_message.append(`attachmentMeta[authors][${index}][first_name]`, authorObj.first_name);
@@ -217,7 +219,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     attachmentId: number,
     attachmentType: string,
-    attachmentMeta: IReportMetaForm,
+    attachmentMeta: IEditReportMetaForm,
     revisionCount: number
   ): Promise<number> => {
     const obj = {
@@ -315,6 +317,25 @@ const useProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get project report metadata based on project ID, attachment ID, and attachmentType
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @returns {*} {Promise<string>}
+   */
+  const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportMetaData> => {
+    const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
+      params: {},
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -331,7 +352,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteProject,
     publishProject,
     makeAttachmentSecure,
-    makeAttachmentUnsecure
+    makeAttachmentUnsecure,
+    getProjectReportMetadata
   };
 };
 
@@ -402,10 +424,33 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get project report metadata based on project ID, attachment ID, and attachmentType
+   *
+   * @param {number} projectId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @returns {*} {Promise<string>}
+   */
+  const getPublicProjectReportMetadata = async (
+    projectId: number,
+    attachmentId: number
+  ): Promise<IGetReportMetaData> => {
+    const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
+      params: {},
+      paramsSerializer: (params) => {
+        return qs.stringify(params);
+      }
+    });
+
+    return data;
+  };
+
   return {
     getProjectsList,
     getProjectForView,
     getProjectAttachments,
-    getAttachmentSignedURL
+    getAttachmentSignedURL,
+    getPublicProjectReportMetadata
   };
 };

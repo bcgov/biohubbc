@@ -10,33 +10,33 @@ import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
-export interface IReportMetaFormArrayItem {
+export interface IEditReportMetaFormArrayItem {
   first_name: string;
   last_name: string;
 }
 
-export const ReportMetaFormArrayItemInitialValues: IReportMetaFormArrayItem = {
+export const EditReportMetaFormArrayItemInitialValues: IEditReportMetaFormArrayItem = {
   first_name: '',
   last_name: ''
 };
 
-export interface IReportMetaForm {
+export interface IEditReportMetaForm {
   title: string;
-  authors: IReportMetaFormArrayItem[];
+  authors: IEditReportMetaFormArrayItem[];
   description: string;
   year_published: number;
-  attachmentFile: File;
+  revision_count: number;
 }
 
-export const ReportMetaFormInitialValues: IReportMetaForm = {
+export const EditReportMetaFormInitialValues: IEditReportMetaForm = {
   title: '',
-  authors: [ReportMetaFormArrayItemInitialValues],
+  authors: [EditReportMetaFormArrayItemInitialValues],
   description: '',
   year_published: ('' as unknown) as number,
-  attachmentFile: (undefined as unknown) as File
+  revision_count: 0
 };
 
-export const ReportMetaFormYupSchema = yup.object().shape({
+export const EditReportMetaFormYupSchema = yup.object().shape({
   title: yup.string().max(300, 'Cannot exceed 300 characters').required('A report title is required'),
   description: yup.string().max(300, 'Cannot exceed 50 characters').required('A report summary is required'),
   year_published: yup
@@ -44,7 +44,6 @@ export const ReportMetaFormYupSchema = yup.object().shape({
     .min(1900, 'year must be between 1900 and 2199')
     .max(2199, 'Year must be between 1900 and 2199')
     .required('Year published required'),
-  attachmentFile: yup.mixed().required('A file is required'),
   authors: yup
     .array()
     .min(1, 'An author is required')
@@ -62,8 +61,8 @@ export const ReportMetaFormYupSchema = yup.object().shape({
  *
  * @return {*}
  */
-const ReportMetaForm: React.FC = () => {
-  const { values, getFieldMeta, errors } = useFormikContext<IReportMetaForm>();
+const EditReportMetaForm: React.FC = () => {
+  const { values, getFieldMeta, errors } = useFormikContext<IEditReportMetaForm>();
 
   return (
     <>
@@ -173,7 +172,7 @@ const ReportMetaForm: React.FC = () => {
                   variant="text"
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   aria-label="add author"
-                  onClick={() => arrayHelpers.push(ReportMetaFormArrayItemInitialValues)}>
+                  onClick={() => arrayHelpers.push(EditReportMetaFormArrayItemInitialValues)}>
                   <strong>Add Author</strong>
                 </Button>
               </Box>
@@ -185,4 +184,4 @@ const ReportMetaForm: React.FC = () => {
   );
 };
 
-export default ReportMetaForm;
+export default EditReportMetaForm;

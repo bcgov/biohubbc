@@ -9,7 +9,7 @@ import { HTTP400 } from '../../../../errors/CustomError';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
+  IReportAttachmentAuthor
 } from '../../../../models/project-survey-attachments';
 import {
   deleteProjectReportAttachmentAuthorsSQL,
@@ -62,6 +62,7 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
+          required: ['attachmentType'],
           properties: {
             media: {
               type: 'string',
@@ -85,6 +86,7 @@ POST.apiDoc = {
                   type: 'array',
                   items: {
                     type: 'object',
+                    required: ['first_name', 'last_name'],
                     properties: {
                       first_name: {
                         type: 'string'
@@ -398,7 +400,7 @@ export const deleteProjectReportAttachmentAuthors = async (
 
 export const insertProjectReportAttachmentAuthor = async (
   attachmentId: number,
-  author: ReportAttachmentAuthor,
+  author: IReportAttachmentAuthor,
   connection: IDBConnection
 ): Promise<void> => {
   const sqlStatement = insertProjectReportAttachmentAuthorSQL(attachmentId, author);

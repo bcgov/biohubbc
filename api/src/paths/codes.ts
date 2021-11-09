@@ -150,6 +150,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    is_first_nation: {
+                      type: 'boolean'
                     }
                   }
                 }

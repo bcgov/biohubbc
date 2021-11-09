@@ -96,13 +96,15 @@ export function getAttachmentSignedURL(): RequestHandler {
 
     const connection = getAPIUserDBConnection();
 
+    await connection.open();
+
     try {
       await connection.open();
 
       let s3Key;
 
       if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        s3Key = await getProjectReportAttachmentS3Key(
+        s3Key = await getPublicProjectReportAttachmentS3Key(
           Number(req.params.projectId),
           Number(req.params.attachmentId),
           connection
@@ -154,7 +156,7 @@ export const getPublicProjectAttachmentS3Key = async (
   return response.rows[0].key;
 };
 
-export const getProjectReportAttachmentS3Key = async (
+export const getPublicProjectReportAttachmentS3Key = async (
   projectId: number,
   attachmentId: number,
   connection: IDBConnection

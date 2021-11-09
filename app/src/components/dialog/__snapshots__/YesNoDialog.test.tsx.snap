@@ -13,6 +13,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
   </div>
   <div
     class="MuiDialog-root"
+    data-testid="yes-no-dialog"
     role="presentation"
     style="position: fixed; z-index: 1300; right: 0px; bottom: 0px; top: 0px; left: 0px;"
   >
@@ -133,6 +134,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
   </div>
   <div
     class="MuiDialog-root"
+    data-testid="yes-no-dialog"
     role="presentation"
     style="position: fixed; z-index: 1300; right: 0px; bottom: 0px; top: 0px; left: 0px;"
   >

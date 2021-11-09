@@ -13,7 +13,7 @@ import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 
 chai.use(sinonChai);
 
-describe('getAttachmentSignedURL', () => {
+describe('getProjectAttachmentSignedURL', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -47,7 +47,7 @@ describe('getAttachmentSignedURL', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = get_signed_url.getAttachmentSignedURL();
+      const result = get_signed_url.getProjectAttachmentSignedURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
@@ -65,7 +65,7 @@ describe('getAttachmentSignedURL', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = get_signed_url.getAttachmentSignedURL();
+      const result = get_signed_url.getProjectAttachmentSignedURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
@@ -95,7 +95,7 @@ describe('getAttachmentSignedURL', () => {
     sinon.stub(project_attachments_queries, 'getProjectAttachmentS3KeySQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
-    const result = get_signed_url.getAttachmentSignedURL();
+    const result = get_signed_url.getProjectAttachmentSignedURL();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
@@ -114,7 +114,7 @@ describe('getAttachmentSignedURL', () => {
       sinon.stub(project_attachments_queries, 'getProjectAttachmentS3KeySQL').returns(null);
 
       try {
-        const result = get_signed_url.getAttachmentSignedURL();
+        const result = get_signed_url.getProjectAttachmentSignedURL();
 
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
@@ -140,7 +140,7 @@ describe('getAttachmentSignedURL', () => {
       sinon.stub(project_attachments_queries, 'getProjectAttachmentS3KeySQL').returns(SQL`some query`);
       sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
-      const result = get_signed_url.getAttachmentSignedURL();
+      const result = get_signed_url.getProjectAttachmentSignedURL();
 
       await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
@@ -160,7 +160,7 @@ describe('getAttachmentSignedURL', () => {
       sinon.stub(project_attachments_queries, 'getProjectReportAttachmentS3KeySQL').returns(null);
 
       try {
-        const result = get_signed_url.getAttachmentSignedURL();
+        const result = get_signed_url.getProjectAttachmentSignedURL();
 
         await result(
           {
@@ -195,7 +195,7 @@ describe('getAttachmentSignedURL', () => {
       sinon.stub(project_attachments_queries, 'getProjectReportAttachmentS3KeySQL').returns(SQL`some query`);
       sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
-      const result = get_signed_url.getAttachmentSignedURL();
+      const result = get_signed_url.getProjectAttachmentSignedURL();
 
       await result(
         {
