@@ -1,7 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getAPIUserDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/CustomError';
 import {
@@ -18,11 +17,6 @@ export const GET: Operation = [getAttachmentSignedURL()];
 GET.apiDoc = {
   description: 'Retrieves the signed url of a public project attachment.',
   tags: ['attachment'],
-  security: [
-    {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
-    }
-  ],
   parameters: [
     {
       in: 'path',
@@ -102,11 +96,15 @@ export function getAttachmentSignedURL(): RequestHandler {
 
     const connection = getAPIUserDBConnection();
 
+    await connection.open();
+
     try {
+      await connection.open();
+
       let s3Key;
 
       if (req.query.attachmentType === ATTACHMENT_TYPE.REPORT) {
-        s3Key = await getProjectReportAttachmentS3Key(
+        s3Key = await getPublicProjectReportAttachmentS3Key(
           Number(req.params.projectId),
           Number(req.params.attachmentId),
           connection
@@ -158,7 +156,7 @@ export const getPublicProjectAttachmentS3Key = async (
   return response.rows[0].key;
 };
 
-export const getProjectReportAttachmentS3Key = async (
+export const getPublicProjectReportAttachmentS3Key = async (
   projectId: number,
   attachmentId: number,
   connection: IDBConnection

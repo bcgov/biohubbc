@@ -24,7 +24,7 @@ export interface IReportMetaForm {
   title: string;
   authors: IReportMetaFormArrayItem[];
   description: string;
-  year_published: string;
+  year_published: number;
   attachmentFile: File;
 }
 
@@ -32,7 +32,7 @@ export const ReportMetaFormInitialValues: IReportMetaForm = {
   title: '',
   authors: [ReportMetaFormArrayItemInitialValues],
   description: '',
-  year_published: '',
+  year_published: ('' as unknown) as number,
   attachmentFile: (undefined as unknown) as File
 };
 

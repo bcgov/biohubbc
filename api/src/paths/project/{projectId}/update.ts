@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400, HTTP409 } from '../../../errors/CustomError';
 import {
@@ -50,7 +50,6 @@ import {
   getActivitiesByProjectSQL
 } from '../../../queries/project/project-view-update-queries';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
 import {
   insertClassificationDetail,
   insertIndigenousNation,
@@ -61,10 +60,24 @@ import {
 } from '../../project';
 import { IPostExistingPermit, IPostPermit, PostPermitData } from '../../../models/project-create';
 import { deleteSurveyFundingSourceByProjectFundingSourceIdSQL } from '../../../queries/survey/survey-delete-queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
-export const GET: Operation = [logRequest('paths/project/{projectId}/update', 'GET'), getProjectForUpdate()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getProjectForUpdate()
+];
 
 export enum GET_ENTITIES {
   coordinator = 'coordinator',
@@ -84,7 +97,7 @@ GET.apiDoc = {
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -404,14 +417,27 @@ export const getProjectData = async (projectId: number, connection: IDBConnectio
   return new GetProjectData(resultDetails, resultActivities);
 };
 
-export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  updateProject()
+];
 
 PUT.apiDoc = {
   description: 'Update a project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {

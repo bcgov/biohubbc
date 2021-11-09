@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
 import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../../models/permit-no-sampling';
@@ -8,19 +8,36 @@ import { PostCoordinatorData } from '../../models/project-create';
 import { PutCoordinatorData } from '../../models/project-update';
 import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../../openapi/schemas/permit-no-sampling';
 import { postPermitNoSamplingSQL } from '../../queries/permit/permit-create-queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('/api/permit/create-no-sampling');
 
-export const POST: Operation = [logRequest('/api/permit/create-no-sampling', 'POST'), createNoSamplePermits()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        },
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  createNoSamplePermits()
+];
 
 POST.apiDoc = {
   description: 'Creates new no sample permit records.',
   tags: ['no-sample-permit'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {

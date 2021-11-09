@@ -1,4 +1,12 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import {
+  cleanup,
+  fireEvent,
+  render,
+  waitFor,
+  queryByTestId as rawQueryByTestId,
+  getByTestId as rawGetByTestId
+} from '@testing-library/react';
+import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -96,14 +104,22 @@ describe('ProjectAttachments', () => {
       attachmentsList: [
         {
           id: 1,
-          fileName: 'filename.test',
+          fileName: 'filename1.test',
+          fileType: AttachmentType.OTHER,
+          lastModified: '2021-04-09 11:53:53',
+          size: 3028
+        },
+        {
+          id: 2,
+          fileName: 'filename2.test',
+          fileType: AttachmentType.REPORT,
           lastModified: '2021-04-09 11:53:53',
           size: 3028
         }
       ]
     });
 
-    const { queryByText, getByTestId } = render(
+    const { baseElement, queryByText, getByTestId, getAllByTestId, queryByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
           <ProjectAttachments projectForViewData={getProjectForViewResponse} />
@@ -112,24 +128,39 @@ describe('ProjectAttachments', () => {
     );
 
     await waitFor(() => {
-      expect(queryByText('filename.test')).toBeInTheDocument();
+      expect(queryByText('filename1.test')).toBeInTheDocument();
+      expect(queryByText('filename2.test')).toBeInTheDocument();
     });
 
     mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
-      attachmentsList: []
+      attachmentsList: [
+        {
+          id: 2,
+          fileName: 'filename2.test',
+          fileType: AttachmentType.REPORT,
+          lastModified: '2021-04-09 11:53:53',
+          size: 3028
+        }
+      ]
     });
 
-    fireEvent.click(getByTestId('delete-attachment'));
+    fireEvent.click(getAllByTestId('attachment-action-menu')[0]);
 
     await waitFor(() => {
-      expect(queryByText('Delete Attachment')).toBeInTheDocument();
+      expect(rawQueryByTestId(baseElement as HTMLElement, 'attachment-action-menu-delete')).toBeInTheDocument();
+    });
+
+    fireEvent.click(rawGetByTestId(baseElement as HTMLElement, 'attachment-action-menu-delete'));
+
+    await waitFor(() => {
+      expect(queryByTestId('yes-no-dialog')).toBeInTheDocument();
     });
 
     fireEvent.click(getByTestId('yes-button'));
 
     await waitFor(() => {
-      expect(queryByText('Delete Attachment')).not.toBeInTheDocument();
-      expect(queryByText('filename.test')).not.toBeInTheDocument();
+      expect(queryByText('filename1.test')).not.toBeInTheDocument();
+      expect(queryByText('filename2.test')).toBeInTheDocument();
     });
   });
 
@@ -140,13 +171,14 @@ describe('ProjectAttachments', () => {
         {
           id: 1,
           fileName: 'filename.test',
+          fileType: AttachmentType.REPORT,
           lastModified: '2021-04-09 11:53:53',
           size: 3028
         }
       ]
     });
 
-    const { queryByText, getByTestId, getByText } = render(
+    const { baseElement, queryByText, getByTestId, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
           <ProjectAttachments projectForViewData={getProjectForViewResponse} />
@@ -162,13 +194,19 @@ describe('ProjectAttachments', () => {
       attachmentsList: []
     });
 
-    fireEvent.click(getByTestId('delete-attachment'));
+    fireEvent.click(getAllByTestId('attachment-action-menu')[0]);
 
     await waitFor(() => {
-      expect(queryByText('Delete Attachment')).toBeInTheDocument();
+      expect(rawQueryByTestId(baseElement as HTMLElement, 'attachment-action-menu-delete')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('No'));
+    fireEvent.click(rawGetByTestId(baseElement as HTMLElement, 'attachment-action-menu-delete'));
+
+    await waitFor(() => {
+      expect(queryByTestId('yes-no-dialog')).toBeInTheDocument();
+    });
+
+    fireEvent.click(getByTestId('no-button'));
 
     await waitFor(() => {
       expect(queryByText('filename.test')).toBeInTheDocument();
@@ -188,7 +226,7 @@ describe('ProjectAttachments', () => {
       ]
     });
 
-    const { queryByText, getByTestId, getAllByRole } = render(
+    const { baseElement, queryByText, getAllByRole, queryByTestId, getAllByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
           <ProjectAttachments projectForViewData={getProjectForViewResponse} />
@@ -204,15 +242,26 @@ describe('ProjectAttachments', () => {
       attachmentsList: []
     });
 
-    fireEvent.click(getByTestId('delete-attachment'));
+    fireEvent.click(getAllByTestId('attachment-action-menu')[0]);
 
     await waitFor(() => {
-      expect(queryByText('Delete Attachment')).toBeInTheDocument();
+      expect(rawQueryByTestId(baseElement as HTMLElement, 'attachment-action-menu-delete')).toBeInTheDocument();
+    });
+
+    fireEvent.click(rawGetByTestId(baseElement as HTMLElement, 'attachment-action-menu-delete'));
+
+    await waitFor(() => {
+      expect(queryByTestId('yes-no-dialog')).toBeInTheDocument();
     });
 
     // Get the backdrop, then get the firstChild because this is where the event listener is attached
-    //@ts-ignore
-    fireEvent.click(getAllByRole('presentation')[0].firstChild);
+    const background = getAllByRole('presentation')[0].firstChild;
+
+    if (!background) {
+      fail('Failed to click background.');
+    }
+
+    fireEvent.click(background);
 
     await waitFor(() => {
       expect(queryByText('filename.test')).toBeInTheDocument();

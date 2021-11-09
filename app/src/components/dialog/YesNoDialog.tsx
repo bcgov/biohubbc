@@ -64,6 +64,7 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
     <Dialog
       open={props.open}
       onClose={props.onClose}
+      data-testid="yes-no-dialog"
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>

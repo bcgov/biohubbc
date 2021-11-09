@@ -3,7 +3,7 @@ import { getLogger } from '../../utils/logger';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
-  ReportAttachmentAuthor
+  IReportAttachmentAuthor
 } from '../../models/project-survey-attachments';
 
 const defaultLog = getLogger('queries/survey/survey-attachments-queries');
@@ -48,7 +48,7 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
 };
 
 /**
- * SQL query to get report attachments for a single survey.
+ * SQL query to get the list of report attachments for a single survey.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
@@ -73,6 +73,54 @@ export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | 
       survey_report_attachment
     where
       survey_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyReportAttachmentsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get report attachments for a single survey.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyReportAttachmentSQL = (surveyId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyReportAttachmentSQL',
+    message: 'params',
+    surveyId,
+    attachmentId
+  });
+
+  if (!surveyId || !attachmentId) {
+    return null;
+  }
+  const sqlStatement: SQLStatement = SQL`
+  SELECT
+    survey_report_attachment_id as attachment_id,
+    file_name,
+    title,
+    description,
+    year,
+    update_date,
+    create_date,
+    file_size,
+    key,
+    security_token,
+    revision_count
+  FROM
+    survey_report_attachment
+  where
+    survey_report_attachment_id = ${attachmentId}
+  and
+    survey_id = ${surveyId}
   `;
 
   defaultLog.debug({
@@ -520,7 +568,7 @@ export interface ReportAttachmentMeta {
  * @param {PutReportAttachmentMetadata} metadata
  * @return {*}  {(SQLStatement | null)}
  */
-export const updateProjectReportAttachmentMetadataSQL = (
+export const updateSurveyReportAttachmentMetadataSQL = (
   surveyId: number,
   attachmentId: number,
   metadata: PutReportAttachmentMetadata
@@ -566,12 +614,12 @@ export const updateProjectReportAttachmentMetadataSQL = (
  * Insert a new survey report attachment author record, for the specified `attachmentId`
  *
  * @param {number} attachmentId
- * @param {ReportAttachmentAuthor} author
+ * @param {IReportAttachmentAuthor} author
  * @return {*}  {(SQLStatement | null)}
  */
 export const insertSurveyReportAttachmentAuthorSQL = (
   attachmentId: number,
-  author: ReportAttachmentAuthor
+  author: IReportAttachmentAuthor
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'createSurveyReportAttachmentAuthorSQL',
@@ -631,6 +679,44 @@ export const deleteSurveyReportAttachmentAuthorsSQL = (attachmentId: number): SQ
 
   defaultLog.debug({
     label: 'deleteSurveyReportAttachmentAuthorsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * Get the metadata fields of  survey report attachment, for the specified `surveyId` and `attachmentId`.
+ *
+ * @param {number} surveyId
+ * @param {number} attachmentId
+ * @param {PutReportAttachmentMetadata} metadata
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getSurveyReportAuthorsSQL = (surveyReportAttachmentId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyReportAuthorsSQL',
+    message: 'params',
+    surveyReportAttachmentId
+  });
+
+  if (!surveyReportAttachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      survey_report_author.*
+    FROM
+      survey_report_author
+    where
+      survey_report_attachment_id = ${surveyReportAttachmentId}
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyReportAuthorsSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
