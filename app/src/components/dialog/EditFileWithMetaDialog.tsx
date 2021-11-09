@@ -125,12 +125,7 @@ const EditFileWithMetaDialog: React.FC<IEditFileWithMetaDialogProps> = (props) =
             </DialogContent>
             <DialogActions>
               <Box className={classes.wrapper}>
-                <Button
-                  onClick={formikProps.submitForm}
-                  color="primary"
-                  variant="contained"
-                  disabled={isSaving}
-                  autoFocus>
+                <Button onClick={formikProps.submitForm} color="primary" variant="contained" disabled={isSaving}>
                   <strong>Save</strong>
                 </Button>
                 {isSaving && <CircularProgress size={24} className={classes.buttonProgress} />}
