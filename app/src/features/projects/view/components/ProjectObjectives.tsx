@@ -144,12 +144,12 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
             Edit
           </Button>
         </Box>
+        <Divider></Divider>
         <ReadMoreField text={objectives.objectives} maxCharLength={850} />
       </Box>
 
       {objectives.caveats && (
         <>
-          <Divider></Divider>
           <Box mt={4}>
             <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
               <Typography variant="h3">Caveats</Typography>

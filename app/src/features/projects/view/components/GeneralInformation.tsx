@@ -25,6 +25,7 @@ import {
 import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import Divider from '@material-ui/core/Divider';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -138,6 +139,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
           <Typography variant="h3">General Information</Typography>
+
           <Button
             variant="text"
             color="primary"
@@ -149,6 +151,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
             Edit
           </Button>
         </Box>
+        <Divider></Divider>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>

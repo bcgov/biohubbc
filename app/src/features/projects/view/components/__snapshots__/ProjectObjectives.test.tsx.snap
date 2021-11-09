@@ -44,6 +44,9 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <div
       class="MuiBox-root MuiBox-root-13"
     >
@@ -115,9 +118,6 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
       </div>
     </div>
   </div>
-  <hr
-    class="MuiDivider-root"
-  />
   <div
     class="MuiBox-root MuiBox-root-15"
   >
@@ -248,6 +248,9 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <div
       class="MuiBox-root MuiBox-root-21"
     >
@@ -269,9 +272,6 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
       </p>
     </div>
   </div>
-  <hr
-    class="MuiDivider-root"
-  />
   <div
     class="MuiBox-root MuiBox-root-22"
   >
@@ -352,6 +352,9 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <div
       class="MuiBox-root MuiBox-root-3"
     >
@@ -362,9 +365,6 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
       </p>
     </div>
   </div>
-  <hr
-    class="MuiDivider-root"
-  />
   <div
     class="MuiBox-root MuiBox-root-4"
   >
@@ -434,6 +434,9 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <div
       class="MuiBox-root MuiBox-root-9"
     >

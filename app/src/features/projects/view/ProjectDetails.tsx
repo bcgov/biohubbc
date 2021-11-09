@@ -15,6 +15,7 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import ProjectPermits from './components/ProjectPermits';
 
+
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
@@ -50,51 +51,23 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         <Typography variant="h2">Project Details</Typography>
       </Box>
 
-      <Box component={Paper} p={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+      <Box display="flex" justifyContent="space-between">
+        <Box component={Paper} p={4}>
+          <Box component="section" className={classes.projectDetailsSection}>
+            <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+            <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+            <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+            <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+            <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+            <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+            <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          </Box>
         </Box>
-      </Box>
 
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        <Box component={Paper} p={4}>
+          <Box component="section" className={classes.projectDetailsSection}>
+            <LocationBoundary projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+          </Box>
         </Box>
       </Box>
     </>

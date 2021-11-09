@@ -1,20 +1,20 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+// import List from '@material-ui/core/List';
+// import ListItem from '@material-ui/core/ListItem';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import {
-  mdiClipboardCheckMultipleOutline,
+  //mdiClipboardCheckMultipleOutline,
   mdiTrashCanOutline,
-  mdiInformationOutline,
-  mdiPaperclip,
+  //mdiInformationOutline,
+  //mdiPaperclip,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline
 } from '@mdi/js';
@@ -27,8 +27,8 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState, useContext } from 'react';
-import { useLocation, useParams } from 'react-router';
-import { NavLink } from 'react-router-dom';
+import { useParams } from 'react-router';
+//import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import Button from '@material-ui/core/Button';
 import { DialogContext } from 'contexts/dialogContext';
@@ -88,7 +88,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectPage: React.FC = () => {
   const urlParams = useParams();
-  const location = useLocation();
+  //const location = useLocation();
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
@@ -329,9 +329,17 @@ const ProjectPage: React.FC = () => {
         </Container>
       </Paper>
 
-      <Container maxWidth="xl">
-        <Box display="flex" flexDirection="row" py={6}>
-          <Box component="aside" mr={6} mt={-2}>
+      <Paper elevation={2} square={true}>
+        <Container maxWidth="xl">
+          <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+          <SurveysListPage projectForViewData={projectWithDetails} />
+          <ProjectAttachments projectForViewData={projectWithDetails} />
+        </Container>
+      </Paper>
+
+      {/* <Container maxWidth="xl">
+        <Box display="flex" flexDirection="row" py={6}> */}
+          {/* <Box component="aside" mr={6} mt={-2}>
             <Paper>
               <List component="nav" role="navigation" className={classes.projectNav} aria-label="Project Navigation">
                 <ListItem component={NavLink} to="details">
@@ -354,8 +362,8 @@ const ProjectPage: React.FC = () => {
                 </ListItem>
               </List>
             </Paper>
-          </Box>
-          <Box component="article" flex="1 1 auto">
+          </Box> */}
+          {/* <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
               <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
             )}
@@ -363,9 +371,9 @@ const ProjectPage: React.FC = () => {
             {location.pathname.includes('/attachments') && (
               <ProjectAttachments projectForViewData={projectWithDetails} />
             )}
-          </Box>
-        </Box>
-      </Container>
+          </Box> */}
+        {/* </Box>
+      </Container> */}
     </>
   );
 };

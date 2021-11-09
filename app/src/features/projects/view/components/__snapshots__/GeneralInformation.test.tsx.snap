@@ -44,6 +44,9 @@ exports[`ProjectDetails renders correctly with activity data 1`] = `
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <dl>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
@@ -154,6 +157,9 @@ exports[`ProjectDetails renders correctly with no activity data 1`] = `
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <dl>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
@@ -264,6 +270,9 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <dl>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"

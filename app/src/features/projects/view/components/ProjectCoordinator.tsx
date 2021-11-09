@@ -23,6 +23,7 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
+import Divider from '@material-ui/core/Divider';
 
 export interface IProjectCoordinatorProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -145,6 +146,7 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
             Edit
           </Button>
         </Box>
+        <Divider></Divider>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>

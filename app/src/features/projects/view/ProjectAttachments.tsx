@@ -130,7 +130,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         uploadHandler={getUploadHandler()}
       />
       <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Project Attachments</Typography>
+        <Typography variant="h2">Documents</Typography>
         <Box my={-1}>
           <Button
             color="primary"

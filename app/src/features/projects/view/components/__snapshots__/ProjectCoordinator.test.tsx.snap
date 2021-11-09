@@ -44,6 +44,9 @@ exports[`ProjectCoordinator renders correctly 1`] = `
         />
       </button>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <dl>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
