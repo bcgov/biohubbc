@@ -7,6 +7,8 @@ import * as db from '../../../../database/db';
 import * as file_utils from '../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import { CustomError } from '../../../../errors/CustomError';
+//import * as project_attachment_queries from '../../../../queries/project/project-attachments-queries';
+//import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
@@ -17,7 +19,7 @@ describe('uploadMedia', () => {
 
   const dbConnectionObj = getMockDBConnection();
 
-  const sampleReq = {
+  const mockReq = {
     keycloak_token: {},
     params: {
       projectId: 1,
@@ -33,13 +35,13 @@ describe('uploadMedia', () => {
       }
     ],
     body: {
-      attachmentType: 'type'
+      attachmentType: 'Other'
     }
   } as any;
 
   let actualResult: any = null;
 
-  const sampleRes = {
+  const mockRes = {
     status: () => {
       return {
         json: (result: any) => {
@@ -47,7 +49,9 @@ describe('uploadMedia', () => {
         }
       };
     }
-  };
+  } as any;
+
+  //const mockNext = {} as any;
 
   it('should throw an error when attachmentType is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -56,7 +60,7 @@ describe('uploadMedia', () => {
       const result = upload.uploadMedia();
 
       await result(
-        { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
+        { ...mockReq, body: { ...mockReq.body, attachmentType: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
@@ -74,7 +78,7 @@ describe('uploadMedia', () => {
       const result = upload.uploadMedia();
 
       await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        { ...mockReq, params: { ...mockReq.params, projectId: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
@@ -91,7 +95,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...mockReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -112,7 +116,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: ['file1'] }, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...mockReq, files: ['file1'] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -135,7 +139,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(mockReq, mockRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -143,7 +147,7 @@ describe('uploadMedia', () => {
     }
   });
 
-  it('should return id and revision_count on success (with username and email)', async () => {
+  it('should return id and revision_count on success (with username and email) when attachmentType is Other', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -157,8 +161,61 @@ describe('uploadMedia', () => {
 
     const result = upload.uploadMedia();
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    await result(mockReq, mockRes as any, (null as unknown) as any);
 
     expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
+
+  // it('should return 200 on success when attachmentType is Other', async () => {
+  //   let actualStatus: any = null;
+
+  //   const mockRes = {
+  //     status: () => {
+  //       return {
+  //         json: (result: any) => {
+  //           actualStatus = result;
+  //         }
+  //       };
+  //     },
+  //     send: (status: number) => {
+  //       actualStatus = status;
+  //     }
+  //   } as any;
+
+  //   const mockNext = {} as any;
+
+  //   const mockQuery = sinon.stub();
+
+  //   mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
+  //   mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ id: 1, revision_count: 1 }] });
+  //   mockQuery.onCall(2).resolves({ rowCount: 1, rows: [{ id: 1 }] });
+
+  //   sinon.stub(db, 'getDBConnection').returns({
+  //     ...dbConnectionObj,
+  //     systemUserId: () => {
+  //       return 20;
+  //     },
+  //     query: mockQuery
+  //   });
+
+    //sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
+    //sinon.stub(project_attachment_queries, 'getProjectAttachmentByFileNameSQL').returns(SQL`some query`);
+    //sinon.stub(project_attachment_queries, 'postProjectAttachmentSQL').returns(SQL`some query`);
+
+  //   sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
+
+  //   const result = upload.uploadMedia();
+
+  //   await result(
+  //     {
+  //       ...mockReq,
+  //       auth_payload: { preferred_username: 'user', email: 'example@email.com' }
+  //     },
+  //     mockRes,
+  //     mockNext
+  //   );
+
+  //   console.log('actual status is:', actualStatus);
+  //   expect(actualStatus).to.eql({ attachmentId: 1, revision_count: 1 });
+  // });
 });
