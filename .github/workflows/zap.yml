@@ -13,9 +13,17 @@ jobs:
         with:
           ref: dev
       - name: Subtitute Password
+        working-directory: ./testing/zap
         run:
+          echo ${{env.working-directory}}
           LOCAL_VAR=$(echo 'cypressidir$CYPRESS_PW' | base64)
-          sed -i 's/@pw@/'$LOCAL_VAR'/g' ./testing/zap/dev.context
+          sed -i 's/@pw@/'$LOCAL_VAR'/g' dev.context
+          pwd
+      - name: Copy context
+        run:
+          echo ${{env.working-directory}}
+          cd /
+          find -name dev.context
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
