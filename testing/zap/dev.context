@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<configuration>
+    <context>
+        <name>HUD Context</name>
+        <desc/>
+        <inscope>true</inscope>
+        <incregexes>https://dev-biohubbc.apps.silver.devops.gov.bc.ca/.*</incregexes>
+        <tech>
+            <include>Db.PostgreSQL</include>
+            <include>Language.JavaScript</include>
+            <include>OS.Linux</include>
+            <include>SCM.Git</include>
+            <exclude>Db</exclude>
+            <exclude>Db.CouchDB</exclude>
+            <exclude>Db.Firebird</exclude>
+            <exclude>Db.HypersonicSQL</exclude>
+            <exclude>Db.IBM DB2</exclude>
+            <exclude>Db.Microsoft Access</exclude>
+            <exclude>Db.Microsoft SQL Server</exclude>
+            <exclude>Db.MongoDB</exclude>
+            <exclude>Db.MySQL</exclude>
+            <exclude>Db.Oracle</exclude>
+            <exclude>Db.SAP MaxDB</exclude>
+            <exclude>Db.SQLite</exclude>
+            <exclude>Db.Sybase</exclude>
+            <exclude>Language</exclude>
+            <exclude>Language.ASP</exclude>
+            <exclude>Language.C</exclude>
+            <exclude>Language.JSP/Servlet</exclude>
+            <exclude>Language.Java</exclude>
+            <exclude>Language.Java.Spring</exclude>
+            <exclude>Language.PHP</exclude>
+            <exclude>Language.Python</exclude>
+            <exclude>Language.Ruby</exclude>
+            <exclude>Language.XML</exclude>
+            <exclude>OS</exclude>
+            <exclude>OS.MacOS</exclude>
+            <exclude>OS.Windows</exclude>
+            <exclude>SCM</exclude>
+            <exclude>SCM.SVN</exclude>
+            <exclude>WS</exclude>
+            <exclude>WS.Apache</exclude>
+            <exclude>WS.IIS</exclude>
+            <exclude>WS.Tomcat</exclude>
+        </tech>
+        <urlparser>
+            <class>org.zaproxy.zap.model.StandardParameterParser</class>
+            <config>{"kvps":"&amp;","kvs":"=","struct":[]}</config>
+        </urlparser>
+        <postparser>
+            <class>org.zaproxy.zap.model.StandardParameterParser</class>
+            <config>{"kvps":"&amp;","kvs":"=","struct":[]}</config>
+        </postparser>
+        <authentication>
+            <type>2</type>
+            <strategy>EACH_RESP</strategy>
+            <pollurl/>
+            <polldata/>
+            <pollheaders/>
+            <pollfreq>60</pollfreq>
+            <pollunits>REQUESTS</pollunits>
+            <form>
+                <loginurl>https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/login-actions/authenticate?session_code=1CRAxIBdE64McOcCAYPztRxj1sx5ctpZ3HGdXbcmcgw&amp;execution=ece173d2-60ef-46ff-8fbb-dc88941e7ec2&amp;client_id=biohubbc&amp;tab_id=-x85dklYFqw</loginurl>
+                <loginbody>username={%username%}&amp;password={%password%}</loginbody>
+                <loginpageurl>https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/login-actions/authenticate?session_code=1CRAxIBdE64McOcCAYPztRxj1sx5ctpZ3HGdXbcmcgw&amp;execution=ece173d2-60ef-46ff-8fbb-dc88941e7ec2&amp;client_id=biohubbc&amp;tab_id=-x85dklYFqw</loginpageurl>
+            </form>
+        </authentication>
+        <users>
+            <user>164;true;Q3lwcmVzcw==;2;Y3lwcmVzc0BpZGly~bmo1Rk5Gd3VuN3dGa1Y4dg==~</user>
+        </users>
+        <forceduser>164</forceduser>
+        <session>
+            <type>0</type>
+        </session>
+        <authorization>
+            <type>0</type>
+            <basic>
+                <header/>
+                <body/>
+                <logic>AND</logic>
+                <code>403</code>
+            </basic>
+        </authorization>
+    </context>
+</configuration>

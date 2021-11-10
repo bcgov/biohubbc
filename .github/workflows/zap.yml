@@ -1,0 +1,19 @@
+name: zap
+on: workflow_dispatch
+
+jobs:
+  zap_scan:
+    runs-on: ubuntu-latest
+    name: Scan the webapplication
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+        with:
+          ref: dev
+      - name: ZAP Scan
+        uses: zaproxy/action-full-scan@v0.3.0
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          docker_name: 'owasp/zap2docker-stable'
+          target: 'https://dev-biohubbc.apps.silver.devops.gov.bc.ca/'
+          cmd_options: '-a -n ./testing/zap/dev.context'
