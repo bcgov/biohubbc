@@ -139,7 +139,7 @@ interface IActionToolbarProps {
 
 const ActionToolbar: React.FC<IActionToolbarProps> = (props) => {
   return (
-    <Toolbar disableGutters={true} style={{ justifyContent: 'space-between' }}>
+    <Toolbar style={{ justifyContent: 'space-between', paddingLeft: '16px', paddingRight: '16px' }}>
       <Typography {...props.labelProps} color="inherit">
         {props.label}
       </Typography>
