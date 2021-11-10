@@ -7,6 +7,7 @@ jobs:
     name: Scan the webapplication
     env:
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
+      LOCAL_VAR: $(echo 'cypressidir$CYPRESS_PW' | base64)
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -14,16 +15,12 @@ jobs:
           ref: dev
       - name: Subtitute Password
         working-directory: ./testing/zap
-        run:
-          echo Git Event Name: ${{ github.event_name }}
-          echo Git Event Action: ${{ github.event.action }}
-          echo Git Labels: "$LABELS"
-          echo PR in Draft: ${{ github.event.pull_request.draft }}
-          echo Path: $(pwd)
-          LOCAL_VAR=$(echo 'cypressidir$CYPRESS_PW' | base64)
+        run: |
+          echo working dir: ${{env.working-directory}}
           sed -i 's/@pw@/'$LOCAL_VAR'/g' dev.context
+          echo Path: $(pwd)
       - name: Copy context
-        run:
+        run: |
           echo working dir: ${{env.working-directory}}
           cd /
           echo Location: $(find -name dev.context)
