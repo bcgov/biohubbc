@@ -8,6 +8,7 @@ import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { AddFundingI18N, DeleteProjectFundingI18N, EditFundingI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -193,18 +194,13 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         onSave={handleDialogEditSave}
       />
 
-      <Box component="header" display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-        <Typography variant="h3">Funding Sources</Typography>
-        <Button
-          variant="outlined"
-          color="primary"
-          title="Add Funding Source"
-          aria-label="Add Funding Source"
-          startIcon={<Icon path={mdiPlus} size={1} />}
-          onClick={() => handleDialogEditOpen(funding.fundingSources.length)}>
-          Add Funding Source
-        </Button>
-      </Box>
+      <H3ButtonToolbar
+        label="Funding Sources"
+        buttonLabel="Add Funding Source"
+        buttonTitle="Add Funding Source"
+        buttonStartIcon={<Icon path={mdiPlus} size={0.875} />}
+        buttonOnClick={() => handleDialogEditOpen(funding.fundingSources.length)}
+      />
 
       {hasFundingSources &&
         funding.fundingSources.map((item: any, index: number) => (

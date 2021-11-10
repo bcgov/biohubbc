@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -30,6 +29,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { EditPermitI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 
 const useStyles = makeStyles({
   table: {
@@ -163,19 +163,13 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Project Permits</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Permits"
-            aria-label="Edit Permits"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
+        <H3ButtonToolbar
+          label="Project Permits"
+          buttonLabel="Edit"
+          buttonTitle="Edit Permits"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+        />
 
         {hasPermits && (
           <TableContainer>

@@ -1,14 +1,13 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
+import SurveysList from 'components/surveys/SurveysList';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import SurveysList from 'components/surveys/SurveysList';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 
 export interface ISurveysListPageProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -49,18 +48,13 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   return (
     <>
-      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Surveys</Typography>
-        <Box my={-1}>
-          <Button
-            color="primary"
-            variant="outlined"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => navigateToCreateSurveyPage(projectForViewData.id)}>
-            Create Survey
-          </Button>
-        </Box>
-      </Box>
+      <H2ButtonToolbar
+        label="Surveys"
+        buttonLabel="Create Survey"
+        buttonTitle="Create Survey"
+        buttonStartIcon={<Icon path={mdiPlus} size={1} />}
+        buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
+      />
       <Box mb={3}>
         <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
       </Box>

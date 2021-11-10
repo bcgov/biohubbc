@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
@@ -22,6 +21,7 @@ import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useP
 import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { DialogContext } from 'contexts/dialogContext';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -136,19 +136,13 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
         onSave={handleDialogEditSave}
       />
 
-      <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-        <Typography variant="h3">IUCN Conservation Actions Classification</Typography>
-        <Button
-          variant="text"
-          color="primary"
-          className="sectionHeaderButton"
-          onClick={() => handleDialogEditOpen()}
-          title="Edit IUCN Classifications"
-          aria-label="Edit IUCN Classifications"
-          startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-          Edit
-        </Button>
-      </Box>
+      <H3ButtonToolbar
+        label="IUCN Conservation Actions Classification"
+        buttonLabel="Edit"
+        buttonTitle="Edit IUCN Classifications"
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+        buttonOnClick={() => handleDialogEditOpen()}
+      />
 
       {hasIucnClassifications && (
         <Box component="ul" className="listNoBullets">
