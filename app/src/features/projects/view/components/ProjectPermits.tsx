@@ -127,7 +127,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
     try {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     } finally {

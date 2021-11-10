@@ -3,7 +3,7 @@
 exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in valid GeoJSON format 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiPaper-root MuiBox-root MuiBox-root-7 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
       class="MuiBox-root MuiBox-root-8"
@@ -271,6 +271,36 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
       />
     </div>
+    <button
+      aria-label="Show Expanded Location"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+      tabindex="0"
+      title="Expand Location"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Show More
+        <span
+          class="MuiButton-endIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.3125rem; height: 1.3125rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
@@ -278,7 +308,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
 exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-4"
+    class="MuiPaper-root MuiBox-root MuiBox-root-4 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
       class="MuiBox-root MuiBox-root-5"
@@ -523,6 +553,36 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
       />
     </div>
+    <button
+      aria-label="Show Expanded Location"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+      tabindex="0"
+      title="Expand Location"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Show More
+        <span
+          class="MuiButton-endIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.3125rem; height: 1.3125rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
@@ -530,7 +590,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
 exports[`LocationBoundary matches the snapshot when there is no location description 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiPaper-root MuiBox-root MuiBox-root-1 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
       class="MuiBox-root MuiBox-root-2"
@@ -775,6 +835,36 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
       />
     </div>
+    <button
+      aria-label="Show Expanded Location"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+      tabindex="0"
+      title="Expand Location"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Show More
+        <span
+          class="MuiButton-endIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.3125rem; height: 1.3125rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;

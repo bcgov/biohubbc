@@ -76,7 +76,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
 
       partnershipsResponseData = response.partnerships;
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
@@ -92,7 +92,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     try {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     } finally {

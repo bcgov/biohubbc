@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -28,6 +29,7 @@ import React, { useContext, useState } from 'react';
 import { useEffect } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
+import { mdiChevronRight } from '@mdi/js';
 
 export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -91,8 +93,36 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
       locationResponseData = response.location;
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
+      return;
+    }
+
+    setLocationDataForUpdate(locationResponseData);
+
+    setLocationFormData({
+      location_description: locationResponseData.location_description,
+      geometry: locationResponseData.geometry
+    });
+
+    setOpenEditDialog(true);
+  };
+
+  const handleDialogViewOpen = async () => {
+    let locationResponseData;
+
+    try {
+      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.location]);
+
+      if (!response?.location) {
+        showErrorDialog({ open: true });
+        return;
+      }
+
+      locationResponseData = response.location;
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
       return;
     }
 
@@ -114,7 +144,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     try {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     } finally {
@@ -133,6 +163,27 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry]);
 
+  const LocationDetails: React.FC = () => {
+    return (
+      <>
+        <Grid container spacing={2}>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'Natual Resource Ministries Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.env, 'Ministry of Environment Regions')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'Management Unit / Game Management Zones')}
+          </Grid>
+          <Grid item xs={6}>
+            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
+          </Grid>
+        </Grid>
+      </>
+    );
+  };
+
   return (
     <>
       <EditDialog
@@ -146,7 +197,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <Box>
+      <Box component={Paper} p={4}>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
           <Typography variant="h3">Project Location</Typography>
           <Button
@@ -160,18 +211,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             Edit
           </Button>
         </Box>
-        {/* <dl>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Location Description
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {location.location_description ? <>{location.location_description}</> : 'No Description'}
-              </Typography>
-            </Grid>
-          </Grid>
-        </dl> */}
         <Box mt={4} mb={4} height={500}>
           <MapContainer
             mapId="project_location_form_map"
@@ -194,20 +233,17 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             </Grid>
           </Grid>
         </dl>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-          </Grid>
-        </Grid>
+        <LocationDetails></LocationDetails>
+        <Button
+          variant="text"
+          color="primary"
+          className="sectionHeaderButton"
+          onClick={() => handleDialogViewOpen()}
+          title="Expand Location"
+          aria-label="Show Expanded Location"
+          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+          Show More
+        </Button>
       </Box>
     </>
   );
