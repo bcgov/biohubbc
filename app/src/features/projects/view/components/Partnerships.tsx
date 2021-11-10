@@ -1,11 +1,10 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditPartnershipsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {
@@ -119,21 +118,13 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         onSave={handleDialogEditSave}
       />
 
-      <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Partnerships</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Partnerships"
-            aria-label="Edit Partnerships"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
-      </Box>
+      <H3ButtonToolbar
+        label="Partnerships"
+        buttonLabel="Edit"
+        buttonTitle="Edit Partnerships"
+        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+        buttonOnClick={() => handleDialogEditOpen()}
+      />
 
       <dl className="ddInline">
         <Grid container spacing={2}>

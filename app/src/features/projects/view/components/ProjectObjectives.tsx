@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Divider from '@material-ui/core/Divider';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
@@ -7,6 +6,7 @@ import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import ReadMoreField from 'components/fields/ReadMoreField';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditObjectivesI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {
@@ -131,19 +131,13 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <Box mb={5}>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Objectives</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Project Objectives"
-            aria-label="Edit Project Objectives"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
+        <H3ButtonToolbar
+          label="Objectives"
+          buttonLabel="Edit"
+          buttonTitle="Edit Project Objectives"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+        />
         <Divider></Divider>
         <ReadMoreField text={objectives.objectives} maxCharLength={850} />
       </Box>

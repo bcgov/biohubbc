@@ -1,35 +1,35 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {
-  IGetProjectForUpdateResponseCoordinator,
-  IGetProjectForViewResponse,
-  UPDATE_GET_ENTITIES
-} from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
+import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { EditPermitI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import ProjectPermitForm, {
   IProjectPermitForm,
   ProjectPermitEditFormYupSchema,
   ProjectPermitFormArrayItemInitialValues,
   ProjectPermitFormInitialValues
 } from 'features/projects/components/ProjectPermitForm';
-import EditDialog from 'components/dialog/EditDialog';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
-import { EditPermitI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
+import {
+  IGetProjectForUpdateResponseCoordinator,
+  IGetProjectForViewResponse,
+  UPDATE_GET_ENTITIES
+} from 'interfaces/useProjectApi.interface';
+import React, { useContext, useState } from 'react';
 
 const useStyles = makeStyles({
   table: {
@@ -163,19 +163,13 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Project Permits</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Permits"
-            aria-label="Edit Permits"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
+        <H3ButtonToolbar
+          label="Project Permits"
+          buttonLabel="Edit"
+          buttonTitle="Edit Permits"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+        />
 
         {hasPermits && (
           <TableContainer>
