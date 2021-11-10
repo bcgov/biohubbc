@@ -5,11 +5,17 @@ jobs:
   zap_scan:
     runs-on: ubuntu-latest
     name: Scan the webapplication
+    env:
+      CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
         with:
           ref: dev
+      - name: Subtitute Password
+        run:
+          LOCAL_VAR=$(echo 'cypressidir$CYPRESS_PW' | base64)
+          sed -i 's/@pw@/'$LOCAL_VAR'/g' ./testing/zap/dev.context
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
