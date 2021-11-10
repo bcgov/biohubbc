@@ -79,24 +79,23 @@ const ProjectPage: React.FC = () => {
         <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
       </Paper>
 
-      <Paper elevation={2} square={true}>
-        <Container maxWidth="xl">
-          <Box display="flex" justifyContent="space-between">
-            <Box>
-              <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-            </Box>
-            <Box>
-              <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-            </Box>
+      <Container maxWidth="xl">
+        <Box display="flex" justifyContent="space-between">
+          <Box>
+            <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
           </Box>
-          <Box mt={3}>
-            <SurveysListPage projectForViewData={projectWithDetails} />
+          <Box>
+            <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
           </Box>
-          <Box mt={3}>
-            <ProjectAttachments projectForViewData={projectWithDetails} />
-          </Box>
-        </Container>
-      </Paper>
+        </Box>
+        <Box mt={3}>
+          <SurveysListPage projectForViewData={projectWithDetails} />
+        </Box>
+        <Box mt={3}>
+          <ProjectAttachments projectForViewData={projectWithDetails} />
+        </Box>
+      </Container>
+
     </>
   );
 };

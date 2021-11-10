@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -49,9 +50,9 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   return (
     <>
-      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Surveys</Typography>
-        <Box my={-1}>
+      <Paper>
+        <Box p={2} display="flex" alignItems="center" justifyContent="space-between">
+          <Typography variant="h2">Surveys</Typography>
           <Button
             color="primary"
             variant="outlined"
@@ -60,10 +61,8 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
             Create Survey
           </Button>
         </Box>
-      </Box>
-      <Box mb={3}>
         <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
-      </Box>
+      </Paper>
     </>
   );
 };
