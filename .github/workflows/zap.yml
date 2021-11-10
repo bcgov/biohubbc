@@ -7,7 +7,6 @@ jobs:
     name: Scan the webapplication
     env:
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
-      LOCAL_VAR: $(echo 'cypressidir$CYPRESS_PW' | base64)
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -16,12 +15,12 @@ jobs:
       - name: Subtitute Password
         working-directory: ./testing/zap
         run: |
-          echo working dir: ${{env.working-directory}}
-          sed -i 's/@pw@/'$LOCAL_VAR'/g' dev.context
           echo Path: $(pwd)
+          LOCAL_VAR=$(echo 'cypressidir$CYPRESS_PW' | base64)
+          sed -i 's/@pw@/'$LOCAL_VAR'/g' dev.context
       - name: Copy context
         run: |
-          echo working dir: ${{env.working-directory}}
+          echo Path: $(pwd)
           cd /
           echo Location: $(find -name dev.context)
       - name: ZAP Scan
