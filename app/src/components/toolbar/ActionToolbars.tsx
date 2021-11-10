@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
-import Toolbar from '@material-ui/core/Toolbar';
+import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
 import { mdiMenuDown } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -135,11 +135,12 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
 interface IActionToolbarProps {
   label: string;
   labelProps?: Partial<TypographyProps<'div'>>;
+  toolbarProps?: Partial<ToolbarProps>;
 }
 
 const ActionToolbar: React.FC<IActionToolbarProps> = (props) => {
   return (
-    <Toolbar disableGutters={true} style={{ justifyContent: 'space-between' }}>
+    <Toolbar {...props.toolbarProps} style={{ justifyContent: 'space-between' }}>
       <Typography {...props.labelProps} color="inherit">
         {props.label}
       </Typography>
