@@ -20,7 +20,7 @@ jobs:
           sed -i 's/@pw@/'$LOCAL_VAR'/g' dev.context
       - name: Copy Context
         run: |
-          cp /home/runner/work/biohubbc/biohubbc/testing/zap/dev.context /zap/wrk/dev.context
+          cp /home/runner/work/biohubbc/biohubbc/testing/zap/dev.context /zap/wrk
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
