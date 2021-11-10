@@ -1,6 +1,7 @@
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -95,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'block',
       padding: theme.spacing(2),
       color: 'inherit',
-      fontSize: '1rem',
+      fontSize: '0.875rem',
       textDecoration: 'none'
     },
     '& a:hover': {
@@ -195,75 +196,79 @@ const Header: React.FC = () => {
       <AppBar position="sticky" style={{ boxShadow: 'none' }}>
         <Box className={classes.govHeader}>
           <Toolbar className={classes.govHeaderToolbar}>
-            <Box display="flex" justifyContent="space-between" width="100%">
-              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-                <picture>
-                  <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                  <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                  <img src={headerImageSmall} alt={'Government of British Columbia'} />
-                </picture>
-                <span>
-                  Species Inventory Management System
-                  <sup
-                    className={classes.appPhaseTag}
-                    aria-label="This application is currently in beta phase of development">
-                    Beta
-                  </sup>
-                  {config?.REACT_APP_NODE_ENV !== 'prod' && (
+            <Container maxWidth="xl">
+              <Box display="flex" justifyContent="space-between" width="100%">
+                <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+                  <picture>
+                    <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                    <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                    <img src={headerImageSmall} alt={'Government of British Columbia'} />
+                  </picture>
+                  <span>
+                    Species Inventory Management System
                     <sup
                       className={classes.appPhaseTag}
-                      aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
-                      & {config?.REACT_APP_NODE_ENV}
+                      aria-label="This application is currently in beta phase of development">
+                      Beta
                     </sup>
-                  )}
-                </span>
-              </Link>
-              {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
-              {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
-            </Box>
+                    {config?.REACT_APP_NODE_ENV !== 'prod' && (
+                      <sup
+                        className={classes.appPhaseTag}
+                        aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
+                        & {config?.REACT_APP_NODE_ENV}
+                      </sup>
+                    )}
+                  </span>
+                </Link>
+                {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
+                {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
+              </Box>
+            </Container>
           </Toolbar>
         </Box>
         <Box className={classes.mainNav}>
-          <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            {isAuthenticated(keycloakWrapper) && (
-              <SecureLink
-                to="/admin/projects"
-                label="Projects"
-                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-                id="menu_projects"
-              />
-            )}
-            {!isAuthenticated(keycloakWrapper) && (
-              <>
-                <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
-                <SecureLink to="/search" label="Map" validRoles={[]} id="menu_search" />
-              </>
-            )}
-            <SecureLink
-              to="/admin/permits"
-              label="Permits"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_permits"
-            />
-            <SecureLink
-              to="/admin/users"
-              label="Manage Users"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
-              id="menu_admin_users"
-            />
-            <SecureLink
-              to="/admin/search"
-              label="Map"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_search"
-            />
-            <SecureLink
-              to="/admin/resources"
-              label="Resources"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_resources"
-            />
-          </Toolbar>
+          <Container maxWidth="xl">
+            <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation" disableGutters>
+                {isAuthenticated(keycloakWrapper) && (
+                  <SecureLink
+                    to="/admin/projects"
+                    label="Projects"
+                    validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                    id="menu_projects"
+                  />
+                )}
+                {!isAuthenticated(keycloakWrapper) && (
+                  <>
+                    <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+                    <SecureLink to="/search" label="Map" validRoles={[]} id="menu_search" />
+                  </>
+                )}
+                <SecureLink
+                  to="/admin/permits"
+                  label="Permits"
+                  validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                  id="menu_permits"
+                />
+                <SecureLink
+                  to="/admin/search"
+                  label="Map"
+                  validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                  id="menu_search"
+                />
+                <SecureLink
+                  to="/admin/resources"
+                  label="Resources"
+                  validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                  id="menu_resources"
+                />
+                <SecureLink
+                  to="/admin/users"
+                  label="Manage Users"
+                  validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
+                  id="menu_admin_users"
+                />
+            </Toolbar>
+          </Container>
         </Box>
       </AppBar>
 

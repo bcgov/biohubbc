@@ -9,7 +9,7 @@ import React from 'react';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import SurveyStudyArea from './components/SurveyStudyArea';
+//import SurveyStudyArea from './components/SurveyStudyArea';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -55,29 +55,16 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
             codes={codes}
             refresh={refresh}
           />
+           <SurveyProprietaryData
+              projectForViewData={projectForViewData}
+              surveyForViewData={surveyForViewData}
+              codes={codes}
+              refresh={refresh}
+            />
         </Box>
       </Box>
 
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyStudyArea
-            surveyForViewData={surveyForViewData}
-            projectForViewData={projectForViewData}
-            refresh={refresh}
-          />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyProprietaryData
-            projectForViewData={projectForViewData}
-            surveyForViewData={surveyForViewData}
-            codes={codes}
-            refresh={refresh}
-          />
-        </Box>
-      </Box>
+     
     </>
   );
 };

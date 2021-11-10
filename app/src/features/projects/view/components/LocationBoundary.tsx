@@ -1,9 +1,12 @@
+import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronRight, mdiPencilOutline, mdiArrowLeft } from '@mdi/js';
 import Icon from '@mdi/react';
 import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
@@ -162,6 +165,16 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry]);
 
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
+
   const LocationDetails: React.FC = () => {
     return (
       <>
@@ -196,48 +209,85 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <Box component={Paper} p={4}>
-        <H3ButtonToolbar
-          label="Project Location"
-          buttonLabel="Edit"
-          buttonTitle="Edit Project Location"
-          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
-          buttonOnClick={() => handleDialogEditOpen()}
-        />
 
-        <Box mt={4} mb={4} height={500}>
-          <MapContainer
-            mapId="project_location_form_map"
-            hideDrawControls={true}
-            nonEditableGeometries={nonEditableGeometries}
-            bounds={bounds}
-            setInferredLayersInfo={setInferredLayersInfo}
-          />
+      <Dialog fullScreen open={open} onClose={handleClose}>
+        <AppBar position="relative" color="inherit" elevation={1}>
+          <Toolbar>
+            <Button
+              color="primary"
+              variant="text"
+              startIcon={<Icon path={mdiArrowLeft} size={1} />}
+              onClick={handleClose}>
+                Back to Project
+              </Button>
+          </Toolbar>
+        </AppBar>
+        <Box display="flex" flex="1 1 auto">
+          <Box flex="0 0 auto" p={3} width="400px">
+            <Box mb={3}>
+              <Typography variant="h2">Project Location</Typography>
+            </Box>
+            <Typography variant="body1">
+              {location.location_description ? <>{location.location_description}</> : 'No Description'}
+            </Typography>
+          </Box>
+          <Box flex="1 1 auto">
+            <MapContainer
+              mapId="project_location_form_map"
+              hideDrawControls={true}
+              nonEditableGeometries={nonEditableGeometries}
+              bounds={bounds}
+              setInferredLayersInfo={setInferredLayersInfo}
+            />
+          </Box>
         </Box>
+      </Dialog>
 
-        <dl>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Location Description
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {location.location_description ? <>{location.location_description}</> : 'No Description'}
-              </Typography>
+      <Box>
+        <Box component={Paper} p={4}>
+          <H3ButtonToolbar
+            label="Project Location"
+            buttonLabel="Edit"
+            buttonTitle="Edit Project Location"
+            buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+            buttonOnClick={() => handleDialogEditOpen()}
+          />
+
+          <Box mt={4} mb={4} height={500}>
+            <MapContainer
+              mapId="project_location_form_map"
+              hideDrawControls={true}
+              nonEditableGeometries={nonEditableGeometries}
+              bounds={bounds}
+              setInferredLayersInfo={setInferredLayersInfo}
+            />
+          </Box>
+
+          <dl>
+            <Grid container spacing={2}>
+              <Grid item xs={12}>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  Location Description
+                </Typography>
+                <Typography component="dd" variant="body1">
+                  {location.location_description ? <>{location.location_description}</> : 'No Description'}
+                </Typography>
+              </Grid>
             </Grid>
-          </Grid>
-        </dl>
-        <LocationDetails></LocationDetails>
-        <Button
-          variant="text"
-          color="primary"
-          className="sectionHeaderButton"
-          onClick={() => handleDialogViewOpen()}
-          title="Expand Location"
-          aria-label="Show Expanded Location"
-          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
-          Show More
-        </Button>
+          </dl>
+          <LocationDetails></LocationDetails>
+          <Button
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
+            onClick={() => handleDialogViewOpen()}
+            title="Expand Location"
+            aria-label="Show Expanded Location"
+            endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+            Show More
+          </Button>
+          <Button variant="text" color="primary" onClick={handleClickOpen}>TEST FULL SCREEN DIALOG</Button>
+        </Box>
       </Box>
     </>
   );

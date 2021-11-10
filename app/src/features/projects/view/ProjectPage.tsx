@@ -5,7 +5,7 @@ import Container from '@material-ui/core/Container';
 // import ListItem from '@material-ui/core/ListItem';
 // import ListItemIcon from '@material-ui/core/ListItemIcon';
 // import ListItemText from '@material-ui/core/ListItemText';
-import Paper from '@material-ui/core/Paper';
+// import Paper from '@material-ui/core/Paper';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
@@ -75,11 +75,14 @@ const ProjectPage: React.FC = () => {
 
   return (
     <>
-      <Paper elevation={2} square={true}>
-        <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
-      </Paper>
+      <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
 
       <Container maxWidth="xl">
+        <SurveysListPage projectForViewData={projectWithDetails} />
+        
+        <Box mt={3}>
+          <ProjectAttachments projectForViewData={projectWithDetails} />
+        </Box>
         <Box display="flex" justifyContent="space-between">
           <Box>
             <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
@@ -87,12 +90,6 @@ const ProjectPage: React.FC = () => {
           <Box>
             <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
           </Box>
-        </Box>
-        <Box mt={3}>
-          <SurveysListPage projectForViewData={projectWithDetails} />
-        </Box>
-        <Box mt={3}>
-          <ProjectAttachments projectForViewData={projectWithDetails} />
         </Box>
       </Container>
 

@@ -5,23 +5,23 @@ import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import ListItemIcon from '@material-ui/core/ListItemIcon';
-import ListItemText from '@material-ui/core/ListItemText';
+// import List from '@material-ui/core/List';
+// import ListItem from '@material-ui/core/ListItem';
+// import ListItemIcon from '@material-ui/core/ListItemIcon';
+// import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import {
-  mdiClipboardCheckMultipleOutline,
-  mdiInformationOutline,
-  mdiPaperclip,
+  // mdiClipboardCheckMultipleOutline,
+  // mdiInformationOutline,
+  // mdiPaperclip,
   mdiToggleSwitch,
   mdiToggleSwitchOffOutline,
-  mdiTrashCanOutline,
-  mdiEye
+  mdiTrashCanOutline
+  // mdiEye
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
@@ -36,12 +36,17 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { useHistory, useLocation, useParams } from 'react-router';
-import { NavLink } from 'react-router-dom';
+import {
+  useHistory,
+  //useLocation,
+  useParams
+} from 'react-router';
+//import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
 import SurveyAttachments from './SurveyAttachments';
-import SurveyObservations from './SurveyObservations';
-import SurveySummaryResults from './SurveySummaryResults';
+import SurveyStudyArea from './components/SurveyStudyArea';
+// import SurveyObservations from './SurveyObservations';
+// import SurveySummaryResults from './SurveySummaryResults';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -93,7 +98,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const SurveyPage: React.FC = () => {
-  const location = useLocation();
+  //const location = useLocation();
   const classes = useStyles();
   const history = useHistory();
   const urlParams = useParams();
@@ -316,7 +321,7 @@ const SurveyPage: React.FC = () => {
         </Container>
       </Paper>
 
-      <Container maxWidth="xl">
+      {/* <Container maxWidth="xl">
         <Box display="flex" flexDirection="row" py={6}>
           <Box component="aside" mr={6} mt={-2}>
             <Paper>
@@ -363,6 +368,31 @@ const SurveyPage: React.FC = () => {
               <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
             )}
           </Box>
+        </Box>
+      </Container> */}
+
+      <Container maxWidth="xl">
+        <Box display="flex" justifyContent="space-between">
+          <Box>
+            <SurveyDetails
+              projectForViewData={projectWithDetails}
+              surveyForViewData={surveyWithDetails}
+              codes={codes}
+              refresh={getSurvey}
+            />
+          </Box>
+          <Box>
+           <SurveyStudyArea
+            surveyForViewData={surveyWithDetails}
+            projectForViewData={projectWithDetails}
+            refresh={getSurvey}
+          />
+          </Box>
+        </Box>
+
+
+        <Box mt={3}>
+          <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
         </Box>
       </Container>
     </>

@@ -32,6 +32,11 @@ const useStyles = makeStyles({
     border: '2px solid',
     textTransform: 'capitalize',
     fontWeight: 'bold'
+  },
+  mapLocations: {
+    '& dd': {
+      display: 'inline-block'
+    }
   }
 });
 
@@ -46,18 +51,18 @@ export interface IMapBoundaryProps {
   setFieldValue: (key: string, value: any) => void;
 }
 
-export const displayInferredLayersInfo = (data: any[], type: string) => {
+export const displayInferredLayersInfo = (data: any[], type: string) => {  
   if (!data.length) {
     return;
   }
 
   return (
-    <Box>
-      <Typography component="dt" variant="subtitle2" color="textSecondary">
-        {type}
+    <Box className="mapLocations">
+      <Typography component="div" variant="subtitle2" color="textSecondary">
+        {type} {type.length}
       </Typography>
       {data.map((item: string, index: number) => (
-        <Typography key={index} component="dd" variant="body1">
+        <Typography key={index} component="span" variant="body1">
           {item}
         </Typography>
       ))}
@@ -222,6 +227,9 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             <dl>
               <Grid container spacing={2}>
                 <Grid item xs={6}>
+
+                  <strong>NRM Regions {inferredLayersInfo.nrm.length}</strong>
+
                   {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
                 </Grid>
                 <Grid item xs={6}>
