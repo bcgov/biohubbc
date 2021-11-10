@@ -15,15 +15,18 @@ jobs:
       - name: Subtitute Password
         working-directory: ./testing/zap
         run:
-          echo ${{env.working-directory}}
+          echo Git Event Name: ${{ github.event_name }}
+          echo Git Event Action: ${{ github.event.action }}
+          echo Git Labels: "$LABELS"
+          echo PR in Draft: ${{ github.event.pull_request.draft }}
+          echo Path: $(pwd)
           LOCAL_VAR=$(echo 'cypressidir$CYPRESS_PW' | base64)
           sed -i 's/@pw@/'$LOCAL_VAR'/g' dev.context
-          pwd
       - name: Copy context
         run:
-          echo ${{env.working-directory}}
+          echo working dir: ${{env.working-directory}}
           cd /
-          find -name dev.context
+          echo Location: $(find -name dev.context)
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
