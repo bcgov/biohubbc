@@ -139,6 +139,7 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
           buttonTitle="Edit Project Coordinator Information"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
         <dl>

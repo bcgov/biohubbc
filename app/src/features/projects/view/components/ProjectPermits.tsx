@@ -169,6 +169,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
           buttonTitle="Edit Permits"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
         />
 
         {hasPermits && (

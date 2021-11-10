@@ -12,7 +12,7 @@ import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
-import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {
@@ -218,8 +218,8 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
               variant="text"
               startIcon={<Icon path={mdiArrowLeft} size={1} />}
               onClick={handleClose}>
-                Back to Project
-              </Button>
+              Back to Project
+            </Button>
           </Toolbar>
         </AppBar>
         <Box display="flex" flex="1 1 auto">
@@ -244,13 +244,14 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       </Dialog>
 
       <Box>
-        <Box component={Paper} p={4}>
-          <H3ButtonToolbar
+        <Box component={Paper}>
+          <H2ButtonToolbar
             label="Project Location"
             buttonLabel="Edit"
             buttonTitle="Edit Project Location"
             buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
             buttonOnClick={() => handleDialogEditOpen()}
+            buttonProps={{ variant: 'text' }}
           />
 
           <Box mt={4} mb={4} height={500}>
@@ -286,7 +287,9 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
             Show More
           </Button>
-          <Button variant="text" color="primary" onClick={handleClickOpen}>TEST FULL SCREEN DIALOG</Button>
+          <Button variant="text" color="primary" onClick={handleClickOpen}>
+            TEST FULL SCREEN DIALOG
+          </Button>
         </Box>
       </Box>
     </>

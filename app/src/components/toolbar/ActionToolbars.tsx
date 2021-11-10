@@ -1,5 +1,5 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Button, { ButtonProps } from '@material-ui/core/Button';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
@@ -13,13 +13,14 @@ export interface IButtonToolbarProps extends IActionToolbarProps {
   buttonTitle: string;
   buttonOnClick: () => void;
   buttonStartIcon: ReactNode;
+  buttonProps?: Partial<ButtonProps>;
 }
 
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h3-button-toolbar-${props.buttonLabel.replaceAll(/\s/g, '')}`;
 
   return (
-    <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }}>
+    <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
       <Button
         id={id}
         data-testid={id}
@@ -29,7 +30,8 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         title={props.buttonTitle}
         aria-label={props.buttonTitle}
         startIcon={props.buttonStartIcon}
-        onClick={() => props.buttonOnClick()}>
+        onClick={() => props.buttonOnClick()}
+        {...props.buttonProps}>
         {props.buttonLabel}
       </Button>
     </ActionToolbar>
@@ -40,7 +42,7 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h2-button-toolbar-${props.buttonLabel.replaceAll(/\s/g, '')}`;
 
   return (
-    <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }}>
+    <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
       <Button
         id={id}
         data-testid={id}
@@ -49,7 +51,8 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         title={props.buttonTitle}
         aria-label={props.buttonTitle}
         startIcon={props.buttonStartIcon}
-        onClick={() => props.buttonOnClick()}>
+        onClick={() => props.buttonOnClick()}
+        {...props.buttonProps}>
         {props.buttonLabel}
       </Button>
     </ActionToolbar>
@@ -65,6 +68,7 @@ export interface IMenuToolbarProps extends IActionToolbarProps {
   buttonLabel: string;
   buttonTitle: string;
   buttonStartIcon: ReactNode;
+  buttonProps?: Partial<ButtonProps>;
   menuItems: IMenuToolbarItem[];
 }
 
@@ -89,7 +93,7 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   };
 
   return (
-    <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }}>
+    <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
       <Button
         color="primary"
         variant="outlined"
@@ -98,7 +102,8 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
         aria-expanded={open ? 'true' : undefined}
         startIcon={props.buttonStartIcon}
         endIcon={<Icon path={mdiMenuDown} size={1} />}
-        onClick={handleClick}>
+        onClick={handleClick}
+        {...props.buttonProps}>
         {props.buttonLabel}
       </Button>
       <Menu
@@ -140,7 +145,7 @@ interface IActionToolbarProps {
 
 const ActionToolbar: React.FC<IActionToolbarProps> = (props) => {
   return (
-    <Toolbar {...props.toolbarProps} style={{ justifyContent: 'space-between', paddingLeft: '16px', paddingRight: '16px' }}>
+    <Toolbar {...props.toolbarProps} style={{ justifyContent: 'space-between' }}>
       <Typography {...props.labelProps} color="inherit">
         {props.label}
       </Typography>

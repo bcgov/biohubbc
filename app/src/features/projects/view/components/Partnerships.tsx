@@ -124,6 +124,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         buttonTitle="Edit Partnerships"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
         buttonOnClick={() => handleDialogEditOpen()}
+        toolbarProps={{ disableGutters: true }}
       />
 
       <dl className="ddInline">

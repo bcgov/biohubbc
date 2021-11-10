@@ -200,6 +200,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         buttonTitle="Add Funding Source"
         buttonStartIcon={<Icon path={mdiPlus} size={0.875} />}
         buttonOnClick={() => handleDialogEditOpen(funding.fundingSources.length)}
+        toolbarProps={{ disableGutters: true }}
       />
 
       {hasFundingSources &&
