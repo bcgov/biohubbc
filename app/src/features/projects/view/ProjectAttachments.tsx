@@ -1,4 +1,4 @@
-import Box from '@material-ui/core/Box';
+import Paper from '@material-ui/core/Paper';
 import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
@@ -107,19 +107,19 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <H2MenuToolbar
-        label="Documents"
-        buttonLabel="Upload"
-        buttonTitle="Upload Document"
-        buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-        menuItems={[
-          { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
-          { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
-        ]}
-      />
-      <Box mb={3}>
+      <Paper>
+        <H2MenuToolbar
+          label="Documents"
+          buttonLabel="Upload"
+          buttonTitle="Upload Document"
+          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          menuItems={[
+            { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
+            { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
+          ]}
+        />
         <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
-      </Box>
+      </Paper>
     </>
   );
 };

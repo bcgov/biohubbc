@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -351,7 +350,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         }}
         onSave={handleDialogEditSave}
       />
-      <Paper>
+      <Box>
         <TableContainer>
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
             <TableHead>
@@ -427,7 +426,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             }
           />
         )}
-      </Paper>
+      </Box>
     </>
   );
 };

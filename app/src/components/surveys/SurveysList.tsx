@@ -1,6 +1,5 @@
 import Chip from '@material-ui/core/Chip';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -70,7 +69,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
   };
 
   return (
-    <Paper>
+    <>
       <TableContainer>
         <Table aria-label="surveys-list-table">
           <TableHead>
@@ -105,7 +104,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               ))}
             {!props.surveysList.length && (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={5} align="center">
                   No Surveys
                 </TableCell>
               </TableRow>
@@ -126,7 +125,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           }
         />
       )}
-    </Paper>
+    </>
   );
 };
 

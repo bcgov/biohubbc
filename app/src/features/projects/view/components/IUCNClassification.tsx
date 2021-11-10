@@ -1,13 +1,15 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditIUCNI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import {
   IProjectIUCNForm,
   ProjectIUCNFormArrayItemInitialValues,
@@ -20,8 +22,6 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import { DialogContext } from 'contexts/dialogContext';
-import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 
 export interface IIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -108,7 +108,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
     try {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     } finally {

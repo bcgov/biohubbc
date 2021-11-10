@@ -1,10 +1,12 @@
 import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditCoordinatorI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {
@@ -22,8 +24,6 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import Divider from '@material-ui/core/Divider';
-import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 
 export interface IProjectCoordinatorProps {
   projectForViewData: IGetProjectForViewResponse;

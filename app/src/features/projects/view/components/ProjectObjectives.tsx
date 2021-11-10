@@ -84,7 +84,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
 
       objectivesResponseData = response.objectives;
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
@@ -107,7 +107,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     try {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     } finally {
