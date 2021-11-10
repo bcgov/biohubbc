@@ -18,10 +18,13 @@ jobs:
           echo Path: $(pwd)
           LOCAL_VAR=$(echo 'cypressidir$CYPRESS_PW' | base64)
           sed -i 's/@pw@/'$LOCAL_VAR'/g' dev.context
+      - name: Copy Context
+        run: |
+          cp /home/runner/work/biohubbc/biohubbc/testing/zap/dev.context /zap/wrk/dev.context
       - name: ZAP Scan
         uses: zaproxy/action-full-scan@v0.3.0
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: 'owasp/zap2docker-stable'
           target: 'https://dev-biohubbc.apps.silver.devops.gov.bc.ca/'
-          cmd_options: '-a -n /home/runner/work/biohubbc/biohubbc/testing/zap/dev.context'
+          cmd_options: '-a -n dev.context'
