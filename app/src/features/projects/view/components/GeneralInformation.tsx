@@ -143,7 +143,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
           buttonTitle="Edit General Information"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
-          toolbarProps={{ disableGutters: true, color: 'secondary' }}
+          toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
         <dl>
