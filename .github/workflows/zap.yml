@@ -24,4 +24,4 @@ jobs:
           token: ${{ secrets.GITHUB_TOKEN }}
           docker_name: 'owasp/zap2docker-stable'
           target: 'https://dev-biohubbc.apps.silver.devops.gov.bc.ca/'
-          cmd_options: '-a -n dev.context'  
+          cmd_options: '-a'  
