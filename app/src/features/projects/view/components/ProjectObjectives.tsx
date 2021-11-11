@@ -137,6 +137,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
           buttonTitle="Edit Project Objectives"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
         <ReadMoreField text={objectives.objectives} maxCharLength={850} />

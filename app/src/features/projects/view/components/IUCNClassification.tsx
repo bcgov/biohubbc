@@ -142,6 +142,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
         buttonTitle="Edit IUCN Classifications"
         buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
         buttonOnClick={() => handleDialogEditOpen()}
+        toolbarProps={{ disableGutters: true }}
       />
 
       {hasIucnClassifications && (

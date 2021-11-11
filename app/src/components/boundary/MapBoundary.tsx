@@ -34,6 +34,11 @@ const useStyles = makeStyles({
     border: '2px solid',
     textTransform: 'capitalize',
     fontWeight: 'bold'
+  },
+  mapLocations: {
+    '& dd': {
+      display: 'inline-block'
+    }
   }
 });
 
