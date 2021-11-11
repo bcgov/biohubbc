@@ -1,11 +1,8 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import ListItemText from '@material-ui/core/ListItemText';
-// import Paper from '@material-ui/core/Paper';
+import Paper from '@material-ui/core/Paper';
+import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
 import SurveysListPage from 'features/surveys/list/SurveysListPage';
@@ -15,7 +12,6 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 import ProjectHeader from './ProjectHeader';
-import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 
 /**
  * Page to display a single Project.
@@ -78,21 +74,25 @@ const ProjectPage: React.FC = () => {
       <ProjectHeader projectWithDetails={projectWithDetails} refresh={getProject} />
 
       <Container maxWidth="xl">
-        <SurveysListPage projectForViewData={projectWithDetails} />
-        
+        <Box display="flex" justifyContent="space-between" flexShrink="1">
+          <Box>
+            <Box component={Paper} px={4} pb={2} mr={4}>
+              <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+            </Box>
+          </Box>
+          <Box>
+            <Box component={Paper} px={4} pb={2}>
+              <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
+            </Box>
+          </Box>
+        </Box>
         <Box mt={3}>
+          <SurveysListPage projectForViewData={projectWithDetails} />
+        </Box>
+        <Box my={3}>
           <ProjectAttachments projectForViewData={projectWithDetails} />
         </Box>
-        <Box display="flex" justifyContent="space-between">
-          <Box>
-            <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-          </Box>
-          <Box>
-            <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-          </Box>
-        </Box>
       </Container>
-
     </>
   );
 };
