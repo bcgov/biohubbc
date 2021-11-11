@@ -111,33 +111,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setOpenEditDialog(true);
   };
 
-  const handleDialogViewOpen = async () => {
-    let locationResponseData;
 
-    try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.location]);
-
-      if (!response?.location) {
-        showErrorDialog({ open: true });
-        return;
-      }
-
-      locationResponseData = response.location;
-    } catch (error) {
-      const apiError = error as APIError;
-      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
-      return;
-    }
-
-    setLocationDataForUpdate(locationResponseData);
-
-    setLocationFormData({
-      location_description: locationResponseData.location_description,
-      geometry: locationResponseData.geometry
-    });
-
-    setOpenEditDialog(true);
-  };
 
   const handleDialogEditSave = async (values: IProjectLocationForm) => {
     const projectData = {
@@ -168,7 +142,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
   const [open, setOpen] = React.useState(false);
 
-  const handleClickOpen = () => {
+  const handleDialogViewOpen = () => {
     setOpen(true);
   };
 
@@ -267,9 +241,9 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
             Show More
           </Button>
-          <Button variant="text" color="primary" onClick={handleClickOpen}>
+          {/* <Button variant="text" color="primary" onClick={handleClickOpen}>
             TEST FULL SCREEN DIALOG
-          </Button>
+          </Button> */}
         </Box>
       </Box>
     </>
