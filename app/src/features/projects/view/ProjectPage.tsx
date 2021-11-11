@@ -95,7 +95,6 @@ const ProjectPage: React.FC = () => {
           <ProjectAttachments projectForViewData={projectWithDetails} />
         </Box>
       </Container>
-
     </>
   );
 };

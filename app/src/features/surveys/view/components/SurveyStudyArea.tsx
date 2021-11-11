@@ -4,7 +4,6 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
@@ -26,6 +25,8 @@ import {
 } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import InferredLocationDetails from 'components/boundary/InferredLocationDetails';
+import { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 
 export interface ISurveyStudyAreaProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -52,7 +53,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -199,20 +200,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             }
           />
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-          </Grid>
-        </Grid>
+        <InferredLocationDetails layers={inferredLayersInfo} />
       </Box>
     </>
   );

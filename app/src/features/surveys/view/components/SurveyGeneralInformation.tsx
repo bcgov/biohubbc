@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
@@ -239,19 +240,14 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       />
       <ErrorDialog {...errorDialogProps} />
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">General Information</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Survey General Information"
-            aria-label="Edit Survey General Information"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
+        <H3ButtonToolbar
+          label="General Information"
+          buttonLabel="Edit"
+          buttonTitle="Edit General Information"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+        />
+        <Divider></Divider>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>

@@ -5,7 +5,6 @@ import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
@@ -29,6 +28,8 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
+import InferredLocationDetails from 'components/boundary/InferredLocationDetails';
+import { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 
 export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -70,7 +71,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [locationDataForUpdate, setLocationDataForUpdate] = useState<IGetProjectForUpdateResponseLocation>(null as any);
   const [locationFormData, setLocationFormData] = useState<IProjectLocationForm>(ProjectLocationFormInitialValues);
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -162,27 +163,6 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry]);
 
-  const LocationDetails: React.FC = () => {
-    return (
-      <>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'Natual Resource Ministries Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.env, 'Ministry of Environment Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'Management Unit / Game Management Zones')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-          </Grid>
-        </Grid>
-      </>
-    );
-  };
-
   return (
     <>
       <EditDialog
@@ -227,7 +207,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             </Grid>
           </Grid>
         </dl>
-        <LocationDetails></LocationDetails>
+        <InferredLocationDetails layers={inferredLayersInfo} />
         <Button
           variant="text"
           color="primary"

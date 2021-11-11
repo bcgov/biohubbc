@@ -5,24 +5,13 @@ import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
-// import List from '@material-ui/core/List';
-// import ListItem from '@material-ui/core/ListItem';
-// import ListItemIcon from '@material-ui/core/ListItemIcon';
-// import ListItemText from '@material-ui/core/ListItemText';
+
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import {
-  // mdiClipboardCheckMultipleOutline,
-  // mdiInformationOutline,
-  // mdiPaperclip,
-  mdiToggleSwitch,
-  mdiToggleSwitchOffOutline,
-  mdiTrashCanOutline
-  // mdiEye
-} from '@mdi/js';
+import { mdiToggleSwitch, mdiToggleSwitchOffOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -36,17 +25,11 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import {
-  useHistory,
-  //useLocation,
-  useParams
-} from 'react-router';
-//import { NavLink } from 'react-router-dom';
+import { useHistory, useParams } from 'react-router';
+
 import { getFormattedDateRangeString } from 'utils/Utils';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyStudyArea from './components/SurveyStudyArea';
-// import SurveyObservations from './SurveyObservations';
-// import SurveySummaryResults from './SurveySummaryResults';
 
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
@@ -321,56 +304,6 @@ const SurveyPage: React.FC = () => {
         </Container>
       </Paper>
 
-      {/* <Container maxWidth="xl">
-        <Box display="flex" flexDirection="row" py={6}>
-          <Box component="aside" mr={6} mt={-2}>
-            <Paper>
-              <List component="nav" role="navigation" className={classes.surveyNav} aria-label="Survey Navigation">
-                <ListItem component={NavLink} to="details">
-                  <ListItemIcon>
-                    <Icon path={mdiInformationOutline} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Survey Details</ListItemText>
-                </ListItem>
-                <ListItem component={NavLink} to="results">
-                  <ListItemIcon>
-                    <Icon path={mdiClipboardCheckMultipleOutline} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Summary Results</ListItemText>
-                </ListItem>
-                <ListItem component={NavLink} to="observations">
-                  <ListItemIcon>
-                    <Icon path={mdiEye} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Observations</ListItemText>
-                </ListItem>
-                <ListItem component={NavLink} to="attachments">
-                  <ListItemIcon>
-                    <Icon path={mdiPaperclip} size={1} />
-                  </ListItemIcon>
-                  <ListItemText>Attachments</ListItemText>
-                </ListItem>
-              </List>
-            </Paper>
-          </Box>
-          <Box component="article" flex="1 1 auto">
-            {location.pathname.includes('/details') && (
-              <SurveyDetails
-                projectForViewData={projectWithDetails}
-                surveyForViewData={surveyWithDetails}
-                codes={codes}
-                refresh={getSurvey}
-              />
-            )}
-            {location.pathname.includes('/results') && <SurveySummaryResults />}
-            {location.pathname.includes('/observations') && <SurveyObservations refresh={getSurvey} />}
-            {location.pathname.includes('/attachments') && (
-              <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
-            )}
-          </Box>
-        </Box>
-      </Container> */}
-
       <Container maxWidth="xl">
         <Box display="flex" justifyContent="space-between">
           <Box>
@@ -382,14 +315,13 @@ const SurveyPage: React.FC = () => {
             />
           </Box>
           <Box>
-           <SurveyStudyArea
-            surveyForViewData={surveyWithDetails}
-            projectForViewData={projectWithDetails}
-            refresh={getSurvey}
-          />
+            <SurveyStudyArea
+              surveyForViewData={surveyWithDetails}
+              projectForViewData={projectWithDetails}
+              refresh={getSurvey}
+            />
           </Box>
         </Box>
-
 
         <Box mt={3}>
           <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />

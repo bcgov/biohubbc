@@ -1,12 +1,13 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useState, useEffect } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
+import InferredLocationDetails from 'components/boundary/InferredLocationDetails';
+import { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 
 export interface IPublicLocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -23,7 +24,7 @@ const PublicLocationBoundary: React.FC<IPublicLocationBoundaryProps> = (props) =
     projectForViewData: { location }
   } = props;
 
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -67,20 +68,7 @@ const PublicLocationBoundary: React.FC<IPublicLocationBoundaryProps> = (props) =
           setInferredLayersInfo={setInferredLayersInfo}
         />
       </Box>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-        </Grid>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-        </Grid>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-        </Grid>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-        </Grid>
-      </Grid>
+      <InferredLocationDetails layers={inferredLayersInfo} />
     </Box>
   );
 };
