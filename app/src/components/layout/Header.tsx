@@ -228,45 +228,50 @@ const Header: React.FC = () => {
         </Box>
         <Box className={classes.mainNav}>
           <Container maxWidth="xl">
-            <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation" disableGutters>
-                {isAuthenticated(keycloakWrapper) && (
-                  <SecureLink
-                    to="/admin/projects"
-                    label="Projects"
-                    validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-                    id="menu_projects"
-                  />
-                )}
-                {!isAuthenticated(keycloakWrapper) && (
-                  <>
-                    <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
-                    <SecureLink to="/search" label="Map" validRoles={[]} id="menu_search" />
-                  </>
-                )}
+            <Toolbar
+              variant="dense"
+              className={classes.mainNavToolbar}
+              role="navigation"
+              aria-label="Main Navigation"
+              disableGutters>
+              {isAuthenticated(keycloakWrapper) && (
                 <SecureLink
-                  to="/admin/permits"
-                  label="Permits"
+                  to="/admin/projects"
+                  label="Projects"
                   validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-                  id="menu_permits"
+                  id="menu_projects"
                 />
-                <SecureLink
-                  to="/admin/search"
-                  label="Map"
-                  validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-                  id="menu_search"
-                />
-                <SecureLink
-                  to="/admin/resources"
-                  label="Resources"
-                  validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-                  id="menu_resources"
-                />
-                <SecureLink
-                  to="/admin/users"
-                  label="Manage Users"
-                  validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
-                  id="menu_admin_users"
-                />
+              )}
+              {!isAuthenticated(keycloakWrapper) && (
+                <>
+                  <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
+                  <SecureLink to="/search" label="Map" validRoles={[]} id="menu_search" />
+                </>
+              )}
+              <SecureLink
+                to="/admin/permits"
+                label="Permits"
+                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                id="menu_permits"
+              />
+              <SecureLink
+                to="/admin/search"
+                label="Map"
+                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                id="menu_search"
+              />
+              <SecureLink
+                to="/admin/resources"
+                label="Resources"
+                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
+                id="menu_resources"
+              />
+              <SecureLink
+                to="/admin/users"
+                label="Manage Users"
+                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
+                id="menu_admin_users"
+              />
             </Toolbar>
           </Container>
         </Box>
