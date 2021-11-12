@@ -8,7 +8,7 @@ import { mdiArrowLeft } from '@mdi/js';
 import Icon from '@mdi/react';
 import React from 'react';
 
-export interface IViewMapProps {
+export interface IFullScreenViewMapProps {
   open: boolean;
   onClose: () => void;
   map: any;
@@ -25,7 +25,7 @@ export interface IViewMapProps {
  * @param {*} props
  * @return {*}
  */
-export const ViewMapDialog: React.FC<IViewMapProps> = (props) => {
+export const FullScreenViewMapDialog: React.FC<IFullScreenViewMapProps> = (props) => {
   if (!props.open) {
     return <></>;
   }
@@ -58,4 +58,4 @@ export const ViewMapDialog: React.FC<IViewMapProps> = (props) => {
   );
 };
 
-export default ViewMapDialog;
+export default FullScreenViewMapDialog;

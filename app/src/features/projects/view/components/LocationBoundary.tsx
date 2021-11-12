@@ -4,7 +4,7 @@ import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import ViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
+import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -78,7 +78,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   });
   const [bounds, setBounds] = useState<any[] | undefined>([]);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
-  const [showViewMapDialog, setShowViewMapDialog] = useState<boolean>(false);
+  const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
   const handleDialogEditOpen = async () => {
     let locationResponseData;
@@ -136,11 +136,11 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   }, [location.geometry]);
 
   const handleDialogViewOpen = () => {
-    setShowViewMapDialog(true);
+    setShowFullScreenViewMapDialog(true);
   };
 
   const handleClose = () => {
-    setShowViewMapDialog(false);
+    setShowFullScreenViewMapDialog(false);
   };
 
   return (
@@ -156,8 +156,8 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <ViewMapDialog
-        open={showViewMapDialog}
+      <FullScreenViewMapDialog
+        open={showFullScreenViewMapDialog}
         onClose={handleClose}
         map={
           <MapContainer

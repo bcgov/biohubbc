@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
-import ViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
+import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
@@ -61,7 +61,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   });
   const [bounds, setBounds] = useState<any[] | undefined>([]);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
-  const [showViewMapDialog, setShowViewMapDialog] = useState<boolean>(false);
+  const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
   useEffect(() => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
@@ -148,11 +148,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   };
 
   const handleDialogViewOpen = () => {
-    setShowViewMapDialog(true);
+    setShowFullScreenViewMapDialog(true);
   };
 
   const handleClose = () => {
-    setShowViewMapDialog(false);
+    setShowFullScreenViewMapDialog(false);
   };
 
   return (
@@ -169,8 +169,8 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         onSave={handleDialogEditSave}
       />
 
-      <ViewMapDialog
-        open={showViewMapDialog}
+      <FullScreenViewMapDialog
+        open={showFullScreenViewMapDialog}
         onClose={handleClose}
         map={
           <MapContainer
