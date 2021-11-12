@@ -1,5 +1,4 @@
 import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
@@ -22,11 +21,11 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
 
     return (
       <Box className="mapLocations">
-        <Typography component="div" variant="subtitle2" color="textSecondary">
-          {type} {data.length}
+        <Typography variant="h3">
+          {type} ({data.length})
         </Typography>
         {data.map((item: string, index: number) => (
-          <Typography key={index} component="span" variant="body1">
+          <Typography key={index} variant="body1">
             {item}
             {index < data.length - 1 && ', '}
           </Typography>
@@ -37,20 +36,10 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
 
   return (
     <>
-      <Grid container spacing={2}>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(props.layers.nrm, 'Natural Resource Ministries Regions')}
-        </Grid>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(props.layers.env, 'Ministry of Environment Regions')}
-        </Grid>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(props.layers.wmu, 'Management Unit / Game Management Zones')}
-        </Grid>
-        <Grid item xs={6}>
-          {displayInferredLayersInfo(props.layers.parks, 'Parks and EcoReserves')}
-        </Grid>
-      </Grid>
+      {displayInferredLayersInfo(props.layers.nrm, 'Natural Resource Ministries Regions')}
+      {displayInferredLayersInfo(props.layers.env, 'Ministry of Environment Regions')}
+      {displayInferredLayersInfo(props.layers.wmu, 'Management Unit / Game Management Zones')}
+      {displayInferredLayersInfo(props.layers.parks, 'Parks and EcoReserves')}
     </>
   );
 };

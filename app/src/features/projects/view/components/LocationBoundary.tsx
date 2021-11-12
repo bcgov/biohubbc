@@ -1,13 +1,14 @@
-import AppBar from '@material-ui/core/AppBar';
+//import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
+//import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
-import Toolbar from '@material-ui/core/Toolbar';
+//import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight, mdiPencilOutline, mdiArrowLeft } from '@mdi/js';
+import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
+import ViewMapDialog from 'components/boundary/ViewMapDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
@@ -81,6 +82,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   });
   const [bounds, setBounds] = useState<any[] | undefined>([]);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
+  const [showViewMapDialog, setShowViewMapDialog] = useState<boolean>(false);
 
   const handleDialogEditOpen = async () => {
     let locationResponseData;
@@ -137,14 +139,12 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [location.geometry]);
 
-  const [open, setOpen] = React.useState(false);
-
   const handleDialogViewOpen = () => {
-    setOpen(true);
+    setShowViewMapDialog(true);
   };
 
   const handleClose = () => {
-    setOpen(false);
+    setShowViewMapDialog(false);
   };
 
   return (
@@ -160,39 +160,20 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-
-      <Dialog fullScreen open={open} onClose={handleClose}>
-        <AppBar position="relative" color="inherit" elevation={1}>
-          <Toolbar>
-            <Button
-              color="primary"
-              variant="text"
-              startIcon={<Icon path={mdiArrowLeft} size={1} />}
-              onClick={handleClose}>
-              Back to Project
-            </Button>
-          </Toolbar>
-        </AppBar>
-        <Box display="flex" flex="1 1 auto">
-          <Box flex="0 0 auto" p={3} width="400px">
-            <Box mb={3}>
-              <Typography variant="h2">Project Location</Typography>
-            </Box>
-            <Typography variant="body1">
-              {location.location_description ? <>{location.location_description}</> : 'No Description'}
-            </Typography>
-          </Box>
-          <Box flex="1 1 auto">
-            <MapContainer
-              mapId="project_location_form_map"
-              hideDrawControls={true}
-              nonEditableGeometries={nonEditableGeometries}
-              bounds={bounds}
-              setInferredLayersInfo={setInferredLayersInfo}
-            />
-          </Box>
-        </Box>
-      </Dialog>
+      <ViewMapDialog
+        open={showViewMapDialog}
+        onClose={handleClose}
+        map={
+          <MapContainer
+            mapId="project_location_form_map"
+            hideDrawControls={true}
+            nonEditableGeometries={nonEditableGeometries}
+            bounds={bounds}
+            setInferredLayersInfo={setInferredLayersInfo}
+          />
+        }
+        description={location.location_description}
+        layers={<InferredLocationDetails layers={inferredLayersInfo} />}></ViewMapDialog>
 
       <H2ButtonToolbar
         label="Project Location"
@@ -217,10 +198,10 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       <dl>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography component="dt" variant="subtitle2" color="textSecondary">
+            <Typography  variant="h3" color="textSecondary">
               Location Description
             </Typography>
-            <Typography component="dd" variant="body1">
+            <Typography variant="body1">
               {location.location_description ? <>{location.location_description}</> : 'No Description'}
             </Typography>
           </Grid>
