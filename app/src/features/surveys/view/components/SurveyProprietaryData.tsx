@@ -176,6 +176,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
           buttonTitle="Edit Survey Proprietor"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
         <dl>
