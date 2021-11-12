@@ -1,14 +1,12 @@
-//import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-//import Dialog from '@material-ui/core/Dialog';
 import Grid from '@material-ui/core/Grid';
-//import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import EditDialog from 'components/dialog/EditDialog';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ViewMapDialog from 'components/boundary/ViewMapDialog';
+import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
@@ -31,8 +29,6 @@ import {
 import React, { useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
-import InferredLocationDetails from 'components/boundary/InferredLocationDetails';
-import { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 
 export interface ILocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -198,7 +194,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       <dl>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography  variant="h3" color="textSecondary">
+            <Typography variant="h3" color="textSecondary">
               Location Description
             </Typography>
             <Typography variant="body1">
