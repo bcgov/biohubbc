@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import FundingSource from 'features/projects/view/components/FundingSource';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
