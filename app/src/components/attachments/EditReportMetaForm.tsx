@@ -38,7 +38,7 @@ export const EditReportMetaFormInitialValues: IEditReportMetaForm = {
 
 export const EditReportMetaFormYupSchema = yup.object().shape({
   title: yup.string().max(300, 'Cannot exceed 300 characters').required('A report title is required'),
-  description: yup.string().max(300, 'Cannot exceed 50 characters').required('A report summary is required'),
+  description: yup.string().max(3000, 'Cannot exceed 3000 characters').required('A report summary is required'),
   year_published: yup
     .number()
     .min(1900, 'year must be between 1900 and 2199')
@@ -70,7 +70,7 @@ const EditReportMetaForm: React.FC = () => {
         <Typography component="legend" variant="body1" id="report_details">
           Report Details
         </Typography>
-        <Grid container spacing={2}>
+        <Grid container spacing={3}>
           <Grid item xs={12} md={8}>
             <CustomTextField
               name="title"
@@ -95,7 +95,7 @@ const EditReportMetaForm: React.FC = () => {
             <CustomTextField
               name="description"
               label="Report Summary"
-              other={{ required: true, multiline: true, rows: 2 }}
+              other={{ required: true, multiline: true, rows: 6 }}
             />
           </Grid>
         </Grid>
@@ -109,7 +109,7 @@ const EditReportMetaForm: React.FC = () => {
           name="authors"
           render={(arrayHelpers) => (
             <Box>
-              <Grid container direction="row" spacing={2}>
+              <Grid container direction="row" spacing={3}>
                 {values.authors?.map((author, index) => {
                   const authorFirstNameMeta = getFieldMeta(`authors.[${index}].first_name`);
                   const authorLastNameMeta = getFieldMeta(`authors.[${index}].last_name`);

@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import FileUpload from 'components/attachments/FileUpload';
-import { mdiUploadOutline } from '@mdi/js';
+import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
@@ -139,7 +139,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             color="primary"
             data-testid="boundary_file-upload"
             variant="outlined"
-            startIcon={<Icon path={mdiUploadOutline} size={1} />}
+            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
             onClick={() => setOpenUploadBoundary(true)}>
             Upload Boundary
           </Button>
