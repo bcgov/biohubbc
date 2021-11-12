@@ -1,15 +1,13 @@
 import Box from '@material-ui/core/Box';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGeneralInformation';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
-import React from 'react';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-//import SurveyStudyArea from './components/SurveyStudyArea';
+import React from 'react';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -32,7 +30,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * Details content for a survey.
+ * Survey details content for a survey.
  *
  * @return {*}
  */
@@ -43,25 +41,24 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
 
   return (
     <>
-      <Box mb={5}>
+      <Box display="flex" alignItems="center" minHeight="64px">
         <Typography variant="h2">Survey Details</Typography>
       </Box>
+
       <Box display="flex" justifyContent="space-between">
-        <Box component={Paper} p={4}>
-          <Box component="section" className={classes.surveyDetailsSection}>
-            <SurveyGeneralInformation
-              projectForViewData={projectForViewData}
-              surveyForViewData={surveyForViewData}
-              codes={codes}
-              refresh={refresh}
-            />
-            <SurveyProprietaryData
-              projectForViewData={projectForViewData}
-              surveyForViewData={surveyForViewData}
-              codes={codes}
-              refresh={refresh}
-            />
-          </Box>
+        <Box component="section" className={classes.surveyDetailsSection}>
+          <SurveyGeneralInformation
+            projectForViewData={projectForViewData}
+            surveyForViewData={surveyForViewData}
+            codes={codes}
+            refresh={refresh}
+          />
+          <SurveyProprietaryData
+            projectForViewData={projectForViewData}
+            surveyForViewData={surveyForViewData}
+            codes={codes}
+            refresh={refresh}
+          />
         </Box>
       </Box>
     </>

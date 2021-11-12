@@ -1,28 +1,17 @@
-import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
-import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
+import Paper from '@material-ui/core/Paper';
+import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
+import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { AttachmentType } from '../../../constants/attachments';
-
-const useStyles = makeStyles((theme: Theme) => ({
-  uploadMenu: {
-    marginTop: theme.spacing(1)
-  }
-}));
 
 export interface ISurveyAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -35,7 +24,6 @@ export interface ISurveyAttachmentsProps {
  * @return {*}
  */
 const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
-  const classes = useStyles();
   const urlParams = useParams();
   const projectId = urlParams['id'];
   const surveyId = urlParams['survey_id'];
@@ -47,21 +35,11 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   );
   const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
 
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-  const handleClick = (event: any) => {
-    setAnchorEl(event.currentTarget);
-  };
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-  const handleUploadReportClick = (event: any) => {
-    setAnchorEl(null);
+  const handleUploadReportClick = () => {
     setAttachmentType(AttachmentType.REPORT);
     setOpenUploadAttachments(true);
   };
-  const handleUploadAttachmentClick = (event: any) => {
-    setAnchorEl(null);
+  const handleUploadAttachmentClick = () => {
     setAttachmentType(AttachmentType.OTHER);
     setOpenUploadAttachments(true);
   };
@@ -129,51 +107,24 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         }}
         uploadHandler={getUploadHandler()}
       />
-      <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-        <Typography variant="h2">Survey Attachments</Typography>
-        <Box my={-1}>
-          <Button
-            color="primary"
-            variant="outlined"
-            aria-controls="basic-menu"
-            aria-haspopup="true"
-            aria-expanded={open ? 'true' : undefined}
-            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
-            endIcon={<Icon path={mdiMenuDown} size={1} />}
-            onClick={handleClick}>
-            Upload
-          </Button>
-          <Menu
-            className={classes.uploadMenu}
-            getContentAnchorEl={null}
-            anchorOrigin={{
-              vertical: 'bottom',
-              horizontal: 'right'
-            }}
-            transformOrigin={{
-              vertical: 'top',
-              horizontal: 'right'
-            }}
-            id="basic-menu"
-            anchorEl={anchorEl}
-            open={open}
-            onClose={handleClose}
-            MenuListProps={{
-              'aria-labelledby': 'basic-button'
-            }}>
-            <MenuItem onClick={handleUploadReportClick}>Upload Report</MenuItem>
-            <MenuItem onClick={handleUploadAttachmentClick}>Upload Attachments</MenuItem>
-          </Menu>
-        </Box>
-      </Box>
-      <Box mb={3}>
+      <Paper>
+        <H2MenuToolbar
+          label="Documents"
+          buttonLabel="Upload"
+          buttonTitle="Upload Document"
+          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          menuItems={[
+            { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
+            { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
+          ]}
+        />
         <AttachmentsList
           projectId={projectId}
           surveyId={surveyId}
           attachmentsList={attachmentsList}
           getAttachments={getAttachments}
         />
-      </Box>
+      </Paper>
     </>
   );
 };
