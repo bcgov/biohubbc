@@ -172,6 +172,22 @@ export const PublishProjectI18N = {
     'An error has occurred while attempting to publish this project, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const DeleteSurveyI18N = {
+  deleteTitle: 'Delete Survey',
+  deleteText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
+  deleteErrorTitle: 'Error Deleting Project',
+  deleteErrorText:
+    'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const PublishSurveyI18N = {
+  publishTitle: 'Publish Survey',
+  publishText: 'Are you sure you want to publish this survey?',
+  publishErrorTitle: 'Error Publishing Survey',
+  publishErrorText:
+    'An error has occurred while attempting to publish this survey, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const EditReportMetaDataI18N = {
   editTitle: 'Edit Report Meta Data',
   editErrorTitle: 'Error Editing Report Meta Data',
