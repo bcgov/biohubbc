@@ -246,6 +246,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           buttonTitle="Edit General Information"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
         <dl>
