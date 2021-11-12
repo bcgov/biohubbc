@@ -182,7 +182,10 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           />
         }
         description={survey_details.survey_area_name}
-        layers={<InferredLocationDetails layers={inferredLayersInfo} />}></ViewMapDialog>
+        layers={<InferredLocationDetails layers={inferredLayersInfo} />}
+        backButtonTitle={'Back To Survey'}
+        mapTitle={'Study Area'}
+      />
       <ErrorDialog {...errorDialogProps} />
       <Box>
         <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">

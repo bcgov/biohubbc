@@ -169,8 +169,10 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           />
         }
         description={location.location_description}
-        layers={<InferredLocationDetails layers={inferredLayersInfo} />}></ViewMapDialog>
-
+        layers={<InferredLocationDetails layers={inferredLayersInfo} />}
+        backButtonTitle={'Back To Project'}
+        mapTitle={'Project Location'}
+      />
       <H2ButtonToolbar
         label="Project Location"
         buttonLabel="Edit"
