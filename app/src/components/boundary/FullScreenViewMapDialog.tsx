@@ -1,12 +1,12 @@
-import Button from '@material-ui/core/Button';
-import Dialog from '@material-ui/core/Dialog';
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
-import Icon from '@mdi/react';
+import Button from '@material-ui/core/Button';
+import Dialog from '@material-ui/core/Dialog';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { mdiArrowLeft } from '@mdi/js';
+import Icon from '@mdi/react';
+import React from 'react';
 
 export interface IViewMapProps {
   open: boolean;

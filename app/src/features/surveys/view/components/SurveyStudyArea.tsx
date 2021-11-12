@@ -5,7 +5,7 @@ import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
-import ViewMapDialog from 'components/boundary/ViewMapDialog';
+import ViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
