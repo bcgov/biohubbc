@@ -6,44 +6,54 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
     class="MuiBox-root MuiBox-root-1"
   >
     <div
-      class="MuiBox-root MuiBox-root-2"
+      class="MuiToolbar-root MuiToolbar-regular"
+      style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3"
+        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
       >
         Proprietary Data
       </h3>
-      <button
-        aria-label="Edit Proprietary Data"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-        tabindex="0"
-        title="Edit Proprietary Data"
-        type="button"
+      <div
+        class="MuiBox-root MuiBox-root-2"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Survey Proprietor"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+          data-testid="h3-button-toolbar-Edit"
+          id="h3-button-toolbar-Edit"
+          tabindex="0"
+          title="Edit Survey Proprietor"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            Edit
           </span>
-          Edit
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
     </div>
+    <hr
+      class="MuiDivider-root"
+    />
     <dl>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
