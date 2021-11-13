@@ -59,7 +59,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         Study Area Boundary
       </p>
       <div
-        class="MuiBox-root MuiBox-root-8"
+        class="MuiBox-root MuiBox-root-9"
       >
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -67,7 +67,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
         </p>
         <div
-          class="MuiBox-root MuiBox-root-9"
+          class="MuiBox-root MuiBox-root-10"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -77,7 +77,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-10"
+        class="MuiBox-root MuiBox-root-11"
       >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -108,7 +108,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           />
         </button>
         <div
-          class="MuiBox-root MuiBox-root-11"
+          class="MuiBox-root MuiBox-root-12"
         >
           <div
             class="MuiFormControl-root"
@@ -171,10 +171,10 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-12"
+        class="MuiBox-root MuiBox-root-13"
       />
       <div
-        class="MuiBox-root MuiBox-root-13"
+        class="MuiBox-root MuiBox-root-14"
       >
         <div
           class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -447,7 +447,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-14"
+      class="MuiBox-root MuiBox-root-15"
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -480,10 +480,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+              class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
             >
               <span>
                 Survey Area Name *
@@ -497,12 +497,12 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
       <p
-        class="MuiTypography-root makeStyles-bold-19 MuiTypography-body1"
+        class="MuiTypography-root makeStyles-bold-20 MuiTypography-body1"
       >
         Study Area Boundary
       </p>
       <div
-        class="MuiBox-root MuiBox-root-21"
+        class="MuiBox-root MuiBox-root-23"
       >
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -510,7 +510,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
         </p>
         <div
-          class="MuiBox-root MuiBox-root-22"
+          class="MuiBox-root MuiBox-root-24"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -520,7 +520,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-23"
+        class="MuiBox-root MuiBox-root-25"
       >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -551,7 +551,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           />
         </button>
         <div
-          class="MuiBox-root MuiBox-root-24"
+          class="MuiBox-root MuiBox-root-26"
         >
           <div
             class="MuiFormControl-root"
@@ -599,10 +599,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
               </svg>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-17"
+                  class="PrivateNotchedOutline-legendLabelled-18"
                 >
                   <span>
                     Select Layer
@@ -614,10 +614,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-25"
+        class="MuiBox-root MuiBox-root-27"
       />
       <div
-        class="MuiBox-root MuiBox-root-26"
+        class="MuiBox-root MuiBox-root-28"
       >
         <div
           class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -897,11 +897,11 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-27"
+        class="MuiBox-root MuiBox-root-29"
       >
         <label
           aria-disabled="false"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-20 MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
           role="button"
           tabindex="0"
         >
@@ -924,7 +924,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-28"
+      class="MuiBox-root MuiBox-root-30"
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -958,10 +958,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-29 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-31 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-31 PrivateNotchedOutline-legendNotched-32"
+              class="PrivateNotchedOutline-legendLabelled-33 PrivateNotchedOutline-legendNotched-34"
             >
               <span>
                 Survey Area Name *
@@ -981,12 +981,12 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
       <p
-        class="MuiTypography-root makeStyles-bold-33 MuiTypography-body1"
+        class="MuiTypography-root makeStyles-bold-35 MuiTypography-body1"
       >
         Study Area Boundary
       </p>
       <div
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiBox-root MuiBox-root-38"
       >
         <p
           class="MuiTypography-root MuiTypography-body1"
@@ -994,7 +994,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
         </p>
         <div
-          class="MuiBox-root MuiBox-root-36"
+          class="MuiBox-root MuiBox-root-39"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -1004,7 +1004,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-37"
+        class="MuiBox-root MuiBox-root-40"
       >
         <button
           class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1035,7 +1035,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           />
         </button>
         <div
-          class="MuiBox-root MuiBox-root-38"
+          class="MuiBox-root MuiBox-root-41"
         >
           <div
             class="MuiFormControl-root"
@@ -1083,10 +1083,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
               </svg>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-29 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-31 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-31"
+                  class="PrivateNotchedOutline-legendLabelled-33"
                 >
                   <span>
                     Select Layer
@@ -1098,10 +1098,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-39"
+        class="MuiBox-root MuiBox-root-42"
       />
       <div
-        class="MuiBox-root MuiBox-root-40"
+        class="MuiBox-root MuiBox-root-43"
       >
         <div
           class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1381,11 +1381,11 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-41"
+        class="MuiBox-root MuiBox-root-44"
       >
         <label
           aria-disabled="false"
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-34 MuiButton-outlinedPrimary"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-36 MuiButton-outlinedPrimary"
           role="button"
           tabindex="0"
         >

@@ -14,26 +14,29 @@ exports[`ProjectDetails renders correctly 1`] = `
   <div
     class="MuiBox-root MuiBox-root-3"
   >
-    <div
-      class="MuiPaper-root MuiBox-root MuiBox-root-4 MuiPaper-elevation1 MuiPaper-rounded"
+    <section
+      class="MuiBox-root MuiBox-root-4 makeStyles-projectDetailsSection-1"
     >
-      <section
-        class="MuiBox-root MuiBox-root-5 makeStyles-projectDetailsSection-1"
+      <div
+        class="MuiBox-root MuiBox-root-5"
       >
         <div
-          class="MuiBox-root MuiBox-root-6"
+          class="MuiToolbar-root MuiToolbar-regular"
+          style="justify-content: space-between;"
         >
-          <div
-            class="MuiBox-root MuiBox-root-7"
+          <h3
+            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
           >
-            <h3
-              class="MuiTypography-root MuiTypography-h3"
-            >
-              General Information
-            </h3>
+            General Information
+          </h3>
+          <div
+            class="MuiBox-root MuiBox-root-6"
+          >
             <button
               aria-label="Edit General Information"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+              data-testid="h3-button-toolbar-Edit"
+              id="h3-button-toolbar-Edit"
               tabindex="0"
               title="Edit General Information"
               type="button"
@@ -62,86 +65,93 @@ exports[`ProjectDetails renders correctly 1`] = `
               />
             </button>
           </div>
-          <hr
-            class="MuiDivider-root"
-          />
-          <dl>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-            >
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Project Name
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Test Project Name
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Project Type
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  1
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Timeline
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Oct 10, 1998 - Feb 26, 2021
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Activities
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Activity code
-                </dd>
-              </div>
-            </div>
-          </dl>
         </div>
-        <div
-          class="MuiBox-root MuiBox-root-8"
-        >
+        <hr
+          class="MuiDivider-root"
+        />
+        <dl>
           <div
-            class="MuiBox-root MuiBox-root-9"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
           >
-            <h3
-              class="MuiTypography-root MuiTypography-h3"
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
-              Objectives
-            </h3>
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Project Name
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Test Project Name
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Project Type
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                1
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Timeline
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Oct 10, 1998 - Feb 26, 2021
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Activities
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Activity code
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-7"
+      >
+        <div
+          class="MuiToolbar-root MuiToolbar-regular"
+          style="justify-content: space-between;"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          >
+            Objectives
+          </h3>
+          <div
+            class="MuiBox-root MuiBox-root-8"
+          >
             <button
               aria-label="Edit Project Objectives"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+              data-testid="h3-button-toolbar-Edit"
+              id="h3-button-toolbar-Edit"
               tabindex="0"
               title="Edit Project Objectives"
               type="button"
@@ -170,55 +180,62 @@ exports[`ProjectDetails renders correctly 1`] = `
               />
             </button>
           </div>
-          <hr
-            class="MuiDivider-root"
-          />
-          <div
-            class="MuiBox-root MuiBox-root-10"
-          >
-            <p
-              class="MuiTypography-root MuiTypography-body1"
-            >
-              Et ad et in culpa si
-            </p>
-          </div>
         </div>
+        <hr
+          class="MuiDivider-root"
+        />
+        <div
+          class="MuiBox-root MuiBox-root-9"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            Et ad et in culpa si
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-10"
+      >
         <div
           class="MuiBox-root MuiBox-root-11"
         >
-          <div
-            class="MuiBox-root MuiBox-root-12"
+          <h3
+            class="MuiTypography-root MuiTypography-h3"
           >
-            <h3
-              class="MuiTypography-root MuiTypography-h3"
-            >
-              Caveats
-            </h3>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-13"
-          >
-            <p
-              class="MuiTypography-root MuiTypography-body1"
-            >
-              sjwer bds
-            </p>
-          </div>
+            Caveats
+          </h3>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-14"
+          class="MuiBox-root MuiBox-root-12"
         >
-          <div
-            class="MuiBox-root MuiBox-root-15"
+          <p
+            class="MuiTypography-root MuiTypography-body1"
           >
-            <h3
-              class="MuiTypography-root MuiTypography-h3"
-            >
-              Project Coordinator
-            </h3>
+            sjwer bds
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-13"
+      >
+        <div
+          class="MuiToolbar-root MuiToolbar-regular"
+          style="justify-content: space-between;"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          >
+            Project Coordinator
+          </h3>
+          <div
+            class="MuiBox-root MuiBox-root-14"
+          >
             <button
               aria-label="Edit Project Coordinator Information"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+              data-testid="h3-button-toolbar-Edit"
+              id="h3-button-toolbar-Edit"
               tabindex="0"
               title="Edit Project Coordinator Information"
               type="button"
@@ -247,72 +264,79 @@ exports[`ProjectDetails renders correctly 1`] = `
               />
             </button>
           </div>
-          <hr
-            class="MuiDivider-root"
-          />
-          <dl>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-            >
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Name
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Amanda Christensen
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Email Address
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  amanda@christensen.com
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Agency
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  Amanda and associates
-                </dd>
-              </div>
-            </div>
-          </dl>
         </div>
-        <div
-          class="MuiBox-root MuiBox-root-19"
-        >
+        <hr
+          class="MuiDivider-root"
+        />
+        <dl>
           <div
-            class="MuiBox-root MuiBox-root-20"
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
           >
-            <h3
-              class="MuiTypography-root MuiTypography-h3"
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
-              Project Permits
-            </h3>
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Name
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Amanda Christensen
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Email Address
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                amanda@christensen.com
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Agency
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Amanda and associates
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-18"
+      >
+        <div
+          class="MuiToolbar-root MuiToolbar-regular"
+          style="justify-content: space-between;"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          >
+            Project Permits
+          </h3>
+          <div
+            class="MuiBox-root MuiBox-root-19"
+          >
             <button
               aria-label="Edit Permits"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+              data-testid="h3-button-toolbar-Edit"
+              id="h3-button-toolbar-Edit"
               tabindex="0"
               title="Edit Permits"
               type="button"
@@ -341,69 +365,76 @@ exports[`ProjectDetails renders correctly 1`] = `
               />
             </button>
           </div>
-          <div
-            class="MuiTableContainer-root"
-          >
-            <table
-              aria-label="permits-list-table"
-              class="MuiTable-root makeStyles-table-16"
-            >
-              <thead
-                class="MuiTableHead-root"
-              >
-                <tr
-                  class="MuiTableRow-root MuiTableRow-head"
-                >
-                  <th
-                    class="MuiTableCell-root MuiTableCell-head makeStyles-heading-17"
-                    scope="col"
-                  >
-                    Permit Number
-                  </th>
-                  <th
-                    class="MuiTableCell-root MuiTableCell-head makeStyles-heading-17"
-                    scope="col"
-                  >
-                    Permit Type
-                  </th>
-                </tr>
-              </thead>
-              <tbody
-                class="MuiTableBody-root"
-              >
-                <tr
-                  class="MuiTableRow-root"
-                >
-                  <th
-                    class="MuiTableCell-root MuiTableCell-body"
-                    role="cell"
-                    scope="row"
-                  >
-                    123
-                  </th>
-                  <th
-                    class="MuiTableCell-root MuiTableCell-body"
-                    role="cell"
-                    scope="row"
-                  >
-                    Permit type
-                  </th>
-                </tr>
-              </tbody>
-            </table>
-          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-22"
+          class="MuiTableContainer-root"
         >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
+          <table
+            aria-label="permits-list-table"
+            class="MuiTable-root makeStyles-table-15"
           >
-            IUCN Conservation Actions Classification
-          </h3>
+            <thead
+              class="MuiTableHead-root"
+            >
+              <tr
+                class="MuiTableRow-root MuiTableRow-head"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-16"
+                  scope="col"
+                >
+                  Permit Number
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-head makeStyles-heading-16"
+                  scope="col"
+                >
+                  Permit Type
+                </th>
+              </tr>
+            </thead>
+            <tbody
+              class="MuiTableBody-root"
+            >
+              <tr
+                class="MuiTableRow-root"
+              >
+                <th
+                  class="MuiTableCell-root MuiTableCell-body"
+                  role="cell"
+                  scope="row"
+                >
+                  123
+                </th>
+                <th
+                  class="MuiTableCell-root MuiTableCell-body"
+                  role="cell"
+                  scope="row"
+                >
+                  Permit type
+                </th>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div
+        class="MuiToolbar-root MuiToolbar-regular"
+        style="justify-content: space-between;"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        >
+          IUCN Conservation Actions Classification
+        </h3>
+        <div
+          class="MuiBox-root MuiBox-root-21"
+        >
           <button
             aria-label="Edit IUCN Classifications"
             class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+            data-testid="h3-button-toolbar-Edit"
+            id="h3-button-toolbar-Edit"
             tabindex="0"
             title="Edit IUCN Classifications"
             type="button"
@@ -432,74 +463,219 @@ exports[`ProjectDetails renders correctly 1`] = `
             />
           </button>
         </div>
-        <ul
-          class="MuiBox-root MuiBox-root-23 listNoBullets"
+      </div>
+      <ul
+        class="MuiBox-root MuiBox-root-22 listNoBullets"
+      >
+        <li
+          class="MuiBox-root MuiBox-root-23 makeStyles-iucnListItem-20"
         >
-          <li
-            class="MuiBox-root MuiBox-root-24 makeStyles-iucnListItem-21"
+          <hr
+            class="MuiDivider-root"
+          />
+          <div
+            class="MuiBox-root MuiBox-root-24"
           >
-            <hr
-              class="MuiDivider-root"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-25"
+            <span
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              classification 
+              <span>
+                &gt;
+              </span>
+               sub classification 1 
+              <span>
+                &gt;
+              </span>
+               sub classification 2
+            </span>
+          </div>
+        </li>
+        <li
+          class="MuiBox-root MuiBox-root-25 makeStyles-iucnListItem-20"
+        >
+          <hr
+            class="MuiDivider-root"
+          />
+          <div
+            class="MuiBox-root MuiBox-root-26"
+          >
+            <span
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              classification again 
+              <span>
+                &gt;
+              </span>
+               sub classification 1 again 
+              <span>
+                &gt;
+              </span>
+               sub classification 2 again
+            </span>
+          </div>
+        </li>
+      </ul>
+      <div
+        class="MuiToolbar-root MuiToolbar-regular"
+        style="justify-content: space-between;"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        >
+          Partnerships
+        </h3>
+        <div
+          class="MuiBox-root MuiBox-root-27"
+        >
+          <button
+            aria-label="Edit Partnerships"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+            data-testid="h3-button-toolbar-Edit"
+            id="h3-button-toolbar-Edit"
+            tabindex="0"
+            title="Edit Partnerships"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
             >
               <span
-                class="MuiTypography-root MuiTypography-body1"
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
               >
-                classification 
-                <span>
-                  &gt;
-                </span>
-                 sub classification 1 
-                <span>
-                  &gt;
-                </span>
-                 sub classification 2
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
               </span>
-            </div>
-          </li>
-          <li
-            class="MuiBox-root MuiBox-root-26 makeStyles-iucnListItem-21"
-          >
-            <hr
-              class="MuiDivider-root"
+              Edit
+            </span>
+            <span
+              class="MuiTouchRipple-root"
             />
-            <div
-              class="MuiBox-root MuiBox-root-27"
+          </button>
+        </div>
+      </div>
+      <dl
+        class="ddInline"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+        >
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <dt
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
             >
-              <span
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                classification again 
-                <span>
-                  &gt;
-                </span>
-                 sub classification 1 again 
-                <span>
-                  &gt;
-                </span>
-                 sub classification 2 again
-              </span>
-            </div>
-          </li>
-        </ul>
+              Indigenous Partnerships
+            </dt>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 1
+            </dd>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 2
+            </dd>
+          </div>
+          <div
+            class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+          >
+            <dt
+              class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+            >
+              Other Partnerships
+            </dt>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 3
+            </dd>
+            <dd
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              partner 4
+            </dd>
+          </div>
+        </div>
+      </dl>
+      <div
+        class="MuiToolbar-root MuiToolbar-regular"
+        style="justify-content: space-between;"
+      >
+        <h3
+          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        >
+          Funding Sources
+        </h3>
         <div
           class="MuiBox-root MuiBox-root-28"
         >
-          <div
-            class="MuiBox-root MuiBox-root-29"
+          <button
+            aria-label="Add Funding Source"
+            class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+            data-testid="h3-button-toolbar-AddFundingSource"
+            id="h3-button-toolbar-AddFundingSource"
+            tabindex="0"
+            title="Add Funding Source"
+            type="button"
           >
-            <h3
-              class="MuiTypography-root MuiTypography-h3"
+            <span
+              class="MuiButton-label"
             >
-              Partnerships
-            </h3>
+              <span
+                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              Add Funding Source
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-29"
+      >
+        <hr
+          class="MuiDivider-root"
+        />
+        <div
+          class="MuiBox-root MuiBox-root-30"
+        >
+          <h4
+            class="MuiTypography-root MuiTypography-h4"
+          >
+            agency name
+          </h4>
+          <div
+            class="MuiBox-root MuiBox-root-31"
+          >
             <button
-              aria-label="Edit Partnerships"
+              aria-label="Edit Funding Source"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
               tabindex="0"
-              title="Edit Partnerships"
+              title="Edit Funding Source"
               type="button"
             >
               <span
@@ -525,238 +701,103 @@ exports[`ProjectDetails renders correctly 1`] = `
                 class="MuiTouchRipple-root"
               />
             </button>
+            <button
+              aria-label="Remove Funding Source"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+              data-testid="delete-funding-source"
+              tabindex="0"
+              title="Remove Funding Source"
+              type="button"
+            >
+              <span
+                class="MuiButton-label"
+              >
+                <span
+                  class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                >
+                  <svg
+                    role="presentation"
+                    style="width: 1.3125rem; height: 1.3125rem;"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                      style="fill: currentColor;"
+                    />
+                  </svg>
+                </span>
+                Remove
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
           </div>
         </div>
-        <dl
-          class="ddInline"
-        >
+        <dl>
           <div
             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
           >
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                Indigenous Partnerships
+                Agency Project ID
               </dt>
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                partner 1
-              </dd>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                partner 2
+                ABC123
               </dd>
             </div>
             <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
             >
               <dt
                 class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
               >
-                Other Partnerships
+                Funding Amount
               </dt>
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                partner 3
+                $333
               </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Funding Dates
+              </dt>
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                partner 4
+                04/14/2000 - 04/13/2021
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Investment Category
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                investment action
               </dd>
             </div>
           </div>
         </dl>
-        <header
-          class="MuiBox-root MuiBox-root-30"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Funding Sources
-          </h3>
-          <button
-            aria-label="Add Funding Source"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-            tabindex="0"
-            title="Add Funding Source"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              Add Funding Source
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </header>
-        <div
-          class="MuiBox-root MuiBox-root-31"
-        >
-          <hr
-            class="MuiDivider-root"
-          />
-          <div
-            class="MuiBox-root MuiBox-root-32"
-          >
-            <h4
-              class="MuiTypography-root MuiTypography-h4"
-            >
-              agency name
-            </h4>
-            <div
-              class="MuiBox-root MuiBox-root-33"
-            >
-              <button
-                aria-label="Edit Funding Source"
-                class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-                tabindex="0"
-                title="Edit Funding Source"
-                type="button"
-              >
-                <span
-                  class="MuiButton-label"
-                >
-                  <span
-                    class="MuiButton-startIcon MuiButton-iconSizeMedium"
-                  >
-                    <svg
-                      role="presentation"
-                      style="width: 1.3125rem; height: 1.3125rem;"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                        style="fill: currentColor;"
-                      />
-                    </svg>
-                  </span>
-                  Edit
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-              <button
-                aria-label="Remove Funding Source"
-                class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-                data-testid="delete-funding-source"
-                tabindex="0"
-                title="Remove Funding Source"
-                type="button"
-              >
-                <span
-                  class="MuiButton-label"
-                >
-                  <span
-                    class="MuiButton-startIcon MuiButton-iconSizeMedium"
-                  >
-                    <svg
-                      role="presentation"
-                      style="width: 1.3125rem; height: 1.3125rem;"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                        style="fill: currentColor;"
-                      />
-                    </svg>
-                  </span>
-                  Remove
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-          </div>
-          <dl>
-            <div
-              class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-            >
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Agency Project ID
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  ABC123
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Funding Amount
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  $333
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Funding Dates
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  04/14/2000 - 04/13/2021
-                </dd>
-              </div>
-              <div
-                class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-              >
-                <dt
-                  class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-                >
-                  Investment Category
-                </dt>
-                <dd
-                  class="MuiTypography-root MuiTypography-body1"
-                >
-                  investment action
-                </dd>
-              </div>
-            </div>
-          </dl>
-        </div>
-      </section>
-    </div>
+      </div>
+    </section>
   </div>
 </DocumentFragment>
 `;
