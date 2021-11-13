@@ -64,7 +64,17 @@ export interface IMenuToolbarItem {
   menuOnClick: () => void;
 }
 
-export interface IMenuToolbarProps extends IActionToolbarProps {
+export interface IMenuToolbarProps extends IActionToolbarProps, ICustomMenuButtonProps {}
+
+export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
+  return (
+    <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
+      <CustomMenuButton {...props} />
+    </ActionToolbar>
+  );
+};
+
+export interface ICustomMenuButtonProps {
   buttonLabel: string;
   buttonTitle: string;
   buttonStartIcon: ReactNode;
@@ -72,7 +82,7 @@ export interface IMenuToolbarProps extends IActionToolbarProps {
   menuItems: IMenuToolbarItem[];
 }
 
-export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
+export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   const [anchorEl, setAnchorEl] = useState(null);
 
   const open = Boolean(anchorEl);
@@ -93,7 +103,7 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   };
 
   return (
-    <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
+    <>
       <Button
         color="primary"
         variant="outlined"
@@ -133,7 +143,7 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
           );
         })}
       </Menu>
-    </ActionToolbar>
+    </>
   );
 };
 
