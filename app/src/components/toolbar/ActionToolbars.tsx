@@ -17,7 +17,7 @@ export interface IButtonToolbarProps extends IActionToolbarProps {
 }
 
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
-  const id = `h3-button-toolbar-${props.buttonLabel.replaceAll(/\s/g, '')}`;
+  const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h3' }} toolbarProps={props.toolbarProps}>
@@ -39,7 +39,7 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
 };
 
 export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
-  const id = `h2-button-toolbar-${props.buttonLabel.replaceAll(/\s/g, '')}`;
+  const id = `h2-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   return (
     <ActionToolbar label={props.label} labelProps={{ variant: 'h2' }} toolbarProps={props.toolbarProps}>
@@ -77,7 +77,7 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
 
   const open = Boolean(anchorEl);
 
-  const id = `h2-menu-toolbar-${props.buttonLabel.replaceAll(/\s/g, '')}`;
+  const id = `h2-menu-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -125,7 +125,7 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
           'aria-labelledby': 'basic-button'
         }}>
         {props.menuItems.map((menuItem) => {
-          const id = `h2-menu-toolbar-item-${menuItem.menuLabel.replaceAll(/\s/g, '')}`;
+          const id = `h2-menu-toolbar-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
           return (
             <MenuItem id={id} data-testid={id} onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
               {menuItem.menuLabel}
