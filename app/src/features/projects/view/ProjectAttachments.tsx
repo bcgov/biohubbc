@@ -1,5 +1,5 @@
 import Paper from '@material-ui/core/Paper';
-import { mdiTrayArrowUp } from '@mdi/js';
+import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
@@ -113,6 +113,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
           buttonLabel="Upload"
           buttonTitle="Upload Document"
           buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
           menuItems={[
             { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
             { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }

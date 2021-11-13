@@ -4,17 +4,18 @@ import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
 import Typography, { TypographyProps } from '@material-ui/core/Typography';
-import { mdiMenuDown } from '@mdi/js';
-import Icon from '@mdi/react';
 import React, { ReactNode, useState } from 'react';
 
-export interface IButtonToolbarProps extends IActionToolbarProps {
+export interface ICustomButtonProps {
   buttonLabel: string;
   buttonTitle: string;
   buttonOnClick: () => void;
   buttonStartIcon: ReactNode;
+  buttonEndIcon?: ReactNode;
   buttonProps?: Partial<ButtonProps>;
 }
+
+export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
 
 export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
   const id = `h3-button-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
@@ -30,6 +31,7 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         title={props.buttonTitle}
         aria-label={props.buttonTitle}
         startIcon={props.buttonStartIcon}
+        endIcon={props.buttonEndIcon}
         onClick={() => props.buttonOnClick()}
         {...props.buttonProps}>
         {props.buttonLabel}
@@ -51,6 +53,7 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         title={props.buttonTitle}
         aria-label={props.buttonTitle}
         startIcon={props.buttonStartIcon}
+        endIcon={props.buttonEndIcon}
         onClick={() => props.buttonOnClick()}
         {...props.buttonProps}>
         {props.buttonLabel}
@@ -64,7 +67,7 @@ export interface IMenuToolbarItem {
   menuOnClick: () => void;
 }
 
-export interface IMenuToolbarProps extends IActionToolbarProps, ICustomMenuButtonProps {}
+export interface IMenuToolbarProps extends ICustomMenuButtonProps, IActionToolbarProps {}
 
 export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
   return (
@@ -75,9 +78,10 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
 };
 
 export interface ICustomMenuButtonProps {
-  buttonLabel: string;
-  buttonTitle: string;
-  buttonStartIcon: ReactNode;
+  buttonLabel?: string;
+  buttonTitle?: string;
+  buttonStartIcon?: ReactNode;
+  buttonEndIcon?: ReactNode;
   buttonProps?: Partial<ButtonProps>;
   menuItems: IMenuToolbarItem[];
 }
@@ -87,7 +91,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
 
   const open = Boolean(anchorEl);
 
-  const id = `h2-menu-toolbar-${props.buttonLabel.replace(/\s/g, '')}`;
+  const id = `h2-menu-toolbar-${props.buttonLabel?.replace(/\s/g, '') || 'button'}`;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -111,7 +115,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
         aria-haspopup="true"
         aria-expanded={open ? 'true' : undefined}
         startIcon={props.buttonStartIcon}
-        endIcon={<Icon path={mdiMenuDown} size={1} />}
+        endIcon={props.buttonEndIcon}
         onClick={handleClick}
         {...props.buttonProps}>
         {props.buttonLabel}
