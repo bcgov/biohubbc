@@ -32,10 +32,9 @@
     "ajv": "~8.6.2",
     "aws-sdk": "~2.742.0",
     "axios": "~0.21.4",
+    "clamdjs": "~1.0.2",
     "db-migrate": "~0.11.11",
     "db-migrate-pg": "~1.2.2",
-    "xlsx": "~0.17.0",
-    "clamdjs": "~1.0.2",
     "express": "~4.17.1",
     "express-openapi": "~7.0.1",
     "jsonpath": "~1.1.1",
@@ -53,7 +52,9 @@
     "typescript": "~3.9.4",
     "uuid": "~8.3.2",
     "validator": "~13.1.1",
-    "winston": "~3.3.3"
+    "winston": "~3.3.3",
+    "xlsx": "~0.17.0",
+    "xml2js": "~0.4.23"
   },
   "devDependencies": {
     "@istanbuljs/nyc-config-typescript": "~1.0.1",
@@ -72,6 +73,7 @@
     "@types/sinon": "^10.0.0",
     "@types/sinon-chai": "^3.2.5",
     "@types/uuid": "~8.3.0",
+    "@types/xml2js": "^0.4.9",
     "@types/yamljs": "~0.2.31",
     "@typescript-eslint/eslint-plugin": "~3.7.1",
     "@typescript-eslint/parser": "~3.7.1",
