@@ -1,12 +1,12 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Paper from '@material-ui/core/Paper';
+import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Link from '@material-ui/core/Link';
+import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -254,6 +254,15 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
             </Box>
           </Box>
           <Box ml={4} mb={4}>
+            <Button
+              variant="outlined"
+              disableElevation
+              className={classes.actionButton}
+              data-testid="manage-project-team-button"
+              aria-label="Manage Project Team"
+              onClick={() => history.push('users')}>
+              Manage Project Team
+            </Button>
             <Button
               variant="outlined"
               disableElevation

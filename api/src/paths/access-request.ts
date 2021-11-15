@@ -150,14 +150,8 @@ export function updateAccessRequest(): RequestHandler {
       let userData = (getUserResponse && getUserResponse.rowCount && getUserResponse.rows[0]) || null;
 
       if (!userData) {
-        const systemUserId = connection.systemUserId();
-
-        if (!systemUserId) {
-          throw new HTTP400('Failed to identify system user ID');
-        }
-
         // Found no existing user, add them
-        userData = await addSystemUser(userIdentifier, identitySource, systemUserId, connection);
+        userData = await addSystemUser(userIdentifier, identitySource, connection);
       }
 
       const userObject = new UserObject(userData);

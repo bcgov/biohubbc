@@ -35,6 +35,7 @@ export interface IGetAllCodeSetsResponse {
   iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
   iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn2_id: number; name: string }>;
   system_roles: CodeSet;
+  project_roles: CodeSet;
   regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
   common_survey_methodologies: CodeSet;

@@ -319,3 +319,21 @@ export interface IGetReportAuthors {
   first_name: string;
   last_name: string;
 }
+
+export interface IGetProjectParticipantsResponseArrayItem {
+  project_participation_id: number;
+  project_id: number;
+  system_user_id: number;
+  project_role_id: number;
+  user_identifier: string;
+  user_identity_source_id: number;
+}
+export interface IGetProjectParticipantsResponse {
+  participants: IGetProjectParticipantsResponseArrayItem[];
+}
+
+export interface IAddProjectParticipant {
+  userIdentifier: string;
+  identitySource: string;
+  role: string;
+}

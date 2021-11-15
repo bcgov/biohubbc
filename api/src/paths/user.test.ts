@@ -24,7 +24,7 @@ describe('user', () => {
       sinon.stub(user_queries, 'addSystemUserSQL').returns(null);
 
       try {
-        await user.addSystemUser('userIdentifier', 'identitySource', 10, {
+        await user.addSystemUser('userIdentifier', 'identitySource', {
           ...dbConnectionObj,
           systemUserId: () => {
             return 10;
@@ -41,7 +41,7 @@ describe('user', () => {
       sinon.stub(user_queries, 'addSystemUserSQL').returns(SQL`some query`);
 
       try {
-        await user.addSystemUser('userIdentifier', 'identitySource', 10, {
+        await user.addSystemUser('userIdentifier', 'identitySource', {
           ...dbConnectionObj,
           systemUserId: () => {
             return 10;
@@ -62,7 +62,7 @@ describe('user', () => {
     it('should return the query rows result on success', async () => {
       sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
 
-      const result = await user.addSystemUser('userIdentifier', 'identitySource', 10, {
+      const result = await user.addSystemUser('userIdentifier', 'identitySource', {
         ...dbConnectionObj,
         systemUserId: () => {
           return 10;

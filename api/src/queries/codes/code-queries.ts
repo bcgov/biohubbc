@@ -94,6 +94,13 @@ export const getIUCNConservationActionLevel3SubclassificationSQL = (): SQLStatem
 export const getSystemRolesSQL = (): SQLStatement => SQL`SELECT system_role_id as id, name from system_role;`;
 
 /**
+ * SQL query to fetch project role codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectRolesSQL = (): SQLStatement => SQL`SELECT project_role_id as id, name from project_role;`;
+
+/**
  * SQL query to fetch administrative activity status type codes.
  *
  * @returns {SQLStatement} sql query object

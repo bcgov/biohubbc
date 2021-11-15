@@ -21,7 +21,7 @@ import {
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
-import { postProjectRolesByRoleNameSQL } from '../queries/users/system-role-queries';
+import { postProjectRolesByRoleNameSQL } from '../queries/project-participation/project-participation-queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 

@@ -130,9 +130,8 @@ export const getUserListSQL = (): SQLStatement | null => {
       su.record_end_date IS NULL
     GROUP BY
       su.system_user_id,
-      su.user_identifier,
-      su.record_end_date
-    ;
+      su.record_end_date,
+      su.user_identifier;
   `;
 
   defaultLog.debug({
@@ -150,23 +149,17 @@ export const getUserListSQL = (): SQLStatement | null => {
  *
  * @param {string} userIdentifier
  * @param {string} identitySource
- * @param {number} systemUserId
  * @return {*}  {(SQLStatement | null)}
  */
-export const addSystemUserSQL = (
-  userIdentifier: string,
-  identitySource: string,
-  systemUserId: number
-): SQLStatement | null => {
+export const addSystemUserSQL = (userIdentifier: string, identitySource: string): SQLStatement | null => {
   defaultLog.debug({
     label: 'addSystemUserSQL',
     message: 'addSystemUserSQL',
     userIdentifier,
-    identitySource,
-    systemUserId
+    identitySource
   });
 
-  if (!userIdentifier || !identitySource || !systemUserId) {
+  if (!userIdentifier || !identitySource) {
     return null;
   }
 
@@ -174,13 +167,11 @@ export const addSystemUserSQL = (
     INSERT INTO system_user (
       user_identity_source_id,
       user_identifier,
-      record_effective_date,
-      create_user
+      record_effective_date
     ) VALUES (
       (Select user_identity_source_id FROM user_identity_source WHERE name = ${identitySource.toUpperCase()}),
       ${userIdentifier},
-      now(),
-      ${systemUserId}
+      now()
     )
     RETURNING
       system_user_id as id,
@@ -191,6 +182,46 @@ export const addSystemUserSQL = (
 
   defaultLog.debug({
     label: 'addSystemUserSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to activate a system user. Does nothing is the system user is already active.
+ *
+ * @param {number} systemUserId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'activateSystemUserSQL',
+    message: 'activateSystemUserSQL',
+    systemUserId
+  });
+
+  if (!systemUserId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE
+      system_user
+    SET
+      record_end_date = NULL
+    WHERE
+      system_user_id = ${systemUserId}
+    AND
+      record_end_date IS NOT NULL
+    RETURNING
+      *;
+  `;
+
+  defaultLog.debug({
+    label: 'activateSystemUserSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
