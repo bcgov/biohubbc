@@ -20,6 +20,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
     SELECT
       su.system_user_id as id,
       su.user_identifier,
+      su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
@@ -36,6 +37,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
       su.user_identifier = ${userIdentifier}
     GROUP BY
       su.system_user_id,
+      su.record_end_date,
       su.user_identifier;
   `;
 
@@ -81,6 +83,8 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
       sur.system_role_id = sr.system_role_id
     WHERE
       su.system_user_id = ${userId}
+    AND
+      su.record_end_date IS NULL
     GROUP BY
       su.system_user_id,
       su.record_end_date,
@@ -195,7 +199,6 @@ export const addSystemUserSQL = (
   return sqlStatement;
 };
 
-
 /**
  * SQL query to remove one or more system roles from a user.
  *
@@ -203,7 +206,7 @@ export const addSystemUserSQL = (
  * @param {number[]} roleIds
  * @return {*}  {(SQLStatement | null)}
  */
- export const deActivateSystemUserSQL = (userId: number): SQLStatement | null => {
+export const deActivateSystemUserSQL = (userId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'deActivateSystemUserSQL', message: 'params' });
 
   if (!userId) {
@@ -221,6 +224,108 @@ export const addSystemUserSQL = (
 
   defaultLog.debug({
     label: 'deleteSystemUserSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to activate a system user. Does nothing is the system user is already active.
+ *
+ * @param {number} systemUserId
+ * @return {*} {(SQLStatement | null)}
+ */
+export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'activateSystemUserSQL',
+    message: 'activateSystemUserSQL',
+    systemUserId
+  });
+
+  if (!systemUserId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+  UPDATE
+  system_user
+  SET
+  record_end_date = NULL
+  WHERE
+  system_user_id = ${systemUserId}
+  AND
+  record_end_date IS NOT NULL
+  RETURNING
+  *;
+  `;
+
+  defaultLog.debug({
+    label: 'activateSystemUserSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to remove all system roles from a user.
+ *
+ * @param {number} userId
+ * @param {number[]} roleIds
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteSystemRolesSQL', message: 'params' });
+
+  if (!userId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    DELETE FROM
+      system_user_role
+    WHERE
+      system_user_id = ${userId};
+    `;
+
+  defaultLog.debug({
+    label: 'deleteSystemRolesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to remove all system roles from a user.
+ *
+ * @param {number} userId
+ * @param {number[]} roleIds
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const deleteAllProjectRolesSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteAllProjectRolesSQL', message: 'params' });
+
+  if (!userId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    DELETE FROM
+      project_participation
+    WHERE
+      system_user_id = ${userId};
+    `;
+
+  defaultLog.debug({
+    label: 'deleteAllProjectRolesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

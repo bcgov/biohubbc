@@ -87,7 +87,6 @@ export const deleteSystemRolesSQL = (userId: number, roleIds: number[]): SQLStat
   return sqlStatement;
 };
 
-
 /**
  * SQL query to add a single project role to a user.
  *

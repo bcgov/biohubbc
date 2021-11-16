@@ -5,7 +5,11 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400, HTTP500 } from '../../../errors/CustomError';
-import { deActivateSystemUserSQL } from '../../../queries/users/user-queries';
+import {
+  deActivateSystemUserSQL,
+  deleteAllSystemRolesSQL,
+  deleteAllProjectRolesSQL
+} from '../../../queries/users/user-queries';
 import { getUserByIdSQL } from '../../../queries/users/user-queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
@@ -100,10 +104,40 @@ export function removeSystemUser(): RequestHandler {
         throw new HTTP400('The system user is not active');
       }
 
+      const deleteAllProjectRolesSqlStatement = deleteAllProjectRolesSQL(userId);
+
+      if (!deleteAllProjectRolesSqlStatement) {
+        throw new HTTP400('Failed to build SQL delete statement for deleting system roles');
+      }
+
+      const deleteProjectRolesResponse = await connection.query(
+        deleteAllProjectRolesSqlStatement.text,
+        deleteAllProjectRolesSqlStatement.values
+      );
+
+      if (!deleteProjectRolesResponse) {
+        throw new HTTP400('Failed to the project project roles');
+      }
+
+      const deleteSystemRoleSqlStatement = deleteAllSystemRolesSQL(userId);
+
+      if (!deleteSystemRoleSqlStatement) {
+        throw new HTTP400('Failed to build SQL delete statement for deleting system roles');
+      }
+
+      const deleteSystemRolesResponse = await connection.query(
+        deleteSystemRoleSqlStatement.text,
+        deleteSystemRoleSqlStatement.values
+      );
+
+      if (!deleteSystemRolesResponse) {
+        throw new HTTP400('Failed to delete the user system roles');
+      }
+
       const deleteSystemUserSqlStatement = deActivateSystemUserSQL(userId);
 
       if (!deleteSystemUserSqlStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
+        throw new HTTP400('Failed to build SQL delete statement to deactivate system user');
       }
 
       const response = await connection.query(deleteSystemUserSqlStatement.text, deleteSystemUserSqlStatement.values);
