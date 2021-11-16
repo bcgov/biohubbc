@@ -12,6 +12,8 @@ import { useParams } from 'react-router';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
+import SurveyObservations from './SurveyObservations';
+import SurveySummaryResults from './SurveySummaryResults';
 
 /**
  * Page to display a single Survey.
@@ -89,7 +91,7 @@ const SurveyPage: React.FC = () => {
   return (
     <>
       <SurveyHeader projectWithDetails={projectWithDetails} surveyWithDetails={surveyWithDetails} refresh={getSurvey} />
-      
+
       <Container maxWidth="xl">
         <Box my={3}>
           <Grid container spacing={3}>
@@ -100,6 +102,12 @@ const SurveyPage: React.FC = () => {
                 codes={codes}
                 refresh={getSurvey}
               />
+              <Box mt={3}>
+                <SurveyObservations refresh={getSurvey}/>
+              </Box>
+              <Box mt={3}>
+                <SurveySummaryResults  />
+              </Box>
               <Box mt={3}>
                 <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
               </Box>
