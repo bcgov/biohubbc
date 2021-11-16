@@ -30,9 +30,21 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get user details for all users.
+   *
+   * @return {*}  {Promise<IGetUserResponse[]>}
+   */
+  const removeSystemUser = async (userId: number): Promise<number> => {
+    const { data } = await axios.delete(`/api/user/${userId}/delete`);
+
+    return data;
+  };
+
   return {
     getUser,
-    getUsersList
+    getUsersList,
+    removeSystemUser
   };
 };
 

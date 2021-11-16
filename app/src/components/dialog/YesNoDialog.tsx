@@ -46,6 +46,30 @@ export interface IYesNoDialogProps {
    * @memberof IYesNoDialogProps
    */
   onYes: () => void;
+
+  /**
+   * The yes button label.
+   *
+   * @type {string}
+   * @memberof IYesNoDialogProps
+   */
+  yesButtonLabel?: string;
+
+  /**
+   * The no button label.
+   *
+   * @type {string}
+   * @memberof IYesNoDialogProps
+   */
+  noButtonLabel?: string;
+
+  /**
+   * The no button label.
+   *
+   * @type {string}
+   * @memberof IYesNoDialogProps
+   */
+  yesButtonColor?: string;
 }
 
 /**
@@ -73,10 +97,10 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
       </DialogContent>
       <DialogActions>
         <Button data-testid="yes-button" onClick={props.onYes} color="primary" variant="contained" autoFocus>
-          Yes
+          {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
         </Button>
         <Button data-testid="no-button" onClick={props.onNo} color="primary" variant="outlined">
-          No
+          {props.noButtonLabel ? props.noButtonLabel : 'No'}
         </Button>
       </DialogActions>
     </Dialog>

@@ -42,7 +42,24 @@ GET.apiDoc = {
               title: 'User Response Object',
               type: 'object',
               properties: {
-                // TODO needs finalizing (here and in the user-queries.ts SQL)
+                id: {
+                  type: 'number'
+                },
+                user_identifier: {
+                  type: 'string'
+                },
+                role_ids: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                },
+                role_names: {
+                  type: 'array',
+                  items: {
+                    type: 'string'
+                  }
+                }
               }
             }
           }

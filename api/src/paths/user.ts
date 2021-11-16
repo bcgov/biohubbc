@@ -9,7 +9,7 @@ import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/user');
 
-export const POST: Operation = [
+export const DELETE: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -23,7 +23,7 @@ export const POST: Operation = [
   addUser()
 ];
 
-POST.apiDoc = {
+DELETE.apiDoc = {
   description: 'Add a new system user.',
   tags: ['user'],
   security: [
@@ -122,6 +122,7 @@ export function addUser(): RequestHandler {
       return res.send(200);
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

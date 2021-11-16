@@ -66,6 +66,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
     SELECT
       su.system_user_id as id,
       su.user_identifier,
+      su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
@@ -82,6 +83,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
       su.system_user_id = ${userId}
     GROUP BY
       su.system_user_id,
+      su.record_end_date,
       su.user_identifier;
   `;
 
@@ -107,6 +109,7 @@ export const getUserListSQL = (): SQLStatement | null => {
     SELECT
       su.system_user_id as id,
       su.user_identifier,
+      su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
@@ -119,9 +122,13 @@ export const getUserListSQL = (): SQLStatement | null => {
       system_role sr
     ON
       sur.system_role_id = sr.system_role_id
+    WHERE
+      su.record_end_date IS NULL
     GROUP BY
       su.system_user_id,
-      su.user_identifier;
+      su.user_identifier,
+      su.record_end_date
+    ;
   `;
 
   defaultLog.debug({
