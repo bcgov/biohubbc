@@ -87,38 +87,6 @@ export const deleteSystemRolesSQL = (userId: number, roleIds: number[]): SQLStat
   return sqlStatement;
 };
 
-/**
- * SQL query to remove one or more system roles from a user.
- *
- * @param {number} userId
- * @param {number[]} roleIds
- * @return {*}  {(SQLStatement | null)}
- */
-export const deleteSystemUserSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteSystemRolesSQL', message: 'params' });
-
-  if (!userId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    UPDATE
-      system_user
-    SET
-      record_end_date = now()
-    WHERE
-      system_user_id = ${userId};
-    `;
-
-  defaultLog.debug({
-    label: 'deleteSystemUserSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
 
 /**
  * SQL query to add a single project role to a user.

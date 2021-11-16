@@ -148,7 +148,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
       } catch {}
 
       setBioHubUser(() => {
-        if (userDetails?.role_names?.length) {
+        if (userDetails?.role_names?.length && !userDetails?.user_record_end_date) {
           setHasLoadedAllUserInfo(true);
         } else {
           setShouldLoadAccessRequest(true);

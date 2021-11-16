@@ -35,7 +35,7 @@ const useUserApi = (axios: AxiosInstance) => {
    *
    * @return {*}  {Promise<IGetUserResponse[]>}
    */
-  const removeSystemUser = async (userId: number): Promise<number> => {
+  const deleteSystemUser = async (userId: number): Promise<number> => {
     const { data } = await axios.delete(`/api/user/${userId}/delete`);
 
     return data;
@@ -44,7 +44,7 @@ const useUserApi = (axios: AxiosInstance) => {
   return {
     getUser,
     getUsersList,
-    removeSystemUser
+    deleteSystemUser
   };
 };
 

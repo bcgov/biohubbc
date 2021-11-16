@@ -5,7 +5,7 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400, HTTP500 } from '../../../errors/CustomError';
-import { deleteSystemUserSQL } from '../../../queries/users/system-role-queries';
+import { deActivateSystemUserSQL } from '../../../queries/users/user-queries';
 import { getUserByIdSQL } from '../../../queries/users/user-queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
@@ -100,7 +100,7 @@ export function removeSystemUser(): RequestHandler {
         throw new HTTP400('The system user is not active');
       }
 
-      const deleteSystemUserSqlStatement = deleteSystemUserSQL(userId);
+      const deleteSystemUserSqlStatement = deActivateSystemUserSQL(userId);
 
       if (!deleteSystemUserSqlStatement) {
         throw new HTTP400('Failed to build SQL delete statement');

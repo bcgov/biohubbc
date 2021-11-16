@@ -39,8 +39,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const handleRemoveUserClick = (row: any) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Remove user?',
-      dialogText:
-        'Removing user will remove their access to this application and all related projects.  Are you sure you want to proceed?',
+      dialogText: `Removing ${row.user_identifier} will remove their access to this application and all related projects.  Are you sure you want to proceed?`,
       yesButtonLabel: 'Remove User',
       noButtonLabel: 'Cancel',
       onClose: () => {
@@ -51,20 +50,18 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       },
       open: true,
       onYes: () => {
-        deleteSystemUser(row);
+        deActivateSystemUser(row);
         dialogContext.setYesNoDialog({ open: false });
       }
     });
   };
 
-  const deleteSystemUser = async (user: any) => {
+  const deActivateSystemUser = async (user: any) => {
     if (!user?.id) {
       return;
     }
     try {
-      const response = await biohubApi.user.removeSystemUser(user.id);
-
-      console.log(response);
+      await biohubApi.user.deleteSystemUser(user.id);
 
       props.getUsers(true);
     } catch (error) {

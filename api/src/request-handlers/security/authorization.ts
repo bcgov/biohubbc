@@ -210,8 +210,13 @@ export const authorizeBySystemRole = async (
     return false;
   }
 
+  if (systemUserObject.user_record_end_date){
+    //system user has an expired record
+    return false;
+  }
+
   // Check if the user has at least 1 of the valid roles
-  return userHasValidRole(authorizeSystemRoles.validSystemRoles, systemUserObject?.role_names);
+  return userHasValidRole(authorizeSystemRoles.validSystemRoles, systemUserObject?.role_names, systemUserObject?.user_record_end_date);
 };
 
 /**
@@ -282,18 +287,20 @@ export const authorizeBySystemUser = async (req: Request, connection: IDBConnect
  * @return {*} {boolean} true if the user has at least 1 of the valid roles or no valid roles are specified, false
  * otherwise
  */
-export const userHasValidRole = function (validRoles: string | string[], userRoles: string | string[]): boolean {
+export const userHasValidRole = function (validRoles: string | string[], userRoles: string | string[], userExpiryDate: string): boolean {
   if (!validRoles || !validRoles.length) {
     return true;
   }
 
-  if (!Array.isArray(validRoles)) {
+  if (!Array.isArray(validRoles) && !userExpiryDate) {
     validRoles = [validRoles];
   }
 
-  if (!Array.isArray(userRoles)) {
+  if (!Array.isArray(userRoles) && !userExpiryDate) {
     userRoles = [userRoles];
   }
+
+
 
   for (const validRole of validRoles) {
     if (userRoles.includes(validRole)) {
