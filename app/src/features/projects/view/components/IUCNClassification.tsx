@@ -1,5 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
@@ -145,22 +147,21 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
         toolbarProps={{ disableGutters: true }}
       />
 
+      <Box component={Divider} mb={0}></Box>
+
       {hasIucnClassifications && (
-        <Box component="ul" className="listNoBullets">
+        <List disablePadding>
           {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
             return (
-              <Box component="li" key={index} className={classes.iucnListItem}>
-                <Divider />
-                <Box>
-                  <Typography component="span" variant="body1">
-                    {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
-                    <span>{'>'}</span> {classificationDetail.subClassification2}
-                  </Typography>
-                </Box>
-              </Box>
+              <ListItem key={index} className={classes.iucnListItem} divider disableGutters>
+                <Typography variant="body2">
+                  {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
+                  <span>{'>'}</span> {classificationDetail.subClassification2}
+                </Typography>
+              </ListItem>
             );
           })}
-        </Box>
+        </List>
       )}
 
       {!hasIucnClassifications && (

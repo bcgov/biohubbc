@@ -1,11 +1,8 @@
 import Box from '@material-ui/core/Box';
+import Divider from '@material-ui/core/Divider';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
-import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
-import TableHead from '@material-ui/core/TableHead';
-import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -32,14 +29,8 @@ import {
 import React, { useContext, useState } from 'react';
 
 const useStyles = makeStyles({
-  table: {
-    minWidth: 650
-  },
-  heading: {
-    fontWeight: 'bold'
-  },
-  tableCellBorderTop: {
-    borderTop: '1px solid rgba(224, 224, 224, 1)'
+  permitList: {
+
   }
 });
 
@@ -172,29 +163,21 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
           toolbarProps={{ disableGutters: true }}
         />
 
+        <Box component={Divider} mb={0}></Box>
+
         {hasPermits && (
-          <TableContainer>
-            <Table className={classes.table} aria-label="permits-list-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.heading}>Permit Number</TableCell>
-                  <TableCell className={classes.heading}>Permit Type</TableCell>
-                </TableRow>
-              </TableHead>
-              {permit.permits.map((item: any) => (
-                <TableBody key={item.permit_number}>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      {item.permit_number}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {item.permit_type}
-                    </TableCell>
-                  </TableRow>
-                </TableBody>
-              ))}
-            </Table>
-          </TableContainer>
+          <List disablePadding className={classes.permitList}>
+            {permit.permits.map((item: any) => (
+              <>
+                <ListItem key={item.permit_number} divider disableGutters>
+                  <Box>
+                    <strong>#{item.permit_number}</strong>&nbsp;
+                    ({item.permit_type})
+                  </Box>
+                </ListItem>
+              </>
+            ))}
+          </List>
         )}
 
         {!hasPermits && (

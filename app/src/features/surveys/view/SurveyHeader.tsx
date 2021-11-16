@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
@@ -9,7 +10,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
-import { mdiToggleSwitch, mdiToggleSwitchOffOutline, mdiTrashCanOutline } from '@mdi/js';
+import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -68,6 +69,9 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
+  },
+  surveyTitle: {
+    fontWeight: 400
   }
 }));
 
@@ -208,9 +212,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
   return (
     <>
-      <Paper elevation={2} square={true}>
+      <Paper square={true}>
         <Container maxWidth="xl">
-          <Box mb={3} pt={3}>
+ 
+          <Box py={3}>
             <Breadcrumbs>
               <Link
                 color="primary"
@@ -232,13 +237,14 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
           <Box display="flex" justifyContent="space-between">
             <Box pb={4}>
-              <Box mb={1} display="flex">
+              <Box mb={1.5} display="flex">
                 <Typography className={classes.spacingRight} variant="h1">
-                  {surveyWithDetails.survey_details.survey_name}
+                  Survey - <span className={classes.surveyTitle}>{surveyWithDetails.survey_details.survey_name}</span>
                 </Typography>
-                {getChipIcon(surveyWithDetails.survey_details.completion_status)}
               </Box>
-              <Box>
+              <Box mb={0.75} display="flex" alignItems="center">
+                {getChipIcon(surveyWithDetails.survey_details.completion_status)}
+                &nbsp;&nbsp;
                 <Typography variant="subtitle1" color="textSecondary">
                   {getFormattedDateRangeString(
                     DATE_FORMAT.ShortMediumDateFormat2,
@@ -251,17 +257,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
             <Box ml={4} mb={4}>
               <Button
                 variant="outlined"
-                className={classes.actionButton}
                 color="primary"
                 data-testid="publish-survey-button"
-                startIcon={
-                  <Icon
-                    path={surveyWithDetails.survey_details.publish_date ? mdiToggleSwitch : mdiToggleSwitchOffOutline}
-                    size={1}
-                  />
-                }
                 onClick={async () => await publishSurvey(!surveyWithDetails.survey_details.publish_date)}>
-                {surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
+                <strong>{surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}</strong>
               </Button>
               {showDeleteSurveyButton && (
                 <Tooltip
@@ -269,16 +268,12 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                   color="secondary"
                   title={!enableDeleteSurveyButton ? 'Cannot delete a published survey' : ''}>
                   <>
-                    <Button
-                      variant="outlined"
-                      color="primary"
-                      className={classes.actionButton}
+                    <IconButton
                       data-testid="delete-survey-button"
-                      startIcon={<Icon path={mdiTrashCanOutline} size={1} />}
                       onClick={showDeleteSurveyDialog}
                       disabled={!enableDeleteSurveyButton}>
-                      Delete Survey
-                    </Button>
+                      <Icon path={mdiTrashCanOutline} size={1} /> 
+                    </IconButton>
                   </>
                 </Tooltip>
               )}

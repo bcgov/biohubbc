@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -173,6 +174,8 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         backButtonTitle={'Back To Project'}
         mapTitle={'Project Location'}
       />
+
+    <Box component={Paper} px={3} pt={1} pb={3}>
       <H2ButtonToolbar
         label="Project Location"
         buttonLabel="Edit"
@@ -183,7 +186,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         toolbarProps={{ disableGutters: true }}
       />
 
-      <Box mt={4} mb={4} height={500}>
+      <Box mt={2} height={350}>
         <MapContainer
           mapId="project_location_form_map"
           hideDrawControls={true}
@@ -216,6 +219,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
         Show More
       </Button>
+    </Box>
     </>
   );
 };

@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+// import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
+import Paper from '@material-ui/core/Paper';
 import FundingSource from 'features/projects/view/components/FundingSource';
 import GeneralInformation from 'features/projects/view/components/GeneralInformation';
 import IUCNClassification from 'features/projects/view/components/IUCNClassification';
@@ -19,19 +19,6 @@ export interface IProjectDetailsProps {
   refresh: () => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  projectDetailsSection: {
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(5),
-    '&:last-child': {
-      marginBottom: 0
-    },
-    '&:first-child': {
-      marginTop: 0
-    }
-  }
-}));
-
 /**
  * Project details content for a project.
  *
@@ -40,23 +27,30 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
   const { projectForViewData, codes, refresh } = props;
 
-  const classes = useStyles();
-
   return (
     <>
-      <Box display="flex" alignItems="center" minHeight="64px">
+      <Box component={Paper} p={3}>
         <Typography variant="h2">Project Details</Typography>
-      </Box>
-
-      <Box display="flex" justifyContent="space-between">
-        <Box component="section" className={classes.projectDetailsSection}>
+        <Box component="section" mt={1}>
           <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        </Box>
+        <Box component="section" mt={3}>
           <ProjectObjectives projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        </Box>
+        <Box component="section" mt={3}>
+        <ProjectCoordinator projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        </Box>
+        <Box component="section" mt={3}>
           <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-          <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        </Box>
+        <Box component="section" mt={3}>
+          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        </Box>
+        <Box component="section" mt={3}>
           <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
+        </Box>
+        <Box component="section" mt={3}>
+          <Partnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
     </>

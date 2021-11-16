@@ -43,8 +43,8 @@ export const FullScreenViewMapDialog: React.FC<IFullScreenViewMapProps> = (props
           </Button>
         </Toolbar>
       </AppBar>
-      <Box display="flex" flex="1 1 auto">
-        <Box flex="0 0 auto" p={3} width="400px">
+      <Box display="flex" flex="1 1 auto" overflow="hidden">
+        <Box flex="0 0 auto" p={3} width="400px" overflow="auto">
           <Box mb={3}>
             <Typography variant="h2">{props.mapTitle}</Typography>
           </Box>

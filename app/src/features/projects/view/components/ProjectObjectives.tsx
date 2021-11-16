@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
@@ -130,7 +129,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <Box mb={5}>
+      <Box>
         <H3ButtonToolbar
           label="Objectives"
           buttonLabel="Edit"
@@ -140,19 +139,13 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
           toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
-        <ReadMoreField text={objectives.objectives} maxCharLength={850} />
-      </Box>
-
-      {objectives.caveats && (
-        <>
-          <Box mt={4}>
-            <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-              <Typography variant="h3">Caveats</Typography>
-            </Box>
+        <Box mt={2}>
+          <ReadMoreField text={objectives.objectives} maxCharLength={850} />
+          {objectives.caveats && (
             <ReadMoreField text={objectives.caveats} maxCharLength={850} />
-          </Box>
-        </>
-      )}
+          )}
+        </Box>
+      </Box>
     </>
   );
 };

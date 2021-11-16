@@ -1,9 +1,7 @@
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
-import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import Grid from '@material-ui/core/Grid';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -15,25 +13,6 @@ import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveyAttachments from './SurveyAttachments';
 import SurveyHeader from './SurveyHeader';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  detailsAndLocationWrapper: {
-    flexDirection: 'row',
-    [theme.breakpoints.down('md')]: {
-      flexDirection: 'column'
-    }
-  },
-  detailsSection: {
-    [theme.breakpoints.up('lg')]: {
-      marginRight: theme.spacing(4)
-    }
-  },
-  locationSection: {
-    [theme.breakpoints.down('md')]: {
-      marginTop: theme.spacing(3)
-    }
-  }
-}));
-
 /**
  * Page to display a single Survey.
  *
@@ -41,7 +20,6 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const SurveyPage: React.FC = () => {
   const urlParams = useParams();
-  const classes = useStyles();
 
   const biohubApi = useBiohubApi();
 
@@ -111,33 +89,32 @@ const SurveyPage: React.FC = () => {
   return (
     <>
       <SurveyHeader projectWithDetails={projectWithDetails} surveyWithDetails={surveyWithDetails} refresh={getSurvey} />
-
+      
       <Container maxWidth="xl">
-        <Box display="flex" justifyContent="space-between" className={classes.detailsAndLocationWrapper}>
-          <Box className={classes.detailsSection} flexShrink="1">
-            <Box component={Paper} px={4} pb={2}>
+        <Box my={3}>
+          <Grid container spacing={3}>
+            <Grid item sm={12} md={8}>
               <SurveyDetails
                 projectForViewData={projectWithDetails}
                 surveyForViewData={surveyWithDetails}
                 codes={codes}
                 refresh={getSurvey}
               />
-            </Box>
-          </Box>
-          <Box className={classes.locationSection} flexShrink="0" flexBasis="500px">
-            <Box component={Paper} px={4} pb={2}>
+              <Box mt={3}>
+                <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+              </Box>
+            </Grid>
+            <Grid item sm={12} md={4}>
               <SurveyStudyArea
                 surveyForViewData={surveyWithDetails}
                 projectForViewData={projectWithDetails}
                 refresh={getSurvey}
               />
-            </Box>
-          </Box>
-        </Box>
-        <Box my={3}>
-          <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+            </Grid>
+          </Grid>
         </Box>
       </Container>
+
     </>
   );
 };

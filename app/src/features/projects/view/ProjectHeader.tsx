@@ -1,5 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
@@ -198,67 +199,69 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !projectWithDetails.project.publish_date);
 
   return (
-    <Container maxWidth="xl">
-      <Box display="flex" justifyContent="space-between">
-        <Box py={4}>
-          <Box mb={1.5} display="flex">
-            <Typography className={classes.spacingRight} variant="h1">
-              Project - <span className={classes.projectTitle}>{projectWithDetails.project.project_name}</span>
-            </Typography>
+    <Paper square={true}>
+      <Container maxWidth="xl">
+        <Box display="flex" justifyContent="space-between">
+          <Box py={4}>
+            <Box mb={1.5} display="flex">
+              <Typography className={classes.spacingRight} variant="h1">
+                Project - <span className={classes.projectTitle}>{projectWithDetails.project.project_name}</span>
+              </Typography>
+            </Box>
+            <Box mb={0.75} display="flex" alignItems="center">
+              {getChipIcon(projectWithDetails.project.completion_status)}
+              &nbsp;&nbsp;
+              <Typography component="span" variant="subtitle1" color="textSecondary">
+                {projectWithDetails.project.end_date ? (
+                  <>
+                    <span>Timeline:</span>{' '}
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      projectWithDetails.project.start_date,
+                      projectWithDetails.project.end_date
+                    )}
+                  </>
+                ) : (
+                  <>
+                    <span>Start Date:</span>{' '}
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      projectWithDetails.project.start_date
+                    )}
+                  </>
+                )}
+              </Typography>
+            </Box>
           </Box>
-          <Box mb={0.75} display="flex" alignItems="center">
-            {getChipIcon(projectWithDetails.project.completion_status)}
-            &nbsp;&nbsp;
-            <Typography component="span" variant="subtitle1" color="textSecondary">
-              {projectWithDetails.project.end_date ? (
+          <Box ml={4} mt={4} mb={4}>
+            <Button
+              variant="outlined"
+              disableElevation
+              className={classes.actionButton}
+              data-testid="publish-project-button"
+              aria-label={projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
+              onClick={async () => await publishProject(!projectWithDetails.project.publish_date)}>
+              {projectWithDetails.project.publish_date ? 'Unpublish' : 'Publish'}
+            </Button>
+            {showDeleteProjectButton && (
+              <Tooltip
+                arrow
+                color="secondary"
+                title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
                 <>
-                  <span>Timeline:</span>{' '}
-                  {getFormattedDateRangeString(
-                    DATE_FORMAT.ShortMediumDateFormat,
-                    projectWithDetails.project.start_date,
-                    projectWithDetails.project.end_date
-                  )}
+                  <IconButton
+                    data-testid="delete-project-button"
+                    onClick={showDeleteProjectDialog}
+                    disabled={!enableDeleteProjectButton}>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </IconButton>
                 </>
-              ) : (
-                <>
-                  <span>Start Date:</span>{' '}
-                  {getFormattedDateRangeString(
-                    DATE_FORMAT.ShortMediumDateFormat,
-                    projectWithDetails.project.start_date
-                  )}
-                </>
-              )}
-            </Typography>
+              </Tooltip>
+            )}
           </Box>
         </Box>
-        <Box ml={4} mt={4} mb={4}>
-          <Button
-            variant="outlined"
-            disableElevation
-            className={classes.actionButton}
-            data-testid="publish-project-button"
-            aria-label={projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
-            onClick={async () => await publishProject(!projectWithDetails.project.publish_date)}>
-            {projectWithDetails.project.publish_date ? 'Unpublish' : 'Publish'}
-          </Button>
-          {showDeleteProjectButton && (
-            <Tooltip
-              arrow
-              color="secondary"
-              title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
-              <>
-                <IconButton
-                  data-testid="delete-project-button"
-                  onClick={showDeleteProjectDialog}
-                  disabled={!enableDeleteProjectButton}>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </IconButton>
-              </>
-            </Tooltip>
-          )}
-        </Box>
-      </Box>
-    </Container>
+      </Container>
+    </Paper>
   );
 };
 
