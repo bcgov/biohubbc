@@ -7,7 +7,12 @@ import { HTTP400 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
   getDataPackageSQL,
-  getPublishedSurveyStatusSQL
+  getPublishedSurveyStatusSQL,
+  getSurveySQL,
+  getProjectSQL,
+  getSurveyFundingSourceSQL,
+  getGeometryBoundingBoxSQL,
+  getGeometryPolygonSQL
 } from '../../queries/dwc/dwc-queries';
 // import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
 // import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
@@ -17,6 +22,8 @@ import * as xml2js from 'xml2js';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../../queries/codes/db-constant-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
+
+type Eml = { [k: string]: any };
 
 const defaultLog = getLogger('paths/dwc/eml');
 
@@ -164,10 +171,6 @@ export const getDataPackageEML = async (
     suppliedTitle
   });
 
-  // the EML specification requires all fields with values
-  // fail gracefully by providing standard message that data is not supplied
-  const notSuppliedMessage = 'Not Supplied';
-
   // get all required data
   const dataPackage = await getDataPackage(dataPackageId, connection);
   const occurrenceSubmission = await getSurveyOccurrenceSubmission(dataPackageId, connection);
@@ -175,15 +178,30 @@ export const getDataPackageEML = async (
     occurrenceSubmission.rows[0].occurrence_submission_id,
     connection
   );
+  const survey = await getSurvey(occurrenceSubmission.rows[0].survey_id, connection);
+  const project = await getProject(survey.rows[0].project_id, connection);
+  const surveyFundingSource = await getSurveyFundingSource(survey.rows[0].survey_id, connection);
+  const surveyBoundingBox = await getSurveyBoundingBox(survey.rows[0].survey_id, connection);
+  const surveyPolygons = await getSurveyPolygons(survey.rows[0].survey_id, connection);
   // database constants
-  const simsProviderURL = await getDbCharacterSystemMetaDataConstant('PROVIDER_URL', connection);
-  const securityProviderURL = await getDbCharacterSystemMetaDataConstant('SECURITY_PROVIDER_URL', connection);
-  const organizationFullName = await getDbCharacterSystemMetaDataConstant('ORGANIZATION_NAME_FULL', connection);
-  const organizationURL = await getDbCharacterSystemMetaDataConstant('ORGANIZATION_URL', connection);
-  const intellectualRights = await getDbCharacterSystemMetaDataConstant('INTELLECTUAL_RIGHTS', connection);
+  const simsProviderURL = checkProvided(
+    (await getDbCharacterSystemMetaDataConstant('PROVIDER_URL', connection)).rows[0].constant
+  );
+  const securityProviderURL = checkProvided(
+    (await getDbCharacterSystemMetaDataConstant('SECURITY_PROVIDER_URL', connection)).rows[0].constant
+  );
+  const organizationFullName = checkProvided(
+    (await getDbCharacterSystemMetaDataConstant('ORGANIZATION_NAME_FULL', connection)).rows[0].constant
+  );
+  const organizationURL = checkProvided(
+    (await getDbCharacterSystemMetaDataConstant('ORGANIZATION_URL', connection)).rows[0].constant
+  );
+  const intellectualRights = checkProvided(
+    (await getDbCharacterSystemMetaDataConstant('INTELLECTUAL_RIGHTS', connection)).rows[0].constant
+  );
 
   // build eml object
-  const eml: { [k: string]: any } = {
+  const eml: Eml = {
     'eml:eml': {
       $: {
         'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
@@ -197,48 +215,159 @@ export const getDataPackageEML = async (
   const emlRoot = eml['eml:eml'];
 
   emlRoot.$.packageId = 'urn:uuid:' + dataPackage.rows[0].uuid;
-  emlRoot.$.system = simsProviderURL.rows[0].constant ? simsProviderURL.rows[0].constant : notSuppliedMessage;
-  //eml.access
+  emlRoot.$.system = simsProviderURL;
+
   emlRoot.access = { $: { order: 'allowFirst' } };
   emlRoot.access.allow = {};
   emlRoot.access.allow.principal = 'public';
   emlRoot.access.allow.permission = 'read';
-  emlRoot.access.$.system = securityProviderURL.rows[0].constant
-    ? securityProviderURL.rows[0].constant
-    : notSuppliedMessage;
+  emlRoot.access.$.system = securityProviderURL;
 
-  //eml.dataset
   emlRoot.dataset = { $: { order: 'allowFirst' } };
   emlRoot.dataset.$.id = dataPackage.rows[0].uuid;
-  //eml.dataset.title
+
   if (suppliedTitle) {
     emlRoot.dataset.title = suppliedTitle;
   } else if (dataPackage) {
     emlRoot.dataset.title = dataPackage.rows[0].uuid;
   }
-  //eml.dataset.creator
-  emlRoot.dataset.creator = organizationFullName.rows[0].constant
-    ? organizationFullName.rows[0].constant
-    : notSuppliedMessage;
-  //eml.dataset.metadataProvider
+
+  emlRoot.dataset.creator = organizationFullName;
+
   emlRoot.dataset.metadataProvider = {};
-  emlRoot.dataset.metadataProvider.organizationName = organizationFullName.rows[0].constant
-    ? organizationFullName.rows[0].constant
-    : notSuppliedMessage;
-  emlRoot.dataset.metadataProvider.onlineUrl = organizationURL.rows[0].constant
-    ? organizationURL.rows[0].constant
-    : notSuppliedMessage;
-  //eml.dataset.pubDate
+  emlRoot.dataset.metadataProvider.organizationName = organizationFullName;
+  emlRoot.dataset.metadataProvider.onlineUrl = organizationURL;
+
   // TODO determine if this can be called without a publish date and if so what value to use?
   emlRoot.dataset.pubDate = publishedSurveyStatus.rows[0].status_event_timestamp.toISOString().split('T')[0];
-  //eml.dataset.language
+
   emlRoot.dataset.language = 'english';
-  //eml.dataset.intellectualRights
-  emlRoot.dataset.intellectualRights = intellectualRights.rows[0].constant;
+
+  emlRoot.dataset.intellectualRights = {};
+  emlRoot.dataset.intellectualRights.para = intellectualRights;
+
+  emlRoot.dataset.contact = {};
+  if (project.rows[0].coordinator_public) {
+    emlRoot.dataset.contact.individualName = {};
+    emlRoot.dataset.contact.individualName.givenName = project.rows[0].coordinator_first_name;
+    emlRoot.dataset.contact.individualName.surName = project.rows[0].coordinator_last_name;
+    emlRoot.dataset.contact.organizationName = project.rows[0].coordinator_agency_name;
+    emlRoot.dataset.contact.electronicMailAddress = project.rows[0].coordinator_email_address;
+  } else {
+    emlRoot.dataset.contact.organizationName = organizationFullName;
+    emlRoot.dataset.contact.onlineUrl = organizationURL;
+  }
+
+  // both projects and surveys are represented as "projects" in EML
+  // main EML "project" is the survey
+  emlRoot.dataset.project = { $: { id: survey.rows[0].uuid, system: simsProviderURL } };
+  emlRoot.dataset.project.title = survey.rows[0].name;
+  emlRoot.dataset.project.personnel = {};
+  if (project.rows[0].coordinator_public) {
+    emlRoot.dataset.project.personnel.individualName = {};
+    emlRoot.dataset.project.personnel.individualName.givenName = survey.rows[0].lead_first_name;
+    emlRoot.dataset.project.personnel.individualName.surName = survey.rows[0].lead_last_name;
+    emlRoot.dataset.project.personnel.organizationName = project.rows[0].coordinator_agency_name;
+    emlRoot.dataset.project.personnel.role = 'pointOfContact';
+  } else {
+    emlRoot.dataset.project.personnel.organizationName = organizationFullName;
+    emlRoot.dataset.project.personnel.onlineUrl = organizationURL;
+    emlRoot.dataset.project.personnel.role = 'custodianSteward';
+  }
+
+  emlRoot.dataset.project.abstract = {};
+  emlRoot.dataset.project.abstract.section = {};
+  emlRoot.dataset.project.abstract.section.title = 'Objectives';
+  emlRoot.dataset.project.abstract.section.para = survey.rows[0].objectives;
+
+  if (surveyFundingSource.rowCount) {
+    addFundingSourceEML(eml, emlRoot, surveyFundingSource);
+  }
+
+  emlRoot.dataset.project.studyAreaDescription = {};
+  emlRoot.dataset.project.studyAreaDescription.coverage = {};
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage = {};
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.geographicDescription = survey.rows[0]
+    .location_description
+    ? survey.rows[0].location_name + ' - ' + survey.rows[0].location_description
+    : survey.rows[0].location_name;
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates = {};
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.westBoundingCoordinate =
+    surveyBoundingBox.rows[0].st_xmax;
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.eastBoundingCoordinate =
+    surveyBoundingBox.rows[0].st_ymax;
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.northBoundingCoordinate =
+    surveyBoundingBox.rows[0].st_xmin;
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.southBoundingCoordinate =
+    surveyBoundingBox.rows[0].st_ymin;
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon = [];
+  for (const row of surveyPolygons.rows) {
+    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[row.polygon - 1] = {};
+    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[
+      row.polygon - 1
+    ].datasetGPolygonOuterGRing = {};
+  }
 
   // convert object to xml
   const builder = new xml2js.Builder();
   return builder.buildObject(eml);
+};
+
+/**
+ * Return funding source eml.
+ *
+ * @param {Eml} eml
+ * @return {Eml}
+ */
+export const addFundingSourceEML = (eml: Eml, emlRoot: any, fundingSourceRows: any): Eml => {
+  emlRoot.dataset.project.funding = {};
+  emlRoot.dataset.project.funding.section = {};
+  emlRoot.dataset.project.funding.section.title = 'Funding Source';
+  for (const row of fundingSourceRows.rows) {
+    emlRoot.dataset.project.funding.section.para = row.funding_source_name;
+    emlRoot.dataset.project.funding.section.section = {};
+    emlRoot.dataset.project.funding.section.section.title = 'Investment Action Category';
+    emlRoot.dataset.project.funding.section.section.para = row.investment_action_category_name;
+
+    emlRoot.dataset.project.funding.section.section.section = [];
+    emlRoot.dataset.project.funding.section.section.section[0] = {};
+    emlRoot.dataset.project.funding.section.section.section[0].title = 'Funding Source Project ID';
+    emlRoot.dataset.project.funding.section.section.section[0].para = row.project_funding_source_id;
+    emlRoot.dataset.project.funding.section.section.section[1] = {};
+    emlRoot.dataset.project.funding.section.section.section[1].title = 'Funding Amount';
+    emlRoot.dataset.project.funding.section.section.section[1].para = row.funding_amount;
+    emlRoot.dataset.project.funding.section.section.section[2] = {};
+    emlRoot.dataset.project.funding.section.section.section[2].title = 'Funding Start Date';
+    emlRoot.dataset.project.funding.section.section.section[2].para = new Date(row.funding_start_date)
+      .toISOString()
+      .split('T')[0];
+    emlRoot.dataset.project.funding.section.section.section[3] = {};
+    emlRoot.dataset.project.funding.section.section.section[3].title = 'Funding End Date';
+    emlRoot.dataset.project.funding.section.section.section[3].para = new Date(row.funding_end_date)
+      .toISOString()
+      .split('T')[0];
+  }
+
+  return eml;
+};
+
+/**
+ * Return default message if value not provided.
+ *
+ * @param {string} valueToCheck
+ * @param {IDBConnection} connection
+ * @return {string | number}
+ */
+export const checkProvided = (valueToCheck: string | number | null): string | number => {
+  // the EML specification requires all fields have values
+  // fail gracefully by providing standard message that data is not supplied
+  const notSuppliedMessage = 'Not Supplied';
+
+  if (valueToCheck === null) {
+    return notSuppliedMessage;
+  }
+
+  return valueToCheck;
 };
 
 /**
@@ -324,6 +453,101 @@ export const getPublishedSurveyStatus = async (
   connection: IDBConnection
 ): Promise<any> => {
   const sqlStatement = getPublishedSurveyStatusSQL(occurrenceSubmissionId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get survey record.
+ *
+ * @param {number} surveyId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getSurvey = async (surveyId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getSurveySQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get project record.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getProject = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getProjectSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get funding source records.
+ *
+ * @param {number} surveyId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getSurveyFundingSource = async (surveyId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getSurveyFundingSourceSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get survey bounding box.
+ *
+ * @param {number} surveyId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getGeometryBoundingBoxSQL(surveyId, 'survey_id', 'survey');
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get survey polygons.
+ *
+ * @param {number} surveyId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+ export const getSurveyPolygons = async (surveyId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getGeometryPolygonSQL(surveyId, 'survey_id', 'survey');
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
