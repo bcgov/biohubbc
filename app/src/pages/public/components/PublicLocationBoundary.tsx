@@ -1,13 +1,12 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import MapContainer from 'components/map/MapContainer';
 import { Feature } from 'geojson';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
-import InferredLocationDetails from 'components/boundary/InferredLocationDetails';
-import { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 
 export interface IPublicLocationBoundaryProps {
   projectForViewData: IGetProjectForViewResponse;

@@ -260,7 +260,9 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               className={classes.actionButton}
               data-testid="publish-project-button"
               aria-label={projectWithDetails.project.publish_date ? 'Unpublish Project' : 'Publish Project'}
-              onClick={async () => await publishProject(!projectWithDetails.project.publish_date)}>
+              onClick={() => {
+                publishProject(!projectWithDetails.project.publish_date);
+              }}>
               {projectWithDetails.project.publish_date ? 'Unpublish' : 'Publish'}
             </Button>
             {showDeleteProjectButton && (
