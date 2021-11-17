@@ -211,21 +211,17 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 ? [<OccurrenceFeatureGroup occurrenceSubmissionId={survey_details.occurrence_submission_id} />]
                 : undefined
             }
-            />
+          />
         </Box>
 
-        <Box mt={3}>
-          <Typography variant="h3">
+        <Box my={3}>
+          <Typography variant="body2" color="textSecondary">
             Study Area Name
           </Typography>
-          <Typography>
-            {survey_details.survey_area_name}
-          </Typography>
+          <Typography variant="body1">{survey_details.survey_area_name}</Typography>
         </Box>
 
-        <Box mt={3}>
-          <InferredLocationDetails layers={inferredLayersInfo} />
-        </Box>
+        <InferredLocationDetails layers={inferredLayersInfo} />
 
         <Box mt={3}>
           <Button

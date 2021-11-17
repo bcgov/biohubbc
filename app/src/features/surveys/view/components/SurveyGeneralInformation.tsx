@@ -351,22 +351,14 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>
-                  Number
-                </TableCell>
-                <TableCell>
-                  Type
-                </TableCell>
+                <TableCell>Number</TableCell>
+                <TableCell>Type</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>
-                  {survey_details.permit_number}
-                </TableCell>
-                <TableCell>
-                  {survey_details.permit_type}
-                </TableCell>
+                <TableCell>{survey_details.permit_number}</TableCell>
+                <TableCell>{survey_details.permit_type}</TableCell>
               </TableRow>
             </TableBody>
             {/* <Typography variant="body1">
@@ -389,45 +381,33 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>
-                  Agency
-                </TableCell>
-                <TableCell>
-                  Amount
-                </TableCell>
-                <TableCell>
-                  Dates
-                </TableCell>
+                <TableCell>Agency</TableCell>
+                <TableCell>Amount</TableCell>
+                <TableCell>Dates</TableCell>
               </TableRow>
             </TableHead>
             <TableBody>
-            {(!survey_details.funding_sources || survey_details.funding_sources.length === 0) && (
-              <TableRow>
-                <TableCell colSpan={3}>
-                  No Funding Sources
-                </TableCell>
-              </TableRow>
-            )}
-            {survey_details.funding_sources &&
-              survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
-                return (
-                  <TableRow key={index}>
-                    <TableCell>
-                      {fundingSource.agency_name}
-                    </TableCell>
-                    <TableCell>
-                      {getFormattedAmount(fundingSource.funding_amount)}
-                    </TableCell>
-                    <TableCell>
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        fundingSource.funding_start_date,
-                        fundingSource.funding_end_date
-                      )}
-                    </TableCell>
-                  </TableRow>
+              {(!survey_details.funding_sources || survey_details.funding_sources.length === 0) && (
+                <TableRow>
+                  <TableCell colSpan={3}>No Funding Sources</TableCell>
+                </TableRow>
+              )}
+              {survey_details.funding_sources &&
+                survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
+                  return (
+                    <TableRow key={index}>
+                      <TableCell>{fundingSource.agency_name}</TableCell>
+                      <TableCell>{getFormattedAmount(fundingSource.funding_amount)}</TableCell>
+                      <TableCell>
+                        {getFormattedDateRangeString(
+                          DATE_FORMAT.ShortMediumDateFormat,
+                          fundingSource.funding_start_date,
+                          fundingSource.funding_end_date
+                        )}
+                      </TableCell>
+                    </TableRow>
                   );
-               })}
+                })}
             </TableBody>
           </Table>
         </TableContainer>

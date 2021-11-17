@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
@@ -175,51 +174,49 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         mapTitle={'Project Location'}
       />
 
-    <Box component={Paper} px={3} pt={1} pb={3}>
-      <H2ButtonToolbar
-        label="Project Location"
-        buttonLabel="Edit"
-        buttonTitle="Edit Project Location"
-        buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
-        buttonOnClick={() => handleDialogEditOpen()}
-        buttonProps={{ variant: 'text' }}
-        toolbarProps={{ disableGutters: true }}
-      />
-
-      <Box mt={2} height={350}>
-        <MapContainer
-          mapId="project_location_form_map"
-          hideDrawControls={true}
-          nonEditableGeometries={nonEditableGeometries}
-          bounds={bounds}
-          setInferredLayersInfo={setInferredLayersInfo}
+      <Box component={Paper} px={3} pt={1} pb={3}>
+        <H2ButtonToolbar
+          label="Project Location"
+          buttonLabel="Edit"
+          buttonTitle="Edit Project Location"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          buttonProps={{ variant: 'text' }}
+          toolbarProps={{ disableGutters: true }}
         />
-      </Box>
 
-      <dl>
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <Typography variant="h3">
-              Location Description
-            </Typography>
-            <Typography variant="body1">
-              {location.location_description ? <>{location.location_description}</> : 'No Description'}
-            </Typography>
-          </Grid>
-        </Grid>
-      </dl>
-      <InferredLocationDetails layers={inferredLayersInfo} />
-      <Button
-        variant="text"
-        color="primary"
-        className="sectionHeaderButton"
-        onClick={() => handleDialogViewOpen()}
-        title="Expand Location"
-        aria-label="Show Expanded Location"
-        endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
-        Show More
-      </Button>
-    </Box>
+        <Box mt={2} height={350}>
+          <MapContainer
+            mapId="project_location_form_map"
+            hideDrawControls={true}
+            nonEditableGeometries={nonEditableGeometries}
+            bounds={bounds}
+            setInferredLayersInfo={setInferredLayersInfo}
+          />
+        </Box>
+
+        <Box my={3}>
+          <Typography variant="body2" color="textSecondary">
+            Location Description
+          </Typography>
+          <Typography variant="body1">
+            {location.location_description ? <>{location.location_description}</> : 'No Description'}
+          </Typography>
+        </Box>
+
+        <InferredLocationDetails layers={inferredLayersInfo} />
+
+        <Button
+          variant="text"
+          color="primary"
+          className="sectionHeaderButton"
+          onClick={() => handleDialogViewOpen()}
+          title="Expand Location"
+          aria-label="Show Expanded Location"
+          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+          Show More
+        </Button>
+      </Box>
     </>
   );
 };

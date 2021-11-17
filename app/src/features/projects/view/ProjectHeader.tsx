@@ -208,7 +208,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   return (
     <Paper square={true}>
       <Container maxWidth="xl">
-
         <Box pt={3} pb={2}>
           <Breadcrumbs>
             <Link

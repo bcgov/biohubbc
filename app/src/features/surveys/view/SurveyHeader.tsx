@@ -212,7 +212,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     <>
       <Paper square={true}>
         <Container maxWidth="xl">
- 
           <Box pt={3} pb={2}>
             <Breadcrumbs>
               <Link
@@ -244,7 +243,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 {getChipIcon(surveyWithDetails.survey_details.completion_status)}
                 &nbsp;&nbsp;
                 <Typography component="span" variant="subtitle1" color="textSecondary">
-                <span>Timeline:</span>{' '}
+                  <span>Timeline:</span>{' '}
                   {getFormattedDateRangeString(
                     DATE_FORMAT.ShortMediumDateFormat,
                     surveyWithDetails.survey_details.start_date,
@@ -272,7 +271,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                       data-testid="delete-survey-button"
                       onClick={showDeleteSurveyDialog}
                       disabled={!enableDeleteSurveyButton}>
-                      <Icon path={mdiTrashCanOutline} size={1} /> 
+                      <Icon path={mdiTrashCanOutline} size={1} />
                     </IconButton>
                   </>
                 </Tooltip>
