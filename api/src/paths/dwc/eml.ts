@@ -284,38 +284,54 @@ export const getDataPackageEML = async (
     emlRoot.dataset.project.funding = getFundingSourceEML(surveyFundingSource);
   }
 
-  emlRoot.dataset.project.studyAreaDescription = {};
-  emlRoot.dataset.project.studyAreaDescription.coverage = {};
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage = {};
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.geographicDescription = survey.rows[0]
-    .location_description
+  const surveyGeographicDescription = survey.rows[0].location_description
     ? survey.rows[0].location_name + ' - ' + survey.rows[0].location_description
     : survey.rows[0].location_name;
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates = {};
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.westBoundingCoordinate =
-    surveyBoundingBox.rows[0].st_xmax;
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.eastBoundingCoordinate =
-    surveyBoundingBox.rows[0].st_ymax;
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.northBoundingCoordinate =
-    surveyBoundingBox.rows[0].st_xmin;
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.southBoundingCoordinate =
-    surveyBoundingBox.rows[0].st_ymin;
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon = [];
-  surveyPolygons.rows.forEach(function (row: any, i: number) {
-    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i] = {};
-    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing = {};
-    row.points.forEach(function (point: any, g: number) {
-    //   emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g] = {};
-    //   // emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLatitude = point[0];
-      // emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLongitude = point[1];
-      defaultLog.debug({ label: 'getSurveyDataPackageEML', message: 'params ' + point[0] + ', ' + point[1] });
-      // defaultLog.debug({ label: 'getSurveyDataPackageEML', message: 'params ' + point[g][1] });
-    });
-  });
-  
+  emlRoot.dataset.project.studyAreaDescription = getSpatialEML(
+    surveyGeographicDescription,
+    surveyBoundingBox,
+    surveyPolygons
+  );
+
   // convert object to xml
   const builder = new xml2js.Builder();
   return builder.buildObject(eml);
+};
+
+/**
+ * Return spatial eml.
+ *
+ * @param {string} geographicDescription
+ * @param {*} boundingBox
+ * @param {*} polygonRows
+ * @return {Eml}
+ */
+export const getSpatialEML = (geographicDescription: string, boundingBox: any, polygonRows: any): Eml => {
+  const studyAreaDescription: Eml = {};
+  studyAreaDescription.coverage = {};
+  studyAreaDescription.coverage.geographicCoverage = {};
+  studyAreaDescription.coverage.geographicCoverage.geographicDescription = geographicDescription;
+  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates = {};
+  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.westBoundingCoordinate = boundingBox.rows[0].st_xmax;
+  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.eastBoundingCoordinate =
+    boundingBox.rows[0].st_ymax;
+  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.northBoundingCoordinate =
+    boundingBox.rows[0].st_xmin;
+  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.southBoundingCoordinate =
+    boundingBox.rows[0].st_ymin;
+  studyAreaDescription.coverage.geographicCoverage.datasetGPolygon = [];
+  polygonRows.rows.forEach(function (row: any, i: number) {
+    studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i] = {};
+    studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing = {};
+    studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint = [];
+    row.points.forEach(function (point: any, g: number) {
+      studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g] = {};
+      studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLatitude = point[0];
+      studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLongitude = point[1];
+    });
+  });
+
+  return studyAreaDescription;
 };
 
 /**
