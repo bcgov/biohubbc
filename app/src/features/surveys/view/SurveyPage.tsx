@@ -103,10 +103,10 @@ const SurveyPage: React.FC = () => {
                 refresh={getSurvey}
               />
               <Box mt={3}>
-                <SurveyObservations refresh={getSurvey}/>
+                <SurveyObservations refresh={getSurvey} />
               </Box>
               <Box mt={3}>
-                <SurveySummaryResults  />
+                <SurveySummaryResults />
               </Box>
               <Box mt={3}>
                 <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
@@ -122,7 +122,6 @@ const SurveyPage: React.FC = () => {
           </Grid>
         </Box>
       </Container>
-
     </>
   );
 };

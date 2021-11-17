@@ -267,7 +267,12 @@ const SurveySummaryResults = () => {
     return (
       <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
         <Box display="flex" alignItems="center" m={0}>
-          <Link className={classes.alertLink} component="button" variant="body2" onClick={() => viewFileContents()} gutterBottom={false}>
+          <Link
+            className={classes.alertLink}
+            component="button"
+            variant="body2"
+            onClick={() => viewFileContents()}
+            gutterBottom={false}>
             <strong>{fileName}</strong>
           </Link>
         </Box>
@@ -283,12 +288,18 @@ const SurveySummaryResults = () => {
           <Box key={index} pl={0.25}>
             <Box display="flex" alignItems="center">
               <Icon path={iconName} size={1} color="#ff5252" />
-              <Typography variant="body1"><strong className={classes.tab}>{msgGroup[key].label}</strong></Typography>
+              <Typography variant="body1">
+                <strong className={classes.tab}>{msgGroup[key].label}</strong>
+              </Typography>
             </Box>
             <Box pl={2}>
               <Box component="ul" my={1}>
                 {value.map((message: string, index2: number) => {
-                  return <li key={`${index}-${index2}`}><Typography variant="body2">{message}</Typography></li>;
+                  return (
+                    <li key={`${index}-${index2}`}>
+                      <Typography variant="body2">{message}</Typography>
+                    </li>
+                  );
                 })}
               </Box>
             </Box>
@@ -301,7 +312,6 @@ const SurveySummaryResults = () => {
   return (
     <>
       <Paper>
-
         <H2ButtonToolbar
           label="Summary Results"
           buttonLabel="Import"
@@ -343,9 +353,7 @@ const SurveySummaryResults = () => {
           )}
           {submission && !hasErrorMessages && (
             <>
-              <Box px={3}>
-                {displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}
-              </Box>
+              <Box px={3}>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
 
               <Box mt={1} overflow="hidden">
                 <ObservationSubmissionCSV
@@ -354,7 +362,6 @@ const SurveySummaryResults = () => {
                   }}
                 />
               </Box>
-
             </>
           )}
         </Box>
@@ -372,7 +379,6 @@ const SurveySummaryResults = () => {
           uploadHandler={importSummaryResults()}
         />
       </ComponentDialog>
-
     </>
   );
 };

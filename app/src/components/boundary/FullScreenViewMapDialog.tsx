@@ -48,8 +48,12 @@ export const FullScreenViewMapDialog: React.FC<IFullScreenViewMapProps> = (props
           <Box mb={3}>
             <Typography variant="h2">{props.mapTitle}</Typography>
           </Box>
-          <Typography variant="h3">Location description</Typography>
-          <Typography variant="body1">{props.description ? <>{props.description}</> : 'No Description'}</Typography>
+          <Box mb={3}>
+            <Typography variant="body2" color="textSecondary">
+              Location description
+            </Typography>
+            <Typography variant="body1">{props.description ? <>{props.description}</> : 'No Description'}</Typography>
+          </Box>
           {props.layers}
         </Box>
         <Box flex="1 1 auto">{props.map}</Box>

@@ -219,19 +219,20 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
       />
 
       <TableContainer>
-          <Table padding="default" className={classes.fundingSourceTable}>
-            <TableHead>
-              <TableRow>
-                <TableCell>Agency</TableCell>
-                <TableCell  width="100px">Project ID</TableCell>
-                <TableCell>Amount</TableCell>
-                <TableCell>Dates</TableCell>
-                <TableCell width="130px" align="center">Actions</TableCell>
-              </TableRow>
-            </TableHead>
+        <Table padding="default" className={classes.fundingSourceTable}>
+          <TableHead>
+            <TableRow>
+              <TableCell>Agency</TableCell>
+              <TableCell width="100px">Project ID</TableCell>
+              <TableCell>Amount</TableCell>
+              <TableCell>Dates</TableCell>
+              <TableCell width="130px" align="center">
+                Actions
+              </TableCell>
+            </TableRow>
+          </TableHead>
 
-            <TableBody>
-
+          <TableBody>
             {hasFundingSources &&
               funding.fundingSources.map((item: any, index: number) => (
                 <TableRow key={item.id}>
@@ -248,47 +249,39 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                       {item.agency_project_id || 'No Agency Project ID'}
                     </Typography>
                   </TableCell>
-                  <TableCell>
-                    {getFormattedAmount(item.funding_amount)}
-                  </TableCell>
+                  <TableCell>{getFormattedAmount(item.funding_amount)}</TableCell>
                   <TableCell>
                     <Typography variant="body2" noWrap>
-                      {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat,
-                        item.start_date,
-                        item.end_date
-                      )}
+                      {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, item.start_date, item.end_date)}
                     </Typography>
                   </TableCell>
                   <TableCell align="center">
                     <IconButton
-                        onClick={() => handleDialogEditOpen(index)}
-                        title="Edit Funding Source"
-                        aria-label="Edit Funding Source">
-                        <Icon path={mdiPencilOutline} size={0.875} />
-                      </IconButton>
-                      <IconButton
-                        data-testid="delete-funding-source"
-                        onClick={() => handleDeleteDialogOpen(index)}
-                        title="Remove Funding Source"
-                        aria-label="Remove Funding Source">
-                        <Icon path={mdiTrashCanOutline} size={0.875} />
-                        </IconButton>
+                      onClick={() => handleDialogEditOpen(index)}
+                      title="Edit Funding Source"
+                      aria-label="Edit Funding Source"
+                      data-testid="edit-funding-source">
+                      <Icon path={mdiPencilOutline} size={0.875} />
+                    </IconButton>
+                    <IconButton
+                      data-testid="delete-funding-source"
+                      onClick={() => handleDeleteDialogOpen(index)}
+                      title="Remove Funding Source"
+                      aria-label="Remove Funding Source">
+                      <Icon path={mdiTrashCanOutline} size={0.875} />
+                    </IconButton>
                   </TableCell>
                 </TableRow>
               ))}
 
-              {!hasFundingSources && (
-                <TableRow>
-                  <TableCell colSpan={3}>
-                    No Funding Sources
-                  </TableCell>
-                </TableRow>
-              )}
-
-            </TableBody>
-          </Table>
-        </TableContainer>
+            {!hasFundingSources && (
+              <TableRow>
+                <TableCell colSpan={3}>No Funding Sources</TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
     </>
   );
 };

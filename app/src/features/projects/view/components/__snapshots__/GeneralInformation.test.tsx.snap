@@ -43,7 +43,9 @@ exports[`ProjectDetails renders correctly with activity data 1`] = `
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -163,7 +165,9 @@ exports[`ProjectDetails renders correctly with no activity data 1`] = `
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -283,7 +287,9 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"

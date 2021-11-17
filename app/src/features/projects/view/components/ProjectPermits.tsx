@@ -166,27 +166,24 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
               </TableRow>
             </TableHead>
 
-              {hasPermits && (
-                <TableBody>
-                  {permit.permits.map((item: any) => (
-                    <TableRow key={item.permit_number}>
-                      <TableCell>{item.permit_number}</TableCell>
-                      <TableCell>{item.permit_type}</TableCell>
-                    </TableRow>
-                  ))}
-                </TableBody>
-              )}
+            {hasPermits && (
+              <TableBody>
+                {permit.permits.map((item: any) => (
+                  <TableRow key={item.permit_number}>
+                    <TableCell>{item.permit_number}</TableCell>
+                    <TableCell>{item.permit_type}</TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            )}
 
-              {!hasPermits && (
-                <TableBody>
+            {!hasPermits && (
+              <TableBody>
                 <TableRow>
-                  <TableCell colSpan={2}>
-                    No Permits
-                  </TableCell>
+                  <TableCell colSpan={2}>No Permits</TableCell>
                 </TableRow>
-                </TableBody>
-              )}
-            
+              </TableBody>
+            )}
           </Table>
         </TableContainer>
       </Box>

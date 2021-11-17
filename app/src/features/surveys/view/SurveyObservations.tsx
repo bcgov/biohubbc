@@ -347,111 +347,110 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   return (
     <>
-    <Paper>
+      <Paper>
+        <H2ButtonToolbar
+          label="Observations"
+          buttonLabel="Import"
+          buttonTitle="Import"
+          buttonStartIcon={<Icon path={mdiImport} size={1} />}
+          buttonOnClick={() => showUploadDialog()}
+        />
 
-      <H2ButtonToolbar
-        label="Observations"
-        buttonLabel="Import"
-        buttonTitle="Import"
-        buttonStartIcon={<Icon path={mdiImport} size={1} />}
-        buttonOnClick={() => showUploadDialog()}
-      />
-
-      <Box>
-        <Box component={Divider} m={0} />
-        {!submissionStatus && (
-          <Box p={3} textAlign="center">
-            <Typography data-testid="observations-nodata" variant="body2">
-              No Observation Data. &nbsp;
-              <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
-                Click Here to Import
-              </Link>
-            </Typography>
-          </Box>
-        )}
-
-        {!isValidating && submissionStatus?.status === 'System Error' && (
-          <>
-            {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed to Start')}
-
-            <Box mt={3} mb={1}>
-              <Typography data-testid="observations-error-details" variant="h4">
-                What's next?
+        <Box>
+          <Box component={Divider} m={0} />
+          {!submissionStatus && (
+            <Box p={3} textAlign="center">
+              <Typography data-testid="observations-nodata" variant="body2">
+                No Observation Data. &nbsp;
+                <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
+                  Click Here to Import
+                </Link>
               </Typography>
             </Box>
-            <Box mb={3}>
-              <Typography data-testid="observations-error-details" variant="body2">
-                Resolve the following errors in your local file and re-import.
-              </Typography>
-            </Box>
+          )}
 
-            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
-
-            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-          </>
-        )}
-
-        {!isValidating && submissionStatus?.status === 'Rejected' && (
-          <>
-            {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed')}
-            <Box mt={3} mb={1}>
-              <Typography data-testid="observations-error-details" variant="h4">
-                What's next?
-              </Typography>
-            </Box>
-            <Box mb={3}>
-              <Typography data-testid="observations-error-details" variant="body2">
-                Resolve the following errors in your local file and re-import.
-              </Typography>
-            </Box>
-
-            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
-
-            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-          </>
-        )}
-        {!isValidating &&
-          submissionStatus &&
-          (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
+          {!isValidating && submissionStatus?.status === 'System Error' && (
             <>
-              {displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}
+              {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed to Start')}
 
-              <Box mt={5} overflow="hidden">
-                <ObservationSubmissionCSV
-                  getCSVData={() => {
-                    return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
-                  }}
-                />
+              <Box mt={3} mb={1}>
+                <Typography data-testid="observations-error-details" variant="h4">
+                  What's next?
+                </Typography>
               </Box>
+              <Box mb={3}>
+                <Typography data-testid="observations-error-details" variant="body2">
+                  Resolve the following errors in your local file and re-import.
+                </Typography>
+              </Box>
+
+              {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
+
+              {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
             </>
           )}
-        {isValidating && submissionStatus && (
-          <>
-            {displayAlertBox(
-              'info',
-              mdiClockOutline,
-              submissionStatus?.inputFileName,
-              'Validating observation data. Please wait ...'
+
+          {!isValidating && submissionStatus?.status === 'Rejected' && (
+            <>
+              {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed')}
+              <Box mt={3} mb={1}>
+                <Typography data-testid="observations-error-details" variant="h4">
+                  What's next?
+                </Typography>
+              </Box>
+              <Box mb={3}>
+                <Typography data-testid="observations-error-details" variant="body2">
+                  Resolve the following errors in your local file and re-import.
+                </Typography>
+              </Box>
+
+              {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
+
+              {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+            </>
+          )}
+          {!isValidating &&
+            submissionStatus &&
+            (submissionStatus.status === 'Darwin Core Validated' ||
+              submissionStatus.status === 'Template Validated') && (
+              <>
+                {displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}
+
+                <Box mt={5} overflow="hidden">
+                  <ObservationSubmissionCSV
+                    getCSVData={() => {
+                      return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
+                    }}
+                  />
+                </Box>
+              </>
             )}
-          </>
-        )}
-      </Box>
-    </Paper>
+          {isValidating && submissionStatus && (
+            <>
+              {displayAlertBox(
+                'info',
+                mdiClockOutline,
+                submissionStatus?.inputFileName,
+                'Validating observation data. Please wait ...'
+              )}
+            </>
+          )}
+        </Box>
+      </Paper>
 
-    <ComponentDialog
-      open={openImportObservations}
-      dialogTitle="Import Observation Data"
-      onClose={() => {
-        setOpenImportObservations(false);
-        setIsPolling(true);
-        setIsLoading(true);
-      }}>
-      <FileUpload
-        dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
-        uploadHandler={importObservations()}
-      />
-    </ComponentDialog>
-
+      <ComponentDialog
+        open={openImportObservations}
+        dialogTitle="Import Observation Data"
+        onClose={() => {
+          setOpenImportObservations(false);
+          setIsPolling(true);
+          setIsLoading(true);
+        }}>
+        <FileUpload
+          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
+          uploadHandler={importObservations()}
+        />
+      </ComponentDialog>
     </>
   );
 };

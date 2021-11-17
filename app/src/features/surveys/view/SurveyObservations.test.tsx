@@ -28,14 +28,14 @@ describe('SurveyObservations', () => {
   });
 
   it('renders correctly', async () => {
-    const { getByTestId } = render(
+    const { getByText } = render(
       <MemoryRouter>
         <SurveyObservations />
       </MemoryRouter>
     );
 
     await waitFor(() => {
-      expect(getByTestId('observations-heading')).toBeInTheDocument();
+      expect(getByText('Observations')).toBeInTheDocument();
       expect(mockBiohubApi().observation.getObservationSubmission).toHaveBeenCalledTimes(1);
     });
   });

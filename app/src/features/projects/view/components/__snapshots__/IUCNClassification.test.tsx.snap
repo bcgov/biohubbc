@@ -12,7 +12,7 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
       IUCN Conservation Actions Classification
     </h3>
     <div
-      class="MuiBox-root MuiBox-root-6"
+      class="MuiBox-root MuiBox-root-7"
     >
       <button
         aria-label="Edit IUCN Classifications"
@@ -40,7 +40,9 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -48,56 +50,45 @@ exports[`IUCNClassification renders correctly with classification details 1`] = 
       </button>
     </div>
   </div>
+  <hr
+    class="MuiDivider-root MuiBox-root MuiBox-root-8"
+  />
   <ul
-    class="MuiBox-root MuiBox-root-7 listNoBullets"
+    class="MuiList-root"
   >
     <li
-      class="MuiBox-root MuiBox-root-8 makeStyles-iucnListItem-5"
+      class="MuiListItem-root makeStyles-iucnListItem-6 MuiListItem-divider"
     >
-      <hr
-        class="MuiDivider-root"
-      />
-      <div
-        class="MuiBox-root MuiBox-root-9"
+      <p
+        class="MuiTypography-root MuiTypography-body2"
       >
-        <span
-          class="MuiTypography-root MuiTypography-body1"
-        >
-          classification 
-          <span>
-            &gt;
-          </span>
-           sub classification 1 
-          <span>
-            &gt;
-          </span>
-           sub classification 2
+        classification 
+        <span>
+          &gt;
         </span>
-      </div>
+         sub classification 1 
+        <span>
+          &gt;
+        </span>
+         sub classification 2
+      </p>
     </li>
     <li
-      class="MuiBox-root MuiBox-root-10 makeStyles-iucnListItem-5"
+      class="MuiListItem-root makeStyles-iucnListItem-6 MuiListItem-divider"
     >
-      <hr
-        class="MuiDivider-root"
-      />
-      <div
-        class="MuiBox-root MuiBox-root-11"
+      <p
+        class="MuiTypography-root MuiTypography-body2"
       >
-        <span
-          class="MuiTypography-root MuiTypography-body1"
-        >
-          classification again 
-          <span>
-            &gt;
-          </span>
-           sub classification 1 again 
-          <span>
-            &gt;
-          </span>
-           sub classification 2 again
+        classification again 
+        <span>
+          &gt;
         </span>
-      </div>
+         sub classification 1 again 
+        <span>
+          &gt;
+        </span>
+         sub classification 2 again
+      </p>
     </li>
   </ul>
 </DocumentFragment>
@@ -143,7 +134,9 @@ exports[`IUCNClassification renders correctly with no classification details 1`]
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -151,11 +144,14 @@ exports[`IUCNClassification renders correctly with no classification details 1`]
       </button>
     </div>
   </div>
+  <hr
+    class="MuiDivider-root MuiBox-root MuiBox-root-3"
+  />
   <ul
-    class="MuiBox-root MuiBox-root-3 listNoBullets"
+    class="MuiBox-root MuiBox-root-4 listNoBullets"
   >
     <li
-      class="MuiBox-root MuiBox-root-4 makeStyles-iucnListItem-1"
+      class="MuiBox-root MuiBox-root-5 makeStyles-iucnListItem-1"
     >
       <dd
         class="MuiTypography-root MuiTypography-body1"

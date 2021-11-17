@@ -43,7 +43,9 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -57,154 +59,145 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
     <div
       class="MuiBox-root MuiBox-root-13"
     >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Cras dapibus. Vivamus elementum
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         nisi.
-      </p>
       <div
         class="MuiBox-root MuiBox-root-14"
       >
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
-          tabindex="0"
-          type="button"
+        <p
+          class="MuiTypography-root MuiTypography-body1"
         >
-          <span
-            class="MuiButton-label"
+          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Cras dapibus. Vivamus elementum
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           nisi.
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-15"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+            tabindex="0"
+            type="button"
           >
-            Read More
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
+            <span
+              class="MuiButton-label"
+            >
+              Read More
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-15"
-  >
-    <div
-      class="MuiBox-root MuiBox-root-16"
-    >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
-      >
-        Caveats
-      </h3>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-17"
-    >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Cras dapibus. Vivamus elementum
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         nisi.
-      </p>
       <div
-        class="MuiBox-root MuiBox-root-18"
+        class="MuiBox-root MuiBox-root-16"
       >
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
-          tabindex="0"
-          type="button"
+        <p
+          class="MuiTypography-root MuiTypography-body1"
         >
-          <span
-            class="MuiButton-label"
+          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Cras dapibus. Vivamus elementum
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           nisi.
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-17"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+            tabindex="0"
+            type="button"
           >
-            Read More
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
+            <span
+              class="MuiButton-label"
+            >
+              Read More
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -214,7 +207,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
 exports[`ProjectObjectives renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-19"
+    class="MuiBox-root MuiBox-root-18"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -226,7 +219,7 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
         Objectives
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-20"
+        class="MuiBox-root MuiBox-root-19"
       >
         <button
           aria-label="Edit Project Objectives"
@@ -254,7 +247,9 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -266,57 +261,48 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
       class="MuiDivider-root"
     />
     <div
-      class="MuiBox-root MuiBox-root-21"
+      class="MuiBox-root MuiBox-root-20"
     >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
+      <div
+        class="MuiBox-root MuiBox-root-21"
       >
-        Paragraph1
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Paragraph1
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Paragraph2
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Paragraph3
+        </p>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-22"
       >
-        Paragraph2
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Paragraph3
-      </p>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-22"
-  >
-    <div
-      class="MuiBox-root MuiBox-root-23"
-    >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
-      >
-        Caveats
-      </h3>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-24"
-    >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Paragraph1
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Paragraph2
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Paragraph3
-      </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Paragraph1
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Paragraph2
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Paragraph3
+        </p>
+      </div>
     </div>
   </div>
 </DocumentFragment>
@@ -365,7 +351,9 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -379,33 +367,24 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
     <div
       class="MuiBox-root MuiBox-root-3"
     >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
+      <div
+        class="MuiBox-root MuiBox-root-4"
       >
-        Et ad et in culpa si
-      </p>
-    </div>
-  </div>
-  <div
-    class="MuiBox-root MuiBox-root-4"
-  >
-    <div
-      class="MuiBox-root MuiBox-root-5"
-    >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Et ad et in culpa si
+        </p>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-5"
       >
-        Caveats
-      </h3>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-6"
-    >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        sjwer bds
-      </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          sjwer bds
+        </p>
+      </div>
     </div>
   </div>
 </DocumentFragment>
@@ -414,7 +393,7 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
 exports[`ProjectObjectives renders correctly when objectives length is > 850 characters and caveats is empty 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiBox-root MuiBox-root-6"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -426,7 +405,7 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
         Objectives
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-8"
+        class="MuiBox-root MuiBox-root-7"
       >
         <button
           aria-label="Edit Project Objectives"
@@ -454,7 +433,9 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -466,73 +447,77 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
       class="MuiDivider-root"
     />
     <div
-      class="MuiBox-root MuiBox-root-9"
+      class="MuiBox-root MuiBox-root-8"
     >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Cras dapibus. Vivamus elementum
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
-      </p>
-      <p />
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
-      </p>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-         nisi.
-      </p>
       <div
-        class="MuiBox-root MuiBox-root-10"
+        class="MuiBox-root MuiBox-root-9"
       >
-        <button
-          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
-          tabindex="0"
-          type="button"
+        <p
+          class="MuiTypography-root MuiTypography-body1"
         >
-          <span
-            class="MuiButton-label"
+          Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Nullam dictum felis eu pede mollis pretium. Integer tincidunt. 
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Cras dapibus. Vivamus elementum
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           semper nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac, enim.
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           Aliquam lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus varius
+        </p>
+        <p />
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+           nisi.
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-10"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeSmall MuiButton-sizeSmall"
+            tabindex="0"
+            type="button"
           >
-            Read More
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
+            <span
+              class="MuiButton-label"
+            >
+              Read More
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
       </div>
     </div>
   </div>
