@@ -247,11 +247,11 @@ exports[`SurveyStudyArea renders correctly 1`] = `
     <div
       class="MuiBox-root MuiBox-root-4"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
       >
         Study Area Name
-      </h3>
+      </p>
       <p
         class="MuiTypography-root MuiTypography-body1"
       >
@@ -260,19 +260,15 @@ exports[`SurveyStudyArea renders correctly 1`] = `
     </div>
     <div
       class="MuiBox-root MuiBox-root-5"
-    >
-      <div
-        class="MuiBox-root MuiBox-root-6"
-      />
-      <div
-        class="MuiBox-root MuiBox-root-7"
-      />
-      <div
-        class="MuiBox-root MuiBox-root-8"
-      />
-    </div>
+    />
     <div
-      class="MuiBox-root MuiBox-root-9"
+      class="MuiBox-root MuiBox-root-6"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-7"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-8"
     >
       <button
         aria-label="Show Expanded Location"
