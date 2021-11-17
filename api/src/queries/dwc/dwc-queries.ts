@@ -358,3 +358,39 @@ export const getGeometryPolygonsSQL = (
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get taxonomic coverage.
+ *
+ * @param {number} surveyId
+ * @param {boolean} isFocal
+ * @returns {SQLStatement} sql query object
+ */
+export const getTaxonomicCoverageSQL = (surveyId: number, isFocal: boolean): SQLStatement | null => {
+  const debugLabel = 'getTaxonomicCoverageSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', surveyId, isFocal });
+
+  let focalPredicate = 'and b.is_focal';
+  if (!isFocal) {
+    focalPredicate = 'and not b.is_focal';
+  }
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      a.* 
+    from 
+      wldtaxonomic_units a, 
+      study_species b
+    where 
+      a.wldtaxonomic_units_id = b.wldtaxonomic_units_id
+    and b.survey_id = ${surveyId}
+    `.append(focalPredicate);
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

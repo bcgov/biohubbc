@@ -12,7 +12,8 @@ import {
   getProjectSQL,
   getSurveyFundingSourceSQL,
   getGeometryBoundingBoxSQL,
-  getGeometryPolygonsSQL
+  getGeometryPolygonsSQL,
+  getTaxonomicCoverageSQL
 } from '../../queries/dwc/dwc-queries';
 // import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
 // import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
@@ -100,7 +101,7 @@ export function getSurveyDataPackageEML(): RequestHandler {
       await connection.open();
 
       // get required data
-      const occurrenceSubmission = await getSurveyOccurrenceSubmission(req.body.data_package_id, connection);
+      const occurrenceSubmission = (await getSurveyOccurrenceSubmission(req.body.data_package_id, connection)).rows[0];
 
       // get the EML data for the survey
       const dataPackageEML = await getDataPackageEML(req.body.data_package_id, connection, req.body.supplied_title);
@@ -109,11 +110,11 @@ export function getSurveyDataPackageEML(): RequestHandler {
       // dataPackageEML = await getDataPackageEMLDB(req.body.data_package_id, connection, req.body.supplied_title);
 
       // get the archive file from s3
-      if (!occurrenceSubmission.rows[0].output_key) {
+      if (!occurrenceSubmission.output_key) {
         throw new HTTP400('No S3 target output key found');
       }
       // TODO: uncomment
-      // const s3Key = occurrenceSubmission.rows[0].output_key;
+      // const s3Key = occurrenceSubmission.output_key;
       // const s3File = await getFileFromS3(s3Key);
 
       // if (!s3File) {
@@ -172,17 +173,18 @@ export const getDataPackageEML = async (
   });
 
   // get all required data
-  const dataPackage = await getDataPackage(dataPackageId, connection);
-  const occurrenceSubmission = await getSurveyOccurrenceSubmission(dataPackageId, connection);
+  const dataPackage = (await getDataPackage(dataPackageId, connection)).rows[0];
+  const occurrenceSubmission = (await getSurveyOccurrenceSubmission(dataPackageId, connection)).rows[0];
   const publishedSurveyStatus = await getPublishedSurveyStatus(
-    occurrenceSubmission.rows[0].occurrence_submission_id,
+    occurrenceSubmission.occurrence_submission_id,
     connection
   );
-  const survey = await getSurvey(occurrenceSubmission.rows[0].survey_id, connection);
-  const project = await getProject(survey.rows[0].project_id, connection);
-  const surveyFundingSource = await getSurveyFundingSource(survey.rows[0].survey_id, connection);
-  const surveyBoundingBox = await getSurveyBoundingBox(survey.rows[0].survey_id, connection);
-  const surveyPolygons = await getSurveyPolygons(survey.rows[0].survey_id, connection);
+  const survey = (await getSurvey(occurrenceSubmission.survey_id, connection)).rows[0];
+  const project = (await getProject(survey.project_id, connection)).rows[0];
+  const surveyFundingSource = await getSurveyFundingSource(survey.survey_id, connection);
+  const surveyBoundingBox = await getSurveyBoundingBox(survey.survey_id, connection);
+  const surveyPolygons = await getSurveyPolygons(survey.survey_id, connection);
+  const focalTaxonomicCoverage = await getFocalTaxonomicCoverage(survey.survey_id, connection);
   // database constants
   const simsProviderURL = checkProvided(
     (await getDbCharacterSystemMetaDataConstant('PROVIDER_URL', connection)).rows[0].constant
@@ -199,6 +201,9 @@ export const getDataPackageEML = async (
   const intellectualRights = checkProvided(
     (await getDbCharacterSystemMetaDataConstant('INTELLECTUAL_RIGHTS', connection)).rows[0].constant
   );
+  const taxonomicProviderURL = checkProvided(
+    (await getDbCharacterSystemMetaDataConstant('TAXONOMIC_PROVIDER_URL', connection)).rows[0].constant
+  );
 
   // build eml object
   const eml: Eml = {
@@ -214,22 +219,26 @@ export const getDataPackageEML = async (
 
   const emlRoot = eml['eml:eml'];
 
-  emlRoot.$.packageId = 'urn:uuid:' + dataPackage.rows[0].uuid;
+  emlRoot.$.packageId = 'urn:uuid:' + dataPackage.uuid;
   emlRoot.$.system = simsProviderURL;
 
-  emlRoot.access = { $: { order: 'allowFirst' } };
+  emlRoot.access = {};
+  emlRoot.access.$ = {};
+  emlRoot.access.$.authSystem = securityProviderURL;
+  emlRoot.access.$.order = 'allowFirst';
   emlRoot.access.allow = {};
   emlRoot.access.allow.principal = 'public';
   emlRoot.access.allow.permission = 'read';
-  emlRoot.access.$.system = securityProviderURL;
 
-  emlRoot.dataset = { $: { order: 'allowFirst' } };
-  emlRoot.dataset.$.id = dataPackage.rows[0].uuid;
+  emlRoot.dataset = {};
+  emlRoot.dataset.$ = {};
+  emlRoot.dataset.$.order = 'allowFirst';
+  emlRoot.dataset.$.id = dataPackage.uuid;
 
   if (suppliedTitle) {
     emlRoot.dataset.title = suppliedTitle;
   } else if (dataPackage) {
-    emlRoot.dataset.title = dataPackage.rows[0].uuid;
+    emlRoot.dataset.title = dataPackage.uuid;
   }
 
   emlRoot.dataset.creator = organizationFullName;
@@ -247,12 +256,12 @@ export const getDataPackageEML = async (
   emlRoot.dataset.intellectualRights.para = intellectualRights;
 
   emlRoot.dataset.contact = {};
-  if (project.rows[0].coordinator_public) {
+  if (project.coordinator_public) {
     emlRoot.dataset.contact.individualName = {};
-    emlRoot.dataset.contact.individualName.givenName = project.rows[0].coordinator_first_name;
-    emlRoot.dataset.contact.individualName.surName = project.rows[0].coordinator_last_name;
-    emlRoot.dataset.contact.organizationName = project.rows[0].coordinator_agency_name;
-    emlRoot.dataset.contact.electronicMailAddress = project.rows[0].coordinator_email_address;
+    emlRoot.dataset.contact.individualName.givenName = project.coordinator_first_name;
+    emlRoot.dataset.contact.individualName.surName = project.coordinator_last_name;
+    emlRoot.dataset.contact.organizationName = project.coordinator_agency_name;
+    emlRoot.dataset.contact.electronicMailAddress = project.coordinator_email_address;
   } else {
     emlRoot.dataset.contact.organizationName = organizationFullName;
     emlRoot.dataset.contact.onlineUrl = organizationURL;
@@ -260,14 +269,14 @@ export const getDataPackageEML = async (
 
   // both projects and surveys are represented as "projects" in EML
   // main EML "project" is the survey
-  emlRoot.dataset.project = { $: { id: survey.rows[0].uuid, system: simsProviderURL } };
-  emlRoot.dataset.project.title = survey.rows[0].name;
+  emlRoot.dataset.project = { $: { id: survey.uuid, system: simsProviderURL } };
+  emlRoot.dataset.project.title = survey.name;
   emlRoot.dataset.project.personnel = {};
-  if (project.rows[0].coordinator_public) {
+  if (project.coordinator_public) {
     emlRoot.dataset.project.personnel.individualName = {};
-    emlRoot.dataset.project.personnel.individualName.givenName = survey.rows[0].lead_first_name;
-    emlRoot.dataset.project.personnel.individualName.surName = survey.rows[0].lead_last_name;
-    emlRoot.dataset.project.personnel.organizationName = project.rows[0].coordinator_agency_name;
+    emlRoot.dataset.project.personnel.individualName.givenName = survey.lead_first_name;
+    emlRoot.dataset.project.personnel.individualName.surName = survey.lead_last_name;
+    emlRoot.dataset.project.personnel.organizationName = project.coordinator_agency_name;
     emlRoot.dataset.project.personnel.role = 'pointOfContact';
   } else {
     emlRoot.dataset.project.personnel.organizationName = organizationFullName;
@@ -278,20 +287,42 @@ export const getDataPackageEML = async (
   emlRoot.dataset.project.abstract = {};
   emlRoot.dataset.project.abstract.section = {};
   emlRoot.dataset.project.abstract.section.title = 'Objectives';
-  emlRoot.dataset.project.abstract.section.para = survey.rows[0].objectives;
+  emlRoot.dataset.project.abstract.section.para = survey.objectives;
 
   if (surveyFundingSource.rowCount) {
-    emlRoot.dataset.project.funding = getFundingSourceEML(surveyFundingSource);
+    emlRoot.dataset.project.funding = getFundingEML(surveyFundingSource);
   }
 
-  const surveyGeographicDescription = survey.rows[0].location_description
-    ? survey.rows[0].location_name + ' - ' + survey.rows[0].location_description
-    : survey.rows[0].location_name;
-  emlRoot.dataset.project.studyAreaDescription = getSpatialEML(
+  emlRoot.dataset.project.studyAreaDescription = {};
+  emlRoot.dataset.project.studyAreaDescription.coverage = {};
+  const surveyGeographicDescription = survey.location_description
+    ? survey.location_name + ' - ' + survey.location_description
+    : survey.location_name;
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicDescription = getGeographicCoverageEML(
     surveyGeographicDescription,
     surveyBoundingBox,
     surveyPolygons
   );
+
+  emlRoot.dataset.project.studyAreaDescription.coverage.temporalCoverage = {};
+  emlRoot.dataset.project.studyAreaDescription.coverage.temporalCoverage = getTemporalCoverageEML(survey);
+
+  emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage = {};
+  emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification = [];
+  focalTaxonomicCoverage.rows.forEach(function (row: any, i: number) {
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i] = {};
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonRankName =
+      row.tty_name;
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonRankValue =
+      row.unit_name1 + ' ' + row.unit_name2;
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].commonName =
+      row.english_name;
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId = {};
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId.$ = {};
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId.$.provider = taxonomicProviderURL;
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId._ =
+      row.code;
+  });
 
   // convert object to xml
   const builder = new xml2js.Builder();
@@ -299,39 +330,51 @@ export const getDataPackageEML = async (
 };
 
 /**
- * Return spatial eml.
+ * Return temporal coverage eml.
+ *
+ * @param {*} projectRow
+ * @return {Eml}
+ */
+const getTemporalCoverageEML = (projectRow: any): Eml => {
+  const temporalCoverage: Eml = {};
+  temporalCoverage.rangeOfDates = {};
+  temporalCoverage.rangeOfDates.beginDate = {};
+  temporalCoverage.rangeOfDates.beginDate.calendarDate = projectRow.start_date;
+  temporalCoverage.rangeOfDates.endDate = {};
+  temporalCoverage.rangeOfDates.endDate.calendarDate = projectRow.end_date;
+
+  return temporalCoverage;
+};
+
+/**
+ * Return geographic coverage eml.
  *
  * @param {string} geographicDescription
  * @param {*} boundingBox
  * @param {*} polygonRows
  * @return {Eml}
  */
-export const getSpatialEML = (geographicDescription: string, boundingBox: any, polygonRows: any): Eml => {
-  const studyAreaDescription: Eml = {};
-  studyAreaDescription.coverage = {};
-  studyAreaDescription.coverage.geographicCoverage = {};
-  studyAreaDescription.coverage.geographicCoverage.geographicDescription = geographicDescription;
-  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates = {};
-  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.westBoundingCoordinate = boundingBox.rows[0].st_xmax;
-  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.eastBoundingCoordinate =
-    boundingBox.rows[0].st_ymax;
-  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.northBoundingCoordinate =
-    boundingBox.rows[0].st_xmin;
-  studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.southBoundingCoordinate =
-    boundingBox.rows[0].st_ymin;
-  studyAreaDescription.coverage.geographicCoverage.datasetGPolygon = [];
+const getGeographicCoverageEML = (geographicDescription: string, boundingBox: any, polygonRows: any): Eml => {
+  const geographicCoverage: Eml = {};
+  geographicCoverage.geographicDescription = geographicDescription;
+  geographicCoverage.boundingCoordinates = {};
+  geographicCoverage.boundingCoordinates.westBoundingCoordinate = boundingBox.rows[0].st_xmax;
+  geographicCoverage.boundingCoordinates.eastBoundingCoordinate = boundingBox.rows[0].st_ymax;
+  geographicCoverage.boundingCoordinates.northBoundingCoordinate = boundingBox.rows[0].st_xmin;
+  geographicCoverage.boundingCoordinates.southBoundingCoordinate = boundingBox.rows[0].st_ymin;
+  geographicCoverage.datasetGPolygon = [];
   polygonRows.rows.forEach(function (row: any, i: number) {
-    studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i] = {};
-    studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing = {};
-    studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint = [];
+    geographicCoverage.datasetGPolygon[i] = {};
+    geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing = {};
+    geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint = [];
     row.points.forEach(function (point: any, g: number) {
-      studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g] = {};
-      studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLatitude = point[0];
-      studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLongitude = point[1];
+      geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g] = {};
+      geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLatitude = point[0];
+      geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLongitude = point[1];
     });
   });
 
-  return studyAreaDescription;
+  return geographicCoverage;
 };
 
 /**
@@ -340,7 +383,7 @@ export const getSpatialEML = (geographicDescription: string, boundingBox: any, p
  * @param {*} fundingSourceRows
  * @return {Eml}
  */
-export const getFundingSourceEML = (fundingSourceRows: any): Eml => {
+const getFundingEML = (fundingSourceRows: any): Eml => {
   const funding: Eml = {};
   funding.section = {};
   funding.section.title = 'Funding Source';
@@ -375,7 +418,7 @@ export const getFundingSourceEML = (fundingSourceRows: any): Eml => {
  * @param {IDBConnection} connection
  * @return {string | number}
  */
-export const checkProvided = (valueToCheck: string | number | null): string | number => {
+const checkProvided = (valueToCheck: string | number | null): string | number => {
   // the EML specification requires all fields have values
   // fail gracefully by providing standard message that data is not supplied
   const notSuppliedMessage = 'Not Supplied';
@@ -565,6 +608,25 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
  */
 export const getSurveyPolygons = async (surveyId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getGeometryPolygonsSQL(surveyId, 'survey_id', 'survey');
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get focal taxonomic coverage.
+ *
+ * @param {number} surveyId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getFocalTaxonomicCoverage = async (surveyId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getTaxonomicCoverageSQL(surveyId, true);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
