@@ -43,7 +43,7 @@ describe('FundingSource', () => {
   });
 
   it('opens the edit funding source dialog box when edit button is clicked, and cancel button works as expected', async () => {
-    const { getByText, queryByText } = render(
+    const { getByText, getByTestId, queryByText } = render(
       <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -51,7 +51,7 @@ describe('FundingSource', () => {
       expect(getByText('Funding Sources')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-funding-source'));
 
     await waitFor(() => {
       expect(getByText('Edit Funding Source')).toBeVisible();
@@ -65,7 +65,7 @@ describe('FundingSource', () => {
   });
 
   it('edits a funding source correctly in the dialog', async () => {
-    const { getByText } = render(
+    const { getByText, getByTestId } = render(
       <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
     );
 
@@ -73,7 +73,7 @@ describe('FundingSource', () => {
       expect(getByText('Funding Sources')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-funding-source'));
 
     await waitFor(() => {
       expect(getByText('Agency Details')).toBeVisible();
@@ -90,7 +90,7 @@ describe('FundingSource', () => {
   it('shows error dialog with API error message when editing a funding source fails', async () => {
     mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = render(
+    const { getByText, getByTestId, queryByText, getAllByRole } = render(
       <DialogContextProvider>
         <FundingSource projectForViewData={getProjectForViewResponse} codes={codes} refresh={mockRefresh} />
       </DialogContextProvider>
@@ -100,7 +100,7 @@ describe('FundingSource', () => {
       expect(getByText('Funding Sources')).toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-funding-source'));
 
     await waitFor(() => {
       expect(getByText('Agency Details')).toBeVisible();

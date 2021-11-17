@@ -264,7 +264,8 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
                     <IconButton
                         onClick={() => handleDialogEditOpen(index)}
                         title="Edit Funding Source"
-                        aria-label="Edit Funding Source">
+                        aria-label="Edit Funding Source"
+                        data-testid="edit-funding-source">
                         <Icon path={mdiPencilOutline} size={0.875} />
                       </IconButton>
                       <IconButton
