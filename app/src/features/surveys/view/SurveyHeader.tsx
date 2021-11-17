@@ -258,7 +258,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 color="primary"
                 className={classes.actionButton}
                 data-testid="publish-survey-button"
-                onClick={async () => await publishSurvey(!surveyWithDetails.survey_details.publish_date)}>
+                onClick={() => publishSurvey(!surveyWithDetails.survey_details.publish_date)}>
                 {surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
               </Button>
               {showDeleteSurveyButton && (
