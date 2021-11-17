@@ -12,7 +12,7 @@ export interface ICustomButtonProps {
   buttonOnClick: () => void;
   buttonStartIcon: ReactNode;
   buttonEndIcon?: ReactNode;
-  buttonProps?: Partial<ButtonProps> & { 'data-testid': string };
+  buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
 }
 
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
@@ -82,7 +82,7 @@ export interface ICustomMenuButtonProps {
   buttonTitle?: string;
   buttonStartIcon?: ReactNode;
   buttonEndIcon?: ReactNode;
-  buttonProps?: Partial<ButtonProps> & { 'data-testid': string };
+  buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
   menuItems: IMenuToolbarItem[];
 }
 
