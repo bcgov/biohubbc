@@ -1,6 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { addSystemUserSQL, getUserByIdSQL, getUserByUserIdentifierSQL, getUserListSQL } from './user-queries';
+import {
+  addSystemUserSQL,
+  getUserByIdSQL,
+  getUserByUserIdentifierSQL,
+  getUserListSQL,
+  deActivateSystemUserSQL
+} from './user-queries';
 
 describe('getUserByUserIdentifierSQL', () => {
   it('returns null response when null userIdentifier provided', () => {
@@ -65,6 +71,20 @@ describe('addSystemUserSQL', () => {
 
   it('returns non null response when valid parameters provided', () => {
     const response = addSystemUserSQL('validString', 'validString', 1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('deActivateSystemUserSQL', () => {
+  it('returns null response when null userIdentifier provided', () => {
+    const response = deActivateSystemUserSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid parameters provided', () => {
+    const response = deActivateSystemUserSQL(1);
 
     expect(response).to.not.be.null;
   });
