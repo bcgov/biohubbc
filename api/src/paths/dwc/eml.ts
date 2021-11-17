@@ -12,7 +12,7 @@ import {
   getProjectSQL,
   getSurveyFundingSourceSQL,
   getGeometryBoundingBoxSQL,
-  getGeometryPolygonSQL
+  getGeometryPolygonsSQL
 } from '../../queries/dwc/dwc-queries';
 // import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
 // import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
@@ -281,7 +281,7 @@ export const getDataPackageEML = async (
   emlRoot.dataset.project.abstract.section.para = survey.rows[0].objectives;
 
   if (surveyFundingSource.rowCount) {
-    addFundingSourceEML(eml, emlRoot, surveyFundingSource);
+    emlRoot.dataset.project.funding = getFundingSourceEML(surveyFundingSource);
   }
 
   emlRoot.dataset.project.studyAreaDescription = {};
@@ -301,13 +301,18 @@ export const getDataPackageEML = async (
   emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.boundingCoordinates.southBoundingCoordinate =
     surveyBoundingBox.rows[0].st_ymin;
   emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon = [];
-  for (const row of surveyPolygons.rows) {
-    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[row.polygon - 1] = {};
-    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[
-      row.polygon - 1
-    ].datasetGPolygonOuterGRing = {};
-  }
-
+  surveyPolygons.rows.forEach(function (row: any, i: number) {
+    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i] = {};
+    emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing = {};
+    row.points.forEach(function (point: any, g: number) {
+    //   emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g] = {};
+    //   // emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLatitude = point[0];
+      // emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLongitude = point[1];
+      defaultLog.debug({ label: 'getSurveyDataPackageEML', message: 'params ' + point[0] + ', ' + point[1] });
+      // defaultLog.debug({ label: 'getSurveyDataPackageEML', message: 'params ' + point[g][1] });
+    });
+  });
+  
   // convert object to xml
   const builder = new xml2js.Builder();
   return builder.buildObject(eml);
@@ -316,39 +321,35 @@ export const getDataPackageEML = async (
 /**
  * Return funding source eml.
  *
- * @param {Eml} eml
+ * @param {*} fundingSourceRows
  * @return {Eml}
  */
-export const addFundingSourceEML = (eml: Eml, emlRoot: any, fundingSourceRows: any): Eml => {
-  emlRoot.dataset.project.funding = {};
-  emlRoot.dataset.project.funding.section = {};
-  emlRoot.dataset.project.funding.section.title = 'Funding Source';
+export const getFundingSourceEML = (fundingSourceRows: any): Eml => {
+  const funding: Eml = {};
+  funding.section = {};
+  funding.section.title = 'Funding Source';
   for (const row of fundingSourceRows.rows) {
-    emlRoot.dataset.project.funding.section.para = row.funding_source_name;
-    emlRoot.dataset.project.funding.section.section = {};
-    emlRoot.dataset.project.funding.section.section.title = 'Investment Action Category';
-    emlRoot.dataset.project.funding.section.section.para = row.investment_action_category_name;
+    funding.section.para = row.funding_source_name;
+    funding.section.section = {};
+    funding.section.section.title = 'Investment Action Category';
+    funding.section.section.para = row.investment_action_category_name;
 
-    emlRoot.dataset.project.funding.section.section.section = [];
-    emlRoot.dataset.project.funding.section.section.section[0] = {};
-    emlRoot.dataset.project.funding.section.section.section[0].title = 'Funding Source Project ID';
-    emlRoot.dataset.project.funding.section.section.section[0].para = row.project_funding_source_id;
-    emlRoot.dataset.project.funding.section.section.section[1] = {};
-    emlRoot.dataset.project.funding.section.section.section[1].title = 'Funding Amount';
-    emlRoot.dataset.project.funding.section.section.section[1].para = row.funding_amount;
-    emlRoot.dataset.project.funding.section.section.section[2] = {};
-    emlRoot.dataset.project.funding.section.section.section[2].title = 'Funding Start Date';
-    emlRoot.dataset.project.funding.section.section.section[2].para = new Date(row.funding_start_date)
-      .toISOString()
-      .split('T')[0];
-    emlRoot.dataset.project.funding.section.section.section[3] = {};
-    emlRoot.dataset.project.funding.section.section.section[3].title = 'Funding End Date';
-    emlRoot.dataset.project.funding.section.section.section[3].para = new Date(row.funding_end_date)
-      .toISOString()
-      .split('T')[0];
+    funding.section.section.section = [];
+    funding.section.section.section[0] = {};
+    funding.section.section.section[0].title = 'Funding Source Project ID';
+    funding.section.section.section[0].para = row.project_funding_source_id;
+    funding.section.section.section[1] = {};
+    funding.section.section.section[1].title = 'Funding Amount';
+    funding.section.section.section[1].para = row.funding_amount;
+    funding.section.section.section[2] = {};
+    funding.section.section.section[2].title = 'Funding Start Date';
+    funding.section.section.section[2].para = new Date(row.funding_start_date).toISOString().split('T')[0];
+    funding.section.section.section[3] = {};
+    funding.section.section.section[3].title = 'Funding End Date';
+    funding.section.section.section[3].para = new Date(row.funding_end_date).toISOString().split('T')[0];
   }
 
-  return eml;
+  return funding;
 };
 
 /**
@@ -546,8 +547,8 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
  * @param {IDBConnection} connection
  * @return {*} {Promise<void>}
  */
- export const getSurveyPolygons = async (surveyId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getGeometryPolygonSQL(surveyId, 'survey_id', 'survey');
+export const getSurveyPolygons = async (surveyId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getGeometryPolygonsSQL(surveyId, 'survey_id', 'survey');
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

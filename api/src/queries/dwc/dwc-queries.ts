@@ -309,32 +309,44 @@ export const getGeometryBoundingBoxSQL = (
  * @param {string} targetTable
  * @returns {SQLStatement} sql query object
  */
-export const getGeometryPolygonSQL = (
+export const getGeometryPolygonsSQL = (
   primaryKey: number,
   primaryKeyName: string,
   targetTable: string
 ): SQLStatement | null => {
-  const debugLabel = 'getGeometryPolygonSQL';
+  const debugLabel = 'getGeometryPolygonsSQL';
   defaultLog.debug({ label: debugLabel, message: 'params', primaryKey, primaryKeyName, targetTable });
 
   const sqlStatement: SQLStatement = SQL`
-  with polygons as (
-    select 
-      (st_dumppoints(g.geom)).* 
-    from (
+    with polygons as (
       select 
-        geography::geometry as geom 
-      from `
+        (st_dumppoints(g.geom)).* 
+      from (
+        select 
+          geography::geometry as geom 
+        from `
     .append(targetTable)
     .append(
       SQL`
-      where `
+          where `
     )
-    .append(primaryKeyName).append(SQL` = ${primaryKey}) as g)
-  select 
-    distinct(path[1]) polygon 
-  from 
-    polygons;
+    .append(primaryKeyName).append(SQL` = ${primaryKey}) as g),
+      points as (
+        select 
+          path[1] polygon, 
+          path[2] point, 
+          jsonb_build_array(st_y(p.geom), st_x(p.geom)) points 
+        from 
+          polygons p 
+        order by 
+          path[1], 
+          path[2])
+    select 
+      json_agg(p.points) points
+    from 
+      points p 
+    group by 
+      polygon;
   `);
 
   defaultLog.debug({
