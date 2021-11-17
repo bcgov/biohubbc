@@ -20,10 +20,11 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
     }
 
     return (
-      <Box className="mapLocations">
+      <Box>
         <Typography variant="h3">
           {type} ({data.length})
         </Typography>
+
         {data.map((item: string, index: number) => (
           <Typography key={index} variant="body1">
             {item}
@@ -37,9 +38,15 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
   return (
     <>
       {displayInferredLayersInfo(props.layers.nrm, 'Natural Resource Ministries Regions')}
-      {displayInferredLayersInfo(props.layers.env, 'Ministry of Environment Regions')}
-      {displayInferredLayersInfo(props.layers.wmu, 'Management Unit / Game Management Zones')}
-      {displayInferredLayersInfo(props.layers.parks, 'Parks and EcoReserves')}
+      <Box mt={3}>
+        {displayInferredLayersInfo(props.layers.env, 'Ministry of Environment Regions')}
+      </Box>
+      <Box mt={3}>
+        {displayInferredLayersInfo(props.layers.wmu, 'Management Unit / Game Management Zones')}
+      </Box>
+      <Box mt={3}>
+        {displayInferredLayersInfo(props.layers.parks, 'Parks and EcoReserves')}
+      </Box>
     </>
   );
 };

@@ -118,7 +118,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
         endIcon={props.buttonEndIcon}
         onClick={handleClick}
         {...props.buttonProps}>
-        {props.buttonLabel}
+        <strong>{props.buttonLabel}</strong>
       </Button>
       <Menu
         id={id}

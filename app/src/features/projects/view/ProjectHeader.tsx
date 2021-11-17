@@ -1,10 +1,12 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Paper from '@material-ui/core/Paper';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import Link from '@material-ui/core/Link';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
@@ -41,6 +43,11 @@ const useStyles = makeStyles((theme: Theme) => ({
         color: theme.palette.primary.main
       }
     }
+  },
+  breadCrumbLink: {
+    display: 'flex',
+    alignItems: 'center',
+    cursor: 'pointer'
   },
   chip: {
     color: '#ffffff'
@@ -201,8 +208,22 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   return (
     <Paper square={true}>
       <Container maxWidth="xl">
-        <Box display="flex" justifyContent="space-between">
-          <Box py={4}>
+
+        <Box pt={3} pb={2}>
+          <Breadcrumbs>
+            <Link
+              color="primary"
+              onClick={() => history.push('/admin/projects')}
+              aria-current="page"
+              className={classes.breadCrumbLink}>
+              <Typography variant="body2">Projects</Typography>
+            </Link>
+            <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
+          </Breadcrumbs>
+        </Box>
+
+        <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+          <Box pb={3}>
             <Box mb={1.5} display="flex">
               <Typography className={classes.spacingRight} variant="h1">
                 Project - <span className={classes.projectTitle}>{projectWithDetails.project.project_name}</span>
@@ -233,7 +254,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               </Typography>
             </Box>
           </Box>
-          <Box ml={4} mt={4} mb={4}>
+          <Box ml={4} mb={4}>
             <Button
               variant="outlined"
               disableElevation

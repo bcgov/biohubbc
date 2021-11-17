@@ -1,3 +1,4 @@
+import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -119,7 +120,9 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
             { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
           ]}
         />
-        <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        <Box px={3} pb={2}>
+          <AttachmentsList projectId={projectId} attachmentsList={attachmentsList} getAttachments={getAttachments} />
+        </Box>
       </Paper>
     </>
   );

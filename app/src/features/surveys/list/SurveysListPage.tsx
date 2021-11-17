@@ -1,3 +1,4 @@
+import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -56,7 +57,9 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
           buttonStartIcon={<Icon path={mdiPlus} size={1} />}
           buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
         />
-        <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+        <Box px={3} pb={2}>
+          <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+        </Box>
       </Paper>
     </>
   );

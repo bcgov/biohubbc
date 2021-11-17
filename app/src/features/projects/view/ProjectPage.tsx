@@ -77,7 +77,7 @@ const ProjectPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box my={3}>
           <Grid container spacing={3}>
-            <Grid item xs={12} md={8}>
+            <Grid item xs={12} lg={8}>
               <Box>
                 <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
               </Box>
@@ -88,7 +88,7 @@ const ProjectPage: React.FC = () => {
                 <ProjectAttachments projectForViewData={projectWithDetails} />
               </Box>
             </Grid>
-            <Grid item xs={12} md={4}>
+            <Grid item xs={12} lg={4}>
               <LocationBoundary projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
             </Grid>
           </Grid>

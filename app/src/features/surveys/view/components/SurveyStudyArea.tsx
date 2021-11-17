@@ -1,8 +1,9 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import Icon from '@mdi/react';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
@@ -187,33 +188,18 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         mapTitle={'Study Area'}
       />
       <ErrorDialog {...errorDialogProps} />
-      <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Study Area</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Study Area"
-            aria-label="Edit Study Area"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
-        <dl>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Survey Area Name
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {survey_details.survey_area_name}
-              </Typography>
-            </Grid>
-          </Grid>
-        </dl>
-        <Box mt={4} mb={4} height={500}>
+      <Box component={Paper} px={3} pt={1} pb={3}>
+        <H2ButtonToolbar
+          label="Study Area"
+          buttonLabel="Edit"
+          buttonTitle="Edit Study Area"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          buttonProps={{ variant: 'text' }}
+          toolbarProps={{ disableGutters: true }}
+        />
+
+        <Box mt={2} height={350}>
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
@@ -225,19 +211,34 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 ? [<OccurrenceFeatureGroup occurrenceSubmissionId={survey_details.occurrence_submission_id} />]
                 : undefined
             }
-          />
+            />
         </Box>
-        <InferredLocationDetails layers={inferredLayersInfo} />
-        <Button
-          variant="text"
-          color="primary"
-          className="sectionHeaderButton"
-          onClick={() => handleDialogViewOpen()}
-          title="Expand Location"
-          aria-label="Show Expanded Location"
-          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
-          Show More
-        </Button>
+
+        <Box mt={3}>
+          <Typography variant="h3">
+            Study Area Name
+          </Typography>
+          <Typography>
+            {survey_details.survey_area_name}
+          </Typography>
+        </Box>
+
+        <Box mt={3}>
+          <InferredLocationDetails layers={inferredLayersInfo} />
+        </Box>
+
+        <Box mt={3}>
+          <Button
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
+            onClick={() => handleDialogViewOpen()}
+            title="Expand Location"
+            aria-label="Show Expanded Location"
+            endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+            Show More
+          </Button>
+        </Box>
       </Box>
     </>
   );

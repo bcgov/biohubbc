@@ -1,10 +1,13 @@
-import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
 import Typography from '@material-ui/core/Typography';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiPencilOutline, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
@@ -26,6 +29,14 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 
+const useStyles = makeStyles((theme: Theme) => ({
+  fundingSourceTable: {
+    '& .MuiTableCell-root': {
+      verticalAlign: 'middle'
+    }
+  }
+}));
+
 export interface IProjectFundingProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
@@ -38,6 +49,8 @@ export interface IProjectFundingProps {
  * @return {*}
  */
 const FundingSource: React.FC<IProjectFundingProps> = (props) => {
+  const classes = useStyles();
+
   const {
     projectForViewData: { funding, id },
     codes
@@ -205,84 +218,77 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
         toolbarProps={{ disableGutters: true }}
       />
 
-      <Divider></Divider>
+      <TableContainer>
+          <Table padding="default" className={classes.fundingSourceTable}>
+            <TableHead>
+              <TableRow>
+                <TableCell>Agency</TableCell>
+                <TableCell  width="100px">Project ID</TableCell>
+                <TableCell>Amount</TableCell>
+                <TableCell>Dates</TableCell>
+                <TableCell width="130px" align="center">Actions</TableCell>
+              </TableRow>
+            </TableHead>
 
-      <List disablePadding>
-        {hasFundingSources &&
-          funding.fundingSources.map((item: any, index: number) => (
-            <ListItem key={item.id} divider disableGutters>
-              <Box width="100%">
-                <Box display="flex" alignItems="center" justifyContent="space-between">
-                  <Typography variant="body2">
-                    <strong>{item.agency_name}</strong>
+            <TableBody>
+
+            {hasFundingSources &&
+              funding.fundingSources.map((item: any, index: number) => (
+                <TableRow key={item.id}>
+                  <TableCell>
+                    {item.agency_name}
                     {item.investment_action_category_name !== 'Not Applicable' && (
-                      <Typography component="span" variant="body2">
+                      <Typography component="em" variant="body2">
                         &nbsp;({item.investment_action_category_name})
                       </Typography>
                     )}
-                    
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" noWrap>
+                      {item.agency_project_id || 'No Agency Project ID'}
                     </Typography>
-                  <Box>
+                  </TableCell>
+                  <TableCell>
+                    {getFormattedAmount(item.funding_amount)}
+                  </TableCell>
+                  <TableCell>
+                    <Typography variant="body2" noWrap>
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat,
+                        item.start_date,
+                        item.end_date
+                      )}
+                    </Typography>
+                  </TableCell>
+                  <TableCell align="center">
                     <IconButton
-                      onClick={() => handleDialogEditOpen(index)}
-                      title="Edit Funding Source"
-                      aria-label="Edit Funding Source">
-                      <Icon path={mdiPencilOutline} size={0.875} />
-                    </IconButton>
-                    <IconButton
-                      data-testid="delete-funding-source"
-                      onClick={() => handleDeleteDialogOpen(index)}
-                      title="Remove Funding Source"
-                      aria-label="Remove Funding Source">
-                      <Icon path={mdiTrashCanOutline} size={0.875} />
-                    </IconButton>
-                  </Box>
-                </Box>
-                <Box component="dl" m={0}>
-                  <Grid container>
-                    <Grid item xs={12} sm={6} md={4}>
-                      <Typography component="dt" variant="subtitle2" color="textSecondary">
-                        Project ID
-                      </Typography>
-                      <Typography component="dd" variant="body1">
-                        {item.agency_project_id || 'No Agency Project ID'}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                      <Typography component="dt" variant="subtitle2" color="textSecondary">
-                        Funding Amount
-                      </Typography>
-                      <Typography component="dd" variant="body1">
-                        {getFormattedAmount(item.funding_amount)}
-                      </Typography>
-                    </Grid>
-                    <Grid item xs={12} sm={6} md={4}>
-                      <Typography component="dt" variant="subtitle2" color="textSecondary">
-                        Funding Dates
-                      </Typography>
-                      <Typography component="dd" variant="body1">
-                        {getFormattedDateRangeString(
-                          DATE_FORMAT.ShortDateFormatMonthFirst,
-                          item.start_date,
-                          item.end_date
-                        )}
-                      </Typography>
-                    </Grid>
-                  </Grid>
-                </Box>
-              </Box>
-            </ListItem>
-          ))}
+                        onClick={() => handleDialogEditOpen(index)}
+                        title="Edit Funding Source"
+                        aria-label="Edit Funding Source">
+                        <Icon path={mdiPencilOutline} size={0.875} />
+                      </IconButton>
+                      <IconButton
+                        data-testid="delete-funding-source"
+                        onClick={() => handleDeleteDialogOpen(index)}
+                        title="Remove Funding Source"
+                        aria-label="Remove Funding Source">
+                        <Icon path={mdiTrashCanOutline} size={0.875} />
+                        </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))}
 
-        {!hasFundingSources && (
-          <Box mt={2}>
-            <Typography component="dd" variant="body1">
-              No Funding Sources
-            </Typography>
-          </Box>
-        )}
+              {!hasFundingSources && (
+                <TableRow>
+                  <TableCell colSpan={3}>
+                    No Funding Sources
+                  </TableCell>
+                </TableRow>
+              )}
 
-      </List>
+            </TableBody>
+          </Table>
+        </TableContainer>
     </>
   );
 };

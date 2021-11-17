@@ -51,15 +51,13 @@ const useStyles = makeStyles((theme: Theme) => ({
     cursor: 'pointer'
   },
   chip: {
-    padding: '0px 8px',
-    borderRadius: '4px',
-    color: 'white'
+    color: '#ffffff'
   },
   chipActive: {
-    backgroundColor: theme.palette.warning.main
+    backgroundColor: theme.palette.success.main
   },
   chipCompleted: {
-    backgroundColor: theme.palette.success.main
+    backgroundColor: theme.palette.primary.main
   },
   spacingRight: {
     paddingRight: '1rem'
@@ -193,10 +191,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     let chipStatusClass;
 
     if (SurveyStatusType.ACTIVE === status_name) {
-      chipLabel = 'ACTIVE';
+      chipLabel = 'Active';
       chipStatusClass = classes.chipActive;
     } else if (SurveyStatusType.COMPLETED === status_name) {
-      chipLabel = 'COMPLETED';
+      chipLabel = 'Completed';
       chipStatusClass = classes.chipCompleted;
     }
 
@@ -215,7 +213,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
       <Paper square={true}>
         <Container maxWidth="xl">
  
-          <Box py={3}>
+          <Box pt={3} pb={2}>
             <Breadcrumbs>
               <Link
                 color="primary"
@@ -235,8 +233,8 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
             </Breadcrumbs>
           </Box>
 
-          <Box display="flex" justifyContent="space-between">
-            <Box pb={4}>
+          <Box display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box pb={3}>
               <Box mb={1.5} display="flex">
                 <Typography className={classes.spacingRight} variant="h1">
                   Survey - <span className={classes.surveyTitle}>{surveyWithDetails.survey_details.survey_name}</span>
@@ -245,9 +243,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               <Box mb={0.75} display="flex" alignItems="center">
                 {getChipIcon(surveyWithDetails.survey_details.completion_status)}
                 &nbsp;&nbsp;
-                <Typography variant="subtitle1" color="textSecondary">
+                <Typography component="span" variant="subtitle1" color="textSecondary">
+                <span>Timeline:</span>{' '}
                   {getFormattedDateRangeString(
-                    DATE_FORMAT.ShortMediumDateFormat2,
+                    DATE_FORMAT.ShortMediumDateFormat,
                     surveyWithDetails.survey_details.start_date,
                     surveyWithDetails.survey_details.end_date
                   )}
@@ -258,9 +257,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               <Button
                 variant="outlined"
                 color="primary"
+                className={classes.actionButton}
                 data-testid="publish-survey-button"
                 onClick={async () => await publishSurvey(!surveyWithDetails.survey_details.publish_date)}>
-                <strong>{surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}</strong>
+                {surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
               </Button>
               {showDeleteSurveyButton && (
                 <Tooltip

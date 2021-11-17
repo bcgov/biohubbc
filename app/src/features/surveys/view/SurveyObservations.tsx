@@ -1,6 +1,7 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
@@ -36,31 +37,11 @@ interface ISurveyObservationsProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  textSpacing: {
-    marginBottom: '1rem'
-  },
   browseLink: {
     cursor: 'pointer'
   },
-  center: {
-    alignSelf: 'center'
-  },
-  box: {
-    width: '100%',
-    background: 'rgba(241, 243, 245, 1)',
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    minHeight: '3rem'
-  },
-  infoBox: {
-    background: 'rgba(241, 243, 245, 1)'
-  },
   tab: {
     paddingLeft: theme.spacing(2)
-  },
-  nested: {
-    paddingLeft: theme.spacing(4)
   },
   alertActions: {
     '& > *': {
@@ -365,28 +346,28 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   }
 
   return (
-    <Box>
-      <Box mb={5} display="flex" justifyContent="space-between">
-        <Typography data-testid="observations-heading" variant="h2">
-          Observations
-        </Typography>
-        <Button
-          startIcon={<Icon path={mdiImport} size={1} />}
-          variant="outlined"
-          color="primary"
-          onClick={() => showUploadDialog()}>
-          Import
-        </Button>
-      </Box>
+    <>
+    <Paper>
 
-      <Box component={Paper} p={4}>
+      <H2ButtonToolbar
+        label="Observations"
+        buttonLabel="Import"
+        buttonTitle="Import"
+        buttonStartIcon={<Icon path={mdiImport} size={1} />}
+        buttonOnClick={() => showUploadDialog()}
+      />
+
+      <Box>
+        <Box component={Divider} m={0} />
         {!submissionStatus && (
-          <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
-            No Observation Data. &nbsp;
-            <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
-              Click Here to Import
-            </Link>
-          </Typography>
+          <Box p={3} textAlign="center">
+            <Typography data-testid="observations-nodata" variant="body2">
+              No Observation Data. &nbsp;
+              <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
+                Click Here to Import
+              </Link>
+            </Typography>
+          </Box>
         )}
 
         {!isValidating && submissionStatus?.status === 'System Error' && (
@@ -394,12 +375,12 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
             {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed to Start')}
 
             <Box mt={3} mb={1}>
-              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
+              <Typography data-testid="observations-error-details" variant="h4">
                 What's next?
               </Typography>
             </Box>
             <Box mb={3}>
-              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
+              <Typography data-testid="observations-error-details" variant="body2">
                 Resolve the following errors in your local file and re-import.
               </Typography>
             </Box>
@@ -414,12 +395,12 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           <>
             {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed')}
             <Box mt={3} mb={1}>
-              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
+              <Typography data-testid="observations-error-details" variant="h4">
                 What's next?
               </Typography>
             </Box>
             <Box mb={3}>
-              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
+              <Typography data-testid="observations-error-details" variant="body2">
                 Resolve the following errors in your local file and re-import.
               </Typography>
             </Box>
@@ -455,21 +436,23 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           </>
         )}
       </Box>
+    </Paper>
 
-      <ComponentDialog
-        open={openImportObservations}
-        dialogTitle="Import Observation Data"
-        onClose={() => {
-          setOpenImportObservations(false);
-          setIsPolling(true);
-          setIsLoading(true);
-        }}>
-        <FileUpload
-          dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
-          uploadHandler={importObservations()}
-        />
-      </ComponentDialog>
-    </Box>
+    <ComponentDialog
+      open={openImportObservations}
+      dialogTitle="Import Observation Data"
+      onClose={() => {
+        setOpenImportObservations(false);
+        setIsPolling(true);
+        setIsLoading(true);
+      }}>
+      <FileUpload
+        dropZoneProps={{ maxNumFiles: 1, acceptedFileExtensions: '.csv, .xls, .txt, .zip, .xlsm, .xlsx' }}
+        uploadHandler={importObservations()}
+      />
+    </ComponentDialog>
+
+    </>
   );
 };
 

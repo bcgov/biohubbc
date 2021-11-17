@@ -2,6 +2,12 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import Grid from '@material-ui/core/Grid';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -249,6 +255,9 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
+        <Box my={3}>
+          <Typography variant="body1">{survey_details.survey_purpose}</Typography>
+        </Box>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
@@ -261,13 +270,21 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
+                Survey Methodology
+              </Typography>
+              <Typography component="dd" variant="body1">
+                {survey_details.common_survey_methodology || 'No Survey Methodology'}
+              </Typography>
+            </Grid>
+            <Grid item xs={12} sm={6} md={4}>
+              <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Survey Timeline
               </Typography>
               <Typography component="dd" variant="body1">
                 {survey_details.end_date ? (
                   <>
                     {getFormattedDateRangeString(
-                      DATE_FORMAT.ShortMediumDateFormat2,
+                      DATE_FORMAT.ShortMediumDateFormat,
                       survey_details.start_date,
                       survey_details.end_date
                     )}
@@ -275,7 +292,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 ) : (
                   <>
                     <span>Start Date:</span>{' '}
-                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, survey_details.start_date)}
+                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, survey_details.start_date)}
                   </>
                 )}
               </Typography>
@@ -317,60 +334,102 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 </Typography>
               )}
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Survey Methodology
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {survey_details.common_survey_methodology || 'No Survey Methodology'}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Permit
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {(survey_details.permit_number && `${survey_details.permit_number} - ${survey_details.permit_type}`) ||
-                  'No Permit'}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Funding Sources
-              </Typography>
-              {(!survey_details.funding_sources || survey_details.funding_sources.length === 0) && (
-                <Typography component="dd" variant="body1">
+          </Grid>
+        </dl>
+      </Box>
+      <Box mt={2}>
+        <H3ButtonToolbar
+          label="Permits"
+          buttonLabel="Edit"
+          buttonTitle="Edit"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
+        />
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  Number
+                </TableCell>
+                <TableCell>
+                  Type
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              <TableRow>
+                <TableCell>
+                  {survey_details.permit_number}
+                </TableCell>
+                <TableCell>
+                  {survey_details.permit_type}
+                </TableCell>
+              </TableRow>
+            </TableBody>
+            {/* <Typography variant="body1">
+              {(survey_details.permit_number && `${survey_details.permit_number} - ${survey_details.permit_type}`) || 'No Permit'}
+            </Typography> */}
+          </Table>
+        </TableContainer>
+      </Box>
+      <Box mt={2}>
+        <H3ButtonToolbar
+          label="Funding Sources"
+          buttonLabel="Edit"
+          buttonTitle="Edit"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
+        />
+
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>
+                  Agency
+                </TableCell>
+                <TableCell>
+                  Amount
+                </TableCell>
+                <TableCell>
+                  Dates
+                </TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+            {(!survey_details.funding_sources || survey_details.funding_sources.length === 0) && (
+              <TableRow>
+                <TableCell colSpan={3}>
                   No Funding Sources
-                </Typography>
-              )}
-              {survey_details.funding_sources &&
-                survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
-                  return (
-                    <Typography component="dd" variant="body1" key={index}>
-                      {fundingSource.agency_name} | {getFormattedAmount(fundingSource.funding_amount)} |{' '}
+                </TableCell>
+              </TableRow>
+            )}
+            {survey_details.funding_sources &&
+              survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
+                return (
+                  <TableRow key={index}>
+                    <TableCell>
+                      {fundingSource.agency_name}
+                    </TableCell>
+                    <TableCell>
+                      {getFormattedAmount(fundingSource.funding_amount)}
+                    </TableCell>
+                    <TableCell>
                       {getFormattedDateRangeString(
-                        DATE_FORMAT.ShortMediumDateFormat2,
+                        DATE_FORMAT.ShortMediumDateFormat,
                         fundingSource.funding_start_date,
                         fundingSource.funding_end_date
                       )}
-                    </Typography>
+                    </TableCell>
+                  </TableRow>
                   );
-                })}
-            </Grid>
-          </Grid>
-          <Grid container spacing={2}>
-            <Grid item>
-              <Box mt={1}>
-                <Box display="flex" alignItems="center" justifyContent="space-between" height="2rem">
-                  <Typography component="dt" variant="subtitle2" color="textSecondary">
-                    Purpose
-                  </Typography>
-                </Box>
-                <Typography>{survey_details.survey_purpose}</Typography>
-              </Box>
-            </Grid>
-          </Grid>
-        </dl>
+               })}
+            </TableBody>
+          </Table>
+        </TableContainer>
       </Box>
     </>
   );

@@ -199,7 +199,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       <dl>
         <Grid container spacing={2}>
           <Grid item xs={12}>
-            <Typography variant="h3" color="textSecondary">
+            <Typography variant="h3">
               Location Description
             </Typography>
             <Typography variant="body1">

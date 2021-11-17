@@ -1,9 +1,10 @@
 import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
-import List from '@material-ui/core/List';
-import ListItem from '@material-ui/core/ListItem';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import Typography from '@material-ui/core/Typography';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import TableCell from '@material-ui/core/TableCell';
+import TableContainer from '@material-ui/core/TableContainer';
+import TableHead from '@material-ui/core/TableHead';
+import TableRow from '@material-ui/core/TableRow';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
@@ -28,12 +29,6 @@ import {
 } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
 
-const useStyles = makeStyles({
-  permitList: {
-
-  }
-});
-
 export interface IProjectPermitsProps {
   projectForViewData: IGetProjectForViewResponse;
   codes: IGetAllCodeSetsResponse;
@@ -51,7 +46,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   } = props;
 
   const biohubApi = useBiohubApi();
-  const classes = useStyles();
 
   const dialogContext = useContext(DialogContext);
 
@@ -163,32 +157,38 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
           toolbarProps={{ disableGutters: true }}
         />
 
-        <Box component={Divider} mb={0}></Box>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Number</TableCell>
+                <TableCell>Type</TableCell>
+              </TableRow>
+            </TableHead>
 
-        {hasPermits && (
-          <List disablePadding className={classes.permitList}>
-            {permit.permits.map((item: any) => (
-              <>
-                <ListItem key={item.permit_number} divider disableGutters>
-                  <Box>
-                    <strong>#{item.permit_number}</strong>&nbsp;
-                    ({item.permit_type})
-                  </Box>
-                </ListItem>
-              </>
-            ))}
-          </List>
-        )}
+              {hasPermits && (
+                <TableBody>
+                  {permit.permits.map((item: any) => (
+                    <TableRow key={item.permit_number}>
+                      <TableCell>{item.permit_number}</TableCell>
+                      <TableCell>{item.permit_type}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              )}
 
-        {!hasPermits && (
-          <Box component="ul" className="listNoBullets">
-            <Box component="li">
-              <Typography component="dd" variant="body1">
-                No Permits
-              </Typography>
-            </Box>
-          </Box>
-        )}
+              {!hasPermits && (
+                <TableBody>
+                <TableRow>
+                  <TableCell colSpan={2}>
+                    No Permits
+                  </TableCell>
+                </TableRow>
+                </TableBody>
+              )}
+            
+          </Table>
+        </TableContainer>
       </Box>
     </>
   );

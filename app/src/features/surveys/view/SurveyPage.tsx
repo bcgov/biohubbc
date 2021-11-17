@@ -95,7 +95,7 @@ const SurveyPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box my={3}>
           <Grid container spacing={3}>
-            <Grid item sm={12} md={8}>
+            <Grid item sm={12} lg={8}>
               <SurveyDetails
                 projectForViewData={projectWithDetails}
                 surveyForViewData={surveyWithDetails}
@@ -112,7 +112,7 @@ const SurveyPage: React.FC = () => {
                 <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
               </Box>
             </Grid>
-            <Grid item sm={12} md={4}>
+            <Grid item sm={12} lg={4}>
               <SurveyStudyArea
                 surveyForViewData={surveyWithDetails}
                 projectForViewData={projectWithDetails}
