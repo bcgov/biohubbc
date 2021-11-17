@@ -1,12 +1,19 @@
-import Button from '@material-ui/core/Button';
+import Button, { ButtonProps } from '@material-ui/core/Button';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
-import React from 'react';
+import React, { ReactNode } from 'react';
 
 export interface IYesNoDialogProps {
+  /**
+   * optional component to render underneath the dialog text.
+   *
+   * @type {ReactNode}
+   * @memberof IYesNoDialogProps
+   */
+  dialogContent?: ReactNode;
   /**
    * The dialog window title text.
    *
@@ -64,12 +71,20 @@ export interface IYesNoDialogProps {
   noButtonLabel?: string;
 
   /**
-   * The no button label.
+   * Optional yes-button props
    *
-   * @type {string}
+   * @type {Partial<ButtonProps>}
    * @memberof IYesNoDialogProps
    */
-  yesButtonColor?: string;
+  yesButtonProps?: Partial<ButtonProps>;
+
+  /**
+   * Optional no-button props
+   *
+   * @type {Partial<ButtonProps>}
+   * @memberof IYesNoDialogProps
+   */
+  noButtonProps?: Partial<ButtonProps>;
 }
 
 /**
@@ -92,13 +107,26 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
       aria-labelledby="alert-dialog-title"
       aria-describedby="alert-dialog-description">
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
-      <DialogContent>
+      {/* <DialogContent>
         <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>
+      </DialogContent> */}
+
+      <DialogContent>
+        {props.dialogText && <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>}
+        {props.dialogContent && props.dialogContent}
       </DialogContent>
+
       <DialogActions>
-        <Button data-testid="yes-button" onClick={props.onYes} color="primary" variant="contained" autoFocus>
+        <Button
+          data-testid="yes-button"
+          onClick={props.onYes}
+          color="primary"
+          variant="contained"
+          autoFocus
+          {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
         </Button>
+
         <Button data-testid="no-button" onClick={props.onNo} color="primary" variant="outlined">
           {props.noButtonLabel ? props.noButtonLabel : 'No'}
         </Button>

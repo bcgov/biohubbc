@@ -62,9 +62,20 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const handleRemoveUserClick = (row: any) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Remove user?',
-      dialogText: `Removing ${row.user_identifier} will remove their access to this application and all related projects.  Are you sure you want to proceed?`,
+      dialogContent: (
+        <>
+          <Typography variant="body2" component="div">
+            Removing <strong>{row.user_identifier}</strong> will revoke their access to this application and all related
+            projects.
+          </Typography>
+          <Typography variant="body2" component="div">
+            Are you sure you want to proceed?
+          </Typography>
+        </>
+      ),
       yesButtonLabel: 'Remove User',
       noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'secondary' },
       onClose: () => {
         dialogContext.setYesNoDialog({ open: false });
       },
