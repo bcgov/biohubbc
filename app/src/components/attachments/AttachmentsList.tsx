@@ -35,7 +35,7 @@ import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
 import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
 import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
 import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
-import { EditReportMetaDataI18N } from 'constants/i18n';
+import { EditReportMetaDataI18N, AttachmentsI18N } from 'constants/i18n';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import { AttachmentType } from '../../constants/attachments';
@@ -86,20 +86,20 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const dialogContext = useContext(DialogContext);
 
-  const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
+  const defaultErrorDialogProps = {
     dialogTitle: EditReportMetaDataI18N.editErrorTitle,
     dialogText: EditReportMetaDataI18N.editErrorText,
     open: false,
     onClose: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     },
     onOk: () => {
-      setErrorDialogProps({ ...errorDialogProps, open: false });
+      dialogContext.setErrorDialog({ open: false });
     }
-  });
+  };
 
   const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    setErrorDialogProps({ ...errorDialogProps, ...textDialogProps, open: true });
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const defaultYesNoDialogProps = {
@@ -172,7 +172,14 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
       props.getAttachments(true);
     } catch (error) {
-      return error;
+      const apiError = error as APIError;
+      showErrorDialog({
+        dialogTitle: AttachmentsI18N.deleteErrorTitle,
+        dialogText: AttachmentsI18N.deleteErrorText,
+        dialogErrorDetails: apiError.errors,
+        open: true
+      });
+      return;
     }
   };
 
@@ -217,7 +224,14 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
       window.open(response);
     } catch (error) {
-      return error;
+      const apiError = error as APIError;
+      showErrorDialog({
+        dialogTitle: AttachmentsI18N.downloadErrorTitle,
+        dialogText: AttachmentsI18N.downloadErrorText,
+        dialogErrorDetails: apiError.errors,
+        open: true
+      });
+      return;
     }
   };
 

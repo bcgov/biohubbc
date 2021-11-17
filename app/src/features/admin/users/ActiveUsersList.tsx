@@ -8,14 +8,17 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
-import React, { useContext, useState } from 'react';
-import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 import { mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
+import { DeleteSystemUserI18N } from 'constants/i18n';
+import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { DialogContext } from 'contexts/dialogContext';
+import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import React, { useContext, useState } from 'react';
+import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
@@ -35,6 +38,26 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
   const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps = {
+    dialogTitle: DeleteSystemUserI18N.deleteErrorTitle,
+    dialogText: DeleteSystemUserI18N.deleteErrorText,
+    open: false,
+    onClose: () => {
+      dialogContext.setErrorDialog({ open: false });
+    },
+    onOk: () => {
+      dialogContext.setErrorDialog({ open: false });
+    }
+  };
+
+  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  };
+
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
 
   const handleRemoveUserClick = (row: any) => {
     dialogContext.setYesNoDialog({
@@ -63,9 +86,12 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     try {
       await biohubApi.user.deleteSystemUser(user.id);
 
+      showSnackBar({ snackbarText: 'Success! User removed', open: true });
+
       props.getUsers(true);
     } catch (error) {
-      return error;
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
   };
 
