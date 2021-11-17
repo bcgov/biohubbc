@@ -43,7 +43,9 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
                 />
               </svg>
             </span>
-            Edit
+            <strong>
+              Edit
+            </strong>
           </span>
           <span
             class="MuiTouchRipple-root"

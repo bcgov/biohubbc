@@ -40,7 +40,9 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -127,7 +129,9 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -224,7 +228,9 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"
