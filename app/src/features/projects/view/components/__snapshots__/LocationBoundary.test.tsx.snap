@@ -3,7 +3,7 @@
 exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in valid GeoJSON format 1`] = `
 <DocumentFragment>
   <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-13 MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiBox-root MuiBox-root-15 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -15,7 +15,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         Project Location
       </h2>
       <div
-        class="MuiBox-root MuiBox-root-14"
+        class="MuiBox-root MuiBox-root-16"
       >
         <button
           aria-label="Edit Project Location"
@@ -54,7 +54,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-15"
+      class="MuiBox-root MuiBox-root-17"
     >
       <div
         class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -244,34 +244,28 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         </div>
       </div>
     </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Location Description
-          </h3>
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Location description
-          </p>
-        </div>
-      </div>
-    </dl>
-    <div
-      class="MuiBox-root MuiBox-root-16"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-17"
-    />
     <div
       class="MuiBox-root MuiBox-root-18"
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+      >
+        Location Description
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Location description
+      </p>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-19"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-20"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-21"
     />
     <button
       aria-label="Show Expanded Location"
@@ -310,7 +304,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
 exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
 <DocumentFragment>
   <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-7 MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiBox-root MuiBox-root-8 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -322,7 +316,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         Project Location
       </h2>
       <div
-        class="MuiBox-root MuiBox-root-8"
+        class="MuiBox-root MuiBox-root-9"
       >
         <button
           aria-label="Edit Project Location"
@@ -361,7 +355,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-9"
+      class="MuiBox-root MuiBox-root-10"
     >
       <div
         class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -528,34 +522,28 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         </div>
       </div>
     </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Location Description
-          </h3>
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Location description
-          </p>
-        </div>
-      </div>
-    </dl>
-    <div
-      class="MuiBox-root MuiBox-root-10"
-    />
     <div
       class="MuiBox-root MuiBox-root-11"
-    />
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+      >
+        Location Description
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Location description
+      </p>
+    </div>
     <div
       class="MuiBox-root MuiBox-root-12"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-13"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-14"
     />
     <button
       aria-label="Show Expanded Location"
@@ -812,34 +800,28 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
         </div>
       </div>
     </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <h3
-            class="MuiTypography-root MuiTypography-h3"
-          >
-            Location Description
-          </h3>
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            No Description
-          </p>
-        </div>
-      </div>
-    </dl>
     <div
       class="MuiBox-root MuiBox-root-4"
-    />
+    >
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+      >
+        Location Description
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        No Description
+      </p>
+    </div>
     <div
       class="MuiBox-root MuiBox-root-5"
     />
     <div
       class="MuiBox-root MuiBox-root-6"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-7"
     />
     <button
       aria-label="Show Expanded Location"
