@@ -9,7 +9,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import {
-  mdiAlertCircle,
+  mdiAlertCircleOutline,
   mdiDownload,
   mdiFileOutline,
   mdiImport,
@@ -34,9 +34,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   center: {
     alignSelf: 'center'
-  },
-  tab: {
-    paddingLeft: theme.spacing(2)
   },
   alertLink: {
     color: 'inherit'
@@ -285,22 +282,15 @@ const SurveySummaryResults = () => {
       <Box>
         {Object.entries(list).map(([key, value], index) => (
           <Box key={index} pl={0.25}>
-            <Box display="flex" alignItems="center">
-              <Icon path={iconName} size={1} color="#ff5252" />
-              <Typography variant="body1">
-                <strong className={classes.tab}>{msgGroup[key].label}</strong>
-              </Typography>
-            </Box>
-            <Box pl={2}>
-              <Box component="ul" my={1}>
-                {value.map((message: string, index2: number) => {
-                  return (
-                    <li key={`${index}-${index2}`}>
-                      <Typography variant="body2">{message}</Typography>
-                    </li>
-                  );
-                })}
-              </Box>
+            <Alert severity="error">{msgGroup[key].label}</Alert>
+            <Box component="ul" my={3}>
+              {value.map((message: string, index2: number) => {
+                return (
+                  <li key={`${index}-${index2}`}>
+                    <Typography variant="body2">{message}</Typography>
+                  </li>
+                );
+              })}
             </Box>
           </Box>
         ))}
@@ -337,14 +327,14 @@ const SurveySummaryResults = () => {
           {submission && hasErrorMessages && (
             <>
               <Box px={3} pb={3}>
-                {displayAlertBox('error', mdiAlertCircle, submission.fileName, 'Validation Failed')}
+                {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
                 <Box my={3}>
                   <Typography data-testid="observations-error-details" variant="body1">
                     Resolve the following errors in your local file and re-import.
                   </Typography>
                 </Box>
-                <Box pl={2}>
-                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
+                <Box>
+                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
                   {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
                 </Box>
               </Box>
@@ -353,7 +343,6 @@ const SurveySummaryResults = () => {
           {submission && !hasErrorMessages && (
             <>
               <Box px={3}>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
-
               <Box mt={1} overflow="hidden">
                 <ObservationSubmissionCSV
                   getCSVData={() => {

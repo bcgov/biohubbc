@@ -66,20 +66,6 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Proprietary Data Category
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            proprietor type
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
             Proprietor Name
           </dt>
           <dd
@@ -94,7 +80,21 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
           <dt
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Data and Information Sharing Agreement Required
+            Data Category
+          </dt>
+          <dd
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            proprietor type
+          </dd>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        >
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          >
+            DISA Required
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
@@ -105,25 +105,17 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
         <div
           class="MuiGrid-root MuiGrid-item"
         >
-          <div
-            class="MuiBox-root MuiBox-root-3"
+          <dt
+            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            <div
-              class="MuiBox-root MuiBox-root-4"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
-                Category Rationale
-              </dt>
-            </div>
-            <p
-              class="MuiTypography-root MuiTypography-body1"
-              style="word-break: break-all;"
-            >
-              rationale
-            </p>
-          </div>
+            Category Rationale
+          </dt>
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+            style="word-break: break-all;"
+          >
+            rationale
+          </p>
         </div>
       </div>
     </dl>

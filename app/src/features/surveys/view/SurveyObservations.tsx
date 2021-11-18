@@ -9,9 +9,8 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
-  mdiAlertCircle,
+  mdiAlertCircleOutline,
   mdiInformationOutline,
   mdiClockOutline,
   mdiFileOutline,
@@ -40,8 +39,8 @@ const useStyles = makeStyles((theme: Theme) => ({
   browseLink: {
     cursor: 'pointer'
   },
-  tab: {
-    paddingLeft: theme.spacing(2)
+  alertLink: {
+    color: 'inherit'
   },
   alertActions: {
     '& > *': {
@@ -313,12 +312,12 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
     return (
       <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
-        <Box component={AlertTitle} display="flex">
-          <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+        <Box display="flex" alignItems="center" m={0}>
+          <Link className={classes.alertLink} component="button" variant="body2" onClick={() => viewFileContents()}>
             <strong>{fileName}</strong>
           </Link>
         </Box>
-        {message}
+        <Typography variant="body2">{message}</Typography>
       </Alert>
     );
   }
@@ -328,16 +327,15 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       <Box>
         {Object.entries(list).map(([key, value], index) => (
           <Box key={index}>
-            <Box display="flex" alignItems="center">
-              <Icon path={iconName} size={1} color="#ff5252" />
-              <strong className={classes.tab}>{msgGroup[key].label}</strong>
-            </Box>
-            <Box pl={2}>
-              <ul>
-                {value.map((message: string, index2: number) => {
-                  return <li key={`${index}-${index2}`}>{message}</li>;
-                })}
-              </ul>
+            <Alert severity="error">{msgGroup[key].label}</Alert>
+            <Box component="ul" my={3}>
+              {value.map((message: string, index2: number) => {
+                return (
+                  <li key={`${index}-${index2}`}>
+                    <Typography variant="body2">{message}</Typography>
+                  </li>
+                );
+              })}
             </Box>
           </Box>
         ))}
@@ -357,66 +355,61 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         />
 
         <Box>
-          <Box component={Divider} m={0} />
           {!submissionStatus && (
-            <Box p={3} textAlign="center">
-              <Typography data-testid="observations-nodata" variant="body2">
-                No Observation Data. &nbsp;
-                <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
-                  Click Here to Import
-                </Link>
-              </Typography>
-            </Box>
+            <>
+              <Box component={Divider} m={0} />
+              <Box p={3} textAlign="center">
+                <Typography data-testid="observations-nodata" variant="body2">
+                  No Observation Data. &nbsp;
+                  <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
+                    Click Here to Import
+                  </Link>
+                </Typography>
+              </Box>
+            </>
           )}
 
           {!isValidating && submissionStatus?.status === 'System Error' && (
-            <>
-              {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed to Start')}
-
-              <Box mt={3} mb={1}>
-                <Typography data-testid="observations-error-details" variant="h4">
-                  What's next?
-                </Typography>
-              </Box>
-              <Box mb={3}>
-                <Typography data-testid="observations-error-details" variant="body2">
+            <Box px={3} pb={3}>
+              {displayAlertBox(
+                'error',
+                mdiAlertCircleOutline,
+                submissionStatus.inputFileName,
+                'Validation Failed to Start'
+              )}
+              <Box my={3}>
+                <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.
                 </Typography>
               </Box>
-
-              {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
-
-              {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-            </>
+              <Box>
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Box>
+            </Box>
           )}
 
           {!isValidating && submissionStatus?.status === 'Rejected' && (
-            <>
-              {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed')}
-              <Box mt={3} mb={1}>
-                <Typography data-testid="observations-error-details" variant="h4">
-                  What's next?
-                </Typography>
-              </Box>
-              <Box mb={3}>
-                <Typography data-testid="observations-error-details" variant="body2">
+            <Box px={3} pb={3}>
+              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
+              <Box my={3}>
+                <Typography data-testid="observations-error-details" variant="body1">
                   Resolve the following errors in your local file and re-import.
                 </Typography>
               </Box>
-
-              {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
-
-              {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-            </>
+              <Box>
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Box>
+            </Box>
           )}
           {!isValidating &&
             submissionStatus &&
             (submissionStatus.status === 'Darwin Core Validated' ||
               submissionStatus.status === 'Template Validated') && (
               <>
-                {displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}
-
-                <Box mt={5} overflow="hidden">
+                <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
+                <Box mt={1} overflow="hidden">
                   <ObservationSubmissionCSV
                     getCSVData={() => {
                       return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
@@ -426,14 +419,14 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               </>
             )}
           {isValidating && submissionStatus && (
-            <>
+            <Box px={3} pb={3}>
               {displayAlertBox(
                 'info',
                 mdiClockOutline,
                 submissionStatus?.inputFileName,
                 'Validating observation data. Please wait ...'
               )}
-            </>
+            </Box>
           )}
         </Box>
       </Paper>

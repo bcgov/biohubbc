@@ -191,14 +191,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Proprietary Data Category
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {survey_proprietor.proprietary_data_category_name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Proprietor Name
                 </Typography>
                 <Typography component="dd" variant="body1">
@@ -207,21 +199,25 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Data and Information Sharing Agreement Required
+                  Data Category
+                </Typography>
+                <Typography component="dd" variant="body1">
+                  {survey_proprietor.proprietary_data_category_name}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  DISA Required
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {survey_proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
                 </Typography>
               </Grid>
               <Grid item>
-                <Box mt={1}>
-                  <Box display="flex" alignItems="center" justifyContent="space-between" height="2rem">
-                    <Typography component="dt" variant="subtitle2" color="textSecondary">
-                      Category Rationale
-                    </Typography>
-                  </Box>
-                  <Typography style={{ wordBreak: 'break-all' }}>{survey_proprietor.category_rationale}</Typography>
-                </Box>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  Category Rationale
+                </Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>{survey_proprietor.category_rationale}</Typography>
               </Grid>
             </Grid>
           )}
