@@ -394,3 +394,69 @@ export const getTaxonomicCoverageSQL = (surveyId: number, isFocal: boolean): SQL
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to get project IUCN conservation data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectIucnConservationSQL = (projectId: number): SQLStatement | null => {
+  const debugLabel = 'getProjectIucnConservationSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
+
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      a.name level_1_name, 
+      b.name level_2_name, 
+      c.name level_3_name 
+    from 
+      iucn_conservation_action_level_1_classification a, 
+      iucn_conservation_action_level_2_subclassification b, 
+      iucn_conservation_action_level_3_subclassification c, 
+      project_iucn_action_classification d
+    where 
+      d.project_id = ${projectId}
+      and c.iucn_conservation_action_level_3_subclassification_id = d.iucn_conservation_action_level_3_subclassification_id 
+      and b.iucn_conservation_action_level_2_subclassification_id = c.iucn_conservation_action_level_2_subclassification_id 
+      and a.iucn_conservation_action_level_1_classification_id  = b.iucn_conservation_action_level_1_classification_id;
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project stakeholder partnership data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectStakeholderPartnershipSQL = (projectId: number): SQLStatement | null => {
+  const debugLabel = 'getProjectStakeholderPartnershipSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
+
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      a.name 
+    from 
+      stakeholder_partnership a
+    where 
+      a.project_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

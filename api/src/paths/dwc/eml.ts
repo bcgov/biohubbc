@@ -13,7 +13,9 @@ import {
   getSurveyFundingSourceSQL,
   getGeometryBoundingBoxSQL,
   getGeometryPolygonsSQL,
-  getTaxonomicCoverageSQL
+  getTaxonomicCoverageSQL,
+  getProjectIucnConservationSQL,
+  getProjectStakeholderPartnershipSQL
 } from '../../queries/dwc/dwc-queries';
 // import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
 // import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
@@ -182,9 +184,14 @@ export const getDataPackageEML = async (
   const survey = (await getSurvey(occurrenceSubmission.survey_id, connection)).rows[0];
   const project = (await getProject(survey.project_id, connection)).rows[0];
   const surveyFundingSource = await getSurveyFundingSource(survey.survey_id, connection);
+  const projectFundingSource = await getSurveyFundingSource(project.project_id, connection);
   const surveyBoundingBox = await getSurveyBoundingBox(survey.survey_id, connection);
   const surveyPolygons = await getSurveyPolygons(survey.survey_id, connection);
+  const projectBoundingBox = await getSurveyBoundingBox(project.project_id, connection);
+  const projectPolygons = await getSurveyPolygons(project.project_id, connection);
   const focalTaxonomicCoverage = await getFocalTaxonomicCoverage(survey.survey_id, connection);
+  const projectIucnConservation = await getProjectIucnConservation(project.project_id, connection);
+  const projectStakeholderPartnership = await getProjectStakeholderPartnership(project.project_id, connection);
   // database constants
   const simsProviderURL = checkProvided(
     (await getDbCharacterSystemMetaDataConstant('PROVIDER_URL', connection)).rows[0].constant
@@ -209,6 +216,8 @@ export const getDataPackageEML = async (
   const eml: Eml = {
     'eml:eml': {
       $: {
+        packageId: 'urn:uuid:' + dataPackage.uuid,
+        system: simsProviderURL,
         'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
         'xmlns:xsi': 'http://www.xml-cml.org/schema/stmml-1.1',
         'xmlns:stmml': 'http://www.xml-cml.org/schema/stmml-1.1',
@@ -219,21 +228,9 @@ export const getDataPackageEML = async (
 
   const emlRoot = eml['eml:eml'];
 
-  emlRoot.$.packageId = 'urn:uuid:' + dataPackage.uuid;
-  emlRoot.$.system = simsProviderURL;
+  emlRoot.access = { $: { authSystem: securityProviderURL, order: 'allowFirst' }, allow: 'public', permission: 'read' };
 
-  emlRoot.access = {};
-  emlRoot.access.$ = {};
-  emlRoot.access.$.authSystem = securityProviderURL;
-  emlRoot.access.$.order = 'allowFirst';
-  emlRoot.access.allow = {};
-  emlRoot.access.allow.principal = 'public';
-  emlRoot.access.allow.permission = 'read';
-
-  emlRoot.dataset = {};
-  emlRoot.dataset.$ = {};
-  emlRoot.dataset.$.order = 'allowFirst';
-  emlRoot.dataset.$.id = dataPackage.uuid;
+  emlRoot.dataset = { $: { order: 'allowFirst', id: dataPackage.uuid } };
 
   if (suppliedTitle) {
     emlRoot.dataset.title = suppliedTitle;
@@ -243,58 +240,56 @@ export const getDataPackageEML = async (
 
   emlRoot.dataset.creator = organizationFullName;
 
-  emlRoot.dataset.metadataProvider = {};
-  emlRoot.dataset.metadataProvider.organizationName = organizationFullName;
-  emlRoot.dataset.metadataProvider.onlineUrl = organizationURL;
+  emlRoot.dataset.metadataProvider = { organizationName: organizationFullName, onlineUrl: organizationURL };
 
   // TODO determine if this can be called without a publish date and if so what value to use?
   emlRoot.dataset.pubDate = publishedSurveyStatus.rows[0].status_event_timestamp.toISOString().split('T')[0];
 
   emlRoot.dataset.language = 'english';
 
-  emlRoot.dataset.intellectualRights = {};
-  emlRoot.dataset.intellectualRights.para = intellectualRights;
+  emlRoot.dataset.intellectualRights = { para: intellectualRights };
 
   emlRoot.dataset.contact = {};
   if (project.coordinator_public) {
-    emlRoot.dataset.contact.individualName = {};
-    emlRoot.dataset.contact.individualName.givenName = project.coordinator_first_name;
-    emlRoot.dataset.contact.individualName.surName = project.coordinator_last_name;
-    emlRoot.dataset.contact.organizationName = project.coordinator_agency_name;
-    emlRoot.dataset.contact.electronicMailAddress = project.coordinator_email_address;
+    emlRoot.dataset.contact = {
+      individualName: {
+        givenName: project.coordinator_first_name,
+        surName: project.coordinator_last_name,
+        organizationName: project.coordinator_agency_name,
+        electronicMailAddress: project.coordinator_email_address
+      }
+    };
   } else {
-    emlRoot.dataset.contact.organizationName = organizationFullName;
-    emlRoot.dataset.contact.onlineUrl = organizationURL;
+    emlRoot.dataset.contact = { organizationName: organizationFullName, onlineUrl: organizationURL };
   }
 
   // both projects and surveys are represented as "projects" in EML
   // main EML "project" is the survey
-  emlRoot.dataset.project = { $: { id: survey.uuid, system: simsProviderURL } };
-  emlRoot.dataset.project.title = survey.name;
-  emlRoot.dataset.project.personnel = {};
+  emlRoot.dataset.project = { $: { id: survey.uuid, system: simsProviderURL }, title: survey.name };
   if (project.coordinator_public) {
-    emlRoot.dataset.project.personnel.individualName = {};
-    emlRoot.dataset.project.personnel.individualName.givenName = survey.lead_first_name;
-    emlRoot.dataset.project.personnel.individualName.surName = survey.lead_last_name;
-    emlRoot.dataset.project.personnel.organizationName = project.coordinator_agency_name;
-    emlRoot.dataset.project.personnel.role = 'pointOfContact';
+    emlRoot.dataset.project.personnel = {
+      individualName: {
+        givenName: survey.lead_first_name,
+        surName: survey.lead_last_name,
+        organizationName: project.coordinator_agency_name,
+        role: 'pointOfContact'
+      }
+    };
   } else {
-    emlRoot.dataset.project.personnel.organizationName = organizationFullName;
-    emlRoot.dataset.project.personnel.onlineUrl = organizationURL;
-    emlRoot.dataset.project.personnel.role = 'custodianSteward';
+    emlRoot.dataset.project.personnel = {
+      organizationName: organizationFullName,
+      onlineUrl: organizationURL,
+      role: 'custodianSteward'
+    };
   }
 
-  emlRoot.dataset.project.abstract = {};
-  emlRoot.dataset.project.abstract.section = {};
-  emlRoot.dataset.project.abstract.section.title = 'Objectives';
-  emlRoot.dataset.project.abstract.section.para = survey.objectives;
+  emlRoot.dataset.project.abstract = { section: { title: 'Objectives', para: survey.objectives } };
 
   if (surveyFundingSource.rowCount) {
     emlRoot.dataset.project.funding = getFundingEML(surveyFundingSource);
   }
 
-  emlRoot.dataset.project.studyAreaDescription = {};
-  emlRoot.dataset.project.studyAreaDescription.coverage = {};
+  emlRoot.dataset.project.studyAreaDescription = { coverage: {} };
   const surveyGeographicDescription = survey.location_description
     ? survey.location_name + ' - ' + survey.location_description
     : survey.location_name;
@@ -304,25 +299,88 @@ export const getDataPackageEML = async (
     surveyPolygons
   );
 
-  emlRoot.dataset.project.studyAreaDescription.coverage.temporalCoverage = {};
   emlRoot.dataset.project.studyAreaDescription.coverage.temporalCoverage = getTemporalCoverageEML(survey);
 
-  emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage = {};
-  emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification = [];
+  emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage = { taxonomicClassification: [] };
   focalTaxonomicCoverage.rows.forEach(function (row: any, i: number) {
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i] = {};
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonRankName =
-      row.tty_name;
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonRankValue =
-      row.unit_name1 + ' ' + row.unit_name2;
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].commonName =
-      row.english_name;
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId = {};
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId.$ = {};
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId.$.provider = taxonomicProviderURL;
-    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i].taxonId._ =
-      row.code;
+    emlRoot.dataset.project.studyAreaDescription.coverage.taxonomicCoverage.taxonomicClassification[i] = {
+      taxonRankName: row.tty_name,
+      taxonRankValue: row.unit_name1 + ' ' + row.unit_name2,
+      commonName: row.english_name,
+      taxonId: { $: { provider: taxonomicProviderURL }, _: row.code }
+    };
   });
+
+  emlRoot.dataset.project.relatedProject = { $: { id: project.uuid, system: simsProviderURL }, title: project.name };
+  if (project.coordinator_public) {
+    emlRoot.dataset.project.relatedProject.personnel = {
+      individualName: { givenName: project.coordinator_first_name, surName: project.coordinator_last_name },
+      organizationName: project.coordinator_agency_name,
+      electronicMailAddress: project.coordinator_email_address,
+      role: 'pointOfContact'
+    };
+  } else {
+    emlRoot.dataset.project.relatedProject.personnel = {
+      organizationName: organizationFullName,
+      onlineUrl: organizationURL,
+      role: 'custodianSteward'
+    };
+  }
+
+  emlRoot.dataset.project.relatedProject.abstract = {
+    section: [
+      { title: 'Objectives', para: project.objectives },
+      { title: 'Caveats', para: project.caveats },
+      { title: 'Comments', para: project.comments }
+    ]
+  };
+
+  if (surveyFundingSource.rowCount) {
+    emlRoot.dataset.project.relatedProject.funding = getFundingEML(projectFundingSource);
+  }
+
+  emlRoot.dataset.project.relatedProject.studyAreaDescription = { coverage: {} };
+  const projectGeographicDescription = project.location_description
+    ? project.location_name + ' - ' + project.location_description
+    : project.location_name;
+  emlRoot.dataset.project.relatedProject.studyAreaDescription.coverage.geographicDescription = getGeographicCoverageEML(
+    projectGeographicDescription,
+    projectBoundingBox,
+    projectPolygons
+  );
+
+  if (projectIucnConservation.rowCount | projectStakeholderPartnership.rowCount) {
+    emlRoot.additionalMetadata = [];
+    let additionalMetadataCount = 0;
+
+    if (projectIucnConservation.rowCount) {
+      emlRoot.additionalMetadata[additionalMetadataCount] = {
+        describes: project.uuid,
+        metadata: { IUCNConservationActions: { IUCNConservationAction: [] } }
+      };
+      projectIucnConservation.rows.forEach(function (row: any, i: number) {
+        emlRoot.additionalMetadata[additionalMetadataCount].metadata.IUCNConservationActions.IUCNConservationAction[i] = {
+          IUCNConservationActionLevel1Classification: row.level_1_name,
+          IUCNConservationActionLevel2SubClassification: row.level_2_name,
+          IUCNConservationActionLevel3SubClassification: row.level_3_name
+        };
+      });
+    }
+    additionalMetadataCount++;
+
+    if (projectStakeholderPartnership.rowCount) {
+      emlRoot.additionalMetadata[additionalMetadataCount] = {
+        describes: project.uuid,
+        metadata: { stakeholderPartnerships: { stakeholderPartnership: [] } }
+      };
+      projectStakeholderPartnership.rows.forEach(function (row: any, i: number) {
+        emlRoot.additionalMetadata[additionalMetadataCount].metadata.stakeholderPartnerships.stakeholderPartnership[i] = {
+          name: row.name
+        };
+      });
+    }
+    additionalMetadataCount++;
+  }
 
   // convert object to xml
   const builder = new xml2js.Builder();
@@ -336,12 +394,9 @@ export const getDataPackageEML = async (
  * @return {Eml}
  */
 const getTemporalCoverageEML = (projectRow: any): Eml => {
-  const temporalCoverage: Eml = {};
-  temporalCoverage.rangeOfDates = {};
-  temporalCoverage.rangeOfDates.beginDate = {};
-  temporalCoverage.rangeOfDates.beginDate.calendarDate = projectRow.start_date;
-  temporalCoverage.rangeOfDates.endDate = {};
-  temporalCoverage.rangeOfDates.endDate.calendarDate = projectRow.end_date;
+  const temporalCoverage: Eml = {
+    rangeOfDates: { beginDate: { calendarDate: projectRow.start_date }, endDate: { calendarDate: projectRow.end_date } }
+  };
 
   return temporalCoverage;
 };
@@ -355,22 +410,23 @@ const getTemporalCoverageEML = (projectRow: any): Eml => {
  * @return {Eml}
  */
 const getGeographicCoverageEML = (geographicDescription: string, boundingBox: any, polygonRows: any): Eml => {
-  const geographicCoverage: Eml = {};
-  geographicCoverage.geographicDescription = geographicDescription;
-  geographicCoverage.boundingCoordinates = {};
-  geographicCoverage.boundingCoordinates.westBoundingCoordinate = boundingBox.rows[0].st_xmax;
-  geographicCoverage.boundingCoordinates.eastBoundingCoordinate = boundingBox.rows[0].st_ymax;
-  geographicCoverage.boundingCoordinates.northBoundingCoordinate = boundingBox.rows[0].st_xmin;
-  geographicCoverage.boundingCoordinates.southBoundingCoordinate = boundingBox.rows[0].st_ymin;
+  const geographicCoverage: Eml = {
+    geographicDescription: geographicDescription,
+    boundingCoordinates: {
+      westBoundingCoordinate: boundingBox.rows[0].st_xmax,
+      eastBoundingCoordinate: boundingBox.rows[0].st_ymax,
+      northBoundingCoordinate: boundingBox.rows[0].st_xmin,
+      southBoundingCoordinate: boundingBox.rows[0].st_ymin
+    }
+  };
   geographicCoverage.datasetGPolygon = [];
   polygonRows.rows.forEach(function (row: any, i: number) {
-    geographicCoverage.datasetGPolygon[i] = {};
-    geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing = {};
-    geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint = [];
+    geographicCoverage.datasetGPolygon[i] = { datasetGPolygonOuterGRing: { gRingPoint: [] } };
     row.points.forEach(function (point: any, g: number) {
-      geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g] = {};
-      geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLatitude = point[0];
-      geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g].gRingLongitude = point[1];
+      geographicCoverage.datasetGPolygon[i].datasetGPolygonOuterGRing.gRingPoint[g] = {
+        gRingLatitude: point[0],
+        gRingLongitude: point[1]
+      };
     });
   });
 
@@ -384,28 +440,19 @@ const getGeographicCoverageEML = (geographicDescription: string, boundingBox: an
  * @return {Eml}
  */
 const getFundingEML = (fundingSourceRows: any): Eml => {
-  const funding: Eml = {};
-  funding.section = {};
-  funding.section.title = 'Funding Source';
+  const funding: Eml = { section: { title: 'Funding Source' } };
   for (const row of fundingSourceRows.rows) {
     funding.section.para = row.funding_source_name;
-    funding.section.section = {};
-    funding.section.section.title = 'Investment Action Category';
-    funding.section.section.para = row.investment_action_category_name;
-
-    funding.section.section.section = [];
-    funding.section.section.section[0] = {};
-    funding.section.section.section[0].title = 'Funding Source Project ID';
-    funding.section.section.section[0].para = row.project_funding_source_id;
-    funding.section.section.section[1] = {};
-    funding.section.section.section[1].title = 'Funding Amount';
-    funding.section.section.section[1].para = row.funding_amount;
-    funding.section.section.section[2] = {};
-    funding.section.section.section[2].title = 'Funding Start Date';
-    funding.section.section.section[2].para = new Date(row.funding_start_date).toISOString().split('T')[0];
-    funding.section.section.section[3] = {};
-    funding.section.section.section[3].title = 'Funding End Date';
-    funding.section.section.section[3].para = new Date(row.funding_end_date).toISOString().split('T')[0];
+    funding.section.section = {
+      title: 'Investment Action Category',
+      para: row.investment_action_category_name,
+      section: [
+        { title: 'Funding Source Project ID', para: row.project_funding_source_id },
+        { title: 'Funding Amount', para: row.funding_amount },
+        { title: 'Funding Start Date', para: new Date(row.funding_start_date).toISOString().split('T')[0] },
+        { title: 'Funding End Date', para: new Date(row.funding_end_date).toISOString().split('T')[0] }
+      ]
+    };
   }
 
   return funding;
@@ -502,7 +549,7 @@ export const getDataPackage = async (dataPackageId: number, connection: IDBConne
 };
 
 /**
- * Get data package record associated with data package ID.
+ * Get published survey status.
  *
  * @param {number} data_package_id
  * @param {IDBConnection} connection
@@ -627,6 +674,44 @@ export const getSurveyPolygons = async (surveyId: number, connection: IDBConnect
  */
 export const getFocalTaxonomicCoverage = async (surveyId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getTaxonomicCoverageSQL(surveyId, true);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get project IUCN conservation data.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getProjectIucnConservation = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getProjectIucnConservationSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get project stakeholder partnership data.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+ export const getProjectStakeholderPartnership = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getProjectStakeholderPartnershipSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
