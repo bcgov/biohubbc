@@ -3,33 +3,6 @@ import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('queries/dwc/dwc-queries');
 
-// TODO: remove
-/**
- * SQL query to get EML for a particular data package.
- *
- * @param {number} dataPackageId
- * @param {string} suppliedTitle
- * @returns {SQLStatement} sql query object
- */
-// export const getDataPackageEMLSQL = (dataPackageId: number, suppliedTitle?: string): SQLStatement | null => {
-//   defaultLog.debug({ label: 'getDataPackageEMLSQL', message: 'params', dataPackageId, suppliedTitle });
-
-//   if (!dataPackageId) {
-//     return null;
-//   }
-
-//   const sqlStatement: SQLStatement = SQL`SELECT api_get_eml_data_package(${dataPackageId}, ${suppliedTitle});`;
-
-//   defaultLog.debug({
-//     label: 'getDataPackageEMLSQL',
-//     message: 'sql',
-//     'sqlStatement.text': sqlStatement.text,
-//     'sqlStatement.values': sqlStatement.values
-//   });
-
-//   return sqlStatement;
-// };
-
 /**
  * SQL query to get submission occurrence record given package ID for a particular survey.
  *
@@ -449,6 +422,163 @@ export const getProjectStakeholderPartnershipSQL = (projectId: number): SQLState
       stakeholder_partnership a
     where 
       a.project_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project activity data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectActivitySQL = (projectId: number): SQLStatement | null => {
+  const debugLabel = 'getProjectActivitySQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
+
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      a.name 
+    from 
+      activity a, 
+      project_activity b
+    where 
+      b.project_id = ${projectId}
+      and a.activity_id = b.activity_id;
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get climate initiative data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectClimateInitiativeSQL = (projectId: number): SQLStatement | null => {
+  const debugLabel = 'getProjectClimateInitiativeSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
+
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      a.name 
+    from 
+      climate_change_initiative a, 
+      project_climate_initiative b
+    where 
+      b.project_id = ${projectId}
+      and a.climate_change_initiative_id = b.climate_change_initiative_id;
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project first nations data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectFirstNationsSQL = (projectId: number): SQLStatement | null => {
+  const debugLabel = 'getProjectFirstNationsSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
+
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      a.name 
+    from 
+      first_nations a, 
+      project_first_nation b
+    where 
+      b.project_id = ${projectId}
+      and a.first_nations_id = b.first_nations_id;
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project management actions data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectManagementActionsSQL = (projectId: number): SQLStatement | null => {
+  const debugLabel = 'getProjectManagementActionsSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
+
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      project_id 
+    from 
+      project_management_actions 
+    where 
+      project_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get survey proprietor data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+ export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null => {
+  const debugLabel = 'getSurveyProprietorSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', surveyId });
+
+  const sqlStatement: SQLStatement = SQL`
+    select 
+      a.name proprietor_type_name, 
+      b.name first_nations_name, 
+      c.* 
+    from 
+      proprietor_type a, 
+      first_nations b, 
+      survey_proprietor c
+    where 
+      c.survey_id = ${surveyId}
+      and b.first_nations_id = c.first_nations_id
+      and a.proprietor_type_id = c.proprietor_type_id;
   `;
 
   defaultLog.debug({

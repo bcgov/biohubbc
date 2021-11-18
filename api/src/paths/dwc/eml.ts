@@ -2,8 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-//import { HTTP400, HTTP500 } from '../../errors/CustomError';
-import { HTTP400 } from '../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
   getSurveyOccurrenceSubmissionSQL,
   getDataPackageSQL,
@@ -15,24 +14,31 @@ import {
   getGeometryPolygonsSQL,
   getTaxonomicCoverageSQL,
   getProjectIucnConservationSQL,
-  getProjectStakeholderPartnershipSQL
+  getProjectStakeholderPartnershipSQL,
+  getProjectActivitySQL,
+  getProjectClimateInitiativeSQL,
+  getProjectFirstNationsSQL,
+  getProjectManagementActionsSQL,
+  getSurveyProprietorSQL
 } from '../../queries/dwc/dwc-queries';
-// import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
-// import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
-// import { MediaFile } from '../../utils/media/media-file';
-// import AdmZip from 'adm-zip';
+import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
+import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
+import { MediaFile } from '../../utils/media/media-file';
+import AdmZip from 'adm-zip';
 import * as xml2js from 'xml2js';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../../queries/codes/db-constant-queries';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
+const simsEmlVersion = '1.0.0';
+
 type Eml = { [k: string]: any };
 
 const defaultLog = getLogger('paths/dwc/eml');
 
-// const defaultEMLFileName = 'eml.xml';
-// const defaultEMLMimeType = 'application/xml';
-// const defaultArchiveMimeType = 'application/zip';
+const defaultEMLFileName = 'eml.xml';
+const defaultEMLMimeType = 'application/xml';
+const defaultArchiveMimeType = 'application/zip';
 
 export const POST: Operation = [logRequest('paths/dwc/eml', 'POST'), getSurveyDataPackageEML(), sendResponse()];
 
@@ -108,35 +114,32 @@ export function getSurveyDataPackageEML(): RequestHandler {
       // get the EML data for the survey
       const dataPackageEML = await getDataPackageEML(req.body.data_package_id, connection, req.body.supplied_title);
       defaultLog.debug({ label: 'getSurveyDataPackageEML', message: 'dataPackageEML is ' + dataPackageEML });
-      // TODO: remove
-      // dataPackageEML = await getDataPackageEMLDB(req.body.data_package_id, connection, req.body.supplied_title);
 
       // get the archive file from s3
       if (!occurrenceSubmission.output_key) {
         throw new HTTP400('No S3 target output key found');
       }
-      // TODO: uncomment
-      // const s3Key = occurrenceSubmission.output_key;
-      // const s3File = await getFileFromS3(s3Key);
+      const s3Key = occurrenceSubmission.output_key;
+      const s3File = await getFileFromS3(s3Key);
 
-      // if (!s3File) {
-      //   throw new HTTP500('Failed to get file from S3');
-      // }
+      if (!s3File) {
+        throw new HTTP500('Failed to get file from S3');
+      }
 
-      // // parse the archive file and add EML file
-      // const archiveFile = parseS3File(s3File);
-      // const mediaFiles = parseUnknownZipFile(archiveFile.buffer);
-      // mediaFiles.push(
-      //   //new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML.rows[0].api_get_eml_data_package))
-      //   new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML))
-      // );
+      // parse the archive file and add EML file
+      const archiveFile = parseS3File(s3File);
+      const mediaFiles = parseUnknownZipFile(archiveFile.buffer);
+      mediaFiles.push(
+        //new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML.rows[0].api_get_eml_data_package))
+        new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML))
+      );
 
-      // // build the archive zip file
-      // const dwcArchiveZip = new AdmZip();
-      // mediaFiles.forEach((file) => dwcArchiveZip.addFile(file.fileName, file.buffer));
+      // build the archive zip file
+      const dwcArchiveZip = new AdmZip();
+      mediaFiles.forEach((file) => dwcArchiveZip.addFile(file.fileName, file.buffer));
 
-      // // upload archive to s3
-      // await uploadBufferToS3(dwcArchiveZip.toBuffer(), defaultArchiveMimeType, s3Key);
+      // upload archive to s3
+      await uploadBufferToS3(dwcArchiveZip.toBuffer(), defaultArchiveMimeType, s3Key);
 
       next();
     } catch (error) {
@@ -192,6 +195,11 @@ export const getDataPackageEML = async (
   const focalTaxonomicCoverage = await getFocalTaxonomicCoverage(survey.survey_id, connection);
   const projectIucnConservation = await getProjectIucnConservation(project.project_id, connection);
   const projectStakeholderPartnership = await getProjectStakeholderPartnership(project.project_id, connection);
+  const projectActivity = await getProjectActivity(project.project_id, connection);
+  const projectClimateInitiative = await getProjectClimateInitiative(project.project_id, connection);
+  const projectFirstNations = await getProjectFirstNations(project.project_id, connection);
+  const projectManagementActions = await getProjectManagementActions(project.project_id, connection);
+  const surveyProprietor = await getSurveyProprietor(survey.survey_id, connection);
   // database constants
   const simsProviderURL = checkProvided(
     (await getDbCharacterSystemMetaDataConstant('PROVIDER_URL', connection)).rows[0].constant
@@ -349,37 +357,108 @@ export const getDataPackageEML = async (
     projectPolygons
   );
 
-  if (projectIucnConservation.rowCount | projectStakeholderPartnership.rowCount) {
-    emlRoot.additionalMetadata = [];
-    let additionalMetadataCount = 0;
+  emlRoot.additionalMetadata = [];
+  let additionalMetadataCount = 0;
+  emlRoot.additionalMetadata[additionalMetadataCount] = {
+    describes: dataPackage.uuid,
+    metadata: { simsEML: { type: 'survey', version: simsEmlVersion } }
+  };
 
-    if (projectIucnConservation.rowCount) {
-      emlRoot.additionalMetadata[additionalMetadataCount] = {
-        describes: project.uuid,
-        metadata: { IUCNConservationActions: { IUCNConservationAction: [] } }
-      };
-      projectIucnConservation.rows.forEach(function (row: any, i: number) {
-        emlRoot.additionalMetadata[additionalMetadataCount].metadata.IUCNConservationActions.IUCNConservationAction[i] = {
-          IUCNConservationActionLevel1Classification: row.level_1_name,
-          IUCNConservationActionLevel2SubClassification: row.level_2_name,
-          IUCNConservationActionLevel3SubClassification: row.level_3_name
-        };
-      });
-    }
+  if (projectIucnConservation.rowCount) {
     additionalMetadataCount++;
+    emlRoot.additionalMetadata[additionalMetadataCount] = {
+      describes: project.uuid,
+      metadata: { IUCNConservationActions: { IUCNConservationAction: [] } }
+    };
+    projectIucnConservation.rows.forEach(function (row: any, i: number) {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.IUCNConservationActions.IUCNConservationAction[i] = {
+        IUCNConservationActionLevel1Classification: row.level_1_name,
+        IUCNConservationActionLevel2SubClassification: row.level_2_name,
+        IUCNConservationActionLevel3SubClassification: row.level_3_name
+      };
+    });
+  }
 
-    if (projectStakeholderPartnership.rowCount) {
-      emlRoot.additionalMetadata[additionalMetadataCount] = {
-        describes: project.uuid,
-        metadata: { stakeholderPartnerships: { stakeholderPartnership: [] } }
-      };
-      projectStakeholderPartnership.rows.forEach(function (row: any, i: number) {
-        emlRoot.additionalMetadata[additionalMetadataCount].metadata.stakeholderPartnerships.stakeholderPartnership[i] = {
-          name: row.name
-        };
-      });
-    }
+  if (projectStakeholderPartnership.rowCount) {
     additionalMetadataCount++;
+    emlRoot.additionalMetadata[additionalMetadataCount] = {
+      describes: project.uuid,
+      metadata: { stakeholderPartnerships: { stakeholderPartnership: [] } }
+    };
+    projectStakeholderPartnership.rows.forEach(function (row: any, i: number) {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.stakeholderPartnerships.stakeholderPartnership[i] = {
+        name: row.name
+      };
+    });
+  }
+
+  if (projectActivity.rowCount) {
+    additionalMetadataCount++;
+    emlRoot.additionalMetadata[additionalMetadataCount] = {
+      describes: project.uuid,
+      metadata: { projectActivities: { projectActivity: [] } }
+    };
+    projectActivity.rows.forEach(function (row: any, i: number) {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.projectActivities.projectActivity[i] = {
+        name: row.name
+      };
+    });
+  }
+
+  if (projectClimateInitiative.rowCount) {
+    additionalMetadataCount++;
+    emlRoot.additionalMetadata[additionalMetadataCount] = {
+      describes: project.uuid,
+      metadata: { climateChangeInitiatives: { climateChangeInitiative: [] } }
+    };
+    projectClimateInitiative.rows.forEach(function (row: any, i: number) {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.climateChangeInitiatives.climateChangeInitiative[i] = {
+        name: row.name
+      };
+    });
+  }
+
+  if (projectFirstNations.rowCount) {
+    additionalMetadataCount++;
+    emlRoot.additionalMetadata[additionalMetadataCount] = {
+      describes: project.uuid,
+      metadata: { firstNations: { firstNation: [] } }
+    };
+    projectFirstNations.rows.forEach(function (row: any, i: number) {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.firstNations.firstNation[i] = {
+        name: row.name
+      };
+    });
+  }
+
+  if (projectManagementActions.rowCount) {
+    additionalMetadataCount++;
+    emlRoot.additionalMetadata[additionalMetadataCount] = {
+      describes: project.uuid,
+      metadata: { managementActionTypes: { managementActionType: [] } }
+    };
+    projectManagementActions.rows.forEach(function (row: any, i: number) {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.managementActionTypes.managementActionType[i] = {
+        name: row.name
+      };
+    });
+  }
+
+  if (surveyProprietor.rowCount) {
+    additionalMetadataCount++;
+    emlRoot.additionalMetadata[additionalMetadataCount] = {
+      describes: project.uuid,
+      metadata: { surveyProprietors: { surveyProprietor: [] } }
+    };
+    surveyProprietor.rows.forEach(function (row: any, i: number) {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.surveyProprietors.surveyProprietor[i] = {
+        firstNationsName: row.first_nations_name,
+        proprietorType: row.proprietor_type_name,
+        rationale: row.rationale,
+        proprietorName: row.proprietor_name,
+        DISARequired: row.disa_required ? 'YES' : 'NO'
+      };
+    });
   }
 
   // convert object to xml
@@ -710,7 +789,7 @@ export const getProjectIucnConservation = async (projectId: number, connection: 
  * @param {IDBConnection} connection
  * @return {*} {Promise<void>}
  */
- export const getProjectStakeholderPartnership = async (projectId: number, connection: IDBConnection): Promise<any> => {
+export const getProjectStakeholderPartnership = async (projectId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getProjectStakeholderPartnershipSQL(projectId);
 
   if (!sqlStatement) {
@@ -722,34 +801,97 @@ export const getProjectIucnConservation = async (projectId: number, connection: 
   return response;
 };
 
-// TODO: remove
 /**
- * Get EML associated with data package ID.
+ * Get project activity data.
  *
- * @param {number} dataPackageId
+ * @param {number} projectId
  * @param {IDBConnection} connection
- * @param {string} suppliedTitle
  * @return {*} {Promise<void>}
  */
-// export const getDataPackageEMLDB = async (
-//   dataPackageId: number,
-//   connection: IDBConnection,
-//   suppliedTitle?: string
-// ): Promise<any> => {
-//   if (!dataPackageId || !connection) {
-//     return null;
-//   }
-//   const sqlStatement = getDataPackageEMLSQL(dataPackageId, suppliedTitle);
+export const getProjectActivity = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getProjectActivitySQL(projectId);
 
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL update statement');
-//   }
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
 
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-//   if (!response || !response.rowCount) {
-//     throw new HTTP400('Failed to acquire survey occurrence submission record');
-//   }
+  return response;
+};
 
-//   return response;
-// };
+/**
+ * Get project climate initiative data.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getProjectClimateInitiative = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getProjectClimateInitiativeSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get project first nations data.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getProjectFirstNations = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getProjectFirstNationsSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get project management action data.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getProjectManagementActions = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getProjectManagementActionsSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get project survey proprietor data.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+export const getSurveyProprietor = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getSurveyProprietorSQL(projectId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
