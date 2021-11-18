@@ -211,11 +211,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   // Action prop for the Alert MUI component to render the delete icon and associated action
   const submissionAlertAction = () => (
-    <Box className={classes.alertActions}>
-      <IconButton aria-label="open" color="inherit" size="small" onClick={() => viewFileContents()}>
+    <Box>
+      <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>
-      <IconButton aria-label="delete" color="inherit" size="small" onClick={() => showDeleteDialog()}>
+      <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     </Box>
