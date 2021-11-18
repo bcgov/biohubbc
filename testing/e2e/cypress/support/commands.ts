@@ -8,7 +8,6 @@
 // https://on.cypress.io/custom-commands
 // ***********************************************
 
-import createUUID from "./createUUID";
 import "cypress-file-upload";
 import "./keycloak.js"
 
@@ -21,6 +20,7 @@ Cypress.Commands.overwrite('login', (originalFn) => {
     client_id: Cypress.env("authClientId"),
     redirect_uri: Cypress.env("baseUrl"),
   })
+  cy.wait(3000);
 })
 
 Cypress.Commands.overwrite('logout', (originalFn) => {
