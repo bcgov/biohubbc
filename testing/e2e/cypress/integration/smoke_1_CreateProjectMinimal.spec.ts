@@ -24,13 +24,14 @@ import {
 } from "../page-functions/project/project-create-page";
 
 beforeEach(() => {
+  cy.logout();
+  cy.login();
   navigate();
-  login("", "");
 });
 
 afterEach(() => {
   navigate();
-  logout();
+  cy.logout();
 });
 
 var n = 0;
@@ -70,7 +71,7 @@ while (n < 1) {
 
     attach_file();
 
-    add_survey();
+    //add_survey();
 
   });
   n++;
