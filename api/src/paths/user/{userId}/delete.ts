@@ -7,10 +7,10 @@ import { getDBConnection } from '../../../database/db';
 import { HTTP400, HTTP500 } from '../../../errors/CustomError';
 import {
   deActivateSystemUserSQL,
+  deleteAllProjectRolesSQL,
   deleteAllSystemRolesSQL,
-  deleteAllProjectRolesSQL
+  getUserByIdSQL
 } from '../../../queries/users/user-queries';
-import { getUserByIdSQL } from '../../../queries/users/user-queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
