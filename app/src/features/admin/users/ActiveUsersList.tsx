@@ -97,7 +97,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     try {
       await biohubApi.user.deleteSystemUser(user.id);
 
-      showSnackBar({ snackbarText: 'Success! User removed', open: true });
+      showSnackBar({ snackbarText: 'Success! User removed', snackbarMessage: 'User successfully removed', open: true });
 
       props.getUsers(true);
     } catch (error) {
