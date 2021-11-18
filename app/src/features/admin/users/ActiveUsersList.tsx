@@ -122,7 +122,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                 <TableCell>Regional Offices</TableCell>
                 <TableCell>Roles</TableCell>
                 <TableCell>Last Active</TableCell>
-                <TableCell>Actions</TableCell>
+                <TableCell width="50px">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="active-users-table">
