@@ -17,13 +17,12 @@ import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePagination
 
 const useStyles = makeStyles({
   table: {
-    minWidth: 650
-  },
-  heading: {
-    fontWeight: 'bold'
-  },
-  tableCellBorderTop: {
-    borderTop: '1px solid rgba(224, 224, 224, 1)'
+    '& th': {
+      whiteSpace: 'nowrap'
+    },
+    '& td': {
+      whiteSpace: 'nowrap'
+    }
   }
 });
 
@@ -99,12 +98,19 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
 
   return (
     <>
-      <Tabs value={value} onChange={handleChange} aria-label="csv-groups" indicatorColor="primary" variant="scrollable">
-        {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, dataItemIndex: number) => (
-          <Tab key={dataItemIndex} label={dataItem.name} {...a11yProps(dataItemIndex)} />
-        ))}
-      </Tabs>
-      <Box mt={2}>
+      <Box px={3}>
+        <Tabs
+          value={value}
+          onChange={handleChange}
+          aria-label="csv-groups"
+          indicatorColor="primary"
+          variant="scrollable">
+          {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, dataItemIndex: number) => (
+            <Tab key={dataItemIndex} label={dataItem.name} {...a11yProps(dataItemIndex)} />
+          ))}
+        </Tabs>
+      </Box>
+      <Box>
         {submissionCSVDetails.data.map((dataItem: IGetSubmissionCSVForViewItem, dataItemIndex: number) => (
           <TabPanel key={dataItemIndex} value={value} index={dataItemIndex}>
             <TableContainer>
@@ -112,9 +118,7 @@ const ObservationSubmissionCSV: React.FC<IObservationSubmissionCSVProps> = (prop
                 <TableHead>
                   <TableRow>
                     {dataItem.headers.map((header: string, headerIndex: number) => (
-                      <TableCell key={headerIndex} className={classes.heading}>
-                        {header}
-                      </TableCell>
+                      <TableCell key={headerIndex}>{header}</TableCell>
                     ))}
                   </TableRow>
                 </TableHead>

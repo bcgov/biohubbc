@@ -66,7 +66,7 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
-          required: ['attachmentType', 'attachmentMeta'],
+          required: ['attachmentType'],
           properties: {
             media: {
               type: 'string',

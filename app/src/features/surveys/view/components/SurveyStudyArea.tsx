@@ -1,10 +1,12 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import Icon from '@mdi/react';
-import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
+import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
@@ -52,7 +54,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -60,6 +62,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   });
   const [bounds, setBounds] = useState<any[] | undefined>([]);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
+  const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
   useEffect(() => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
@@ -145,6 +148,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     refresh();
   };
 
+  const handleDialogViewOpen = () => {
+    setShowFullScreenViewMapDialog(true);
+  };
+
+  const handleClose = () => {
+    setShowFullScreenViewMapDialog(false);
+  };
+
   return (
     <>
       <EditDialog
@@ -158,34 +169,37 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
+
+      <FullScreenViewMapDialog
+        open={showFullScreenViewMapDialog}
+        onClose={handleClose}
+        map={
+          <MapContainer
+            mapId="project_location_form_map"
+            hideDrawControls={true}
+            nonEditableGeometries={nonEditableGeometries}
+            bounds={bounds}
+            setInferredLayersInfo={setInferredLayersInfo}
+          />
+        }
+        description={survey_details.survey_area_name}
+        layers={<InferredLocationDetails layers={inferredLayersInfo} />}
+        backButtonTitle={'Back To Survey'}
+        mapTitle={'Study Area'}
+      />
       <ErrorDialog {...errorDialogProps} />
-      <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Study Area</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Study Area"
-            aria-label="Edit Study Area"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
-        <dl>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Survey Area Name
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {survey_details.survey_area_name}
-              </Typography>
-            </Grid>
-          </Grid>
-        </dl>
-        <Box mt={4} mb={4} height={500}>
+      <Box component={Paper} px={3} pt={1} pb={3}>
+        <H2ButtonToolbar
+          label="Study Area"
+          buttonLabel="Edit"
+          buttonTitle="Edit Study Area"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          buttonProps={{ variant: 'text' }}
+          toolbarProps={{ disableGutters: true }}
+        />
+
+        <Box mt={2} height={350}>
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
@@ -199,20 +213,28 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             }
           />
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-          </Grid>
-        </Grid>
+
+        <Box my={3}>
+          <Typography variant="body2" color="textSecondary">
+            Study Area Name
+          </Typography>
+          <Typography variant="body1">{survey_details.survey_area_name}</Typography>
+        </Box>
+
+        <InferredLocationDetails layers={inferredLayersInfo} />
+
+        <Box mt={3}>
+          <Button
+            variant="text"
+            color="primary"
+            className="sectionHeaderButton"
+            onClick={() => handleDialogViewOpen()}
+            title="Expand Location"
+            aria-label="Show Expanded Location"
+            endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+            Show More
+          </Button>
+        </Box>
       </Box>
     </>
   );

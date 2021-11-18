@@ -1330,7 +1330,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-74"
+          class="MuiBox-root MuiBox-root-75"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -1338,7 +1338,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
           <div
-            class="MuiBox-root MuiBox-root-75"
+            class="MuiBox-root MuiBox-root-76"
           >
             <p
               class="MuiTypography-root MuiTypography-body1"
@@ -1348,7 +1348,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-76"
+          class="MuiBox-root MuiBox-root-77"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1380,7 +1380,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-77"
+            class="MuiBox-root MuiBox-root-78"
           >
             <div
               class="MuiFormControl-root"
@@ -1443,10 +1443,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-78"
+          class="MuiBox-root MuiBox-root-79"
         />
         <div
-          class="MuiBox-root MuiBox-root-79"
+          class="MuiBox-root MuiBox-root-80"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"

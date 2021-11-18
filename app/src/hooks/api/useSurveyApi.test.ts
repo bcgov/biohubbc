@@ -302,13 +302,13 @@ describe('useSurveyApi', () => {
     expect(result).toEqual(data);
   });
 
-  it('publishSurvey works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/publish`).reply(200, 'OK');
+  // it('publishSurvey works as expected', async () => {
+  //   mock.onPut(`/api/project/${projectId}/survey/${surveyId}/publish`).reply(200, 'OK');
 
-    const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
+  //   const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
 
-    expect(result).toEqual('OK');
-  });
+  //   expect(result).toEqual('OK');
+  // });
 
   it('deleteSummarySubmission works as expected', async () => {
     const summaryId = 2;

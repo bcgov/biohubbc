@@ -48,12 +48,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     background: '#f7f8fa'
   },
   chip: {
-    padding: '0px 8px',
-    borderRadius: '4px',
     color: 'white'
   },
   chipActive: {
-    backgroundColor: theme.palette.warning.main
+    backgroundColor: theme.palette.success.main
   },
   chipPublishedCompleted: {
     backgroundColor: theme.palette.success.main
@@ -92,19 +90,19 @@ const ProjectsListPage: React.FC = () => {
     let chipStatusClass;
 
     if (ProjectStatusType.UNPUBLISHED === status_name) {
-      chipLabel = 'UNPUBLISHED';
+      chipLabel = 'Unpublished';
       chipStatusClass = classes.chipUnpublished;
     } else if (ProjectStatusType.PUBLISHED === status_name) {
-      chipLabel = 'PUBLISHED';
+      chipLabel = 'Published';
       chipStatusClass = classes.chipPublishedCompleted;
     } else if (ProjectStatusType.ACTIVE === status_name) {
-      chipLabel = 'ACTIVE';
+      chipLabel = 'Active';
       chipStatusClass = classes.chipActive;
     } else if (ProjectStatusType.COMPLETED === status_name) {
-      chipLabel = 'COMPLETED';
+      chipLabel = 'Completed';
       chipStatusClass = classes.chipPublishedCompleted;
     } else if (ProjectStatusType.DRAFT === status_name) {
-      chipLabel = 'DRAFT';
+      chipLabel = 'Draft';
       chipStatusClass = classes.chipDraft;
     }
 
@@ -261,7 +259,7 @@ const ProjectsListPage: React.FC = () => {
                 <TableCell>Coordinator Agency</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
-                <TableCell>Completion Status</TableCell>
+                <TableCell>Status</TableCell>
                 <TableCell>Publish Status</TableCell>
               </TableRow>
             </TableHead>

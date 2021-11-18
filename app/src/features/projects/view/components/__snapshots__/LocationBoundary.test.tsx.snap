@@ -3,69 +3,58 @@
 exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in valid GeoJSON format 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-7"
+    class="MuiPaper-root MuiBox-root MuiBox-root-15 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
-      class="MuiBox-root MuiBox-root-8"
+      class="MuiToolbar-root MuiToolbar-regular"
+      style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
+      <h2
+        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
       >
-        Location / Project Boundary
-      </h3>
-      <button
-        aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-        tabindex="0"
-        title="Edit Location / Project Boundary"
-        type="button"
+        Project Location
+      </h2>
+      <div
+        class="MuiBox-root MuiBox-root-16"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Project Location"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+          data-testid="h2-button-toolbar-Edit"
+          id="h2-button-toolbar-Edit"
+          tabindex="0"
+          title="Edit Project Location"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            <strong>
+              Edit
+            </strong>
           </span>
-          Edit
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Location Description
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Location description
-          </dd>
-        </div>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
-    </dl>
+    </div>
     <div
-      class="MuiBox-root MuiBox-root-9"
+      class="MuiBox-root MuiBox-root-17"
     >
       <div
         class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -256,21 +245,58 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiBox-root MuiBox-root-18"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+      >
+        Location Description
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Location description
+      </p>
     </div>
+    <div
+      class="MuiBox-root MuiBox-root-19"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-20"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-21"
+    />
+    <button
+      aria-label="Show Expanded Location"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+      tabindex="0"
+      title="Expand Location"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Show More
+        <span
+          class="MuiButton-endIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.3125rem; height: 1.3125rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
@@ -278,69 +304,58 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
 exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-4"
+    class="MuiPaper-root MuiBox-root MuiBox-root-8 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
-      class="MuiBox-root MuiBox-root-5"
+      class="MuiToolbar-root MuiToolbar-regular"
+      style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
+      <h2
+        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
       >
-        Location / Project Boundary
-      </h3>
-      <button
-        aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-        tabindex="0"
-        title="Edit Location / Project Boundary"
-        type="button"
+        Project Location
+      </h2>
+      <div
+        class="MuiBox-root MuiBox-root-9"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Project Location"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+          data-testid="h2-button-toolbar-Edit"
+          id="h2-button-toolbar-Edit"
+          tabindex="0"
+          title="Edit Project Location"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            <strong>
+              Edit
+            </strong>
           </span>
-          Edit
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Location Description
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Location description
-          </dd>
-        </div>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
-    </dl>
+    </div>
     <div
-      class="MuiBox-root MuiBox-root-6"
+      class="MuiBox-root MuiBox-root-10"
     >
       <div
         class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -508,21 +523,58 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiBox-root MuiBox-root-11"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+      >
+        Location Description
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        Location description
+      </p>
     </div>
+    <div
+      class="MuiBox-root MuiBox-root-12"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-13"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-14"
+    />
+    <button
+      aria-label="Show Expanded Location"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+      tabindex="0"
+      title="Expand Location"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Show More
+        <span
+          class="MuiButton-endIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.3125rem; height: 1.3125rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
@@ -530,67 +582,56 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
 exports[`LocationBoundary matches the snapshot when there is no location description 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiPaper-root MuiBox-root MuiBox-root-1 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
-      class="MuiBox-root MuiBox-root-2"
+      class="MuiToolbar-root MuiToolbar-regular"
+      style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
+      <h2
+        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
       >
-        Location / Project Boundary
-      </h3>
-      <button
-        aria-label="Edit Location / Project Boundary"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-        tabindex="0"
-        title="Edit Location / Project Boundary"
-        type="button"
+        Project Location
+      </h2>
+      <div
+        class="MuiBox-root MuiBox-root-2"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Project Location"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+          data-testid="h2-button-toolbar-Edit"
+          id="h2-button-toolbar-Edit"
+          tabindex="0"
+          title="Edit Project Location"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            <strong>
+              Edit
+            </strong>
           </span>
-          Edit
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Location Description
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            No Description
-          </dd>
-        </div>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
-    </dl>
+    </div>
     <div
       class="MuiBox-root MuiBox-root-3"
     >
@@ -760,21 +801,58 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiBox-root MuiBox-root-4"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+      >
+        Location Description
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        No Description
+      </p>
     </div>
+    <div
+      class="MuiBox-root MuiBox-root-5"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-6"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-7"
+    />
+    <button
+      aria-label="Show Expanded Location"
+      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+      tabindex="0"
+      title="Expand Location"
+      type="button"
+    >
+      <span
+        class="MuiButton-label"
+      >
+        Show More
+        <span
+          class="MuiButton-endIcon MuiButton-iconSizeMedium"
+        >
+          <svg
+            role="presentation"
+            style="width: 1.3125rem; height: 1.3125rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+              style="fill: currentColor;"
+            />
+          </svg>
+        </span>
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;

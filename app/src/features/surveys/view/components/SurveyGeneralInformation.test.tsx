@@ -108,13 +108,13 @@ describe('SurveyGeneralInformation', () => {
       { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
     ]);
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, getByTestId, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
@@ -132,7 +132,7 @@ describe('SurveyGeneralInformation', () => {
       expect(queryByText('Edit Survey General Information')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey General Information')).toBeVisible();
@@ -177,13 +177,13 @@ describe('SurveyGeneralInformation', () => {
   it('displays an error dialog when fetching the update data fails', async () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue(null);
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, getByTestId, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(getByText('Error Editing Survey General Information')).toBeVisible();
@@ -199,13 +199,13 @@ describe('SurveyGeneralInformation', () => {
   it('shows error dialog with API error message when getting survey data for update fails', async () => {
     mockBiohubApi().survey.getSurveyForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = renderContainer();
+    const { getByText, getByTestId, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
@@ -246,13 +246,13 @@ describe('SurveyGeneralInformation', () => {
     ]);
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, getByTestId, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
