@@ -1,5 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Button, { ButtonProps } from '@material-ui/core/Button';
+import IconButton, { IconButtonProps } from '@material-ui/core/IconButton';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
 import Toolbar, { ToolbarProps } from '@material-ui/core/Toolbar';
@@ -143,7 +145,78 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
           const id = `h2-menu-toolbar-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
           return (
             <MenuItem id={id} data-testid={id} onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
-              {menuItem.menuIcon}
+              <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>
+              {menuItem.menuLabel}
+            </MenuItem>
+          );
+        })}
+      </Menu>
+    </>
+  );
+};
+
+export interface ICustomMenuIconButtonProps {
+  buttonTitle?: string;
+  buttonIcon: ReactNode;
+  buttonProps?: Partial<IconButtonProps>;
+  menuItems: IMenuToolbarItem[];
+}
+
+export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props) => {
+  const [anchorEl, setAnchorEl] = useState(null);
+
+  const open = Boolean(anchorEl);
+
+  const id = `h2-menu-toolbar-${props.buttonTitle?.replace(/\s/g, '') || 'button'}`;
+
+  const handleClick = (event: any) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const closeMenuOnItemClick = (menuItemOnClick: () => void) => {
+    setAnchorEl(null);
+    menuItemOnClick();
+  };
+
+  return (
+    <>
+      <IconButton
+        color="primary"
+        aria-label="icon button menu"
+        onClick={handleClick}
+        data-testid="icon-action-menu"
+        aria-controls="basic-icon-menu"
+        aria-haspopup="true"
+        aria-expanded={open ? 'true' : undefined}>
+        {props.buttonIcon}
+      </IconButton>
+      <Menu
+        id={id}
+        data-testid={id}
+        open={open}
+        onClose={handleClose}
+        anchorEl={anchorEl}
+        getContentAnchorEl={null}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right'
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
+        MenuListProps={{
+          'aria-labelledby': 'basic-button'
+        }}>
+        {props.menuItems.map((menuItem) => {
+          const id = `h2-menu-toolbar-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
+          return (
+            <MenuItem id={id} data-testid={id} onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
+              <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>
               {menuItem.menuLabel}
             </MenuItem>
           );
