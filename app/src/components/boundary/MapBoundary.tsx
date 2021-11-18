@@ -1,28 +1,29 @@
-import Alert from '@material-ui/lab/Alert';
 import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-import ComponentDialog from 'components/dialog/ComponentDialog';
-import FileUpload from 'components/attachments/FileUpload';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
 import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import FileUpload from 'components/attachments/FileUpload';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import MapContainer from 'components/map/MapContainer';
+import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { Feature } from 'geojson';
+import React, { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
   handleGPXUpload,
   handleKMLUpload,
   handleShapefileUpload
 } from 'utils/mapBoundaryUploadHelpers';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 
 const useStyles = makeStyles({
   bold: {
@@ -32,6 +33,11 @@ const useStyles = makeStyles({
     border: '2px solid',
     textTransform: 'capitalize',
     fontWeight: 'bold'
+  },
+  mapLocations: {
+    '& dd': {
+      display: 'inline-block'
+    }
   }
 });
 
@@ -46,25 +52,6 @@ export interface IMapBoundaryProps {
   setFieldValue: (key: string, value: any) => void;
 }
 
-export const displayInferredLayersInfo = (data: any[], type: string) => {
-  if (!data.length) {
-    return;
-  }
-
-  return (
-    <Box>
-      <Typography component="dt" variant="subtitle2" color="textSecondary">
-        {type}
-      </Typography>
-      {data.map((item: string, index: number) => (
-        <Typography key={index} component="dd" variant="body1">
-          {item}
-        </Typography>
-      ))}
-    </Box>
-  );
-};
-
 /**
  * Shared component for map boundary component
  *
@@ -78,7 +65,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
   const [updatedBounds, setUpdatedBounds] = useState<any[][] | undefined>(undefined);
   const [selectedLayer, setSelectedLayer] = useState('');
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -220,20 +207,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
               <Typography className={classes.bold}>Boundary Information</Typography>
             </Box>
             <dl>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-                </Grid>
-              </Grid>
+              <InferredLocationDetails layers={inferredLayersInfo} />
             </dl>
           </>
         )}

@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import FormLabel from '@material-ui/core/FormLabel';
+import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -85,9 +85,9 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
   return (
     <form data-testid="funding-item-form" onSubmit={handleSubmit}>
       <Box component="fieldset">
-        <FormLabel id="agency_details" component="legend">
+        <Typography id="agency_details" component="legend">
           Agency Details
-        </FormLabel>
+        </Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
@@ -163,7 +163,7 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
         </Grid>
       </Box>
       <Box component="fieldset" mt={5}>
-        <FormLabel component="legend">Funding Details</FormLabel>
+        <Typography component="legend">Funding Details</Typography>
         <Grid container spacing={3}>
           <Grid item xs={12}>
             <DollarAmountField required={true} id="funding_amount" name="funding_amount" label="Funding Amount" />

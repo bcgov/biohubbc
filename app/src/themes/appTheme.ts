@@ -8,7 +8,7 @@ const appTheme = createMuiTheme({
       sm: 600,
       md: 960,
       lg: 1280,
-      xl: 1440
+      xl: 1600
     }
   },
   palette: {
@@ -40,11 +40,11 @@ const appTheme = createMuiTheme({
       },
       h2: {
         letterSpacing: '-0.01rem',
-        fontSize: '1.5rem',
+        fontSize: '1.25rem',
         fontWeight: 700
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1rem',
         fontWeight: 700
       },
       h4: {
@@ -68,9 +68,6 @@ const appTheme = createMuiTheme({
       },
       outlinedPrimary: {
         background: '#ffffff'
-      },
-      startIcon: {
-        marginTop: '-1px'
       }
     },
     MuiContainer: {
@@ -173,11 +170,17 @@ const appTheme = createMuiTheme({
     MuiTableCell: {
       root: {
         verticalAlign: 'top'
+      },
+      head: {
+        backgroundColor: '#f5f5f5',
+        lineHeight: 'normal'
       }
     },
     MuiTab: {
       root: {
-        textTransform: 'none'
+        textTransform: 'none',
+        minWidth: '100px !important',
+        fontWeight: 700
       }
     }
   }

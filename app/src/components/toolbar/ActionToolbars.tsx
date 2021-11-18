@@ -14,7 +14,7 @@ export interface ICustomButtonProps {
   buttonOnClick: () => void;
   buttonStartIcon: ReactNode;
   buttonEndIcon?: ReactNode;
-  buttonProps?: Partial<ButtonProps>;
+  buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
 }
 
 export interface IButtonToolbarProps extends ICustomButtonProps, IActionToolbarProps {}
@@ -36,7 +36,7 @@ export const H3ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         endIcon={props.buttonEndIcon}
         onClick={() => props.buttonOnClick()}
         {...props.buttonProps}>
-        {props.buttonLabel}
+        <strong>{props.buttonLabel}</strong>
       </Button>
     </ActionToolbar>
   );
@@ -58,7 +58,7 @@ export const H2ButtonToolbar: React.FC<IButtonToolbarProps> = (props) => {
         endIcon={props.buttonEndIcon}
         onClick={() => props.buttonOnClick()}
         {...props.buttonProps}>
-        {props.buttonLabel}
+        <strong>{props.buttonLabel}</strong>
       </Button>
     </ActionToolbar>
   );
@@ -85,7 +85,7 @@ export interface ICustomMenuButtonProps {
   buttonTitle?: string;
   buttonStartIcon?: ReactNode;
   buttonEndIcon?: ReactNode;
-  buttonProps?: Partial<ButtonProps>;
+  buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
   menuItems: IMenuToolbarItem[];
 }
 
@@ -94,7 +94,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
 
   const open = Boolean(anchorEl);
 
-  const id = `h2-menu-toolbar-${props.buttonLabel?.replace(/\s/g, '') || 'button'}`;
+  const buttonId = `custom-menu-${props.buttonLabel?.replace(/\s/g, '') || 'button'}`;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -112,6 +112,8 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   return (
     <>
       <Button
+        id={buttonId}
+        data-testid={buttonId}
         color="primary"
         variant="outlined"
         aria-controls="basic-menu"
@@ -124,8 +126,6 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
         {props.buttonLabel}
       </Button>
       <Menu
-        id={id}
-        data-testid={id}
         open={open}
         onClose={handleClose}
         anchorEl={anchorEl}
@@ -213,9 +213,13 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
           'aria-labelledby': 'basic-button'
         }}>
         {props.menuItems.map((menuItem) => {
-          const id = `h2-menu-toolbar-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
+          const menuItemId = `custom-menu-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
           return (
-            <MenuItem id={id} data-testid={id} onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
+            <MenuItem
+              id={menuItemId}
+              key={menuItemId}
+              data-testid={menuItemId}
+              onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
               <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>
               {menuItem.menuLabel}
             </MenuItem>

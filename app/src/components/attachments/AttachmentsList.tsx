@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -365,16 +364,16 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
         }}
         onSave={handleDialogEditSave}
       />
-      <Paper>
+      <Box>
         <TableContainer>
           <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
             <TableHead>
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell>Last Modified</TableCell>
                 <TableCell>File Size</TableCell>
-                <TableCell width="150px">Security Status</TableCell>
+                <TableCell>Last Modified</TableCell>
+                <TableCell width="150px">Security</TableCell>
                 <TableCell width="50px"></TableCell>
               </TableRow>
             </TableHead>
@@ -389,20 +388,21 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                         </Link>
                       </TableCell>
                       <TableCell>{row.fileType}</TableCell>
-                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
                       <TableCell>{getFormattedFileSize(row.size)}</TableCell>
+                      <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.lastModified)}</TableCell>
                       <TableCell>
                         <Box my={-1}>
                           <Button
+                            size="small"
                             color="primary"
-                            variant="text"
+                            variant="outlined"
                             startIcon={
-                              <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                              <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={0.75} />
                             }
                             aria-label="toggle attachment security status"
                             data-testid="toggle-attachment-security-status"
                             onClick={() => showToggleSecurityStatusAttachmentDialog(row)}>
-                            {row.securityToken ? 'Secured' : 'Unsecured'}
+                            <strong>{row.securityToken ? 'Secured' : 'Unsecured'}</strong>
                           </Button>
                         </Box>
                       </TableCell>
@@ -420,7 +420,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
                 })}
               {!props.attachmentsList.length && (
                 <TableRow>
-                  <TableCell colSpan={5} align="center">
+                  <TableCell colSpan={6} align="center">
                     No Attachments
                   </TableCell>
                 </TableRow>
@@ -441,7 +441,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
             }
           />
         )}
-      </Paper>
+      </Box>
     </>
   );
 };

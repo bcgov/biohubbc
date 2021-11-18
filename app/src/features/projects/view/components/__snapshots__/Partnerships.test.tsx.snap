@@ -3,19 +3,22 @@
 exports[`Partnerships renders correctly with default empty values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiToolbar-root MuiToolbar-regular"
+    style="justify-content: space-between;"
   >
-    <div
-      class="MuiBox-root MuiBox-root-2"
+    <h3
+      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
-      >
-        Partnerships
-      </h3>
+      Partnerships
+    </h3>
+    <div
+      class="MuiBox-root MuiBox-root-1"
+    >
       <button
         aria-label="Edit Partnerships"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        data-testid="h3-button-toolbar-Edit"
+        id="h3-button-toolbar-Edit"
         tabindex="0"
         title="Edit Partnerships"
         type="button"
@@ -37,7 +40,9 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -87,19 +92,22 @@ exports[`Partnerships renders correctly with default empty values 1`] = `
 exports[`Partnerships renders correctly with existing partnership values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-5"
+    class="MuiToolbar-root MuiToolbar-regular"
+    style="justify-content: space-between;"
   >
-    <div
-      class="MuiBox-root MuiBox-root-6"
+    <h3
+      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
-      >
-        Partnerships
-      </h3>
+      Partnerships
+    </h3>
+    <div
+      class="MuiBox-root MuiBox-root-3"
+    >
       <button
         aria-label="Edit Partnerships"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        data-testid="h3-button-toolbar-Edit"
+        id="h3-button-toolbar-Edit"
         tabindex="0"
         title="Edit Partnerships"
         type="button"
@@ -121,7 +129,9 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"
@@ -181,19 +191,22 @@ exports[`Partnerships renders correctly with existing partnership values 1`] = `
 exports[`Partnerships renders correctly with invalid null values 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiToolbar-root MuiToolbar-regular"
+    style="justify-content: space-between;"
   >
-    <div
-      class="MuiBox-root MuiBox-root-4"
+    <h3
+      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
-      >
-        Partnerships
-      </h3>
+      Partnerships
+    </h3>
+    <div
+      class="MuiBox-root MuiBox-root-2"
+    >
       <button
         aria-label="Edit Partnerships"
         class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        data-testid="h3-button-toolbar-Edit"
+        id="h3-button-toolbar-Edit"
         tabindex="0"
         title="Edit Partnerships"
         type="button"
@@ -215,7 +228,9 @@ exports[`Partnerships renders correctly with invalid null values 1`] = `
               />
             </svg>
           </span>
-          Edit
+          <strong>
+            Edit
+          </strong>
         </span>
         <span
           class="MuiTouchRipple-root"

@@ -3,67 +3,56 @@
 exports[`SurveyStudyArea renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiPaper-root MuiBox-root MuiBox-root-1 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
-      class="MuiBox-root MuiBox-root-2"
+      class="MuiToolbar-root MuiToolbar-regular"
+      style="justify-content: space-between;"
     >
-      <h3
-        class="MuiTypography-root MuiTypography-h3"
+      <h2
+        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
       >
         Study Area
-      </h3>
-      <button
-        aria-label="Edit Study Area"
-        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-        tabindex="0"
-        title="Edit Study Area"
-        type="button"
+      </h2>
+      <div
+        class="MuiBox-root MuiBox-root-2"
       >
-        <span
-          class="MuiButton-label"
+        <button
+          aria-label="Edit Study Area"
+          class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+          data-testid="h2-button-toolbar-Edit"
+          id="h2-button-toolbar-Edit"
+          tabindex="0"
+          title="Edit Study Area"
+          type="button"
         >
           <span
-            class="MuiButton-startIcon MuiButton-iconSizeMedium"
+            class="MuiButton-label"
           >
-            <svg
-              role="presentation"
-              style="width: 1.3125rem; height: 1.3125rem;"
-              viewBox="0 0 24 24"
+            <span
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <path
-                d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                style="fill: currentColor;"
-              />
-            </svg>
+              <svg
+                role="presentation"
+                style="width: 1.3125rem; height: 1.3125rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            <strong>
+              Edit
+            </strong>
           </span>
-          Edit
-        </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
-      >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Survey Area Name
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            study area
-          </dd>
-        </div>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
       </div>
-    </dl>
+    </div>
     <div
       class="MuiBox-root MuiBox-root-3"
     >
@@ -256,20 +245,61 @@ exports[`SurveyStudyArea renders correctly 1`] = `
       </div>
     </div>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+      class="MuiBox-root MuiBox-root-4"
     >
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-6"
-      />
+      <p
+        class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+      >
+        Study Area Name
+      </p>
+      <p
+        class="MuiTypography-root MuiTypography-body1"
+      >
+        study area
+      </p>
+    </div>
+    <div
+      class="MuiBox-root MuiBox-root-5"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-6"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-7"
+    />
+    <div
+      class="MuiBox-root MuiBox-root-8"
+    >
+      <button
+        aria-label="Show Expanded Location"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        tabindex="0"
+        title="Expand Location"
+        type="button"
+      >
+        <span
+          class="MuiButton-label"
+        >
+          Show More
+          <span
+            class="MuiButton-endIcon MuiButton-iconSizeMedium"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+        </span>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
     </div>
   </div>
 </DocumentFragment>
