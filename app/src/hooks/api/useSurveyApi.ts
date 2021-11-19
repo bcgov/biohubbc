@@ -396,12 +396,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {boolean} publish set to `true` to publish the survey, `false` to unpublish the survey.
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<boolean>}
    */
-  const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
+  const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<boolean> => {
+    const { status } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
 
-    return data;
+    return status === 200;
   };
 
   /**

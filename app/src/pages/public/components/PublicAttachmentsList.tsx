@@ -6,7 +6,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -111,86 +110,84 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
         reportMetaData={reportMetaData}
         attachmentSize={(currentAttachment && getFormattedFileSize(currentAttachment.size)) || '0 KB'}
       />
-      <Paper>
-        <TableContainer>
-          <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
-            <TableHead>
-              <TableRow>
-                <TableCell>Name</TableCell>
-                <TableCell>Type</TableCell>
-                <TableCell>Last Modified</TableCell>
-                <TableCell>File Size</TableCell>
-                <TableCell width="150px">Security Status</TableCell>
-                <TableCell></TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {props.attachmentsList.length > 0 &&
-                props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                  <TableRow key={`${row.fileName}-${index}`}>
-                    <TableCell scope="row">
-                      <Link
-                        underline="always"
-                        component="button"
-                        variant="body2"
+      <TableContainer>
+        <Table className={classes.attachmentsTable} aria-label="attachments-list-table">
+          <TableHead>
+            <TableRow>
+              <TableCell>Name</TableCell>
+              <TableCell>Type</TableCell>
+              <TableCell>Last Modified</TableCell>
+              <TableCell>File Size</TableCell>
+              <TableCell width="150px">Security Status</TableCell>
+              <TableCell></TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {props.attachmentsList.length > 0 &&
+              props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                <TableRow key={`${row.fileName}-${index}`}>
+                  <TableCell scope="row">
+                    <Link
+                      underline="always"
+                      component="button"
+                      variant="body2"
+                      onClick={() => {
+                        if (row.securityToken) {
+                          showRequestAccessDialog();
+                        } else {
+                          openAttachment(row);
+                        }
+                      }}>
+                      {row.fileName}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{row.fileType}</TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
+                  <TableCell>{getFormattedFileSize(row.size)}</TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center">
+                      <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                      <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    {!row.securityToken && (
+                      <IconButton
+                        color="primary"
+                        aria-label="view report"
                         onClick={() => {
-                          if (row.securityToken) {
-                            showRequestAccessDialog();
-                          } else {
-                            openAttachment(row);
-                          }
-                        }}>
-                        {row.fileName}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{row.fileType}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
-                    <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                    <TableCell>
-                      <Box display="flex" alignItems="center">
-                        <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                        <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      {!row.securityToken && (
-                        <IconButton
-                          color="primary"
-                          aria-label="view report"
-                          onClick={() => {
-                            handleReportMetaDialog(row);
-                          }}
-                          data-testid="attachment-view-meta">
-                          <Icon path={mdiInformationOutline} size={1} />
-                        </IconButton>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                ))}
-              {!props.attachmentsList.length && (
-                <TableRow>
-                  <TableCell colSpan={4} align="center">
-                    No Attachments
+                          handleReportMetaDialog(row);
+                        }}
+                        data-testid="attachment-view-meta">
+                        <Icon path={mdiInformationOutline} size={1} />
+                      </IconButton>
+                    )}
                   </TableCell>
                 </TableRow>
-              )}
-            </TableBody>
-          </Table>
-        </TableContainer>
-        {props.attachmentsList.length > 0 && (
-          <TablePagination
-            rowsPerPageOptions={[5, 10, 15, 20]}
-            component="div"
-            count={props.attachmentsList.length}
-            rowsPerPage={rowsPerPage}
-            page={page}
-            onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
-            onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
-              handleChangeRowsPerPage(event, setPage, setRowsPerPage)
-            }
-          />
-        )}
-      </Paper>
+              ))}
+            {!props.attachmentsList.length && (
+              <TableRow>
+                <TableCell colSpan={4} align="center">
+                  No Attachments
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
+      {props.attachmentsList.length > 0 && (
+        <TablePagination
+          rowsPerPageOptions={[5, 10, 15, 20]}
+          component="div"
+          count={props.attachmentsList.length}
+          rowsPerPage={rowsPerPage}
+          page={page}
+          onChangePage={(event: unknown, newPage: number) => handleChangePage(event, newPage, setPage)}
+          onChangeRowsPerPage={(event: React.ChangeEvent<HTMLInputElement>) =>
+            handleChangeRowsPerPage(event, setPage, setRowsPerPage)
+          }
+        />
+      )}
 
       <Dialog open={open}>
         <DialogTitle>Access Denied</DialogTitle>

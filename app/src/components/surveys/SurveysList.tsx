@@ -1,6 +1,5 @@
 import Chip from '@material-ui/core/Chip';
 import Link from '@material-ui/core/Link';
-import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -21,15 +20,13 @@ import { useHistory } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {
-    padding: '0px 8px',
-    borderRadius: '4px',
-    color: 'white'
+    color: '#ffffff'
   },
   chipUnpublished: {
     backgroundColor: theme.palette.text.disabled
   },
   chipActive: {
-    backgroundColor: theme.palette.warning.main
+    backgroundColor: theme.palette.success.main
   },
   chipPublishedCompleted: {
     backgroundColor: theme.palette.success.main
@@ -53,16 +50,16 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
     let chipStatusClass;
 
     if (SurveyStatusType.UNPUBLISHED === status_name) {
-      chipLabel = 'UNPUBLISHED';
+      chipLabel = 'Unpublished';
       chipStatusClass = classes.chipUnpublished;
     } else if (SurveyStatusType.PUBLISHED === status_name) {
-      chipLabel = 'PUBLISHED';
+      chipLabel = 'Published';
       chipStatusClass = classes.chipPublishedCompleted;
     } else if (SurveyStatusType.ACTIVE === status_name) {
-      chipLabel = 'ACTIVE';
+      chipLabel = 'Active';
       chipStatusClass = classes.chipActive;
     } else if (SurveyStatusType.COMPLETED === status_name) {
-      chipLabel = 'COMPLETED';
+      chipLabel = 'Completed';
       chipStatusClass = classes.chipPublishedCompleted;
     }
 
@@ -70,7 +67,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
   };
 
   return (
-    <Paper>
+    <>
       <TableContainer>
         <Table aria-label="surveys-list-table">
           <TableHead>
@@ -78,8 +75,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               <TableCell>Name</TableCell>
               <TableCell>Species</TableCell>
               <TableCell>Timeline</TableCell>
-              <TableCell>Completion Status</TableCell>
-              <TableCell>Publish Status</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Published</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -97,7 +94,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                   </TableCell>
                   <TableCell>{row.species?.join(', ')}</TableCell>
                   <TableCell>
-                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat2, row.start_date, row.end_date)}
+                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, row.start_date, row.end_date)}
                   </TableCell>
                   <TableCell>{getChipIcon(row.completion_status)}</TableCell>
                   <TableCell>{getChipIcon(row.publish_status)}</TableCell>
@@ -105,7 +102,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               ))}
             {!props.surveysList.length && (
               <TableRow>
-                <TableCell colSpan={4} align="center">
+                <TableCell colSpan={5} align="center">
                   No Surveys
                 </TableCell>
               </TableRow>
@@ -126,7 +123,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           }
         />
       )}
-    </Paper>
+    </>
   );
 };
 
