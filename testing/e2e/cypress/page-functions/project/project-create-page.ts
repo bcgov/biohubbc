@@ -3,9 +3,9 @@ import * as faker from "faker";
 
 export function navigate_project() {
   // Create project
+  cy.wait(5000);
   cy.visit("/admin/projects/create");
   cy.wait(5000);
-  cy.get("h1").contains("Create Project").should("be.visible");
 }
 
 // Add Coordinator takes variables or when omitted (NULL), it will use fake data)

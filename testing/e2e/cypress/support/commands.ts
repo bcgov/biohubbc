@@ -20,7 +20,6 @@ Cypress.Commands.overwrite('login', (originalFn) => {
     client_id: Cypress.env("authClientId"),
     redirect_uri: Cypress.env("host"),
   })
-  cy.wait(3000);
 })
 
 Cypress.Commands.overwrite('logout', (originalFn) => {
