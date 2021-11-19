@@ -26,7 +26,7 @@ import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils'
 import { MediaFile } from '../../utils/media/media-file';
 import AdmZip from 'adm-zip';
 import * as xml2js from 'xml2js';
-import { getDbCharacterSystemMetaDataConstantSQL } from '../../queries/codes/db-constant-queries';
+import { getDbCharacterSystemMetaDataConstant } from '../../utils/db-constant-utils';
 import { getLogger } from '../../utils/logger';
 import { logRequest } from '../../utils/path-utils';
 
@@ -109,7 +109,7 @@ export function getSurveyDataPackageEML(): RequestHandler {
       await connection.open();
 
       // get required data
-      const occurrenceSubmission = (await getSurveyOccurrenceSubmission(req.body.data_package_id, connection)).rows[0];
+      const occurrenceSubmission = await getSurveyOccurrenceSubmission(req.body.data_package_id, connection);
 
       // get the EML data for the survey
       const dataPackageEML = await getDataPackageEML(req.body.data_package_id, connection, req.body.supplied_title);
@@ -175,14 +175,14 @@ export const getDataPackageEML = async (
   });
 
   // get all required data
-  const dataPackage = (await getDataPackage(dataPackageId, connection)).rows[0];
-  const occurrenceSubmission = (await getSurveyOccurrenceSubmission(dataPackageId, connection)).rows[0];
+  const dataPackage = await getDataPackage(dataPackageId, connection);
+  const occurrenceSubmission = await getSurveyOccurrenceSubmission(dataPackageId, connection);
   const publishedSurveyStatus = await getPublishedSurveyStatus(
     occurrenceSubmission.occurrence_submission_id,
     connection
   );
-  const survey = (await getSurvey(occurrenceSubmission.survey_id, connection)).rows[0];
-  const project = (await getProject(survey.project_id, connection)).rows[0];
+  const survey = await getSurvey(occurrenceSubmission.survey_id, connection);
+  const project = await getProject(survey.project_id, connection);
   const surveyFundingSource = await getSurveyFundingSource(survey.survey_id, connection);
   const projectFundingSource = await getSurveyFundingSource(project.project_id, connection);
   const surveyBoundingBox = await getSurveyBoundingBox(survey.survey_id, connection);
@@ -198,23 +198,19 @@ export const getDataPackageEML = async (
   const projectManagementActions = await getProjectManagementActions(project.project_id, connection);
   const surveyProprietor = await getSurveyProprietor(survey.survey_id, connection);
   // database constants
-  const simsProviderURL = checkProvided(
-    (await getDbCharacterSystemMetaDataConstant('PROVIDER_URL', connection)).rows[0].constant
-  );
+  const simsProviderURL = checkProvided(await getDbCharacterSystemMetaDataConstant('PROVIDER_URL', connection));
   const securityProviderURL = checkProvided(
-    (await getDbCharacterSystemMetaDataConstant('SECURITY_PROVIDER_URL', connection)).rows[0].constant
+    await getDbCharacterSystemMetaDataConstant('SECURITY_PROVIDER_URL', connection)
   );
   const organizationFullName = checkProvided(
-    (await getDbCharacterSystemMetaDataConstant('ORGANIZATION_NAME_FULL', connection)).rows[0].constant
+    await getDbCharacterSystemMetaDataConstant('ORGANIZATION_NAME_FULL', connection)
   );
-  const organizationURL = checkProvided(
-    (await getDbCharacterSystemMetaDataConstant('ORGANIZATION_URL', connection)).rows[0].constant
-  );
+  const organizationURL = checkProvided(await getDbCharacterSystemMetaDataConstant('ORGANIZATION_URL', connection));
   const intellectualRights = checkProvided(
-    (await getDbCharacterSystemMetaDataConstant('INTELLECTUAL_RIGHTS', connection)).rows[0].constant
+    await getDbCharacterSystemMetaDataConstant('INTELLECTUAL_RIGHTS', connection)
   );
   const taxonomicProviderURL = checkProvided(
-    (await getDbCharacterSystemMetaDataConstant('TAXONOMIC_PROVIDER_URL', connection)).rows[0].constant
+    await getDbCharacterSystemMetaDataConstant('TAXONOMIC_PROVIDER_URL', connection)
   );
 
   // build eml object
@@ -290,7 +286,7 @@ export const getDataPackageEML = async (
 
   emlRoot.dataset.project.abstract = { section: { title: 'Objectives', para: survey.objectives } };
 
-  if (surveyFundingSource.rowCount) {
+  if (surveyFundingSource.length) {
     emlRoot.dataset.project.funding = getFundingEML(surveyFundingSource);
   }
 
@@ -340,7 +336,7 @@ export const getDataPackageEML = async (
     ]
   };
 
-  if (surveyFundingSource.rowCount) {
+  if (projectFundingSource.length) {
     emlRoot.dataset.project.relatedProject.funding = getFundingEML(projectFundingSource);
   }
 
@@ -481,7 +477,7 @@ const getTemporalCoverageEML = (projectRow: any): Eml => {
  * Return geographic coverage eml.
  *
  * @param {string} geographicDescription
- * @param {*} boundingBox
+ * @param {BoundingBox} boundingBox
  * @param {*} polygonRows
  * @return {Eml}
  */
@@ -489,10 +485,10 @@ const getGeographicCoverageEML = (geographicDescription: string, boundingBox: an
   const geographicCoverage: Eml = {
     geographicDescription: geographicDescription,
     boundingCoordinates: {
-      westBoundingCoordinate: boundingBox.rows[0].st_xmax,
-      eastBoundingCoordinate: boundingBox.rows[0].st_ymax,
-      northBoundingCoordinate: boundingBox.rows[0].st_xmin,
-      southBoundingCoordinate: boundingBox.rows[0].st_ymin
+      westBoundingCoordinate: boundingBox.st_xmax,
+      eastBoundingCoordinate: boundingBox.st_ymax,
+      northBoundingCoordinate: boundingBox.st_xmin,
+      southBoundingCoordinate: boundingBox.st_ymin
     }
   };
   geographicCoverage.datasetGPolygon = [];
@@ -512,12 +508,12 @@ const getGeographicCoverageEML = (geographicDescription: string, boundingBox: an
 /**
  * Return funding source eml.
  *
- * @param {*} fundingSourceRows
+ * @param {any[]} fundingSourceRows
  * @return {Eml}
  */
-const getFundingEML = (fundingSourceRows: any): Eml => {
+const getFundingEML = (fundingSourceRows: any[]): Eml => {
   const funding: Eml = { section: { title: 'Funding Source' } };
-  for (const row of fundingSourceRows.rows) {
+  for (const row of fundingSourceRows) {
     funding.section.para = row.funding_source_name;
     funding.section.section = {
       title: 'Investment Action Category',
@@ -554,28 +550,6 @@ const checkProvided = (valueToCheck: string | number | null): string | number =>
 };
 
 /**
- * Get database application constants value.
- *
- * @param {string} constantName
- * @param {IDBConnection} connection
- * @return {*} {Promise<void>}
- */
-export const getDbCharacterSystemMetaDataConstant = async (
-  constantName: string,
-  connection: IDBConnection
-): Promise<any> => {
-  const sqlStatement = getDbCharacterSystemMetaDataConstantSQL(constantName);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  return response;
-};
-
-/**
  * Get occurrence submission record associated with data package ID.
  *
  * @param {number} data_package_id
@@ -598,7 +572,7 @@ export const getSurveyOccurrenceSubmission = async (dataPackageId: number, conne
     throw new HTTP400('Failed to acquire distinct survey occurrence submission record');
   }
 
-  return response;
+  return response.rows[0];
 };
 
 /**
@@ -621,7 +595,7 @@ export const getDataPackage = async (dataPackageId: number, connection: IDBConne
     throw new HTTP400('Failed to acquire data package record');
   }
 
-  return response;
+  return response.rows[0];
 };
 
 /**
@@ -662,7 +636,7 @@ export const getSurvey = async (surveyId: number, connection: IDBConnection): Pr
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return response;
+  return response.rows[0];
 };
 
 /**
@@ -681,7 +655,7 @@ export const getProject = async (projectId: number, connection: IDBConnection): 
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return response;
+  return response.rows[0];
 };
 
 /**
@@ -689,9 +663,9 @@ export const getProject = async (projectId: number, connection: IDBConnection): 
  *
  * @param {number} surveyId
  * @param {IDBConnection} connection
- * @return {*} {Promise<void>}
+ * @return {*} {Promise<any[]>}
  */
-export const getSurveyFundingSource = async (surveyId: number, connection: IDBConnection): Promise<any> => {
+export const getSurveyFundingSource = async (surveyId: number, connection: IDBConnection): Promise<any[]> => {
   const sqlStatement = getSurveyFundingSourceSQL(surveyId);
 
   if (!sqlStatement) {
@@ -700,7 +674,7 @@ export const getSurveyFundingSource = async (surveyId: number, connection: IDBCo
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return response;
+  return response.rows;
 };
 
 /**
@@ -708,7 +682,7 @@ export const getSurveyFundingSource = async (surveyId: number, connection: IDBCo
  *
  * @param {number} surveyId
  * @param {IDBConnection} connection
- * @return {*} {Promise<void>}
+ * @return {BoundingBox} {Promise<BoundingBox>}
  */
 export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getGeometryBoundingBoxSQL(surveyId, 'survey_id', 'survey');
@@ -719,7 +693,7 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return response;
+  return response.rows[0];
 };
 
 /**
