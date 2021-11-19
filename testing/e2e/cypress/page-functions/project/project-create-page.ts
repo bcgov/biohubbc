@@ -3,9 +3,9 @@ import * as faker from "faker";
 
 export function navigate_project() {
   // Create project
+  cy.wait(5000);
   cy.visit("/admin/projects/create");
   cy.wait(5000);
-  cy.get("h1").contains("Create Project").should("be.visible");
 }
 
 // Add Coordinator takes variables or when omitted (NULL), it will use fake data)
@@ -236,35 +236,38 @@ export function add_partnerships() {
 
 export function publish_project() {
   cy.get('button[data-testid="publish-project-button"]')
-    .contains("Publish Project")
+    .contains("Publish")
     .should("be.visible");
   cy.get('button[data-testid="publish-project-button"]').click();
   cy.wait(2000);
   cy.get('button[data-testid="publish-project-button"]')
-    .contains("Unpublish Project")
-    .should("be.visible");
-  cy.get('button[data-testid="publish-project-button"]').click();
-  cy.get('button[data-testid="publish-project-button"]')
-    .contains("Publish Project")
+    .contains("Unpublish")
     .should("be.visible");
   cy.wait(2000);
 }
 
 export function attach_file() {
-  cy.get("a").contains("Attachments").should("be.visible");
-  cy.get("a").contains("Attachments").click();
-  cy.get("h2").contains("Project Attachments").should("be.visible");
-  cy.get("button").contains("Upload").click();
+  cy.get("#custom-menu-Upload").focus().click();
   cy.wait(1000);
-  cy.get("li").contains("Upload Attachments").click({ force: true });
-  cy.get('input[data-testid="drop-zone-input"]').attachFile("1.xlsx");
+  cy.get("#custom-menu-item-UploadReport").click();
+  cy.wait(1000);
+  cy.get("#title").type(
+    (faker.company.catchPhrase() + " " + faker.company.bs()).substring(0, 50)
+  );
+  cy.get("#year_published").type(faker.random.number({ min: 2018, max: 2200 }));
+  cy.get("#description").type(faker.lorem.paragraph());
+  cy.get("#authors\\.\\[0\\]\\.first_name").type(faker.name.firstName());
+  cy.get("#authors\\.\\[0\\]\\.last_name").type(faker.name.lastName());
+  cy.get('input[data-testid="drop-zone-input"]').attachFile("1.doc");
+  cy.wait(1000);
+  cy.get("button").contains("Finish").click();
   cy.wait(2000);
-  cy.get("button").contains("Close").click();
 }
 
 export function add_survey() {
-  cy.get("a").contains("Project Details").click();
-  cy.get("h2").contains("Project Details").should("be.visible");
+  cy.get("#h2-button-toolbar-CreateSurvey").click();
+
+  cy.get("h1").contains("Create Survey").should("be.visible");
   cy.get('button[title="Edit General Information"]').click();
 
   cy.get("input#start_date").then(($input) => {

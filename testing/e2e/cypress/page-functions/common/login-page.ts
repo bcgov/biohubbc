@@ -14,17 +14,22 @@ export function login(userName,passWord) {
   cy.get('[data-testid="login"]').click();
 
   // Make sure we are on the keycloak login page
-  cy.get('#username').should('be.visible')
+  cy.get('#zocial-bceid').should('be.visible')
+  cy.get('#zocial-bceid').click();
+  cy.wait(5000);
 
-  cy.get('#username').clear();
-  cy.get('#username').type(userName || username);
+  cy.location();
+
+  cy.get('#bceidLogo').should('be.visible')
+  cy.get('#user').clear();
+  cy.get('#user').type(userName || username);
 
   cy.get('#password').clear();
   cy.get('#password').type(passWord || password);
 
-  cy.get('#kc-login').click();
+  cy.get('#btnSubmit').click();
 
-  cy.wait(5000);
+  cy.visit('/');
   cy.get('h1').contains('Projects').should('be.visible')
 }
 

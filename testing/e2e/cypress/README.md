@@ -1,33 +1,16 @@
-# Demo of End-to-End testing using [Cypress.io](https://www.cypress.io/)
-
-## Setup of KeyCloak
-
-Using a `non-prod` KeyCloak Realm, follow instructions as per this [article](https://developers.redhat.com/blog/2020/01/29/api-login-and-jwt-token-generation-using-keycloak/) to set up a specific KeyCloak Client using:
-
-- `Direct Grant` Flow and
-- `Client Id and Secret` Credentials
-
-Alternatively, you may import the sample [KeyCloak Client](./sample.kc-client.json) and customize for your application.
-
-Note the Client ID and Client Secret (under the `Credentials` tab), as you'll need both for the next step,
-
-## Local Install
-
-Clone the repo, install dependencies and run Cypress tests
-
-```bash
-git clone git@github.com:garywong-bc/invasives-e2e-demo.git && cd invasives-e2e-demo
-npm install
-```
+# End-to-End testing using [Cypress.io](https://www.cypress.io/)
 
 ### Application Setup
 
 Customize the credentials for your application.
 
 - copy [sample.cypress.env.json](./sample.cypress.env.json) to `cypress.env.json`
-- edit `cypress.env.json`, setting the variable values, including `auth_client_id` and `auth_client_secret` from the previous step
-- configure the `baseURL` for your application in the [config file](./cypress/plugins/index.js#L21)
+- edit `cypress.env.json`, setting the variable values, including: username, password, host, baseUrl, authRealm, authClientId, authUrl
 
 ```bash
-npm run test:e2e
+npm run cypress
 ```
+
+## Setup of KeyCloak
+
+In order to provide log in services through Keycloak (as opposed to navigating the UI to login, which cannot be done in a test script as it needs to address multiple domains), we found the [cypress-keycloak module](https://www.npmjs.com/package/cypress-keycloak). This module reports incompatibility with our current Cypress version, so a rebuilt of the [code](https://github.com/babangsund/cypress-keycloak) with the dependencies updated resulted in a keycloak.js file that has been added to the support files.
