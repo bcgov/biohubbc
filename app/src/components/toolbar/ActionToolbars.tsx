@@ -82,10 +82,10 @@ export const H2MenuToolbar: React.FC<IMenuToolbarProps> = (props) => {
 
 export interface ICustomMenuButtonProps {
   buttonLabel?: string;
-  buttonTitle?: string;
+  buttonTitle: string;
   buttonStartIcon?: ReactNode;
   buttonEndIcon?: ReactNode;
-  buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
+  buttonProps?: Partial<IconButtonProps> & { 'data-testid'?: string };
   menuItems: IMenuToolbarItem[];
 }
 
@@ -112,6 +112,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   return (
     <>
       <Button
+        title={props.buttonTitle}
         id={buttonId}
         data-testid={buttonId}
         color="primary"
@@ -145,7 +146,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
           const id = `h2-menu-toolbar-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
           return (
             <MenuItem id={id} data-testid={id} onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
-              <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>
+              {menuItem.menuIcon && <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>}
               {menuItem.menuLabel}
             </MenuItem>
           );
@@ -156,7 +157,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
 };
 
 export interface ICustomMenuIconButtonProps {
-  buttonTitle?: string;
+  buttonTitle: string;
   buttonIcon: ReactNode;
   buttonProps?: Partial<IconButtonProps>;
   menuItems: IMenuToolbarItem[];
@@ -185,6 +186,7 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
   return (
     <>
       <IconButton
+        title={props.buttonTitle}
         color="primary"
         aria-label="icon button menu"
         onClick={handleClick}
@@ -220,7 +222,7 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
               key={menuItemId}
               data-testid={menuItemId}
               onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
-              <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>
+              {menuItem.menuIcon && <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>}
               {menuItem.menuLabel}
             </MenuItem>
           );

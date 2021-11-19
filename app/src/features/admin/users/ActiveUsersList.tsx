@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
+import { CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { DeleteSystemUserI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
@@ -143,9 +143,9 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                     <TableCell>{row.role_names.join(', ') || 'Not Applicable'}</TableCell>
                     <TableCell></TableCell>
                     <TableCell>
-                      <CustomMenuButton
-                        buttonProps={{ variant: 'text' }}
-                        buttonStartIcon={<Icon path={mdiDotsVertical} size={0.875} />}
+                      <CustomMenuIconButton
+                        buttonTitle="Actions"
+                        buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
                         menuItems={[
                           {
                             menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
