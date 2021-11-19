@@ -525,6 +525,9 @@ jobs:
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
       CYPRESS_BASE_URL: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
       CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
+      CYPRESS_authRealm: '35r1iman'
+      CYPRESS_authClientId: 'biohubbc'
+      CYPRESS_authUrl: 'https://${{ github.base_ref }}.oidc.gov.bc.ca'
     needs:
       - deployDatabase
       - deployDatabaseSetup
