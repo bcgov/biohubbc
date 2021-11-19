@@ -59,7 +59,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
 
-  const handleRemoveUserClick = (row: any) => {
+  const handleRemoveUserClick = (row: IGetUserResponse) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Remove user?',
       dialogContent: (
@@ -90,14 +90,23 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     });
   };
 
-  const deActivateSystemUser = async (user: any) => {
+  const deActivateSystemUser = async (user: IGetUserResponse) => {
     if (!user?.id) {
       return;
     }
     try {
       await biohubApi.user.deleteSystemUser(user.id);
 
-      showSnackBar({ snackbarText: 'Success! User removed', snackbarMessage: 'User successfully removed', open: true });
+      showSnackBar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              User <strong>{user.user_identifier}</strong> removed.
+            </Typography>
+          </>
+        ),
+        open: true
+      });
 
       props.getUsers(true);
     } catch (error) {
