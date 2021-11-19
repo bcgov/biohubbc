@@ -189,10 +189,9 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
                 <TableCell>Username</TableCell>
-                <TableCell>Request Date</TableCell>
-                <TableCell>Status</TableCell>
+                <TableCell>Date of Request</TableCell>
+                <TableCell>Access Status</TableCell>
                 <TableCell width="130px" align="center">
                   Actions
                 </TableCell>
@@ -209,7 +208,6 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
               {accessRequests?.map((row, index) => {
                 return (
                   <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                    <TableCell>{row.data?.name || ''}</TableCell>
                     <TableCell>{row.data?.username || ''}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
                     <TableCell>{getChipIcon(row.status_name)}</TableCell>
