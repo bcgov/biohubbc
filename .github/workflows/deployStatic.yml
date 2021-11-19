@@ -524,6 +524,7 @@ jobs:
       CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
       CYPRESS_BASE_URL: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
+      CYPRESS_host: $CYPRESS_BASE_URL
       CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
       CYPRESS_authRealm: '35r1iman'
       CYPRESS_authClientId: 'biohubbc'
@@ -570,9 +571,11 @@ jobs:
         run: |
           echo Git Base Ref: ${{ github.base_ref }}
           echo Git Change ID: ${{ github.event.number }}
-          echo Cypress Record Key: $CYPRESS_RECORD_KEY
           echo Cypress BaseUrl: $CYPRESS_BASE_URL
           echo Cypress Host: $CYPRESS_ENVIRONMENT
+          echo $CYPRESS_authRealm
+          echo $CYPRESS_authClientId
+          echo $CYPRESS_authUrl
 
   notify:
     name: Discord Notification

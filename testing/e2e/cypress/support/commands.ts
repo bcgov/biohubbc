@@ -18,7 +18,7 @@ Cypress.Commands.overwrite('login', (originalFn) => {
     username: Cypress.env("username"),
     password: Cypress.env("password"),
     client_id: Cypress.env("authClientId"),
-    redirect_uri: Cypress.env("baseUrl"),
+    redirect_uri: Cypress.env("host"),
   })
   cy.wait(3000);
 })
@@ -27,6 +27,6 @@ Cypress.Commands.overwrite('logout', (originalFn) => {
   originalFn({
     root: Cypress.env("authUrl"),
     realm: Cypress.env("authRealm"),
-    redirect_uri: Cypress.env("baseUrl"),
+    redirect_uri: Cypress.env("host"),
   })
 })
