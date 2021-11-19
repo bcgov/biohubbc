@@ -71,6 +71,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
               class="MuiButton-label"
             >
               Yes
+              No
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -192,6 +193,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
               class="MuiButton-label"
             >
               Yes
+              No
             </span>
             <span
               class="MuiTouchRipple-root"

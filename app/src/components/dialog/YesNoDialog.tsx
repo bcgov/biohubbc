@@ -120,6 +120,7 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
           autoFocus
           {...props.yesButtonProps}>
           {props.yesButtonLabel ? props.yesButtonLabel : 'Yes'}
+          {props.noButtonLabel ? props.noButtonLabel : 'No'}
         </Button>
 
         <Button data-testid="no-button" onClick={props.onNo} color="primary" variant="outlined">
