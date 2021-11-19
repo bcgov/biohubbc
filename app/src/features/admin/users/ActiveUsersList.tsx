@@ -11,7 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
+import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { DeleteSystemUserI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
@@ -118,10 +118,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
               <TableRow>
                 <TableCell>Name</TableCell>
                 <TableCell>Username</TableCell>
-                <TableCell>Company</TableCell>
-                <TableCell>Regional Offices</TableCell>
-                <TableCell>Roles</TableCell>
-                <TableCell>Last Active</TableCell>
+                <TableCell>System Permission</TableCell>
                 <TableCell width="50px">Actions</TableCell>
               </TableRow>
             </TableHead>
@@ -138,10 +135,19 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                     <TableCell></TableCell>
                     <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
-                    <TableCell>{row.role_names.join(', ') || 'Not Applicable'}</TableCell>
-                    <TableCell></TableCell>
+                    <TableCell>
+                      <CustomMenuButton
+                        buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
+                        buttonTitle={'Change User Permissions'}
+                        menuItems={[
+                          {
+                            menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
+                            menuLabel: 'Remove User',
+                            menuOnClick: () => handleRemoveUserClick(row)
+                          }
+                        ]}
+                      />
+                    </TableCell>
                     <TableCell>
                       <CustomMenuIconButton
                         buttonTitle="Actions"
