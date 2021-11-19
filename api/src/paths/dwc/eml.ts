@@ -129,9 +129,7 @@ export function getSurveyDataPackageEML(): RequestHandler {
       // parse the archive file and add EML file
       const archiveFile = parseS3File(s3File);
       const mediaFiles = parseUnknownZipFile(archiveFile.buffer);
-      mediaFiles.push(
-        new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML))
-      );
+      mediaFiles.push(new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML)));
 
       // build the archive zip file
       const dwcArchiveZip = new AdmZip();
