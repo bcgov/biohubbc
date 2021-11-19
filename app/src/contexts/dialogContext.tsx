@@ -4,7 +4,7 @@ import CloseIcon from '@material-ui/icons/Close';
 import { Color } from '@material-ui/lab/Alert';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
-import React, { createContext, useState } from 'react';
+import React, { createContext, ReactNode, useState } from 'react';
 
 export interface IDialogContext {
   /**
@@ -55,12 +55,11 @@ export interface IDialogContext {
 }
 
 export interface ISnackbarProps {
-  snackbarText: string;
   open: boolean;
   onClose: () => void;
   severity?: Color;
   color?: Color;
-  snackbarMessage?: string;
+  snackbarMessage: ReactNode;
 }
 
 export const defaultYesNoDialogProps: IYesNoDialogProps = {
@@ -91,7 +90,7 @@ export const defaultErrorDialogProps: IErrorDialogProps = {
 };
 
 export const defaultSnackbarProps: ISnackbarProps = {
-  snackbarText: '',
+  snackbarMessage: '',
   open: false,
   onClose: () => {
     // default do nothing
@@ -159,7 +158,7 @@ export const DialogContextProvider: React.FC = (props) => {
         open={snackbarProps.open}
         autoHideDuration={6000}
         onClose={() => setSnackbar({ open: false })}
-        message={snackbarProps.snackbarText}
+        message={snackbarProps.snackbarMessage}
         action={
           <React.Fragment>
             <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>
