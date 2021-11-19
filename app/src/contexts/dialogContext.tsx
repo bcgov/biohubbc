@@ -1,5 +1,7 @@
+import IconButton from '@material-ui/core/IconButton';
 import Snackbar from '@material-ui/core/Snackbar';
-import Alert, { Color } from '@material-ui/lab/Alert';
+import CloseIcon from '@material-ui/icons/Close';
+import { Color } from '@material-ui/lab/Alert';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import YesNoDialog, { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import React, { createContext, useState } from 'react';
@@ -56,7 +58,9 @@ export interface ISnackbarProps {
   snackbarText: string;
   open: boolean;
   onClose: () => void;
-  severity: Color;
+  severity?: Color;
+  color?: Color;
+  snackbarMessage?: string;
 }
 
 export const defaultYesNoDialogProps: IYesNoDialogProps = {
@@ -91,8 +95,7 @@ export const defaultSnackbarProps: ISnackbarProps = {
   open: false,
   onClose: () => {
     // default do nothing
-  },
-  severity: 'info'
+  }
 };
 
 export const DialogContext = createContext<IDialogContext>({
@@ -148,11 +151,23 @@ export const DialogContextProvider: React.FC = (props) => {
       {props.children}
       <YesNoDialog {...yesNoDialogProps} />
       <ErrorDialog {...errorDialogProps} />
-      <Snackbar open={snackbarProps.open} autoHideDuration={6000} onClose={() => setSnackbar({ open: false })}>
-        <Alert onClose={snackbarProps.onClose} severity={snackbarProps.severity}>
-          {snackbarProps.snackbarText}
-        </Alert>
-      </Snackbar>
+      <Snackbar
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'center'
+        }}
+        open={snackbarProps.open}
+        autoHideDuration={6000}
+        onClose={() => setSnackbar({ open: false })}
+        message={snackbarProps.snackbarText}
+        action={
+          <React.Fragment>
+            <IconButton size="small" aria-label="close" color="inherit" onClick={() => setSnackbar({ open: false })}>
+              <CloseIcon fontSize="small" />
+            </IconButton>
+          </React.Fragment>
+        }
+      />
     </DialogContext.Provider>
   );
 };

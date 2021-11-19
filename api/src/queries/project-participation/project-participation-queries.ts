@@ -27,24 +27,32 @@ export const getProjectParticipationBySystemUserSQL = (
   }
 
   const sqlStatement = SQL`
-    SELECT
-      pp.project_id,
-      pp.system_user_id,
-      array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
-      array_remove(array_agg(pr.name), NULL) AS project_role_names
-    FROM
-      project_participation pp
-    LEFT JOIN
-      project_role pr
-    ON
-      pp.project_role_id = pr.project_role_id
-    WHERE
-      pp.project_id = ${projectId}
-    AND
-      pp.system_user_id = ${systemUserId}
-    GROUP BY
-      pp.project_id,
-      pp.system_user_id;
+  SELECT
+    pp.project_id,
+    pp.system_user_id,
+    su.record_end_date,
+    array_remove(array_agg(pr.project_role_id), NULL) AS project_role_ids,
+    array_remove(array_agg(pr.name), NULL) AS project_role_names
+  FROM
+    project_participation pp
+  LEFT JOIN
+    project_role pr
+  ON
+    pp.project_role_id = pr.project_role_id
+  LEFT JOIN
+    system_user su
+  ON
+    pp.system_user_id = su.system_user_id
+  WHERE
+    pp.project_id = ${projectId}
+  AND
+    pp.system_user_id = ${systemUserId}
+  AND
+    su.record_end_date is NULL
+  GROUP BY
+    pp.project_id,
+    pp.system_user_id,
+    su.record_end_date ;
   `;
 
   defaultLog.info({

@@ -3,10 +3,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../constants/roles';
-import { getDBConnection } from '../database/db';
+import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/CustomError';
 import { UserObject } from '../models/user';
-import { getUserByUserIdentifierSQL } from '../queries/users/user-queries';
+import { getUserByUserIdentifierSQL, activateSystemUserSQL } from '../queries/users/user-queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
@@ -166,6 +166,10 @@ export function updateAccessRequest(): RequestHandler {
         throw new HTTP500('Failed to get or add system user');
       }
 
+      if (userData.record_end_date) {
+        await activateDeactivatedSystemUser(userObject.id, connection);
+      }
+
       // Filter out any system roles that have already been added to the user
       const rolesIdsToAdd = roleIds.filter((roleId) => !userObject.role_ids.includes(roleId));
 
@@ -188,3 +192,19 @@ export function updateAccessRequest(): RequestHandler {
     }
   };
 }
+
+export const activateDeactivatedSystemUser = async (systemUserId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = activateSystemUserSQL(systemUserId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to activate system user');
+  }
+
+  return response?.rows?.[0] || null;
+};

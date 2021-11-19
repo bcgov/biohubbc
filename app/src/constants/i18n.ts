@@ -22,12 +22,18 @@ export const CreatePermitsI18N = {
     'An error has occurred while attempting to create your permits, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const UploadProjectAttachmentsI18N = {
+export const AttachmentsI18N = {
   cancelTitle: 'Cancel Upload',
   cancelText: 'Are you sure you want to cancel?',
-  uploadErrorTitle: 'Error Uploading Project Attachments',
+  uploadErrorTitle: 'Error Uploading Attachments',
   uploadErrorText:
-    'An error has occurred while attempting to upload project attachments, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to upload attachments, please try again. If the error persists, please contact your system administrator.',
+  deleteErrorTitle: 'Error Deleting Attachment',
+  deleteErrorText:
+    'An error has occurred while attempting to delete attachments, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Attachment',
+  downloadErrorText:
+    'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const CreateProjectDraftI18N = {
@@ -193,4 +199,10 @@ export const EditReportMetaDataI18N = {
   editErrorTitle: 'Error Editing Report Meta Data',
   editErrorText:
     'An error has occurred while attempting to edit your report meta data, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const DeleteSystemUserI18N = {
+  deleteErrorTitle: 'Error Deleting System User',
+  deleteErrorText:
+    'An error has occurred while attempting to delete the system user, please try again. If the error persists, please contact your system administrator.'
 };

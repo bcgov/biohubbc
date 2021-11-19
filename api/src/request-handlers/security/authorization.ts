@@ -210,6 +210,11 @@ export const authorizeBySystemRole = async (
     return false;
   }
 
+  if (systemUserObject.user_record_end_date) {
+    //system user has an expired record
+    return false;
+  }
+
   // Check if the user has at least 1 of the valid roles
   return userHasValidRole(authorizeSystemRoles.validSystemRoles, systemUserObject?.role_names);
 };

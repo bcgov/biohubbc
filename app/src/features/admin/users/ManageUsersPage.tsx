@@ -133,7 +133,7 @@ const ManageUsersPage: React.FC = () => {
           />
         </Box>
         <Box pt={3}>
-          <ActiveUsersList activeUsers={activeUsers} />
+          <ActiveUsersList activeUsers={activeUsers} getUsers={refreshActiveUsers} />
         </Box>
       </Container>
     </Box>
