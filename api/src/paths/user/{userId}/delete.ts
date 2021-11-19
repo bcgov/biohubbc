@@ -100,14 +100,15 @@ export function removeSystemUser(): RequestHandler {
         throw new HTTP400('Failed to get system user');
       }
 
-      if (userResult.user_record_end_date) {
+      if (userResult.record_end_date) {
+        console.log('we have a user record end date');
         throw new HTTP400('The system user is not active');
       }
 
       const deleteAllProjectRolesSqlStatement = deleteAllProjectRolesSQL(userId);
 
       if (!deleteAllProjectRolesSqlStatement) {
-        throw new HTTP400('Failed to build SQL delete statement for deleting system roles');
+        throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
       }
 
       const deleteProjectRolesResponse = await connection.query(
@@ -116,7 +117,7 @@ export function removeSystemUser(): RequestHandler {
       );
 
       if (!deleteProjectRolesResponse) {
-        throw new HTTP400('Failed to the project project roles');
+        throw new HTTP400('Failed to the delete project roles');
       }
 
       const deleteSystemRoleSqlStatement = deleteAllSystemRolesSQL(userId);
