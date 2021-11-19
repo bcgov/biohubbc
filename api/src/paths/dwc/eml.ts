@@ -130,7 +130,6 @@ export function getSurveyDataPackageEML(): RequestHandler {
       const archiveFile = parseS3File(s3File);
       const mediaFiles = parseUnknownZipFile(archiveFile.buffer);
       mediaFiles.push(
-        //new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML.rows[0].api_get_eml_data_package))
         new MediaFile(defaultEMLFileName, defaultEMLMimeType, Buffer.from(dataPackageEML))
       );
 
