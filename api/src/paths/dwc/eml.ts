@@ -220,7 +220,7 @@ export const getDataPackageEML = async (
         packageId: 'urn:uuid:' + dataPackage.uuid,
         system: simsProviderURL,
         'xmlns:eml': 'https://eml.ecoinformatics.org/eml-2.2.0',
-        'xmlns:xsi': 'http://www.xml-cml.org/schema/stmml-1.1',
+        'xmlns:xsi': 'http://www.w3.org/2001/XMLSchema-instance',
         'xmlns:stmml': 'http://www.xml-cml.org/schema/stmml-1.1',
         'xsi:schemaLocation': 'https://eml.ecoinformatics.org/eml-2.2.0 xsd/eml.xsd'
       }
@@ -229,9 +229,12 @@ export const getDataPackageEML = async (
 
   const emlRoot = eml['eml:eml'];
 
-  emlRoot.access = { $: { authSystem: securityProviderURL, order: 'allowFirst' }, allow: 'public', permission: 'read' };
+  emlRoot.access = {
+    $: { authSystem: securityProviderURL, order: 'allowFirst' },
+    allow: { principal: 'public', permission: 'read' }
+  };
 
-  emlRoot.dataset = { $: { order: 'allowFirst', id: dataPackage.uuid } };
+  emlRoot.dataset = { $: { system: simsProviderURL, id: dataPackage.uuid } };
 
   if (suppliedTitle) {
     emlRoot.dataset.title = suppliedTitle;
@@ -239,7 +242,7 @@ export const getDataPackageEML = async (
     emlRoot.dataset.title = dataPackage.uuid;
   }
 
-  emlRoot.dataset.creator = organizationFullName;
+  emlRoot.dataset.creator = { organizationName: project.coordinator_agency_name };
 
   emlRoot.dataset.metadataProvider = { organizationName: organizationFullName, onlineUrl: organizationURL };
 
@@ -253,12 +256,8 @@ export const getDataPackageEML = async (
   emlRoot.dataset.contact = {};
   if (project.coordinator_public) {
     emlRoot.dataset.contact = {
-      individualName: {
-        givenName: project.coordinator_first_name,
-        surName: project.coordinator_last_name,
-        organizationName: project.coordinator_agency_name,
-        electronicMailAddress: project.coordinator_email_address
-      }
+      individualName: { givenName: project.coordinator_first_name, surName: project.coordinator_last_name },
+      electronicMailAddress: project.coordinator_email_address
     };
   } else {
     emlRoot.dataset.contact = { organizationName: organizationFullName, onlineUrl: organizationURL };
@@ -269,12 +268,9 @@ export const getDataPackageEML = async (
   emlRoot.dataset.project = { $: { id: survey.uuid, system: simsProviderURL }, title: survey.name };
   if (project.coordinator_public) {
     emlRoot.dataset.project.personnel = {
-      individualName: {
-        givenName: survey.lead_first_name,
-        surName: survey.lead_last_name,
-        organizationName: project.coordinator_agency_name,
-        role: 'pointOfContact'
-      }
+      individualName: { givenName: survey.lead_first_name, surName: survey.lead_last_name },
+      organizationName: project.coordinator_agency_name,
+      role: 'pointOfContact'
     };
   } else {
     emlRoot.dataset.project.personnel = {
@@ -294,7 +290,7 @@ export const getDataPackageEML = async (
   const surveyGeographicDescription = survey.location_description
     ? survey.location_name + ' - ' + survey.location_description
     : survey.location_name;
-  emlRoot.dataset.project.studyAreaDescription.coverage.geographicDescription = getGeographicCoverageEML(
+  emlRoot.dataset.project.studyAreaDescription.coverage.geographicCoverage = getGeographicCoverageEML(
     surveyGeographicDescription,
     surveyBoundingBox,
     surveyPolygons
@@ -341,11 +337,8 @@ export const getDataPackageEML = async (
   }
 
   emlRoot.dataset.project.relatedProject.studyAreaDescription = { coverage: {} };
-  const projectGeographicDescription = project.location_description
-    ? project.location_name + ' - ' + project.location_description
-    : project.location_name;
-  emlRoot.dataset.project.relatedProject.studyAreaDescription.coverage.geographicDescription = getGeographicCoverageEML(
-    projectGeographicDescription,
+  emlRoot.dataset.project.relatedProject.studyAreaDescription.coverage.geographicCoverage = getGeographicCoverageEML(
+    'Not Supplied',
     projectBoundingBox,
     projectPolygons
   );
@@ -485,9 +478,9 @@ const getGeographicCoverageEML = (geographicDescription: string, boundingBox: an
   const geographicCoverage: Eml = {
     geographicDescription: geographicDescription,
     boundingCoordinates: {
-      westBoundingCoordinate: boundingBox.st_xmax,
-      eastBoundingCoordinate: boundingBox.st_ymax,
-      northBoundingCoordinate: boundingBox.st_xmin,
+      westBoundingCoordinate: boundingBox.st_xmin,
+      eastBoundingCoordinate: boundingBox.st_xmax,
+      northBoundingCoordinate: boundingBox.st_ymax,
       southBoundingCoordinate: boundingBox.st_ymin
     }
   };
