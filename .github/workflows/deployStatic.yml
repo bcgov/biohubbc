@@ -552,7 +552,7 @@ jobs:
         with:
           url: $CYPRESS_BASE_URL
           responseCode: 200
-          timeout: 120000
+          timeout: 240000
           interval: 500
 
       - name: E2E Smoke tests
@@ -563,7 +563,7 @@ jobs:
         continue-on-error: false
         with:
           wait-on: $CYPRESS_BASE_URL
-          wait-on-timeout: 120
+          wait-on-timeout: 240
           record: true
           working-directory: testing/e2e
 
