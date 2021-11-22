@@ -191,46 +191,6 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
 };
 
 /**
- * SQL query to activate a system user. Does nothing is the system user is already active.
- *
- * @param {number} systemUserId
- * @return {*}  {(SQLStatement | null)}
- */
-export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'activateSystemUserSQL',
-    message: 'activateSystemUserSQL',
-    systemUserId
-  });
-
-  if (!systemUserId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    UPDATE
-      system_user
-    SET
-      record_end_date = NULL
-    WHERE
-      system_user_id = ${systemUserId}
-    AND
-      record_end_date IS NOT NULL
-    RETURNING
-      *;
-  `;
-
-  defaultLog.debug({
-    label: 'activateSystemUserSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to remove one or more system roles from a user.
  *
  * @param {number} userId
@@ -267,7 +227,7 @@ export const deActivateSystemUserSQL = (userId: number): SQLStatement | null => 
  * SQL query to activate a system user. Does nothing is the system user is already active.
  *
  * @param {number} systemUserId
- * @return {*} {(SQLStatement | null)}
+ * @return {*}  {(SQLStatement | null)}
  */
 export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null => {
   defaultLog.debug({
@@ -281,16 +241,16 @@ export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null
   }
 
   const sqlStatement = SQL`
-  UPDATE
-  system_user
-  SET
-  record_end_date = NULL
-  WHERE
-  system_user_id = ${systemUserId}
-  AND
-  record_end_date IS NOT NULL
-  RETURNING
-  *;
+    UPDATE
+      system_user
+    SET
+      record_end_date = NULL
+    WHERE
+      system_user_id = ${systemUserId}
+    AND
+      record_end_date IS NOT NULL
+    RETURNING
+      *;
   `;
 
   defaultLog.debug({

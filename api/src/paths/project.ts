@@ -21,9 +21,9 @@ import {
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
-import { postProjectRolesByRoleNameSQL } from '../queries/project-participation/project-participation-queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
+import { addProjectParticipant } from '../paths-helpers/project-participation';
 
 const defaultLog = getLogger('paths/project');
 
@@ -387,15 +387,5 @@ export const insertProjectParticipantRoles = async (
     throw new HTTP400('Failed to identify system user ID');
   }
 
-  const sqlStatement = postProjectRolesByRoleNameSQL(projectId, systemUserId, projectParticipantRole);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert project participant records');
-  }
+  await addProjectParticipant(projectId, systemUserId, projectParticipantRole, connection);
 };

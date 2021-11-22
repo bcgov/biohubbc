@@ -1,89 +1,20 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as user from './user';
-import * as db from '../database/db';
-import * as user_queries from '../queries/users/user-queries';
-import { QueryResult } from 'pg';
 import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../__mocks__/db';
+import * as db from '../database/db';
 import { CustomError } from '../errors/CustomError';
+import * as user_queries from '../queries/users/user-queries';
+import { getMockDBConnection } from '../__mocks__/db';
+import * as user from './user';
+import * as system_user from '../paths-helpers/system-user';
 
 chai.use(sinonChai);
 
 describe('user', () => {
   const dbConnectionObj = getMockDBConnection();
-
-  describe('addSystemUser', () => {
-    afterEach(() => {
-      sinon.restore();
-    });
-
-    it('should throw a 400 error when no sql statement produced', async () => {
-      sinon.stub(user_queries, 'addSystemUserSQL').returns(null);
-
-      try {
-        await user.addSystemUser('userIdentifier', 'identitySource', {
-          ...dbConnectionObj,
-          systemUserId: () => {
-            return 10;
-          }
-        });
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-      }
-    });
-
-    it('should throw a 500 response when response has no rows', async () => {
-      sinon.stub(user_queries, 'addSystemUserSQL').returns(SQL`some query`);
-
-      try {
-        await user.addSystemUser('userIdentifier', 'identitySource', {
-          ...dbConnectionObj,
-          systemUserId: () => {
-            return 10;
-          },
-          query: async () => {
-            return ({
-              rows: null
-            } as unknown) as QueryResult<any>;
-          }
-        });
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(500);
-        expect((actualError as CustomError).message).to.equal('Failed to add system user');
-      }
-    });
-
-    it('should return the query rows result on success', async () => {
-      sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-
-      const result = await user.addSystemUser('userIdentifier', 'identitySource', {
-        ...dbConnectionObj,
-        systemUserId: () => {
-          return 10;
-        },
-        query: async () => {
-          return {
-            rows: [
-              {
-                id: 1,
-                uis_id: 'uis_id',
-                user_identifier: 'user_identifier',
-                record_effective_date: '2020/04/04'
-              }
-            ]
-          } as QueryResult<any>;
-        }
-      });
-
-      expect(result.id).to.equal(1);
-    });
-  });
 
   describe('addUser', () => {
     afterEach(() => {
@@ -96,7 +27,7 @@ describe('user', () => {
         userIdentifier: 'uid',
         identitySource: 'idsource'
       }
-    };
+    } as any;
 
     let actualStatus: number = (null as unknown) as number;
 
@@ -156,83 +87,19 @@ describe('user', () => {
       }
     });
 
-    it('should throw a 400 error when no system user id', async () => {
+    it('adds a system user and returns 200 on success', async () => {
+      const sendStub = sinon.fake();
+      const mockRes = { send: sendStub } as any;
+
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      try {
-        const result = user.addUser();
+      sinon.stub(system_user, 'addSystemUser').resolves();
 
-        await result(sampleReq as any, (null as unknown) as any, (null as unknown) as any);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to identify system user ID');
-      }
-    });
+      const requestHandler = user.addUser();
 
-    it('should throw a 400 error when no sql statement produced', async () => {
-      sinon.stub(db, 'getDBConnection').returns({
-        ...dbConnectionObj,
-        systemUserId: () => {
-          return 20;
-        }
-      });
-      sinon.stub(user_queries, 'addSystemUserSQL').returns(null);
+      await requestHandler(sampleReq, mockRes, (null as unknown) as any);
 
-      try {
-        const result = user.addUser();
-
-        await result(sampleReq as any, (null as unknown) as any, (null as unknown) as any);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-      }
-    });
-
-    it('should throw an error when a failure occurs', async () => {
-      const expectedError = new Error('cannot process query');
-
-      sinon.stub(db, 'getDBConnection').returns({
-        ...dbConnectionObj,
-        systemUserId: () => {
-          throw expectedError;
-        }
-      });
-
-      try {
-        const result = user.addUser();
-
-        await result(sampleReq as any, (null as unknown) as any, (null as unknown) as any);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal(expectedError.message);
-      }
-    });
-
-    it('should throw a 500 response when response has no rows', async () => {
-      sinon.stub(db, 'getDBConnection').returns({
-        ...dbConnectionObj,
-        systemUserId: () => {
-          return 20;
-        },
-        query: async () => {
-          return ({
-            rows: null
-          } as unknown) as QueryResult<any>;
-        }
-      });
-      sinon.stub(user_queries, 'addSystemUserSQL').returns(SQL`some query`);
-
-      try {
-        const result = user.addUser();
-
-        await result(sampleReq as any, sampleRes as any, (null as unknown) as any);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(500);
-        expect((actualError as CustomError).message).to.equal('Failed to add system user');
-      }
+      expect(sendStub).to.have.been.calledWith(200);
     });
 
     it('should return status 200 on success', async () => {

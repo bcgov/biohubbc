@@ -2,16 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../errors/CustomError';
-import { UserObject } from '../../../../models/user';
-import {
-  getProjectParticipationBySystemUserSQL,
-  postProjectRolesByRoleNameSQL
-} from '../../../../queries/project-participation/project-participation-queries';
-import { activateSystemUserSQL, getUserByUserIdentifierSQL } from '../../../../queries/users/user-queries';
+import { HTTP400 } from '../../../../errors/CustomError';
+import { ensureProjectParticipant } from '../../../../paths-helpers/project-participation';
+import { ensureSystemUser } from '../../../../paths-helpers/system-user';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
-import { addSystemUser } from '../../../user';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/create');
 
@@ -117,6 +112,7 @@ export function createProjectParticipants(): RequestHandler {
 
     try {
       const projectId = Number(req.params.projectId);
+
       const participants: { userIdentifier: string; identitySource: string; role: string }[] = req.body.participants;
 
       await connection.open();
@@ -151,134 +147,4 @@ export const ensureSystemUserAndProjectParticipantUser = async (
 
   // Add project role, unless they already have one
   await ensureProjectParticipant(projectId, systemUserObject.id, participant.role, connection);
-};
-
-export const ensureSystemUser = async (
-  userIdentifier: string,
-  identitySource: string,
-  connection: IDBConnection
-): Promise<UserObject> => {
-  // Check if the user exists in SIMS
-  let systemUserRecord = await getSystemUser(userIdentifier, connection);
-
-  if (!systemUserRecord) {
-    // Id of the current authenticated user
-    const systemUserId = connection.systemUserId();
-
-    if (!systemUserId) {
-      throw new HTTP400('Failed to identify system user ID');
-    }
-
-    // Found no existing user, add them
-    systemUserRecord = await addSystemUser(userIdentifier, identitySource, connection);
-  }
-
-  let userObject = new UserObject(systemUserRecord);
-
-  if (!userObject.user_record_end_date) {
-    // system user is active
-    return userObject;
-  }
-
-  // system user is not active
-  const response = await activateDeactivatedSystemUser(userObject.id, connection);
-
-  if (!response) {
-    throw new HTTP500('Failed to activate system user');
-  }
-
-  userObject = new UserObject(systemUserRecord);
-  if (!userObject.id || !userObject.user_identifier) {
-    throw new HTTP500('Failed to add system user');
-  }
-
-  return userObject;
-};
-
-export const getSystemUser = async (userIdentifier: string, connection: IDBConnection): Promise<object | null> => {
-  const sqlStatement = getUserByUserIdentifierSQL(userIdentifier);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response) {
-    throw new HTTP400('Failed to verify system user');
-  }
-
-  return response?.rows?.[0] || null;
-};
-
-export const activateDeactivatedSystemUser = async (systemUserId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = activateSystemUserSQL(systemUserId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response) {
-    throw new HTTP400('Failed to activate system user');
-  }
-
-  return response?.rows?.[0] || null;
-};
-
-export const ensureProjectParticipant = async (
-  projectId: number,
-  systemUserId: number,
-  projectParticipantRole: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const projectParticipantRecord = await getProjectParticipant(projectId, systemUserId, connection);
-
-  if (projectParticipantRecord) {
-    // project participant already exists, do nothing
-    return;
-  }
-
-  // add new project participant record
-  await addProjectParticipant(projectId, systemUserId, projectParticipantRole, connection);
-};
-
-export const getProjectParticipant = async (
-  projectId: number,
-  systemUserId: number,
-  connection: IDBConnection
-): Promise<any> => {
-  const sqlStatement = getProjectParticipationBySystemUserSQL(projectId, systemUserId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response) {
-    throw new HTTP400('Failed to get project participant');
-  }
-
-  return response?.rows?.[0] || null;
-};
-
-export const addProjectParticipant = async (
-  projectId: number,
-  systemUserId: number,
-  projectParticipantRole: string,
-  connection: IDBConnection
-): Promise<void> => {
-  const sqlStatement = postProjectRolesByRoleNameSQL(projectId, systemUserId, projectParticipantRole);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response?.rows?.length) {
-    throw new HTTP400('Failed to insert project participant');
-  }
 };
