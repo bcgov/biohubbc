@@ -94,7 +94,7 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
 
   const open = Boolean(anchorEl);
 
-  const buttonId = `custom-menu-${props.buttonLabel?.replace(/\s/g, '') || 'button'}`;
+  const buttonId = `custom-menu-button-${props.buttonLabel?.replace(/\s/g, '') || 'button'}`;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -112,9 +112,9 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
   return (
     <>
       <Button
-        title={props.buttonTitle}
         id={buttonId}
         data-testid={buttonId}
+        title={props.buttonTitle}
         color="primary"
         variant="outlined"
         aria-controls="basic-menu"
@@ -143,9 +143,13 @@ export const CustomMenuButton: React.FC<ICustomMenuButtonProps> = (props) => {
           'aria-labelledby': 'basic-button'
         }}>
         {props.menuItems.map((menuItem) => {
-          const id = `h2-menu-toolbar-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
+          const menuItemId = `custom-menu-button-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
           return (
-            <MenuItem id={id} data-testid={id} onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
+            <MenuItem
+              id={menuItemId}
+              key={menuItemId}
+              data-testid={menuItemId}
+              onClick={() => closeMenuOnItemClick(menuItem.menuOnClick)}>
               {menuItem.menuIcon && <ListItemIcon>{menuItem.menuIcon}</ListItemIcon>}
               {menuItem.menuLabel}
             </MenuItem>
@@ -168,7 +172,7 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
 
   const open = Boolean(anchorEl);
 
-  const id = `h2-menu-toolbar-${props.buttonTitle?.replace(/\s/g, '') || 'button'}`;
+  const buttonId = `custom-menu-icon-${props.buttonTitle?.replace(/\s/g, '') || 'button'}`;
 
   const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
@@ -186,19 +190,18 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
   return (
     <>
       <IconButton
+        id={buttonId}
+        data-testid={buttonId}
         title={props.buttonTitle}
         color="primary"
         aria-label="icon button menu"
-        onClick={handleClick}
-        data-testid="icon-action-menu"
         aria-controls="basic-icon-menu"
         aria-haspopup="true"
-        aria-expanded={open ? 'true' : undefined}>
+        aria-expanded={open ? 'true' : undefined}
+        onClick={handleClick}>
         {props.buttonIcon}
       </IconButton>
       <Menu
-        id={id}
-        data-testid={id}
         open={open}
         onClose={handleClose}
         anchorEl={anchorEl}
@@ -215,7 +218,7 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
           'aria-labelledby': 'basic-button'
         }}>
         {props.menuItems.map((menuItem) => {
-          const menuItemId = `custom-menu-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
+          const menuItemId = `custom-menu-icon-item-${menuItem.menuLabel.replace(/\s/g, '')}`;
           return (
             <MenuItem
               id={menuItemId}
