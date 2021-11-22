@@ -1,11 +1,12 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import { mdiFilterOutline, mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -13,26 +14,27 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
-import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import React, { useEffect, useState, useContext, useRef } from 'react';
-import { useHistory } from 'react-router';
-import { getFormattedDate } from 'utils/Utils';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { mdiFilterOutline, mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
+import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import ProjectAdvancedFilters, {
   ProjectAdvancedFiltersInitialValues
 } from 'components/search-filter/ProjectAdvancedFilters';
+import { SystemRoleGuard } from 'components/security/Guards';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ProjectStatusType } from 'constants/misc';
+import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { ProjectStatusType } from 'constants/misc';
-import clsx from 'clsx';
-import Chip from '@material-ui/core/Chip';
+import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
+import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { useHistory } from 'react-router';
+import { getFormattedDate } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -322,13 +324,15 @@ const ProjectsListPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box mb={5} display="flex" justifyContent="space-between">
           <Typography variant="h1">Projects</Typography>
-          <Button
-            variant="contained"
-            color="primary"
-            startIcon={<Icon path={mdiPlus} size={1} />}
-            onClick={() => navigateToCreateProjectPage()}>
-            Create Project
-          </Button>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}>
+            <Button
+              variant="contained"
+              color="primary"
+              startIcon={<Icon path={mdiPlus} size={1} />}
+              onClick={() => navigateToCreateProjectPage()}>
+              Create Project
+            </Button>
+          </SystemRoleGuard>
         </Box>
         <Paper>
           <Box display="flex" alignItems="center" justifyContent="space-between" p={2}>

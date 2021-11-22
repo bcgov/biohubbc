@@ -14,10 +14,25 @@ import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
 import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { deleteSurveyReportAttachmentAuthors } from '../upload';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/delete');
 
-export const POST: Operation = [deleteAttachment()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  deleteAttachment()
+];
 
 POST.apiDoc = {
   ...attachmentApiDocObject('Delete an attachment of a survey.', 'Row count of successfully deleted attachment record'),

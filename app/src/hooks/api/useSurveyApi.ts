@@ -396,7 +396,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {boolean} publish set to `true` to publish the survey, `false` to unpublish the survey.
-   * @return {*}  {Promise<boolean>}
+   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
    */
   const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<boolean> => {
     const { status } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });

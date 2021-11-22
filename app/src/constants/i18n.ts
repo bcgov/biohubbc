@@ -206,3 +206,16 @@ export const DeleteSystemUserI18N = {
   deleteErrorText:
     'An error has occurred while attempting to delete the system user, please try again. If the error persists, please contact your system administrator.'
 };
+
+export const ProjectParticipantsI18N = {
+  getParticipantsErrorTitle: 'Error Fetching Project Participants',
+  getParticipantsErrorText:
+    'An error has occurred while attempting to fetch project participants, please try again. If the error persists, please contact your system administrator.',
+  addParticipantsErrorTitle: 'Error Adding Project Participants',
+  addParticipantsErrorText:
+    'An error has occurred while attempting to add project participants, please try again. If the error persists, please contact your system administrator.',
+  removeParticipantTitle: 'Remove Participant?',
+  removeParticipantErrorTitle: 'Error Removing Project Participant',
+  removeParticipantErrorText:
+    'An error has occurred while attempting to remove the project participant, please try again. If the error persists, please contact your system administrator.'
+};

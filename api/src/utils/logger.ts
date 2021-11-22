@@ -113,7 +113,7 @@ export const getPrintfFunction = (logLabel: string): ((args: ILoggerMessage) => 
  * @returns
  */
 export const getLogger = function (logLabel: string) {
-  return winston.loggers.get('default', {
+  return winston.loggers.get(logLabel || 'default', {
     transports: [
       new winston.transports.Console({
         level: process.env.LOG_LEVEL || 'info',

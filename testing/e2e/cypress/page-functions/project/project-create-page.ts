@@ -247,9 +247,9 @@ export function publish_project() {
 }
 
 export function attach_file() {
-  cy.get("#custom-menu-Upload").focus().click();
+  cy.get("#custom-menu-button-Upload").focus().click();
   cy.wait(1000);
-  cy.get("#h2-menu-toolbar-item-UploadReport").click();
+  cy.get("#custom-menu-button-item-UploadReport").click();
   cy.wait(1000);
   cy.get("#title").type(
     (faker.company.catchPhrase() + " " + faker.company.bs()).substring(0, 50)
