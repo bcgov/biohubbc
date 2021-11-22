@@ -550,7 +550,7 @@ jobs:
       - name: Wait for APP response
         uses: nev7n/wait_for_response@v1.0.1
         with:
-          url: $CYPRESS_BASE_URL
+          url: '$CYPRESS_BASE_URL/projects'
           responseCode: 200
           timeout: 240000
           interval: 500
@@ -562,7 +562,7 @@ jobs:
         id: smoke
         continue-on-error: false
         with:
-          wait-on: $CYPRESS_BASE_URL
+          wait-on: '$CYPRESS_BASE_URL/projects'
           wait-on-timeout: 240
           record: true
           working-directory: testing/e2e
