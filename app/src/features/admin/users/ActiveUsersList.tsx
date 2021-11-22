@@ -2,6 +2,8 @@ import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
@@ -20,6 +22,15 @@ import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 
+const useStyles = makeStyles((theme: Theme) => ({
+  table: {
+    tableLayout: 'fixed',
+    '& td': {
+      verticalAlign: 'middle'
+    }
+  }
+}));
+
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
   getUsers: (forceFetch: boolean) => void;
@@ -32,6 +43,7 @@ export interface IActiveUsersListProps {
  * @return {*}
  */
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
+  const classes = useStyles();
   const biohubApi = useBiohubApi();
   const { activeUsers } = props;
 
@@ -64,13 +76,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       dialogTitle: 'Remove user?',
       dialogContent: (
         <>
-          <Typography variant="body2" component="div">
-            Removing <strong>{row.user_identifier}</strong> will revoke their access to this application and all related
-            projects.
+          <Typography variant="body1">
+            Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
+            related projects.
           </Typography>
-          <Typography variant="body2" component="div">
-            Are you sure you want to proceed?
-          </Typography>
+          <Typography variant="body1">Are you sure you want to proceed?</Typography>
         </>
       ),
       yesButtonLabel: 'Remove User',
@@ -117,21 +127,19 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
   return (
     <>
-      <Paper>
-        <Box p={2}>
+      <Box component={Paper} p={3}>
+        <Box pb={3}>
           <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
         </Box>
         <TableContainer>
-          <Table>
+          <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
                 <TableCell>Username</TableCell>
-                <TableCell>Company</TableCell>
-                <TableCell>Regional Offices</TableCell>
                 <TableCell>Roles</TableCell>
-                <TableCell>Last Active</TableCell>
-                <TableCell width="50px">Actions</TableCell>
+                <TableCell width="100px" align="center">
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="active-users-table">
@@ -145,24 +153,22 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
               {activeUsers.length > 0 &&
                 activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
-                    <TableCell></TableCell>
                     <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
-                    <TableCell></TableCell>
-                    <TableCell></TableCell>
                     <TableCell>{row.role_names.join(', ') || 'Not Applicable'}</TableCell>
-                    <TableCell></TableCell>
-                    <TableCell>
-                      <CustomMenuIconButton
-                        buttonTitle="Actions"
-                        buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
-                        menuItems={[
-                          {
-                            menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
-                            menuLabel: 'Remove User',
-                            menuOnClick: () => handleRemoveUserClick(row)
-                          }
-                        ]}
-                      />
+                    <TableCell align="center">
+                      <Box my={-1}>
+                        <CustomMenuIconButton
+                          buttonTitle="Actions"
+                          buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
+                          menuItems={[
+                            {
+                              menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
+                              menuLabel: 'Remove User',
+                              menuOnClick: () => handleRemoveUserClick(row)
+                            }
+                          ]}
+                        />
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -182,7 +188,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             }
           />
         )}
-      </Paper>
+      </Box>
     </>
   );
 };
