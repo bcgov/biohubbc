@@ -2,11 +2,13 @@ import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import {
+  IAddProjectParticipant,
   ICreateProjectRequest,
   ICreateProjectResponse,
   IGetProjectAttachmentsResponse,
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
+  IGetProjectParticipantsResponse,
   IGetProjectsListResponse,
   IGetReportMetaData,
   IProjectAdvancedFilterRequest,
@@ -323,7 +325,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} attachmentId
    * @param {string} attachmentType
-   * @returns {*} {Promise<string>}
+   * @return {*}  {Promise<IGetReportMetaData>}
    */
   const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportMetaData> => {
     const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
@@ -334,6 +336,47 @@ const useProjectApi = (axios: AxiosInstance) => {
     });
 
     return data;
+  };
+
+  /**
+   * Get all project participants.
+   *
+   * @param {number} projectId
+   * @return {*}  {Promise<IGetProjectParticipantsResponse>}
+   */
+  const getProjectParticipants = async (projectId: number): Promise<IGetProjectParticipantsResponse> => {
+    const { data } = await axios.get(`/api/project/${projectId}/participants/get`);
+
+    return data;
+  };
+
+  /**
+   * Add new project participants.
+   *
+   * @param {number} projectId
+   * @param {IAddProjectParticipant[]} participants
+   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
+   */
+  const addProjectParticipants = async (
+    projectId: number,
+    participants: IAddProjectParticipant[]
+  ): Promise<boolean> => {
+    const { status } = await axios.post(`/api/project/${projectId}/participants/create`, { participants });
+
+    return status === 200;
+  };
+
+  /**
+   * Remove existing project participant.
+   *
+   * @param {number} projectId
+   * @param {number} projectParticipationId
+   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
+   */
+  const removeProjectParticipant = async (projectId: number, projectParticipationId: number): Promise<boolean> => {
+    const { status } = await axios.delete(`/api/project/${projectId}/participants/${projectParticipationId}/delete`);
+
+    return status === 200;
   };
 
   return {
@@ -353,7 +396,10 @@ const useProjectApi = (axios: AxiosInstance) => {
     publishProject,
     makeAttachmentSecure,
     makeAttachmentUnsecure,
-    getProjectReportMetadata
+    getProjectReportMetadata,
+    getProjectParticipants,
+    addProjectParticipants,
+    removeProjectParticipant
   };
 };
 

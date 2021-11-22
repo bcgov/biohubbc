@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400, HTTP500 } from '../errors/CustomError';
-import { addSystemUserSQL } from '../queries/users/user-queries';
+import { getDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/CustomError';
+import { addSystemUser } from '../paths-helpers/system-user';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
@@ -97,27 +97,9 @@ export function addUser(): RequestHandler {
     try {
       await connection.open();
 
-      const systemUserId = connection.systemUserId();
-
-      if (!systemUserId) {
-        throw new HTTP400('Failed to identify system user ID');
-      }
-
-      const addSystemUserSQLStatement = addSystemUserSQL(userIdentifier, identitySource, systemUserId);
-
-      if (!addSystemUserSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const response = await connection.query(addSystemUserSQLStatement.text, addSystemUserSQLStatement.values);
+      await addSystemUser(userIdentifier, identitySource, connection);
 
       await connection.commit();
-
-      const result = (response && response.rows && response.rows[0]) || null;
-
-      if (!result) {
-        throw new HTTP500('Failed to add system user');
-      }
 
       return res.send(200);
     } catch (error) {
@@ -129,36 +111,3 @@ export function addUser(): RequestHandler {
     }
   };
 }
-
-/**
- * Adds a new system user.
- *
- * Note: Does not account for the user already existing.
- *
- * @param {string} userIdentifier
- * @param {string} identitySource
- * @param {number} systemUserId
- * @param {IDBConnection} connection
- */
-export const addSystemUser = async (
-  userIdentifier: string,
-  identitySource: string,
-  systemUserId: number,
-  connection: IDBConnection
-) => {
-  const addSystemUserSQLStatement = addSystemUserSQL(userIdentifier, identitySource, systemUserId);
-
-  if (!addSystemUserSQLStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(addSystemUserSQLStatement.text, addSystemUserSQLStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result) {
-    throw new HTTP500('Failed to add system user');
-  }
-
-  return result;
-};

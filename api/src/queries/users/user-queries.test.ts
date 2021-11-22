@@ -49,31 +49,25 @@ describe('getUserListSQL', () => {
 
 describe('addSystemUserSQL', () => {
   it('returns null response when null userIdentifier provided', () => {
-    const response = addSystemUserSQL((null as unknown) as string, 'validString', 1);
+    const response = addSystemUserSQL((null as unknown) as string, 'validString');
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null identitySource provided', () => {
-    const response = addSystemUserSQL('validString', (null as unknown) as string, 1);
+    const response = addSystemUserSQL('validString', (null as unknown) as string);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null userIdentifier provided', () => {
-    const response = addSystemUserSQL((null as unknown) as string, 'validString', 1);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null systemUserId provided', () => {
-    const response = addSystemUserSQL('validString', 'validString', (null as unknown) as number);
+    const response = addSystemUserSQL((null as unknown) as string, 'validString');
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid parameters provided', () => {
-    const response = addSystemUserSQL('validString', 'validString', 1);
+    const response = addSystemUserSQL('validString', 'validString');
 
     expect(response).to.not.be.null;
   });

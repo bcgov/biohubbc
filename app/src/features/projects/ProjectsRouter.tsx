@@ -2,12 +2,13 @@ import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import ProjectsListPage from 'features/projects/list/ProjectsListPage';
 import ProjectsLayout from 'features/projects/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
-import SurveyPage from 'features/surveys/view/SurveyPage';
 import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
+import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
+import ProjectParticipantsPage from './participants/ProjectParticipantsPage';
 
 interface IProjectsRouterProps {
   classes: any;
@@ -42,6 +43,13 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         layout={ProjectsLayout}
         path="/admin/projects/:id?/details"
         component={ProjectPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={ProjectsLayout}
+        path="/admin/projects/:id?/users"
+        component={ProjectParticipantsPage}
         componentProps={props}
       />
       <PrivateRoute
