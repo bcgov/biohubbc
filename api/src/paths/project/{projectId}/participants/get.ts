@@ -130,7 +130,5 @@ export const getProjectParticipants = async (projectId: number, connection: IDBC
     throw new HTTP400('Failed to get project participants');
   }
 
-  const result = (response && response.rows) || [];
-
-  return result;
+  return (response && response.rows) || [];
 };
