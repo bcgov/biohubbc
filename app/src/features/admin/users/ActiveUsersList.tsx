@@ -8,7 +8,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
@@ -16,12 +16,14 @@ import { DeleteSystemUserI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
+  codes: IGetAllCodeSetsResponse;
   getUsers: (forceFetch: boolean) => void;
 }
 
@@ -33,7 +35,7 @@ export interface IActiveUsersListProps {
  */
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const biohubApi = useBiohubApi();
-  const { activeUsers } = props;
+  const { activeUsers, codes } = props;
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -115,6 +117,71 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     }
   };
 
+  const handleChangeUserPermissionsClick = (row: IGetUserResponse, newRoleName: any) => {
+    console.log('system changed to ', newRoleName);
+
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Change User Role?',
+      dialogContent: (
+        <>
+          <Typography variant="body2" component="div">
+            Changing <strong>{row.user_identifier}</strong> 's role to <strong>{newRoleName}</strong> will give them the following
+            permissions in this application:
+          </Typography>
+          <Typography variant="body2" component="div">
+            <ul>
+              <li>Permission 1</li>
+              <li>Permission 2</li>
+            </ul>
+          </Typography>
+
+          <Typography variant="body2" component="div">
+            Are you sure you want to proceed?
+          </Typography>
+        </>
+      ),
+      yesButtonLabel: 'Change Role',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'primary' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        changeSystemUserRole(row);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const changeSystemUserRole = async (user: IGetUserResponse) => {
+    if (!user?.id) {
+      return;
+    }
+    try {
+      //await biohubApi.user.deleteSystemUser(user.id);
+
+      showSnackBar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              User <strong>{user.user_identifier}</strong>'s role change to [new role].
+            </Typography>
+          </>
+        ),
+        open: true
+      });
+
+      props.getUsers(true);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
+
   return (
     <>
       <Paper>
@@ -125,7 +192,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           <Table>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
                 <TableCell>Username</TableCell>
                 <TableCell>System Permission</TableCell>
                 <TableCell width="50px">Actions</TableCell>
@@ -142,19 +208,24 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
               {activeUsers.length > 0 &&
                 activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
-                    <TableCell></TableCell>
                     <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
                     <TableCell>
                       <CustomMenuButton
                         buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                         buttonTitle={'Change User Permissions'}
-                        menuItems={[
-                          {
-                            menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
-                            menuLabel: 'Remove User',
-                            menuOnClick: () => handleRemoveUserClick(row)
-                          }
-                        ]}
+                        buttonProps={{ variant: 'text' }}
+                        menuItems={codes.system_roles
+                          .sort((item1, item2) => {
+                            return item1.name.localeCompare(item2.name);
+                          })
+                          .map((item) => {
+                            return {
+                              menuLabel: item.name,
+                              menuOnClick: () => handleChangeUserPermissionsClick(row, item.name)
+                            };
+                          })
+                        }
+                        buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
                       />
                     </TableCell>
                     <TableCell>

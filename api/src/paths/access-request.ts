@@ -11,7 +11,7 @@ import { authorizeRequestHandler } from '../request-handlers/security/authorizat
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
 import { addSystemUser } from './user';
-import { addSystemRoles } from './user/{userId}/system-roles';
+import { addSystemRoles } from './user/{userId}/system-roles/create';
 
 const defaultLog = getLogger('paths/access-request');
 

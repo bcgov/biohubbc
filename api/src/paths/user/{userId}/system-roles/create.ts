@@ -2,16 +2,16 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../database/db';
-import { HTTP400, HTTP500 } from '../../../errors/CustomError';
-import { UserObject } from '../../../models/user';
-import { deleteSystemRolesSQL, postSystemRolesSQL } from '../../../queries/users/system-role-queries';
-import { getUserByIdSQL } from '../../../queries/users/user-queries';
-import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { getLogger } from '../../../utils/logger';
+import { SYSTEM_ROLE } from '../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../database/db';
+import { HTTP400} from '../../../../errors/CustomError';
+import { UserObject } from '../../../../models/user';
+import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
+import { getUserByIdSQL } from '../../../../queries/users/user-queries';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('paths/user/{userId}/system-roles');
+const defaultLog = getLogger('paths/user/{userId}/system-roles/create');
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -170,115 +170,3 @@ export const addSystemRoles = async (userId: number, roleIds: number[], connecti
     throw new HTTP400('Failed to add system roles');
   }
 };
-
-export const DELETE: Operation = [
-  authorizeRequestHandler(() => {
-    return {
-      and: [
-        {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-          discriminator: 'SystemRole'
-        }
-      ]
-    };
-  }),
-  removeSystemRoles()
-];
-
-DELETE.apiDoc = {
-  description: 'Remove system roles from a user.',
-  tags: ['user'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
-  parameters: [
-    {
-      in: 'path',
-      name: 'userId',
-      schema: {
-        type: 'number'
-      },
-      required: true
-    },
-    {
-      in: 'query',
-      name: 'roleId',
-      schema: {
-        type: 'array',
-        items: {
-          type: 'number'
-        }
-      },
-      required: true
-    }
-  ],
-  responses: {
-    200: {
-      description: 'Remove system user roles from user OK.'
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
-export function removeSystemRoles(): RequestHandler {
-  return async (req, res) => {
-    defaultLog.debug({ label: 'removeSystemRoles', message: 'params', req_params: req.params, req_body: req.body });
-
-    const userId = (req.params && Number(req.params.userId)) || null;
-
-    if (!userId) {
-      throw new HTTP400('Missing required path param: userId');
-    }
-
-    const roleIds: number[] = (req.query && (req.query.roleId as string[]).map((item: any) => Number(item))) || [];
-
-    if (!roleIds.length) {
-      throw new HTTP400('Missing required query param: roles');
-    }
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      const sqlStatement = deleteSystemRolesSQL(userId, roleIds);
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
-      }
-
-      await connection.open();
-
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-      await connection.commit();
-
-      const result = (response && response.rowCount) || null;
-
-      if (!result) {
-        throw new HTTP500('Failed to remove system roles');
-      }
-
-      return res.status(200).send();
-    } catch (error) {
-      defaultLog.error({ label: 'removeSystemRoles', message: 'error', error });
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
