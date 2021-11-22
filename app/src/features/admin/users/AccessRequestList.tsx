@@ -200,7 +200,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
             <TableBody data-testid="access-request-table">
               {!accessRequests?.length && (
                 <TableRow data-testid={'access-request-row-0'}>
-                  <TableCell colSpan={7} align="center">
+                  <TableCell colSpan={4} align="center">
                     No Access Requests
                   </TableCell>
                 </TableRow>
