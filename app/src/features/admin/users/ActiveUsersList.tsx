@@ -159,7 +159,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       return;
     }
     try {
-      //await biohubApi.user.deleteSystemUser(user.id);
+      //await biohubApi.user.updateSystemUserRole(user.id);
 
       showSnackBar({
         snackbarMessage: (

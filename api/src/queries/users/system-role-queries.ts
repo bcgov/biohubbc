@@ -138,3 +138,37 @@ export const postProjectRolesByRoleNameSQL = (
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to add one or more system roles to a user.
+ *
+ * @param {number} userId
+ * @param {number} roleId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const updateSystemRoleSQL = (userId: number, roleId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'updateSystemRoleSQL', message: 'params', userId, roleId });
+
+  if (!userId || !roleId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE
+      system_user_role
+    SET
+      system_role_id = ${roleId}
+    WHERE
+      system_user_id = ${userId}
+    RETURNING
+      system_role_id;`;
+
+  defaultLog.debug({
+    label: 'updateSystemRoleSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

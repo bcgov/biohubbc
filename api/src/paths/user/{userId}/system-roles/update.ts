@@ -125,6 +125,7 @@ export function updateSystemRolesHandler(): RequestHandler {
 
       console.log(userObject);
 
+
       //TODO : delete existing role (if there is one)
       // TODO: add a new role to the user
 
@@ -149,7 +150,6 @@ export function updateSystemRolesHandler(): RequestHandler {
 
 
       await addSystemRoles(userId, roles, connection);
-
       await connection.commit();
 
       return res.status(200).send();
@@ -171,7 +171,7 @@ export function updateSystemRolesHandler(): RequestHandler {
  * @param {number[]} roleIds
  * @param {IDBConnection} connection
  */
-export const addSystemRoles = async (userId: number, roleIds: number[], connection: IDBConnection) => {
+export const addUserSystemRole = async (userId: number, roleIds: number[], connection: IDBConnection) => {
   const postSystemRolesSqlStatement = postSystemRolesSQL(userId, roleIds);
 
   if (!postSystemRolesSqlStatement) {
