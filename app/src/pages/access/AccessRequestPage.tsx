@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
@@ -26,33 +25,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
-  },
-  finishContainer: {
-    padding: theme.spacing(3),
-    backgroundColor: 'transparent'
-  },
-  stepper: {
-    backgroundColor: 'transparent'
-  },
-  stepTitle: {
-    marginBottom: '0.45rem'
-  },
-  spacingBottom: {
-    marginBottom: '0.9rem'
-  },
-  legend: {
-    marginTop: '1rem',
-    float: 'left',
-    marginBottom: '0.75rem',
-    letterSpacing: '-0.01rem'
   }
 }));
 
@@ -184,7 +156,7 @@ export const AccessRequestPage: React.FC = () => {
   }
 
   return (
-    <Box mb={4}>
+    <Box p={4}>
       <Container maxWidth="md">
         <Formik
           initialValues={initialValues}
@@ -196,61 +168,54 @@ export const AccessRequestPage: React.FC = () => {
             handleSubmitAccessRequest(values);
           }}>
           {({ handleSubmit }) => (
-            <>
-              <Box>
-                <h1>Request Access to SIMS</h1>
-                <Typography variant="subtitle1" className={classes.spacingBottom}>
-                  You will need to provide some additional details before accessing this application. Complete the form
-                  below to request access.
+            <Box component={Paper} p={3}>
+              <Typography variant="h1">Request Access</Typography>
+              <Box mt={3}>
+                <Typography variant="body1" color="textSecondary">
+                  You will need to provide some additional details before accessing this application.
                 </Typography>
-                <Paper elevation={2} square={true} className={classes.finishContainer}>
-                  <h2>Request Details</h2>
-                  <Box mb={3}>
-                    <form onSubmit={handleSubmit}>
-                      {requestForm}
-                      <Box my={4}>
-                        <Divider />
-                      </Box>
-                      <Box display="flex" justifyContent="flex-end">
-                        <Box className="buttonWrapper" mr={1}>
-                          <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            className={classes.actionButton}
-                            disabled={isSubmittingRequest}>
-                            Submit Request
-                          </Button>
-                          {isSubmittingRequest && (
-                            <CircularProgress
-                              className="buttonProgress"
-                              variant="indeterminate"
-                              size={20}
-                              color="primary"
-                            />
-                          )}
-                        </Box>
-                        {/*
-                          CircularProgress styling examples:
-                          https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
-                          https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
-                        */}
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={() => {
-                            history.push('/logout');
-                          }}
-                          className={classes.actionButton}
-                          data-testid="logout-button">
-                          Log out
-                        </Button>
-                      </Box>
-                    </form>
-                  </Box>
-                </Paper>
               </Box>
-            </>
+              <Box mt={4}>
+                <form onSubmit={handleSubmit}>
+                  {requestForm}
+                  <Box mt={4} display="flex" justifyContent="flex-end">
+                    <Box className="buttonWrapper" mr={1}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={classes.actionButton}
+                        disabled={isSubmittingRequest}>
+                        <strong>Submit Request</strong>
+                      </Button>
+                      {isSubmittingRequest && (
+                        <CircularProgress
+                          className="buttonProgress"
+                          variant="indeterminate"
+                          size={20}
+                          color="primary"
+                        />
+                      )}
+                    </Box>
+                    {/*
+                      CircularProgress styling examples:
+                      https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
+                      https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
+                    */}
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => {
+                        history.push('/logout');
+                      }}
+                      className={classes.actionButton}
+                      data-testid="logout-button">
+                      Log out
+                    </Button>
+                  </Box>
+                </form>
+              </Box>
+            </Box>
           )}
         </Formik>
       </Container>

@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -24,9 +24,9 @@ import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  activeUserTable: {
+  table: {
     tableLayout: 'fixed',
-    '& .MuiTableCell-root': {
+    '& td': {
       verticalAlign: 'middle'
     }
   }
@@ -78,13 +78,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       dialogTitle: 'Remove user?',
       dialogContent: (
         <>
-          <Typography variant="body2" component="div">
-            Removing <strong>{row.user_identifier}</strong> will revoke their access to this application and all related
-            projects.
+          <Typography variant="body1">
+            Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
+            related projects.
           </Typography>
-          <Typography variant="body2" component="div">
-            Are you sure you want to proceed?
-          </Typography>
+          <Typography variant="body1">Are you sure you want to proceed?</Typography>
         </>
       ),
       yesButtonLabel: 'Remove User',
@@ -183,17 +181,19 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
   return (
     <>
-      <Paper>
-        <Box p={2}>
+      <Box component={Paper} p={3}>
+        <Box pb={3}>
           <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
         </Box>
         <TableContainer>
-          <Table className={classes.activeUserTable}>
+          <Table className={classes.table}>
             <TableHead>
               <TableRow>
                 <TableCell>Username</TableCell>
-                <TableCell>System Permission</TableCell>
-                <TableCell width="100px" align="center">Actions</TableCell>
+                <TableCell>Roles</TableCell>
+                <TableCell width="100px" align="center">
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="active-users-table">
@@ -258,7 +258,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             }
           />
         )}
-      </Paper>
+      </Box>
     </>
   );
 };

@@ -29,9 +29,13 @@ import ReviewAccessRequestForm, {
 } from './ReviewAccessRequestForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
+  table: {
+    tableLayout: 'fixed',
+    '& td': {
+      verticalAlign: 'middle'
+    }
+  },
   chip: {
-    padding: '0px 8px',
-    borderRadius: '4px',
     color: 'white'
   },
   chipPending: {
@@ -42,12 +46,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   chipRejected: {
     backgroundColor: theme.palette.error.main
-  },
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
-    }
   }
 }));
 
@@ -143,13 +141,13 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     let chipStatusClass;
 
     if (AdministrativeActivityStatusType.REJECTED === status_name) {
-      chipLabel = 'DENIED';
+      chipLabel = 'Denied';
       chipStatusClass = classes.chipRejected;
     } else if (AdministrativeActivityStatusType.ACTIONED === status_name) {
-      chipLabel = 'APPROVED';
+      chipLabel = 'Approved';
       chipStatusClass = classes.chipActioned;
     } else {
-      chipLabel = 'PENDING';
+      chipLabel = 'Pending';
       chipStatusClass = classes.chipPending;
     }
 
@@ -183,53 +181,44 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           )
         }}
       />
-      <Paper>
-        <Box p={2}>
+      <Box component={Paper} p={3}>
+        <Box pb={3}>
           <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
         </Box>
         <TableContainer>
-          <Table>
+          <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
                 <TableCell>Username</TableCell>
-                <TableCell>Company</TableCell>
-                <TableCell>Regional Offices</TableCell>
-                <TableCell>Request Date</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell></TableCell>
+                <TableCell>Date of Request</TableCell>
+                <TableCell>Access Status</TableCell>
+                <TableCell width="130px" align="center">
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="access-request-table">
               {!accessRequests?.length && (
                 <TableRow data-testid={'access-request-row-0'}>
-                  <TableCell colSpan={6} style={{ textAlign: 'center' }}>
+                  <TableCell colSpan={4} align="center">
                     No Access Requests
                   </TableCell>
                 </TableRow>
               )}
               {accessRequests?.map((row, index) => {
-                const regional_offices = row.data?.regional_offices
-                  ?.map((regionId) => codes.regional_offices.find((code) => code.id === regionId)?.name)
-                  .join(', ');
-
                 return (
                   <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                    <TableCell>{row.data?.name || ''}</TableCell>
                     <TableCell>{row.data?.username || ''}</TableCell>
-                    <TableCell>{row.data?.company || 'Not Applicable'}</TableCell>
-                    <TableCell>{regional_offices || 'Not Applicable'}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, row.create_date)}</TableCell>
+                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
                     <TableCell>{getChipIcon(row.status_name)}</TableCell>
 
-                    <TableCell>
+                    <TableCell align="center">
                       {row.status_name === AdministrativeActivityStatusType.PENDING && (
                         <Button
-                          className={classes.actionButton}
                           color="primary"
                           variant="outlined"
                           onClick={() => setActiveReviewDialog({ open: true, request: row })}>
-                          Review
+                          <strong>Review</strong>
                         </Button>
                       )}
                     </TableCell>
@@ -239,7 +228,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-      </Paper>
+      </Box>
     </>
   );
 };

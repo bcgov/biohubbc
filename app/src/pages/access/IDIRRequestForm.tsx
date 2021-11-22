@@ -11,6 +11,7 @@ import RadioGroup from '@material-ui/core/RadioGroup';
 import Select from '@material-ui/core/Select';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { useFormikContext } from 'formik';
@@ -68,30 +69,32 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
     <Box>
       <Grid container spacing={3}>
         <Grid item xs={12}>
-          <h3> Select which role you want to be assigned to</h3>
-          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-            <InputLabel id="role-label">Role</InputLabel>
-            <Select
-              id="role"
-              name="role"
-              labelId="role-label"
-              label="Role"
-              value={values.role}
-              labelWidth={300}
-              onChange={handleChange}
-              error={touched.role && Boolean(errors.role)}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Role' }}>
-              {codes?.system_roles
-                .filter((item) => item.id <= 2) // TODO Release 1 Patch (BHBC-1442): remove other roles from dropdown
-                .map((item) => (
-                  <MenuItem key={item.id} value={item.id}>
-                    {item.name}
-                  </MenuItem>
-                ))}
-            </Select>
-            <FormHelperText>{errors.role}</FormHelperText>
-          </FormControl>
+          <Typography variant="h3">What role do you want to be assigned?</Typography>
+          <Box mt={2}>
+            <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+              <InputLabel id="role-label">Role</InputLabel>
+              <Select
+                id="role"
+                name="role"
+                labelId="role-label"
+                label="Role"
+                value={values.role}
+                labelWidth={300}
+                onChange={handleChange}
+                error={touched.role && Boolean(errors.role)}
+                displayEmpty
+                inputProps={{ 'aria-label': 'Role' }}>
+                {codes?.system_roles
+                  .filter((item) => item.id <= 2) // TODO Release 1 Patch (BHBC-1442): remove other roles from dropdown
+                  .map((item) => (
+                    <MenuItem key={item.id} value={item.id}>
+                      {item.name}
+                    </MenuItem>
+                  ))}
+              </Select>
+              <FormHelperText>{errors.role}</FormHelperText>
+            </FormControl>
+          </Box>
         </Grid>
 
         {false && ( // TODO Release 1 Patch (BHBC-1442): Remove regional offices section
@@ -132,27 +135,29 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
             </FormControl>
           </Grid>
         )}
-
-        {values.work_from_regional_office === 'true' && (
-          <Grid item xs={12}>
-            <h3>Which Regional Offices do you work for?</h3>
-            <MultiAutocompleteFieldVariableSize
-              id={'regional_offices'}
-              label={'Regional Offices'}
-              options={
-                codes?.regional_offices?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-            />
-          </Grid>
-        )}
-
-        <Grid item xs={12}>
-          <h3>Additional comments</h3>
-          <CustomTextField name="comments" label="Comments " other={{ multiline: true, rows: 4 }} />
-        </Grid>
       </Grid>
+
+      {values.work_from_regional_office === 'true' && (
+        <Box>
+          <Typography variant="h3">Which Regional Offices do you work for?</Typography>
+          <MultiAutocompleteFieldVariableSize
+            id={'regional_offices'}
+            label={'Regional Offices'}
+            options={
+              codes?.regional_offices?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        </Box>
+      )}
+
+      <Box mt={3}>
+        <Typography variant="h3">Reason for your request</Typography>
+        <Box mt={2}>
+          <CustomTextField name="Reason" label="Reason" other={{ multiline: true, rows: 4 }} />
+        </Box>
+      </Box>
     </Box>
   );
 };
