@@ -1,4 +1,6 @@
 import Box from '@material-ui/core/Box';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -21,6 +23,15 @@ import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 
+const useStyles = makeStyles((theme: Theme) => ({
+  activeUserTable: {
+    tableLayout: 'fixed',
+    '& .MuiTableCell-root': {
+      verticalAlign: 'middle'
+    }
+  }
+}));
+
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
   codes: IGetAllCodeSetsResponse;
@@ -34,6 +45,7 @@ export interface IActiveUsersListProps {
  * @return {*}
  */
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
+  const classes = useStyles();
   const biohubApi = useBiohubApi();
   const { activeUsers, codes } = props;
 
@@ -124,20 +136,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       dialogTitle: 'Change User Role?',
       dialogContent: (
         <>
-          <Typography variant="body2" component="div">
-            Changing <strong>{row.user_identifier}</strong> 's role to <strong>{newRoleName}</strong> will give them the following
-            permissions in this application:
-          </Typography>
-          <Typography variant="body2" component="div">
-            <ul>
-              <li>Permission 1</li>
-              <li>Permission 2</li>
-            </ul>
-          </Typography>
-
-          <Typography variant="body2" component="div">
-            Are you sure you want to proceed?
-          </Typography>
+          <Typography color="textPrimary">Change user <strong>{row.user_identifier}'s</strong> role to <strong>{newRoleName}</strong>?</Typography>
         </>
       ),
       yesButtonLabel: 'Change Role',
@@ -189,12 +188,12 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
         </Box>
         <TableContainer>
-          <Table>
+          <Table className={classes.activeUserTable}>
             <TableHead>
               <TableRow>
                 <TableCell>Username</TableCell>
                 <TableCell>System Permission</TableCell>
-                <TableCell width="50px">Actions</TableCell>
+                <TableCell width="100px" align="center">Actions</TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="active-users-table">
@@ -228,7 +227,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                         buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
                       />
                     </TableCell>
-                    <TableCell>
+                    <TableCell align="center">
                       <CustomMenuIconButton
                         buttonTitle="Actions"
                         buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}

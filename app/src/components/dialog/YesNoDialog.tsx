@@ -109,7 +109,7 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
       <DialogTitle id="alert-dialog-title">{props.dialogTitle}</DialogTitle>
       <DialogContent>
         {props.dialogText && <DialogContentText id="alert-dialog-description">{props.dialogText}</DialogContentText>}
-        {props.dialogContent}
+        <DialogContentText>{props.dialogContent}</DialogContentText>
       </DialogContent>
       <DialogActions>
         <Button

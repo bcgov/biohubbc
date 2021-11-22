@@ -204,7 +204,7 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
         anchorEl={anchorEl}
         getContentAnchorEl={null}
         anchorOrigin={{
-          vertical: 'bottom',
+          vertical: 'top',
           horizontal: 'right'
         }}
         transformOrigin={{
