@@ -208,16 +208,16 @@ export const DeleteSystemUserI18N = {
 };
 
 export const ProjectParticipantsI18N = {
-  getParticipantsErrorTitle: 'Error Fetching Project Participants',
+  getParticipantsErrorTitle: 'Error Fetching Project Team Members',
   getParticipantsErrorText:
-    'An error has occurred while attempting to fetch project participants, please try again. If the error persists, please contact your system administrator.',
-  addParticipantsErrorTitle: 'Error Adding Project Participants',
+    'An error has occurred while attempting to fetch project team members, please try again. If the error persists, please contact your system administrator.',
+  addParticipantsErrorTitle: 'Error Adding Project Team Members',
   addParticipantsErrorText:
-    'An error has occurred while attempting to add project participants, please try again. If the error persists, please contact your system administrator.',
-  removeParticipantTitle: 'Remove Participant?',
-  removeParticipantErrorTitle: 'Error Removing Project Participant',
+    'An error has occurred while attempting to add project team members, please try again. If the error persists, please contact your system administrator.',
+  removeParticipantTitle: 'Remove Team Member?',
+  removeParticipantErrorTitle: 'Error Removing Project Team Member',
   removeParticipantErrorText:
-    'An error has occurred while attempting to remove the project participant, please try again. If the error persists, please contact your system administrator.',
+    'An error has occurred while attempting to remove the project team member, please try again. If the error persists, please contact your system administrator.',
   updateParticipantRoleErrorTitle: 'Error Updating Project Role',
   updateParticipantRoleErrorText:
     "An error has occurred while attempting to update the user's project role, please try again. If the error persists, please contact your system administrator."

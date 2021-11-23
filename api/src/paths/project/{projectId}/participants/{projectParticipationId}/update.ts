@@ -56,10 +56,10 @@ PUT.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['role'],
+          required: ['roleId'],
           properties: {
-            role: {
-              type: 'string'
+            roleId: {
+              type: 'number'
             }
           }
         }
@@ -100,8 +100,8 @@ export function updateProjectParticipantRole(): RequestHandler {
       throw new HTTP400('Missing required path param `projectParticipationId`');
     }
 
-    if (!req.body.role) {
-      throw new HTTP400('Missing required body param `role`');
+    if (!req.body.roleId) {
+      throw new HTTP400('Missing required body param `roleId`');
     }
 
     const connection = getDBConnection(req['keycloak_token']);
@@ -120,7 +120,7 @@ export function updateProjectParticipantRole(): RequestHandler {
       await addProjectParticipant(
         Number(req.params.projectId),
         Number(result.system_user_id), // get the user's system id from the old participation record
-        req.body.role,
+        Number(req.body.roleId),
         connection
       );
 

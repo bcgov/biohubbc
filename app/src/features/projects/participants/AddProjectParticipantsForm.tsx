@@ -17,7 +17,7 @@ import yup from 'utils/YupSchema';
 export interface IAddProjectParticipantsFormArrayItem {
   userIdentifier: string;
   identitySource: string;
-  role: string;
+  roleId: number;
 }
 
 export interface IAddProjectParticipantsForm {
@@ -27,7 +27,7 @@ export interface IAddProjectParticipantsForm {
 export const AddProjectParticipantsFormArrayItemInitialValues: IAddProjectParticipantsFormArrayItem = {
   userIdentifier: '',
   identitySource: '',
-  role: ''
+  roleId: ('' as unknown) as number
 };
 
 export const AddProjectParticipantsFormInitialValues: IAddProjectParticipantsForm = {
@@ -39,7 +39,7 @@ export const AddProjectParticipantsFormYupSchema = yup.object().shape({
     yup.object().shape({
       userIdentifier: yup.string().required('Required'),
       identitySource: yup.string().required('Required'),
-      role: yup.string().required('Required')
+      roleId: yup.number().required('Required')
     })
   )
 });
@@ -61,7 +61,7 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
               {values.participants?.map((participant, index) => {
                 const userIdentifierMeta = getFieldMeta(`participants.[${index}].userIdentifier`);
                 const identitySourceMeta = getFieldMeta(`participants.[${index}].identitySource`);
-                const roleMeta = getFieldMeta(`participants.[${index}].role`);
+                const roleIdMeta = getFieldMeta(`participants.[${index}].roleId`);
 
                 return (
                   <Grid item xs={12} key={index}>
@@ -80,7 +80,7 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                       </Box>
                       <Box flexBasis="30%" pl={1}>
                         <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="role">Username Type</InputLabel>
+                          <InputLabel id="roleId">Username Type</InputLabel>
                           <Select
                             id={`participants.[${index}].identitySource`}
                             name={`participants.[${index}].identitySource`}
@@ -104,16 +104,16 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                       </Box>
                       <Box flexBasis="35%" pl={1}>
                         <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="role">Project Role</InputLabel>
+                          <InputLabel id="Id">Project Role</InputLabel>
                           <Select
-                            id={`participants.[${index}].role`}
-                            name={`participants.[${index}].role`}
+                            id={`participants.[${index}].roleId`}
+                            name={`participants.[${index}].roleId`}
                             labelId="project_role"
                             label="Project Role"
-                            value={participant.role}
+                            value={participant.roleId}
                             labelWidth={300}
                             onChange={handleChange}
-                            error={roleMeta.touched && Boolean(roleMeta.error)}
+                            error={roleIdMeta.touched && Boolean(roleIdMeta.error)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'Project Role' }}>
                             {props.project_roles.map((item) => (
@@ -122,7 +122,7 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                               </MenuItem>
                             ))}
                           </Select>
-                          <FormHelperText>{roleMeta.touched && roleMeta.error}</FormHelperText>
+                          <FormHelperText>{roleIdMeta.touched && roleIdMeta.error}</FormHelperText>
                         </FormControl>
                       </Box>
                       <Box pt={0.5} pl={1}>

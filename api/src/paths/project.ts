@@ -13,6 +13,7 @@ import {
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
 import { postProjectPermitSQL } from '../queries/permit/permit-create-queries';
 import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
+import { addProjectRoleByRoleNameSQL } from '../queries/project-participation/project-participation-queries';
 import {
   postProjectActivitySQL,
   postProjectFundingSourceSQL,
@@ -23,7 +24,6 @@ import {
 } from '../queries/project/project-create-queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { addProjectParticipant } from '../paths-helpers/project-participation';
 
 const defaultLog = getLogger('paths/project');
 
@@ -199,7 +199,7 @@ export function createProject(): RequestHandler {
         await Promise.all(promises);
 
         // The user that creates a project is automatically assigned a project lead role, for this project
-        await insertProjectParticipantRoles(projectId, PROJECT_ROLE.PROJECT_LEAD, connection);
+        await insertProjectParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD, connection);
 
         await connection.commit();
       } catch (error) {
@@ -376,7 +376,7 @@ export const insertProjectActivity = async (
   return result.id;
 };
 
-export const insertProjectParticipantRoles = async (
+export const insertProjectParticipantRole = async (
   projectId: number,
   projectParticipantRole: string,
   connection: IDBConnection
@@ -387,5 +387,15 @@ export const insertProjectParticipantRoles = async (
     throw new HTTP400('Failed to identify system user ID');
   }
 
-  await addProjectParticipant(projectId, systemUserId, projectParticipantRole, connection);
+  const sqlStatement = addProjectRoleByRoleNameSQL(projectId, systemUserId, projectParticipantRole);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert project team member');
+  }
 };

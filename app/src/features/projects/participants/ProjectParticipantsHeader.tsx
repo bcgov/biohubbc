@@ -161,7 +161,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
             <AddProjectParticipantsForm
               project_roles={
                 props.codes?.project_roles?.map((item) => {
-                  return { value: item.name, label: item.name };
+                  return { value: item.id, label: item.name };
                 }) || []
               }
             />

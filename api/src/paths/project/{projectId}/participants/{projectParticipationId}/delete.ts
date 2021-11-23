@@ -117,7 +117,7 @@ export const deleteProjectParticipationRecord = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response.rowCount) {
-    throw new HTTP500('Failed to delete project participant');
+    throw new HTTP500('Failed to delete project team member');
   }
 
   return response.rows[0];
