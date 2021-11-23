@@ -122,7 +122,7 @@ const ProjectParticipantsPage: React.FC = () => {
     }
 
     getProjectParticipants();
-  }, [biohubApi, projectId, getProjectParticipants]);
+  }, [biohubApi, projectId, projectParticipants, getProjectParticipants]);
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
     onClose: () => dialogContext.setErrorDialog({ open: false }),
