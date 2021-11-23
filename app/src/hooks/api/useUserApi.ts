@@ -41,7 +41,6 @@ const useUserApi = (axios: AxiosInstance) => {
     return data;
   };
 
-
   /**
    * Grant one or more system roles to a user.
    *
@@ -49,19 +48,18 @@ const useUserApi = (axios: AxiosInstance) => {
    * @param {number[]} roleIds
    * @return {*}  {Promise<number>}
    */
-   const addSystemUserRoles = async (userId: number, roleIds: number[]): Promise<number> => {
+  const addSystemUserRoles = async (userId: number, roleIds: number[]): Promise<number> => {
     const { data } = await axios.post(`/api/user/${userId}/system-roles/create`, { roles: roleIds });
 
     return data;
   };
-
 
   /**
    * Get user details for all users.
    *
    * @return {*}  {Promise<IGetUserResponse[]>}
    */
-   const updateSystemUserRoles = async (userId: number, roleIds: number[]): Promise<IGetUserResponse> => {
+  const updateSystemUserRoles = async (userId: number, roleIds: number[]): Promise<IGetUserResponse> => {
     const { data } = await axios.patch(`/api/user/${userId}/system-roles/update`, { roles: roleIds });
 
     return data;

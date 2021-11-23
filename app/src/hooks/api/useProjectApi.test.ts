@@ -343,11 +343,12 @@ describe('useProjectApi', () => {
   });
 
   it('getProjectParticipants works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200);
+    const mockResponse = { participants: [] };
+    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);
 
     const result = await useProjectApi(axios).getProjectParticipants(projectId);
 
-    expect(result).toEqual(true);
+    expect(result).toEqual(mockResponse);
   });
 
   it('removeProjectParticipant works as expected', async () => {

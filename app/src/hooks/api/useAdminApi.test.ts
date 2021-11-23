@@ -72,6 +72,4 @@ describe('useAdminApi', () => {
 
     expect(result).toEqual(10);
   });
-
- 
 });

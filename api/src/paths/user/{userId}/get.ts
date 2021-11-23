@@ -67,7 +67,6 @@ GET.apiDoc = {
  */
 export function getUser(): RequestHandler {
   return async (req, res) => {
-
     defaultLog.debug({ label: 'gerUserObject', message: 'params', req_params: req.params, req_body: req.body });
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -75,7 +74,6 @@ export function getUser(): RequestHandler {
     if (!userId) {
       throw new HTTP400('Failed to identify system user ID');
     }
-
 
     try {
       await connection.open();

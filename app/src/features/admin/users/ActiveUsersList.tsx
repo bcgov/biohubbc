@@ -160,7 +160,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     }
     const roleIds = [roleId];
 
-
     try {
       await biohubApi.user.updateSystemUserRoles(user.id, roleIds);
 
@@ -168,8 +167,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              User <strong>{user.user_identifier}</strong>'s role has changed to {' '}
-               <strong>{roleName}</strong>.
+              User <strong>{user.user_identifier}</strong>'s role has changed to <strong>{roleName}</strong>.
             </Typography>
           </>
         ),

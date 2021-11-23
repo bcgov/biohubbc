@@ -163,5 +163,4 @@ describe('uploadMedia', () => {
 
     expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
-
 });

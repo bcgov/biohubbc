@@ -4,7 +4,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400} from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/CustomError';
 import { UserObject } from '../../../../models/user';
 import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
 import { getUserByIdSQL } from '../../../../queries/users/user-queries';
