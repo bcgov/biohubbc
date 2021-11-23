@@ -305,7 +305,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
       dialogContent: (
         <>
           <Typography color="textPrimary">
-            Change user <strong>{row.user_identifier}'s</strong> role to <strong>{newRole}</strong>?
+            Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRole}</strong>?
           </Typography>
         </>
       ),
