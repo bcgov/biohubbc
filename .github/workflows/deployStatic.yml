@@ -64,9 +64,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -112,9 +112,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -161,9 +161,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -208,9 +208,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -257,9 +257,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -307,9 +307,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -357,9 +357,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -406,9 +406,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -457,9 +457,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
