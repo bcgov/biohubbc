@@ -398,7 +398,9 @@ export const getDataPackageEML = async (
       metadata: { climateChangeInitiatives: { climateChangeInitiative: [] } }
     };
     projectClimateInitiative.rows.forEach(function (row: any, i: number) {
-      emlRoot.additionalMetadata[additionalMetadataCount].metadata.climateChangeInitiatives.climateChangeInitiative[i] = {
+      emlRoot.additionalMetadata[additionalMetadataCount].metadata.climateChangeInitiatives.climateChangeInitiative[
+        i
+      ] = {
         name: row.name
       };
     });

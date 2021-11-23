@@ -562,7 +562,7 @@ export const getProjectManagementActionsSQL = (projectId: number): SQLStatement 
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
- export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null => {
+export const getSurveyProprietorSQL = (surveyId: number): SQLStatement | null => {
   const debugLabel = 'getSurveyProprietorSQL';
   defaultLog.debug({ label: debugLabel, message: 'params', surveyId });
 
