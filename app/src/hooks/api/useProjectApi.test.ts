@@ -351,6 +351,14 @@ describe('useProjectApi', () => {
     expect(result).toEqual(mockResponse);
   });
 
+  it('addProjectParticipants works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/participants/create`).reply(200);
+
+    const result = await useProjectApi(axios).getProjectParticipants(projectId);
+
+    expect(result).toEqual(true);
+  });
+
   it('removeProjectParticipant works as expected', async () => {
     const projectParticipationId = 1;
 

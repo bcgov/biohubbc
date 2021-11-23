@@ -133,7 +133,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       dialogContent: (
         <>
           <Typography color="textPrimary">
-            Change user <strong>{row.user_identifier}'s</strong> role to <strong>{newRoleName}</strong>?
+            Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRoleName}</strong>?
           </Typography>
         </>
       ),
