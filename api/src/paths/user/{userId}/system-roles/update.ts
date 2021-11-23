@@ -2,16 +2,17 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400} from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/CustomError';
 import { UserObject } from '../../../../models/user';
 import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
+import { deleteAllSystemRolesSQL } from '../../../../queries/users/user-queries';
 import { getUserByIdSQL } from '../../../../queries/users/user-queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}/system-roles/update');
 
-export const POST: Operation = [
+export const PATCH: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -25,7 +26,7 @@ export const POST: Operation = [
   updateSystemRolesHandler()
 ];
 
-POST.apiDoc = {
+PATCH.apiDoc = {
   description: 'Update system role for a user.',
   tags: ['user'],
   security: [
@@ -121,38 +122,19 @@ export function updateSystemRolesHandler(): RequestHandler {
 
       const userObject = new UserObject(userResult);
 
-      console.log(userObject);
+      if (userObject.role_ids.length) {
+        //delete all existing user system roles
+        deleteUserSystemRoles(userId, connection);
+      }
 
-
-      //TODO : delete existing role (if there is one)
-      // TODO: add a new role to the user
-
-
-      // Filter out any system roles that have already been added to the user
-      //const rolesToRemove = roles.filter((role) => !userObject.role_ids.includes(role));
-
-      // if (!rolesToAdd.length) {
-      //   // No new system roles to add, do nothing
-      //   return res.status(200).send();
-      // }
-
-
-      // Filter out any system roles that have already been added to the user
-      //const rolesToAdd = roles.filter((role) => !userObject.role_ids.includes(role));
-
-      // if (!rolesToAdd.length) {
-      //   // No new system roles to add, do nothing
-      //   return res.status(200).send();
-      // }
-
-
-
-      await addSystemRoles(userId, roles, connection);
+      //add new user system roles
+      await addUserSystemRoles(userId, roles, connection);
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'addSystemRoles', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();
@@ -163,13 +145,11 @@ export function updateSystemRolesHandler(): RequestHandler {
 /**
  * Adds the specified roleIds to the user.
  *
- * Note: Does not account for any existing roles the user may already have.
- *
  * @param {number} userId
  * @param {number[]} roleIds
  * @param {IDBConnection} connection
  */
-export const addUserSystemRole = async (userId: number, roleIds: number[], connection: IDBConnection) => {
+export const addUserSystemRoles = async (userId: number, roleIds: number[], connection: IDBConnection) => {
   const postSystemRolesSqlStatement = postSystemRolesSQL(userId, roleIds);
 
   if (!postSystemRolesSqlStatement) {
@@ -183,5 +163,31 @@ export const addUserSystemRole = async (userId: number, roleIds: number[], conne
 
   if (!postSystemRolesResponse || !postSystemRolesResponse.rowCount) {
     throw new HTTP400('Failed to add system roles');
+  }
+};
+
+/**
+ * Adds the specified roleIds to the user.
+ *
+ * Note: Does not account for any existing roles the user may already have.
+ *
+ * @param {number} userId
+ * @param {number[]} roleIds
+ * @param {IDBConnection} connection
+ */
+export const deleteUserSystemRoles = async (userId: number, connection: IDBConnection) => {
+  const deleteSystemRolesSqlStatement = deleteAllSystemRolesSQL(userId);
+
+  if (!deleteSystemRolesSqlStatement) {
+    throw new HTTP400('Failed to build SQL delete statement');
+  }
+
+  const deleteSystemRolesResponse = await connection.query(
+    deleteSystemRolesSqlStatement.text,
+    deleteSystemRolesSqlStatement.values
+  );
+
+  if (!deleteSystemRolesResponse) {
+    throw new HTTP400('Failed to delete system roles');
   }
 };
