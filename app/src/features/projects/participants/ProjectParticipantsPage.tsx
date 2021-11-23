@@ -299,13 +299,13 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const handleChangeUserPermissionsClick = (row: IGetProjectParticipantsResponseArrayItem, newRole: string) => {
+  const handleChangeUserPermissionsClick = (item: IGetProjectParticipantsResponseArrayItem, newRole: string) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
         <>
           <Typography color="textPrimary">
-            Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRole}</strong>?
+            Change user <strong>{item.user_identifier}</strong>'s role to <strong>{newRole}</strong>?
           </Typography>
         </>
       ),
@@ -320,20 +320,20 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         dialogContext.setYesNoDialog({ open: false });
       },
       onYes: () => {
-        changeProjectParticipantRole(row, newRole);
+        changeProjectParticipantRole(item, newRole);
         dialogContext.setYesNoDialog({ open: false });
       }
     });
   };
 
-  const changeProjectParticipantRole = async (row: IGetProjectParticipantsResponseArrayItem, newRole: string) => {
-    if (!row?.project_participation_id) {
+  const changeProjectParticipantRole = async (item: IGetProjectParticipantsResponseArrayItem, newRole: string) => {
+    if (!item?.project_participation_id) {
       return;
     }
     try {
       const status = await biohubApi.project.updateProjectParticipantRole(
-        row.project_id,
-        row.project_participation_id,
+        item.project_id,
+        item.project_participation_id,
         newRole
       );
 
@@ -346,7 +346,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         open: true,
         snackbarMessage: (
           <Typography variant="body2" component="div">
-            User <strong>{row.user_identifier}</strong>'s role changed to {newRole}.
+            User <strong>{item.user_identifier}</strong>'s role changed to {newRole}.
           </Typography>
         )
       });
