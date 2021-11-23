@@ -235,6 +235,14 @@ const ProjectParticipantsPage: React.FC = () => {
                               onYes: () => {
                                 handleRemoveProjectParticipant(row.project_participation_id);
                                 dialogContext.setYesNoDialog({ open: false });
+                                dialogContext.setSnackbar({
+                                  open: true,
+                                  snackbarMessage: (
+                                    <Typography variant="body2" component="div">
+                                      User <strong>{row.user_identifier}</strong> removed.
+                                    </Typography>
+                                  )
+                                });
                               }
                             })
                           }>
