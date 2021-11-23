@@ -5,8 +5,7 @@ import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { UserObject } from '../../../../models/user';
 import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
-import { deleteAllSystemRolesSQL } from '../../../../queries/users/user-queries';
-import { getUserByIdSQL } from '../../../../queries/users/user-queries';
+import { deleteAllSystemRolesSQL, getUserByIdSQL } from '../../../../queries/users/user-queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
