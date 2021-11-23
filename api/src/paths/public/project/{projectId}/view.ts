@@ -23,11 +23,10 @@ import { GetPublicProjectData, GetPublicCoordinatorData } from '../../../../mode
 import { GetFundingData } from '../../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../../openapi/schemas/project';
 import { getLogger } from '../../../../utils/logger';
-import { logRequest } from '../../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/public/project/{projectId}/view');
 
-export const GET: Operation = [logRequest('paths/public/project/{projectId}/view', 'GET'), getPublicProjectForView()];
+export const GET: Operation = [getPublicProjectForView()];
 
 GET.apiDoc = {
   description: 'Get a public (published) project, for view-only purposes.',

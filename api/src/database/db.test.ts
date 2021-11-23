@@ -3,6 +3,7 @@ import { describe } from 'mocha';
 import * as pg from 'pg';
 import Sinon from 'sinon';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { CustomError } from '../errors/CustomError';
 import { setSystemUserContextSQL } from '../queries/user-context-queries';
 import * as db from './db';
 import { getAPIUserDBConnection, getDBConnection, getDBPool, IDBConnection, initDBPool } from './db';
@@ -36,7 +37,7 @@ describe('db', () => {
 
         expect.fail();
       } catch (actualError) {
-        expect(actualError.message).to.equal('Keycloak token is undefined');
+        expect((actualError as CustomError).message).to.equal('Keycloak token is undefined');
       }
     });
 

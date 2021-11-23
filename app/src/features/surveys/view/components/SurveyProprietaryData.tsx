@@ -1,5 +1,8 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
+
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
+
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
@@ -149,7 +152,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
             <ProprietaryDataForm
               proprietary_data_category={
                 codes?.proprietor_type?.map((item) => {
-                  return { value: item.id, label: item.name };
+                  return { value: item.id, label: item.name, is_first_nation: item.is_first_nation };
                 }) || []
               }
               first_nations={
@@ -167,19 +170,15 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
       />
       <ErrorDialog {...errorDialogProps} />
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Proprietary Data</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Proprietary Data"
-            aria-label="Edit Proprietary Data"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
+        <H3ButtonToolbar
+          label="Proprietary Data"
+          buttonLabel="Edit"
+          buttonTitle="Edit Survey Proprietor"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
+        />
+        <Divider></Divider>
         <dl>
           {!survey_proprietor && (
             <Grid container spacing={2}>
@@ -192,14 +191,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Proprietary Data Category
-                </Typography>
-                <Typography component="dd" variant="body1">
-                  {survey_proprietor.proprietary_data_category_name}
-                </Typography>
-              </Grid>
-              <Grid item xs={12} sm={6} md={4}>
-                <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Proprietor Name
                 </Typography>
                 <Typography component="dd" variant="body1">
@@ -208,21 +199,25 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Data and Information Sharing Agreement Required
+                  Data Category
+                </Typography>
+                <Typography component="dd" variant="body1">
+                  {survey_proprietor.proprietary_data_category_name}
+                </Typography>
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  DISA Required
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {survey_proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
                 </Typography>
               </Grid>
               <Grid item>
-                <Box mt={1}>
-                  <Box display="flex" alignItems="center" justifyContent="space-between" height="2rem">
-                    <Typography component="dt" variant="subtitle2" color="textSecondary">
-                      Category Rationale
-                    </Typography>
-                  </Box>
-                  <Typography style={{ wordBreak: 'break-all' }}>{survey_proprietor.category_rationale}</Typography>
-                </Box>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  Category Rationale
+                </Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>{survey_proprietor.category_rationale}</Typography>
               </Grid>
             </Grid>
           )}

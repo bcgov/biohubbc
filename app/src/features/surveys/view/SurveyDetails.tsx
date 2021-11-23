@@ -1,15 +1,12 @@
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGeneralInformation';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
-import React from 'react';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import SurveyStudyArea from './components/SurveyStudyArea';
+import React from 'react';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -18,37 +15,19 @@ export interface ISurveyDetailsProps {
   refresh: () => void;
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  surveyDetailsSection: {
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(5),
-    '&:last-child': {
-      marginBottom: 0
-    },
-    '&:first-child': {
-      marginTop: 0
-    }
-  }
-}));
-
 /**
- * Details content for a survey.
+ * Survey details content for a survey.
  *
  * @return {*}
  */
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const { surveyForViewData, codes, refresh, projectForViewData } = props;
 
-  const classes = useStyles();
-
   return (
     <>
-      <Box mb={5}>
+      <Box component={Paper} p={3}>
         <Typography variant="h2">Survey Details</Typography>
-      </Box>
-
-      <Box component={Paper} p={4}>
-        <Box component="section" className={classes.surveyDetailsSection}>
+        <Box component="section" mt={1}>
           <SurveyGeneralInformation
             projectForViewData={projectForViewData}
             surveyForViewData={surveyForViewData}
@@ -56,20 +35,7 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
             refresh={refresh}
           />
         </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.surveyDetailsSection}>
-          <SurveyStudyArea
-            surveyForViewData={surveyForViewData}
-            projectForViewData={projectForViewData}
-            refresh={refresh}
-          />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.surveyDetailsSection}>
+        <Box component="section" mt={1}>
           <SurveyProprietaryData
             projectForViewData={projectForViewData}
             surveyForViewData={surveyForViewData}

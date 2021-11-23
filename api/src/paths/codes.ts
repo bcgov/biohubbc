@@ -4,11 +4,10 @@ import { getAPIUserDBConnection } from '../database/db';
 import { HTTP500 } from '../errors/CustomError';
 import { getAllCodeSets } from '../utils/code-utils';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/code');
 
-export const GET: Operation = [logRequest('paths/code', 'GET'), getAllCodes()];
+export const GET: Operation = [getAllCodes()];
 
 GET.apiDoc = {
   description: 'Get all Codes.',
@@ -113,6 +112,20 @@ GET.apiDoc = {
                   }
                 }
               },
+              coordinator_agency: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
               region: {
                 type: 'array',
                 items: {
@@ -151,6 +164,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    is_first_nation: {
+                      type: 'boolean'
                     }
                   }
                 }
@@ -204,6 +220,62 @@ GET.apiDoc = {
                 }
               },
               system_role: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              project_role: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              regional_offices: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              administrative_activity_status_type: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              common_survey_methodologies: {
                 type: 'array',
                 items: {
                   type: 'object',

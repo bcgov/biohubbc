@@ -7,17 +7,30 @@ import { HTTP400 } from '../../../errors/CustomError';
 import { getLogger } from '../../../utils/logger';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { deleteDraftSQL } from '../../../queries/draft-queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/draft/{draftId}/delete');
 
-export const DELETE: Operation = [deleteDraft()];
+export const DELETE: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  deleteDraft()
+];
 
 DELETE.apiDoc = {
   description: 'Delete a draft record.',
   tags: ['attachment'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

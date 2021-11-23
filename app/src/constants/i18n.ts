@@ -22,12 +22,18 @@ export const CreatePermitsI18N = {
     'An error has occurred while attempting to create your permits, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const UploadProjectAttachmentsI18N = {
+export const AttachmentsI18N = {
   cancelTitle: 'Cancel Upload',
   cancelText: 'Are you sure you want to cancel?',
-  uploadErrorTitle: 'Error Uploading Project Attachments',
+  uploadErrorTitle: 'Error Uploading Attachments',
   uploadErrorText:
-    'An error has occurred while attempting to upload project attachments, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to upload attachments, please try again. If the error persists, please contact your system administrator.',
+  deleteErrorTitle: 'Error Deleting Attachment',
+  deleteErrorText:
+    'An error has occurred while attempting to delete attachments, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Attachment',
+  downloadErrorText:
+    'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const CreateProjectDraftI18N = {
@@ -86,10 +92,10 @@ export const EditSurveyProprietorI18N = {
 };
 
 export const EditLocationBoundaryI18N = {
-  editTitle: 'Edit Location / Project Boundary',
-  editErrorTitle: 'Error Editing Location / Project Boundary',
+  editTitle: 'Edit Project Location',
+  editErrorTitle: 'Error Editing Project Location',
   editErrorText:
-    'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to edit your location, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditIUCNI18N = {
@@ -170,4 +176,46 @@ export const PublishProjectI18N = {
   publishErrorTitle: 'Error Publishing Project',
   publishErrorText:
     'An error has occurred while attempting to publish this project, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const DeleteSurveyI18N = {
+  deleteTitle: 'Delete Survey',
+  deleteText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
+  deleteErrorTitle: 'Error Deleting Project',
+  deleteErrorText:
+    'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const PublishSurveyI18N = {
+  publishTitle: 'Publish Survey',
+  publishText: 'Are you sure you want to publish this survey?',
+  publishErrorTitle: 'Error Publishing Survey',
+  publishErrorText:
+    'An error has occurred while attempting to publish this survey, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditReportMetaDataI18N = {
+  editTitle: 'Edit Report Meta Data',
+  editErrorTitle: 'Error Editing Report Meta Data',
+  editErrorText:
+    'An error has occurred while attempting to edit your report meta data, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const DeleteSystemUserI18N = {
+  deleteErrorTitle: 'Error Deleting System User',
+  deleteErrorText:
+    'An error has occurred while attempting to delete the system user, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const ProjectParticipantsI18N = {
+  getParticipantsErrorTitle: 'Error Fetching Project Participants',
+  getParticipantsErrorText:
+    'An error has occurred while attempting to fetch project participants, please try again. If the error persists, please contact your system administrator.',
+  addParticipantsErrorTitle: 'Error Adding Project Participants',
+  addParticipantsErrorText:
+    'An error has occurred while attempting to add project participants, please try again. If the error persists, please contact your system administrator.',
+  removeParticipantTitle: 'Remove Participant?',
+  removeParticipantErrorTitle: 'Error Removing Project Participant',
+  removeParticipantErrorText:
+    'An error has occurred while attempting to remove the project participant, please try again. If the error persists, please contact your system administrator.'
 };

@@ -1,26 +1,36 @@
-import { COMPLETION_STATUS } from '../constants/status';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import moment from 'moment';
 import { SYSTEM_ROLE } from '../constants/roles';
+import { COMPLETION_STATUS } from '../constants/status';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { projectIdResponseObject } from '../openapi/schemas/project';
 import { getProjectListSQL } from '../queries/project/project-view-queries';
+import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
-import { userHasValidSystemRoles } from '../security/auth-utils';
 
 const defaultLog = getLogger('paths/projects');
 
-export const POST: Operation = [logRequest('paths/projects', 'POST'), getProjectList()];
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser'
+        }
+      ]
+    };
+  }),
+  getProjectList()
+];
 
 POST.apiDoc = {
   description: 'Gets a list of projects based on search parameters if passed in.',
   tags: ['projects'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -131,7 +141,7 @@ function getProjectList(): RequestHandler {
       await connection.open();
 
       const systemUserId = connection.systemUserId();
-      const isUserAdmin = userHasValidSystemRoles([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+      const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
 
       const getProjectListSQLStatement = getProjectListSQL(isUserAdmin, systemUserId, filterFields);
 

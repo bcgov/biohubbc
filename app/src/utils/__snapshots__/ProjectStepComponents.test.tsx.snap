@@ -1330,16 +1330,25 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           Project Boundary
         </p>
         <div
-          class="MuiBox-root MuiBox-root-74"
+          class="MuiBox-root MuiBox-root-75"
         >
           <p
-            class="MuiTypography-root MuiTypography-body2"
+            class="MuiTypography-root MuiTypography-body1"
           >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
+          <div
+            class="MuiBox-root MuiBox-root-76"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body1"
+            >
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
+            </p>
+          </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-75"
+          class="MuiBox-root MuiBox-root-77"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1359,7 +1368,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                   viewBox="0 0 24 24"
                 >
                   <path
-                    d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
+                    d="M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z"
                     style="fill: currentColor;"
                   />
                 </svg>
@@ -1371,7 +1380,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-76"
+            class="MuiBox-root MuiBox-root-78"
           >
             <div
               class="MuiFormControl-root"
@@ -1434,10 +1443,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-77"
+          class="MuiBox-root MuiBox-root-79"
         />
         <div
-          class="MuiBox-root MuiBox-root-78"
+          class="MuiBox-root MuiBox-root-80"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"

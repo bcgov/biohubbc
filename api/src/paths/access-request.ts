@@ -1,28 +1,37 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
+import { PROJECT_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400, HTTP500 } from '../errors/CustomError';
-import { UserObject } from '../models/user';
-import { getUserByUserIdentifierSQL } from '../queries/users/user-queries';
+import { HTTP400 } from '../errors/CustomError';
+import { ensureSystemUser } from '../paths-helpers/system-user';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 import { updateAdministrativeActivity } from './administrative-activity';
-import { addSystemUser } from './user';
 import { addSystemRoles } from './user/{userId}/system-roles';
 
 const defaultLog = getLogger('paths/access-request');
 
-export const PUT: Operation = [logRequest('paths/access-request', 'POST'), updateAccessRequest()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  updateAccessRequest()
+];
 
 PUT.apiDoc = {
   description: "Update a user's system access request and add any specified system roles to the user.",
   tags: ['user'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -120,45 +129,20 @@ export function updateAccessRequest(): RequestHandler {
       throw new HTTP400('Missing required body param: requestStatusTypeId');
     }
 
-    const getUserSQLStatement = getUserByUserIdentifierSQL(userIdentifier);
-
-    if (!getUserSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      // Get the user by their user identifier (user may not exist)
-      const getUserResponse = await connection.query(getUserSQLStatement.text, getUserSQLStatement.values);
-
-      let userData = (getUserResponse && getUserResponse.rowCount && getUserResponse.rows[0]) || null;
-
-      if (!userData) {
-        const systemUserId = connection.systemUserId();
-
-        if (!systemUserId) {
-          throw new HTTP400('Failed to identify system user ID');
-        }
-
-        // Found no existing user, add them
-        userData = await addSystemUser(userIdentifier, identitySource, systemUserId, connection);
-      }
-
-      const userObject = new UserObject(userData);
-
-      if (!userObject.id || !userObject.user_identifier) {
-        throw new HTTP500('Failed to get or add system user');
-      }
+      // Get the system user (adding or activating them if they already existed).
+      const systemUserObject = await ensureSystemUser(userIdentifier, identitySource, connection);
 
       // Filter out any system roles that have already been added to the user
-      const rolesIdsToAdd = roleIds.filter((roleId) => !userObject.role_ids.includes(roleId));
+      const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));
 
       if (rolesIdsToAdd?.length) {
         // Add any missing roles (if any)
-        await addSystemRoles(userObject.id, rolesIdsToAdd, connection);
+        await addSystemRoles(systemUserObject.id, rolesIdsToAdd, connection);
       }
 
       // Update the access request record status

@@ -7,6 +7,7 @@ import * as administrative_queries from '../queries/administrative-activity/admi
 import * as db from '../database/db';
 import { getMockDBConnection } from '../__mocks__/db';
 import SQL from 'sql-template-strings';
+import { CustomError } from '../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -47,8 +48,8 @@ describe('getAdministrativeActivities', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 

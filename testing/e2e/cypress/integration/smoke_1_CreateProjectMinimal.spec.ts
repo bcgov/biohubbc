@@ -18,16 +18,20 @@ import {
   add_classification,
   add_funding,
   add_partnerships,
+  publish_project,
+  attach_file,
+  add_survey,
 } from "../page-functions/project/project-create-page";
 
 beforeEach(() => {
+  cy.logout();
+  cy.login();
   navigate();
-  login("", "");
 });
 
 afterEach(() => {
   navigate();
-  logout();
+  cy.logout();
 });
 
 var n = 0;
@@ -51,7 +55,7 @@ while (n < 1) {
 
     add_locations(null, null); //description, kml_file
     add_gpx(null); // gpx_file
-    add_zip(1);
+    //add_zip(1);
     next_page_project();
 
     add_classification(null, null, null); //classification, sub_classification1, sub_classification2
@@ -62,6 +66,13 @@ while (n < 1) {
 
     add_partnerships();
     submit_project();
+
+    publish_project();
+
+    attach_file();
+
+    //add_survey();
+
   });
   n++;
 }

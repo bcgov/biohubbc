@@ -1,20 +1,21 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
+import { IGetReportMetaData, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
   ICreateSurveyRequest,
   ICreateSurveyResponse,
+  IGetSurveyAttachmentsResponse,
+  IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   IGetSurveysListResponse,
   IUpdateSurveyRequest,
-  IGetSurveyForUpdateResponse,
-  UPDATE_GET_SURVEY_ENTITIES,
-  IGetSurveyAttachmentsResponse,
+  SurveyFundingSources,
   SurveyPermits,
-  SurveyFundingSources
+  UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
-
-import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
-
 import qs from 'qs';
 
 /**
@@ -112,19 +113,67 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     file: File,
-    attachmentType: string,
+    attachmentType?: string,
+    attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
-  ): Promise<string> => {
+  ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
-    req_message.append('attachmentType', attachmentType);
+    attachmentType && req_message.append('attachmentType', attachmentType);
+
+    if (attachmentMeta) {
+      req_message.append('attachmentMeta[title]', attachmentMeta.title);
+      req_message.append('attachmentMeta[year_published]', String(attachmentMeta.year_published));
+      req_message.append('attachmentMeta[description]', attachmentMeta.description);
+      attachmentMeta.authors.forEach((authorObj, index) => {
+        req_message.append(`attachmentMeta[authors][${index}][first_name]`, authorObj.first_name);
+        req_message.append(`attachmentMeta[authors][${index}][last_name]`, authorObj.last_name);
+      });
+    }
 
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
+
+    return data;
+  };
+
+  /**
+   * Update survey attachment metadata.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {string} attachmentType
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+  const updateSurveyAttachmentMetadata = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number,
+    attachmentType: string,
+    attachmentMeta: IEditReportMetaForm,
+    revisionCount: number
+  ): Promise<number> => {
+    const obj = {
+      attachment_type: attachmentType,
+      attachment_meta: {
+        title: attachmentMeta.title,
+        year_published: attachmentMeta.year_published,
+        authors: attachmentMeta.authors,
+        description: attachmentMeta.description
+      },
+      revision_count: revisionCount
+    };
+
+    const { data } = await axios.put(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`,
+      obj
+    );
 
     return data;
   };
@@ -264,16 +313,26 @@ const useSurveyApi = (axios: AxiosInstance) => {
   /**
    * Get survey attachment S3 url based on survey and attachment ID
    *
-   * @param {AxiosInstance} axios
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
    * @returns {*} {Promise<string>}
    */
   const getSurveyAttachmentSignedURL = async (
     projectId: number,
     surveyId: number,
-    attachmentId: number
+    attachmentId: number,
+    attachmentType: string
   ): Promise<string> => {
     const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/getSignedUrl`,
+      {
+        params: { attachmentType: attachmentType },
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      }
     );
 
     return data;
@@ -337,12 +396,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @param {number} surveyId
    * @param {boolean} publish set to `true` to publish the survey, `false` to unpublish the survey.
-   * @return {*}  {Promise<any>}
+   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
    */
-  const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
+  const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<boolean> => {
+    const { status } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
 
-    return data;
+    return status === 200;
   };
 
   /**
@@ -412,6 +471,33 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Get survey report metadata based on project ID, surveyID, attachment ID, and attachmentType
+   *
+   * @param {number} projectId
+   * @params {number} surveyId
+   * @param {number} attachmentId
+   * @param {string} attachmentType
+   * @returns {*} {Promise<string>}
+   */
+  const getSurveyReportMetadata = async (
+    projectId: number,
+    surveyId: number,
+    attachmentId: number
+  ): Promise<IGetReportMetaData> => {
+    const { data } = await axios.get(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/get`,
+      {
+        params: {},
+        paramsSerializer: (params) => {
+          return qs.stringify(params);
+        }
+      }
+    );
+
+    return data;
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -419,6 +505,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
+    updateSurveyAttachmentMetadata,
+    getSurveyReportMetadata,
     uploadSurveySummaryResults,
     getSurveySummarySubmission,
     getSurveyAttachments,

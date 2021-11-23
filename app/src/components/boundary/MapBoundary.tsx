@@ -1,27 +1,29 @@
 import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-import ComponentDialog from 'components/dialog/ComponentDialog';
-import FileUpload from 'components/attachments/FileUpload';
-import { mdiUploadOutline } from '@mdi/js';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
+import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import FileUpload from 'components/attachments/FileUpload';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import MapContainer from 'components/map/MapContainer';
+import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { Feature } from 'geojson';
+import React, { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
   handleGPXUpload,
   handleKMLUpload,
   handleShapefileUpload
 } from 'utils/mapBoundaryUploadHelpers';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 
 const useStyles = makeStyles({
   bold: {
@@ -31,6 +33,11 @@ const useStyles = makeStyles({
     border: '2px solid',
     textTransform: 'capitalize',
     fontWeight: 'bold'
+  },
+  mapLocations: {
+    '& dd': {
+      display: 'inline-block'
+    }
   }
 });
 
@@ -45,25 +52,6 @@ export interface IMapBoundaryProps {
   setFieldValue: (key: string, value: any) => void;
 }
 
-export const displayInferredLayersInfo = (data: any[], type: string) => {
-  if (!data.length) {
-    return;
-  }
-
-  return (
-    <Box>
-      <Typography component="dt" variant="subtitle2" color="textSecondary">
-        {type}
-      </Typography>
-      {data.map((item: string, index: number) => (
-        <Typography key={index} component="dd" variant="body1">
-          {item}
-        </Typography>
-      ))}
-    </Box>
-  );
-};
-
 /**
  * Shared component for map boundary component
  *
@@ -77,7 +65,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
   const [updatedBounds, setUpdatedBounds] = useState<any[][] | undefined>(undefined);
   const [selectedLayer, setSelectedLayer] = useState('');
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -109,7 +97,9 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         dialogTitle="Upload Boundary"
         onClose={() => setOpenUploadBoundary(false)}>
         <Box>
-          <Typography style={{ marginBottom: '1rem' }}>Accepted file types: .gpx, .klm, .zip (shapefiles)</Typography>
+          <Box mb={3}>
+            <Alert severity="info">If uploading a shapefile, it must be configured with a valid projection.</Alert>
+          </Box>
           <FileUpload
             uploadHandler={boundaryUploadHandler()}
             dropZoneProps={{
@@ -121,19 +111,22 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
       <Grid item xs={12}>
         <Typography className={classes.bold}>{title}</Typography>
         <Box mt={2}>
-          <Typography variant="body2">
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be
-            accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from
-            an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary.
-            When done, press the hide layer button.
+          <Typography variant="body1">
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </Typography>
+          <Box mt={2}>
+            <Typography variant="body1">
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map
+              and click 'Add Boundary'.
+            </Typography>
+          </Box>
         </Box>
         <Box display="flex" mt={3}>
           <Button
             color="primary"
             data-testid="boundary_file-upload"
             variant="outlined"
-            startIcon={<Icon path={mdiUploadOutline} size={1} />}
+            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
             onClick={() => setOpenUploadBoundary(true)}>
             Upload Boundary
           </Button>
@@ -214,20 +207,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
               <Typography className={classes.bold}>Boundary Information</Typography>
             </Box>
             <dl>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-                </Grid>
-              </Grid>
+              <InferredLocationDetails layers={inferredLayersInfo} />
             </dl>
           </>
         )}

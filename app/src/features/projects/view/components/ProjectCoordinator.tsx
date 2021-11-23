@@ -1,11 +1,12 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import Divider from '@material-ui/core/Divider';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditCoordinatorI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {
@@ -132,19 +133,15 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-          <Typography variant="h3">Project Coordinator</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Project Coordinator Information"
-            aria-label="Edit Project Coordinator Information"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
+        <H3ButtonToolbar
+          label="Project Coordinator"
+          buttonLabel="Edit"
+          buttonTitle="Edit Project Coordinator Information"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
+        />
+        <Divider></Divider>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>

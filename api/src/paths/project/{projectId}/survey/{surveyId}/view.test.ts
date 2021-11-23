@@ -9,6 +9,7 @@ import * as survey_view_queries from '../../../../../queries/survey/survey-view-
 import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
 import * as view from './view';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
+import { CustomError } from '../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -61,8 +62,8 @@ describe('getSurveyForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 

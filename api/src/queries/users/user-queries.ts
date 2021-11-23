@@ -20,6 +20,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
     SELECT
       su.system_user_id as id,
       su.user_identifier,
+      su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
@@ -36,6 +37,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
       su.user_identifier = ${userIdentifier}
     GROUP BY
       su.system_user_id,
+      su.record_end_date,
       su.user_identifier;
   `;
 
@@ -66,6 +68,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
     SELECT
       su.system_user_id as id,
       su.user_identifier,
+      su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
@@ -80,8 +83,11 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
       sur.system_role_id = sr.system_role_id
     WHERE
       su.system_user_id = ${userId}
+    AND
+      su.record_end_date IS NULL
     GROUP BY
       su.system_user_id,
+      su.record_end_date,
       su.user_identifier;
   `;
 
@@ -107,6 +113,7 @@ export const getUserListSQL = (): SQLStatement | null => {
     SELECT
       su.system_user_id as id,
       su.user_identifier,
+      su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
       array_remove(array_agg(sr.name), NULL) AS role_names
     FROM
@@ -119,8 +126,11 @@ export const getUserListSQL = (): SQLStatement | null => {
       system_role sr
     ON
       sur.system_role_id = sr.system_role_id
+    WHERE
+      su.record_end_date IS NULL
     GROUP BY
       su.system_user_id,
+      su.record_end_date,
       su.user_identifier;
   `;
 
@@ -139,23 +149,17 @@ export const getUserListSQL = (): SQLStatement | null => {
  *
  * @param {string} userIdentifier
  * @param {string} identitySource
- * @param {number} systemUserId
  * @return {*}  {(SQLStatement | null)}
  */
-export const addSystemUserSQL = (
-  userIdentifier: string,
-  identitySource: string,
-  systemUserId: number
-): SQLStatement | null => {
+export const addSystemUserSQL = (userIdentifier: string, identitySource: string): SQLStatement | null => {
   defaultLog.debug({
     label: 'addSystemUserSQL',
     message: 'addSystemUserSQL',
     userIdentifier,
-    identitySource,
-    systemUserId
+    identitySource
   });
 
-  if (!userIdentifier || !identitySource || !systemUserId) {
+  if (!userIdentifier || !identitySource) {
     return null;
   }
 
@@ -163,13 +167,11 @@ export const addSystemUserSQL = (
     INSERT INTO system_user (
       user_identity_source_id,
       user_identifier,
-      record_effective_date,
-      create_user
+      record_effective_date
     ) VALUES (
       (Select user_identity_source_id FROM user_identity_source WHERE name = ${identitySource.toUpperCase()}),
       ${userIdentifier},
-      now(),
-      ${systemUserId}
+      now()
     )
     RETURNING
       system_user_id as id,
@@ -180,6 +182,141 @@ export const addSystemUserSQL = (
 
   defaultLog.debug({
     label: 'addSystemUserSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to remove one or more system roles from a user.
+ *
+ * @param {number} userId
+ * @param {number[]} roleIds
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const deActivateSystemUserSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deActivateSystemUserSQL', message: 'params' });
+
+  if (!userId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE
+      system_user
+    SET
+      record_end_date = now()
+    WHERE
+      system_user_id = ${userId};
+    `;
+
+  defaultLog.debug({
+    label: 'deleteSystemUserSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to activate a system user. Does nothing is the system user is already active.
+ *
+ * @param {number} systemUserId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'activateSystemUserSQL',
+    message: 'activateSystemUserSQL',
+    systemUserId
+  });
+
+  if (!systemUserId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE
+      system_user
+    SET
+      record_end_date = NULL
+    WHERE
+      system_user_id = ${systemUserId}
+    AND
+      record_end_date IS NOT NULL
+    RETURNING
+      *;
+  `;
+
+  defaultLog.debug({
+    label: 'activateSystemUserSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to remove all system roles from a user.
+ *
+ * @param {number} userId
+ * @param {number[]} roleIds
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteSystemRolesSQL', message: 'params' });
+
+  if (!userId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    DELETE FROM
+      system_user_role
+    WHERE
+      system_user_id = ${userId};
+    `;
+
+  defaultLog.debug({
+    label: 'deleteSystemRolesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to remove all system roles from a user.
+ *
+ * @param {number} userId
+ * @param {number[]} roleIds
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const deleteAllProjectRolesSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deleteAllProjectRolesSQL', message: 'params' });
+
+  if (!userId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    DELETE FROM
+      project_participation
+    WHERE
+      system_user_id = ${userId};
+    `;
+
+  defaultLog.debug({
+    label: 'deleteAllProjectRolesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

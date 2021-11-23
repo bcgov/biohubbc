@@ -107,7 +107,7 @@ export const getPrintfFunction = (logLabel: string): ((args: ILoggerMessage) => 
  * ...etc
  *
  * Valid `LOG_LEVEL` values (from least logging to most logging) (default: info):
- * error, warn, info, debug
+ * silent, error, warn, info, debug, silly
  *
  * @param {string} logLabel common label for the instance of the logger.
  * @returns

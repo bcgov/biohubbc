@@ -2,10 +2,11 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
 import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-summary-queries';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { DWCArchive } from '../../../../../../../../utils/media/dwc/dwc-archive-file';
@@ -15,14 +16,31 @@ import { XLSXCSV } from '../../../../../../../../utils/media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/{summaryId}/view');
 
-export const GET: Operation = [getSummarySubmissionCSVForView()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [
+            PROJECT_ROLE.PROJECT_LEAD,
+            PROJECT_ROLE.PROJECT_REVIEWER,
+            PROJECT_ROLE.PROJECT_TEAM_MEMBER
+          ],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSummarySubmissionCSVForView()
+];
 
 GET.apiDoc = {
   description: 'Fetches a summary submission csv details for a survey.',
   tags: ['summary_submission_csv'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -69,10 +87,16 @@ GET.apiDoc = {
                       type: 'string'
                     },
                     headers: {
-                      type: 'array'
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     },
                     rows: {
-                      type: 'array'
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      }
                     }
                   }
                 }

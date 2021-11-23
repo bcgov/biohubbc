@@ -2,22 +2,40 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
 import { getAllPermitsSQL } from '../../queries/permit/permit-view-queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('/api/permits/list');
 
-export const GET: Operation = [getAllPermits()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        },
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getAllPermits()
+];
 
 GET.apiDoc = {
   description: 'Fetches a list of all permits by system user id.',
   tags: ['permits'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   responses: {

@@ -59,9 +59,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -107,9 +107,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -155,9 +155,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -203,9 +203,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -252,9 +252,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -301,9 +301,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -351,9 +351,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -400,9 +400,9 @@ jobs:
 
       # Install Node - for `node` and `npm` commands
       - name: Setup Node.js
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: 10.16
+          node-version: 14
 
       # Cache Node modules
       - name: Cache node modules
@@ -440,7 +440,11 @@ jobs:
       CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
       CYPRESS_BASE_URL: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
+      CYPRESS_host: 'https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca'
       CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
+      CYPRESS_authRealm: '35r1iman'
+      CYPRESS_authClientId: 'biohubbc'
+      CYPRESS_authUrl: 'https://${{ github.base_ref }}.oidc.gov.bc.ca'
     needs:
       - deployDatabase
       - deployDatabaseSetup
@@ -488,4 +492,7 @@ jobs:
           echo Git Change ID: ${{ github.event.number }}
           echo Cypress BaseUrl: $CYPRESS_BASE_URL
           echo Cypress Host: $CYPRESS_ENVIRONMENT
+          echo $CYPRESS_authRealm
+          echo $CYPRESS_authClientId
+          echo $CYPRESS_authUrl
 

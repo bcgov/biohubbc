@@ -105,12 +105,20 @@ export const getProjectListSQL = (
       on sp.survey_id = s.survey_id
     left outer join wldtaxonomic_units as wu
       on wu.wldtaxonomic_units_id = sp.wldtaxonomic_units_id
+    where 1 = 1
   `;
 
   if (!isUserAdmin) {
-    sqlStatement.append(SQL` where p.create_user = ${systemUserId}`);
-  } else {
-    sqlStatement.append(SQL` where 1 = 1`);
+    sqlStatement.append(SQL`
+      AND p.project_id IN (
+        SELECT
+          project_id
+        FROM
+          project_participation
+        where
+          system_user_id = ${systemUserId}
+      )
+    `);
   }
 
   if (filterFields && Object.keys(filterFields).length !== 0 && filterFields.constructor === Object) {

@@ -1,23 +1,18 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import Typography from '@material-ui/core/Typography';
-import { mdiUploadOutline } from '@mdi/js';
+import Paper from '@material-ui/core/Paper';
+import { mdiMenuDown, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import AttachmentsList from 'components/attachments/AttachmentsList';
-import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
-import ComponentDialog from 'components/dialog/ComponentDialog';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
+import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ProjectSurveyAttachmentType, ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+import { IGetProjectForViewResponse, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyAttachment, IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { getKeyByValue } from 'utils/Utils';
+import { AttachmentType } from '../../../constants/attachments';
 
 export interface ISurveyAttachmentsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -36,8 +31,19 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   const biohubApi = useBiohubApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
+  const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(
+    AttachmentType.OTHER
+  );
   const [attachmentsList, setAttachmentsList] = useState<IGetSurveyAttachment[]>([]);
-  const [attachmentType, setAttachmentType] = useState<string>('');
+
+  const handleUploadReportClick = () => {
+    setAttachmentType(AttachmentType.REPORT);
+    setOpenUploadAttachments(true);
+  };
+  const handleUploadAttachmentClick = () => {
+    setAttachmentType(AttachmentType.OTHER);
+    setOpenUploadAttachments(true);
+  };
 
   const getAttachments = useCallback(
     async (forceFetch: boolean) => {
@@ -60,16 +66,27 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
     [biohubApi.survey, projectId, surveyId, attachmentsList.length]
   );
 
-  const uploadAttachments = (): IUploadHandler => {
+  const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
     return (file, cancelToken, handleFileUploadProgress) => {
       return biohubApi.survey.uploadSurveyAttachments(
         projectId,
         surveyId,
         file,
         attachmentType,
+        undefined,
         cancelToken,
         handleFileUploadProgress
       );
+    };
+  };
+
+  const getFinishHandler = () => {
+    return (fileMeta: IReportMetaForm) => {
+      return biohubApi.survey
+        .uploadSurveyAttachments(projectId, surveyId, fileMeta.attachmentFile, attachmentType, fileMeta)
+        .finally(() => {
+          setOpenUploadAttachments(false);
+        });
     };
   };
 
@@ -80,67 +97,38 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   return (
     <>
-      <ComponentDialog
+      <FileUploadWithMetaDialog
         open={openUploadAttachments}
-        dialogTitle="Upload Attachments"
+        dialogTitle={attachmentType === 'Report' ? 'Upload Report' : 'Upload Attachment'}
+        attachmentType={attachmentType}
+        onFinish={getFinishHandler()}
         onClose={() => {
-          getAttachments(true);
           setOpenUploadAttachments(false);
-          setAttachmentType('');
-        }}>
-        <Box>
-          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%', marginBottom: '1rem' }}>
-            <InputLabel id="attachment_type-label">Attachment Type</InputLabel>
-            <Select
-              id="attachment_type"
-              name="attachment_type"
-              labelId="attachment_type-label"
-              label="Attachment Type"
-              value={attachmentType}
-              onChange={(e) => setAttachmentType(e.target.value as string)}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Attachment Type' }}>
-              {Object.keys(ProjectSurveyAttachmentType).map((key) => (
-                <MenuItem key={key} value={ProjectSurveyAttachmentType[key]}>
-                  {ProjectSurveyAttachmentType[key]}
-                </MenuItem>
-              ))}
-            </Select>
-          </FormControl>
-          {attachmentType && (
-            <FileUpload
-              uploadHandler={uploadAttachments()}
-              dropZoneProps={{
-                acceptedFileExtensions:
-                  ProjectSurveyAttachmentValidExtensions[
-                    getKeyByValue(ProjectSurveyAttachmentType, attachmentType) || 'OTHER'
-                  ]
-              }}
-            />
-          )}
-        </Box>
-      </ComponentDialog>
-      <Box mb={5}>
-        <Box display="flex" justifyContent="space-between">
-          <Box>
-            <Typography variant="h2">Survey Attachments</Typography>
-          </Box>
-          <Box>
-            <Button variant="outlined" onClick={() => setOpenUploadAttachments(true)}>
-              <Icon path={mdiUploadOutline} size={1} />
-              <Typography>Upload</Typography>
-            </Button>
-          </Box>
-        </Box>
-      </Box>
-      <Box mb={3}>
-        <AttachmentsList
-          projectId={projectId}
-          surveyId={surveyId}
-          attachmentsList={attachmentsList}
-          getAttachments={getAttachments}
+          getAttachments(true);
+        }}
+        uploadHandler={getUploadHandler()}
+      />
+      <Paper>
+        <H2MenuToolbar
+          label="Documents"
+          buttonLabel="Upload"
+          buttonTitle="Upload Document"
+          buttonStartIcon={<Icon path={mdiTrayArrowUp} size={1} />}
+          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
+          menuItems={[
+            { menuLabel: 'Upload Report', menuOnClick: handleUploadReportClick },
+            { menuLabel: 'Upload Attachments', menuOnClick: handleUploadAttachmentClick }
+          ]}
         />
-      </Box>
+        <Box px={3} pb={2}>
+          <AttachmentsList
+            projectId={projectId}
+            surveyId={surveyId}
+            attachmentsList={attachmentsList}
+            getAttachments={getAttachments}
+          />
+        </Box>
+      </Paper>
     </>
   );
 };

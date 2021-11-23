@@ -4,12 +4,24 @@ import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { getAdministrativeActivitiesSQL } from '../queries/administrative-activity/administrative-activity-queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
-const defaultLog = getLogger('paths/administrative-activity');
+const defaultLog = getLogger('paths/administrative-activities');
 
-export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getAdministrativeActivities()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  getAdministrativeActivities()
+];
 
 export enum ADMINISTRATIVE_ACTIVITY_STATUS_TYPE {
   PENDING = 'Pending',
@@ -25,7 +37,7 @@ GET.apiDoc = {
   tags: ['admin'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [

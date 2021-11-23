@@ -10,6 +10,7 @@ import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import { CustomError } from '../../../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -40,6 +41,9 @@ describe('deleteAttachment', () => {
       return {
         json: (result: any) => {
           actualResult = result;
+        },
+        send: () => {
+          //do nothing
         }
       };
     }
@@ -58,8 +62,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -76,8 +80,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -94,8 +98,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `attachmentType`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required body param `attachmentType`');
     }
   });
 
@@ -115,8 +119,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL unsecure record statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL unsecure record statement');
     }
   });
 
@@ -141,8 +145,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to unsecure record');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to unsecure record');
     }
   });
 
@@ -168,8 +172,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete project attachment statement');
     }
   });
 
@@ -180,7 +184,7 @@ describe('deleteAttachment', () => {
       .onFirstCall()
       .resolves({ rowCount: 1 })
       .onSecondCall()
-      .resolves({ rows: [{ key: 's3Key' }] });
+      .resolves({ rowCount: 1, rows: [{ key: 's3Key' }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -201,7 +205,7 @@ describe('deleteAttachment', () => {
     expect(actualResult).to.equal(null);
   });
 
-  it('should return the rowCount response on success when type is not Report', async () => {
+  it('should return null response on success when type is not Report', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -226,16 +230,18 @@ describe('deleteAttachment', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.equal(1);
+    expect(actualResult).to.equal(null);
   });
 
-  it('should return the rowCount response on success when type is Report', async () => {
+  it('should return null response on success when type is Report', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
       .onFirstCall()
       .resolves({ rowCount: 1 })
       .onSecondCall()
+      .resolves({ rowCount: 1 })
+      .onThirdCall()
       .resolves({ rows: [{ key: 's3Key' }], rowCount: 1 });
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -258,6 +264,6 @@ describe('deleteAttachment', () => {
       (null as unknown) as any
     );
 
-    expect(actualResult).to.equal(1);
+    expect(actualResult).to.equal(null);
   });
 });

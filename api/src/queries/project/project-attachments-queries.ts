@@ -1,4 +1,9 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import {
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata,
+  IReportAttachmentAuthor
+} from '../../models/project-survey-attachments';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('queries/project/project-attachments-queries');
@@ -180,6 +185,41 @@ export const getProjectAttachmentS3KeySQL = (projectId: number, attachmentId: nu
 };
 
 /**
+ * SQL query to get S3 key of a report attachment for a single project.
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectReportAttachmentS3KeySQL = (projectId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectReportAttachmentS3KeySQL', message: 'params', projectId });
+
+  if (!projectId || !attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      key
+    FROM
+      project_report_attachment
+    WHERE
+      project_id = ${projectId}
+    AND
+      project_report_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectReportAttachmentS3KeySQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to insert a project attachment row.
  *
  * @param fileName
@@ -225,7 +265,8 @@ export const postProjectAttachmentSQL = (
       ${key}
     )
     RETURNING
-      project_attachment_id as id;
+      project_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -251,7 +292,8 @@ export const postProjectReportAttachmentSQL = (
   fileName: string,
   fileSize: number,
   projectId: number,
-  key: string
+  key: string,
+  attachmentMeta: PostReportAttachmentMetadata
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'postProjectReportAttachmentSQL',
@@ -262,35 +304,39 @@ export const postProjectReportAttachmentSQL = (
     key
   });
 
-  if (!fileName || !fileSize || !projectId || !key) {
+  if (
+    !fileName ||
+    !fileSize ||
+    !projectId ||
+    !key ||
+    !attachmentMeta?.title ||
+    !attachmentMeta?.year_published ||
+    !attachmentMeta?.description
+  ) {
     return null;
   }
-
-  // TODO: Replace hard-coded title, year and description
-  const title = 'Test Report';
-  const year = '2021';
-  const description = 'Test description';
 
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO project_report_attachment (
       project_id,
+      file_name,
       title,
       year,
       description,
-      file_name,
       file_size,
       key
     ) VALUES (
       ${projectId},
-      ${title},
-      ${year},
-      ${description},
       ${fileName},
+      ${attachmentMeta.title},
+      ${attachmentMeta.year_published},
+      ${attachmentMeta.description},
       ${fileSize},
       ${key}
     )
     RETURNING
-      project_report_attachment_id as id;
+      project_report_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -343,6 +389,45 @@ export const getProjectAttachmentByFileNameSQL = (projectId: number, fileName: s
 };
 
 /**
+ * SQL query to get an attachment for a single project by project id and filename.
+ *
+ * @param {number} projectId
+ * @param {string} fileName
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectReportAttachmentByFileNameSQL = (projectId: number, fileName: string): SQLStatement | null => {
+  defaultLog.debug({ label: 'getProjectReportAttachmentByFileNameSQL', message: 'params', projectId });
+
+  if (!projectId || !fileName) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      project_report_attachment_id as id,
+      file_name,
+      update_date,
+      create_date,
+      file_size
+    from
+      project_report_attachment
+    where
+      project_id = ${projectId}
+    and
+      file_name = ${fileName};
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectReportAttachmentByFileNameSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to update an attachment for a single project by project id and filename and filetype.
  *
  * @param {number} projectId
@@ -366,7 +451,10 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string, fil
     WHERE
       file_name = ${fileName}
     AND
-      project_id = ${projectId};
+      project_id = ${projectId}
+    RETURNING
+      project_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
@@ -386,10 +474,20 @@ export const putProjectAttachmentSQL = (projectId: number, fileName: string, fil
  * @param {string} fileName
  * @returns {SQLStatement} sql query object
  */
-export const putProjectReportAttachmentSQL = (projectId: number, fileName: string): SQLStatement | null => {
+export const putProjectReportAttachmentSQL = (
+  projectId: number,
+  fileName: string,
+  attachmentMeta: PutReportAttachmentMetadata
+): SQLStatement | null => {
   defaultLog.debug({ label: 'putProjectReportAttachmentSQL', message: 'params', projectId, fileName });
 
-  if (!projectId || !fileName) {
+  if (
+    !projectId ||
+    !fileName ||
+    !attachmentMeta?.title ||
+    !attachmentMeta?.year_published ||
+    !attachmentMeta?.description
+  ) {
     return null;
   }
 
@@ -397,15 +495,244 @@ export const putProjectReportAttachmentSQL = (projectId: number, fileName: strin
     UPDATE
       project_report_attachment
     SET
-      file_name = ${fileName}
+      file_name = ${fileName},
+      title = ${attachmentMeta.title},
+      year = ${attachmentMeta.year_published},
+      description = ${attachmentMeta.description}
     WHERE
       file_name = ${fileName}
     AND
-      project_id = ${projectId};
+      project_id = ${projectId}
+    RETURNING
+      project_report_attachment_id as id,
+      revision_count;
   `;
 
   defaultLog.debug({
     label: 'putProjectReportAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+export interface ReportAttachmentMeta {
+  title: string;
+  description: string;
+  yearPublished: string;
+}
+
+/**
+ * Update the metadata fields of  project report attachment, for tjhe specified `projectId` and `attachmentId`.
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @param {PutReportAttachmentMetadata} metadata
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const updateProjectReportAttachmentMetadataSQL = (
+  projectId: number,
+  attachmentId: number,
+  metadata: PutReportAttachmentMetadata
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'updateProjectReportAttachmentMetadataSQL',
+    message: 'params',
+    projectId,
+    attachmentId,
+    metadata
+  });
+
+  if (!projectId || !attachmentId || !metadata) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    UPDATE
+      project_report_attachment
+    SET
+      title = ${metadata.title},
+      year = ${metadata.year_published},
+      description = ${metadata.description}
+    WHERE
+      project_id = ${projectId}
+    AND
+      project_report_attachment_id = ${attachmentId}
+    AND
+      revision_count = ${metadata.revision_count};
+  `;
+
+  defaultLog.debug({
+    label: 'updateProjectReportAttachmentMetadataSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * Insert a new project report attachment author record, for the specified `attachmentId`
+ *
+ * @param {number} attachmentId
+ * @param {IReportAttachmentAuthor} author
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const insertProjectReportAttachmentAuthorSQL = (
+  attachmentId: number,
+  author: IReportAttachmentAuthor
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'createProjectReportAttachmentAuthorSQL',
+    message: 'params',
+    attachmentId,
+    author
+  });
+
+  if (!attachmentId || !author) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO project_report_author (
+      project_report_attachment_id,
+      first_name,
+      last_name
+    ) VALUES (
+      ${attachmentId},
+      ${author.first_name},
+      ${author.last_name}
+    );
+  `;
+
+  defaultLog.debug({
+    label: 'createProjectReportAttachmentAuthorSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * Delete all project report attachment author records, for the specified `attachmentId`.
+ *
+ * @param {number} attachmentId
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const deleteProjectReportAttachmentAuthorsSQL = (attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteProjectReportAttachmentAuthorsSQL',
+    message: 'params',
+    attachmentId
+  });
+
+  if (!attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      FROM project_report_author
+    WHERE
+      project_report_attachment_id = ${attachmentId};
+  `;
+
+  defaultLog.debug({
+    label: 'deleteProjectReportAttachmentAuthorsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * Get the metadata fields of  project report attachment, for the specified `projectId` and `attachmentId`.
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @param {PutReportAttachmentMetadata} metadata
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getProjectReportAttachmentSQL',
+    message: 'params',
+    projectId,
+    attachmentId
+  });
+
+  if (!projectId || !attachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      project_report_attachment_id as attachment_id,
+      file_name,
+      title,
+      description,
+      year,
+      update_date,
+      create_date,
+      file_size,
+      key,
+      security_token,
+      revision_count
+    FROM
+      project_report_attachment
+    where
+      project_report_attachment_id = ${attachmentId}
+    and
+      project_id = ${projectId}
+  `;
+
+  defaultLog.debug({
+    label: 'updateProjectReportAttachmentSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * Get the metadata fields of  project report attachment, for the specified `projectId` and `attachmentId`.
+ *
+ * @param {number} projectId
+ * @param {number} attachmentId
+ * @param {PutReportAttachmentMetadata} metadata
+ * @return {*}  {(SQLStatement | null)}
+ */
+export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getProjectReportAuthorsSQL',
+    message: 'params',
+    projectReportAttachmentId
+  });
+
+  if (!projectReportAttachmentId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      project_report_author.*
+    FROM
+      project_report_author
+    where
+      project_report_attachment_id = ${projectReportAttachmentId}
+  `;
+
+  defaultLog.debug({
+    label: 'getProjectReportAuthorsSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

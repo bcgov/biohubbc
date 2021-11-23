@@ -30,11 +30,12 @@ export interface IGetAllCodeSetsResponse {
   project_type: CodeSet;
   region: CodeSet;
   species: CodeSet;
-  proprietor_type: CodeSet;
+  proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
   iucn_conservation_action_level_1_classification: CodeSet;
   iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
   iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn2_id: number; name: string }>;
   system_roles: CodeSet;
+  project_roles: CodeSet;
   regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
   common_survey_methodologies: CodeSet;

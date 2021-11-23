@@ -30,13 +30,13 @@ parameters:
     value: dev
   - name: BASE_IMAGE_URL
     required: true
-    value: registry.access.redhat.com/ubi8/nodejs-10:1-41
+    value: image-registry.openshift-image-registry.svc:5000/openshift/nodejs:14-ubi8
   - name: SOURCE_IMAGE_NAME
     required: true
-    value: redhat-ubi-node-10
+    value: nodejs
   - name: SOURCE_IMAGE_TAG
     required: true
-    value: 1-41
+    value: 14-ubi8
 objects:
   - kind: ImageStream
     apiVersion: v1

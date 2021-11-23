@@ -1,23 +1,33 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { draftResponseObject } from '../openapi/schemas/draft';
 import { getDraftsSQL } from '../queries/draft-queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/drafts');
 
-export const GET: Operation = [logRequest('paths/drafts', 'GET'), getDraftList()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser'
+        }
+      ]
+    };
+  }),
+  getDraftList()
+];
 
 GET.apiDoc = {
   description: 'Get all Drafts.',
   tags: ['draft'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   responses: {

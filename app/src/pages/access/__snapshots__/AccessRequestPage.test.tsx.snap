@@ -3,44 +3,49 @@
 exports[`AccessRequestPage renders correctly 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-9"
+    class="MuiBox-root MuiBox-root-2"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthMd"
     >
       <div
-        class="MuiBox-root MuiBox-root-10"
+        class="MuiPaper-root MuiBox-root MuiBox-root-3 MuiPaper-elevation1 MuiPaper-rounded"
       >
-        <h1>
-          Request Access to SIMS
+        <h1
+          class="MuiTypography-root MuiTypography-h1"
+        >
+          Request Access
         </h1>
-        <h6
-          class="MuiTypography-root makeStyles-spacingBottom-7 MuiTypography-subtitle1"
-        >
-          You will need to provide some additional details before accessing this application. Complete the form below to request access.
-        </h6>
         <div
-          class="MuiPaper-root makeStyles-finishContainer-4 MuiPaper-elevation2"
+          class="MuiBox-root MuiBox-root-4"
         >
-          <h2>
-            Request Details
-          </h2>
-          <div
-            class="MuiBox-root MuiBox-root-11"
+          <p
+            class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
           >
-            <form>
+            You will need to provide some additional details before accessing this application.
+          </p>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-5"
+        >
+          <form>
+            <div
+              class="MuiBox-root MuiBox-root-7"
+            >
               <div
-                class="MuiBox-root MuiBox-root-13"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
               >
                 <div
-                  class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
-                  <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3"
                   >
-                    <h3>
-                       Select which role you want to be assigned to
-                    </h3>
+                    What role do you want to be assigned?
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-8"
+                  >
                     <div
                       class="MuiFormControl-root MuiFormControl-fullWidth"
                       style="width: 100%;"
@@ -94,10 +99,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-16"
+                            class="PrivateNotchedOutline-legendLabelled-11"
                           >
                             <span>
                               Role
@@ -110,96 +115,97 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       />
                     </div>
                   </div>
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-13"
+              >
+                <h3
+                  class="MuiTypography-root MuiTypography-h3"
+                >
+                  Reason for your request
+                </h3>
+                <div
+                  class="MuiBox-root MuiBox-root-14"
+                >
                   <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                   >
-                    <h3>
-                      Additional comments
-                    </h3>
-                    <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                      data-shrink="false"
+                      for="Reason"
+                      id="Reason-label"
                     >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                        data-shrink="false"
-                        for="comments"
-                        id="comments-label"
+                      Reason
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
+                    >
+                      <textarea
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
+                        id="Reason"
+                        name="Reason"
+                        rows="4"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
                       >
-                        Comments 
-                      </label>
-                      <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-                      >
-                        <textarea
-                          aria-invalid="false"
-                          class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                          id="comments"
-                          name="comments"
-                          rows="4"
-                        />
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-11"
                         >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-16"
-                          >
-                            <span>
-                              Comments 
-                            </span>
-                          </legend>
-                        </fieldset>
-                      </div>
+                          <span>
+                            Reason
+                          </span>
+                        </legend>
+                      </fieldset>
                     </div>
                   </div>
                 </div>
               </div>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-15"
+            >
               <div
-                class="MuiBox-root MuiBox-root-18"
+                class="MuiBox-root MuiBox-root-16 buttonWrapper"
               >
-                <hr
-                  class="MuiDivider-root"
-                />
-              </div>
-              <div
-                class="MuiBox-root MuiBox-root-19"
-              >
-                <div
-                  class="MuiBox-root MuiBox-root-20 buttonWrapper"
-                >
-                  <button
-                    class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
-                    tabindex="0"
-                    type="submit"
-                  >
-                    <span
-                      class="MuiButton-label"
-                    >
-                      Submit Request
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                </div>
                 <button
-                  class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
-                  data-testid="logout-button"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
                   tabindex="0"
-                  type="button"
+                  type="submit"
                 >
                   <span
                     class="MuiButton-label"
                   >
-                    Log out
+                    <strong>
+                      Submit Request
+                    </strong>
                   </span>
                   <span
                     class="MuiTouchRipple-root"
                   />
                 </button>
               </div>
-            </form>
-          </div>
+              <button
+                class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-1 MuiButton-outlinedPrimary"
+                data-testid="logout-button"
+                tabindex="0"
+                type="button"
+              >
+                <span
+                  class="MuiButton-label"
+                >
+                  Log out
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </form>
         </div>
       </div>
     </div>

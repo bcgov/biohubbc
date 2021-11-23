@@ -8,6 +8,7 @@ import * as survey_view_queries from '../../../queries/survey/survey-view-querie
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../../constants/status';
 import { getMockDBConnection } from '../../../__mocks__/db';
+import { CustomError } from '../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -55,8 +56,8 @@ describe('getSurveyList', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -76,8 +77,8 @@ describe('getSurveyList', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
     }
   });
 

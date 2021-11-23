@@ -4,431 +4,436 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiBox-root MuiBox-root-1"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
       >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+          data-shrink="false"
+          for="survey_area_name"
+          id="survey_area_name-label"
         >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="false"
-            for="survey_area_name"
-            id="survey_area_name-label"
+          Survey Area Name
+          <span
+            aria-hidden="true"
+            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
           >
-            Survey Area Name
+             *
+          </span>
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+        >
+          <input
+            aria-invalid="false"
+            class="MuiInputBase-input MuiOutlinedInput-input"
+            id="survey_area_name"
+            name="survey_area_name"
+            required=""
+            type="text"
+            value=""
+          />
+          <fieldset
+            aria-hidden="true"
+            class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="PrivateNotchedOutline-legendLabelled-4"
+            >
+              <span>
+                Survey Area Name *
+              </span>
+            </legend>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+    >
+      <p
+        class="MuiTypography-root makeStyles-bold-6 MuiTypography-body1"
+      >
+        Study Area Boundary
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-9"
+      >
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-10"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-11"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="boundary_file-upload"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
             <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-               *
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
             </span>
-          </label>
+            Upload Boundary
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <div
+          class="MuiBox-root MuiBox-root-12"
+        >
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiFormControl-root"
+            style="width: 100%;"
           >
-            <input
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
-              id="survey_area_name"
-              name="survey_area_name"
-              required=""
-              type="text"
-              value=""
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
+              id="layer"
             >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
+              Select Layer
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+            >
+              <div
+                aria-haspopup="listbox"
+                aria-label="Layer"
+                aria-labelledby="layer layer"
+                class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                id="layer"
+                role="button"
+                tabindex="0"
               >
                 <span>
-                  Survey Area Name *
+                  ​
                 </span>
-              </legend>
-            </fieldset>
+              </div>
+              <input
+                aria-hidden="true"
+                class="MuiSelect-nativeInput"
+                name="layer"
+                tabindex="-1"
+                value=""
+              />
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-2 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-4"
+                >
+                  <span>
+                    Select Layer
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
           </div>
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiBox-root MuiBox-root-13"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-14"
       >
-        <p
-          class="MuiTypography-root makeStyles-bold-5 MuiTypography-body1"
-        >
-          Study Area Boundary
-        </p>
         <div
-          class="MuiBox-root MuiBox-root-7"
+          class="leaflet-container leaflet-grab leaflet-touch-drag"
+          id="study_area_form_map"
+          style="height: 100%; position: relative;"
+          tabindex="0"
         >
-          <p
-            class="MuiTypography-root MuiTypography-body2"
+          <div
+            class="leaflet-pane leaflet-map-pane"
+            style="left: 0px; top: 0px;"
           >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
-          </p>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-8"
-        >
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-            data-testid="boundary_file-upload"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
+            <div
+              class="leaflet-pane leaflet-tile-pane"
             >
-              <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              <div
+                class="leaflet-layer "
+                style="z-index: 1;"
               >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
+                <div
+                  class="leaflet-tile-container leaflet-zoom-animated"
+                  style="z-index: 18; left: 0px; top: 0px;"
                 >
-                  <path
-                    d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
-                    style="fill: currentColor;"
+                  <img
+                    alt=""
+                    class="leaflet-tile"
+                    role="presentation"
+                    src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                    style="width: 256px; height: 256px; left: -159px; top: -31px;"
                   />
-                </svg>
-              </span>
-              Upload Boundary
-            </span>
-            <span
-              class="MuiTouchRipple-root"
+                </div>
+              </div>
+            </div>
+            <div
+              class="leaflet-pane leaflet-shadow-pane"
             />
-          </button>
-          <div
-            class="MuiBox-root MuiBox-root-9"
-          >
             <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                data-shrink="false"
-                id="layer"
-              >
-                Select Layer
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-              >
-                <div
-                  aria-haspopup="listbox"
-                  aria-label="Layer"
-                  aria-labelledby="layer layer"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="layer"
-                  role="button"
-                  tabindex="0"
-                >
-                  <span>
-                    ​
-                  </span>
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="layer"
-                  tabindex="-1"
-                  value=""
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-3"
-                  >
-                    <span>
-                      Select Layer
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
+              class="leaflet-pane leaflet-overlay-pane"
+            />
+            <div
+              class="leaflet-pane leaflet-marker-pane"
+            />
+            <div
+              class="leaflet-pane leaflet-tooltip-pane"
+            />
+            <div
+              class="leaflet-pane leaflet-popup-pane"
+            />
           </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-10"
-        />
-        <div
-          class="MuiBox-root MuiBox-root-11"
-        >
           <div
-            class="leaflet-container leaflet-grab leaflet-touch-drag"
-            id="study_area_form_map"
-            style="height: 100%; position: relative;"
-            tabindex="0"
+            class="leaflet-control-container"
           >
             <div
-              class="leaflet-pane leaflet-map-pane"
-              style="left: 0px; top: 0px;"
+              class="leaflet-top leaflet-left"
             >
               <div
-                class="leaflet-pane leaflet-tile-pane"
+                class="leaflet-control-zoom leaflet-bar leaflet-control"
               >
-                <div
-                  class="leaflet-layer "
-                  style="z-index: 1;"
+                <a
+                  aria-label="Zoom in"
+                  class="leaflet-control-zoom-in"
+                  href="#"
+                  role="button"
+                  title="Zoom in"
                 >
-                  <div
-                    class="leaflet-tile-container leaflet-zoom-animated"
-                    style="z-index: 18; left: 0px; top: 0px;"
-                  >
-                    <img
-                      alt=""
-                      class="leaflet-tile"
-                      role="presentation"
-                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
-                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
-                    />
-                  </div>
-                </div>
+                  +
+                </a>
+                <a
+                  aria-label="Zoom out"
+                  class="leaflet-control-zoom-out"
+                  href="#"
+                  role="button"
+                  title="Zoom out"
+                >
+                  −
+                </a>
               </div>
               <div
-                class="leaflet-pane leaflet-shadow-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-overlay-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-marker-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-tooltip-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-popup-pane"
-              />
+                class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+              >
+                <a
+                  class="leaflet-control-fullscreen-button leaflet-bar-part"
+                  href="#"
+                  title="View Fullscreen"
+                />
+              </div>
             </div>
             <div
-              class="leaflet-control-container"
+              class="leaflet-top leaflet-right"
             >
               <div
-                class="leaflet-top leaflet-left"
+                class="leaflet-draw leaflet-control"
               >
                 <div
-                  class="leaflet-control-zoom leaflet-bar leaflet-control"
+                  class="leaflet-draw-section"
                 >
-                  <a
-                    aria-label="Zoom in"
-                    class="leaflet-control-zoom-in"
-                    href="#"
-                    role="button"
-                    title="Zoom in"
+                  <div
+                    class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
                   >
-                    +
-                  </a>
-                  <a
-                    aria-label="Zoom out"
-                    class="leaflet-control-zoom-out"
-                    href="#"
-                    role="button"
-                    title="Zoom out"
-                  >
-                    −
-                  </a>
+                    <a
+                      class="leaflet-draw-draw-polyline"
+                      href="#"
+                      title="Draw a polyline"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a polyline
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-polygon"
+                      href="#"
+                      title="Draw a polygon"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a polygon
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-rectangle"
+                      href="#"
+                      title="Draw a rectangle"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a rectangle
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-marker"
+                      href="#"
+                      title="Draw a marker"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a marker
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-circlemarker"
+                      href="#"
+                      title="Draw a circlemarker"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a circlemarker
+                      </span>
+                    </a>
+                  </div>
+                  <ul
+                    class="leaflet-draw-actions"
+                  />
                 </div>
                 <div
-                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                  class="leaflet-draw-section"
                 >
-                  <a
-                    class="leaflet-control-fullscreen-button leaflet-bar-part"
-                    href="#"
-                    title="View Fullscreen"
+                  <div
+                    class="leaflet-draw-toolbar leaflet-bar"
+                  >
+                    <a
+                      class="leaflet-draw-edit-edit leaflet-disabled"
+                      href="#"
+                      title="No layers to edit"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Edit layers
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-edit-remove leaflet-disabled"
+                      href="#"
+                      title="No layers to delete"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Delete layers
+                      </span>
+                    </a>
+                  </div>
+                  <ul
+                    class="leaflet-draw-actions"
                   />
                 </div>
               </div>
+            </div>
+            <div
+              class="leaflet-bottom leaflet-left"
+            />
+            <div
+              class="leaflet-bottom leaflet-right"
+            >
               <div
-                class="leaflet-top leaflet-right"
+                aria-haspopup="true"
+                class="leaflet-control-layers leaflet-control"
               >
-                <div
-                  class="leaflet-draw leaflet-control"
+                <a
+                  class="leaflet-control-layers-toggle"
+                  href="#"
+                  title="Layers"
+                />
+                <section
+                  class="leaflet-control-layers-list"
                 >
                   <div
-                    class="leaflet-draw-section"
+                    class="leaflet-control-layers-base"
                   >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
-                    >
-                      <a
-                        class="leaflet-draw-draw-polyline"
-                        href="#"
-                        title="Draw a polyline"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polyline
+                    <label>
+                      <div>
+                        <input
+                          checked="checked"
+                          class="leaflet-control-layers-selector"
+                          name="leaflet-base-layers_43"
+                          type="radio"
+                        />
+                        <span>
+                           BC Government
                         </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-polygon"
-                        href="#"
-                        title="Draw a polygon"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polygon
+                      </div>
+                    </label>
+                    <label>
+                      <div>
+                        <input
+                          class="leaflet-control-layers-selector"
+                          name="leaflet-base-layers_43"
+                          type="radio"
+                        />
+                        <span>
+                           Esri Imagery
                         </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-rectangle"
-                        href="#"
-                        title="Draw a rectangle"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a rectangle
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-marker"
-                        href="#"
-                        title="Draw a marker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a marker
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-circlemarker"
-                        href="#"
-                        title="Draw a circlemarker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a circlemarker
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
+                      </div>
+                    </label>
                   </div>
                   <div
-                    class="leaflet-draw-section"
-                  >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar"
-                    >
-                      <a
-                        class="leaflet-draw-edit-edit leaflet-disabled"
-                        href="#"
-                        title="No layers to edit"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Edit layers
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-edit-remove leaflet-disabled"
-                        href="#"
-                        title="No layers to delete"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Delete layers
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
-                  </div>
-                </div>
+                    class="leaflet-control-layers-separator"
+                    style="display: none;"
+                  />
+                  <div
+                    class="leaflet-control-layers-overlays"
+                  />
+                </section>
               </div>
               <div
-                class="leaflet-bottom leaflet-left"
-              />
-              <div
-                class="leaflet-bottom leaflet-right"
+                class="leaflet-control-attribution leaflet-control"
               >
-                <div
-                  aria-haspopup="true"
-                  class="leaflet-control-layers leaflet-control"
+                <a
+                  href="https://leafletjs.com"
+                  title="A JS library for interactive maps"
                 >
-                  <a
-                    class="leaflet-control-layers-toggle"
-                    href="#"
-                    title="Layers"
-                  />
-                  <section
-                    class="leaflet-control-layers-list"
-                  >
-                    <div
-                      class="leaflet-control-layers-base"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            checked="checked"
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
-                            type="radio"
-                          />
-                          <span>
-                             BC Government
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
-                            type="radio"
-                          />
-                          <span>
-                             Esri Imagery
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                    <div
-                      class="leaflet-control-layers-separator"
-                      style="display: none;"
-                    />
-                    <div
-                      class="leaflet-control-layers-overlays"
-                    />
-                  </section>
-                </div>
-                <div
-                  class="leaflet-control-attribution leaflet-control"
-                >
-                  <a
-                    href="https://leafletjs.com"
-                    title="A JS library for interactive maps"
-                  >
-                    Leaflet
-                  </a>
-                </div>
+                  Leaflet
+                </a>
               </div>
             </div>
           </div>
@@ -443,469 +448,474 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiBox-root MuiBox-root-15"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
       >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+          data-shrink="true"
+          for="survey_area_name"
+          id="survey_area_name-label"
         >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            for="survey_area_name"
-            id="survey_area_name-label"
+          Survey Area Name
+          <span
+            aria-hidden="true"
+            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
           >
-            Survey Area Name
+             *
+          </span>
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+        >
+          <input
+            aria-invalid="false"
+            class="MuiInputBase-input MuiOutlinedInput-input"
+            id="survey_area_name"
+            name="survey_area_name"
+            required=""
+            type="text"
+            value="Study area name"
+          />
+          <fieldset
+            aria-hidden="true"
+            class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="PrivateNotchedOutline-legendLabelled-18 PrivateNotchedOutline-legendNotched-19"
+            >
+              <span>
+                Survey Area Name *
+              </span>
+            </legend>
+          </fieldset>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+    >
+      <p
+        class="MuiTypography-root makeStyles-bold-20 MuiTypography-body1"
+      >
+        Study Area Boundary
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-23"
+      >
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-24"
+        >
+          <p
+            class="MuiTypography-root MuiTypography-body1"
+          >
+            To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
+          </p>
+        </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-25"
+      >
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="boundary_file-upload"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
             <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-               *
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
             </span>
-          </label>
+            Upload Boundary
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <div
+          class="MuiBox-root MuiBox-root-26"
+        >
           <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+            class="MuiFormControl-root"
+            style="width: 100%;"
           >
-            <input
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input"
-              id="survey_area_name"
-              name="survey_area_name"
-              required=""
-              type="text"
-              value="Study area name"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
+              id="layer"
             >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-14 PrivateNotchedOutline-legendNotched-15"
+              Select Layer
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+            >
+              <div
+                aria-haspopup="listbox"
+                aria-label="Layer"
+                aria-labelledby="layer layer"
+                class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                id="layer"
+                role="button"
+                tabindex="0"
               >
                 <span>
-                  Survey Area Name *
+                  ​
                 </span>
-              </legend>
-            </fieldset>
+              </div>
+              <input
+                aria-hidden="true"
+                class="MuiSelect-nativeInput"
+                name="layer"
+                tabindex="-1"
+                value=""
+              />
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-16 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-18"
+                >
+                  <span>
+                    Select Layer
+                  </span>
+                </legend>
+              </fieldset>
+            </div>
           </div>
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiBox-root MuiBox-root-27"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-28"
       >
-        <p
-          class="MuiTypography-root makeStyles-bold-16 MuiTypography-body1"
-        >
-          Study Area Boundary
-        </p>
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="leaflet-container leaflet-grab leaflet-touch-drag"
+          id="study_area_form_map"
+          style="height: 100%; position: relative;"
+          tabindex="0"
         >
-          <p
-            class="MuiTypography-root MuiTypography-body2"
-          >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
-          </p>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-19"
-        >
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-            data-testid="boundary_file-upload"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              Upload Boundary
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
           <div
-            class="MuiBox-root MuiBox-root-20"
+            class="leaflet-pane leaflet-map-pane"
+            style="left: 0px; top: 0px;"
           >
             <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
+              class="leaflet-pane leaflet-tile-pane"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                data-shrink="false"
-                id="layer"
-              >
-                Select Layer
-              </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="leaflet-layer "
+                style="z-index: 1;"
               >
                 <div
-                  aria-haspopup="listbox"
-                  aria-label="Layer"
-                  aria-labelledby="layer layer"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="layer"
+                  class="leaflet-tile-container leaflet-zoom-animated"
+                  style="z-index: 18; left: 0px; top: 0px;"
+                >
+                  <img
+                    alt=""
+                    class="leaflet-tile"
+                    role="presentation"
+                    src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                    style="width: 256px; height: 256px; left: -159px; top: -31px;"
+                  />
+                </div>
+              </div>
+            </div>
+            <div
+              class="leaflet-pane leaflet-shadow-pane"
+            >
+              <img
+                alt=""
+                class="leaflet-marker-shadow leaflet-zoom-hide"
+                src="marker-shadow.png"
+                style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
+              />
+            </div>
+            <div
+              class="leaflet-pane leaflet-overlay-pane"
+            />
+            <div
+              class="leaflet-pane leaflet-marker-pane"
+            >
+              <img
+                alt=""
+                class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                src="marker-icon.png"
+                style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
+                tabindex="0"
+              />
+            </div>
+            <div
+              class="leaflet-pane leaflet-tooltip-pane"
+            />
+            <div
+              class="leaflet-pane leaflet-popup-pane"
+            />
+          </div>
+          <div
+            class="leaflet-control-container"
+          >
+            <div
+              class="leaflet-top leaflet-left"
+            >
+              <div
+                class="leaflet-control-zoom leaflet-bar leaflet-control"
+              >
+                <a
+                  aria-label="Zoom in"
+                  class="leaflet-control-zoom-in"
+                  href="#"
                   role="button"
-                  tabindex="0"
+                  title="Zoom in"
                 >
-                  <span>
-                    ​
-                  </span>
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="layer"
-                  tabindex="-1"
-                  value=""
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
+                  +
+                </a>
+                <a
+                  aria-label="Zoom out"
+                  class="leaflet-control-zoom-out"
+                  href="#"
+                  role="button"
+                  title="Zoom out"
                 >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-12 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-14"
-                  >
-                    <span>
-                      Select Layer
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-21"
-        />
-        <div
-          class="MuiBox-root MuiBox-root-22"
-        >
-          <div
-            class="leaflet-container leaflet-grab leaflet-touch-drag"
-            id="study_area_form_map"
-            style="height: 100%; position: relative;"
-            tabindex="0"
-          >
-            <div
-              class="leaflet-pane leaflet-map-pane"
-              style="left: 0px; top: 0px;"
-            >
-              <div
-                class="leaflet-pane leaflet-tile-pane"
-              >
-                <div
-                  class="leaflet-layer "
-                  style="z-index: 1;"
-                >
-                  <div
-                    class="leaflet-tile-container leaflet-zoom-animated"
-                    style="z-index: 18; left: 0px; top: 0px;"
-                  >
-                    <img
-                      alt=""
-                      class="leaflet-tile"
-                      role="presentation"
-                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
-                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
-                    />
-                  </div>
-                </div>
+                  −
+                </a>
               </div>
               <div
-                class="leaflet-pane leaflet-shadow-pane"
+                class="leaflet-control-fullscreen leaflet-bar leaflet-control"
               >
-                <img
-                  alt=""
-                  class="leaflet-marker-shadow leaflet-zoom-hide"
-                  src="marker-shadow.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
+                <a
+                  class="leaflet-control-fullscreen-button leaflet-bar-part"
+                  href="#"
+                  title="View Fullscreen"
                 />
               </div>
-              <div
-                class="leaflet-pane leaflet-overlay-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-marker-pane"
-              >
-                <img
-                  alt=""
-                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
-                  src="marker-icon.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
-                  tabindex="0"
-                />
-              </div>
-              <div
-                class="leaflet-pane leaflet-tooltip-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-popup-pane"
-              />
             </div>
             <div
-              class="leaflet-control-container"
+              class="leaflet-top leaflet-right"
             >
               <div
-                class="leaflet-top leaflet-left"
+                class="leaflet-draw leaflet-control"
               >
                 <div
-                  class="leaflet-control-zoom leaflet-bar leaflet-control"
-                >
-                  <a
-                    aria-label="Zoom in"
-                    class="leaflet-control-zoom-in"
-                    href="#"
-                    role="button"
-                    title="Zoom in"
-                  >
-                    +
-                  </a>
-                  <a
-                    aria-label="Zoom out"
-                    class="leaflet-control-zoom-out"
-                    href="#"
-                    role="button"
-                    title="Zoom out"
-                  >
-                    −
-                  </a>
-                </div>
-                <div
-                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
-                >
-                  <a
-                    class="leaflet-control-fullscreen-button leaflet-bar-part"
-                    href="#"
-                    title="View Fullscreen"
-                  />
-                </div>
-              </div>
-              <div
-                class="leaflet-top leaflet-right"
-              >
-                <div
-                  class="leaflet-draw leaflet-control"
+                  class="leaflet-draw-section"
                 >
                   <div
-                    class="leaflet-draw-section"
+                    class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
                   >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
+                    <a
+                      class="leaflet-draw-draw-polyline"
+                      href="#"
+                      title="Draw a polyline"
                     >
-                      <a
-                        class="leaflet-draw-draw-polyline"
-                        href="#"
-                        title="Draw a polyline"
+                      <span
+                        class="sr-only"
                       >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polyline
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-polygon"
-                        href="#"
-                        title="Draw a polygon"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polygon
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-rectangle"
-                        href="#"
-                        title="Draw a rectangle"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a rectangle
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-marker"
-                        href="#"
-                        title="Draw a marker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a marker
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-circlemarker"
-                        href="#"
-                        title="Draw a circlemarker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a circlemarker
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
-                  </div>
-                  <div
-                    class="leaflet-draw-section"
-                  >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar"
+                        Draw a polyline
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-polygon"
+                      href="#"
+                      title="Draw a polygon"
                     >
-                      <a
-                        class="leaflet-draw-edit-edit"
-                        href="#"
-                        title="Edit layers"
+                      <span
+                        class="sr-only"
                       >
-                        <span
-                          class="sr-only"
-                        >
-                          Edit layers
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-edit-remove"
-                        href="#"
-                        title="Delete layers"
+                        Draw a polygon
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-rectangle"
+                      href="#"
+                      title="Draw a rectangle"
+                    >
+                      <span
+                        class="sr-only"
                       >
-                        <span
-                          class="sr-only"
-                        >
-                          Delete layers
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
+                        Draw a rectangle
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-marker"
+                      href="#"
+                      title="Draw a marker"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a marker
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-circlemarker"
+                      href="#"
+                      title="Draw a circlemarker"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a circlemarker
+                      </span>
+                    </a>
                   </div>
-                </div>
-              </div>
-              <div
-                class="leaflet-bottom leaflet-left"
-              />
-              <div
-                class="leaflet-bottom leaflet-right"
-              >
-                <div
-                  aria-haspopup="true"
-                  class="leaflet-control-layers leaflet-control"
-                >
-                  <a
-                    class="leaflet-control-layers-toggle"
-                    href="#"
-                    title="Layers"
+                  <ul
+                    class="leaflet-draw-actions"
                   />
-                  <section
-                    class="leaflet-control-layers-list"
-                  >
-                    <div
-                      class="leaflet-control-layers-base"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            checked="checked"
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
-                            type="radio"
-                          />
-                          <span>
-                             BC Government
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
-                            type="radio"
-                          />
-                          <span>
-                             Esri Imagery
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                    <div
-                      class="leaflet-control-layers-separator"
-                      style="display: none;"
-                    />
-                    <div
-                      class="leaflet-control-layers-overlays"
-                    />
-                  </section>
                 </div>
                 <div
-                  class="leaflet-control-attribution leaflet-control"
+                  class="leaflet-draw-section"
                 >
-                  <a
-                    href="https://leafletjs.com"
-                    title="A JS library for interactive maps"
+                  <div
+                    class="leaflet-draw-toolbar leaflet-bar"
                   >
-                    Leaflet
-                  </a>
+                    <a
+                      class="leaflet-draw-edit-edit"
+                      href="#"
+                      title="Edit layers"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Edit layers
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-edit-remove"
+                      href="#"
+                      title="Delete layers"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Delete layers
+                      </span>
+                    </a>
+                  </div>
+                  <ul
+                    class="leaflet-draw-actions"
+                  />
                 </div>
               </div>
             </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-23"
-        >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-17 MuiButton-outlinedPrimary"
-            role="button"
-            tabindex="0"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Zoom to Boundary Extent
-            </span>
-            <span
-              class="MuiTouchRipple-root"
+            <div
+              class="leaflet-bottom leaflet-left"
             />
-          </label>
+            <div
+              class="leaflet-bottom leaflet-right"
+            >
+              <div
+                aria-haspopup="true"
+                class="leaflet-control-layers leaflet-control"
+              >
+                <a
+                  class="leaflet-control-layers-toggle"
+                  href="#"
+                  title="Layers"
+                />
+                <section
+                  class="leaflet-control-layers-list"
+                >
+                  <div
+                    class="leaflet-control-layers-base"
+                  >
+                    <label>
+                      <div>
+                        <input
+                          checked="checked"
+                          class="leaflet-control-layers-selector"
+                          name="leaflet-base-layers_71"
+                          type="radio"
+                        />
+                        <span>
+                           BC Government
+                        </span>
+                      </div>
+                    </label>
+                    <label>
+                      <div>
+                        <input
+                          class="leaflet-control-layers-selector"
+                          name="leaflet-base-layers_71"
+                          type="radio"
+                        />
+                        <span>
+                           Esri Imagery
+                        </span>
+                      </div>
+                    </label>
+                  </div>
+                  <div
+                    class="leaflet-control-layers-separator"
+                    style="display: none;"
+                  />
+                  <div
+                    class="leaflet-control-layers-overlays"
+                  />
+                </section>
+              </div>
+              <div
+                class="leaflet-control-attribution leaflet-control"
+              >
+                <a
+                  href="https://leafletjs.com"
+                  title="A JS library for interactive maps"
+                >
+                  Leaflet
+                </a>
+              </div>
+            </div>
+          </div>
         </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-29"
+      >
+        <label
+          aria-disabled="false"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-21 MuiButton-outlinedPrimary"
+          role="button"
+          tabindex="0"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Zoom to Boundary Extent
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </label>
       </div>
     </div>
   </form>
@@ -916,476 +926,481 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      class="MuiBox-root MuiBox-root-30"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
       >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
+          data-shrink="true"
+          for="survey_area_name"
+          id="survey_area_name-label"
         >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            for="survey_area_name"
-            id="survey_area_name-label"
+          Survey Area Name
+          <span
+            aria-hidden="true"
+            class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
           >
-            Survey Area Name
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+             *
+          </span>
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
+        >
+          <input
+            aria-describedby="survey_area_name-helper-text"
+            aria-invalid="true"
+            class="MuiInputBase-input MuiOutlinedInput-input"
+            id="survey_area_name"
+            name="survey_area_name"
+            required=""
+            type="text"
+            value="Study area name"
+          />
+          <fieldset
+            aria-hidden="true"
+            class="PrivateNotchedOutline-root-31 MuiOutlinedInput-notchedOutline"
           >
-            <input
-              aria-describedby="survey_area_name-helper-text"
-              aria-invalid="true"
-              class="MuiInputBase-input MuiOutlinedInput-input"
-              id="survey_area_name"
-              name="survey_area_name"
-              required=""
-              type="text"
-              value="Study area name"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
+            <legend
+              class="PrivateNotchedOutline-legendLabelled-33 PrivateNotchedOutline-legendNotched-34"
             >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-26 PrivateNotchedOutline-legendNotched-27"
-              >
-                <span>
-                  Survey Area Name *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
+              <span>
+                Survey Area Name *
+              </span>
+            </legend>
+          </fieldset>
+        </div>
+        <p
+          class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
+          id="survey_area_name-helper-text"
+        >
+          error on survey area name field
+        </p>
+      </div>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+    >
+      <p
+        class="MuiTypography-root makeStyles-bold-35 MuiTypography-body1"
+      >
+        Study Area Boundary
+      </p>
+      <div
+        class="MuiBox-root MuiBox-root-38"
+      >
+        <p
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
+        </p>
+        <div
+          class="MuiBox-root MuiBox-root-39"
+        >
           <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
-            id="survey_area_name-helper-text"
+            class="MuiTypography-root MuiTypography-body1"
           >
-            error on survey area name field
+            To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map and click 'Add Boundary'.
           </p>
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiBox-root MuiBox-root-40"
       >
-        <p
-          class="MuiTypography-root makeStyles-bold-28 MuiTypography-body1"
+        <button
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          data-testid="boundary_file-upload"
+          tabindex="0"
+          type="button"
         >
-          Study Area Boundary
-        </p>
-        <div
-          class="MuiBox-root MuiBox-root-30"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body2"
-          >
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary. When done, press the hide layer button.
-          </p>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-31"
-        >
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-            data-testid="boundary_file-upload"
-            tabindex="0"
-            type="button"
+          <span
+            class="MuiButton-label"
           >
             <span
-              class="MuiButton-label"
+              class="MuiButton-startIcon MuiButton-iconSizeMedium"
             >
-              <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
               >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M9,10V16H15V10H19L12,3L5,10H9M12,5.8L14.2,8H13V14H11V8H9.8L12,5.8M19,18H5V20H19V18Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              Upload Boundary
+                <path
+                  d="M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
             </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
+            Upload Boundary
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+        <div
+          class="MuiBox-root MuiBox-root-41"
+        >
           <div
-            class="MuiBox-root MuiBox-root-32"
+            class="MuiFormControl-root"
+            style="width: 100%;"
           >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
+            <label
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+              data-shrink="false"
+              id="layer"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                data-shrink="false"
-                id="layer"
-              >
-                Select Layer
-              </label>
+              Select Layer
+            </label>
+            <div
+              class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+            >
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                aria-haspopup="listbox"
+                aria-label="Layer"
+                aria-labelledby="layer layer"
+                class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                id="layer"
+                role="button"
+                tabindex="0"
               >
-                <div
-                  aria-haspopup="listbox"
-                  aria-label="Layer"
-                  aria-labelledby="layer layer"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="layer"
-                  role="button"
-                  tabindex="0"
+                <span>
+                  ​
+                </span>
+              </div>
+              <input
+                aria-hidden="true"
+                class="MuiSelect-nativeInput"
+                name="layer"
+                tabindex="-1"
+                value=""
+              />
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M7 10l5 5 5-5z"
+                />
+              </svg>
+              <fieldset
+                aria-hidden="true"
+                class="PrivateNotchedOutline-root-31 MuiOutlinedInput-notchedOutline"
+              >
+                <legend
+                  class="PrivateNotchedOutline-legendLabelled-33"
                 >
                   <span>
-                    ​
+                    Select Layer
                   </span>
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="layer"
-                  tabindex="-1"
-                  value=""
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-24 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-26"
-                  >
-                    <span>
-                      Select Layer
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
+                </legend>
+              </fieldset>
             </div>
           </div>
         </div>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-42"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-43"
+      >
         <div
-          class="MuiBox-root MuiBox-root-33"
-        />
-        <div
-          class="MuiBox-root MuiBox-root-34"
+          class="leaflet-container leaflet-grab leaflet-touch-drag"
+          id="study_area_form_map"
+          style="height: 100%; position: relative;"
+          tabindex="0"
         >
           <div
-            class="leaflet-container leaflet-grab leaflet-touch-drag"
-            id="study_area_form_map"
-            style="height: 100%; position: relative;"
-            tabindex="0"
+            class="leaflet-pane leaflet-map-pane"
+            style="left: 0px; top: 0px;"
           >
             <div
-              class="leaflet-pane leaflet-map-pane"
-              style="left: 0px; top: 0px;"
+              class="leaflet-pane leaflet-tile-pane"
             >
               <div
-                class="leaflet-pane leaflet-tile-pane"
+                class="leaflet-layer "
+                style="z-index: 1;"
               >
                 <div
-                  class="leaflet-layer "
-                  style="z-index: 1;"
+                  class="leaflet-tile-container leaflet-zoom-animated"
+                  style="z-index: 18; left: 0px; top: 0px;"
                 >
-                  <div
-                    class="leaflet-tile-container leaflet-zoom-animated"
-                    style="z-index: 18; left: 0px; top: 0px;"
-                  >
-                    <img
-                      alt=""
-                      class="leaflet-tile"
-                      role="presentation"
-                      src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
-                      style="width: 256px; height: 256px; left: -159px; top: -31px;"
-                    />
-                  </div>
+                  <img
+                    alt=""
+                    class="leaflet-tile"
+                    role="presentation"
+                    src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/5/10/4"
+                    style="width: 256px; height: 256px; left: -159px; top: -31px;"
+                  />
                 </div>
               </div>
-              <div
-                class="leaflet-pane leaflet-shadow-pane"
-              >
-                <img
-                  alt=""
-                  class="leaflet-marker-shadow leaflet-zoom-hide"
-                  src="marker-shadow.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
-                />
-              </div>
-              <div
-                class="leaflet-pane leaflet-overlay-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-marker-pane"
-              >
-                <img
-                  alt=""
-                  class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
-                  src="marker-icon.png"
-                  style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
-                  tabindex="0"
-                />
-              </div>
-              <div
-                class="leaflet-pane leaflet-tooltip-pane"
-              />
-              <div
-                class="leaflet-pane leaflet-popup-pane"
+            </div>
+            <div
+              class="leaflet-pane leaflet-shadow-pane"
+            >
+              <img
+                alt=""
+                class="leaflet-marker-shadow leaflet-zoom-hide"
+                src="marker-shadow.png"
+                style="margin-left: -12px; margin-top: -41px; width: 41px; height: 41px; left: 5771px; top: 1274px;"
               />
             </div>
             <div
-              class="leaflet-control-container"
+              class="leaflet-pane leaflet-overlay-pane"
+            />
+            <div
+              class="leaflet-pane leaflet-marker-pane"
+            >
+              <img
+                alt=""
+                class="leaflet-marker-icon leaflet-zoom-hide leaflet-interactive"
+                src="marker-icon.png"
+                style="margin-left: -12px; margin-top: -41px; width: 25px; height: 41px; left: 5771px; top: 1274px; z-index: 1274;"
+                tabindex="0"
+              />
+            </div>
+            <div
+              class="leaflet-pane leaflet-tooltip-pane"
+            />
+            <div
+              class="leaflet-pane leaflet-popup-pane"
+            />
+          </div>
+          <div
+            class="leaflet-control-container"
+          >
+            <div
+              class="leaflet-top leaflet-left"
             >
               <div
-                class="leaflet-top leaflet-left"
+                class="leaflet-control-zoom leaflet-bar leaflet-control"
+              >
+                <a
+                  aria-label="Zoom in"
+                  class="leaflet-control-zoom-in"
+                  href="#"
+                  role="button"
+                  title="Zoom in"
+                >
+                  +
+                </a>
+                <a
+                  aria-label="Zoom out"
+                  class="leaflet-control-zoom-out"
+                  href="#"
+                  role="button"
+                  title="Zoom out"
+                >
+                  −
+                </a>
+              </div>
+              <div
+                class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+              >
+                <a
+                  class="leaflet-control-fullscreen-button leaflet-bar-part"
+                  href="#"
+                  title="View Fullscreen"
+                />
+              </div>
+            </div>
+            <div
+              class="leaflet-top leaflet-right"
+            >
+              <div
+                class="leaflet-draw leaflet-control"
               >
                 <div
-                  class="leaflet-control-zoom leaflet-bar leaflet-control"
+                  class="leaflet-draw-section"
                 >
-                  <a
-                    aria-label="Zoom in"
-                    class="leaflet-control-zoom-in"
-                    href="#"
-                    role="button"
-                    title="Zoom in"
+                  <div
+                    class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
                   >
-                    +
-                  </a>
-                  <a
-                    aria-label="Zoom out"
-                    class="leaflet-control-zoom-out"
-                    href="#"
-                    role="button"
-                    title="Zoom out"
-                  >
-                    −
-                  </a>
+                    <a
+                      class="leaflet-draw-draw-polyline"
+                      href="#"
+                      title="Draw a polyline"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a polyline
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-polygon"
+                      href="#"
+                      title="Draw a polygon"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a polygon
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-rectangle"
+                      href="#"
+                      title="Draw a rectangle"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a rectangle
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-marker"
+                      href="#"
+                      title="Draw a marker"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a marker
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-draw-circlemarker"
+                      href="#"
+                      title="Draw a circlemarker"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Draw a circlemarker
+                      </span>
+                    </a>
+                  </div>
+                  <ul
+                    class="leaflet-draw-actions"
+                  />
                 </div>
                 <div
-                  class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                  class="leaflet-draw-section"
                 >
-                  <a
-                    class="leaflet-control-fullscreen-button leaflet-bar-part"
-                    href="#"
-                    title="View Fullscreen"
+                  <div
+                    class="leaflet-draw-toolbar leaflet-bar"
+                  >
+                    <a
+                      class="leaflet-draw-edit-edit"
+                      href="#"
+                      title="Edit layers"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Edit layers
+                      </span>
+                    </a>
+                    <a
+                      class="leaflet-draw-edit-remove"
+                      href="#"
+                      title="Delete layers"
+                    >
+                      <span
+                        class="sr-only"
+                      >
+                        Delete layers
+                      </span>
+                    </a>
+                  </div>
+                  <ul
+                    class="leaflet-draw-actions"
                   />
                 </div>
               </div>
+            </div>
+            <div
+              class="leaflet-bottom leaflet-left"
+            />
+            <div
+              class="leaflet-bottom leaflet-right"
+            >
               <div
-                class="leaflet-top leaflet-right"
+                aria-haspopup="true"
+                class="leaflet-control-layers leaflet-control"
               >
-                <div
-                  class="leaflet-draw leaflet-control"
+                <a
+                  class="leaflet-control-layers-toggle"
+                  href="#"
+                  title="Layers"
+                />
+                <section
+                  class="leaflet-control-layers-list"
                 >
                   <div
-                    class="leaflet-draw-section"
+                    class="leaflet-control-layers-base"
                   >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
-                    >
-                      <a
-                        class="leaflet-draw-draw-polyline"
-                        href="#"
-                        title="Draw a polyline"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polyline
+                    <label>
+                      <div>
+                        <input
+                          checked="checked"
+                          class="leaflet-control-layers-selector"
+                          name="leaflet-base-layers_96"
+                          type="radio"
+                        />
+                        <span>
+                           BC Government
                         </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-polygon"
-                        href="#"
-                        title="Draw a polygon"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a polygon
+                      </div>
+                    </label>
+                    <label>
+                      <div>
+                        <input
+                          class="leaflet-control-layers-selector"
+                          name="leaflet-base-layers_96"
+                          type="radio"
+                        />
+                        <span>
+                           Esri Imagery
                         </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-rectangle"
-                        href="#"
-                        title="Draw a rectangle"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a rectangle
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-marker"
-                        href="#"
-                        title="Draw a marker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a marker
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-draw-circlemarker"
-                        href="#"
-                        title="Draw a circlemarker"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Draw a circlemarker
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
+                      </div>
+                    </label>
                   </div>
                   <div
-                    class="leaflet-draw-section"
-                  >
-                    <div
-                      class="leaflet-draw-toolbar leaflet-bar"
-                    >
-                      <a
-                        class="leaflet-draw-edit-edit"
-                        href="#"
-                        title="Edit layers"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Edit layers
-                        </span>
-                      </a>
-                      <a
-                        class="leaflet-draw-edit-remove"
-                        href="#"
-                        title="Delete layers"
-                      >
-                        <span
-                          class="sr-only"
-                        >
-                          Delete layers
-                        </span>
-                      </a>
-                    </div>
-                    <ul
-                      class="leaflet-draw-actions"
-                    />
-                  </div>
-                </div>
+                    class="leaflet-control-layers-separator"
+                    style="display: none;"
+                  />
+                  <div
+                    class="leaflet-control-layers-overlays"
+                  />
+                </section>
               </div>
               <div
-                class="leaflet-bottom leaflet-left"
-              />
-              <div
-                class="leaflet-bottom leaflet-right"
+                class="leaflet-control-attribution leaflet-control"
               >
-                <div
-                  aria-haspopup="true"
-                  class="leaflet-control-layers leaflet-control"
+                <a
+                  href="https://leafletjs.com"
+                  title="A JS library for interactive maps"
                 >
-                  <a
-                    class="leaflet-control-layers-toggle"
-                    href="#"
-                    title="Layers"
-                  />
-                  <section
-                    class="leaflet-control-layers-list"
-                  >
-                    <div
-                      class="leaflet-control-layers-base"
-                    >
-                      <label>
-                        <div>
-                          <input
-                            checked="checked"
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_96"
-                            type="radio"
-                          />
-                          <span>
-                             BC Government
-                          </span>
-                        </div>
-                      </label>
-                      <label>
-                        <div>
-                          <input
-                            class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_96"
-                            type="radio"
-                          />
-                          <span>
-                             Esri Imagery
-                          </span>
-                        </div>
-                      </label>
-                    </div>
-                    <div
-                      class="leaflet-control-layers-separator"
-                      style="display: none;"
-                    />
-                    <div
-                      class="leaflet-control-layers-overlays"
-                    />
-                  </section>
-                </div>
-                <div
-                  class="leaflet-control-attribution leaflet-control"
-                >
-                  <a
-                    href="https://leafletjs.com"
-                    title="A JS library for interactive maps"
-                  >
-                    Leaflet
-                  </a>
-                </div>
+                  Leaflet
+                </a>
               </div>
             </div>
           </div>
         </div>
-        <div
-          class="MuiBox-root MuiBox-root-35"
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-44"
+      >
+        <label
+          aria-disabled="false"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-36 MuiButton-outlinedPrimary"
+          role="button"
+          tabindex="0"
         >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-29 MuiButton-outlinedPrimary"
-            role="button"
-            tabindex="0"
+          <span
+            class="MuiButton-label"
           >
-            <span
-              class="MuiButton-label"
-            >
-              Zoom to Boundary Extent
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
-        </div>
+            Zoom to Boundary Extent
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </label>
       </div>
     </div>
   </form>

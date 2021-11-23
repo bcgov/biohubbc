@@ -7,11 +7,10 @@ import { HTTP400 } from '../../errors/CustomError';
 import { projectIdResponseObject } from '../../openapi/schemas/project';
 import { getPublicProjectListSQL } from '../../queries/public/project-queries';
 import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/public/projects');
 
-export const GET: Operation = [logRequest('paths/public/projects', 'POST'), getPublicProjectsList()];
+export const GET: Operation = [getPublicProjectsList()];
 
 GET.apiDoc = {
   description: 'Gets a list of public facing (published) projects.',

@@ -15,6 +15,7 @@ export interface IGetProjectAttachment {
   lastModified: string;
   size: number;
   securityToken: any;
+  revisionCount: number;
 }
 
 /**
@@ -291,4 +292,48 @@ export interface IGetProjectForViewResponsePartnerships {
 export interface IGetProjectMediaListResponse {
   file_name: string;
   encoded_file: string;
+}
+
+/**
+ * A  file upload response.
+ *
+ * @export
+ * @interface IUploadAttachmentResponse
+ */
+export interface IUploadAttachmentResponse {
+  attachmentId: number;
+  revision_count: number;
+}
+
+export interface IGetReportMetaData {
+  attachment_id: number;
+  title: string;
+  year_published: number;
+  description: string;
+  last_modified: string;
+  revision_count: number;
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetReportAuthors {
+  first_name: string;
+  last_name: string;
+}
+
+export interface IGetProjectParticipantsResponseArrayItem {
+  project_participation_id: number;
+  project_id: number;
+  system_user_id: number;
+  project_role_id: number;
+  user_identifier: string;
+  user_identity_source_id: number;
+}
+export interface IGetProjectParticipantsResponse {
+  participants: IGetProjectParticipantsResponseArrayItem[];
+}
+
+export interface IAddProjectParticipant {
+  userIdentifier: string;
+  identitySource: string;
+  role: string;
 }

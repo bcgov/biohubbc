@@ -23,6 +23,12 @@ parameters:
   - name: REACT_APP_SITEMINDER_LOGOUT_URL
     description: Siteminder URL to log out and clear the session for the logged in user
     value: ''
+  - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+    description: Default maximum number of files that can be uploaded at a time vai the upload component UI.
+    value: '10'
+  - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+    description: Default maximum size of a single file that can be uploaded by the upload component UI.
+    value: '52428800'
   - name: NODE_ENV
     description: NODE_ENV specification variable
     value: 'dev'
@@ -122,6 +128,10 @@ objects:
                   value: ${REACT_APP_N8N_HOST}
                 - name: REACT_APP_SITEMINDER_LOGOUT_URL
                   value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
+                - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+                  value: ${REACT_APP_MAX_UPLOAD_NUM_FILES}
+                - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+                  value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: REACT_APP_NODE_ENV

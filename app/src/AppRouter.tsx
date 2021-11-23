@@ -63,7 +63,6 @@ const AppRouter: React.FC = (props: any) => {
         component={ProjectsRouter}
         layout={PublicLayout}
         title={getTitle('Projects')}
-        validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
       />
       <AppRoute
         protected
@@ -79,7 +78,6 @@ const AppRouter: React.FC = (props: any) => {
         component={PermitsRouter}
         layout={PublicLayout}
         title={getTitle('Permits')}
-        validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
       />
       <AppRoute
         protected
@@ -87,7 +85,6 @@ const AppRouter: React.FC = (props: any) => {
         component={SearchPage}
         layout={PublicLayout}
         title={getTitle('Search')}
-        validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
       />
       <AppRoute
         protected
@@ -95,7 +92,6 @@ const AppRouter: React.FC = (props: any) => {
         component={ResourcesRouter}
         layout={PublicLayout}
         title={getTitle('Resources')}
-        validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
       />
       <AppRoute protected path="/logout" component={LogOutPage} layout={PublicLayout} title={getTitle('Logout')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />

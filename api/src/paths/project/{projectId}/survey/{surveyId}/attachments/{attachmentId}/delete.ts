@@ -12,10 +12,27 @@ import {
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
+import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
+import { deleteSurveyReportAttachmentAuthors } from '../upload';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/delete');
 
-export const POST: Operation = [deleteAttachment()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  deleteAttachment()
+];
 
 POST.apiDoc = {
   ...attachmentApiDocObject('Delete an attachment of a survey.', 'Row count of successfully deleted attachment record'),
@@ -83,31 +100,24 @@ export function deleteAttachment(): RequestHandler {
         await unsecureSurveyAttachmentRecord(req.body.securityToken, req.body.attachmentType, connection);
       }
 
-      // Proceed to delete the attachment record itself
-      const deleteSurveyAttachmentSQLStatement =
-        req.body.attachmentType === 'Report'
-          ? deleteSurveyReportAttachmentSQL(Number(req.params.attachmentId))
-          : deleteSurveyAttachmentSQL(Number(req.params.attachmentId));
+      let deleteResult: { key: string };
+      if (req.body.attachmentType === ATTACHMENT_TYPE.REPORT) {
+        await deleteSurveyReportAttachmentAuthors(Number(req.params.attachmentId), connection);
 
-      if (!deleteSurveyAttachmentSQLStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
+        deleteResult = await deleteSurveyReportAttachment(Number(req.params.attachmentId), connection);
+      } else {
+        deleteResult = await deleteSurveyAttachment(Number(req.params.attachmentId), connection);
       }
-
-      const result = await connection.query(
-        deleteSurveyAttachmentSQLStatement.text,
-        deleteSurveyAttachmentSQLStatement.values
-      );
-      const s3Key = result && result.rows.length && result.rows[0].key;
 
       await connection.commit();
 
-      const deleteFileResult = await deleteFileFromS3(s3Key);
+      const deleteFileResult = await deleteFileFromS3(deleteResult.key);
 
       if (!deleteFileResult) {
         return res.status(200).json(null);
       }
 
-      return res.status(200).json(result && result.rowCount);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'deleteAttachment', message: 'error', error });
       await connection.rollback();
@@ -140,4 +150,42 @@ const unsecureSurveyAttachmentRecord = async (
   if (!unsecureRecordSQLResponse || !unsecureRecordSQLResponse.rowCount) {
     throw new HTTP400('Failed to unsecure record');
   }
+};
+
+export const deleteSurveyAttachment = async (
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<{ key: string }> => {
+  const sqlStatement = deleteSurveyAttachmentSQL(attachmentId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete project attachment statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to delete survey attachment record');
+  }
+
+  return response.rows[0];
+};
+
+export const deleteSurveyReportAttachment = async (
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<{ key: string }> => {
+  const sqlStatement = deleteSurveyReportAttachmentSQL(attachmentId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete project report attachment statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to delete survey attachment report record');
+  }
+
+  return response.rows[0];
 };

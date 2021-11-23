@@ -1,22 +1,32 @@
 'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
   updateSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesIdSQLStatement
+  getTemplateMethodologySpeciesIdSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { logRequest } from '../../../../../../../utils/path-utils';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/upload');
 
 export const POST: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/observation/submission/upload', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   uploadMedia()
 ];
 
@@ -25,7 +35,7 @@ POST.apiDoc = {
   tags: ['attachments'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -128,10 +138,7 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const templateMethodologyId = await getTemplateMethodologySpeciesIdStatement(
-        Number(req.params.surveyId),
-        connection
-      );
+      const templateMethodologyId = await getTemplateMethodologySpeciesId(Number(req.params.surveyId), connection);
 
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),
@@ -218,11 +225,11 @@ export const insertSurveyOccurrenceSubmission = async (
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
-export const getTemplateMethodologySpeciesIdStatement = async (
+export const getTemplateMethodologySpeciesId = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<number | null> => {
-  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQLStatement(surveyId);
+  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId);
 
   if (!getIdSqlStatement) {
     throw new HTTP400('Failed to build SQL get template methodology species id sql statement');

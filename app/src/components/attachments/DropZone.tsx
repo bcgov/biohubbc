@@ -2,18 +2,24 @@ import Box from '@material-ui/core/Box';
 import Link from '@material-ui/core/Link';
 import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { mdiUploadOutline } from '@mdi/js';
+import { mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import React, { useContext } from 'react';
 import Dropzone, { FileRejection } from 'react-dropzone';
 import { ConfigContext } from 'contexts/configContext';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 
-const useStyles = makeStyles(() => ({
-  textSpacing: {
-    marginBottom: '1rem'
+const useStyles = makeStyles((theme: Theme) => ({
+  dropZoneTitle: {
+    marginBottom: theme.spacing(1),
+    fontSize: '1.125rem',
+    fontWeight: 700
   },
-  browseLink: {
-    cursor: 'pointer'
+  dropZoneIcon: {
+    color: theme.palette.text.primary + '55'
+  },
+  dropZoneRequirements: {
+    textAlign: 'center'
   }
 }));
 
@@ -45,7 +51,24 @@ export interface IDropZoneConfigProps {
    * @memberof IDropZoneProps
    */
   maxNumFiles?: number;
-
+  /**
+   * Allow selecting multiple files while browsing.
+   * Default: true
+   *
+   * Note: Does not impact drag/drop.
+   *
+   * @type {boolean}
+   * @memberof IDropZoneProps
+   */
+  multiple?: boolean;
+  /**
+   * Comma separated list of allowed file extensions.
+   *
+   * Example: `'.pdf, .txt'`
+   *
+   * @type {string}
+   * @memberof IDropZoneConfigProps
+   */
   acceptedFileExtensions?: string;
 }
 
@@ -55,39 +78,53 @@ export const DropZone: React.FC<IDropZoneProps & IDropZoneConfigProps> = (props)
 
   const maxNumFiles = props.maxNumFiles || config?.MAX_UPLOAD_NUM_FILES;
   const maxFileSize = props.maxFileSize || config?.MAX_UPLOAD_FILE_SIZE;
+  const multiple = props.multiple ?? true;
   const acceptedFileExtensions = props.acceptedFileExtensions;
 
   return (
-    <Dropzone maxFiles={maxNumFiles} maxSize={maxFileSize} onDrop={props.onFiles} accept={props.acceptedFileExtensions}>
-      {({ getRootProps, getInputProps }) => (
-        <section>
+    <Box className="dropZoneContainer">
+      <Dropzone
+        maxFiles={maxNumFiles}
+        maxSize={maxFileSize}
+        multiple={multiple}
+        onDrop={props.onFiles}
+        accept={props.acceptedFileExtensions}>
+        {({ getRootProps, getInputProps }) => (
           <Box {...getRootProps()}>
             <input {...getInputProps()} data-testid="drop-zone-input" />
-            <Box m={3} display="flex" flexDirection="column" alignItems="center">
-              <Icon path={mdiUploadOutline} size={2} className={classes.textSpacing} />
-              <Typography variant="h3" className={classes.textSpacing}>
-                Drag your files here, or <Link className={classes.browseLink}>Browse Files</Link>
-              </Typography>
-              {acceptedFileExtensions && (
-                <Typography component="span" variant="subtitle2" color="textSecondary">
-                  {`Accepted file types: ${acceptedFileExtensions}`}
-                </Typography>
-              )}
-              {!!maxFileSize && maxFileSize !== Infinity && (
-                <Typography component="span" variant="subtitle2" color="textSecondary">
-                  {`Maximum file size: ${Math.round(maxFileSize / BYTES_PER_MEGABYTE)} MB`}
-                </Typography>
-              )}
-              {!!maxNumFiles && (
-                <Typography component="span" variant="subtitle2" color="textSecondary">
-                  {`Maximum file count: ${maxNumFiles}`}
-                </Typography>
-              )}
+            <Box p={2} display="flex" flexDirection="column" alignItems="center">
+              <Icon className={classes.dropZoneIcon} path={mdiTrayArrowUp} size={1.5} />
+              <Box mt={0.5} className={classes.dropZoneTitle}>
+                Drag your {(multiple && 'files') || 'file'} here, or <Link underline="always">Browse Files</Link>
+              </Box>
+              <Box textAlign="center">
+                {acceptedFileExtensions && (
+                  <Box>
+                    <Typography component="span" variant="subtitle2" color="textSecondary">
+                      {`Accepted files: ${acceptedFileExtensions}`}
+                    </Typography>
+                  </Box>
+                )}
+                {!!maxFileSize && maxFileSize !== Infinity && (
+                  <Box>
+                    <Typography component="span" variant="subtitle2" color="textSecondary">
+                      {`Maximum file size: ${Math.round(maxFileSize / BYTES_PER_MEGABYTE)} MB`}
+                    </Typography>
+                  </Box>
+                )}
+                {!!maxNumFiles && (
+                  <Box>
+                    <Typography component="span" variant="subtitle2" color="textSecondary">
+                      {`Maximum files: ${maxNumFiles}`}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
             </Box>
           </Box>
-        </section>
-      )}
-    </Dropzone>
+        )}
+      </Dropzone>
+    </Box>
   );
 };
 

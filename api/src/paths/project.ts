@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import {
@@ -11,15 +11,8 @@ import {
   PostProjectObject
 } from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
-import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
 import { postProjectPermitSQL } from '../queries/permit/permit-create-queries';
-import {
-  getProjectAttachmentByFileNameSQL,
-  postProjectAttachmentSQL,
-  postProjectReportAttachmentSQL,
-  putProjectAttachmentSQL,
-  putProjectReportAttachmentSQL
-} from '../queries/project/project-attachments-queries';
+import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
 import {
   postProjectActivitySQL,
   postProjectFundingSourceSQL,
@@ -28,20 +21,32 @@ import {
   postProjectSQL,
   postProjectStakeholderPartnershipSQL
 } from '../queries/project/project-create-queries';
-import { generateS3FileKey } from '../utils/file-utils';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
+import { addProjectParticipant } from '../paths-helpers/project-participation';
 
 const defaultLog = getLogger('paths/project');
 
-export const POST: Operation = [logRequest('paths/project', 'POST'), createProject()];
+export const POST: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  createProject()
+];
 
 POST.apiDoc = {
   description: 'Create a new Project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -193,6 +198,9 @@ export function createProject(): RequestHandler {
 
         await Promise.all(promises);
 
+        // The user that creates a project is automatically assigned a project lead role, for this project
+        await insertProjectParticipantRoles(projectId, PROJECT_ROLE.PROJECT_LEAD, connection);
+
         await connection.commit();
       } catch (error) {
         await connection.rollback();
@@ -283,6 +291,10 @@ export const insertPermit = async (
 ): Promise<number> => {
   const systemUserId = connection.systemUserId();
 
+  if (!systemUserId) {
+    throw new HTTP400('Failed to identify system user ID');
+  }
+
   const sqlStatement = postProjectPermitSQL(permitNumber, permitType, projectId, systemUserId);
 
   if (!sqlStatement) {
@@ -364,57 +376,16 @@ export const insertProjectActivity = async (
   return result.id;
 };
 
-export const upsertProjectAttachment = async (
-  file: Express.Multer.File,
+export const insertProjectParticipantRoles = async (
   projectId: number,
-  attachmentType: string,
+  projectParticipantRole: string,
   connection: IDBConnection
-): Promise<number> => {
-  const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
+): Promise<void> => {
+  const systemUserId = connection.systemUserId();
 
-  if (!getSqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
+  if (!systemUserId) {
+    throw new HTTP400('Failed to identify system user ID');
   }
 
-  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
-
-  if (getResponse && getResponse.rowCount > 0) {
-    const updateSqlStatement =
-      attachmentType === 'Report'
-        ? putProjectReportAttachmentSQL(projectId, file.originalname)
-        : putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
-
-    if (!updateSqlStatement) {
-      throw new HTTP400('Failed to build SQL update statement');
-    }
-
-    const updateResponse = await connection.query(updateSqlStatement.text, updateSqlStatement.values);
-    const updateResult = (updateResponse && updateResponse.rowCount) || null;
-
-    if (!updateResult) {
-      throw new HTTP400('Failed to update project attachment data');
-    }
-
-    return updateResult;
-  }
-
-  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
-
-  const insertSqlStatement =
-    attachmentType === 'Report'
-      ? postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key)
-      : postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
-
-  if (!insertSqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
-  const insertResult = (insertResponse && insertResponse.rows && insertResponse.rows[0]) || null;
-
-  if (!insertResult || !insertResult.id) {
-    throw new HTTP400('Failed to insert project attachment data');
-  }
-
-  return insertResult.id;
+  await addProjectParticipant(projectId, systemUserId, projectParticipantRole, connection);
 };

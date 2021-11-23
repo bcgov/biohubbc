@@ -12,14 +12,15 @@ import {
   postAdministrativeActivitySQL,
   putAdministrativeActivitySQL
 } from '../queries/administrative-activity/administrative-activity-queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 
-export const POST: Operation = [logRequest('paths/administrative-activity', 'POST'), createAdministrativeActivity()];
-export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getPendingAccessRequestsCount()];
+export const POST: Operation = [createAdministrativeActivity()];
+
+export const GET: Operation = [getPendingAccessRequestsCount()];
 
 POST.apiDoc = {
   description: 'Create a new Administrative Activity.',
@@ -215,7 +216,16 @@ export function getPendingAccessRequestsCount(): RequestHandler {
 }
 
 export const PUT: Operation = [
-  logRequest('paths/administrative-activity', 'PUT'),
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
   getUpdateAdministrativeActivityHandler()
 ];
 
@@ -224,7 +234,7 @@ PUT.apiDoc = {
   tags: ['admin'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
