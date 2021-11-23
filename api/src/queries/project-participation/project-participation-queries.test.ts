@@ -4,8 +4,7 @@ import {
   deleteProjectParticipationSQL,
   getAllProjectParticipants,
   getProjectParticipationBySystemUserSQL,
-  postProjectRolesByRoleNameSQL,
-  updateProjectRolesByRoleNameSQL
+  postProjectRolesByRoleNameSQL
 } from './project-participation-queries';
 
 describe('getProjectParticipationBySystemUserSQL', () => {
@@ -63,32 +62,6 @@ describe('postProjectRolesByRoleNameSQL', () => {
 
   it('returns non null response when valid parameters provided', () => {
     const response = postProjectRolesByRoleNameSQL(1, 2, 'role');
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('updateProjectRolesByRoleNameSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = updateProjectRolesByRoleNameSQL((null as unknown) as number, 2, 'role', 0);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null systemUserId provided', () => {
-    const response = updateProjectRolesByRoleNameSQL(1, (null as unknown) as number, 'role', 0);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null response when null/empty projectParticipantRole provided', () => {
-    const response = updateProjectRolesByRoleNameSQL(1, 2, '', 0);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid parameters provided', () => {
-    const response = updateProjectRolesByRoleNameSQL(1, 2, 'role', 0);
 
     expect(response).to.not.be.null;
   });

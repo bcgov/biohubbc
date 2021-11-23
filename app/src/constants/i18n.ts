@@ -217,5 +217,8 @@ export const ProjectParticipantsI18N = {
   removeParticipantTitle: 'Remove Participant?',
   removeParticipantErrorTitle: 'Error Removing Project Participant',
   removeParticipantErrorText:
-    'An error has occurred while attempting to remove the project participant, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to remove the project participant, please try again. If the error persists, please contact your system administrator.',
+  updateParticipantRoleErrorTitle: 'Error Updating Project Role',
+  updateParticipantRoleErrorText:
+    "An error has occurred while attempting to update the user's project role, please try again. If the error persists, please contact your system administrator."
 };

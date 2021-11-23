@@ -166,64 +166,6 @@ export const postProjectRolesByRoleNameSQL = (
 };
 
 /**
- * SQL query to update a single project participation record.
- *
- * @param {number} projectId
- * @param {number} systemUserId
- * @param {string} projectParticipantRole
- * @return {*}  {(SQLStatement | null)}
- */
-export const updateProjectRolesByRoleNameSQL = (
-  projectId: number,
-  systemUserId: number,
-  projectParticipantRole: string,
-  revision_count: number
-): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectRoleSQL',
-    message: 'params',
-    projectId,
-    systemUserId,
-    projectParticipantRole
-  });
-
-  if (!projectId || !systemUserId || !projectParticipantRole) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    UPDATE
-      project_participation
-    SET
-      project_role_id = (
-        SELECT
-          project_role_id
-        FROM
-          project_role
-        WHERE
-          name = ${projectParticipantRole})
-      )
-    WHERE
-      project_id = ${projectId}
-    AND
-      system_user_id = ${systemUserId}
-    AND
-      revision_count = ${revision_count}
-    RETURNING
-      *;
-  `;
-
-  defaultLog.info({
-    label: 'postProjectRoleSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to delete a single project participation record.
  *
  * @param {number} projectParticipationId
@@ -244,7 +186,9 @@ export const deleteProjectParticipationSQL = (projectParticipationId: number): S
     DELETE FROM
       project_participation
     WHERE
-      project_participation_id = ${projectParticipationId};
+      project_participation_id = ${projectParticipationId}
+    RETURNING
+      *;
   `;
 
   defaultLog.info({
