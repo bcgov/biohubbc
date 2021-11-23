@@ -341,4 +341,37 @@ describe('useProjectApi', () => {
 
     expect(result).toEqual('result 1');
   });
+
+  it('getProjectParticipants works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200);
+
+    const result = await useProjectApi(axios).getProjectParticipants(projectId);
+
+    expect(result).toEqual(true);
+  });
+
+  it('removeProjectParticipant works as expected', async () => {
+    const projectParticipationId = 1;
+
+    mock.onDelete(`/api/project/${projectId}/participants/${projectParticipationId}/delete`).reply(200);
+
+    const result = await useProjectApi(axios).removeProjectParticipant(projectId, projectParticipationId);
+
+    expect(result).toEqual(true);
+  });
+
+  it('removeProjectParticipant works as expected', async () => {
+    const projectParticipationId = 1;
+    const projectRole = 'Test Role';
+
+    mock.onPut(`/api/project/${projectId}/participants/${projectParticipationId}/update`).reply(200);
+
+    const result = await useProjectApi(axios).updateProjectParticipantRole(
+      projectId,
+      projectParticipationId,
+      projectRole
+    );
+
+    expect(result).toEqual(true);
+  });
 });

@@ -10,7 +10,7 @@ import { deleteProjectParticipationRecord } from './delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
 
-export const PATCH: Operation = [
+export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
       and: [
@@ -25,7 +25,7 @@ export const PATCH: Operation = [
   updateProjectParticipantRole()
 ];
 
-PATCH.apiDoc = {
+PUT.apiDoc = {
   description: 'Update a project participant role.',
   tags: ['project'],
   security: [

@@ -392,7 +392,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectParticipationId: number,
     role: string
   ): Promise<boolean> => {
-    const { status } = await axios.patch(`/api/project/${projectId}/participants/${projectParticipationId}/update`, {
+    const { status } = await axios.put(`/api/project/${projectId}/participants/${projectParticipationId}/update`, {
       role
     });
 
