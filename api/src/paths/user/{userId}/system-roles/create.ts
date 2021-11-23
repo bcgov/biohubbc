@@ -166,8 +166,6 @@ export const addSystemRoles = async (userId: number, roleIds: number[], connecti
     postSystemRolesSqlStatement.values
   );
 
-  console.log('response : ', postSystemRolesResponse);
-
   if (!postSystemRolesResponse || !postSystemRolesResponse.rowCount) {
     throw new HTTP400('Failed to add system roles');
   }
