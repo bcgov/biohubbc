@@ -176,7 +176,7 @@ describe('getAddSystemRolesHandler', () => {
     });
 
     sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-    sinon.stub(system_roles, 'addSystemRoles');
+    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(SQL`some query`);
 
     const result = system_roles.getAddSystemRolesHandler();
 
@@ -184,24 +184,30 @@ describe('getAddSystemRolesHandler', () => {
 
     expect(actualResult).to.equal(200);
   });
-});
 
-describe('addSystemRoles', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
+  it('should throw a 400 when fails to build SQL insert statement ', async () => {
+    const mockQuery = sinon.stub();
 
-  const dbConnectionObj = getMockDBConnection();
+    mockQuery.resolves({
+      rows: [{ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 11', 'role 22'] }],
+      rowCount: 1
+    });
 
-  const userId = 1;
-  const roles = [1, 2];
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
 
-  it('should throw a 400 error when it fails to postSystemRolesSQL', async () => {
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
     sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(null);
 
     try {
-      await system_roles.addSystemRoles(userId, roles, dbConnectionObj);
+      const result = system_roles.getAddSystemRolesHandler();
 
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -209,33 +215,30 @@ describe('addSystemRoles', () => {
     }
   });
 
-  it('should throw a 400 error when it fails to add system roles (no result)', async () => {
+  it('should throw a 400 when fails to add system roles ', async () => {
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves(null);
-    sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
-    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(SQL`something`);
+    mockQuery.onCall(0).resolves({
+      rows: [{ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 11', 'role 22'] }],
+      rowCount: 1
+    });
+    mockQuery.onCall(1).resolves(null);
+
+    sinon.stub(db, 'getDBConnection').returns({
+      ...dbConnectionObj,
+      systemUserId: () => {
+        return 20;
+      },
+      query: mockQuery
+    });
+
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
+    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(SQL`some query`);
 
     try {
-      await system_roles.addSystemRoles(userId, roles, dbConnectionObj);
+      const result = system_roles.getAddSystemRolesHandler();
 
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to add system roles');
-    }
-  });
-
-  it('should throw a 400 error when it fails to add system roles (no rowCount)', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rowCount: null });
-    sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, query: mockQuery });
-    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(SQL`something`);
-
-    try {
-      await system_roles.addSystemRoles(userId, roles, dbConnectionObj);
-
+      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
