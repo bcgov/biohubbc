@@ -17,7 +17,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N } from 'constants/i18n';
-import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
+import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { CodeSet, IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -318,10 +318,6 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     });
   };
 
-  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
-    dialogContext.setSnackbar({ ...textDialogProps, open: true });
-  };
-
   const changeProjectParticipantRole = async (row: IGetProjectParticipantsResponseArrayItem, newRole: string) => {
     if (!row?.project_participation_id) {
       return;
@@ -338,7 +334,8 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         return;
       }
 
-      showSnackBar({
+      dialogContext.setSnackbar({
+        open: true,
         snackbarMessage: (
           <Typography variant="body2" component="div">
             User <strong>{row.user_identifier}</strong>'s role changed to {newRole}.
