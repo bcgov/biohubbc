@@ -101,7 +101,6 @@ export function removeSystemUser(): RequestHandler {
       }
 
       if (userResult.record_end_date) {
-        console.log('we have a user record end date');
         throw new HTTP400('The system user is not active');
       }
 

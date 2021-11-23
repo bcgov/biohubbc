@@ -127,14 +127,14 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     }
   };
 
-  const handleChangeUserPermissionsClick = (row: IGetUserResponse, newRoleName: any) => {
-    console.log('system changed to ', newRoleName);
-
+  const handleChangeUserPermissionsClick = (row: IGetUserResponse, newRoleName: any, newRoleId: number) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change User Role?',
       dialogContent: (
         <>
-          <Typography color="textPrimary">Change user <strong>{row.user_identifier}'s</strong> role to <strong>{newRoleName}</strong>?</Typography>
+          <Typography color="textPrimary">
+            Change user <strong>{row.user_identifier}'s</strong> role to <strong>{newRoleName}</strong>?
+          </Typography>
         </>
       ),
       yesButtonLabel: 'Change Role',
@@ -148,24 +148,28 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       },
       open: true,
       onYes: () => {
-        changeSystemUserRole(row);
+        changeSystemUserRole(row, newRoleId, newRoleName);
         dialogContext.setYesNoDialog({ open: false });
       }
     });
   };
 
-  const changeSystemUserRole = async (user: IGetUserResponse) => {
+  const changeSystemUserRole = async (user: IGetUserResponse, roleId: number, roleName: string) => {
     if (!user?.id) {
       return;
     }
+    const roleIds = [roleId];
+
+
     try {
-      //await biohubApi.user.updateSystemUserRole(user.id);
+      await biohubApi.user.updateSystemUserRoles(user.id, roleIds);
 
       showSnackBar({
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              User <strong>{user.user_identifier}</strong>'s role change to [new role].
+              User <strong>{user.user_identifier}</strong>'s role has changed to {' '}
+               <strong>{roleName}</strong>.
             </Typography>
           </>
         ),
@@ -220,10 +224,9 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                           .map((item) => {
                             return {
                               menuLabel: item.name,
-                              menuOnClick: () => handleChangeUserPermissionsClick(row, item.name)
+                              menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
                             };
-                          })
-                        }
+                          })}
                         buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
                       />
                     </TableCell>

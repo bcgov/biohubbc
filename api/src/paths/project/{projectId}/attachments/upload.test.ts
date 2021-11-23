@@ -7,8 +7,6 @@ import * as db from '../../../../database/db';
 import * as file_utils from '../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import { CustomError } from '../../../../errors/CustomError';
-//import * as project_attachment_queries from '../../../../queries/project/project-attachments-queries';
-//import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
@@ -166,56 +164,4 @@ describe('uploadMedia', () => {
     expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
 
-  // it('should return 200 on success when attachmentType is Other', async () => {
-  //   let actualStatus: any = null;
-
-  //   const mockRes = {
-  //     status: () => {
-  //       return {
-  //         json: (result: any) => {
-  //           actualStatus = result;
-  //         }
-  //       };
-  //     },
-  //     send: (status: number) => {
-  //       actualStatus = status;
-  //     }
-  //   } as any;
-
-  //   const mockNext = {} as any;
-
-  //   const mockQuery = sinon.stub();
-
-  //   mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-  //   mockQuery.onCall(1).resolves({ rowCount: 1, rows: [{ id: 1, revision_count: 1 }] });
-  //   mockQuery.onCall(2).resolves({ rowCount: 1, rows: [{ id: 1 }] });
-
-  //   sinon.stub(db, 'getDBConnection').returns({
-  //     ...dbConnectionObj,
-  //     systemUserId: () => {
-  //       return 20;
-  //     },
-  //     query: mockQuery
-  //   });
-
-  //sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-  //sinon.stub(project_attachment_queries, 'getProjectAttachmentByFileNameSQL').returns(SQL`some query`);
-  //sinon.stub(project_attachment_queries, 'postProjectAttachmentSQL').returns(SQL`some query`);
-
-  //   sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
-
-  //   const result = upload.uploadMedia();
-
-  //   await result(
-  //     {
-  //       ...mockReq,
-  //       auth_payload: { preferred_username: 'user', email: 'example@email.com' }
-  //     },
-  //     mockRes,
-  //     mockNext
-  //   );
-
-  //   console.log('actual status is:', actualStatus);
-  //   expect(actualStatus).to.eql({ attachmentId: 1, revision_count: 1 });
-  // });
 });
