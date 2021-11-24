@@ -28,7 +28,6 @@ import AdmZip from 'adm-zip';
 import * as xml2js from 'xml2js';
 import { getDbCharacterSystemMetaDataConstant } from '../../utils/db-constant-utils';
 import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
 
 const simsEmlVersion = '1.0.0';
 
@@ -40,7 +39,7 @@ const defaultEMLFileName = 'eml.xml';
 const defaultEMLMimeType = 'application/xml';
 const defaultArchiveMimeType = 'application/zip';
 
-export const POST: Operation = [logRequest('paths/dwc/eml', 'POST'), getSurveyDataPackageEML(), sendResponse()];
+export const POST: Operation = [getSurveyDataPackageEML(), sendResponse()];
 
 POST.apiDoc = {
   description: 'Produces an Ecological Metadata Language (EML) extract for a target data package.',
