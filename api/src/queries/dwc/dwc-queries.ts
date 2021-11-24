@@ -187,7 +187,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
 };
 
 /**
- * SQL query to get project funding source data.
+ * SQL query to get survey funding source data.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
@@ -213,6 +213,41 @@ export const getSurveyFundingSourceSQL = (surveyId: number): SQLStatement | null
         survey_funding_source 
       where 
         survey_id = ${surveyId})
+    and b.investment_action_category_id = a.investment_action_category_id 
+    and c.funding_source_id = b.funding_source_id;
+  `;
+
+  defaultLog.debug({
+    label: debugLabel,
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project funding source data.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getProjectFundingSourceSQL = (projectId: number): SQLStatement | null => {
+  const debugLabel = 'getProjectFundingSourceSQL';
+  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
+
+  const sqlStatement: SQLStatement = SQL`
+  select 
+    a.*, 
+    b.name investment_action_category_name, 
+    c.name funding_source_name 
+  from 
+    project_funding_source a, 
+    investment_action_category b, 
+    funding_source c
+  where 
+    project_id =  ${projectId}
     and b.investment_action_category_id = a.investment_action_category_id 
     and c.funding_source_id = b.funding_source_id;
   `;
@@ -539,11 +574,13 @@ export const getProjectManagementActionsSQL = (projectId: number): SQLStatement 
 
   const sqlStatement: SQLStatement = SQL`
     select 
-      project_id 
+      a.* 
     from 
-      project_management_actions 
+      management_action_type a, 
+      project_management_actions b
     where 
-      project_id = ${projectId};
+      a.management_action_type_id = b.management_action_type_id
+      and b.project_id =  ${projectId};
   `;
 
   defaultLog.debug({

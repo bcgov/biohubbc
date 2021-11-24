@@ -10,6 +10,7 @@ import {
   getSurveySQL,
   getProjectSQL,
   getSurveyFundingSourceSQL,
+  getProjectFundingSourceSQL,
   getGeometryBoundingBoxSQL,
   getGeometryPolygonsSQL,
   getTaxonomicCoverageSQL,
@@ -112,7 +113,7 @@ export function getSurveyDataPackageEML(): RequestHandler {
 
       // get the EML data for the survey
       const dataPackageEML = await getDataPackageEML(req.body.data_package_id, connection, req.body.supplied_title);
-      defaultLog.debug({ label: 'getSurveyDataPackageEML', message: 'dataPackageEML is ' + dataPackageEML });
+      //defaultLog.debug({ label: 'getSurveyDataPackageEML', message: 'dataPackageEML is ' + dataPackageEML });
 
       // get the archive file from s3
       if (!occurrenceSubmission.output_key) {
@@ -183,11 +184,11 @@ export const getDataPackageEML = async (
   const survey = await getSurvey(occurrenceSubmission.survey_id, connection);
   const project = await getProject(survey.project_id, connection);
   const surveyFundingSource = await getSurveyFundingSource(survey.survey_id, connection);
-  const projectFundingSource = await getSurveyFundingSource(project.project_id, connection);
+  const projectFundingSource = await getProjectFundingSource(project.project_id, connection);
   const surveyBoundingBox = await getSurveyBoundingBox(survey.survey_id, connection);
   const surveyPolygons = await getSurveyPolygons(survey.survey_id, connection);
-  const projectBoundingBox = await getSurveyBoundingBox(project.project_id, connection);
-  const projectPolygons = await getSurveyPolygons(project.project_id, connection);
+  const projectBoundingBox = await getProjectBoundingBox(project.project_id, connection);
+  const projectPolygons = await getProjectPolygons(project.project_id, connection);
   const focalTaxonomicCoverage = await getFocalTaxonomicCoverage(survey.survey_id, connection);
   const projectIucnConservation = await getProjectIucnConservation(project.project_id, connection);
   const projectStakeholderPartnership = await getProjectStakeholderPartnership(project.project_id, connection);
@@ -506,20 +507,21 @@ const getGeographicCoverageEML = (geographicDescription: string, boundingBox: an
  * @return {Eml}
  */
 const getFundingEML = (fundingSourceRows: any[]): Eml => {
-  const funding: Eml = { section: { title: 'Funding Source' } };
-  for (const row of fundingSourceRows) {
-    funding.section.para = row.funding_source_name;
-    funding.section.section = {
+  const funding: Eml = { section: [] };
+
+  fundingSourceRows.forEach(function (row: any, i: number) {
+    funding.section[i] = { title: 'Funding Source', para: row.funding_source_name };
+    funding.section[i].section = {
       title: 'Investment Action Category',
       para: row.investment_action_category_name,
       section: [
-        { title: 'Funding Source Project ID', para: row.project_funding_source_id },
+        { title: 'Funding Source Project ID', para: row.funding_source_project_id },
         { title: 'Funding Amount', para: row.funding_amount },
         { title: 'Funding Start Date', para: new Date(row.funding_start_date).toISOString().split('T')[0] },
         { title: 'Funding End Date', para: new Date(row.funding_end_date).toISOString().split('T')[0] }
       ]
     };
-  }
+  });
 
   return funding;
 };
@@ -653,7 +655,7 @@ export const getProject = async (projectId: number, connection: IDBConnection): 
 };
 
 /**
- * Get funding source records.
+ * Get survey funding source records.
  *
  * @param {number} surveyId
  * @param {IDBConnection} connection
@@ -661,6 +663,25 @@ export const getProject = async (projectId: number, connection: IDBConnection): 
  */
 export const getSurveyFundingSource = async (surveyId: number, connection: IDBConnection): Promise<any[]> => {
   const sqlStatement = getSurveyFundingSourceSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response.rows;
+};
+
+/**
+ * Get project funding source records.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<any[]>}
+ */
+ export const getProjectFundingSource = async (projectId: number, connection: IDBConnection): Promise<any[]> => {
+  const sqlStatement = getProjectFundingSourceSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -691,6 +712,25 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
 };
 
 /**
+ * Get project bounding box.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {BoundingBox} {Promise<BoundingBox>}
+ */
+ export const getProjectBoundingBox = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getGeometryBoundingBoxSQL(projectId, 'project_id', 'project');
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response.rows[0];
+};
+
+/**
  * Get survey polygons.
  *
  * @param {number} surveyId
@@ -699,6 +739,25 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
  */
 export const getSurveyPolygons = async (surveyId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getGeometryPolygonsSQL(surveyId, 'survey_id', 'survey');
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return response;
+};
+
+/**
+ * Get project polygons.
+ *
+ * @param {number} projectId
+ * @param {IDBConnection} connection
+ * @return {*} {Promise<void>}
+ */
+ export const getProjectPolygons = async (projectId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getGeometryPolygonsSQL(projectId, 'project_id', 'project');
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

@@ -21,5 +21,5 @@ export const getDbCharacterSystemMetaDataConstant = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return response;
+  return response.rows?.[0].constant || null;
 };
