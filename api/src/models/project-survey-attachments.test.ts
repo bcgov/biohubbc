@@ -185,8 +185,6 @@ describe('GetReportAttachmentAuthor', () => {
     it('sets the report metadata', function () {
       const getReportAttachmentAuthor = new GetReportAttachmentAuthor(input);
 
-      console.log('getReportAttachmentAuthor', getReportAttachmentAuthor);
-
       expect(getReportAttachmentAuthor.first_name).to.equal(input.first_name);
       expect(getReportAttachmentAuthor.last_name).to.equal(input.last_name);
     });

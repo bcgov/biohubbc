@@ -1,8 +1,8 @@
 import { IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import {
-  getProjectParticipationBySystemUserSQL,
-  postProjectRolesByRoleNameSQL
+  addProjectRoleByRoleIdSQL,
+  getProjectParticipationBySystemUserSQL
 } from '../queries/project-participation/project-participation-queries';
 
 /**
@@ -17,7 +17,7 @@ import {
 export const ensureProjectParticipant = async (
   projectId: number,
   systemUserId: number,
-  projectParticipantRole: string,
+  projectParticipantRoleId: number,
   connection: IDBConnection
 ): Promise<void> => {
   const projectParticipantRecord = await getProjectParticipant(projectId, systemUserId, connection);
@@ -28,7 +28,7 @@ export const ensureProjectParticipant = async (
   }
 
   // add new project participant record
-  await addProjectParticipant(projectId, systemUserId, projectParticipantRole, connection);
+  await addProjectParticipant(projectId, systemUserId, projectParticipantRoleId, connection);
 };
 
 /**
@@ -53,7 +53,7 @@ export const getProjectParticipant = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response) {
-    throw new HTTP400('Failed to get project participant');
+    throw new HTTP400('Failed to get project team member');
   }
 
   return response?.rows?.[0] || null;
@@ -73,10 +73,10 @@ export const getProjectParticipant = async (
 export const addProjectParticipant = async (
   projectId: number,
   systemUserId: number,
-  projectParticipantRole: string,
+  projectParticipantRoleId: number,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = postProjectRolesByRoleNameSQL(projectId, systemUserId, projectParticipantRole);
+  const sqlStatement = addProjectRoleByRoleIdSQL(projectId, systemUserId, projectParticipantRoleId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -85,6 +85,6 @@ export const addProjectParticipant = async (
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   if (!response || !response.rowCount) {
-    throw new HTTP400('Failed to insert project participant');
+    throw new HTTP400('Failed to insert project team member');
   }
 };

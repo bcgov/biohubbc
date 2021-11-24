@@ -21,7 +21,8 @@ import React, { useContext, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import AddProjectParticipantsForm, {
   AddProjectParticipantsFormInitialValues,
-  AddProjectParticipantsFormYupSchema
+  AddProjectParticipantsFormYupSchema,
+  IAddProjectParticipantsForm
 } from './AddProjectParticipantsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -77,7 +78,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
     });
   };
 
-  const handleAddProjectParticipantsSave = async (values: any) => {
+  const handleAddProjectParticipantsSave = async (values: IAddProjectParticipantsForm) => {
     try {
       const response = await biohubApi.project.addProjectParticipants(projectId, values.participants);
 
@@ -160,7 +161,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
             <AddProjectParticipantsForm
               project_roles={
                 props.codes?.project_roles?.map((item) => {
-                  return { value: item.name, label: item.name };
+                  return { value: item.id, label: item.name };
                 }) || []
               }
             />
@@ -172,6 +173,14 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
         onSave={(values) => {
           handleAddProjectParticipantsSave(values);
           setOpenAddParticipantsDialog(false);
+          dialogContext.setSnackbar({
+            open: true,
+            snackbarMessage: (
+              <Typography variant="body2" component="div">
+                {values.participants.length} project members added.
+              </Typography>
+            )
+          });
         }}
       />
     </>

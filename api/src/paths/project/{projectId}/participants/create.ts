@@ -54,7 +54,7 @@ POST.apiDoc = {
               type: 'array',
               items: {
                 type: 'object',
-                required: ['userIdentifier', 'identitySource', 'role'],
+                required: ['userIdentifier', 'identitySource', 'roleId'],
                 properties: {
                   userIdentifier: {
                     description: 'A IDIR or BCEID username.',
@@ -64,9 +64,9 @@ POST.apiDoc = {
                     type: 'string',
                     enum: ['IDIR', 'BCEID']
                   },
-                  role: {
-                    description: 'The name of the project role to assign to the participant.',
-                    type: 'string'
+                  roleId: {
+                    description: 'The id of the project role to assign to the participant.',
+                    type: 'number'
                   }
                 }
               }
@@ -113,7 +113,7 @@ export function createProjectParticipants(): RequestHandler {
     try {
       const projectId = Number(req.params.projectId);
 
-      const participants: { userIdentifier: string; identitySource: string; role: string }[] = req.body.participants;
+      const participants: { userIdentifier: string; identitySource: string; roleId: number }[] = req.body.participants;
 
       await connection.open();
 
@@ -139,12 +139,12 @@ export function createProjectParticipants(): RequestHandler {
 
 export const ensureSystemUserAndProjectParticipantUser = async (
   projectId: number,
-  participant: { userIdentifier: string; identitySource: string; role: string },
+  participant: { userIdentifier: string; identitySource: string; roleId: number },
   connection: IDBConnection
 ) => {
   // Add a system user, unless they already have one
   const systemUserObject = await ensureSystemUser(participant.userIdentifier, participant.identitySource, connection);
 
   // Add project role, unless they already have one
-  await ensureProjectParticipant(projectId, systemUserObject.id, participant.role, connection);
+  await ensureProjectParticipant(projectId, systemUserObject.id, participant.roleId, connection);
 };

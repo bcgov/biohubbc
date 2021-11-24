@@ -379,6 +379,26 @@ const useProjectApi = (axios: AxiosInstance) => {
     return status === 200;
   };
 
+  /**
+   * Update project participant role.
+   *
+   * @param {number} projectId
+   * @param {number} projectParticipationId
+   * @param {string} role
+   * @return {*}  {Promise<boolean>}
+   */
+  const updateProjectParticipantRole = async (
+    projectId: number,
+    projectParticipationId: number,
+    roleId: number
+  ): Promise<boolean> => {
+    const { status } = await axios.put(`/api/project/${projectId}/participants/${projectParticipationId}/update`, {
+      roleId
+    });
+
+    return status === 200;
+  };
+
   return {
     getProjectsList,
     createProject,
@@ -399,7 +419,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     getProjectReportMetadata,
     getProjectParticipants,
     addProjectParticipants,
-    removeProjectParticipant
+    removeProjectParticipant,
+    updateProjectParticipantRole
   };
 };
 

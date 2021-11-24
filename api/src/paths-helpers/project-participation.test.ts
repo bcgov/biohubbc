@@ -28,13 +28,13 @@ describe('user', () => {
 
       const projectId = 1;
       const systemUserId = 1;
-      const projectParticipantRole = 'project_role';
+      const projectParticipantRoleId = 1;
 
       try {
         await project_participation.ensureProjectParticipant(
           projectId,
           systemUserId,
-          projectParticipantRole,
+          projectParticipantRoleId,
           mockDBConnection
         );
       } catch (actualError) {
@@ -54,13 +54,13 @@ describe('user', () => {
 
       const projectId = 1;
       const systemUserId = 1;
-      const projectParticipantRole = 'project_role';
+      const projectParticipantRoleId = 1;
 
       try {
         await project_participation.ensureProjectParticipant(
           projectId,
           systemUserId,
-          projectParticipantRole,
+          projectParticipantRoleId,
           mockDBConnection
         );
       } catch (actualError) {
@@ -107,7 +107,7 @@ describe('user', () => {
         await project_participation.getProjectParticipant(projectId, systemUserId, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to get project participant');
+        expect((actualError as CustomError).message).to.equal('Failed to get project team member');
         expect((actualError as CustomError).status).to.equal(400);
       }
     });
@@ -150,17 +150,17 @@ describe('user', () => {
     it('should throw a 400 error when no sql statement produced', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      sinon.stub(project_participation_queries, 'postProjectRolesByRoleNameSQL').returns(null);
+      sinon.stub(project_participation_queries, 'addProjectRoleByRoleIdSQL').returns(null);
 
       const projectId = 1;
       const systemUserId = 1;
-      const projectParticipantRole = 'project_role';
+      const projectParticipantRoleId = 1;
 
       try {
         await project_participation.addProjectParticipant(
           projectId,
           systemUserId,
-          projectParticipantRole,
+          projectParticipantRoleId,
           mockDBConnection
         );
         expect.fail();
@@ -174,22 +174,22 @@ describe('user', () => {
       const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
 
-      sinon.stub(project_participation_queries, 'postProjectRolesByRoleNameSQL').returns(SQL`valid sql`);
+      sinon.stub(project_participation_queries, 'addProjectRoleByRoleIdSQL').returns(SQL`valid sql`);
 
       const projectId = 1;
       const systemUserId = 1;
-      const projectParticipantRole = 'project_role';
+      const projectParticipantRoleId = 1;
 
       try {
         await project_participation.addProjectParticipant(
           projectId,
           systemUserId,
-          projectParticipantRole,
+          projectParticipantRoleId,
           mockDBConnection
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to insert project participant');
+        expect((actualError as CustomError).message).to.equal('Failed to insert project team member');
         expect((actualError as CustomError).status).to.equal(400);
       }
     });
@@ -199,22 +199,22 @@ describe('user', () => {
       const mockQuery = sinon.fake.resolves(mockQueryResponse);
       const mockDBConnection = getMockDBConnection({ query: mockQuery });
 
-      const postProjectRolesByRoleNameSQLStub = sinon
-        .stub(project_participation_queries, 'postProjectRolesByRoleNameSQL')
+      const addProjectRoleByRoleIdSQLStub = sinon
+        .stub(project_participation_queries, 'addProjectRoleByRoleIdSQL')
         .returns(SQL`valid sql`);
 
       const projectId = 1;
       const systemUserId = 1;
-      const projectParticipantRole = 'project_role';
+      const projectParticipantRoleId = 1;
 
       await project_participation.addProjectParticipant(
         projectId,
         systemUserId,
-        projectParticipantRole,
+        projectParticipantRoleId,
         mockDBConnection
       );
 
-      expect(postProjectRolesByRoleNameSQLStub).to.have.been.calledOnce;
+      expect(addProjectRoleByRoleIdSQLStub).to.have.been.calledOnce;
       expect(mockQuery).to.have.been.calledOnce;
     });
   });

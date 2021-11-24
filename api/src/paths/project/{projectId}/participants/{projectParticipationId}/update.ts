@@ -1,15 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
-import { deleteProjectParticipationSQL } from '../../../../../queries/project-participation/project-participation-queries';
+import { addProjectParticipant } from '../../../../../paths-helpers/project-participation';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
+import { deleteProjectParticipationRecord } from './delete';
 
-const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/delete');
+const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
 
-export const DELETE: Operation = [
+export const PUT: Operation = [
   authorizeRequestHandler((req) => {
     return {
       and: [
@@ -21,11 +22,11 @@ export const DELETE: Operation = [
       ]
     };
   }),
-  deleteProjectParticipant()
+  updateProjectParticipantRole()
 ];
 
-DELETE.apiDoc = {
-  description: 'Delete a project participant.',
+PUT.apiDoc = {
+  description: 'Update a project participant role.',
   tags: ['project'],
   security: [
     {
@@ -50,9 +51,24 @@ DELETE.apiDoc = {
       required: true
     }
   ],
+  requestBody: {
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          required: ['roleId'],
+          properties: {
+            roleId: {
+              type: 'number'
+            }
+          }
+        }
+      }
+    }
+  },
   responses: {
     200: {
-      description: 'Delete project participant OK'
+      description: 'Update project participant role OK'
     },
     400: {
       $ref: '#/components/responses/400'
@@ -72,9 +88,9 @@ DELETE.apiDoc = {
   }
 };
 
-export function deleteProjectParticipant(): RequestHandler {
+export function updateProjectParticipantRole(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'deleteProjectParticipant', message: 'params', req_params: req.params });
+    defaultLog.debug({ label: 'updateProjectParticipantRole', message: 'params', req_params: req.params });
 
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
@@ -84,18 +100,35 @@ export function deleteProjectParticipant(): RequestHandler {
       throw new HTTP400('Missing required path param `projectParticipationId`');
     }
 
+    if (!req.body.roleId) {
+      throw new HTTP400('Missing required body param `roleId`');
+    }
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+      // Delete the user's old participation record, returning the old record
+      const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+
+      if (!result || !result.system_user_id) {
+        // The delete result is missing necesary data, fail the request
+        throw new HTTP500('Failed to update project participant role');
+      }
+
+      await addProjectParticipant(
+        Number(req.params.projectId),
+        Number(result.system_user_id), // get the user's system id from the old participation record
+        Number(req.body.roleId),
+        connection
+      );
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'deleteProjectParticipant', message: 'error', error });
+      defaultLog.error({ label: 'updateProjectParticipantRole', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -103,22 +136,3 @@ export function deleteProjectParticipant(): RequestHandler {
     }
   };
 }
-
-export const deleteProjectParticipationRecord = async (
-  projectParticipationId: number,
-  connection: IDBConnection
-): Promise<any> => {
-  const sqlStatement = deleteProjectParticipationSQL(projectParticipationId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rowCount) {
-    throw new HTTP500('Failed to delete project team member');
-  }
-
-  return response.rows[0];
-};

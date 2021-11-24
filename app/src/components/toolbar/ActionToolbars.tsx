@@ -85,7 +85,7 @@ export interface ICustomMenuButtonProps {
   buttonTitle: string;
   buttonStartIcon?: ReactNode;
   buttonEndIcon?: ReactNode;
-  buttonProps?: Partial<IconButtonProps> & { 'data-testid'?: string };
+  buttonProps?: Partial<ButtonProps> & { 'data-testid'?: string };
   menuItems: IMenuToolbarItem[];
 }
 
