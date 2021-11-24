@@ -10,6 +10,7 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
 import clsx from 'clsx';
 import RequestDialog from 'components/dialog/RequestDialog';
@@ -181,10 +182,12 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
           )
         }}
       />
-      <Box component={Paper} p={3}>
-        <Box pb={3}>
-          <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
-        </Box>
+      <Paper>
+        <Toolbar disableGutters>
+          <Box px={2}>
+            <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
+          </Box>
+        </Toolbar>
         <TableContainer>
           <Table className={classes.table}>
             <TableHead>
@@ -228,7 +231,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
             </TableBody>
           </Table>
         </TableContainer>
-      </Box>
+      </Paper>
     </>
   );
 };
