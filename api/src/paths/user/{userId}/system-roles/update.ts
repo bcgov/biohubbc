@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../../../errors/CustomError';
 import { UserObject } from '../../../../models/user';
 import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
 import { deleteAllSystemRolesSQL, getUserByIdSQL } from '../../../../queries/users/user-queries';
@@ -122,8 +122,7 @@ export function updateSystemRolesHandler(): RequestHandler {
       const userObject = new UserObject(userResult);
 
       if (userObject.role_ids.length) {
-        //delete all existing user system roles
-        deleteUserSystemRoles(userId, connection);
+        const temp = await deleteUserSystemRoles(userId, connection);
       }
 
       //add new user system roles
@@ -160,9 +159,13 @@ export const deleteUserSystemRoles = async (userId: number, connection: IDBConne
     deleteSystemRolesSqlStatement.values
   );
 
-  if (!deleteSystemRolesResponse) {
-    throw new HTTP400('Failed to delete system roles');
+  const result = deleteSystemRolesResponse || null;
+
+  if (!result) {
+    throw new HTTP500('Failed to delete user roles');
   }
+
+  return result;
 };
 
 /**
@@ -185,6 +188,6 @@ export const addUserSystemRoles = async (userId: number, roleIds: number[], conn
   );
 
   if (!postSystemRolesResponse || !postSystemRolesResponse.rowCount) {
-    throw new HTTP400('Failed to add system roles');
+    throw new HTTP400('Failed to insert user roles');
   }
 };
