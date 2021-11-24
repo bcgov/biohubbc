@@ -122,7 +122,7 @@ export function updateSystemRolesHandler(): RequestHandler {
       const userObject = new UserObject(userResult);
 
       if (userObject.role_ids.length) {
-        const temp = await deleteUserSystemRoles(userId, connection);
+        await deleteUserSystemRoles(userId, connection);
       }
 
       //add new user system roles
