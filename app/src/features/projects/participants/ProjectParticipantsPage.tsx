@@ -57,6 +57,35 @@ const ProjectParticipantsPage: React.FC = () => {
 
   const projectId = urlParams['id'];
 
+  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
+    onClose: () => dialogContext.setErrorDialog({ open: false }),
+    onOk: () => dialogContext.setErrorDialog({ open: false })
+  };
+
+  const openErrorDialog = useCallback(
+    (errorDialogProps?: Partial<IErrorDialogProps>) => {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        ...errorDialogProps,
+        open: true
+      });
+    },
+    [defaultErrorDialogProps, dialogContext]
+  );
+
+  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      ...yesNoDialogProps,
+      open: true
+    });
+  };
+
   const getProject = useCallback(async () => {
     const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
 
@@ -91,7 +120,7 @@ const ProjectParticipantsPage: React.FC = () => {
     }
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
-  const getProjectParticipants = async () => {
+  const getProjectParticipants = useCallback(async () => {
     try {
       const response = await biohubApi.project.getProjectParticipants(projectId);
 
@@ -114,7 +143,7 @@ const ProjectParticipantsPage: React.FC = () => {
       setProjectParticipants([]);
       return;
     }
-  };
+  }, [biohubApi.project, openErrorDialog, projectId]);
 
   useEffect(() => {
     if (projectParticipants) {
@@ -123,32 +152,6 @@ const ProjectParticipantsPage: React.FC = () => {
 
     getProjectParticipants();
   }, [biohubApi, projectId, projectParticipants, getProjectParticipants]);
-
-  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
-  };
-
-  const openErrorDialog = (errorDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      ...defaultErrorDialogProps,
-      ...errorDialogProps,
-      open: true
-    });
-  };
-
-  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
-  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
-    dialogContext.setYesNoDialog({
-      ...defaultYesNoDialogProps,
-      ...yesNoDialogProps,
-      open: true
-    });
-  };
 
   const handleRemoveProjectParticipant = async (projectParticipationId: number) => {
     try {
@@ -299,7 +302,11 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const handleChangeUserPermissionsClick = (item: IGetProjectParticipantsResponseArrayItem, newRole: string) => {
+  const handleChangeUserPermissionsClick = (
+    item: IGetProjectParticipantsResponseArrayItem,
+    newRole: string,
+    newRoleId: number
+  ) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
@@ -320,21 +327,26 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         dialogContext.setYesNoDialog({ open: false });
       },
       onYes: () => {
-        changeProjectParticipantRole(item, newRole);
+        changeProjectParticipantRole(item, newRole, newRoleId);
         dialogContext.setYesNoDialog({ open: false });
       }
     });
   };
 
-  const changeProjectParticipantRole = async (item: IGetProjectParticipantsResponseArrayItem, newRole: string) => {
+  const changeProjectParticipantRole = async (
+    item: IGetProjectParticipantsResponseArrayItem,
+    newRole: string,
+    newRoleId: number
+  ) => {
     if (!item?.project_participation_id) {
       return;
     }
+
     try {
       const status = await biohubApi.project.updateProjectParticipantRole(
         item.project_id,
         item.project_participation_id,
-        newRole
+        newRoleId
       );
 
       if (!status) {
@@ -368,7 +380,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
       menuItems={projectRoleCodes.map((roleCode) => {
         return {
           menuLabel: roleCode.name,
-          menuOnClick: () => handleChangeUserPermissionsClick(row, roleCode.name)
+          menuOnClick: () => handleChangeUserPermissionsClick(row, roleCode.name, roleCode.id)
         };
       })}
       buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}

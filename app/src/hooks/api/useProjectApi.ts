@@ -390,10 +390,10 @@ const useProjectApi = (axios: AxiosInstance) => {
   const updateProjectParticipantRole = async (
     projectId: number,
     projectParticipationId: number,
-    role: string
+    roleId: number
   ): Promise<boolean> => {
     const { status } = await axios.put(`/api/project/${projectId}/participants/${projectParticipationId}/update`, {
-      role
+      roleId
     });
 
     return status === 200;

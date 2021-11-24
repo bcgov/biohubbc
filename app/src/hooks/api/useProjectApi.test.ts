@@ -372,14 +372,14 @@ describe('useProjectApi', () => {
 
   it('removeProjectParticipant works as expected', async () => {
     const projectParticipationId = 1;
-    const projectRole = 'Test Role';
+    const projectRoleId = 1;
 
     mock.onPut(`/api/project/${projectId}/participants/${projectParticipationId}/update`).reply(200);
 
     const result = await useProjectApi(axios).updateProjectParticipantRole(
       projectId,
       projectParticipationId,
-      projectRole
+      projectRoleId
     );
 
     expect(result).toEqual(true);
