@@ -118,7 +118,7 @@ export const getAllProjectParticipants = (projectId: number): SQLStatement | nul
  * @param {string} projectParticipantRole
  * @return {*}  {(SQLStatement | null)}
  */
-export const postProjectRolesByRoleNameSQL = (
+export const addProjectRoleByRoleNameSQL = (
   projectId: number,
   systemUserId: number,
   projectParticipantRole: string
@@ -166,55 +166,46 @@ export const postProjectRolesByRoleNameSQL = (
 };
 
 /**
- * SQL query to update a single project participation record.
+ * SQL query to add a single project role to a user.
  *
  * @param {number} projectId
  * @param {number} systemUserId
  * @param {string} projectParticipantRole
  * @return {*}  {(SQLStatement | null)}
  */
-export const updateProjectRolesByRoleNameSQL = (
+export const addProjectRoleByRoleIdSQL = (
   projectId: number,
   systemUserId: number,
-  projectParticipantRole: string,
-  revision_count: number
+  projectParticipantRoleId: number
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'postProjectRoleSQL',
+    label: 'addProjectRoleByRoleIdSQL',
     message: 'params',
     projectId,
     systemUserId,
-    projectParticipantRole
+    projectParticipantRoleId
   });
 
-  if (!projectId || !systemUserId || !projectParticipantRole) {
+  if (!projectId || !systemUserId || !projectParticipantRoleId) {
     return null;
   }
 
   const sqlStatement = SQL`
-    UPDATE
-      project_participation
-    SET
-      project_role_id = (
-        SELECT
-          project_role_id
-        FROM
-          project_role
-        WHERE
-          name = ${projectParticipantRole})
-      )
-    WHERE
-      project_id = ${projectId}
-    AND
-      system_user_id = ${systemUserId}
-    AND
-      revision_count = ${revision_count}
+    INSERT INTO project_participation (
+      project_id,
+      system_user_id,
+      project_role_id
+    ) VALUES (
+      ${projectId},
+      ${systemUserId},
+      ${projectParticipantRoleId}
+    )
     RETURNING
       *;
   `;
 
   defaultLog.info({
-    label: 'postProjectRoleSQL',
+    label: 'addProjectRoleByRoleIdSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -244,7 +235,9 @@ export const deleteProjectParticipationSQL = (projectParticipationId: number): S
     DELETE FROM
       project_participation
     WHERE
-      project_participation_id = ${projectParticipationId};
+      project_participation_id = ${projectParticipationId}
+    RETURNING
+      *;
   `;
 
   defaultLog.info({

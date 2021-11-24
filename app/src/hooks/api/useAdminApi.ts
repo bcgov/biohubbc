@@ -108,25 +108,7 @@ const useAdminApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<number>}
    */
   const addSystemUserRoles = async (userId: number, roleIds: number[]): Promise<number> => {
-    const { data } = await axios.post(`/api/user/${userId}/system-roles`, { roles: roleIds });
-
-    return data;
-  };
-
-  /**
-   * Remove one or more system roles from a user.
-   *
-   * @param {number} userId
-   * @param {number[]} roleIds
-   * @return {*}  {Promise<number>}
-   */
-  const removeSystemUserRoles = async (userId: number, roleIds: number[]): Promise<number> => {
-    const { data } = await axios.delete(`/api/user/${userId}/system-roles`, {
-      params: { roleId: roleIds },
-      paramsSerializer: (params) => {
-        return qs.stringify(params);
-      }
-    });
+    const { data } = await axios.post(`/api/user/${userId}/system-roles/create`, { roles: roleIds });
 
     return data;
   };
@@ -137,8 +119,7 @@ const useAdminApi = (axios: AxiosInstance) => {
     updateAdministrativeActivity,
     createAdministrativeActivity,
     hasPendingAdministrativeActivities,
-    addSystemUserRoles,
-    removeSystemUserRoles
+    addSystemUserRoles
   };
 };
 
