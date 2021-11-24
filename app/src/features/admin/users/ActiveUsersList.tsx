@@ -4,6 +4,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
+import Toolbar from '@material-ui/core/Toolbar';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
@@ -78,11 +79,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       dialogTitle: 'Remove user?',
       dialogContent: (
         <>
-          <Typography variant="body1">
+          <Typography variant="body1" color="textPrimary">
             Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
             related projects.
           </Typography>
-          <Typography variant="body1">Are you sure you want to proceed?</Typography>
+          <Typography variant="body1" color="textPrimary">
+            Are you sure you want to proceed?
+          </Typography>
         </>
       ),
       yesButtonLabel: 'Remove User',
@@ -113,7 +116,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              User <strong>{user.user_identifier}</strong> removed.
+              User <strong>{user.user_identifier}</strong> removed from application.
             </Typography>
           </>
         ),
@@ -183,16 +186,18 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
   return (
     <>
-      <Box component={Paper} p={3}>
-        <Box pb={3}>
-          <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
-        </Box>
+      <Paper>
+        <Toolbar disableGutters>
+          <Box px={2}>
+            <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
+          </Box>
+        </Toolbar>
         <TableContainer>
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
                 <TableCell>Username</TableCell>
-                <TableCell>Roles</TableCell>
+                <TableCell>Role</TableCell>
                 <TableCell width="100px" align="center">
                   Actions
                 </TableCell>
@@ -211,35 +216,39 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                     <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
                     <TableCell>
-                      <CustomMenuButton
-                        buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
-                        buttonTitle={'Change User Permissions'}
-                        buttonProps={{ variant: 'text' }}
-                        menuItems={codes.system_roles
-                          .sort((item1, item2) => {
-                            return item1.name.localeCompare(item2.name);
-                          })
-                          .map((item) => {
-                            return {
-                              menuLabel: item.name,
-                              menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
-                            };
-                          })}
-                        buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
-                      />
+                      <Box my={-1}>
+                        <CustomMenuButton
+                          buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
+                          buttonTitle={'Change User Permissions'}
+                          buttonProps={{ variant: 'text' }}
+                          menuItems={codes.system_roles
+                            .sort((item1, item2) => {
+                              return item1.name.localeCompare(item2.name);
+                            })
+                            .map((item) => {
+                              return {
+                                menuLabel: item.name,
+                                menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
+                              };
+                            })}
+                          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
+                        />
+                      </Box>
                     </TableCell>
                     <TableCell align="center">
-                      <CustomMenuIconButton
-                        buttonTitle="Actions"
-                        buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
-                        menuItems={[
-                          {
-                            menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
-                            menuLabel: 'Remove User',
-                            menuOnClick: () => handleRemoveUserClick(row)
-                          }
-                        ]}
-                      />
+                      <Box my={-1}>
+                        <CustomMenuIconButton
+                          buttonTitle="Actions"
+                          buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
+                          menuItems={[
+                            {
+                              menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
+                              menuLabel: 'Remove User',
+                              menuOnClick: () => handleRemoveUserClick(row)
+                            }
+                          ]}
+                        />
+                      </Box>
                     </TableCell>
                   </TableRow>
                 ))}
@@ -259,7 +268,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             }
           />
         )}
-      </Box>
+      </Paper>
     </>
   );
 };
