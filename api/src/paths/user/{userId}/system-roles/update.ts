@@ -142,6 +142,30 @@ export function updateSystemRolesHandler(): RequestHandler {
 }
 
 /**
+ * Deleted the all the system roles for the user.
+ *
+ * @param {number} userId
+ * @param {number[]} roleIds
+ * @param {IDBConnection} connection
+ */
+export const deleteUserSystemRoles = async (userId: number, connection: IDBConnection) => {
+  const deleteSystemRolesSqlStatement = deleteAllSystemRolesSQL(userId);
+
+  if (!deleteSystemRolesSqlStatement) {
+    throw new HTTP400('Failed to build SQL delete statement');
+  }
+
+  const deleteSystemRolesResponse = await connection.query(
+    deleteSystemRolesSqlStatement.text,
+    deleteSystemRolesSqlStatement.values
+  );
+
+  if (!deleteSystemRolesResponse) {
+    throw new HTTP400('Failed to delete system roles');
+  }
+};
+
+/**
  * Adds the specified roleIds to the user.
  *
  * @param {number} userId
@@ -162,31 +186,5 @@ export const addUserSystemRoles = async (userId: number, roleIds: number[], conn
 
   if (!postSystemRolesResponse || !postSystemRolesResponse.rowCount) {
     throw new HTTP400('Failed to add system roles');
-  }
-};
-
-/**
- * Adds the specified roleIds to the user.
- *
- * Note: Does not account for any existing roles the user may already have.
- *
- * @param {number} userId
- * @param {number[]} roleIds
- * @param {IDBConnection} connection
- */
-export const deleteUserSystemRoles = async (userId: number, connection: IDBConnection) => {
-  const deleteSystemRolesSqlStatement = deleteAllSystemRolesSQL(userId);
-
-  if (!deleteSystemRolesSqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const deleteSystemRolesResponse = await connection.query(
-    deleteSystemRolesSqlStatement.text,
-    deleteSystemRolesSqlStatement.values
-  );
-
-  if (!deleteSystemRolesResponse) {
-    throw new HTTP400('Failed to delete system roles');
   }
 };
