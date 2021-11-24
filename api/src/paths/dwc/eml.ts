@@ -680,7 +680,7 @@ export const getSurveyFundingSource = async (surveyId: number, connection: IDBCo
  * @param {IDBConnection} connection
  * @return {*} {Promise<any[]>}
  */
- export const getProjectFundingSource = async (projectId: number, connection: IDBConnection): Promise<any[]> => {
+export const getProjectFundingSource = async (projectId: number, connection: IDBConnection): Promise<any[]> => {
   const sqlStatement = getProjectFundingSourceSQL(projectId);
 
   if (!sqlStatement) {
@@ -718,7 +718,7 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
  * @param {IDBConnection} connection
  * @return {BoundingBox} {Promise<BoundingBox>}
  */
- export const getProjectBoundingBox = async (projectId: number, connection: IDBConnection): Promise<any> => {
+export const getProjectBoundingBox = async (projectId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getGeometryBoundingBoxSQL(projectId, 'project_id', 'project');
 
   if (!sqlStatement) {
@@ -756,7 +756,7 @@ export const getSurveyPolygons = async (surveyId: number, connection: IDBConnect
  * @param {IDBConnection} connection
  * @return {*} {Promise<void>}
  */
- export const getProjectPolygons = async (projectId: number, connection: IDBConnection): Promise<any> => {
+export const getProjectPolygons = async (projectId: number, connection: IDBConnection): Promise<any> => {
   const sqlStatement = getGeometryPolygonsSQL(projectId, 'project_id', 'project');
 
   if (!sqlStatement) {
