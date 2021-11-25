@@ -76,7 +76,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
           <span
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Draft saved on
+            Draft saved on 
           </span>
         </div>
       </div>

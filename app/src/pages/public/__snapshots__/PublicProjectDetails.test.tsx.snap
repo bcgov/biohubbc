@@ -553,11 +553,11 @@ exports[`PublicProjectDetails renders correctly 1`] = `
             <span
               class="MuiTypography-root MuiTypography-body1"
             >
-              classification
+              classification 
               <span>
                 &gt;
               </span>
-               sub classification 1
+               sub classification 1 
               <span>
                 &gt;
               </span>
@@ -577,11 +577,11 @@ exports[`PublicProjectDetails renders correctly 1`] = `
             <span
               class="MuiTypography-root MuiTypography-body1"
             >
-              classification again
+              classification again 
               <span>
                 &gt;
               </span>
-               sub classification 1 again
+               sub classification 1 again 
               <span>
                 &gt;
               </span>
