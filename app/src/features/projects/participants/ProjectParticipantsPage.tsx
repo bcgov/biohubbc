@@ -35,6 +35,16 @@ const useStyles = makeStyles((theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
+  },
+  teamMembersToolbar: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
+  },
+  teamMembersTable: {
+    tableLayout: 'fixed',
+    '& td': {
+      verticalAlign: 'middle'
+    }
   }
 }));
 
@@ -192,13 +202,13 @@ const ProjectParticipantsPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box my={3}>
           <Paper>
-            <Toolbar>
-              <Typography variant="h3" color="inherit">
+            <Toolbar className={classes.teamMembersToolbar}>
+              <Typography variant="h2" color="inherit">
                 Project Participants
               </Typography>
             </Toolbar>
 
-            <Table>
+            <Table className={classes.teamMembersTable}>
               <TableHead>
                 <TableRow>
                   <TableCell>User</TableCell>
@@ -212,16 +222,16 @@ const ProjectParticipantsPage: React.FC = () => {
                 {hasProjectParticipants &&
                   projectParticipants?.map((row) => (
                     <TableRow key={row.project_participation_id}>
-                      <TableCell component="th" scope="row">
-                        {row.user_identifier}
-                      </TableCell>
+                      <TableCell scope="row">{row.user_identifier}</TableCell>
                       {/* <TableCell>{codes.project_roles.find((item) => item.id === row.project_role_id)?.name}</TableCell> */}
                       <TableCell>
-                        <ChangeProjectRoleMenu
-                          row={row}
-                          projectRoleCodes={codes.project_roles}
-                          refresh={getProjectParticipants}
-                        />
+                        <Box my={-1}>
+                          <ChangeProjectRoleMenu
+                            row={row}
+                            projectRoleCodes={codes.project_roles}
+                            refresh={getProjectParticipants}
+                          />
+                        </Box>
                       </TableCell>
                       <TableCell>
                         <Button
@@ -234,7 +244,18 @@ const ProjectParticipantsPage: React.FC = () => {
                           onClick={() =>
                             openYesNoDialog({
                               dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
-                              dialogText: `Removing user ${row.user_identifier} will revoke their access to this project. Are you sure you want to proceed?`,
+                              dialogContent: (
+                                <>
+                                  <Typography variant="body1" color="textPrimary">
+                                    Removing user <strong>{row.user_identifier}</strong> will revoke their access to
+                                    project.
+                                  </Typography>
+                                  <Typography variant="body1" color="textPrimary">
+                                    Are you sure you want to proceed?
+                                  </Typography>
+                                </>
+                              ),
+                              yesButtonProps: { color: 'secondary' },
                               onYes: () => {
                                 handleRemoveProjectParticipant(row.project_participation_id);
                                 dialogContext.setYesNoDialog({ open: false });
@@ -242,7 +263,7 @@ const ProjectParticipantsPage: React.FC = () => {
                                   open: true,
                                   snackbarMessage: (
                                     <Typography variant="body2" component="div">
-                                      User <strong>{row.user_identifier}</strong> removed.
+                                      User <strong>{row.user_identifier}</strong> removed from project.
                                     </Typography>
                                   )
                                 });
@@ -358,7 +379,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         open: true,
         snackbarMessage: (
           <Typography variant="body2" component="div">
-            User <strong>{item.user_identifier}</strong>'s role changed to {newRole}.
+            User <strong>{item.user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.
           </Typography>
         )
       });

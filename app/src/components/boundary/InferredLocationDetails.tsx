@@ -26,7 +26,7 @@ const InferredLocationDetails: React.FC<IInferredLocationDetailsProps> = (props)
         </Typography>
 
         {data.map((item: string, index: number) => (
-          <Typography key={index} variant="body1">
+          <Typography key={index} variant="body1" component="div">
             {item}
             {index < data.length - 1 && ', '}
           </Typography>
