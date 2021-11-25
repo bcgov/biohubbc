@@ -609,7 +609,7 @@ export const getPublishedSurveyStatus = async (
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -728,7 +728,7 @@ export const getSurveyPolygons = async (surveyId: number, connection: IDBConnect
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -745,7 +745,7 @@ export const getProjectPolygons = async (projectId: number, connection: IDBConne
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -762,7 +762,7 @@ export const getFocalTaxonomicCoverage = async (surveyId: number, connection: ID
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -779,7 +779,7 @@ export const getProjectIucnConservation = async (projectId: number, connection: 
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -796,7 +796,7 @@ export const getProjectStakeholderPartnership = async (projectId: number, connec
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -813,7 +813,7 @@ export const getProjectActivity = async (projectId: number, connection: IDBConne
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -830,7 +830,7 @@ export const getProjectClimateInitiative = async (projectId: number, connection:
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -847,7 +847,7 @@ export const getProjectFirstNations = async (projectId: number, connection: IDBC
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -864,7 +864,7 @@ export const getProjectManagementActions = async (projectId: number, connection:
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
 
 /**
@@ -881,5 +881,5 @@ export const getSurveyProprietor = async (projectId: number, connection: IDBConn
     throw new HTTP400('Failed to build SQL statement');
   }
 
-  return await connection.query(sqlStatement.text, sqlStatement.values);
+  return connection.query(sqlStatement.text, sqlStatement.values);
 };
