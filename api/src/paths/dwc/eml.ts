@@ -553,13 +553,10 @@ const checkProvided = (valueToCheck: string | number | null): string | number =>
  * @return {*} {Promise<void>}
  */
 export const getSurveyOccurrenceSubmission = async (dataPackageId: number, connection: IDBConnection): Promise<any> => {
-  if (!dataPackageId || !connection) {
-    throw new HTTP400('Failed to build SQL update statement');
-  }
   const sqlStatement = getSurveyOccurrenceSubmissionSQL(dataPackageId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -582,7 +579,7 @@ export const getDataPackage = async (dataPackageId: number, connection: IDBConne
   const sqlStatement = getDataPackageSQL(dataPackageId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -608,7 +605,7 @@ export const getPublishedSurveyStatus = async (
   const sqlStatement = getPublishedSurveyStatusSQL(occurrenceSubmissionId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -627,7 +624,7 @@ export const getSurvey = async (surveyId: number, connection: IDBConnection): Pr
   const sqlStatement = getSurveySQL(surveyId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -646,7 +643,7 @@ export const getProject = async (projectId: number, connection: IDBConnection): 
   const sqlStatement = getProjectSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -665,7 +662,7 @@ export const getSurveyFundingSource = async (surveyId: number, connection: IDBCo
   const sqlStatement = getSurveyFundingSourceSQL(surveyId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -684,7 +681,7 @@ export const getProjectFundingSource = async (projectId: number, connection: IDB
   const sqlStatement = getProjectFundingSourceSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -703,7 +700,7 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
   const sqlStatement = getGeometryBoundingBoxSQL(surveyId, 'survey_id', 'survey');
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -722,7 +719,7 @@ export const getProjectBoundingBox = async (projectId: number, connection: IDBCo
   const sqlStatement = getGeometryBoundingBoxSQL(projectId, 'project_id', 'project');
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -741,7 +738,7 @@ export const getSurveyPolygons = async (surveyId: number, connection: IDBConnect
   const sqlStatement = getGeometryPolygonsSQL(surveyId, 'survey_id', 'survey');
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -760,7 +757,7 @@ export const getProjectPolygons = async (projectId: number, connection: IDBConne
   const sqlStatement = getGeometryPolygonsSQL(projectId, 'project_id', 'project');
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -779,7 +776,7 @@ export const getFocalTaxonomicCoverage = async (surveyId: number, connection: ID
   const sqlStatement = getTaxonomicCoverageSQL(surveyId, true);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -798,7 +795,7 @@ export const getProjectIucnConservation = async (projectId: number, connection: 
   const sqlStatement = getProjectIucnConservationSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -817,7 +814,7 @@ export const getProjectStakeholderPartnership = async (projectId: number, connec
   const sqlStatement = getProjectStakeholderPartnershipSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -836,7 +833,7 @@ export const getProjectActivity = async (projectId: number, connection: IDBConne
   const sqlStatement = getProjectActivitySQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -855,7 +852,7 @@ export const getProjectClimateInitiative = async (projectId: number, connection:
   const sqlStatement = getProjectClimateInitiativeSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -874,7 +871,7 @@ export const getProjectFirstNations = async (projectId: number, connection: IDBC
   const sqlStatement = getProjectFirstNationsSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -893,7 +890,7 @@ export const getProjectManagementActions = async (projectId: number, connection:
   const sqlStatement = getProjectManagementActionsSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
@@ -912,7 +909,7 @@ export const getSurveyProprietor = async (projectId: number, connection: IDBConn
   const sqlStatement = getSurveyProprietorSQL(projectId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL update statement');
+    throw new HTTP400('Failed to build SQL statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);

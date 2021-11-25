@@ -12,7 +12,7 @@ import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-con
 export const getDbCharacterSystemMetaDataConstant = async (
   constantName: string,
   connection: IDBConnection
-): Promise<any> => {
+): Promise<string | null> => {
   const sqlStatement = getDbCharacterSystemMetaDataConstantSQL(constantName);
 
   if (!sqlStatement) {
