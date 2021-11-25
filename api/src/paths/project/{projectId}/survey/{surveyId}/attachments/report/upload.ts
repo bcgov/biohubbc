@@ -21,7 +21,7 @@ import {
 } from '../../../../../../../models/project-survey-attachments';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/report/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -158,7 +158,7 @@ export function uploadMedia(): RequestHandler {
     }
 
     if (req.body.attachmentType !== ATTACHMENT_TYPE.REPORT) {
-      throw new HTTP400('Attachment type is not report');
+      throw new HTTP400('Attachment type is incorrect');
     }
 
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
