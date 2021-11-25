@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Project Coordinator Form renders correctly the empty component correctly 1`] = `
+exports[`Project Contact Form renders correctly the empty component correctly 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -248,7 +248,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project coordinator contact information visible to the public?
+          Do you want the project contact contact information visible to the public?
         </p>
         <div
           class="MuiBox-root MuiBox-root-8"
@@ -374,7 +374,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
 </DocumentFragment>
 `;
 
-exports[`Project Coordinator Form renders correctly the filled component correctly 1`] = `
+exports[`Project Contact Form renders correctly the filled component correctly 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -622,7 +622,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project coordinator contact information visible to the public?
+          Do you want the project contact contact information visible to the public?
         </p>
         <div
           class="MuiBox-root MuiBox-root-23"

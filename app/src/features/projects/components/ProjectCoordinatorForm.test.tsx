@@ -18,7 +18,7 @@ const projectCoordinatorFilledValues = {
   share_contact_details: 'true'
 };
 
-describe('Project Coordinator Form', () => {
+describe('Project Contact Form', () => {
   it('renders correctly the empty component correctly', () => {
     const { asFragment } = render(
       <Formik

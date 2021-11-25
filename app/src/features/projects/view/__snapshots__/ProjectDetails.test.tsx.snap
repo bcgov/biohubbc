@@ -225,18 +225,18 @@ exports[`ProjectDetails renders correctly 1`] = `
           <h3
             class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
           >
-            Project Coordinator
+            Project Contact
           </h3>
           <div
             class="MuiBox-root MuiBox-root-13"
           >
             <button
-              aria-label="Edit Project Coordinator Information"
+              aria-label="Edit Project Contact Information"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
               data-testid="h3-button-toolbar-Edit"
               id="h3-button-toolbar-Edit"
               tabindex="0"
-              title="Edit Project Coordinator Information"
+              title="Edit Project Contact Information"
               type="button"
             >
               <span
@@ -382,11 +382,11 @@ exports[`ProjectDetails renders correctly 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            classification 
+            classification
             <span>
               &gt;
             </span>
-             sub classification 1 
+             sub classification 1
             <span>
               &gt;
             </span>
@@ -399,11 +399,11 @@ exports[`ProjectDetails renders correctly 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            classification again 
+            classification again
             <span>
               &gt;
             </span>
-             sub classification 1 again 
+             sub classification 1 again
             <span>
               &gt;
             </span>

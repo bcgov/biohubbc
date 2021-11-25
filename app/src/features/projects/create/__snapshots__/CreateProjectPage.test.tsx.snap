@@ -76,7 +76,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
           <span
             class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
           >
-            Draft saved on 
+            Draft saved on
           </span>
         </div>
       </div>
@@ -131,7 +131,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       <p
                         class="MuiTypography-root MuiTypography-body2"
                       >
-                        Project Coordinator
+                        Project Contact
                       </p>
                     </span>
                   </span>
@@ -523,7 +523,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
               <h2
                 class="MuiTypography-root makeStyles-stepTitle-16 MuiTypography-h2"
               >
-                Project Coordinator
+                Project Contact
               </h2>
             </div>
             <p
@@ -783,7 +783,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                       <p
                         class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
                       >
-                        Do you want the project coordinator contact information visible to the public?
+                        Do you want the project contact contact information visible to the public?
                       </p>
                       <div
                         class="MuiBox-root MuiBox-root-36"
