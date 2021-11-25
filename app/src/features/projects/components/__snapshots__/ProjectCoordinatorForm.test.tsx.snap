@@ -165,7 +165,7 @@ exports[`Project Contact Form renders correctly the empty component correctly 1`
               for="coordinator_agency"
               id="coordinator_agency-label"
             >
-              Coordinator Agency
+              Contact Agency
               <span
                 aria-hidden="true"
                 class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -225,7 +225,7 @@ exports[`Project Contact Form renders correctly the empty component correctly 1`
                   class="PrivateNotchedOutline-legendLabelled-4"
                 >
                   <span>
-                    Coordinator Agency *
+                    Contact Agency *
                   </span>
                 </legend>
               </fieldset>
@@ -248,7 +248,7 @@ exports[`Project Contact Form renders correctly the empty component correctly 1`
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project contact contact information visible to the public?
+          Do you want the project contact’s name and email address visible to the public?
         </p>
         <div
           class="MuiBox-root MuiBox-root-8"
@@ -539,7 +539,7 @@ exports[`Project Contact Form renders correctly the filled component correctly 1
               for="coordinator_agency"
               id="coordinator_agency-label"
             >
-              Coordinator Agency
+              Contact Agency
               <span
                 aria-hidden="true"
                 class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -599,7 +599,7 @@ exports[`Project Contact Form renders correctly the filled component correctly 1
                   class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
                 >
                   <span>
-                    Coordinator Agency *
+                    Contact Agency *
                   </span>
                 </legend>
               </fieldset>
@@ -622,7 +622,7 @@ exports[`Project Contact Form renders correctly the filled component correctly 1
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project contact contact information visible to the public?
+          Do you want the project contact’s name and email address visible to the public?
         </p>
         <div
           class="MuiBox-root MuiBox-root-23"
