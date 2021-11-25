@@ -113,7 +113,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             Share Contact Details
           </Box>
           <Typography color="textSecondary">
-            Do you want the project contact contact information visible to the public?
+            Do you want the project coordinator contact information visible to the public?
           </Typography>
           <Box mt={2} pl={1}>
             <RadioGroup

@@ -34,7 +34,7 @@ export class PostProjectObject {
 }
 
 /**
- * Processes POST /project contact data
+ * Processes POST /project coordinator data
  *
  * @export
  * @class PostCoordinatorData

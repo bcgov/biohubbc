@@ -57,10 +57,10 @@ export const EditObjectivesI18N = {
 };
 
 export const EditCoordinatorI18N = {
-  editTitle: 'Edit Project Contact',
-  editErrorTitle: 'Error Editing Project Contact',
+  editTitle: 'Edit Project Coordinator',
+  editErrorTitle: 'Error Editing Project Coordinator',
   editErrorText:
-    'An error has occurred while attempting to edit your project contact details, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to edit your project coordinator details, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditGeneralInformationI18N = {

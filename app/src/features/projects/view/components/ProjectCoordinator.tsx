@@ -134,9 +134,9 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
       />
       <Box>
         <H3ButtonToolbar
-          label="Project Contact"
+          label="Project Coordinator"
           buttonLabel="Edit"
-          buttonTitle="Edit Project Contact Information"
+          buttonTitle="Edit Project Coordinator Information"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
           toolbarProps={{ disableGutters: true }}

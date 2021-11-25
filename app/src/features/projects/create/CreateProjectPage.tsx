@@ -256,7 +256,7 @@ const CreateProjectPage: React.FC = () => {
 
     setStepForms([
       {
-        stepTitle: 'Project Contact',
+        stepTitle: 'Project Coordinator',
         stepSubTitle:
           'Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.',
         stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,

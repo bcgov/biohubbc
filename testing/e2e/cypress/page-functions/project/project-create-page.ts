@@ -21,7 +21,7 @@ export function add_coordinator_info(
   cy.get("span.MuiStepLabel-iconContainer")
     .eq(navloc || 0)
     .click(); // Click on the Navigation bar
-  cy.contains("Project Contact").should("be.visible");
+  cy.contains("Project Coordinator").should("be.visible");
   cy.get("#first_name").clear();
   cy.get("#first_name").type(fname || faker.name.firstName());
   cy.get("#last_name").clear();

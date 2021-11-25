@@ -11,7 +11,7 @@ exports[`PublicProjectCoordinator renders correctly 1`] = `
       <h3
         class="MuiTypography-root MuiTypography-h3"
       >
-        Project Contact
+        Project Coordinator
       </h3>
     </div>
     <dl>

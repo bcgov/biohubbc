@@ -46,7 +46,7 @@ describe('ProjectCoordinator', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('editing the project contact works in the dialog', async () => {
+  it('editing the project coordinator works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       coordinator: {
         first_name: 'first name',
@@ -61,7 +61,7 @@ describe('ProjectCoordinator', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Contact')).toBeVisible();
+      expect(getByText('Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -73,19 +73,19 @@ describe('ProjectCoordinator', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Edit Project Contact')).toBeVisible();
+      expect(getByText('Edit Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(queryByText('Edit Project Contact')).not.toBeInTheDocument();
+      expect(queryByText('Edit Project Coordinator')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Edit Project Contact')).toBeVisible();
+      expect(getByText('Edit Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));
@@ -115,19 +115,19 @@ describe('ProjectCoordinator', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Contact')).toBeVisible();
+      expect(getByText('Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Error Editing Project Contact')).toBeVisible();
+      expect(getByText('Error Editing Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(queryByText('Error Editing Project Contact')).not.toBeInTheDocument();
+      expect(queryByText('Error Editing Project Coordinator')).not.toBeInTheDocument();
     });
   });
 
@@ -137,7 +137,7 @@ describe('ProjectCoordinator', () => {
     const { getByText, queryByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Contact')).toBeVisible();
+      expect(getByText('Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -169,7 +169,7 @@ describe('ProjectCoordinator', () => {
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
-      expect(getByText('Project Contact')).toBeVisible();
+      expect(getByText('Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -181,7 +181,7 @@ describe('ProjectCoordinator', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Edit Project Contact')).toBeVisible();
+      expect(getByText('Edit Project Coordinator')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));

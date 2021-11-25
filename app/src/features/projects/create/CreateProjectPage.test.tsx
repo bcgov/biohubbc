@@ -77,7 +77,7 @@ describe('CreateProjectPage', () => {
     const { getByText, getAllByText, asFragment } = renderContainer();
 
     await waitFor(() => {
-      expect(getAllByText('Project Contact').length).toEqual(2);
+      expect(getAllByText('Project Coordinator').length).toEqual(2);
 
       expect(getByText('Project Permits')).toBeVisible();
 
@@ -119,7 +119,7 @@ describe('CreateProjectPage', () => {
 
     // wait for initial page to load
     await waitFor(() => {
-      expect(getAllByText('Project Contact').length).toEqual(2);
+      expect(getAllByText('Project Coordinator').length).toEqual(2);
 
       expect(getByText('Project Permits')).toBeVisible();
 
@@ -329,7 +329,7 @@ describe('CreateProjectPage', () => {
 
       // wait for initial page to load
       await waitFor(() => {
-        expect(getAllByText('Project Contact').length).toEqual(2);
+        expect(getAllByText('Project Coordinator').length).toEqual(2);
       });
 
       // update first name field

@@ -34,7 +34,7 @@ const handleSaveAndNext = jest.fn();
 jest.spyOn(console, 'debug').mockImplementation(() => {});
 
 describe('ProjectStepComponents', () => {
-  it('renders the project contact', () => {
+  it('renders the project coordinator', () => {
     const { asFragment } = render(
       <Formik
         initialValues={ProjectCoordinatorInitialValues}

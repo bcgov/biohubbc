@@ -88,7 +88,7 @@ exports[`ProjectStepComponents renders the project IUCN without the codes values
 </DocumentFragment>
 `;
 
-exports[`ProjectStepComponents renders the project contact 1`] = `
+exports[`ProjectStepComponents renders the project coordinator 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -336,7 +336,7 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project contact contact information visible to the public?
+          Do you want the project coordinator contact information visible to the public?
         </p>
         <div
           class="MuiBox-root MuiBox-root-8"
