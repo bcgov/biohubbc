@@ -9,11 +9,11 @@ import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import { PutReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
 import { updateSurveyReportAttachmentMetadataSQL } from '../../../../../../../../queries/survey/survey-attachments-queries';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../upload';
+import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../upload-attachments';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 
-export const PUT: Operation = [updateSurveyAttachmentMetadata()];
+export const PUT: Operation = [updateSurveyReportMetadata()];
 
 PUT.apiDoc = {
   description: 'Update project attachment metadata.',
@@ -119,7 +119,7 @@ PUT.apiDoc = {
   }
 };
 
-export function updateSurveyAttachmentMetadata(): RequestHandler {
+export function updateSurveyReportMetadata(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
       label: 'updateProjectAttachmentMetadata',

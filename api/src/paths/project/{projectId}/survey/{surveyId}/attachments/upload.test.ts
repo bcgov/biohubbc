@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as upload from './upload';
+import * as upload from './upload-attachments';
 import * as db from '../../../../../../database/db';
 import * as file_utils from '../../../../../../utils/file-utils';
 import * as survey_attachment_queries from '../../../../../../queries/survey/survey-attachments-queries';

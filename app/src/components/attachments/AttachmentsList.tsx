@@ -318,7 +318,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
     try {
       if (props.surveyId) {
-        await biohubApi.survey.updateSurveyAttachmentMetadata(
+        await biohubApi.survey.updateSurveyReportMetadata(
           props.projectId,
           props.surveyId,
           reportMetaData.attachment_id,

@@ -188,9 +188,21 @@ describe('useSurveyApi', () => {
       type: 'text/plain'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`).reply(200, 'result 1');
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload-attachments`).reply(200, 'result 1');
 
-    const result = await useSurveyApi(axios).uploadSurveyAttachments(
+    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file, attachmentType);
+
+    expect(result).toEqual('result 1');
+  });
+
+  it('uploadSurveyReport works as expected', async () => {
+    const file = new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    });
+
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload-report`).reply(200, 'result 1');
+
+    const result = await useSurveyApi(axios).uploadSurveyReports(
       projectId,
       surveyId,
       file,
@@ -356,12 +368,12 @@ describe('useSurveyApi', () => {
     expect(result).toEqual(true);
   });
 
-  it('updateSurveyAttachmentMetadata works as expected', async () => {
+  it('updateSurveyReportMetadata works as expected', async () => {
     mock
       .onPut(`/api/project/${projectId}/survey/${surveyId}/attachments/${attachmentId}/metadata/update`)
       .reply(200, 'result 1');
 
-    const result = await useSurveyApi(axios).updateSurveyAttachmentMetadata(
+    const result = await useSurveyApi(axios).updateSurveyReportMetadata(
       projectId,
       surveyId,
       attachmentId,

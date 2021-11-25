@@ -58,7 +58,7 @@ describe('updates metadata for a survey report', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = update_survey_metadata.updateSurveyAttachmentMetadata();
+      const result = update_survey_metadata.updateSurveyReportMetadata();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
         (null as unknown) as any,
@@ -75,7 +75,7 @@ describe('updates metadata for a survey report', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = update_survey_metadata.updateSurveyAttachmentMetadata();
+      const result = update_survey_metadata.updateSurveyReportMetadata();
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
         (null as unknown) as any,
@@ -92,7 +92,7 @@ describe('updates metadata for a survey report', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = update_survey_metadata.updateSurveyAttachmentMetadata();
+      const result = update_survey_metadata.updateSurveyReportMetadata();
       await result(
         { ...sampleReq, body: { ...sampleReq.body, attachment_type: 'notAReport' } },
         (null as unknown) as any,
@@ -134,7 +134,7 @@ describe('updates metadata for a survey report', () => {
       query: mockQuery
     });
 
-    const result = update_survey_metadata.updateSurveyAttachmentMetadata();
+    const result = update_survey_metadata.updateSurveyReportMetadata();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
@@ -163,7 +163,7 @@ describe('updates metadata for a survey report', () => {
 
     sinon.stub(survey_attachment_queries, 'updateSurveyReportAttachmentMetadataSQL').returns(null);
 
-    const result = update_survey_metadata.updateSurveyAttachmentMetadata();
+    const result = update_survey_metadata.updateSurveyReportMetadata();
 
     try {
       await result(sampleReq, sampleRes as any, (null as unknown) as any);
@@ -191,7 +191,7 @@ describe('updates metadata for a survey report', () => {
 
     sinon.stub(survey_attachment_queries, 'updateSurveyReportAttachmentMetadataSQL').returns(SQL`something`);
 
-    const result = update_survey_metadata.updateSurveyAttachmentMetadata();
+    const result = update_survey_metadata.updateSurveyReportMetadata();
 
     try {
       await result(sampleReq, sampleRes as any, (null as unknown) as any);

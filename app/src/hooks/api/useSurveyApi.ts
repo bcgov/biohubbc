@@ -114,6 +114,42 @@ const useSurveyApi = (axios: AxiosInstance) => {
     surveyId: number,
     file: File,
     attachmentType?: string,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<IUploadAttachmentResponse> => {
+    const req_message = new FormData();
+
+    req_message.append('media', file);
+    attachmentType && req_message.append('attachmentType', attachmentType);
+
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/upload-attachments`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
+
+    return data;
+  };
+
+  /**
+   * Upload survey reports.
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @param {File} file
+   * @param {string} attachmentType
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+  const uploadSurveyReports = async (
+    projectId: number,
+    surveyId: number,
+    file: File,
+    attachmentType?: string,
     attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
@@ -133,10 +169,14 @@ const useSurveyApi = (axios: AxiosInstance) => {
       });
     }
 
-    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
-      cancelToken: cancelTokenSource?.token,
-      onUploadProgress: onProgress
-    });
+    const { data } = await axios.post(
+      `/api/project/${projectId}/survey/${surveyId}/attachments/upload-report`,
+      req_message,
+      {
+        cancelToken: cancelTokenSource?.token,
+        onUploadProgress: onProgress
+      }
+    );
 
     return data;
   };
@@ -151,7 +191,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
-  const updateSurveyAttachmentMetadata = async (
+  const updateSurveyReportMetadata = async (
     projectId: number,
     surveyId: number,
     attachmentId: number,
@@ -505,7 +545,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyForUpdate,
     updateSurvey,
     uploadSurveyAttachments,
-    updateSurveyAttachmentMetadata,
+    uploadSurveyReports,
+    updateSurveyReportMetadata,
     getSurveyReportMetadata,
     uploadSurveySummaryResults,
     getSurveySummarySubmission,

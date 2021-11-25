@@ -73,7 +73,6 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
         surveyId,
         file,
         attachmentType,
-        undefined,
         cancelToken,
         handleFileUploadProgress
       );
@@ -83,7 +82,7 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
   const getFinishHandler = () => {
     return (fileMeta: IReportMetaForm) => {
       return biohubApi.survey
-        .uploadSurveyAttachments(projectId, surveyId, fileMeta.attachmentFile, attachmentType, fileMeta)
+        .uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, attachmentType, fileMeta)
         .finally(() => {
           setOpenUploadAttachments(false);
         });

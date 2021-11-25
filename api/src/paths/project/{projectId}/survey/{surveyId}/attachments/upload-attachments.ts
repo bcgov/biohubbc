@@ -24,7 +24,7 @@ import {
 } from '../../../../../../models/project-survey-attachments';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload-attachments');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -74,7 +74,7 @@ POST.apiDoc = {
             },
             attachmentType: {
               type: 'string',
-              enum: ['Report', 'Other']
+              enum: ['Other']
             },
             attachmentMeta: {
               type: 'object',
