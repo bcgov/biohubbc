@@ -122,14 +122,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
     req_message.append('media', file);
     attachmentType && req_message.append('attachmentType', attachmentType);
 
-    const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/upload-attachments`,
-      req_message,
-      {
-        cancelToken: cancelTokenSource?.token,
-        onUploadProgress: onProgress
-      }
-    );
+    const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
 
     return data;
   };
@@ -170,7 +166,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     }
 
     const { data } = await axios.post(
-      `/api/project/${projectId}/survey/${surveyId}/attachments/upload-report`,
+      `/api/project/${projectId}/survey/${surveyId}/attachments/report/upload`,
       req_message,
       {
         cancelToken: cancelTokenSource?.token,

@@ -1,25 +1,25 @@
 'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
-import { PROJECT_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   getSurveyReportAttachmentByFileNameSQL,
   postSurveyReportAttachmentSQL,
   putSurveyReportAttachmentSQL,
   deleteSurveyReportAttachmentAuthorsSQL,
   insertSurveyReportAttachmentAuthorSQL
-} from '../../../../../../queries/survey/survey-attachments-queries';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
+} from '../../../../../../../queries/survey/survey-attachments-queries';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
   IReportAttachmentAuthor
-} from '../../../../../../models/project-survey-attachments';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+} from '../../../../../../../models/project-survey-attachments';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
 

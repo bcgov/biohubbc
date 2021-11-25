@@ -9,7 +9,7 @@ import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import { PutReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
 import { updateSurveyReportAttachmentMetadataSQL } from '../../../../../../../../queries/survey/survey-attachments-queries';
 import { getLogger } from '../../../../../../../../utils/logger';
-import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../upload-report';
+import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 

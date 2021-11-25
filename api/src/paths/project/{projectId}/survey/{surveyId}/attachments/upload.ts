@@ -14,7 +14,7 @@ import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../..
 import { getLogger } from '../../../../../../utils/logger';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload-attachments');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {

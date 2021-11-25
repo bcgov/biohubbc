@@ -188,7 +188,7 @@ describe('useSurveyApi', () => {
       type: 'text/plain'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload-attachments`).reply(200, 'result 1');
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`).reply(200, 'result 1');
 
     const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file, attachmentType);
 
@@ -200,7 +200,7 @@ describe('useSurveyApi', () => {
       type: 'text/plain'
     });
 
-    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload-report`).reply(200, 'result 1');
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/report/upload`).reply(200, 'result 1');
 
     const result = await useSurveyApi(axios).uploadSurveyReports(
       projectId,
