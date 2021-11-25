@@ -72,24 +72,4 @@ describe('useAdminApi', () => {
 
     expect(result).toEqual(10);
   });
-
-  it('addSystemUserRoles works as expected', async () => {
-    const userId = 1;
-
-    mock.onPost(`/api/user/${userId}/system-roles`).reply(200, 3);
-
-    const result = await useAdminApi(axios).addSystemUserRoles(1, [1, 2, 3]);
-
-    expect(result).toEqual(3);
-  });
-
-  it('removeSystemUserRoles works as expected', async () => {
-    const userId = 1;
-
-    mock.onDelete(`/api/user/${userId}/system-roles`).reply(200, 3);
-
-    const result = await useAdminApi(axios).removeSystemUserRoles(1, [1, 2, 3]);
-
-    expect(result).toEqual(3);
-  });
 });

@@ -1,23 +1,25 @@
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
-import Table from '@material-ui/core/Table';
-import TableBody from '@material-ui/core/TableBody';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Table from '@material-ui/core/Table';
+import TableBody from '@material-ui/core/TableBody';
+import Toolbar from '@material-ui/core/Toolbar';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { mdiDotsVertical, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
+import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
 import { DeleteSystemUserI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
@@ -33,6 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
+  codes: IGetAllCodeSetsResponse;
   getUsers: (forceFetch: boolean) => void;
 }
 
@@ -45,7 +48,7 @@ export interface IActiveUsersListProps {
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
-  const { activeUsers } = props;
+  const { activeUsers, codes } = props;
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -76,11 +79,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       dialogTitle: 'Remove user?',
       dialogContent: (
         <>
-          <Typography variant="body1">
+          <Typography variant="body1" color="textPrimary">
             Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
             related projects.
           </Typography>
-          <Typography variant="body1">Are you sure you want to proceed?</Typography>
+          <Typography variant="body1" color="textPrimary">
+            Are you sure you want to proceed?
+          </Typography>
         </>
       ),
       yesButtonLabel: 'Remove User',
@@ -111,7 +116,61 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
-              User <strong>{user.user_identifier}</strong> removed.
+              User <strong>{user.user_identifier}</strong> removed from application.
+            </Typography>
+          </>
+        ),
+        open: true
+      });
+
+      props.getUsers(true);
+    } catch (error) {
+      const apiError = error as APIError;
+      showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
+
+  const handleChangeUserPermissionsClick = (row: IGetUserResponse, newRoleName: any, newRoleId: number) => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Change User Role?',
+      dialogContent: (
+        <>
+          <Typography color="textPrimary">
+            Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRoleName}</strong>?
+          </Typography>
+        </>
+      ),
+      yesButtonLabel: 'Change Role',
+      noButtonLabel: 'Cancel',
+      yesButtonProps: { color: 'primary' },
+      onClose: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      onNo: () => {
+        dialogContext.setYesNoDialog({ open: false });
+      },
+      open: true,
+      onYes: () => {
+        changeSystemUserRole(row, newRoleId, newRoleName);
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const changeSystemUserRole = async (user: IGetUserResponse, roleId: number, roleName: string) => {
+    if (!user?.id) {
+      return;
+    }
+    const roleIds = [roleId];
+
+    try {
+      await biohubApi.user.updateSystemUserRoles(user.id, roleIds);
+
+      showSnackBar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              User <strong>{user.user_identifier}</strong>'s role has changed to <strong>{roleName}</strong>.
             </Typography>
           </>
         ),
@@ -127,16 +186,18 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
   return (
     <>
-      <Box component={Paper} p={3}>
-        <Box pb={3}>
-          <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
-        </Box>
+      <Paper>
+        <Toolbar disableGutters>
+          <Box px={2}>
+            <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
+          </Box>
+        </Toolbar>
         <TableContainer>
           <Table className={classes.table}>
             <TableHead>
               <TableRow>
                 <TableCell>Username</TableCell>
-                <TableCell>Roles</TableCell>
+                <TableCell>Role</TableCell>
                 <TableCell width="100px" align="center">
                   Actions
                 </TableCell>
@@ -154,7 +215,26 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                 activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
                     <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
-                    <TableCell>{row.role_names.join(', ') || 'Not Applicable'}</TableCell>
+                    <TableCell>
+                      <Box my={-1}>
+                        <CustomMenuButton
+                          buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
+                          buttonTitle={'Change User Permissions'}
+                          buttonProps={{ variant: 'text' }}
+                          menuItems={codes.system_roles
+                            .sort((item1, item2) => {
+                              return item1.name.localeCompare(item2.name);
+                            })
+                            .map((item) => {
+                              return {
+                                menuLabel: item.name,
+                                menuOnClick: () => handleChangeUserPermissionsClick(row, item.name, item.id)
+                              };
+                            })}
+                          buttonEndIcon={<Icon path={mdiMenuDown} size={1} />}
+                        />
+                      </Box>
+                    </TableCell>
                     <TableCell align="center">
                       <Box my={-1}>
                         <CustomMenuIconButton
@@ -188,7 +268,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
             }
           />
         )}
-      </Box>
+      </Paper>
     </>
   );
 };

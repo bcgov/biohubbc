@@ -54,7 +54,26 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  properties: {}
+                  properties: {
+                    project_participation_id: {
+                      type: 'number'
+                    },
+                    project_id: {
+                      type: 'number'
+                    },
+                    system_user_id: {
+                      type: 'number'
+                    },
+                    project_role_id: {
+                      type: 'number'
+                    },
+                    user_identifier: {
+                      type: 'string'
+                    },
+                    user_identity_source_id: {
+                      type: 'number'
+                    }
+                  }
                 }
               }
             }

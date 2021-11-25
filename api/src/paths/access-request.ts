@@ -7,7 +7,7 @@ import { ensureSystemUser } from '../paths-helpers/system-user';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
-import { addSystemRoles } from './user/{userId}/system-roles';
+import { addSystemRoles } from './user/{userId}/system-roles/create';
 
 const defaultLog = getLogger('paths/access-request');
 

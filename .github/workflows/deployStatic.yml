@@ -550,7 +550,7 @@ jobs:
       - name: Wait for APP response
         uses: nev7n/wait_for_response@v1.0.1
         with:
-          url: $CYPRESS_BASE_URL
+          url: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
           responseCode: 200
           timeout: 240000
           interval: 500

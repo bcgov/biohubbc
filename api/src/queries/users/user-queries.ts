@@ -271,7 +271,7 @@ export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null
  * @return {*}  {(SQLStatement | null)}
  */
 export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteSystemRolesSQL', message: 'params' });
+  defaultLog.debug({ label: 'deleteAllSystemRolesSQL', message: 'params' });
 
   if (!userId) {
     return null;
@@ -285,7 +285,7 @@ export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => 
     `;
 
   defaultLog.debug({
-    label: 'deleteSystemRolesSQL',
+    label: 'deleteAllSystemRolesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

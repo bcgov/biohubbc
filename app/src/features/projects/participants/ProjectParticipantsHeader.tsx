@@ -7,7 +7,7 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiArrowLeft, mdiPlus } from '@mdi/js';
+import { mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -21,7 +21,8 @@ import React, { useContext, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import AddProjectParticipantsForm, {
   AddProjectParticipantsFormInitialValues,
-  AddProjectParticipantsFormYupSchema
+  AddProjectParticipantsFormYupSchema,
+  IAddProjectParticipantsForm
 } from './AddProjectParticipantsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -77,7 +78,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
     });
   };
 
-  const handleAddProjectParticipantsSave = async (values: any) => {
+  const handleAddProjectParticipantsSave = async (values: IAddProjectParticipantsForm) => {
     try {
       const response = await biohubApi.project.addProjectParticipants(projectId, values.participants);
 
@@ -125,13 +126,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
 
           <Box display="flex" justifyContent="space-between">
             <Box pb={4}>
-              <Box mb={1.5} display="flex">
-                <Button
-                  color="primary"
-                  variant="text"
-                  startIcon={<Icon path={mdiArrowLeft} size={1} />}
-                  onClick={() => history.goBack()}
-                />
+              <Box display="flex">
                 <Typography className={classes.spacingRight} variant="h1">
                   Project Team
                 </Typography>
@@ -139,13 +134,14 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
             </Box>
             <Box ml={4} mb={4}>
               <Button
+                color="primary"
                 variant="outlined"
                 disableElevation
                 data-testid="invite-project-users-button"
-                aria-label={'Invite People'}
+                aria-label={'Add Team Members'}
                 startIcon={<Icon path={mdiPlus} size={1} />}
                 onClick={() => setOpenAddParticipantsDialog(true)}>
-                Add Project Participants
+                <strong>Add Team Members</strong>
               </Button>
             </Box>
           </Box>
@@ -153,14 +149,15 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
       </Paper>
 
       <EditDialog
-        dialogTitle={'Add Project Participants'}
+        dialogTitle={'Add Team Members'}
         open={openAddParticipantsDialog}
+        dialogSaveButtonLabel={'Add'}
         component={{
           element: (
             <AddProjectParticipantsForm
               project_roles={
                 props.codes?.project_roles?.map((item) => {
-                  return { value: item.name, label: item.name };
+                  return { value: item.id, label: item.name };
                 }) || []
               }
             />
@@ -172,6 +169,14 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
         onSave={(values) => {
           handleAddProjectParticipantsSave(values);
           setOpenAddParticipantsDialog(false);
+          dialogContext.setSnackbar({
+            open: true,
+            snackbarMessage: (
+              <Typography variant="body2" component="div">
+                {values.participants.length} team {values.participants.length > 1 ? 'members' : 'member'} added.
+              </Typography>
+            )
+          });
         }}
       />
     </>
