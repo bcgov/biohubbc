@@ -337,7 +337,7 @@ export const getDataPackageEML = async (
 
   emlRoot.dataset.project.relatedProject.studyAreaDescription = { coverage: {} };
   emlRoot.dataset.project.relatedProject.studyAreaDescription.coverage.geographicCoverage = getGeographicCoverageEML(
-    'Not Supplied',
+    checkProvided(project.location_description),
     projectBoundingBox,
     projectPolygons
   );
@@ -525,6 +525,8 @@ const getFundingEML = (fundingSourceRows: any[]): Eml => {
   return funding;
 };
 
+type StringIfNull<T> = T extends null | undefined ? string : T;
+
 /**
  * Return default message if value not provided.
  *
@@ -532,16 +534,16 @@ const getFundingEML = (fundingSourceRows: any[]): Eml => {
  * @param {IDBConnection} connection
  * @return {string | number}
  */
-const checkProvided = (valueToCheck: string | number | null): string | number => {
+const checkProvided = <T extends string | number | null>(valueToCheck: T): StringIfNull<T> => {
   // the EML specification requires all fields have values
   // fail gracefully by providing standard message that data is not supplied
   const notSuppliedMessage = 'Not Supplied';
 
   if (valueToCheck === null) {
-    return notSuppliedMessage;
+    return notSuppliedMessage as StringIfNull<T>;
   }
 
-  return valueToCheck;
+  return valueToCheck as StringIfNull<T>;
 };
 
 /**
