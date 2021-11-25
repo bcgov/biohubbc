@@ -299,7 +299,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                   <p
                     class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
                   >
-                    Do you want the project coordinator contact information visible to the public?
+                    Do you want the project contact contact information visible to the public?
                   </p>
                   <div
                     class="MuiBox-root MuiBox-root-28"
