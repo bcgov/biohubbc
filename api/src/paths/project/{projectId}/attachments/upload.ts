@@ -133,7 +133,6 @@ POST.apiDoc = {
  * Also adds the metadata to the project_attachment DB table
  * Does nothing if no media is present in the request.
  *
- * TODO: make media handling an extension that can be added to different endpoints/record types
  *
  * @returns {RequestHandler}
  */
