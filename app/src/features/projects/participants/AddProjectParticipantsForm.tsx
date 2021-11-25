@@ -17,7 +17,7 @@ import yup from 'utils/YupSchema';
 export interface IAddProjectParticipantsFormArrayItem {
   userIdentifier: string;
   identitySource: string;
-  role: string;
+  roleId: number;
 }
 
 export interface IAddProjectParticipantsForm {
@@ -27,7 +27,7 @@ export interface IAddProjectParticipantsForm {
 export const AddProjectParticipantsFormArrayItemInitialValues: IAddProjectParticipantsFormArrayItem = {
   userIdentifier: '',
   identitySource: '',
-  role: ''
+  roleId: ('' as unknown) as number
 };
 
 export const AddProjectParticipantsFormInitialValues: IAddProjectParticipantsForm = {
@@ -37,9 +37,9 @@ export const AddProjectParticipantsFormInitialValues: IAddProjectParticipantsFor
 export const AddProjectParticipantsFormYupSchema = yup.object().shape({
   participants: yup.array().of(
     yup.object().shape({
-      userIdentifier: yup.string().required('Required'),
-      identitySource: yup.string().required('Required'),
-      role: yup.string().required('Required')
+      userIdentifier: yup.string().required('Username is required'),
+      identitySource: yup.string().required('Login Method is required'),
+      roleId: yup.number().required('Role is required')
     })
   )
 });
@@ -57,11 +57,11 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
         name="participants"
         render={(arrayHelpers) => (
           <Box>
-            <Grid container direction="row" spacing={3}>
+            <Grid container direction="row" spacing={2}>
               {values.participants?.map((participant, index) => {
                 const userIdentifierMeta = getFieldMeta(`participants.[${index}].userIdentifier`);
                 const identitySourceMeta = getFieldMeta(`participants.[${index}].identitySource`);
-                const roleMeta = getFieldMeta(`participants.[${index}].role`);
+                const roleIdMeta = getFieldMeta(`participants.[${index}].roleId`);
 
                 return (
                   <Grid item xs={12} key={index}>
@@ -80,18 +80,20 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                       </Box>
                       <Box flexBasis="30%" pl={1}>
                         <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="role">Username Type</InputLabel>
+                          <InputLabel id="loginMethod" required={false}>
+                            Login Method
+                          </InputLabel>
                           <Select
                             id={`participants.[${index}].identitySource`}
                             name={`participants.[${index}].identitySource`}
-                            labelId="user_type"
-                            label="User Type"
+                            labelId="login_method"
+                            label="Login Method"
                             value={participant.identitySource}
                             labelWidth={300}
                             onChange={handleChange}
                             error={identitySourceMeta.touched && Boolean(identitySourceMeta.error)}
                             displayEmpty
-                            inputProps={{ 'aria-label': 'Username Type' }}>
+                            inputProps={{ 'aria-label': 'Login Method' }}>
                             <MenuItem key={'IDIR'} value={'IDIR'}>
                               IDIR
                             </MenuItem>
@@ -104,16 +106,18 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                       </Box>
                       <Box flexBasis="35%" pl={1}>
                         <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="role">Project Role</InputLabel>
+                          <InputLabel id="Id" required={false}>
+                            Project Role
+                          </InputLabel>
                           <Select
-                            id={`participants.[${index}].role`}
-                            name={`participants.[${index}].role`}
+                            id={`participants.[${index}].roleId`}
+                            name={`participants.[${index}].roleId`}
                             labelId="project_role"
                             label="Project Role"
-                            value={participant.role}
+                            value={participant.roleId}
                             labelWidth={300}
                             onChange={handleChange}
-                            error={roleMeta.touched && Boolean(roleMeta.error)}
+                            error={roleIdMeta.touched && Boolean(roleIdMeta.error)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'Project Role' }}>
                             {props.project_roles.map((item) => (
@@ -122,7 +126,7 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                               </MenuItem>
                             ))}
                           </Select>
-                          <FormHelperText>{roleMeta.touched && roleMeta.error}</FormHelperText>
+                          <FormHelperText>{roleIdMeta.touched && roleIdMeta.error}</FormHelperText>
                         </FormControl>
                       </Box>
                       <Box pt={0.5} pl={1}>
@@ -142,13 +146,13 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
             <Box pt={2}>
               <Button
                 type="button"
-                variant="outlined"
+                variant="text"
                 color="primary"
                 aria-label="add participant"
                 data-testid="add-participant-button"
                 startIcon={<Icon path={mdiPlus} size={1} />}
                 onClick={() => arrayHelpers.push(AddProjectParticipantsFormArrayItemInitialValues)}>
-                Add Participant
+                <strong>Add Team Members</strong>
               </Button>
             </Box>
           </Box>

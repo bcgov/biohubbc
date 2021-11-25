@@ -9,7 +9,7 @@ import * as system_user from '../paths-helpers/system-user';
 import * as administrative_activity from '../paths/administrative-activity';
 import { getMockDBConnection } from '../__mocks__/db';
 import * as access_request from './access-request';
-import * as system_roles from './user/{userId}/system-roles';
+import * as system_roles from './user/{userId}/system-roles/create';
 
 chai.use(sinonChai);
 

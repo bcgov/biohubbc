@@ -1,15 +1,21 @@
 import { render, waitFor } from '@testing-library/react';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { IActiveUsersListProps } from './ActiveUsersList';
 import React from 'react';
 import ActiveUsersList from './ActiveUsersList';
+import { codes } from 'test-helpers/code-helpers';
 
-const renderContainer = (activeUsers: IGetUserResponse[]) => {
-  return render(<ActiveUsersList activeUsers={activeUsers} />);
+const renderContainer = (props: IActiveUsersListProps) => {
+  return render(<ActiveUsersList {...props} />);
 };
 
 describe('ActiveUsersList', () => {
   it('shows `No Active Users` when there are no active users', async () => {
-    const { getByText } = renderContainer([]);
+    const mockGetUsers = jest.fn();
+    const { getByText } = renderContainer({
+      activeUsers: [],
+      codes: codes,
+      getUsers: mockGetUsers
+    });
 
     await waitFor(() => {
       expect(getByText('No Active Users')).toBeVisible();
@@ -17,13 +23,20 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with all fields having values', async () => {
-    const { getByText } = renderContainer([
-      {
-        id: 1,
-        user_identifier: 'username',
-        role_names: ['role 1', 'role 2']
-      }
-    ]);
+    const mockGetUsers = jest.fn();
+
+    const { getByText } = renderContainer({
+      activeUsers: [
+        {
+          id: 1,
+          user_identifier: 'username',
+          user_record_end_date: '2020-10-10',
+          role_names: ['role 1', 'role 2']
+        }
+      ],
+      codes: codes,
+      getUsers: mockGetUsers
+    });
 
     await waitFor(() => {
       expect(getByText('username')).toBeVisible();
@@ -32,16 +45,22 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with fields not having values', async () => {
-    const { getAllByText } = renderContainer([
-      {
-        id: 1,
-        user_identifier: '',
-        role_names: []
-      }
-    ]);
+    const mockGetUsers = jest.fn();
+    const { getByTestId } = renderContainer({
+      activeUsers: [
+        {
+          id: 1,
+          user_identifier: 'username',
+          user_record_end_date: '2020-10-10',
+          role_names: []
+        }
+      ],
+      codes: codes,
+      getUsers: mockGetUsers
+    });
 
     await waitFor(() => {
-      expect(getAllByText('Not Applicable').length).toEqual(2);
+      expect(getByTestId('custom-menu-button-NotApplicable')).toBeInTheDocument();
     });
   });
 });

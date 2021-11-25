@@ -1,17 +1,16 @@
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { createMemoryHistory } from 'history';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React from 'react';
-import { Router } from 'react-router';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
-import SurveyPage from './SurveyPage';
-import { DialogContextProvider } from 'contexts/dialogContext';
+import { cleanup, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { DialogContextProvider } from 'contexts/dialogContext';
+import { createMemoryHistory } from 'history';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import React from 'react';
+import { Router } from 'react-router';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import SurveyPage from './SurveyPage';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1/surveys/1'] });
 
