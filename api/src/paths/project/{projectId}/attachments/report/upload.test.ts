@@ -49,26 +49,6 @@ describe('uploadMedia', () => {
     }
   } as any;
 
-  //const mockNext = {} as any;
-
-  it('should throw an error when attachmentType is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...mockReq, body: { ...mockReq.body, attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing attachment file type');
-    }
-  });
-
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
@@ -131,7 +111,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
+    sinon.stub(upload, 'upsertProjectReportAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {

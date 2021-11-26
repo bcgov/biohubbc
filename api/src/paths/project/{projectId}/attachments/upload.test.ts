@@ -32,9 +32,7 @@ describe('uploadMedia', () => {
         size: 340
       }
     ],
-    body: {
-      attachmentType: 'Other'
-    }
+    body: {}
   } as any;
 
   let actualResult: any = null;
@@ -48,26 +46,6 @@ describe('uploadMedia', () => {
       };
     }
   } as any;
-
-  //const mockNext = {} as any;
-
-  it('should throw an error when attachmentType is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...mockReq, body: { ...mockReq.body, attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing attachment file type');
-    }
-  });
 
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -137,7 +115,7 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result(mockReq, mockRes as any, (null as unknown) as any);
+      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -145,7 +123,7 @@ describe('uploadMedia', () => {
     }
   });
 
-  it('should return id and revision_count on success (with username and email) when attachmentType is Other', async () => {
+  it('should return id and revision_count on success (with username and email) with valid parameters', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {

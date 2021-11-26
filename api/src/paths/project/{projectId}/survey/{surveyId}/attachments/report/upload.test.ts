@@ -10,7 +10,7 @@ import { CustomError } from '../../../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
-describe.only('uploadMedia', () => {
+describe('uploadMedia', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -103,24 +103,6 @@ describe.only('uploadMedia', () => {
     }
   });
 
-  it('should throw an error when attachmentType is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...sampleReq, body: { attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing attachment file type');
-    }
-  });
-
   it('should throw a 400 error when file format incorrect', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
@@ -139,31 +121,6 @@ describe.only('uploadMedia', () => {
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
       expect((actualError as CustomError).message).to.equal('Failed to insert survey attachment data');
-    }
-  });
-
-  it('should throw a 400 error when attachmentType is not `other` ', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...sampleReq, body: { ...sampleReq.body, attachmentType: 'Not Report' } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Attachment type is incorrect');
     }
   });
 
