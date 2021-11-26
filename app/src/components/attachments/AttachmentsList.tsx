@@ -327,7 +327,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
           reportMetaData.revision_count
         );
       } else {
-        await biohubApi.project.updateProjectAttachmentMetadata(
+        await biohubApi.project.updateProjectReportMetadata(
           props.projectId,
           reportMetaData.attachment_id,
           AttachmentType.REPORT,

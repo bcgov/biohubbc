@@ -247,10 +247,12 @@ const useProjectApi = (axios: AxiosInstance) => {
   const updateProjectReportMetadata = async (
     projectId: number,
     attachmentId: number,
+    attachmentType: string,
     attachmentMeta: IEditReportMetaForm,
     revisionCount: number
   ): Promise<number> => {
     const obj = {
+      attachment_type: attachmentType,
       attachment_meta: {
         title: attachmentMeta.title,
         year_published: attachmentMeta.year_published,
