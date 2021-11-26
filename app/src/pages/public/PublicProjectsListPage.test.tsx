@@ -33,7 +33,7 @@ describe('PublicProjectsListPage', () => {
         name: 'Project 1',
         start_date: null,
         end_date: null,
-        coordinator_agency: 'coordinator agency',
+        coordinator_agency: 'contact agency',
         project_type: 'project type',
         permits_list: '1, 2, 3',
         completion_status: 'Completed'
@@ -59,7 +59,7 @@ describe('PublicProjectsListPage', () => {
         name: 'Project 1',
         start_date: null,
         end_date: null,
-        coordinator_agency: 'coordinator agency',
+        coordinator_agency: 'contact agency',
         project_type: 'project type',
         permits_list: '1, 2, 3',
         completion_status: 'Active'
