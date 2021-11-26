@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c4f67ff9-7252-4a76-a5b7-0bc5d3077e9d",
+		"_postman_id": "7fa268f5-4d8e-4e57-855e-4d1b1e318767",
 		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -62,6 +62,36 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "eml",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"data_package_id\": 1,\n    \"supplied_title\": \"my title\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/dwc/eml",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"dwc",
+								"eml"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -107,7 +137,7 @@
 			"name": "project",
 			"item": [
 				{
-					"name": "{projectId}",
+					"name": "3",
 					"item": [
 						{
 							"name": "attachments",

@@ -1,3 +1,4 @@
+import { QueryResult } from 'pg';
 import { IDBConnection } from '../database/db';
 
 /**
@@ -24,7 +25,7 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
       // do nothing
     },
     query: async () => {
-      // do nothing
+      return (undefined as unknown) as QueryResult<any>;
     },
     ...config
   };

@@ -110,11 +110,11 @@ export interface IDBConnection {
    *
    * @param {string} text SQL text
    * @param {any[]} [values] SQL values array (optional)
-   * @return {*}  {(Promise<QueryResult<any> | void>)}
+   * @return {*}  {(Promise<QueryResult<any>>)}
    * @throws If the connection is not open.
    * @memberof IDBConnection
    */
-  query: (text: string, values?: any[]) => Promise<pg.QueryResult<any> | void>;
+  query: (text: string, values?: any[]) => Promise<pg.QueryResult<any>>;
   /**
    * Get the ID of the system user in context.
    *
@@ -240,9 +240,9 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
    * @param {string} text SQL text
    * @param {any[]} [values] SQL values array (optional)
    * @throws {Error} if the connection is not open
-   * @return {*}  {(Promise<QueryResult<any> | void>)}
+   * @return {*}  {(Promise<QueryResult<any>>)}
    */
-  const _query = async (text: string, values?: any[]): Promise<pg.QueryResult<any> | void> => {
+  const _query = async (text: string, values?: any[]): Promise<pg.QueryResult<any>> => {
     if (!_client || !_isOpen) {
       throw Error('DBConnection is not open');
     }
