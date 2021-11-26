@@ -96,7 +96,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
           <AutocompleteFreeSoloField
             id="coordinator_agency"
             name="coordinator_agency"
-            label="Coordinator Agency"
+            label="Contact Agency"
             options={props.coordinator_agency}
             required={false}
           />

@@ -233,7 +233,7 @@ const ProjectsListPage: React.FC = () => {
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Permits</TableCell>
-              <TableCell>Coordinator Agency</TableCell>
+              <TableCell>Contact Agency</TableCell>
               <TableCell>Start Date</TableCell>
               <TableCell>End Date</TableCell>
             </TableRow>
@@ -258,7 +258,7 @@ const ProjectsListPage: React.FC = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>Permits</TableCell>
-                <TableCell>Coordinator Agency</TableCell>
+                <TableCell>Contact Agency</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
                 <TableCell>Status</TableCell>

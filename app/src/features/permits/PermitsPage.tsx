@@ -60,7 +60,7 @@ const PermitsPage: React.FC = () => {
             <TableRow>
               <TableCell>Number</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell>Coordinator Agency</TableCell>
+              <TableCell>Contact Agency</TableCell>
               <TableCell>Associated Project</TableCell>
             </TableRow>
           </TableHead>
@@ -83,7 +83,7 @@ const PermitsPage: React.FC = () => {
               <TableRow>
                 <TableCell>Number</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell>Coordinator Agency</TableCell>
+                <TableCell>Contact Agency</TableCell>
                 <TableCell>Associated Project</TableCell>
               </TableRow>
             </TableHead>

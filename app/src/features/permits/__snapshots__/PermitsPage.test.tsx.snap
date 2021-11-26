@@ -88,7 +88,7 @@ exports[`PermitsPage renders with a proper list of permits 1`] = `
                   class="MuiTableCell-root MuiTableCell-head"
                   scope="col"
                 >
-                  Coordinator Agency
+                  Contact Agency
                 </th>
                 <th
                   class="MuiTableCell-root MuiTableCell-head"
@@ -120,7 +120,7 @@ exports[`PermitsPage renders with a proper list of permits 1`] = `
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
                 >
-                  coordinator agency
+                  contact agency
                 </td>
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
@@ -146,7 +146,7 @@ exports[`PermitsPage renders with a proper list of permits 1`] = `
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
                 >
-                  coordinator agency 2
+                  contact agency 2
                 </td>
                 <td
                   class="MuiTableCell-root MuiTableCell-body"
