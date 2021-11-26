@@ -46,10 +46,26 @@ initialize({
   promiseMode: true, // allow endpoint handlers to return promises
   consumesMiddleware: {
     'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
-    'multipart/form-data': multer({
-      storage: multer.memoryStorage(),
-      limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
-    }).array('media', MAX_UPLOAD_NUM_FILES),
+    'multipart/form-data': function (req, res, next) {
+      const multerRequestHandler = multer({
+        storage: multer.memoryStorage(),
+        limits: { fileSize: MAX_UPLOAD_FILE_SIZE }
+      }).array('media', MAX_UPLOAD_NUM_FILES);
+
+      multerRequestHandler(req, res, (error?: any) => {
+        if (error) {
+          return next(error);
+        }
+
+        if (req.files && req.files.length) {
+          // Set original request file field to empty string to satisfy OpenAPI validation
+          // See: https://www.npmjs.com/package/express-openapi#argsconsumesmiddleware
+          (req.files as Express.Multer.File[]).forEach((file) => (req.body[file.fieldname] = ''));
+        }
+
+        return next();
+      });
+    },
     'application/x-www-form-urlencoded': express.urlencoded({ limit: MAX_REQ_BODY_SIZE, extended: true })
   },
   securityHandlers: {

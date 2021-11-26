@@ -68,22 +68,14 @@ const SurveyAttachments: React.FC<ISurveyAttachmentsProps> = () => {
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
     return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.survey.uploadSurveyAttachments(
-        projectId,
-        surveyId,
-        file,
-        attachmentType,
-        undefined,
-        cancelToken,
-        handleFileUploadProgress
-      );
+      return biohubApi.survey.uploadSurveyAttachments(projectId, surveyId, file, cancelToken, handleFileUploadProgress);
     };
   };
 
   const getFinishHandler = () => {
     return (fileMeta: IReportMetaForm) => {
       return biohubApi.survey
-        .uploadSurveyAttachments(projectId, surveyId, fileMeta.attachmentFile, attachmentType, fileMeta)
+        .uploadSurveyReports(projectId, surveyId, fileMeta.attachmentFile, fileMeta)
         .finally(() => {
           setOpenUploadAttachments(false);
         });

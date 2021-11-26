@@ -204,7 +204,7 @@ describe('PublicAttachmentsList', () => {
     expect(queryByText('filename10.test')).toBeNull();
   });
 
-  it.only('viewing reportMetadata in dialog works as expected for project attachments', async () => {
+  it('viewing reportMetadata in dialog works as expected for project attachments', async () => {
     const renderContainer = () => {
       return render(
         <PublicAttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />

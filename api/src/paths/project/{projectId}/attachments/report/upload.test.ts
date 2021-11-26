@@ -3,10 +3,10 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as upload from './upload';
-import * as db from '../../../../database/db';
-import * as file_utils from '../../../../utils/file-utils';
-import { getMockDBConnection } from '../../../../__mocks__/db';
-import { CustomError } from '../../../../errors/CustomError';
+import * as db from '../../../../../database/db';
+import * as file_utils from '../../../../../utils/file-utils';
+import { getMockDBConnection } from '../../../../../__mocks__/db';
+import { CustomError } from '../../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -32,7 +32,9 @@ describe('uploadMedia', () => {
         size: 340
       }
     ],
-    body: {}
+    body: {
+      attachmentType: 'Other'
+    }
   } as any;
 
   let actualResult: any = null;
@@ -109,13 +111,13 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
+    sinon.stub(upload, 'upsertProjectReportAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {
       const result = upload.uploadMedia();
 
-      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
+      await result(mockReq, mockRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -123,7 +125,7 @@ describe('uploadMedia', () => {
     }
   });
 
-  it('should return id and revision_count on success (with username and email) with valid parameters', async () => {
+  it('should return id and revision_count on success (with username and email) when attachmentType is Other', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -133,7 +135,7 @@ describe('uploadMedia', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
+    sinon.stub(upload, 'upsertProjectReportAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
 
     const result = upload.uploadMedia();
 
