@@ -190,7 +190,7 @@ describe('useSurveyApi', () => {
 
     mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file, attachmentType);
+    const result = await useSurveyApi(axios).uploadSurveyAttachments(projectId, surveyId, file);
 
     expect(result).toEqual('result 1');
   });
@@ -202,13 +202,7 @@ describe('useSurveyApi', () => {
 
     mock.onPost(`/api/project/${projectId}/survey/${surveyId}/attachments/report/upload`).reply(200, 'result 1');
 
-    const result = await useSurveyApi(axios).uploadSurveyReports(
-      projectId,
-      surveyId,
-      file,
-      attachmentType,
-      attachmentMeta
-    );
+    const result = await useSurveyApi(axios).uploadSurveyReports(projectId, surveyId, file, attachmentMeta);
 
     expect(result).toEqual('result 1');
   });
@@ -314,13 +308,13 @@ describe('useSurveyApi', () => {
     expect(result).toEqual(data);
   });
 
-  // it('publishSurvey works as expected', async () => {
-  //   mock.onPut(`/api/project/${projectId}/survey/${surveyId}/publish`).reply(200, 'OK');
+  it('publishSurvey works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/publish`).reply(200, true);
 
-  //   const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
+    const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
 
-  //   expect(result).toEqual('OK');
-  // });
+    expect(result).toEqual(true);
+  });
 
   it('deleteSummarySubmission works as expected', async () => {
     const summaryId = 2;

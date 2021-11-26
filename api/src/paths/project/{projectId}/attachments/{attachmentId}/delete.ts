@@ -13,7 +13,7 @@ import { unsecureAttachmentRecordSQL } from '../../../../../queries/security/sec
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
-import { deleteProjectReportAttachmentAuthors } from '../upload';
+import { deleteProjectReportAttachmentAuthors } from '../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/delete');
 

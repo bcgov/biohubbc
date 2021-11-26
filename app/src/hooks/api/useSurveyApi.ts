@@ -113,14 +113,12 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     file: File,
-    attachmentType?: string,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
     const req_message = new FormData();
 
     req_message.append('media', file);
-    attachmentType && req_message.append('attachmentType', attachmentType);
 
     const { data } = await axios.post(`/api/project/${projectId}/survey/${surveyId}/attachments/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
@@ -145,7 +143,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     projectId: number,
     surveyId: number,
     file: File,
-    attachmentType?: string,
+
     attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
@@ -153,7 +151,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     const req_message = new FormData();
 
     req_message.append('media', file);
-    attachmentType && req_message.append('attachmentType', attachmentType);
 
     if (attachmentMeta) {
       req_message.append('attachmentMeta[title]', attachmentMeta.title);

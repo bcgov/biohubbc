@@ -69,24 +69,15 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
     return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.project.uploadProjectAttachments(
-        projectId,
-        file,
-        attachmentType,
-        undefined,
-        cancelToken,
-        handleFileUploadProgress
-      );
+      return biohubApi.project.uploadProjectAttachments(projectId, file, cancelToken, handleFileUploadProgress);
     };
   };
 
   const getFinishHandler = () => {
     return (fileMeta: IReportMetaForm) => {
-      return biohubApi.project
-        .uploadProjectAttachments(projectId, fileMeta.attachmentFile, attachmentType, fileMeta)
-        .finally(() => {
-          setOpenUploadAttachments(false);
-        });
+      return biohubApi.project.uploadProjectReports(projectId, fileMeta.attachmentFile, fileMeta).finally(() => {
+        setOpenUploadAttachments(false);
+      });
     };
   };
 

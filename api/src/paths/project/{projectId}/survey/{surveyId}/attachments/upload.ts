@@ -56,45 +56,11 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
-          required: ['attachmentType'],
+          required: ['media'],
           properties: {
             media: {
               type: 'string',
               format: 'binary'
-            },
-            attachmentType: {
-              type: 'string',
-              enum: ['Other']
-            },
-            attachmentMeta: {
-              type: 'object',
-              required: ['title', 'year_published', 'authors', 'description'],
-              properties: {
-                title: {
-                  type: 'string'
-                },
-                year_published: {
-                  type: 'string'
-                },
-                authors: {
-                  type: 'array',
-                  items: {
-                    type: 'object',
-                    required: ['first_name', 'last_name'],
-                    properties: {
-                      first_name: {
-                        type: 'string'
-                      },
-                      last_name: {
-                        type: 'string'
-                      }
-                    }
-                  }
-                },
-                description: {
-                  type: 'string'
-                }
-              }
             }
           }
         }
@@ -146,14 +112,6 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
-    if (!req.body || !req.body.attachmentType) {
-      throw new HTTP400('Missing attachment file type');
-    }
-
-    if (req.body.attachmentType !== ATTACHMENT_TYPE.OTHER) {
-      throw new HTTP400('Attachment type is incorrect');
-    }
-
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
 
     defaultLog.debug({
@@ -180,7 +138,7 @@ export function uploadMedia(): RequestHandler {
         rawMediaFile,
         Number(req.params.projectId),
         Number(req.params.surveyId),
-        req.body.attachmentType,
+        ATTACHMENT_TYPE.OTHER,
         connection
       );
 

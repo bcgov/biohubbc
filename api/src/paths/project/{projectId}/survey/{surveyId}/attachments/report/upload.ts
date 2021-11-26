@@ -1,7 +1,6 @@
 'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
@@ -63,15 +62,11 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
-          required: ['attachmentType'],
+          required: ['media', 'attachmentMeta'],
           properties: {
             media: {
               type: 'string',
               format: 'binary'
-            },
-            attachmentType: {
-              type: 'string',
-              enum: ['Report']
             },
             attachmentMeta: {
               type: 'object',
@@ -153,12 +148,8 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
-    if (!req.body || !req.body.attachmentType) {
-      throw new HTTP400('Missing attachment file type');
-    }
-
-    if (req.body.attachmentType !== ATTACHMENT_TYPE.REPORT) {
-      throw new HTTP400('Attachment type is incorrect');
+    if (!req.body) {
+      throw new HTTP400('Missing request body');
     }
 
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];

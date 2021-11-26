@@ -2,18 +2,24 @@
 
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../constants/attachments';
-import { PROJECT_ROLE } from '../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { HTTP400 } from '../../../../../errors/CustomError';
 import {
-  getProjectAttachmentByFileNameSQL,
-  postProjectAttachmentSQL,
-  putProjectAttachmentSQL
-} from '../../../../queries/project/project-attachments-queries';
-import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../utils/file-utils';
-import { getLogger } from '../../../../utils/logger';
+  IReportAttachmentAuthor,
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata
+} from '../../../../../models/project-survey-attachments';
+import {
+  deleteProjectReportAttachmentAuthorsSQL,
+  getProjectReportAttachmentByFileNameSQL,
+  insertProjectReportAttachmentAuthorSQL,
+  postProjectReportAttachmentSQL,
+  putProjectReportAttachmentSQL
+} from '../../../../../queries/project/project-attachments-queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../utils/file-utils';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/upload');
 
@@ -52,11 +58,41 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
-          required: ['media'],
+          required: ['media', 'attachmentMeta'],
           properties: {
             media: {
               type: 'string',
               format: 'binary'
+            },
+            attachmentMeta: {
+              type: 'object',
+              required: ['title', 'year_published', 'authors', 'description'],
+              properties: {
+                title: {
+                  type: 'string'
+                },
+                year_published: {
+                  type: 'string'
+                },
+                authors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['first_name', 'last_name'],
+                    properties: {
+                      first_name: {
+                        type: 'string'
+                      },
+                      last_name: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                },
+                description: {
+                  type: 'string'
+                }
+              }
             }
           }
         }
@@ -94,6 +130,7 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
+    console.log('req is: ', req);
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
     if (!req.params.projectId) {
@@ -104,9 +141,7 @@ export function uploadMedia(): RequestHandler {
       // no media objects included, skipping media upload step
       throw new HTTP400('Missing upload data');
     }
-    if (!req.body) {
-      throw new HTTP400('Missing request body');
-    }
+
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
 
     defaultLog.debug({
@@ -129,10 +164,11 @@ export function uploadMedia(): RequestHandler {
 
       // Insert file metadata into project_attachment or project_report_attachment table
 
-      const upsertResult = await upsertProjectAttachment(
+      // Upsert a report attachment
+      const upsertResult = await upsertProjectReportAttachment(
         rawMediaFile,
         Number(req.params.projectId),
-        ATTACHMENT_TYPE.OTHER,
+        req.body.attachmentMeta,
         connection
       );
 
@@ -158,43 +194,64 @@ export function uploadMedia(): RequestHandler {
   };
 }
 
-export const upsertProjectAttachment = async (
+export const upsertProjectReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
-  attachmentType: string,
+  attachmentMeta: any,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number; key: string }> => {
-  const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
+  const getSqlStatement = getProjectReportAttachmentByFileNameSQL(projectId, file.originalname);
 
   if (!getSqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
-  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname });
+  const key = generateS3FileKey({ projectId: projectId, fileName: file.originalname, folder: 'reports' });
 
   const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
 
+  let metadata;
   let attachmentResult: { id: number; revision_count: number };
 
   if (getResponse && getResponse.rowCount > 0) {
     // Existing attachment with matching name found, update it
-    attachmentResult = await updateProjectAttachment(file, projectId, attachmentType, connection);
+    metadata = new PutReportAttachmentMetadata(attachmentMeta);
+    attachmentResult = await updateProjectReportAttachment(file, projectId, metadata, connection);
   } else {
     // No matching attachment found, insert new attachment
-    attachmentResult = await insertProjectAttachment(file, projectId, attachmentType, key, connection);
+    metadata = new PostReportAttachmentMetadata(attachmentMeta);
+    attachmentResult = await insertProjectReportAttachment(
+      file,
+      projectId,
+      new PostReportAttachmentMetadata(attachmentMeta),
+      key,
+      connection
+    );
   }
+
+  // Delete any existing attachment author records
+  await deleteProjectReportAttachmentAuthors(attachmentResult.id, connection);
+
+  const promises = [];
+
+  // Insert any new attachment author records
+  promises.push(
+    metadata.authors.map((author) => insertProjectReportAttachmentAuthor(attachmentResult.id, author, connection))
+  );
+
+  await Promise.all(promises);
 
   return { ...attachmentResult, key };
 };
 
-export const insertProjectAttachment = async (
+export const insertProjectReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
-  attachmentType: string,
+  attachmentMeta: PostReportAttachmentMetadata,
   key: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
+  const sqlStatement = postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key, attachmentMeta);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -209,13 +266,13 @@ export const insertProjectAttachment = async (
   return response.rows[0];
 };
 
-export const updateProjectAttachment = async (
+export const updateProjectReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
-  attachmentType: string,
+  attachmentMeta: PutReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
+  const sqlStatement = putProjectReportAttachmentSQL(projectId, file.originalname, attachmentMeta);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -228,4 +285,39 @@ export const updateProjectAttachment = async (
   }
 
   return response.rows[0];
+};
+
+export const deleteProjectReportAttachmentAuthors = async (
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = deleteProjectReportAttachmentAuthorsSQL(attachmentId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete attachment report authors statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to delete attachment report authors records');
+  }
+};
+
+export const insertProjectReportAttachmentAuthor = async (
+  attachmentId: number,
+  author: IReportAttachmentAuthor,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = insertProjectReportAttachmentAuthorSQL(attachmentId, author);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert attachment report author statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert attachment report author record');
+  }
 };

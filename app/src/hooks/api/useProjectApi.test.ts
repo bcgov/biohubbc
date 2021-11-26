@@ -323,10 +323,9 @@ describe('useProjectApi', () => {
   it('updateProjectAttachmentMetadata works as expected', async () => {
     mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).updateProjectAttachmentMetadata(
+    const result = await useProjectApi(axios).updateProjectReportMetadata(
       projectId,
       attachmentId,
-      attachmentType,
       attachmentMetaForUpdate,
       attachmentMetaForUpdate.revision_count
     );
