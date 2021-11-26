@@ -47,14 +47,14 @@ describe('PermitsPage', () => {
         id: 1,
         number: '123',
         type: 'Wildlife',
-        coordinator_agency: 'coordinator agency',
+        coordinator_agency: 'contact agency',
         project_name: 'Project 1'
       },
       {
         id: 2,
         number: '1234',
         type: 'Wildlife',
-        coordinator_agency: 'coordinator agency 2',
+        coordinator_agency: 'contact agency 2',
         project_name: null
       }
     ]);
@@ -77,7 +77,7 @@ describe('PermitsPage', () => {
         id: 1,
         number: '123',
         type: 'Wildlife',
-        coordinator_agency: 'coordinator agency',
+        coordinator_agency: 'contact agency',
         project_name: 'Project 1'
       }
     ]);
