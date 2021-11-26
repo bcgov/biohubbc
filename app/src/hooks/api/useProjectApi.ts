@@ -225,8 +225,6 @@ const useProjectApi = (axios: AxiosInstance) => {
       });
     }
 
-    console.log('req_message is: ', req_message);
-
     const { data } = await axios.post(`/api/project/${projectId}/attachments/report/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress

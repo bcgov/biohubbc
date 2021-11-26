@@ -132,8 +132,6 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      // Insert file metadata into project_attachment or _report_attachment table
-
       const upsertResult = await upsertSurveyAttachment(
         rawMediaFile,
         Number(req.params.projectId),

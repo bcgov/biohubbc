@@ -130,7 +130,6 @@ POST.apiDoc = {
  */
 export function uploadMedia(): RequestHandler {
   return async (req, res) => {
-    console.log('req is: ', req);
     const rawMediaArray: Express.Multer.File[] = req.files as Express.Multer.File[];
 
     if (!req.params.projectId) {
@@ -162,9 +161,7 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      // Insert file metadata into project_attachment or project_report_attachment table
-
-      // Upsert a report attachment
+      //Upsert a report attachment
       const upsertResult = await upsertProjectReportAttachment(
         rawMediaFile,
         Number(req.params.projectId),
