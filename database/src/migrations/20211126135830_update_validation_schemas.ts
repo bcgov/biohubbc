@@ -10,7 +10,6 @@ const moose_srb_or_composition = fs.readFileSync(
   path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'moose_srb_or_composition_survey_4.json')
 );
 
-
 enum COMMON_SURVEY_METHODOLOGY {
   STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block',
   COMPOSITION = 'Composition',

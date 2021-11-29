@@ -25,7 +25,7 @@
         },
         {
           "file_required_columns_validator": {
-            "required_columns": ["Stratum", "Stratum Definition"]
+            "required_columns": ["Stratum Definition"]
           }
         }
       ]
@@ -142,12 +142,9 @@
                 "name": "",
                 "description": "",
                 "allowed_code_values": [
-                  { "name": "Bell JetRanger", "description": "" },
-                  { "name": "Bell LongRanger", "description": "" },
                   { "name": "Bell JetRanger with bubble window", "description": "" },
                   { "name": "Bell JetRanger without bubble window", "description": "" },
-                  { "name": "A-Star", "description": "" },
-                  { "name": "Bell 406", "description": "" },
+                  { "name": "Bell LongRanger", "description": "" },
                   { "name": "Hiller 12E4", "description": "" },
                   { "name": "Hughes 500D", "description": "" },
                   { "name": "Cessna 172", "description": "" },
@@ -158,7 +155,9 @@
                   { "name": "SuperCub", "description": "" },
                   { "name": "Beaver", "description": "" },
                   { "name": "Single Otter", "description": "" },
-                  { "name": "Twin Otter", "description": "" }
+                  { "name": "Twin Otter", "description": "" },
+                  { "name": "Bell 406", "description": "" },
+                  { "name": "A-Star", "description": "" }
                 ]
               }
             }
@@ -177,29 +176,6 @@
                   { "name": "Decimal Degrees", "description": "" },
                   { "name": "Degrees Decimal Minutes", "description": "" },
                   { "name": "Degrees Minutes Seconds", "description": "" }
-                ]
-              }
-            }
-          ]
-        },
-        {
-          "name": "Precipitation",
-          "description": "",
-          "validations": [
-            {
-              "column_code_validator": {
-                "name": "",
-                "description": "",
-                "allowed_code_values": [
-                  { "name": "None", "description": "" },
-                  { "name": "Fog", "description": "" },
-                  { "name": "Misty Drizzle", "description": "" },
-                  { "name": "Light Rain", "description": "" },
-                  { "name": "Hard Rain", "description": "" },
-                  { "name": "Snow", "description": "" },
-                  { "name": "Light Snow", "description": "" },
-                  { "name": "Heavy Snow", "description": "" },
-                  { "name": "Freezing", "description": "" }
                 ]
               }
             }
@@ -257,42 +233,7 @@
             }
           ]
         },
-        {
-          "name": "Wind Speed (KPH)",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Snow cover (%)",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Snow Depth (cm)",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
+
         {
           "name": "Days Since Snowfall",
           "description": "",
@@ -315,7 +256,6 @@
             "required_columns": [
               "Survey Area",
               "Block ID/SU ID",
-              "Stratum",
               "Area (km2)",
               "Date",
               "Start Time 1 (24hrs)",
@@ -328,7 +268,7 @@
               "Time (mins)/block area (km2)",
               "Aircraft Company",
               "Aircraft Type",
-              "Aircraft Call Sign",
+              "Aircraft Registration",
               "Pilot",
               "Navigator",
               "Rear Left Observer",
@@ -336,11 +276,11 @@
               "Air Temperature (C)",
               "Visibility",
               "Cloud Cover (%)",
-              "Wind Speed (KPH)",
+              "Wind Speed",
               "Precipitation",
               "Light",
-              "Snow cover (%)",
-              "Snow Depth (cm)",
+              "Snow Cover",
+              "Snow Depth",
               "Days Since Snowfall",
               "Weather Description",
               "Habitat Description",
@@ -394,13 +334,71 @@
               "column_code_validator": {
                 "name": "",
                 "description": "",
-                "allowed_code_values": [{ "name": "Standing" }, { "name": "Moving" }, { "name": "Bedding" }]
+                "allowed_code_values": [
+                  { "name": "Alert" },
+                  { "name": "Avoiding Pests" },
+                  { "name": "Basking" },
+                  { "name": "Bedding" },
+                  { "name": "Building" },
+                  { "name": "Caching" },
+                  { "name": "Casting" },
+                  { "name": "Courting" },
+                  { "name": "Denning" },
+                  { "name": "Disturbed" },
+                  { "name": "Drinking" },
+                  { "name": "Excreting" },
+                  { "name": "Feeding" },
+                  { "name": "Fleeing" },
+                  { "name": "Feeding Salmonid" },
+                  { "name": "Grooming" },
+                  { "name": "Hibernating" },
+                  { "name": "Hunting" },
+                  { "name": "Ingesting Minerals" },
+                  { "name": "Incubating" },
+                  { "name": "Living" },
+                  { "name": "Migrating Daily" },
+                  { "name": "Migrating Seasonally" },
+                  { "name": "Reproducing birthing" },
+                  { "name": "Reproducing eggs" },
+                  { "name": "Rearing" },
+                  { "name": "Standing" },
+                  { "name": "Security, Habitat" },
+                  { "name": "Security and/or Thermal" },
+                  { "name": "Thermal, Habitat" },
+                  { "name": " Territoriality" },
+                  { "name": " Not Traveling" },
+                  { "name": " Traveling Flying" },
+                  { "name": "Traveling Unclassified" },
+                  { "name": "Traveling Walking" },
+                  { "name": "Traveling on a Path" },
+                  { "name": "Traveling Running" },
+                  { "name": " Traveling Swimming" },
+                  { "name": "Traveling, Heli-Skiing" },
+                  { "name": " Traveling, Skiing" },
+                  { "name": "Traveling, Snowmobiling" },
+                  { "name": "Traveling, Snowshoeing" },
+                  { "name": "Traveling, Snow Cat" },
+                  { "name": "Urinating" },
+                  { "name": "Described in comments" }
+                ]
               }
             }
           ]
         },
         {
           "name": "Yearling Bulls",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Adult Bulls - Unclassified",
           "description": "",
           "validations": [
             {
@@ -544,6 +542,18 @@
           ]
         },
         {
+          "name": "3 brow/10 points",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
           "name": "% Veg Cover",
           "description": "",
           "validations": [
@@ -578,10 +588,11 @@
               "Survey Area",
               "Block ID/SU ID",
               "Stratum",
+              "GPS Unit Name",
               "Waypoint",
               "Species",
-              "Total Count",
               "Yearling Bulls",
+              "Adult Bulls - Unclassified",
               "Sub-Prime Bulls",
               "Prime Bulls",
               "Senior Bulls",
@@ -593,10 +604,14 @@
               "Unclassified",
               "Total Count",
               "No. Spike/Fork",
-              "Activity",
+              "3 brow/10 points",
+              "Feature Type",
+              "Sign Type",
               "% Veg Cover",
               "% Snow Cover",
-              "Observation Comments"
+              "Activity",
+              "Observation Comments",
+              "Photos"
             ]
           }
         }
@@ -634,6 +649,76 @@
                   { "name": "Hibernating" },
                   { "name": "Hunting" },
                   { "name": "Ingesting" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Feature Type",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Breeding Site" },
+                  { "name": "Maternity Roost" },
+                  { "name": "Bat Nursery Roost" },
+                  { "name": "Rookery" },
+                  { "name": "Courting Site" },
+                  { "name": "Feeding Site" },
+                  { "name": "Resting Site" },
+                  { "name": "Staging Site" },
+                  { "name": "Ungulate Winter Range" },
+                  { "name": "Hibernaculum" },
+                  { "name": "Roost" },
+                  { "name": "Wallow" },
+                  { "name": "Mineral Lick" },
+                  { "name": "Burrow" },
+                  { "name": "Den" },
+                  { "name": "Lodge" },
+                  { "name": "Nest" },
+                  { "name": "Nest Tree" },
+                  { "name": "Plant Community" },
+                  { "name": "Plant Site" },
+                  { "name": "Hot Spring" },
+                  { "name": "Water" },
+                  { "name": "Fisheries Sensitive Feature" },
+                  { "name": "Marine Sensitive Feature" },
+                  { "name": "Described in Comments" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "Sign Type",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Antler" },
+                  { "name": "Body Parts" },
+                  { "name": "Cache" },
+                  { "name": "Carcass" },
+                  { "name": "Described in Comments" },
+                  { "name": "Egg Shell" },
+                  { "name": "Excrement" },
+                  { "name": "Feeding" },
+                  { "name": "Feather" },
+                  { "name": "Hair" },
+                  { "name": "Pellet Group" },
+                  { "name": "Scratchings" },
+                  { "name": "Regurgitated Pellet" },
+                  { "name": "Shed Skin" },
+                  { "name": "Trail" },
+                  { "name": "Tracks" },
+                  { "name": "Whitewash" }
                 ]
               }
             }
@@ -758,7 +843,9 @@
             "required_columns": [
               "Study Area",
               "Block ID/SU ID",
+              "GPS Unit Name",
               "Waypoint",
+              "GPS Unit Name",
               "Date",
               "Species",
               "Total Count",
@@ -770,6 +857,9 @@
               "Juveniles - Unclassified Sex",
               "Unknown Age/Sex",
               "Activity",
+              "Feature Type",
+              "Sign Type",
+              "Photos",
               "NonTargeted Observation Comments"
             ]
           }
@@ -868,7 +958,7 @@
           ]
         },
         {
-          "name": "Elevation (m)",
+          "name": "Waypoint Elevation (m)",
           "description": "",
           "validations": [
             {
@@ -899,13 +989,15 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
+              "GPS Unit Name",
               "Waypoint",
               "UTM Zone",
               "Easting",
               "Northing",
               "GPS Datum",
-              "Elevation (m)",
+              "Waypoint Elevation (m)",
               "Elevation(-65m)",
+              "Time",
               "Lat/Long Units",
               "Lat",
               "Long",
