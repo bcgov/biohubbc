@@ -62,7 +62,7 @@ const validationSchemas = [
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     set schema '${DB_SCHEMA}';
-    set search_path = ${DB_SCHEMA},public, biohub_dapi_v1;
+    set search_path = ${DB_SCHEMA},public;
   `);
 
   for (const validationSchema of validationSchemas) {
