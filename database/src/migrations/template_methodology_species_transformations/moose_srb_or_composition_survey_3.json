@@ -2,14 +2,14 @@
   "flatten": [
     {
       "fileName": "Effort & Site Conditions",
-      "uniqueId": ["Survey Area", "Block ID/SU ID", "Stratum"]
+      "uniqueId": ["Survey Area", "Block ID/SU ID"]
     },
     {
       "fileName": "Observations",
       "uniqueId": ["Waypoint"],
       "parent": {
         "fileName": "Effort & Site Conditions",
-        "uniqueId": ["Survey Area", "Block ID/SU ID", "Stratum"]
+        "uniqueId": ["Survey Area", "Block ID/SU ID"]
       }
     },
     {
@@ -231,6 +231,49 @@
             },
             "individualCount": {
               "columns": ["Bulls - Unclassified"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Unknown"
+            },
+            "sex": {
+              "value": "Male"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Adult Bulls - Unclassified"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Adult Bulls - Unclassified"]
             },
             "vernacularName": {
               "columns": ["Species"]
