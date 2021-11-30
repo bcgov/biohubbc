@@ -25,7 +25,7 @@
         },
         {
           "file_required_columns_validator": {
-            "required_columns": ["Stratum Definition"]
+            "required_columns": ["Stratum", "Stratum Definition"]
           }
         }
       ]
@@ -318,10 +318,9 @@
           "description": "",
           "validations": [
             {
-              "column_format_validator": {
-                "reg_exp": "^wpt \\d+$",
-                "reg_exp_flags": "i",
-                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
               }
             }
           ]
@@ -729,10 +728,9 @@
           "description": "",
           "validations": [
             {
-              "column_format_validator": {
-                "reg_exp": "^wpt \\d+$",
-                "reg_exp_flags": "i",
-                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
               }
             }
           ]
@@ -901,10 +899,9 @@
           "description": "",
           "validations": [
             {
-              "column_format_validator": {
-                "reg_exp": "^wpt \\d+$",
-                "reg_exp_flags": "i",
-                "expected_format": "Must be in the format \"WPT X\": WPT 11, wpt 11"
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
               }
             }
           ]
