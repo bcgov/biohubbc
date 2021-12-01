@@ -35,18 +35,6 @@
       "description": "",
       "columns": [
         {
-          "name": "Block ID/SU ID",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
           "name": "Area (km2)",
           "description": "",
           "validations": [
@@ -121,18 +109,6 @@
       "name": "Effort & Site Conditions",
       "description": "",
       "columns": [
-        {
-          "name": "Block ID/SU ID",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
         {
           "name": "Aircraft Type",
           "description": "",
