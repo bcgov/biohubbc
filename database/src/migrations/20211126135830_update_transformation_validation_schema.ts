@@ -4,7 +4,7 @@ import path from 'path';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
-const TRANSFORMATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
+const TRANSFORMATION_SCHEMAS_FOLDER = 'template_methodology_species_transformations';
 
 const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
 
@@ -57,7 +57,7 @@ const transformationAndValidationSchemas = [
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
-    set schema '${DB_SCHEMA}';
+    SET schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
   `);
   for (const v_t_schema of transformationAndValidationSchemas) {
@@ -102,7 +102,6 @@ const updateValidationAndTransformation = (
   SET
     validation = '${validationSchema}',
     transform = '${transformationSchema}'
-
   WHERE
     tms.template_methodology_species_id =
     (SELECT
