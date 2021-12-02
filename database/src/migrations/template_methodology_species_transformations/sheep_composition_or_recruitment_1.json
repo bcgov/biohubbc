@@ -25,7 +25,7 @@
     {
       "condition": {
         "if": {
-          "columns": ["Adult - Unclassified"]
+          "columns": ["Ram - Class I"]
         }
       },
       "transformations": [
@@ -50,7 +50,7 @@
               "unique": "occ"
             },
             "individualCount": {
-              "columns": ["Adult - Unclassified"]
+              "columns": ["Ram - Class I"]
             },
             "vernacularName": {
               "columns": ["Species"]
@@ -60,6 +60,350 @@
             },
             "sex": {
               "value": "Unknown"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Ram - Class II"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Ram - Class II"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Unknown"
+            },
+            "sex": {
+              "value": "Unknown"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Ram - Class III"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Ram - Class III"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Kid"
+            },
+            "sex": {
+              "value": "Unknown"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Ram - Class IV"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Ram - Class IV"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Female"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Ram - Unclassified"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Ram - Unclassified"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Male"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Ewes"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Ewes"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Male"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Yearling"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Yearling"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Male"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Lamb (Young of Year)"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Lamb (Young of Year)"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Male"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Ewe-Like Sheep"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinates": {
+              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Ewe-Like Sheep"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Male"
             }
           }
         }
@@ -103,135 +447,6 @@
             },
             "sex": {
               "value": "Unknown"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "condition": {
-        "if": {
-          "columns": ["Kid"]
-        }
-      },
-      "transformations": [
-        {
-          "fields": {
-            "id": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
-              "separator": ":"
-            },
-            "eventID": {
-              "columns": ["Survey Area", "Block ID/SU ID"],
-              "separator": ":"
-            },
-            "eventDate": {
-              "columns": ["Date"]
-            },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
-            },
-            "occurrenceID": {
-              "columns": ["Waypoint"],
-              "unique": "occ"
-            },
-            "individualCount": {
-              "columns": ["Kid"]
-            },
-            "vernacularName": {
-              "columns": ["Species"]
-            },
-            "lifeStage": {
-              "value": "Kid"
-            },
-            "sex": {
-              "value": "Unknown"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "condition": {
-        "if": {
-          "columns": ["Nanny"]
-        }
-      },
-      "transformations": [
-        {
-          "fields": {
-            "id": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
-              "separator": ":"
-            },
-            "eventID": {
-              "columns": ["Survey Area", "Block ID/SU ID"],
-              "separator": ":"
-            },
-            "eventDate": {
-              "columns": ["Date"]
-            },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
-            },
-            "occurrenceID": {
-              "columns": ["Waypoint"],
-              "unique": "occ"
-            },
-            "individualCount": {
-              "columns": ["Nanny"]
-            },
-            "vernacularName": {
-              "columns": ["Species"]
-            },
-            "lifeStage": {
-              "value": "Adult"
-            },
-            "sex": {
-              "value": "Female"
-            }
-          }
-        }
-      ]
-    },
-    {
-      "condition": {
-        "if": {
-          "columns": ["Billy"]
-        }
-      },
-      "transformations": [
-        {
-          "fields": {
-            "id": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
-              "separator": ":"
-            },
-            "eventID": {
-              "columns": ["Survey Area", "Block ID/SU ID"],
-              "separator": ":"
-            },
-            "eventDate": {
-              "columns": ["Date"]
-            },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
-            },
-            "occurrenceID": {
-              "columns": ["Waypoint"],
-              "unique": "occ"
-            },
-            "individualCount": {
-              "columns": ["Billy"]
-            },
-            "vernacularName": {
-              "columns": ["Species"]
-            },
-            "lifeStage": {
-              "value": "Adult"
-            },
-            "sex": {
-              "value": "Male"
             }
           }
         }

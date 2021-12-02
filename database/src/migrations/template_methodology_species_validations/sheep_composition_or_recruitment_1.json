@@ -57,6 +57,18 @@
       "description": "",
       "columns": [
         {
+          "name": "Area (km2)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
           "name": "Aircraft Type",
           "description": "",
           "validations": [
@@ -204,24 +216,6 @@
       "description": "",
       "columns": [
         {
-          "name": "Species",
-          "description": "",
-          "validations": [
-            {
-              "column_code_validator": {
-                "name": "",
-                "description": "",
-                "allowed_code_values": [
-                  { "name": "Mountain Goat" },
-                  { "name": "Oreamnos americanus" },
-                  { "name": "M-ORAM" },
-                  { "name": "ORAM" }
-                ]
-              }
-            }
-          ]
-        },
-        {
           "name": "Waypoint",
           "description": "",
           "validations": [
@@ -234,7 +228,32 @@
           ]
         },
         {
-          "name": "Adult Unclassified",
+          "name": "Species",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Bighorn Sheep" },
+                  { "name": "Ovis canadensis" },
+                  { "name": "M-OVCA" },
+                  { "name": "Dall's Sheep" },
+                  { "name": "M-OVDA-DA" },
+                  { "name": "Stone's Sheep" },
+                  { "name": "M-OVDA-ST" },
+                  { "name": "Thinhorn Sheep" },
+                  { "name": "Ovis dalli" },
+                  { "name": "M-OVDA" }
+                ]
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Ram - Class I",
           "description": "",
           "validations": [
             {
@@ -246,7 +265,7 @@
           ]
         },
         {
-          "name": "Kid",
+          "name": "Ram - Class II",
           "description": "",
           "validations": [
             {
@@ -258,31 +277,91 @@
           ]
         },
         {
+          "name": "Ram - Class III",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ram - Class IV",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Ram - Unclassified",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+
+
+
+        {
+          "name": "Ewes",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Yearling",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },{
+          "name": "Lam (Young of Year)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },{
+          "name": "Ewe-Like Sheep",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },{
           "name": "Unclassified",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Nanny",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Billy",
           "description": "",
           "validations": [
             {
@@ -422,7 +501,7 @@
           ]
         },
         {
-          "name": "Wind Blown",
+          "name": "Habitat - Slope",
           "description": "",
           "validations": [
             {
@@ -430,46 +509,52 @@
                 "name": "",
                 "description": "",
                 "allowed_code_values": [
-                  { "name": "Y", "description": "Yes" },
-                  { "name": "N", "description": "No" }
+                  { "name": "Flat (0%)", "description": "Flat (0%)" },
+                  { "name": "Minimum (5-20%)", "description": "Minimum (5-20%)" },
+                  { "name": "Moderate (20-50%", "description": "Moderate (20-50%" },
+                  { "name": "Steep (>50%)", "description": "Steep (>50%)" }
                 ]
               }
             }
           ]
         },
         {
-          "name": "Terrain Obstruction",
+          "name": "% Veg Cover",
           "description": "",
           "validations": [
             {
-              "column_code_validator": {
+              "column_numeric_validator": {
                 "name": "",
-                "description": "",
-                "allowed_code_values": [
-                  { "name": "Y", "description": "Yes" },
-                  { "name": "N", "description": "No" }
-                ]
+                "description": ""
               }
             }
           ]
         },
         {
-          "name": "Count Confidence",
+          "name": "% Snow Cover",
           "description": "",
           "validations": [
             {
-              "column_code_validator": {
+              "column_numeric_validator": {
                 "name": "",
-                "description": "",
-                "allowed_code_values": [
-                  { "name": "Low", "description": "Low" },
-                  { "name": "Moderate", "description": "Moderate" },
-                  { "name": "High", "description": "High" }
-                ]
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "% Canopy Cover",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
               }
             }
           ]
         }
+
       ],
       "validations": [
         {
@@ -480,24 +565,31 @@
             "required_columns": [
               "Survey Area",
               "Block ID/SU ID",
+              "Date",
               "GPS Unit Name",
               "Waypoint",
               "Distance (m) and Bearing to Waypoint",
               "Species",
-              "Adult - Unclassified",
-              "kid",
+              "Ram - Class I",
+              "Ram - Class II",
+              "Ram - Class III",
+              "Ram - Class IV",
+              "Ram - Unclassified",
+              "Ewes",
+              "Yearling",
+              "Lamb (Young of Year)",
+              "Ewe-Like Sheep",
               "Unclassified",
-              "Nanny",
-              "Billy",
               "Total Count",
               "Sign Type",
               "Age of Sign",
               "Activity",
               "Elevation (m) of Observation",
               "Habitat",
-              "Wind Blown",
-              "Terrain Obstruction",
-              "Count Confidence",
+              "Habitat-slope",
+              "% Veg Cover",
+              "% Snow Cover",
+              "% Canopy Cover",
               "Observation Comments",
               "Photos"
             ]
@@ -760,7 +852,6 @@
               "Block ID/SU ID",
               "GPS Unit Name",
               "Waypoint",
-              "GPS Unit Name",
               "Date",
               "Species",
               "Adult Males",
