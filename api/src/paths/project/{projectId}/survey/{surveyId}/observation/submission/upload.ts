@@ -138,7 +138,8 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const templateMethodologyId = await getTemplateMethodologySpeciesId(Number(req.params.surveyId), connection);
+      //const templateMethodologyId = await getTemplateMethodologySpeciesId(Number(req.params.surveyId), connection);
+      const templateMethodologyId = 4;
 
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),

@@ -8,12 +8,12 @@ const TRANSFORMATION_SCHEMAS_FOLDER = 'template_methodology_species_transformati
 
 const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
 
-const moose_srb_or_composition_validation = fs.readFileSync(
-  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'moose_srb_or_composition_survey_4.json')
+const goat_composition_or_recruitment_validation = fs.readFileSync(
+  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_1.json')
 );
 
-const moose_srb_or_composition_transformation = fs.readFileSync(
-  path.join(__dirname, TRANSFORMATION_SCHEMAS_FOLDER, 'moose_srb_or_composition_survey_3.json')
+const goat_composition_or_recruitment_transformation = fs.readFileSync(
+  path.join(__dirname, TRANSFORMATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_1.json')
 );
 
 enum COMMON_SURVEY_METHODOLOGY {
@@ -22,29 +22,21 @@ enum COMMON_SURVEY_METHODOLOGY {
   RECRUITMENT = 'Recruitment'
 }
 
-enum SPECIES_NAME {
-  MOOSE = 'Moose'
-}
-
 enum TEMPLATE_NAME {
-  MOOSE_SRB_OR_COMPOSITION_SURVEY = 'Moose SRB or Composition Survey'
+  GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY = 'Goat Composition or Recruitment Survey'
 }
 
-const transformationAndValidationSchemas = [
+const validationAndTransformationSchemas = [
   // Common Survey Methodology: Stratified Random Block or Composition
   {
-    v_schema: moose_srb_or_composition_validation.toString(),
-    t_schema: moose_srb_or_composition_transformation.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY
+    v_schema: goat_composition_or_recruitment_validation.toString(),
+    t_schema: goat_composition_or_recruitment_transformation.toString(),
+    cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION
   },
   {
-    v_schema: moose_srb_or_composition_validation.toString(),
-    t_schema: moose_srb_or_composition_transformation.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY
+    v_schema: goat_composition_or_recruitment_validation.toString(),
+    t_schema: goat_composition_or_recruitment_transformation.toString(),
+    cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT
   }
 ];
 
@@ -59,16 +51,16 @@ export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
     SET schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
+
+    insert into
+      ${DB_SCHEMA}.template (name, version, record_effective_date, description)
+    values
+      ('${TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY}', '1.0', now(), 'Goat Composition or Recruitment Survey');
   `);
-  for (const v_t_schema of transformationAndValidationSchemas) {
+
+  for (const v_t_schema of validationAndTransformationSchemas) {
     await knex.raw(`
-      ${updateValidationAndTransformation(
-        v_t_schema.v_schema,
-        v_t_schema.t_schema,
-        v_t_schema.cms,
-        v_t_schema.species,
-        v_t_schema.template
-      )}
+      ${insertValidationAndTransformation(v_t_schema.v_schema, v_t_schema.t_schema, v_t_schema.cms)}
     `);
   }
 }
@@ -90,41 +82,15 @@ export async function down(knex: Knex): Promise<void> {
  * @param {string} species species `english name` from the wldtaxonomic_units table needed for the query
  * @param {string} template name of the template
  */
-const updateValidationAndTransformation = (
-  validationSchema: string,
-  transformationSchema: string,
-  csm: string,
-  species: string,
-  template: string
-) => `
-  UPDATE
-    biohub.template_methodology_species tms
-  SET
-    validation = '${validationSchema}',
-    transform = '${transformationSchema}'
-  WHERE
-    tms.template_methodology_species_id =
-    (SELECT
-      template_methodology_species_id
-    FROM
-      template_methodology_species tms
-    LEFT JOIN
-      common_survey_methodology csm
-    ON
-      tms.common_survey_methodology_id = csm.common_survey_methodology_id
-    LEFT JOIN
-      wldtaxonomic_units wu
-    ON
-      tms.wldtaxonomic_units_id = wu.wldtaxonomic_units_id
-    LEFT JOIN
-      template t
-    ON
-      tms.template_id = t.template_id
-    WHERE
-      csm.name = '${csm}'
-    AND
-      wu.english_name = '${species}'
-    AND
-      t.name = '${template}'
+const insertValidationAndTransformation = (validationSchema: string, transformationSchema: string, csm: string) => `
+  insert into
+    ${DB_SCHEMA}.template_methodology_species (common_survey_methodology_id, wldtaxonomic_units_id, template_id, validation, transform)
+  values
+    (
+      (select common_survey_methodology_id from common_survey_methodology where name = '${csm}'),
+      (select wldtaxonomic_units_id from wldtaxonomic_units where code = 'M-ORAM'),
+      (select template_id from template where name = '${TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY}'),
+      '${validationSchema}',
+      '${transformationSchema}'
     );
 `;
