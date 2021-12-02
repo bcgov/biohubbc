@@ -14,7 +14,7 @@
     },
     {
       "fileName": "UTM_LatLong",
-      "uniqueId": ["Waypoint"],
+      "uniqueId": ["Waypoint", "GPS Unit Name", "UTM Zone"],
       "parent": {
         "fileName": "Observations",
         "uniqueId": ["Waypoint"]

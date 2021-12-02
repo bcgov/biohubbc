@@ -73,18 +73,6 @@
               }
             }
           ]
-        },
-        {
-          "name": "Area (km2)",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
         }
       ],
       "validations": [
@@ -116,7 +104,7 @@
             {
               "column_code_validator": {
                 "name": "",
-                "description": "",
+                "description": "Model of aircraft used for survey",
                 "allowed_code_values": [
                   { "name": "Bell JetRanger with bubble window", "description": "" },
                   { "name": "Bell JetRanger without bubble window", "description": "" },
@@ -244,7 +232,9 @@
               "Time (mins)/block area (km2)",
               "Aircraft Company",
               "Aircraft Type",
-              "Aircraft Registration",
+              "Aircraft Call Sign",
+              "GPS Model",
+              "GPS Units",
               "Pilot",
               "Navigator",
               "Rear Left Observer",
@@ -271,6 +261,18 @@
       "description": "",
       "columns": [
         {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
           "name": "Species",
           "description": "",
           "validations": [
@@ -289,18 +291,7 @@
             }
           ]
         },
-        {
-          "name": "Waypoint",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
+
         {
           "name": "Yearling Bulls",
           "description": "",
@@ -362,7 +353,7 @@
           ]
         },
         {
-          "name": "Bulls - Unclassified",
+          "name": "Bulls Unclassified",
           "description": "",
           "validations": [
             {
@@ -508,11 +499,11 @@
               "Waypoint",
               "Species",
               "Yearling Bulls",
-              "Adult Bulls - Unclassified",
+              "Adult Bulls Unclassified",
               "Sub-Prime Bulls",
               "Prime Bulls",
               "Senior Bulls",
-              "Bulls - Unclassified",
+              "Bulls Unclassified",
               "Lone Cows",
               "Cow W/1 calf",
               "Cow W/2 calves",
@@ -712,7 +703,7 @@
           ]
         },
         {
-          "name": "Adults - Unclassified Sex",
+          "name": "Adults Unclassified Sex",
           "description": "",
           "validations": [
             {
@@ -748,7 +739,7 @@
           ]
         },
         {
-          "name": "Juveniles - Unclassified Sex",
+          "name": "Juveniles Unclassified Sex",
           "description": "",
           "validations": [
             {
@@ -789,10 +780,10 @@
               "Total Count",
               "Adult Males",
               "Adult Females",
-              "Adults - Unclassified Sex",
+              "Adults Unclassified Sex",
               "Juvenile Males",
               "Juvenile Females",
-              "Juveniles - Unclassified Sex",
+              "Juveniles Unclassified Sex",
               "Unknown Age/Sex",
               "Activity",
               "Feature Type",
