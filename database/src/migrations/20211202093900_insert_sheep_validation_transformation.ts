@@ -8,12 +8,12 @@ const TRANSFORMATION_SCHEMAS_FOLDER = 'template_methodology_species_transformati
 
 const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
 
-const goat_composition_or_recruitment_validation = fs.readFileSync(
-  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_1.json')
+const sheep_composition_or_recruitment_validation = fs.readFileSync(
+  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'sheep_composition_or_recruitment_1.json')
 );
 
-const goat_composition_or_recruitment_transformation = fs.readFileSync(
-  path.join(__dirname, TRANSFORMATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_1.json')
+const sheep_composition_or_recruitment_transformation = fs.readFileSync(
+  path.join(__dirname, TRANSFORMATION_SCHEMAS_FOLDER, 'sheep_composition_or_recruitment_1.json')
 );
 
 enum COMMON_SURVEY_METHODOLOGY {
@@ -23,22 +23,22 @@ enum COMMON_SURVEY_METHODOLOGY {
 }
 
 enum TEMPLATE_NAME {
-  GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY = 'Goat Composition or Recruitment Survey'
+  SHEEP_COMPOSITION_OR_RECRUITMENT_SURVEY = 'Sheep Composition or Recruitment Survey'
 }
 
 const validationAndTransformationSchemas = [
   // Common Survey Methodology: Stratified Random Block or Composition
   {
-    v_schema: goat_composition_or_recruitment_validation.toString(),
-    t_schema: goat_composition_or_recruitment_transformation.toString(),
+    v_schema: sheep_composition_or_recruitment_validation.toString(),
+    t_schema: sheep_composition_or_recruitment_transformation.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
-    species: 'M-ORAM'
+    species: 'M-OVCA'
   },
   {
-    v_schema: goat_composition_or_recruitment_validation.toString(),
-    t_schema: goat_composition_or_recruitment_transformation.toString(),
+    v_schema: sheep_composition_or_recruitment_validation.toString(),
+    t_schema: sheep_composition_or_recruitment_transformation.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT,
-    species: 'M-ORAM'
+    species: 'M-OVCA'
   }
 ];
 
@@ -57,7 +57,7 @@ export async function up(knex: Knex): Promise<void> {
     insert into
       ${DB_SCHEMA}.template (name, version, record_effective_date, description)
     values
-      ('${TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY}', '1.0', now(), 'Goat Composition or Recruitment Survey');
+      ('${TEMPLATE_NAME.SHEEP_COMPOSITION_OR_RECRUITMENT_SURVEY}', '1.0', now(), 'Sheep Composition or Recruitment Survey');
   `);
 
   for (const v_t_schema of validationAndTransformationSchemas) {
@@ -81,7 +81,7 @@ export async function down(knex: Knex): Promise<void> {
  * @param {string} validationSchema validation rules config
  * @param {string} transformationSchema transformation rules config
  * @param {string} csm common survey methodology needed for the query
- * @param {string} species species from the wldtaxonomic_units table needed for the query
+ * @param {string} species species `english name` from the wldtaxonomic_units table needed for the query
  */
 const insertValidationAndTransformation = (
   validationSchema: string,
@@ -94,8 +94,8 @@ const insertValidationAndTransformation = (
   VALUES
     (
       (select common_survey_methodology_id from common_survey_methodology where name = '${csm}'),
-      (select wldtaxonomic_units_id from wldtaxonomic_units where code = '${species}'),
-      (select template_id from template where name = '${TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY}'),
+      (select wldtaxonomic_units_id from wldtaxonomic_units where code = '${species}' and end_date isnull),
+      (select template_id from template where name = '${TEMPLATE_NAME.SHEEP_COMPOSITION_OR_RECRUITMENT_SURVEY}'),
       '${validationSchema}',
       '${transformationSchema}'
     );

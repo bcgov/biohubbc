@@ -56,10 +56,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Adult"
+              "value": "Ram - class I"
             },
             "sex": {
-              "value": "Unknown"
+              "value": "Male"
             }
           }
         }
@@ -99,10 +99,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Unknown"
+              "value": "Ram - Class II"
             },
             "sex": {
-              "value": "Unknown"
+              "value": "Male"
             }
           }
         }
@@ -142,10 +142,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Kid"
+              "value": "Ram - Class III"
             },
             "sex": {
-              "value": "Unknown"
+              "value": "Male"
             }
           }
         }
@@ -185,10 +185,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Adult"
+              "value": "Ram - Class IV"
             },
             "sex": {
-              "value": "Female"
+              "value": "Male"
             }
           }
         }
@@ -228,7 +228,7 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Adult"
+              "value": "Unknown"
             },
             "sex": {
               "value": "Male"
@@ -271,10 +271,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Adult"
+              "value": "Ewe"
             },
             "sex": {
-              "value": "Male"
+              "value": "Female"
             }
           }
         }
@@ -314,10 +314,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Adult"
+              "value": "Yearling"
             },
             "sex": {
-              "value": "Male"
+              "value": "Unknown"
             }
           }
         }
@@ -357,10 +357,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Adult"
+              "value": "Lamb"
             },
             "sex": {
-              "value": "Male"
+              "value": "Unknown"
             }
           }
         }
@@ -400,10 +400,10 @@
               "columns": ["Species"]
             },
             "lifeStage": {
-              "value": "Adult"
+              "value": "Ewe-like"
             },
             "sex": {
-              "value": "Male"
+              "value": "Female"
             }
           }
         }

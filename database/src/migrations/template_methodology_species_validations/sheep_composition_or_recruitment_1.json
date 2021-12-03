@@ -239,9 +239,9 @@
                   { "name": "Bighorn Sheep" },
                   { "name": "Ovis canadensis" },
                   { "name": "M-OVCA" },
-                  { "name": "Dall's Sheep" },
+                  { "name": "Dall''s Sheep" },
                   { "name": "M-OVDA-DA" },
-                  { "name": "Stone's Sheep" },
+                  { "name": "Stone''s Sheep" },
                   { "name": "M-OVDA-ST" },
                   { "name": "Thinhorn Sheep" },
                   { "name": "Ovis dalli" },
@@ -312,9 +312,6 @@
             }
           ]
         },
-
-
-
         {
           "name": "Ewes",
           "description": "",
@@ -338,7 +335,8 @@
               }
             }
           ]
-        },{
+        },
+        {
           "name": "Lam (Young of Year)",
           "description": "",
           "validations": [
@@ -349,7 +347,8 @@
               }
             }
           ]
-        },{
+        },
+        {
           "name": "Ewe-Like Sheep",
           "description": "",
           "validations": [
@@ -360,7 +359,8 @@
               }
             }
           ]
-        },{
+        },
+        {
           "name": "Unclassified",
           "description": "",
           "validations": [
@@ -554,7 +554,6 @@
             }
           ]
         }
-
       ],
       "validations": [
         {
