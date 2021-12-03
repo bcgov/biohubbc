@@ -793,7 +793,7 @@ export async function up(knex: Knex): Promise<void> {
   create trigger audit_user_user_group before insert or update or delete on biohub.user_user_group for each row execute procedure tr_audit_trigger();
   create trigger journal_user_user_group after insert or update or delete on biohub.user_user_group for each row execute procedure tr_journal_trigger();
 
-  `)
+  `);
 }
 
 export async function down(knex: Knex): Promise<void> {
