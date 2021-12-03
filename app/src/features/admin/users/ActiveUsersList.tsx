@@ -1,5 +1,8 @@
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
+import { Grid } from '@material-ui/core';
+import { mdiPlus } from '@mdi/js';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -23,6 +26,14 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
+import EditDialog from 'components/dialog/EditDialog';
+
+import AddSystemUsersForm, {
+  AddSystemUsersFormInitialValues,
+  AddSystemUsersFormYupSchema,
+  IAddSystemUsersForm,
+} from './AddSystemUsersForm';
+//import { identity } from 'lodash';
 
 const useStyles = makeStyles((theme: Theme) => ({
   table: {
@@ -37,6 +48,7 @@ export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
   codes: IGetAllCodeSetsResponse;
   getUsers: (forceFetch: boolean) => void;
+  refresh: () => void;
 }
 
 /**
@@ -53,6 +65,8 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
   const dialogContext = useContext(DialogContext);
+
+  const [openAddUserDialog, setOpenAddUserDialog] = useState(false);
 
   const defaultErrorDialogProps = {
     dialogTitle: DeleteSystemUserI18N.deleteErrorTitle,
@@ -184,13 +198,58 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     }
   };
 
+  const handleAddSystemUsersSave = async (values: IAddSystemUsersForm) => {
+
+    setOpenAddUserDialog(false);
+
+    try {      
+      let response = '';
+      for (const participant of values.participants) {
+        const res = await biohubApi.admin.addSystemUser(
+          participant.userIdentifier, 
+          participant.identitySource,
+          participant.system_role
+        );
+        response += res; 
+      }
+
+      props.refresh();
+      return(response);
+
+    } catch (error) {  
+      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
+    }
+  };
+
   return (
     <>
       <Paper>
         <Toolbar disableGutters>
-          <Box px={2}>
-            <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
-          </Box>
+          <Grid
+            justify="space-between" // Add it here :)
+            container
+            alignItems="center">
+            <Grid item>
+              <Box px={2}>
+                <Typography variant="h2">Active Users ({activeUsers?.length || 0})</Typography>
+              </Box>
+            </Grid>
+
+            <Grid item>
+              <Box my={1} mx={2}>
+                <Button
+                  color="primary"
+                  variant="outlined"
+                  disableElevation
+                  data-testid="invite-project-users-button"
+                  aria-label={'New Users'}
+                  startIcon={<Icon path={mdiPlus} size={1} />}
+                  onClick={() => setOpenAddUserDialog(true)}>
+                  <strong>New Users</strong>
+                </Button>
+              </Box>
+            </Grid>
+          </Grid>
         </Toolbar>
         <TableContainer>
           <Table className={classes.table}>
@@ -269,6 +328,38 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
           />
         )}
       </Paper>
+
+      <EditDialog
+        dialogTitle={'Add System Users'}
+        open={openAddUserDialog}
+        dialogSaveButtonLabel={'Add'}
+        component={{
+          element: (
+            <AddSystemUsersForm
+              system_roles={
+                props.codes?.system_roles?.map((item) => {
+                  return { value: item.id, label: item.name };
+                }) || []
+              }
+            />
+          ),
+          initialValues: AddSystemUsersFormInitialValues,
+          validationSchema: AddSystemUsersFormYupSchema
+        }}
+        onCancel={() => setOpenAddUserDialog(false)}
+        onSave={(values) => {
+          handleAddSystemUsersSave(values);
+          setOpenAddUserDialog(false);
+          dialogContext.setSnackbar({
+            open: true,
+            snackbarMessage: (
+              <Typography variant="body2" component="div">
+                {values.participants.length} team {values.participants.length > 1 ? 'members' : 'member'} added.
+              </Typography>
+            )
+          });
+        }}
+      />
     </>
   );
 };
