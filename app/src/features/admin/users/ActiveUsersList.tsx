@@ -31,7 +31,7 @@ import EditDialog from 'components/dialog/EditDialog';
 import AddSystemUsersForm, {
   AddSystemUsersFormInitialValues,
   AddSystemUsersFormYupSchema,
-  IAddSystemUsersForm,
+  IAddSystemUsersForm
 } from './AddSystemUsersForm';
 //import { identity } from 'lodash';
 
@@ -199,24 +199,22 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   };
 
   const handleAddSystemUsersSave = async (values: IAddSystemUsersForm) => {
-
     setOpenAddUserDialog(false);
 
-    try {      
+    try {
       let response = '';
       for (const participant of values.participants) {
         const res = await biohubApi.admin.addSystemUser(
-          participant.userIdentifier, 
+          participant.userIdentifier,
           participant.identitySource,
           participant.system_role
         );
-        response += res; 
+        response += res;
       }
 
       props.refresh();
-      return(response);
-
-    } catch (error) {  
+      return response;
+    } catch (error) {
       dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
     }
   };

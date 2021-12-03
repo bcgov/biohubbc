@@ -114,32 +114,24 @@ const useAdminApi = (axios: AxiosInstance) => {
   };
 
   /**
- * Adds a new system user with role.
- *
- * Note: Will fail if the system user already exists.
- *
- * @param {string} userIdentifier
- * @param {string} identitySource
- * @param {number} roleId
- * @return {*}  
- */
-   const addSystemUser = async (
-     userIdentifier: string, 
-     identitySource: string, 
-     roleId: number,
-     ):
-     Promise<number> => {
+   * Adds a new system user with role.
+   *
+   * Note: Will fail if the system user already exists.
+   *
+   * @param {string} userIdentifier
+   * @param {string} identitySource
+   * @param {number} roleId
+   * @return {*}
+   */
+  const addSystemUser = async (userIdentifier: string, identitySource: string, roleId: number): Promise<number> => {
+    const { data } = await axios.post(`/api/add-system-user`, {
+      identitySource: identitySource.toLowerCase(),
+      userIdentifier: userIdentifier,
+      roleId: roleId
+    });
 
-      
-      const { data } = await axios.post(`/api/add-system-user`, 
-      {
-        identitySource: identitySource.toLowerCase(),
-        userIdentifier: userIdentifier,
-        roleId: roleId
-      });
-      
-      return data;
-     };
+    return data;
+  };
 
   return {
     getAccessRequests,

@@ -9,7 +9,7 @@ import { CustomError } from '../errors/CustomError';
 import * as user_queries from '../queries/users/user-queries';
 import { getMockDBConnection } from '../__mocks__/db';
 import * as user from './add-system-user';
-//import * as system_user from '../paths-helpers/system-user';
+import * as system_user from '../paths-helpers/system-user';
 
 chai.use(sinonChai);
 
@@ -112,7 +112,7 @@ describe('user', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(user, 'addSystemRoleUser');
+      sinon.stub(system_user, 'addSystemUser').resolves();
 
       const requestHandler = user.addSystemRoleUser();
 

@@ -120,14 +120,11 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             error={systemRoleMeta.touched && Boolean(systemRoleMeta.error)}
                             displayEmpty
                             inputProps={{ 'aria-label': 'System Role' }}>
-
-
                             {props?.system_roles?.map((item) => (
                               <MenuItem key={item.value} value={item.value}>
                                 {item.label}
                               </MenuItem>
                             ))}
-
                           </Select>
                           <FormHelperText>{systemRoleMeta.touched && systemRoleMeta.error}</FormHelperText>
                         </FormControl>

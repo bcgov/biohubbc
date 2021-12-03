@@ -90,7 +90,6 @@ export const addSystemUser = async (userIdentifier: string, identitySource: stri
 
   const response = await connection.query(addSystemUserSQLStatement.text, addSystemUserSQLStatement.values);
 
-  //console.log("LOOOOOOOOOOOOOOOOOOOOOOOOOOOOOOK HEEHEHHRE : " +JSON.stringify(response.rows[0].id));
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result) {

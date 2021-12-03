@@ -48,8 +48,8 @@ POST.apiDoc = {
               type: 'string',
               enum: ['idir', 'bceid']
             },
-            roleId:{
-                type: 'number'
+            roleId: {
+              type: 'number'
             }
           }
         }
@@ -80,7 +80,7 @@ POST.apiDoc = {
 
 /**
  * Add a system user by its user identifier and role.
- * 
+ *
  * @returns {RequestHandler}
  */
 export function addSystemRoleUser(): RequestHandler {
@@ -93,15 +93,15 @@ export function addSystemRoleUser(): RequestHandler {
     const roles = [roleId];
 
     if (!userIdentifier) {
-        throw new HTTP400('Missing required body param: userIdentifier');
+      throw new HTTP400('Missing required body param: userIdentifier');
     }
 
     if (!identitySource) {
-        throw new HTTP400('Missing required body param: identitySource');
+      throw new HTTP400('Missing required body param: identitySource');
     }
 
     if (!roleId) {
-        throw new HTTP400('Missing required body param: roleId');
+      throw new HTTP400('Missing required body param: roleId');
     }
 
     try {
