@@ -96,7 +96,7 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
                       item.name == RELEVANT_SYSTEM_ROLES.CREATOR ||
                       item.name == RELEVANT_SYSTEM_ROLES.DATA_ADMINSTRATOR ||
                       item.name == RELEVANT_SYSTEM_ROLES.SYSTEM_ADMINISTRATOR
-                  ) // TODO Release 1 Patch (BHBC-1442): remove other roles from dropdown
+                  )
                   .map((item) => (
                     <MenuItem key={item.id} value={item.id}>
                       {item.name}
