@@ -69,7 +69,7 @@ describe('AccessRequestPage', () => {
 
   it('renders correctly', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Role 1' }]
+      system_roles: [{ id: 1, name: 'Creator' }]
     });
 
     const { asFragment } = renderContainer();
@@ -84,7 +84,7 @@ describe('AccessRequestPage', () => {
 
     it('should redirect to `/logout`', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        system_roles: [{ id: 1, name: 'Role 1' }]
+        system_roles: [{ id: 1, name: 'Creator' }]
       });
 
       const authState = {
