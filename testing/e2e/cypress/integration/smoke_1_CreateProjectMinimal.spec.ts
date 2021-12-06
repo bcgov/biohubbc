@@ -66,6 +66,7 @@ while (n < 1) {
 
     add_partnerships();
     submit_project();
+    cy.wait(10000);
 
     publish_project();
 

@@ -239,7 +239,7 @@ export function publish_project() {
     .contains("Publish")
     .should("be.visible");
   cy.get('button[data-testid="publish-project-button"]').click();
-  cy.wait(2000);
+  cy.wait(10000);
   cy.get('button[data-testid="publish-project-button"]')
     .contains("Unpublish")
     .should("be.visible");
