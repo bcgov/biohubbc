@@ -65,6 +65,7 @@
                 "name": "",
                 "description": "",
                 "allowed_code_values": [
+                  { "name": "Bell JetRanger", "description": "" },
                   { "name": "Bell JetRanger with bubble window", "description": "" },
                   { "name": "Bell JetRanger without bubble window", "description": "" },
                   { "name": "Bell LongRanger", "description": "" },

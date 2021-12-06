@@ -94,7 +94,7 @@ const insertValidationAndTransformation = (
   VALUES
     (
       (select common_survey_methodology_id from common_survey_methodology where name = '${csm}'),
-      (select wldtaxonomic_units_id from wldtaxonomic_units where code = '${species}'),
+      (select wldtaxonomic_units_id from wldtaxonomic_units where code = '${species}' and end_date isnull),
       (select template_id from template where name = '${TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY}'),
       '${validationSchema}',
       '${transformationSchema}'
