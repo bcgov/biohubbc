@@ -125,6 +125,8 @@ const updateValidationAndTransformation = (
     AND
       wu.english_name = '${species}'
     AND
+      wu.end_date isnull
+    AND
       t.name = '${template}'
     );
 `;
