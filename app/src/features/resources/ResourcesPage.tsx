@@ -22,8 +22,8 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose SRB Composition Survey 2.0',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_Composition_Survey_2.0.xlsx',
+      name: 'Moose SRB Composition Survey 2.3',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_Composition_Survey_2.3.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '80 KB'
