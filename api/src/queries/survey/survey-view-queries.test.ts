@@ -52,7 +52,7 @@ describe('getSurveyListSQL', () => {
 });
 
 describe('getSurveyBasicDataForViewSQL', () => {
-  it('returns a null response when null project id param provided', () => {
+  it('returns a null response when null survey id param provided', () => {
     const response = getSurveyBasicDataForViewSQL((null as unknown) as number);
 
     expect(response).to.be.null;
@@ -66,7 +66,7 @@ describe('getSurveyBasicDataForViewSQL', () => {
 });
 
 describe('getSurveyFundingSourcesDataForViewSQL', () => {
-  it('returns a null response when null project id param provided', () => {
+  it('returns a null response when null survey id param provided', () => {
     const response = getSurveyFundingSourcesDataForViewSQL((null as unknown) as number);
 
     expect(response).to.be.null;
@@ -80,7 +80,7 @@ describe('getSurveyFundingSourcesDataForViewSQL', () => {
 });
 
 describe('getSurveySpeciesDataForViewSQL', () => {
-  it('returns a null response when null project id param provided', () => {
+  it('returns a null response when null survey id param provided', () => {
     const response = getSurveySpeciesDataForViewSQL((null as unknown) as number);
 
     expect(response).to.be.null;
