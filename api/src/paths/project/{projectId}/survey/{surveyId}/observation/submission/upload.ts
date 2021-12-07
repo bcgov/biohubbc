@@ -141,10 +141,10 @@ export function uploadMedia(): RequestHandler {
       //const templateMethodologyId = await getTemplateMethodologySpeciesId(Number(req.params.surveyId), connection);
 
       //To test Goat templates, use templateMethodologyId 4 or 5
-      //const templateMethodologyId = 4;
+      const templateMethodologyId = 4;
 
       //To test Sheep templates, use templateMethodologyId 6 or 7
-      const templateMethodologyId = 6;
+      //const templateMethodologyId = 6;
 
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),
