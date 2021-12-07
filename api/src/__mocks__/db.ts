@@ -1,4 +1,5 @@
 import { Request, Response } from 'express';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import { IDBConnection } from '../database/db';
 
