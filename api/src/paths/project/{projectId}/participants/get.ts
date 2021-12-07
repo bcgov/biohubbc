@@ -119,8 +119,6 @@ export function getParticipants(): RequestHandler {
 
       const result = await getProjectParticipants(projectId, connection);
 
-      console.log('result is:', result);
-
       return res.status(200).json({ participants: result });
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipants', message: 'error', error });
@@ -146,8 +144,6 @@ export const getProjectParticipants = async (projectId: number, connection: IDBC
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  console.log('response is: ', response);
 
   if (!response || !response.rows) {
     throw new HTTP400('Failed to get project participants');
