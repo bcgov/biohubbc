@@ -11,7 +11,7 @@ import { CustomError } from '../../../../errors/CustomError';
 
 chai.use(sinonChai);
 
-describe('gets metadata for a project report', () => {
+describe('gets a list of project participants', () => {
   const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
