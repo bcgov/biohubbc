@@ -145,7 +145,7 @@ export function getSurveyForView(): RequestHandler {
 export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
   const sqlStatement = getSurveyBasicDataForViewSQL(surveyId);
 
-  if (!sqlStatement || !sqlStatement) {
+  if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
@@ -164,7 +164,7 @@ export const getSurveyFundingSourcesDataForView = async (
 ): Promise<any[]> => {
   const sqlStatement = getSurveyFundingSourcesDataForViewSQL(surveyId);
 
-  if (!sqlStatement || !sqlStatement) {
+  if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
@@ -180,7 +180,7 @@ export const getSurveyFundingSourcesDataForView = async (
 export const getSurveySpeciesDataForView = async (surveyId: number, connection: IDBConnection): Promise<any[]> => {
   const sqlStatement = getSurveySpeciesDataForViewSQL(surveyId);
 
-  if (!sqlStatement || !sqlStatement) {
+  if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
@@ -196,7 +196,7 @@ export const getSurveySpeciesDataForView = async (surveyId: number, connection: 
 export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {
   const sqlStatement = getSurveyProprietorForUpdateSQL(surveyId);
 
-  if (!sqlStatement || !sqlStatement) {
+  if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
