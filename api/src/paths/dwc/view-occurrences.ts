@@ -16,7 +16,7 @@ export const POST: Operation = [
       and: [
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
-          projectId: Number(req.params.projectId),
+          projectId: Number(req.body.project_id),
           discriminator: 'ProjectRole'
         }
       ]
@@ -41,6 +41,9 @@ POST.apiDoc = {
           type: 'object',
           required: ['occurrence_submission_id'],
           properties: {
+            project_id: {
+              type: 'number'
+            },
             occurrence_submission_id: {
               description: 'A survey occurrence submission ID',
               type: 'number',

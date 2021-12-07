@@ -79,20 +79,20 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           }
 
           if (config?.N8N_HOST) {
-            biohubApi.n8n.initiateOccurrenceSubmissionProcessing(result.submissionId, file.type);
+            biohubApi.n8n.initiateOccurrenceSubmissionProcessing(projectId, result.submissionId, file.type);
             return;
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            biohubApi.observation.initiateDwCSubmissionValidation(result.submissionId).then(() => {
-              biohubApi.observation.initiateScrapeOccurrences(result.submissionId).then(() => {
+            biohubApi.observation.initiateDwCSubmissionValidation(projectId, result.submissionId).then(() => {
+              biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
                 props.refresh();
               });
             });
           } else {
-            biohubApi.observation.initiateXLSXSubmissionValidation(result.submissionId).then(() => {
-              biohubApi.observation.initiateXLSXSubmissionTransform(result.submissionId).then(() => {
-                biohubApi.observation.initiateScrapeOccurrences(result.submissionId).then(() => {
+            biohubApi.observation.initiateXLSXSubmissionValidation(projectId, result.submissionId).then(() => {
+              biohubApi.observation.initiateXLSXSubmissionTransform(projectId, result.submissionId).then(() => {
+                biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
                   props.refresh();
                 });
               });
