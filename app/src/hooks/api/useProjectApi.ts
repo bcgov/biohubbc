@@ -179,8 +179,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   const uploadProjectAttachments = async (
     projectId: number,
     file: File,
-    attachmentType?: string,
-    attachmentMeta?: IReportMetaForm,
     cancelTokenSource?: CancelTokenSource,
     onProgress?: (progressEvent: ProgressEvent) => void
   ): Promise<IUploadAttachmentResponse> => {
@@ -188,7 +186,34 @@ const useProjectApi = (axios: AxiosInstance) => {
 
     req_message.append('media', file);
 
-    attachmentType && req_message.append('attachmentType', attachmentType);
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
+      cancelToken: cancelTokenSource?.token,
+      onUploadProgress: onProgress
+    });
+
+    return data;
+  };
+
+  /**
+   * Upload project reports.
+   *
+   * @param {number} projectId
+   * @param {File} file
+   * @param {string} attachmentType
+   * @param {CancelTokenSource} [cancelTokenSource]
+   * @param {(progressEvent: ProgressEvent) => void} [onProgress]
+   * @return {*}  {Promise<string[]>}
+   */
+  const uploadProjectReports = async (
+    projectId: number,
+    file: File,
+    attachmentMeta: IReportMetaForm,
+    cancelTokenSource?: CancelTokenSource,
+    onProgress?: (progressEvent: ProgressEvent) => void
+  ): Promise<IUploadAttachmentResponse> => {
+    const req_message = new FormData();
+
+    req_message.append('media', file);
 
     if (attachmentMeta) {
       req_message.append('attachmentMeta[title]', attachmentMeta.title);
@@ -200,7 +225,7 @@ const useProjectApi = (axios: AxiosInstance) => {
       });
     }
 
-    const { data } = await axios.post(`/api/project/${projectId}/attachments/upload`, req_message, {
+    const { data } = await axios.post(`/api/project/${projectId}/attachments/report/upload`, req_message, {
       cancelToken: cancelTokenSource?.token,
       onUploadProgress: onProgress
     });
@@ -217,7 +242,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
    * @return {*}  {Promise<string[]>}
    */
-  const updateProjectAttachmentMetadata = async (
+  const updateProjectReportMetadata = async (
     projectId: number,
     attachmentId: number,
     attachmentType: string,
@@ -404,7 +429,8 @@ const useProjectApi = (axios: AxiosInstance) => {
     createProject,
     getProjectForView,
     uploadProjectAttachments,
-    updateProjectAttachmentMetadata,
+    uploadProjectReports,
+    updateProjectReportMetadata,
     getProjectForUpdate,
     updateProject,
     getProjectAttachments,

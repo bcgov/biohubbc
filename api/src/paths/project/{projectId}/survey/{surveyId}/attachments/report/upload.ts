@@ -1,20 +1,26 @@
 'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
-import { PROJECT_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
-  getSurveyAttachmentByFileNameSQL,
-  postSurveyAttachmentSQL,
-  putSurveyAttachmentSQL
-} from '../../../../../../queries/survey/survey-attachments-queries';
-import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
-import { getLogger } from '../../../../../../utils/logger';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+  getSurveyReportAttachmentByFileNameSQL,
+  postSurveyReportAttachmentSQL,
+  putSurveyReportAttachmentSQL,
+  deleteSurveyReportAttachmentAuthorsSQL,
+  insertSurveyReportAttachmentAuthorSQL
+} from '../../../../../../../queries/survey/survey-attachments-queries';
+import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../utils/logger';
+import {
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata,
+  IReportAttachmentAuthor
+} from '../../../../../../../models/project-survey-attachments';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/report/upload');
 
 export const POST: Operation = [
   authorizeRequestHandler((req) => {
@@ -31,7 +37,7 @@ export const POST: Operation = [
   uploadMedia()
 ];
 POST.apiDoc = {
-  description: 'Upload a survey-specific attachment.',
+  description: 'Upload a survey-specific report.',
   tags: ['attachment'],
   security: [
     {
@@ -56,11 +62,41 @@ POST.apiDoc = {
       'multipart/form-data': {
         schema: {
           type: 'object',
-          required: ['media'],
+          required: ['media', 'attachmentMeta'],
           properties: {
             media: {
               type: 'string',
               format: 'binary'
+            },
+            attachmentMeta: {
+              type: 'object',
+              required: ['title', 'year_published', 'authors', 'description'],
+              properties: {
+                title: {
+                  type: 'string'
+                },
+                year_published: {
+                  type: 'string'
+                },
+                authors: {
+                  type: 'array',
+                  items: {
+                    type: 'object',
+                    required: ['first_name', 'last_name'],
+                    properties: {
+                      first_name: {
+                        type: 'string'
+                      },
+                      last_name: {
+                        type: 'string'
+                      }
+                    }
+                  }
+                },
+                description: {
+                  type: 'string'
+                }
+              }
             }
           }
         }
@@ -69,7 +105,7 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Attachment upload response.',
+      description: 'Report upload response.',
       content: {
         'application/json': {
           schema: {
@@ -112,6 +148,10 @@ export function uploadMedia(): RequestHandler {
       throw new HTTP400('Missing upload data');
     }
 
+    if (!req.body) {
+      throw new HTTP400('Missing request body');
+    }
+
     const rawMediaFile: Express.Multer.File = rawMediaArray[0];
 
     defaultLog.debug({
@@ -132,11 +172,11 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const upsertResult = await upsertSurveyAttachment(
+      const upsertResult = await upsertSurveyReportAttachment(
         rawMediaFile,
         Number(req.params.projectId),
         Number(req.params.surveyId),
-        ATTACHMENT_TYPE.OTHER,
+        req.body.attachmentMeta,
         connection
       );
 
@@ -163,43 +203,19 @@ export function uploadMedia(): RequestHandler {
   };
 }
 
-export const upsertSurveyAttachment = async (
+export const upsertSurveyReportAttachment = async (
   file: Express.Multer.File,
   projectId: number,
   surveyId: number,
-  attachmentType: string,
+  attachmentMeta: any,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number; key: string }> => {
-  const getSqlStatement = getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
+  const getSqlStatement = getSurveyReportAttachmentByFileNameSQL(surveyId, file.originalname);
 
   if (!getSqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
-  const key = generateS3FileKey({ projectId: projectId, surveyId: surveyId, fileName: file.originalname });
-
-  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
-
-  let attachmentResult: { id: number; revision_count: number };
-
-  if (getResponse && getResponse.rowCount > 0) {
-    // Existing attachment with matching name found, update it
-    attachmentResult = await updateSurveyAttachment(file, surveyId, attachmentType, connection);
-  } else {
-    // No matching attachment found, insert new attachment
-    attachmentResult = await insertSurveyAttachment(file, projectId, surveyId, attachmentType, connection);
-  }
-
-  return { ...attachmentResult, key };
-};
-
-export const insertSurveyAttachment = async (
-  file: Express.Multer.File,
-  projectId: number,
-  surveyId: number,
-  attachmentType: string,
-  connection: IDBConnection
-): Promise<{ id: number; revision_count: number }> => {
   const key = generateS3FileKey({
     projectId: projectId,
     surveyId: surveyId,
@@ -207,7 +223,50 @@ export const insertSurveyAttachment = async (
     folder: 'reports'
   });
 
-  const sqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, attachmentType, surveyId, key);
+  const getResponse = await connection.query(getSqlStatement.text, getSqlStatement.values);
+
+  let metadata;
+  let attachmentResult: { id: number; revision_count: number };
+
+  if (getResponse && getResponse.rowCount > 0) {
+    // Existing attachment with matching name found, update it
+    metadata = new PutReportAttachmentMetadata(attachmentMeta);
+    attachmentResult = await updateSurveyReportAttachment(file, surveyId, metadata, connection);
+  } else {
+    // No matching attachment found, insert new attachment
+    metadata = new PostReportAttachmentMetadata(attachmentMeta);
+    attachmentResult = await insertSurveyReportAttachment(
+      file,
+      surveyId,
+      new PostReportAttachmentMetadata(attachmentMeta),
+      key,
+      connection
+    );
+  }
+
+  // Delete any existing attachment author records
+  await deleteSurveyReportAttachmentAuthors(attachmentResult.id, connection);
+
+  const promises = [];
+
+  // Insert any new attachment author records
+  promises.push(
+    metadata.authors.map((author) => insertSurveyReportAttachmentAuthor(attachmentResult.id, author, connection))
+  );
+
+  await Promise.all(promises);
+
+  return { ...attachmentResult, key };
+};
+
+export const insertSurveyReportAttachment = async (
+  file: Express.Multer.File,
+  surveyId: number,
+  attachmentMeta: PostReportAttachmentMetadata,
+  key: string,
+  connection: IDBConnection
+): Promise<{ id: number; revision_count: number }> => {
+  const sqlStatement = postSurveyReportAttachmentSQL(file.originalname, file.size, surveyId, key, attachmentMeta);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -222,13 +281,13 @@ export const insertSurveyAttachment = async (
   return response.rows[0];
 };
 
-export const updateSurveyAttachment = async (
+export const updateSurveyReportAttachment = async (
   file: Express.Multer.File,
   surveyId: number,
-  attachmentType: string,
+  attachmentMeta: PutReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = putSurveyAttachmentSQL(surveyId, file.originalname, attachmentType);
+  const sqlStatement = putSurveyReportAttachmentSQL(surveyId, file.originalname, attachmentMeta);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -241,4 +300,39 @@ export const updateSurveyAttachment = async (
   }
 
   return response.rows[0];
+};
+
+export const deleteSurveyReportAttachmentAuthors = async (
+  attachmentId: number,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = deleteSurveyReportAttachmentAuthorsSQL(attachmentId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete attachment report authors statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to delete attachment report authors records');
+  }
+};
+
+export const insertSurveyReportAttachmentAuthor = async (
+  attachmentId: number,
+  author: IReportAttachmentAuthor,
+  connection: IDBConnection
+): Promise<void> => {
+  const sqlStatement = insertSurveyReportAttachmentAuthorSQL(attachmentId, author);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert attachment report author statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response.rowCount) {
+    throw new HTTP400('Failed to insert attachment report author record');
+  }
 };

@@ -105,24 +105,6 @@ describe('uploadMedia', () => {
     }
   });
 
-  it('should throw an error when attachmentType is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...sampleReq, body: { attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing attachment file type');
-    }
-  });
-
   it('should throw a 400 error when file format incorrect', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

@@ -22,7 +22,7 @@ const PublicProjectCoordinator: React.FC<IPublicProjectCoordinatorProps> = (prop
   return (
     <Box>
       <Box mb={2}>
-        <Typography variant="h3">Project Coordinator</Typography>
+        <Typography variant="h3">Project Contact</Typography>
       </Box>
       <dl>
         <Grid container spacing={2}>

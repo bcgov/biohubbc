@@ -341,7 +341,7 @@ export const getProjectCoordinatorData = async (
   const result = (response && response.rows && response.rows[0]) || null;
 
   if (!result) {
-    throw new HTTP400('Failed to get project coordinator data');
+    throw new HTTP400('Failed to get project contact data');
   }
 
   return new GetCoordinatorData(result);

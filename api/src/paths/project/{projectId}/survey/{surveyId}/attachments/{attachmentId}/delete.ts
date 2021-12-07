@@ -13,7 +13,7 @@ import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
 import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
-import { deleteSurveyReportAttachmentAuthors } from '../upload';
+import { deleteSurveyReportAttachmentAuthors } from '../report/upload';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 

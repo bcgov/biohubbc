@@ -21,7 +21,7 @@ export function add_coordinator_info(
   cy.get("span.MuiStepLabel-iconContainer")
     .eq(navloc || 0)
     .click(); // Click on the Navigation bar
-  cy.contains("Project Coordinator").should("be.visible");
+  cy.contains("Project Contact").should("be.visible");
   cy.get("#first_name").clear();
   cy.get("#first_name").type(fname || faker.name.firstName());
   cy.get("#last_name").clear();
@@ -239,7 +239,7 @@ export function publish_project() {
     .contains("Publish")
     .should("be.visible");
   cy.get('button[data-testid="publish-project-button"]').click();
-  cy.wait(2000);
+  cy.wait(10000);
   cy.get('button[data-testid="publish-project-button"]')
     .contains("Unpublish")
     .should("be.visible");

@@ -10,7 +10,7 @@ import { PutReportAttachmentMetadata } from '../../../../../../models/project-su
 import { updateProjectReportAttachmentMetadataSQL } from '../../../../../../queries/project/project-attachments-queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../utils/logger';
-import { deleteProjectReportAttachmentAuthors, insertProjectReportAttachmentAuthor } from '../../upload';
+import { deleteProjectReportAttachmentAuthors, insertProjectReportAttachmentAuthor } from '../../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 

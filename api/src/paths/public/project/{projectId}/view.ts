@@ -75,7 +75,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getPublicProjectForView(): RequestHandler {
+export function getPublicProjectForView(): RequestHandler {
   return async (req, res) => {
     const connection = getAPIUserDBConnection();
 

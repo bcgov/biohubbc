@@ -46,7 +46,7 @@ describe('getProjectListSQL', () => {
     expect(response).to.not.be.null;
   });
 
-  it('returns a SQLStatement when filter fields provided (only coordinator agency)', () => {
+  it('returns a SQLStatement when filter fields provided (only contact agency)', () => {
     const response = getProjectListSQL(true, 1, { coordinator_agency: 'agency' });
 
     expect(response).to.not.be.null;
