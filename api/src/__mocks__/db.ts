@@ -1,4 +1,6 @@
+import { Request, Response } from 'express';
 import { QueryResult } from 'pg';
+import sinon from 'sinon';
 import { IDBConnection } from '../database/db';
 
 /**
@@ -29,4 +31,51 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
     },
     ...config
   };
+};
+
+export type ExtendedMockReq = MockReq & Request & { [key: string]: any };
+export class MockReq {
+  query = {};
+  params = {};
+  body = {};
+  files = [];
+}
+
+export type ExtendedMockRes = MockRes & Response;
+export class MockRes {
+  statusValue: any;
+  status = sinon.fake((value: any) => {
+    this.statusValue = value;
+
+    return this;
+  });
+
+  jsonValue: any;
+  json = sinon.fake((value: any) => {
+    this.jsonValue = value;
+
+    return this;
+  });
+
+  sendValue: any;
+  send = sinon.fake((value: any) => {
+    this.sendValue = value;
+
+    return this;
+  });
+}
+
+/**
+ * Returns several mocks for testing RequestHandler responses.
+ *
+ * @return {*}
+ */
+export const getRequestHandlerMocks = () => {
+  const mockReq = new MockReq() as ExtendedMockReq;
+
+  const mockRes = new MockRes() as ExtendedMockRes;
+
+  const mockNext = sinon.fake();
+
+  return { mockReq, mockRes, mockNext };
 };
