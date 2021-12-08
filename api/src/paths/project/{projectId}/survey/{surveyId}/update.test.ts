@@ -2,17 +2,17 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as update from './update';
-import * as create from '../create';
-import * as db from '../../../../../database/db';
-import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
-import * as survey_create_queries from '../../../../../queries/survey/survey-create-queries';
-import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
-import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../../../../constants/status';
-import { getMockDBConnection } from '../../../../../__mocks__/db';
+import * as db from '../../../../../database/db';
 import { CustomError } from '../../../../../errors/CustomError';
+import * as survey_create_queries from '../../../../../queries/survey/survey-create-queries';
+import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
+import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
+import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
+import * as create from '../create';
+import * as update from './update';
 
 chai.use(sinonChai);
 
@@ -20,8 +20,6 @@ describe('getSurveyForUpdate', () => {
   afterEach(() => {
     sinon.restore();
   });
-
-  const dbConnectionObj = getMockDBConnection();
 
   const sampleReq = {
     keycloak_token: {},
@@ -47,6 +45,8 @@ describe('getSurveyForUpdate', () => {
   };
 
   it('should throw a 400 error when no survey id path param', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -70,6 +70,8 @@ describe('getSurveyForUpdate', () => {
   });
 
   it('should throw a 400 error when no get survey sql statement produced', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -91,15 +93,17 @@ describe('getSurveyForUpdate', () => {
   });
 
   it('should return only survey details when entity specified with survey_details, on success', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
     const survey_details = {
       id: 1,
       name: 'name',
       objectives: 'objective',
-      focal_species: 1,
-      ancillary_species: 3,
+      focal_species: [1],
+      ancillary_species: [3],
       common_survey_methodology_id: 1,
-      start_date: '2020/04/04',
-      end_date: '2020/05/05',
+      start_date: '2020-04-04',
+      end_date: '2020-05-05',
       lead_first_name: 'first',
       lead_last_name: 'last',
       location_name: 'location',
@@ -108,7 +112,7 @@ describe('getSurveyForUpdate', () => {
       publish_timestamp: null,
       number: '123',
       type: 'scientific',
-      pfs_id: 1
+      pfs_id: [1]
     };
 
     const mockQuery = sinon.stub();
@@ -137,8 +141,8 @@ describe('getSurveyForUpdate', () => {
         id: 1,
         survey_name: survey_details.name,
         survey_purpose: survey_details.objectives,
-        focal_species: [survey_details.focal_species],
-        ancillary_species: [survey_details.ancillary_species],
+        focal_species: survey_details.focal_species,
+        ancillary_species: survey_details.ancillary_species,
         common_survey_methodology_id: survey_details.common_survey_methodology_id,
         start_date: survey_details.start_date,
         end_date: survey_details.end_date,
@@ -151,13 +155,15 @@ describe('getSurveyForUpdate', () => {
         permit_type: survey_details.type,
         completion_status: COMPLETION_STATUS.COMPLETED,
         publish_date: '',
-        funding_sources: [1]
+        funding_sources: survey_details.pfs_id
       },
       survey_proprietor: null
     });
   });
 
   it('should return survey proprietor info when only survey proprietor entity is specified, on success', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
     const survey_proprietor = {
       category_rationale: '',
       data_sharing_agreement_required: 'false',
@@ -213,22 +219,32 @@ describe('getSurveyForUpdate', () => {
   });
 
   it('should return survey details and proprietor info when no entity is specified, on success', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.keycloak_token = {};
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+
     const survey_details = {
       id: 1,
       name: 'name',
       objectives: 'objective',
-      focal_species: 1,
-      ancillary_species: 3,
+      focal_species: [1],
+      ancillary_species: [3],
       common_survey_methodology_id: 1,
-      start_date: '2020/04/04',
-      end_date: '2020/05/05',
+      start_date: '2020-04-04',
+      end_date: '2020-05-05',
       lead_first_name: 'first',
       lead_last_name: 'last',
       location_name: 'location',
       revision_count: 1,
       geometry: [],
       publish_timestamp: null,
-      pfs_id: 10
+      pfs_id: [10]
     };
 
     const survey_proprietor = {
@@ -269,15 +285,15 @@ describe('getSurveyForUpdate', () => {
 
     const result = update.getSurveyForUpdate();
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    await result(mockReq, mockRes, mockNext);
 
-    expect(actualResult).to.eql({
+    expect(mockRes.sendValue).to.eql({
       survey_details: {
         id: 1,
         survey_name: survey_details.name,
         survey_purpose: survey_details.objectives,
-        focal_species: [survey_details.focal_species],
-        ancillary_species: [survey_details.ancillary_species],
+        focal_species: survey_details.focal_species,
+        ancillary_species: survey_details.ancillary_species,
         common_survey_methodology_id: survey_details.common_survey_methodology_id,
         start_date: survey_details.start_date,
         end_date: survey_details.end_date,
@@ -290,7 +306,7 @@ describe('getSurveyForUpdate', () => {
         permit_type: '',
         completion_status: COMPLETION_STATUS.COMPLETED,
         publish_date: '',
-        funding_sources: [10]
+        funding_sources: survey_details.pfs_id
       },
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,
@@ -326,8 +342,8 @@ describe('updateSurvey', () => {
         survey_name: 'name',
         survey_purpose: 'purpose',
         species: 'species',
-        start_date: '2020/03/03',
-        end_date: '2020/04/04',
+        start_date: '2020-03-03',
+        end_date: '2020-04-04',
         biologist_first_name: 'first',
         biologist_last_name: 'last',
         survey_area_name: 'area name',
@@ -985,23 +1001,6 @@ describe('getSurveyDetailsData', () => {
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
       expect((actualError as CustomError).message).to.equal('Failed to build survey details SQL get statement');
-    }
-  });
-
-  it('should throw a 400 error when no result returned', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: null });
-
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`something`);
-
-    try {
-      await update.getSurveyDetailsData(surveyId, { ...dbConnectionObj, query: mockQuery });
-
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to get project survey details data');
     }
   });
 });

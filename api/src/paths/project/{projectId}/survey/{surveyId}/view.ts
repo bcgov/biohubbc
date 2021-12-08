@@ -1,15 +1,19 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
-import { GetViewSurveyDetailsData } from '../../../../../models/survey-view';
-import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
-import { getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-queries';
-import { getSurveyProprietorForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
-import { getLogger } from '../../../../../utils/logger';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { HTTP400 } from '../../../../../errors/CustomError';
+import { GetViewSurveyDetailsData } from '../../../../../models/survey-view';
+import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
+import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
+import {
+  getSurveyBasicDataForViewSQL,
+  getSurveyFundingSourcesDataForViewSQL,
+  getSurveySpeciesDataForViewSQL
+} from '../../../../../queries/survey/survey-view-queries';
+import { getSurveyProprietorForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
@@ -96,31 +100,32 @@ export function getSurveyForView(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
+    }
+
+    const surveyId = Number(req.params.surveyId);
+
     try {
-      const getSurveySQLStatement = getSurveyForViewSQL(Number(req.params.surveyId));
-      const getSurveyProprietorSQLStatement = getSurveyProprietorForUpdateSQL(Number(req.params.surveyId));
-
-      if (!getSurveySQLStatement || !getSurveyProprietorSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const [surveyData, surveyProprietorData] = await Promise.all([
-        await connection.query(getSurveySQLStatement.text, getSurveySQLStatement.values),
-        await connection.query(getSurveyProprietorSQLStatement.text, getSurveyProprietorSQLStatement.values)
+      const [surveyBasicData, surveyFundingSourcesData, SurveySpeciesData, surveyProprietorData] = await Promise.all([
+        getSurveyBasicDataForView(surveyId, connection),
+        getSurveyFundingSourcesDataForView(surveyId, connection),
+        getSurveySpeciesDataForView(surveyId, connection),
+        getSurveyProprietorDataForView(surveyId, connection)
       ]);
 
       await connection.commit();
 
-      const getSurveyData = (surveyData && surveyData.rows && new GetViewSurveyDetailsData(surveyData.rows)) || null;
+      const getSurveyData = new GetViewSurveyDetailsData({
+        ...surveyBasicData,
+        funding_sources: surveyFundingSourcesData,
+        ...SurveySpeciesData
+      });
 
       const getSurveyProprietorData =
-        (surveyProprietorData &&
-          surveyProprietorData.rows &&
-          surveyProprietorData.rows[0] &&
-          new GetSurveyProprietorData(surveyProprietorData.rows[0])) ||
-        null;
+        (surveyProprietorData && new GetSurveyProprietorData(surveyProprietorData)) || null;
 
       const result = {
         survey_details: getSurveyData,
@@ -136,3 +141,66 @@ export function getSurveyForView(): RequestHandler {
     }
   };
 }
+
+export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
+  const sqlStatement = getSurveyBasicDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to get survey basic data');
+  }
+
+  return (response && response.rows?.[0]) || null;
+};
+
+export const getSurveyFundingSourcesDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<any[]> => {
+  const sqlStatement = getSurveyFundingSourcesDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to get survey funding sources data');
+  }
+
+  return (response && response.rows) || [];
+};
+
+export const getSurveySpeciesDataForView = async (surveyId: number, connection: IDBConnection): Promise<any[]> => {
+  const sqlStatement = getSurveySpeciesDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to get survey species data');
+  }
+
+  return (response && response.rows?.[0]) || null;
+};
+
+export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {
+  const sqlStatement = getSurveyProprietorForUpdateSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (response && response.rows?.[0]) || null;
+};
