@@ -33,8 +33,8 @@ describe('getSurveyDataPackageEML', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requesthandler = eml.getSurveyDataPackageEML();
-      await requesthandler(
+      const requestHandler = eml.getSurveyDataPackageEML();
+      await requestHandler(
         { ...sampleReq, body: { ...sampleReq.body, data_package_id: null } },
         (null as unknown) as any,
         (null as unknown) as any
@@ -63,8 +63,7 @@ describe('getSurveyOccurrenceSubmission', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requesthandler = eml.getSurveyOccurrenceSubmission(sampleReq.data_package_id, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurveyOccurrenceSubmission(sampleReq.data_package_id, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -79,8 +78,8 @@ describe('getSurveyOccurrenceSubmission', () => {
     const fake = sinon.replace(eml_queries, 'getSurveyOccurrenceSubmissionSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getSurveyOccurrenceSubmission(sampleReq.data_package_id, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurveyOccurrenceSubmission(sampleReq.data_package_id, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -105,8 +104,7 @@ describe('getSurveyOccurrenceSubmission', () => {
     sinon.stub(eml_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     try {
-      const requesthandler = eml.getSurveyOccurrenceSubmission(sampleReq.data_package_id, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurveyOccurrenceSubmission(sampleReq.data_package_id, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -134,8 +132,7 @@ describe('getDataPackage', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const requesthandler = eml.getDataPackage(sampleReq.data_package_id, dbConnectionObj);
-      await requesthandler;
+      await eml.getDataPackage(sampleReq.data_package_id, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -148,8 +145,8 @@ describe('getDataPackage', () => {
     const fake = sinon.replace(eml_queries, 'getDataPackageSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getDataPackage(sampleReq.data_package_id, dbConnectionObj);
-      await requesthandler;
+      await eml.getDataPackage(sampleReq.data_package_id, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -174,8 +171,7 @@ describe('getDataPackage', () => {
     sinon.stub(eml_queries, 'getDataPackageSQL').returns(SQL`something`);
 
     try {
-      const requesthandler = eml.getDataPackage(sampleReq.data_package_id, dbConnectionObj);
-      await requesthandler;
+      await eml.getDataPackage(sampleReq.data_package_id, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -201,8 +197,8 @@ describe('getPublishedSurveyStatus', () => {
     const fake = sinon.replace(eml_queries, 'getPublishedSurveyStatusSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getPublishedSurveyStatus(sampleReq.data_package_id, dbConnectionObj);
-      await requesthandler;
+      await eml.getPublishedSurveyStatus(sampleReq.data_package_id, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -229,8 +225,8 @@ describe('getSurvey', () => {
     const fake = sinon.replace(eml_queries, 'getSurveySQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getSurvey(sampleReq.surveyId, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurvey(sampleReq.surveyId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -257,8 +253,8 @@ describe('getProject', () => {
     const fake = sinon.replace(eml_queries, 'getProjectSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProject(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProject(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -285,8 +281,8 @@ describe('getSurveyFundingSource', () => {
     const fake = sinon.replace(eml_queries, 'getSurveyFundingSourceSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getSurveyFundingSource(sampleReq.surveyId, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurveyFundingSource(sampleReq.surveyId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -313,8 +309,8 @@ describe('getProjectFundingSource', () => {
     const fake = sinon.replace(eml_queries, 'getProjectFundingSourceSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectFundingSource(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectFundingSource(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -341,8 +337,8 @@ describe('getSurveyBoundingBox', () => {
     const fake = sinon.replace(eml_queries, 'getGeometryBoundingBoxSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getSurveyBoundingBox(sampleReq.surveyId, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurveyBoundingBox(sampleReq.surveyId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -369,8 +365,8 @@ describe('getProjectBoundingBox', () => {
     const fake = sinon.replace(eml_queries, 'getGeometryBoundingBoxSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getSurveyBoundingBox(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurveyBoundingBox(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -397,8 +393,8 @@ describe('getProjectBoundingBox', () => {
     const fake = sinon.replace(eml_queries, 'getGeometryBoundingBoxSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectBoundingBox(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectBoundingBox(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -425,8 +421,8 @@ describe('getSurveyPolygons', () => {
     const fake = sinon.replace(eml_queries, 'getGeometryPolygonsSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getSurveyPolygons(sampleReq.surveyId, dbConnectionObj);
-      await requesthandler;
+      await eml.getSurveyPolygons(sampleReq.surveyId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -453,8 +449,8 @@ describe('getProjectPolygons', () => {
     const fake = sinon.replace(eml_queries, 'getGeometryPolygonsSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectPolygons(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectPolygons(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -481,8 +477,8 @@ describe('getFocalTaxonomicCoverage', () => {
     const fake = sinon.replace(eml_queries, 'getTaxonomicCoverageSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getFocalTaxonomicCoverage(sampleReq.surveyId, dbConnectionObj);
-      await requesthandler;
+      await eml.getFocalTaxonomicCoverage(sampleReq.surveyId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -509,8 +505,8 @@ describe('getProjectIucnConservation', () => {
     const fake = sinon.replace(eml_queries, 'getProjectIucnConservationSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectIucnConservation(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectIucnConservation(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -537,8 +533,8 @@ describe('getProjectStakeholderPartnership', () => {
     const fake = sinon.replace(eml_queries, 'getProjectStakeholderPartnershipSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectStakeholderPartnership(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectStakeholderPartnership(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -565,8 +561,8 @@ describe('getProjectActivity', () => {
     const fake = sinon.replace(eml_queries, 'getProjectActivitySQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectActivity(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectActivity(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -593,8 +589,8 @@ describe('getProjectClimateInitiative', () => {
     const fake = sinon.replace(eml_queries, 'getProjectClimateInitiativeSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectClimateInitiative(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectClimateInitiative(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -621,8 +617,8 @@ describe('getProjectFirstNations', () => {
     const fake = sinon.replace(eml_queries, 'getProjectFirstNationsSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectFirstNations(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectFirstNations(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
@@ -649,8 +645,8 @@ describe('getProjectManagementActions', () => {
     const fake = sinon.replace(eml_queries, 'getProjectManagementActionsSQL', sinon.fake.returns(null));
 
     try {
-      const requesthandler = eml.getProjectManagementActions(sampleReq.projectId, dbConnectionObj);
-      await requesthandler;
+      await eml.getProjectManagementActions(sampleReq.projectId, dbConnectionObj);
+
       fake.should.have.returned(null);
 
       expect.fail();
