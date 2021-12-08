@@ -8,9 +8,29 @@ export async function up(knex: Knex): Promise<void> {
   set schema '${DB_SCHEMA}';
   set search_path = ${DB_SCHEMA},public;
 
-  UPDATE system_user_role SET system_role_id = 5 WHERE system_role_id = 3;
-  UPDATE system_user_role SET system_role_id = 6 WHERE system_role_id = 4;
-  UPDATE system_user_role SET system_role_id = 6 WHERE system_role_id = 5;
+  UPDATE
+    system_user_role
+  SET
+    system_role_id = (select system_role_id where name = 'Data Administrator')
+  WHERE
+    system_role_id = (select system_role_id where name = 'Government User');
+
+
+  UPDATE
+    system_user_role
+  SET
+    system_role_id = (select system_role_id where name = 'Creator')
+  WHERE
+    system_role_id = (select system_role_id where name = 'External User');
+
+
+  UPDATE
+    system_user_role
+  SET
+    system_role_id = (select system_role_id where name = 'Creator')
+  WHERE
+    system_role_id = (select system_role_id where name = 'Public User');
+
 
   --Delete from system_user
 
