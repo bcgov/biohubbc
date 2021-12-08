@@ -162,7 +162,20 @@ export const submissionTransformationSchema = {
               type: 'object',
               properties: {
                 source: {
-                  type: 'string'
+                  oneOf: [
+                    {
+                      type: 'string',
+                      description: 'The name of a source property'
+                    },
+                    {
+                      type: 'array',
+                      items: {
+                        type: 'string'
+                      },
+                      description:
+                        'An array of source properties. The first property with a defined value will be used.'
+                    }
+                  ]
                 },
                 target: {
                   type: 'string'
