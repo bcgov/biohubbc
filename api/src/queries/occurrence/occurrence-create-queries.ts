@@ -43,8 +43,9 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
       ${occurrence.organismQuantityType}
   `;
 
-  ifVerbatimCoordinates: if (occurrence.verbatimCoordinates) {
+  if (occurrence.verbatimCoordinates) {
     const utm = parseUTMString(occurrence.verbatimCoordinates);
+    const latLong = parseLatLongString(occurrence.verbatimCoordinates);
 
     if (utm) {
       // transform utm string into point, if it is not null
@@ -57,13 +58,7 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
         4326
       )
     `);
-
-      // Occurrence record has a valid UTM, skip checking for a LatLong below
-      break ifVerbatimCoordinates;
-    }
-
-    const latLong = parseLatLongString(occurrence.verbatimCoordinates);
-    if (latLong) {
+    } else if (latLong) {
       // transform latLong string into point, if it is not null
       sqlStatement.append(SQL`
       ,public.ST_Transform(

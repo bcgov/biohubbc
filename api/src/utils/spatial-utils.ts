@@ -86,7 +86,7 @@ export interface ILatLong {
   long: number;
 }
 
-const LAT_LONG_STRING_FORMAT = RegExp(/^[+-]?([0-9]*[.])?[0-9]+ [+-]?([0-9]*[.])?[0-9]+$/i);
+const LAT_LONG_STRING_FORMAT = RegExp(/^[+-]?(\d*[.])?\d+ [+-]?(\d*[.])?\d+$/i);
 
 /**
  * Parses a `latitude longitude` string of the form: `49.116906	-122.62887`
