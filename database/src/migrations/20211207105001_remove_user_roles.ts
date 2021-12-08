@@ -11,25 +11,25 @@ export async function up(knex: Knex): Promise<void> {
   UPDATE
     system_user_role
   SET
-    system_role_id = (select system_role_id where name = 'Data Administrator')
+    system_role_id = (select system_role_id from system_role where name = 'Data Administrator')
   WHERE
-    system_role_id = (select system_role_id where name = 'Government User');
+    system_role_id = (select system_role_id from system_role where name = 'Government User');
 
 
   UPDATE
     system_user_role
   SET
-    system_role_id = (select system_role_id where name = 'Creator')
+    system_role_id = (select system_role_id from system_role where name = 'Creator')
   WHERE
-    system_role_id = (select system_role_id where name = 'External User');
+    system_role_id = (select system_role_id from system_role where name = 'External User');
 
 
   UPDATE
     system_user_role
   SET
-    system_role_id = (select system_role_id where name = 'Creator')
+    system_role_id = (select system_role_id from system_role where name = 'Creator')
   WHERE
-    system_role_id = (select system_role_id where name = 'Public User');
+    system_role_id = (select system_role_id from system_role where name = 'Public User');
 
 
   --Delete from system_user
