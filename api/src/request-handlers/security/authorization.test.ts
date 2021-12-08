@@ -192,7 +192,7 @@ describe('executeAuthorizeConfig', function () {
     const mockReq = ({} as unknown) as Request;
     const mockAuthorizeRules: authorization.AuthorizeRule[] = [
       {
-        validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+        validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
         discriminator: 'SystemRole'
       },
       {
@@ -234,7 +234,7 @@ describe('authorizeBySystemRole', function () {
   it('returns false if `systemUserObject` is null', async function () {
     const mockReq = ({} as unknown) as Request;
     const mockAuthorizeSystemRoles: authorization.AuthorizeBySystemRoles = {
-      validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+      validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
       discriminator: 'SystemRole'
     };
     const mockDBConnection = getMockDBConnection();
@@ -271,7 +271,7 @@ describe('authorizeBySystemRole', function () {
   it('returns false if the user does not have any valid roles', async function () {
     const mockReq = ({ system_user: { role_names: [] } } as unknown) as Request;
     const mockAuthorizeSystemRoles: authorization.AuthorizeBySystemRoles = {
-      validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+      validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
       discriminator: 'SystemRole'
     };
     const mockDBConnection = getMockDBConnection();
@@ -286,9 +286,9 @@ describe('authorizeBySystemRole', function () {
   });
 
   it('returns true if the user has at least one of the valid roles', async function () {
-    const mockReq = ({ system_user: { role_names: [SYSTEM_ROLE.PROJECT_ADMIN] } } as unknown) as Request;
+    const mockReq = ({ system_user: { role_names: [SYSTEM_ROLE.PROJECT_CREATOR] } } as unknown) as Request;
     const mockAuthorizeSystemRoles: authorization.AuthorizeBySystemRoles = {
-      validSystemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+      validSystemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
       discriminator: 'SystemRole'
     };
     const mockDBConnection = getMockDBConnection();
