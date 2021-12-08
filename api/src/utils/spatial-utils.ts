@@ -31,26 +31,15 @@ export function parseUTMString(utm: string): IUTM | null {
   }
 
   const utmParts = utm.split(' ');
-  const easting = Number(utmParts[1]);
-  if (easting < 166640 || easting > 833360) {
-    // utm easting is invalid
-    return null;
-  }
-
-  const northing = Number(utmParts[2]);
-  if (northing < 1110400 || northing > 9334080) {
-    // utm northing is invalid
-    return null;
-  }
-
-  const hasZoneLetter = UTM_ZONE_WITH_LETTER_FORMAT.test(utmParts[0]);
 
   let zone_letter = undefined;
   let zone_number = undefined;
 
+  const hasZoneLetter = UTM_ZONE_WITH_LETTER_FORMAT.test(utmParts[0]);
+
   if (hasZoneLetter) {
-    zone_letter = utmParts[0].slice(-1).toUpperCase();
     zone_number = Number(utmParts[0].slice(0, -1));
+    zone_letter = utmParts[0].slice(-1).toUpperCase();
   } else {
     zone_number = Number(utmParts[0]);
   }
@@ -60,15 +49,71 @@ export function parseUTMString(utm: string): IUTM | null {
     return null;
   }
 
+  const easting = Number(utmParts[1]);
+  if (easting < 166640 || easting > 833360) {
+    // utm easting is invalid
+    return null;
+  }
+
+  const northing = Number(utmParts[2]);
+
   let zone_srid;
+
   if (!zone_letter || NORTH_UTM_ZONE_LETTERS.includes(zone_letter)) {
+    if (northing < 0 || northing > 9334080) {
+      // utm northing is invalid
+      return null;
+    }
+
     // If `zone_letter` is not defined, then assume northern hemisphere
     zone_srid = NORTH_UTM_BASE_ZONE_NUMBER + zone_number;
   } else if (SOUTH_UTM_ZONE_LETTERS.includes(zone_letter)) {
+    if (northing < 1110400 || northing > 10000000) {
+      // utm northing is invalid
+      return null;
+    }
+
     zone_srid = SOPUTH_UTM_BASE_ZONE_NUMBER + zone_number;
   } else {
     return null;
   }
 
   return { easting, northing, zone_letter, zone_number, zone_srid };
+}
+
+export interface ILatLong {
+  lat: number;
+  long: number;
+}
+
+const LAT_LONG_STRING_FORMAT = RegExp(/^[+-]?(\d*[.])?\d+ [+-]?(\d*[.])?\d+$/i);
+
+/**
+ * Parses a `latitude longitude` string of the form: `49.116906	-122.62887`
+ *
+ * @export
+ * @param {string} latLong
+ * @return {*}  {(ILatLong | null)}
+ */
+export function parseLatLongString(latLong: string): ILatLong | null {
+  if (!latLong || !LAT_LONG_STRING_FORMAT.test(latLong)) {
+    // latLong string is null or does not match the expected format
+    return null;
+  }
+
+  const latLongParts = latLong.split(' ');
+
+  const lat = Number(latLongParts[0]);
+  if (lat < -90 || lat > 90) {
+    // latitude is invalid
+    return null;
+  }
+
+  const long = Number(latLongParts[1]);
+  if (long < -180 || long > 180) {
+    // longitude is invalid
+    return null;
+  }
+
+  return { lat, long };
 }
