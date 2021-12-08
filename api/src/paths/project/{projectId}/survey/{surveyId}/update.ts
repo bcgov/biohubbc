@@ -284,7 +284,7 @@ export const getSurveyDetailsData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && new GetUpdateSurveyDetailsData(response.rows)) || null;
+  const result = (response && response?.rows.length && new GetUpdateSurveyDetailsData(response.rows[0])) || null;
 
   if (!result) {
     throw new HTTP400('Failed to get project survey details data');
