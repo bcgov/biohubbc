@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400, HTTP500 } from '../../errors/CustomError';
 import {
@@ -29,6 +29,7 @@ import AdmZip from 'adm-zip';
 import * as xml2js from 'xml2js';
 import { getDbCharacterSystemMetaDataConstant } from '../../utils/db-constant-utils';
 import { getLogger } from '../../utils/logger';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 
 const simsEmlVersion = '1.0.0';
 
@@ -40,7 +41,21 @@ const defaultEMLFileName = 'eml.xml';
 const defaultEMLMimeType = 'application/xml';
 const defaultArchiveMimeType = 'application/zip';
 
-export const POST: Operation = [getSurveyDataPackageEML(), sendResponse()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.body.project_id),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSurveyDataPackageEML(),
+  sendResponse()
+];
 
 POST.apiDoc = {
   description: 'Produces an Ecological Metadata Language (EML) extract for a target data package.',
@@ -58,6 +73,9 @@ POST.apiDoc = {
           type: 'object',
           required: ['data_package_id'],
           properties: {
+            project_id: {
+              type: 'number'
+            },
             data_package_id: {
               description: 'A data package ID',
               type: 'number',

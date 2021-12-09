@@ -21,7 +21,7 @@
         "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+        "bodyParametersJson": "={\n\"project_id\": {{$node[\"Webhook\"].json[\"body\"][\"project_id\"]}},\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
       "name": "DWC Validate",
       "type": "n8n-nodes-base.httpRequest",
@@ -78,7 +78,7 @@
         "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+        "bodyParametersJson": "={\n\"project_id\": {{$node[\"Webhook\"].json[\"body\"][\"project_id\"]}},\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
       "name": "XLSX Validate",
       "type": "n8n-nodes-base.httpRequest",
@@ -229,7 +229,7 @@
     }
   },
   "createdAt": "2021-08-26T12:19:31.100Z",
-  "updatedAt": "2021-10-07T18:00:44.931Z",
+  "updatedAt": "2021-12-08T23:01:55.035Z",
   "settings": {},
   "staticData": null
 }

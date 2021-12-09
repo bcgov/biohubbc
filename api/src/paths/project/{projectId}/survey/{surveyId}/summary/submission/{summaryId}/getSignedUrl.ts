@@ -8,10 +8,25 @@ import { getDBConnection } from '../../../../../../../../database/db';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
 import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-summary-queries';
+import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/{summaryId}/getSignedUrl');
 
-export const GET: Operation = [getSingleSummarySubmissionURL()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSingleSummarySubmissionURL()
+];
 
 GET.apiDoc = {
   ...attachmentApiDocObject(
