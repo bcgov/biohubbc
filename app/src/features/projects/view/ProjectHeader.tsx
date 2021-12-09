@@ -199,11 +199,14 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   };
 
   // Show delete button if you are a system admin or a project admin
-  const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]);
+  const showDeleteProjectButton = keycloakWrapper?.hasSystemRole([
+    SYSTEM_ROLE.SYSTEM_ADMIN,
+    SYSTEM_ROLE.PROJECT_CREATOR
+  ]);
   // Enable delete button if you a system admin OR a project admin and the project is not published
   const enableDeleteProjectButton =
     keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
-    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !projectWithDetails.project.publish_date);
+    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]) && !projectWithDetails.project.publish_date);
 
   return (
     <Paper square={true}>
