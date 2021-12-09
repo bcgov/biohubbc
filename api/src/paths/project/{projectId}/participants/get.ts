@@ -145,7 +145,7 @@ export const getProjectParticipants = async (projectId: number, connection: IDBC
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!response) {
+  if (!response || !response.rows) {
     throw new HTTP400('Failed to get project participants');
   }
 
