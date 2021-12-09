@@ -289,7 +289,7 @@ describe('ProjectPage', () => {
   //   const authState = {
   //     keycloakWrapper: {
   //       ...defaultAuthState.keycloakWrapper,
-  //       systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
+  //       systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
   //       hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
   //     }
   //   };
@@ -323,7 +323,7 @@ describe('ProjectPage', () => {
   //   const authState = {
   //     keycloakWrapper: {
   //       ...defaultAuthState.keycloakWrapper,
-  //       systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
+  //       systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
   //       hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
   //     }
   //   };

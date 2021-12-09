@@ -25,7 +25,7 @@ describe('Header', () => {
   //         authenticated: true
   //       },
   //       hasLoadedAllUserInfo: true,
-  //       systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+  //       systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
   //       getUserIdentifier: () => 'testuser',
   //       hasAccessRequest: false,
   //       hasSystemRole: mockHasSystemRole,
@@ -33,7 +33,6 @@ describe('Header', () => {
   //       username: 'testusername',
   //       displayName: 'testdisplayname',
   //       email: 'test@email.com',
-  //       firstName: 'testfirst',
   //       lastName: 'testlast',
   //       refresh: () => {}
   //     }

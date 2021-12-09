@@ -165,7 +165,7 @@ describe('deleteProject', () => {
       const result = delete_project.deleteProject();
 
       await result(
-        { ...sampleReq, system_user: { role_names: [SYSTEM_ROLE.PROJECT_ADMIN] } },
+        { ...sampleReq, system_user: { role_names: [SYSTEM_ROLE.PROJECT_CREATOR] } },
         (null as unknown) as any,
         (null as unknown) as any
       );
