@@ -10,6 +10,6 @@
   "experimentalStudio": true,
   "viewportHeight": 900,
   "viewportWidth": 1440,
-  "OldbaseUrl": "http://localhost:7100",
-  "baseUrl":"https://dev-biohubbc.apps.silver.devops.gov.bc.ca"
+  "baseUrl": "http://localhost:7100",
+  "oldbaseUrl":"https://dev-biohubbc.apps.silver.devops.gov.bc.ca"
 }
