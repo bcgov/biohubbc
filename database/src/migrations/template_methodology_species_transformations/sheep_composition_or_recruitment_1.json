@@ -6,7 +6,7 @@
     },
     {
       "fileName": "Observations",
-      "uniqueId": ["Waypoint"],
+      "uniqueId": ["GPS Unit Name", "Waypoint"],
       "parent": {
         "fileName": "Effort & Site Conditions",
         "uniqueId": ["Survey Area", "Block ID/SU ID"]
@@ -14,10 +14,10 @@
     },
     {
       "fileName": "UTM_LatLong",
-      "uniqueId": ["Waypoint"],
+      "uniqueId": ["GPS Unit Name", "Waypoint"],
       "parent": {
         "fileName": "Observations",
-        "uniqueId": ["Waypoint"]
+        "uniqueId": ["GPS Unit Name", "Waypoint"]
       }
     }
   ],
@@ -42,8 +42,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -85,8 +88,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -128,8 +134,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -171,8 +180,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -214,8 +226,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -257,8 +272,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -300,8 +318,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -343,8 +364,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -386,8 +410,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -429,8 +456,11 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "verbatimCoordinates": {
-              "columns": ["GPS Unit Name", "Easting", "Northing"]
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
             },
             "occurrenceID": {
               "columns": ["Waypoint"],
@@ -460,7 +490,7 @@
         { "source": "id", "target": "id" },
         { "source": "eventID", "target": "eventID" },
         { "source": "eventDate", "target": "eventDate" },
-        { "source": "verbatimCoordinates", "target": "verbatimCoordinates" }
+        { "source": ["verbatimCoordinatesUTM", "verbatimCoordinatesLatLong"], "target": "verbatimCoordinates" }
       ]
     },
     {
