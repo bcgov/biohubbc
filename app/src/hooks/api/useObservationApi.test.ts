@@ -19,20 +19,21 @@ describe('useObservationApi', () => {
   it('getObservationSubmission works as expected', async () => {
     mock
       .onGet(`/api/project/${projectId}/survey/${surveyId}/observation/submission/get`)
-      .reply(200, { id: 1, fileName: 'file.txt' });
+      .reply(200, { id: 1, inputFileName: 'file.txt' });
 
     const result = await useObservationApi(axios).getObservationSubmission(projectId, surveyId);
 
     expect(result.id).toEqual(1);
-    expect(result.fileName).toEqual('file.txt');
+    expect(result.inputFileName).toEqual('file.txt');
   });
 
   it('initiateScrapeOccurrences works as expected', async () => {
+    const projectId = 1;
     const submissionId = 1;
 
     mock.onPost(`/api/dwc/scrape-occurrences`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateScrapeOccurrences(submissionId);
+    const result = await useObservationApi(axios).initiateScrapeOccurrences(projectId, submissionId);
 
     expect(result).toEqual(true);
   });
@@ -92,28 +93,31 @@ describe('useObservationApi', () => {
   });
 
   it('initiateXLSXSubmissionTransform works as expected', async () => {
+    const projectId = 1;
     const submissionId = 2;
     mock.onPost(`/api/xlsx/transform`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(submissionId);
+    const result = await useObservationApi(axios).initiateXLSXSubmissionTransform(projectId, submissionId);
 
     expect(result).toEqual(true);
   });
 
   it('initiateXLSXSubmissionValidation works as expected', async () => {
+    const projectId = 1;
     const submissionId = 2;
     mock.onPost(`/api/xlsx/validate`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateXLSXSubmissionValidation(submissionId);
+    const result = await useObservationApi(axios).initiateXLSXSubmissionValidation(projectId, submissionId);
 
     expect(result).toEqual(true);
   });
 
   it('initiateDwCSubmissionValidation works as expected', async () => {
+    const projectId = 1;
     const submissionId = 2;
     mock.onPost(`/api/dwc/validate`).reply(200, true);
 
-    const result = await useObservationApi(axios).initiateDwCSubmissionValidation(submissionId);
+    const result = await useObservationApi(axios).initiateDwCSubmissionValidation(projectId, submissionId);
 
     expect(result).toEqual(true);
   });
@@ -141,6 +145,7 @@ describe('useObservationApi', () => {
   });
 
   it('getOccurrencesForView works as expected', async () => {
+    const projectId = 1;
     const submissionId = 2;
     const data = {
       geometry: null,
@@ -156,7 +161,7 @@ describe('useObservationApi', () => {
 
     mock.onPost(`/api/dwc/view-occurrences`).reply(200, data);
 
-    const result = await useObservationApi(axios).getOccurrencesForView(submissionId);
+    const result = await useObservationApi(axios).getOccurrencesForView(projectId, submissionId);
 
     expect(result).toEqual(data);
   });

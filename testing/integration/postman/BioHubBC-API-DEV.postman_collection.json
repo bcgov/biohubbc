@@ -73,7 +73,7 @@
 						"header": [],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n    \"data_package_id\": 1,\n    \"supplied_title\": \"my title\"\n}\n",
+							"raw": "{\n    \"project_id\": {{PROJECT_ID}},\n    \"data_package_id\": 1,\n    \"supplied_title\": \"my title\"\n}\n",
 							"options": {
 								"raw": {
 									"language": "json"

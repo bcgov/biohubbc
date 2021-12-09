@@ -3,17 +3,31 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../../constants/attachments';
-import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import { PutReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
 import { updateSurveyReportAttachmentMetadataSQL } from '../../../../../../../../queries/survey/survey-attachments-queries';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { deleteSurveyReportAttachmentAuthors, insertSurveyReportAttachmentAuthor } from '../../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/metadata/update');
 
-export const PUT: Operation = [updateSurveyReportMetadata()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  updateSurveyReportMetadata()
+];
 
 PUT.apiDoc = {
   description: 'Update project attachment metadata.',

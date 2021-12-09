@@ -84,13 +84,16 @@ const useObservationApi = (axios: AxiosInstance) => {
   /**
    * Get occurrence information for view-only purposes based on occurrence submission id
    *
+   * @param {number} projectId
    * @param {number} occurrenceSubmissionId
    * @returns {*} {Promise<IGetOccurrencesForViewResponseDetails[]>}
    */
   const getOccurrencesForView = async (
+    projectId: number,
     occurrenceSubmissionId: number
   ): Promise<IGetOccurrencesForViewResponseDetails[]> => {
     const { data } = await axios.post(`/api/dwc/view-occurrences`, {
+      project_id: projectId,
       occurrence_submission_id: occurrenceSubmissionId
     });
 
@@ -119,10 +122,13 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   /**
    * Initiate the validation process for the submitted DWC observations
+   *
+   * @param {number} projectId
    * @param {number} submissionId
    */
-  const initiateDwCSubmissionValidation = async (submissionId: number) => {
+  const initiateDwCSubmissionValidation = async (projectId: number, submissionId: number) => {
     const { data } = await axios.post(`/api/dwc/validate`, {
+      project_id: projectId,
       occurrence_submission_id: submissionId
     });
 
@@ -131,10 +137,13 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   /**
    * Initiate the validation process for the submitted XLSX observations
+   *
+   * @param {number} projectId
    * @param {number} submissionId
    */
-  const initiateXLSXSubmissionValidation = async (submissionId: number) => {
+  const initiateXLSXSubmissionValidation = async (projectId: number, submissionId: number) => {
     const { data } = await axios.post(`/api/xlsx/validate`, {
+      project_id: projectId,
       occurrence_submission_id: submissionId
     });
 
@@ -144,10 +153,12 @@ const useObservationApi = (axios: AxiosInstance) => {
   /**
    * Initiate the transformation process for the submitted observation template.
    *
+   * @param {number} projectId
    * @param {number} submissionId
    */
-  const initiateXLSXSubmissionTransform = async (submissionId: number) => {
+  const initiateXLSXSubmissionTransform = async (projectId: number, submissionId: number) => {
     const { data } = await axios.post(`/api/xlsx/transform`, {
+      project_id: projectId,
       occurrence_submission_id: submissionId
     });
 
@@ -156,10 +167,13 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   /**
    * Initiate the scraping process for the submitted DWC observations
+   *
+   * @param {number} projectId
    * @param {number} submissionId
    */
-  const initiateScrapeOccurrences = async (submissionId: number) => {
+  const initiateScrapeOccurrences = async (projectId: number, submissionId: number) => {
     const { data } = await axios.post(`/api/dwc/scrape-occurrences`, {
+      project_id: projectId,
       occurrence_submission_id: submissionId
     });
 

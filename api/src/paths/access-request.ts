@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../constants/roles';
+import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/CustomError';
 import { ensureSystemUser } from '../paths-helpers/system-user';
@@ -12,13 +12,12 @@ import { addSystemRoles } from './user/{userId}/system-roles/create';
 const defaultLog = getLogger('paths/access-request');
 
 export const PUT: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
-          projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
         }
       ]
     };
