@@ -8,12 +8,27 @@ import { getDBConnection } from '../../../../../../../../database/db';
 import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
+import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger(
   '/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/getSignedUrl'
 );
 
-export const GET: Operation = [getSingleSubmissionURL()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSingleSubmissionURL()
+];
 
 GET.apiDoc = {
   ...attachmentApiDocObject(
