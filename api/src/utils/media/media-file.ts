@@ -33,7 +33,7 @@ export class MediaFile implements IMediaFile {
    * @memberof MediaFile
    */
   get name(): string {
-    return this.fileName.split('.')[0];
+    return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
   }
 
   /**
@@ -84,7 +84,7 @@ export class ArchiveFile implements IMediaFile {
    * @memberof ArchiveFile
    */
   get name(): string {
-    return this.fileName.split('.')[0];
+    return this.fileName.substring(0, this.fileName.lastIndexOf('.'));
   }
 
   /**
