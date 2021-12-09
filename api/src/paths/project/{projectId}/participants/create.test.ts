@@ -4,8 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as create_project_participants from './create';
 import * as db from '../../../../database/db';
-//import * as project_participation_queries from '../../../../queries/project-participation/project-participation-queries';
-//import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import { CustomError } from '../../../../errors/CustomError';
 
@@ -23,18 +21,6 @@ describe('creates a list of project participants', () => {
       projectId: 1
     }
   } as any;
-
-  // let actualResult: any = null;
-
-  // const sampleRes = {
-  //   status: () => {
-  //     return {
-  //       json: (result: any) => {
-  //         actualResult = result;
-  //       }
-  //     };
-  //   }
-  // };
 
   afterEach(() => {
     sinon.restore();
