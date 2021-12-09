@@ -83,6 +83,7 @@ export function getUser(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

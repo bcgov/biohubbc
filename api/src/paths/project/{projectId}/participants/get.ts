@@ -119,6 +119,8 @@ export function getParticipants(): RequestHandler {
 
       const result = await getProjectParticipants(projectId, connection);
 
+      await connection.commit();
+
       return res.status(200).json({ participants: result });
     } catch (error) {
       defaultLog.error({ label: 'getAllProjectParticipants', message: 'error', error });

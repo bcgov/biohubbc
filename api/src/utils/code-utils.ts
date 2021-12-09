@@ -105,8 +105,6 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
 
   await connection.commit();
 
-  connection.release();
-
   return {
     management_action_type: (management_action_type && management_action_type.rows) || [],
     first_nations: (first_nations && first_nations.rows) || [],
