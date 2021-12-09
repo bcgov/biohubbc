@@ -30,7 +30,7 @@ describe('SurveyObservations', () => {
   it('renders correctly', async () => {
     const { getByText } = render(
       <MemoryRouter>
-        <SurveyObservations />
+        <SurveyObservations refresh={() => {}} />
       </MemoryRouter>
     );
 
@@ -43,7 +43,7 @@ describe('SurveyObservations', () => {
   it('shows circular spinner when observation data not yet loaded', async () => {
     const { asFragment } = render(
       <MemoryRouter>
-        <SurveyObservations />
+        <SurveyObservations refresh={() => {}} />
       </MemoryRouter>
     );
 

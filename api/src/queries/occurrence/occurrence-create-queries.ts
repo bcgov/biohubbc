@@ -43,13 +43,12 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
       ${occurrence.organismQuantityType}
   `;
 
-  if (occurrence.verbatimCoordinates) {
-    const utm = parseUTMString(occurrence.verbatimCoordinates);
-    const latLong = parseLatLongString(occurrence.verbatimCoordinates);
+  const utm = parseUTMString(occurrence.verbatimCoordinates);
+  const latLong = parseLatLongString(occurrence.verbatimCoordinates);
 
-    if (utm) {
-      // transform utm string into point, if it is not null
-      sqlStatement.append(SQL`
+  if (utm) {
+    // transform utm string into point, if it is not null
+    sqlStatement.append(SQL`
       ,public.ST_Transform(
         public.ST_SetSRID(
           public.ST_MakePoint(${utm.easting}, ${utm.northing}),
@@ -58,9 +57,9 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
         4326
       )
     `);
-    } else if (latLong) {
-      // transform latLong string into point, if it is not null
-      sqlStatement.append(SQL`
+  } else if (latLong) {
+    // transform latLong string into point, if it is not null
+    sqlStatement.append(SQL`
       ,public.ST_Transform(
         public.ST_SetSRID(
           public.ST_MakePoint(${latLong.long}, ${latLong.lat}),
@@ -69,12 +68,11 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
         4326
       )
     `);
-    }
   } else {
     // insert null geography
     sqlStatement.append(SQL`
-      ,null
-    `);
+        ,null
+      `);
   }
 
   sqlStatement.append(');');
