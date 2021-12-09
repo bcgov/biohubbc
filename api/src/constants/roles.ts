@@ -6,7 +6,8 @@
  */
 export enum SYSTEM_ROLE {
   SYSTEM_ADMIN = 'System Administrator',
-  PROJECT_ADMIN = 'Project Administrator'
+  PROJECT_CREATOR = 'Creator',
+  DATA_ADMINISTRATOR = 'Data Administrator'
 }
 
 /**
@@ -17,8 +18,8 @@ export enum SYSTEM_ROLE {
  */
 export enum PROJECT_ROLE {
   PROJECT_LEAD = 'Project Lead',
-  PROJECT_TEAM_MEMBER = 'Project Team Member',
-  PROJECT_REVIEWER = 'Project Reviewer'
+  PROJECT_EDITOR = 'Editor',
+  PROJECT_VIEWER = 'Viewer'
 }
 
 /**

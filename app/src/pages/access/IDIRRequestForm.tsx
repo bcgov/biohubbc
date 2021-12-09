@@ -55,12 +55,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export enum RELEVANT_SYSTEM_ROLES {
-  SYSTEM_ADMINISTRATOR = 'System Administrator',
-  DATA_ADMINSTRATOR = 'Data Administrator',
-  CREATOR = 'Creator'
-}
-
 /**
  * Access Request - IDIR request fields
  *
@@ -90,18 +84,11 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
                 error={touched.role && Boolean(errors.role)}
                 displayEmpty
                 inputProps={{ 'aria-label': 'Role' }}>
-                {codes?.system_roles
-                  .filter(
-                    (item) =>
-                      item.name == RELEVANT_SYSTEM_ROLES.CREATOR ||
-                      item.name == RELEVANT_SYSTEM_ROLES.DATA_ADMINSTRATOR ||
-                      item.name == RELEVANT_SYSTEM_ROLES.SYSTEM_ADMINISTRATOR
-                  )
-                  .map((item) => (
-                    <MenuItem key={item.id} value={item.id}>
-                      {item.name}
-                    </MenuItem>
-                  ))}
+                {codes?.system_roles.map((item) => (
+                  <MenuItem key={item.id} value={item.id}>
+                    {item.name}
+                  </MenuItem>
+                ))}
               </Select>
               <FormHelperText>{errors.role}</FormHelperText>
             </FormControl>
