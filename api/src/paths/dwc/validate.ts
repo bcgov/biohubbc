@@ -141,6 +141,8 @@ export function getOccurrenceSubmission(): RequestHandler {
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
+      await connection.commit();
+
       if (!response || !response.rows.length) {
         throw new HTTP400('Failed to get survey occurrence submission');
       }

@@ -114,6 +114,8 @@ export function getSurveyDataPackageEML(): RequestHandler {
       // get the EML data for the survey
       const dataPackageEML = await getDataPackageEML(req.body.data_package_id, connection, req.body.supplied_title);
 
+      await connection.commit();
+
       // get the archive file from s3
       if (!occurrenceSubmission.output_key) {
         throw new HTTP400('No S3 target output key found');

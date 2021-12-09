@@ -130,6 +130,8 @@ export function publishSurveyAndOccurrences(): RequestHandler {
 
       await publishSurvey(surveyId, publish, connection);
 
+      await connection.commit();
+
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'publishSurveyAndOccurrences', message: 'error', error });
