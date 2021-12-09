@@ -94,12 +94,13 @@ export const authorizeRequest = async (req: Request): Promise<boolean> => {
 
     await connection.open();
 
-    const isSystemAdmin = await authorizeSystemAdministrator(req, connection);
-    if (isSystemAdmin) {
-      return true;
-    }
+    const isAuthorized =
+      (await authorizeSystemAdministrator(req, connection)) ||
+      (await executeAuthorizationScheme(req, authorizationScheme, connection));
 
-    return await executeAuthorizationScheme(req, authorizationScheme, connection);
+    await connection.commit();
+
+    return isAuthorized;
   } catch (error) {
     defaultLog.error({ label: 'authorize', message: 'error', error });
     await connection.rollback();
