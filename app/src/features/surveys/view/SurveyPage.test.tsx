@@ -211,7 +211,7 @@ describe('SurveyPage', () => {
   //   const authState = {
   //     keycloakWrapper: {
   //       ...defaultAuthState.keycloakWrapper,
-  //       systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
+  //       systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
   //       hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
   //     }
   //   };
@@ -241,7 +241,7 @@ describe('SurveyPage', () => {
   //   const authState = {
   //     keycloakWrapper: {
   //       ...defaultAuthState.keycloakWrapper,
-  //       systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
+  //       systemRoles: [SYSTEM_ROLE.PROJECT_CRETOR] as string[],
   //       hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
   //     }
   //   };

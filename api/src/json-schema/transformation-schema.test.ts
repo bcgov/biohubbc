@@ -66,8 +66,11 @@ describe('example submission transformation schema', () => {
               eventDate: {
                 columns: ['Date']
               },
-              verbatimCoordinates: {
+              verbatimCoordinatesUTM: {
                 columns: ['UTM Zone', 'Easting', 'Northing']
+              },
+              verbatimCoordinatesLatLong: {
+                columns: ['lat', 'long']
               },
               occurrenceID: {
                 columns: ['Waypoint'],
@@ -109,8 +112,11 @@ describe('example submission transformation schema', () => {
               eventDate: {
                 columns: ['Date']
               },
-              verbatimCoordinates: {
+              verbatimCoordinatesUTM: {
                 columns: ['UTM Zone', 'Easting', 'Northing']
+              },
+              verbatimCoordinatesLatLong: {
+                columns: ['lat', 'long']
               },
               occurrenceID: {
                 columns: ['Waypoint'],
@@ -153,8 +159,11 @@ describe('example submission transformation schema', () => {
               eventDate: {
                 columns: ['Date']
               },
-              verbatimCoordinates: {
+              verbatimCoordinatesUTM: {
                 columns: ['UTM Zone', 'Easting', 'Northing']
+              },
+              verbatimCoordinatesLatLong: {
+                columns: ['lat', 'long']
               },
               occurrenceID: {
                 columns: ['Waypoint'],
@@ -202,7 +211,7 @@ describe('example submission transformation schema', () => {
           { source: 'id', target: 'id' },
           { source: 'eventID', target: 'eventID' },
           { source: 'eventDate', target: 'eventDate' },
-          { source: 'verbatimCoordinates', target: 'verbatimCoordinates' }
+          { source: ['verbatimCoordinatesUTM', 'verbatimCoordinatesLatLong'], target: 'verbatimCoordinates' }
         ]
       },
       {

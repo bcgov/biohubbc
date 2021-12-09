@@ -324,7 +324,7 @@ const ProjectsListPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box mb={5} display="flex" justifyContent="space-between">
           <Typography variant="h1">Projects</Typography>
-          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}>
+          <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR]}>
             <Button
               variant="contained"
               color="primary"

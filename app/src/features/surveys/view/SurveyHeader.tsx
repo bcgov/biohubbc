@@ -202,11 +202,14 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   };
 
   // Show delete button if you are a system admin or a project admin
-  const showDeleteSurveyButton = keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]);
+  const showDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
+    SYSTEM_ROLE.SYSTEM_ADMIN,
+    SYSTEM_ROLE.PROJECT_CREATOR
+  ]);
   // Enable delete button if you a system admin OR a project admin and the survey is not published
   const enableDeleteSurveyButton =
     keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
-    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_ADMIN]) && !surveyWithDetails.survey_details.publish_date);
+    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]) && !surveyWithDetails.survey_details.publish_date);
 
   return (
     <>

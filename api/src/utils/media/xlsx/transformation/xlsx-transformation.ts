@@ -324,7 +324,7 @@ export class XLSXTransformation {
         return;
       }
 
-      Object.entries(transformation.fields).forEach(([dwcField, config]) => {
+      Object.entries(transformation.fields).forEach(([fieldName, config]) => {
         if (!this._isConditionMet(rowObject, config?.condition)) {
           return;
         }
@@ -336,7 +336,7 @@ export class XLSXTransformation {
           columnValue = `${columnValue}:${config.unique}-${rowObjectIndex}-${transformationSchemaIndex}`;
         }
 
-        newDWCRowObject[dwcField] = columnValue;
+        newDWCRowObject[fieldName] = columnValue;
       });
 
       newDWCRowObjects.push(newDWCRowObject);
@@ -519,14 +519,26 @@ export class XLSXTransformation {
 
         const newRowObject = {};
 
-        Object.entries(rowObject).forEach(([dwcField, value]) => {
-          for (const column of columns) {
-            if (column.source === dwcField) {
-              newRowObject[column.target] = value;
-              break;
+        for (const column of columns) {
+          if (Array.isArray(column.source)) {
+            // iterate over source columns
+            for (const sourceColumn of column.source) {
+              const sourceValue = rowObject[sourceColumn];
+
+              if (sourceValue) {
+                // use the first source column that has a defined value
+                newRowObject[column.target] = sourceValue;
+                break;
+              }
+            }
+          } else {
+            const sourceValue = rowObject[column.source];
+
+            if (sourceValue) {
+              newRowObject[column.target] = sourceValue;
             }
           }
-        });
+        }
 
         const newRowObjectKeys = Object.keys(newRowObject);
 
