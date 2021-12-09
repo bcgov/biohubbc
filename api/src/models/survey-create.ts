@@ -14,6 +14,7 @@ export class PostSurveyObject {
   biologist_first_name: string;
   biologist_last_name: string;
   foippa_requirements_accepted: boolean;
+  sedis_procedures_accepted: boolean;
   focal_species: number[];
   ancillary_species: number[];
   common_survey_methodology_id: number;
@@ -44,6 +45,7 @@ export class PostSurveyObject {
     this.biologist_last_name = obj?.biologist_last_name || null;
     this.end_date = obj?.end_date || null;
     this.foippa_requirements_accepted = obj?.foippa_requirements_accepted === 'true' || false;
+    this.sedis_procedures_accepted = obj?.sedis_procedures_accepted === 'true' || false;
     this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
     this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
     this.common_survey_methodology_id = obj?.common_survey_methodology_id || null;

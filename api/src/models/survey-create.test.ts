@@ -54,6 +54,10 @@ describe('PostSurveyObject', () => {
       expect(data.foippa_requirements_accepted).to.equal(false);
     });
 
+    it('sets sedis_procedures_accepted', () => {
+      expect(data.sedis_procedures_accepted).to.equal(false);
+    });
+
     it('sets survey_data_proprietary', () => {
       expect(data.survey_data_proprietary).to.equal(false);
     });
@@ -71,6 +75,7 @@ describe('PostSurveyObject', () => {
       biologist_last_name: 'last',
       end_date: '2020/04/04',
       foippa_requirements_accepted: 'true',
+      sedis_procedures_accepted: 'true',
       focal_species: [1, 2],
       ancillary_species: [3, 4],
       common_survey_methodology_id: 1,
@@ -151,6 +156,10 @@ describe('PostSurveyObject', () => {
       expect(data.foippa_requirements_accepted).to.equal(true);
     });
 
+    it('sets sedis_procedures_accepted', () => {
+      expect(data.sedis_procedures_accepted).to.equal(true);
+    });
+
     it('sets survey_data_proprietary', () => {
       expect(data.survey_data_proprietary).to.equal(false);
     });
@@ -172,6 +181,7 @@ describe('PostSurveyObject', () => {
       biologist_last_name: 'last',
       end_date: '2020/04/04',
       foippa_requirements_accepted: 'true',
+      sedis_procedures_accepted: 'true',
       focal_species: [1, 2],
       ancillary_species: [3, 4],
       common_survey_methodology_id: 1,
@@ -233,6 +243,10 @@ describe('PostSurveyObject', () => {
 
     it('sets foippa_requirements_accepted', () => {
       expect(data.foippa_requirements_accepted).to.equal(true);
+    });
+
+    it('sets sedis_procedures_accepted', () => {
+      expect(data.sedis_procedures_accepted).to.equal(true);
     });
 
     it('sets survey_data_proprietary', () => {

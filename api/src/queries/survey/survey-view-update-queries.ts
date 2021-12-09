@@ -33,16 +33,33 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.geojson as geometry,
       s.revision_count,
       s.common_survey_methodology_id,
+      s.publish_timestamp as publish_date,
       per.number,
       per.type,
-      sfs.project_funding_source_id as pfs_id,
-      s.publish_timestamp as publish_date,
-      CASE
-        WHEN ss.is_focal = TRUE THEN wtu.wldtaxonomic_units_id
-      END as focal_species,
-      CASE
-        WHEN ss.is_focal = FALSE THEN wtu.wldtaxonomic_units_id
-      END as ancillary_species
+      array_remove(
+        array_agg(
+          distinct sfs.project_funding_source_id
+        ),
+        NULL
+      ) as pfs_id,
+      array_remove(
+        array_agg(
+          DISTINCT CASE
+            WHEN ss.is_focal = TRUE
+              THEN wtu.wldtaxonomic_units_id
+            END
+          ),
+          NULL
+      ) as focal_species,
+      array_remove(
+        array_agg(
+          DISTINCT CASE
+            WHEN ss.is_focal = FALSE
+              THEN wtu.wldtaxonomic_units_id
+            END
+        ),
+        NULL
+      ) as ancillary_species
     FROM
       wldtaxonomic_units as wtu
     LEFT OUTER JOIN
@@ -62,7 +79,22 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
     ON
       sfs.survey_id = s.survey_id
     WHERE
-      s.survey_id = ${surveyId};
+      s.survey_id = ${surveyId}
+    group by
+      s.survey_id,
+      s.name,
+      s.objectives,
+      s.start_date,
+      s.end_date,
+      s.lead_first_name,
+      s.lead_last_name,
+      s.location_name,
+      s.geojson,
+      s.revision_count,
+      s.common_survey_methodology_id,
+      s.publish_timestamp,
+      per.number,
+      per.type;
   `;
 
   defaultLog.debug({
