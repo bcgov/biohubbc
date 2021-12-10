@@ -208,6 +208,12 @@ export const DeleteSystemUserI18N = {
 };
 
 export const ProjectParticipantsI18N = {
+  deleteProjectLeadTitle: 'Error Deleting Project Lead',
+  deleteProjectLeadErrorText:
+    'An error has occurred while attempting to delete the project Lead, please assign a different project lead before removing. Please try again, if the error persists please contact your system administrator.',
+  updateProjectLeadRoleErrorTitle: 'Error Updating Project Role',
+  updateProjectLeadRoleErrorText:
+    "An error has occurred while attempting to update the user's project lead role, please assign a different project lead before changing. Please try again, if the error persists please contact your system administrator.",  
   getParticipantsErrorTitle: 'Error Fetching Project Team Members',
   getParticipantsErrorText:
     'An error has occurred while attempting to fetch project team members, please try again. If the error persists, please contact your system administrator.',

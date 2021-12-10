@@ -14,7 +14,7 @@ import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import { makeStyles } from '@material-ui/core/styles';
 import Icon from '@mdi/react';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
-import { IGetUserProjectsListResponse } from 'interfaces/useProjectApi.interface';
+import { IGetUserProjectsListResponse, IGetProjectParticipantsResponse } from 'interfaces/useProjectApi.interface';
 import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
@@ -44,8 +44,8 @@ const useStyles = makeStyles((theme) => ({
       verticalAlign: 'middle'
     }
   },
-  tableColumn :{
-      width: '30%',
+  tableColumn: {
+    width: '30%'
   }
 }));
 
@@ -77,7 +77,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     return apiCall;
   };
 
-  const refresh =() => () => {
+  const refresh = () => () => {
     handleGetUserProjects(userDetails.id);
   };
 
@@ -133,17 +133,38 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
+      const response = await biohubApi.project.getProjectParticipants(projectId);
 
-      if (!response) {
+      const projectLeadAprroval = checkForProjectLead(response, projectParticipationId);
+
+      if (projectLeadAprroval) {
+        const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
+
+        if (!response) {
+          openErrorDialog({
+            dialogTitle: ProjectParticipantsI18N.removeParticipantErrorTitle,
+            dialogText: ProjectParticipantsI18N.removeParticipantErrorText
+          });
+          return;
+        }
+
+        dialogContext.setSnackbar({
+          open: true,
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              User <strong>{userDetails.user_identifier}</strong> removed from project.
+            </Typography>
+          )
+        });
+        
+        handleGetUserProjects(userDetails.id);
+      } else {
         openErrorDialog({
-          dialogTitle: ProjectParticipantsI18N.removeParticipantErrorTitle,
-          dialogText: ProjectParticipantsI18N.removeParticipantErrorText
+          dialogTitle: ProjectParticipantsI18N.deleteProjectLeadTitle,
+          dialogText: ProjectParticipantsI18N.deleteProjectLeadErrorText
         });
         return;
       }
-
-      handleGetUserProjects(userDetails.id);
     } catch (error) {
       openErrorDialog({
         dialogTitle: ProjectParticipantsI18N.removeParticipantErrorTitle,
@@ -160,12 +181,16 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
     return (
       <TableContainer>
-        <Table >
+        <Table>
           <TableHead>
             <TableRow>
-              <TableCell width="40%" align="left">Project Name</TableCell>
-              <TableCell width="40%" align="left">Project Role</TableCell>
-              <TableCell width="20%" align="center" >
+              <TableCell width="40%" align="left">
+                Project Name
+              </TableCell>
+              <TableCell width="40%" align="left">
+                Project Role
+              </TableCell>
+              <TableCell width="20%" align="center">
                 Actions
               </TableCell>
             </TableRow>
@@ -194,7 +219,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                     />
                   </Box>
                 </TableCell>
-                <TableCell width="10%" align="center"> 
+                <TableCell width="10%" align="center">
                   <Button
                     title="Remove Project Participant"
                     color="primary"
@@ -218,16 +243,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                         ),
                         yesButtonProps: { color: 'secondary' },
                         onYes: () => {
-                          handleRemoveProjectParticipant(row.project_id, row.project_role_id);
+                          handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
                           dialogContext.setYesNoDialog({ open: false });
-                          dialogContext.setSnackbar({
-                            open: true,
-                            snackbarMessage: (
-                              <Typography variant="body2" component="div">
-                                User <strong>{userDetails.user_identifier}</strong> removed from project.
-                              </Typography>
-                            )
-                          });
                         }
                       })
                     }>
@@ -255,6 +272,18 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 };
 
 export default UsersDetailProjects;
+
+const checkForProjectLead = (
+  projectParticipants: IGetProjectParticipantsResponse,
+  projectParticipationId: number
+): boolean => {
+  for (const participant of projectParticipants.participants) {
+    if (participant.project_participation_id !== projectParticipationId && participant.project_role_id === 1) {
+      return true;
+    }
+  }
+  return false;
+};
 
 export interface IChangeProjectRoleMenuProps {
   row: IGetUserProjectsListResponse;
@@ -322,25 +351,36 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
 
     try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
-        item.project_id,
-        item.project_participation_id,
-        newRoleId
-      );
+      const response = await biohubApi.project.getProjectParticipants(row.project_id);
 
-      if (!status) {
-        showErrorDialog();
-        return;
+      const projectLeadAprroval = checkForProjectLead(response, row.project_participation_id);
+
+      if (projectLeadAprroval) {
+        const status = await biohubApi.project.updateProjectParticipantRole(
+          item.project_id,
+          item.project_participation_id,
+          newRoleId
+        );
+
+        if (!status) {
+          showErrorDialog();
+          return;
+        }
+
+        dialogContext.setSnackbar({
+          open: true,
+          snackbarMessage: (
+            <Typography variant="body2" component="div">
+              User <strong>{user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.
+            </Typography>
+          )
+        });
+      } else {
+        showErrorDialog({
+          dialogTitle: ProjectParticipantsI18N.updateProjectLeadRoleErrorTitle,
+          dialogText: ProjectParticipantsI18N.updateProjectLeadRoleErrorText
+        });
       }
-
-      dialogContext.setSnackbar({
-        open: true,
-        snackbarMessage: (
-          <Typography variant="body2" component="div">
-            User <strong>{user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.
-          </Typography>
-        )
-      });
 
       refresh();
     } catch (error) {
