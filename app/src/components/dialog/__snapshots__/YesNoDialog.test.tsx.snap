@@ -57,9 +57,6 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
           >
             This is an error
           </p>
-          <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-          />
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"
@@ -172,9 +169,6 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
           >
             this is text
           </p>
-          <p
-            class="MuiTypography-root MuiDialogContentText-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-          />
         </div>
         <div
           class="MuiDialogActions-root MuiDialogActions-spacing"

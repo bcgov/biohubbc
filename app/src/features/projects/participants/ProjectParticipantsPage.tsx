@@ -1,5 +1,5 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
@@ -204,16 +204,16 @@ const ProjectParticipantsPage: React.FC = () => {
           <Paper>
             <Toolbar className={classes.teamMembersToolbar}>
               <Typography variant="h2" color="inherit">
-                Project Participants
+                Team Members
               </Typography>
             </Toolbar>
 
             <Table className={classes.teamMembersTable}>
               <TableHead>
                 <TableRow>
-                  <TableCell>User</TableCell>
+                  <TableCell>Username</TableCell>
                   <TableCell>Project Role</TableCell>
-                  <TableCell width="130px" align="center">
+                  <TableCell width="100px" align="center">
                     Actions
                   </TableCell>
                 </TableRow>
@@ -222,10 +222,11 @@ const ProjectParticipantsPage: React.FC = () => {
                 {hasProjectParticipants &&
                   projectParticipants?.map((row) => (
                     <TableRow key={row.project_participation_id}>
-                      <TableCell scope="row">{row.user_identifier}</TableCell>
-                      {/* <TableCell>{codes.project_roles.find((item) => item.id === row.project_role_id)?.name}</TableCell> */}
+                      <TableCell scope="row">
+                        <strong>{row.user_identifier}</strong>
+                      </TableCell>
                       <TableCell>
-                        <Box my={-1}>
+                        <Box m={-1}>
                           <ChangeProjectRoleMenu
                             row={row}
                             projectRoleCodes={codes.project_roles}
@@ -233,53 +234,46 @@ const ProjectParticipantsPage: React.FC = () => {
                           />
                         </Box>
                       </TableCell>
-                      <TableCell>
-                        <Button
-                          title="Remove Project Participant"
-                          color="primary"
-                          variant="text"
-                          className={classes.actionButton}
-                          startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
-                          data-testid={'remove-project-participant-button'}
-                          onClick={() =>
-                            openYesNoDialog({
-                              dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
-                              dialogContent: (
-                                <>
-                                  <Typography variant="body1" color="textPrimary">
+                      <TableCell align="center">
+                        <Box m={-1}>
+                          <IconButton
+                            title="Remove Team Member"
+                            data-testid={'remove-project-participant-button'}
+                            onClick={() =>
+                              openYesNoDialog({
+                                dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
+                                dialogContent: (
+                                  <Typography variant="body1" component="div" color="textSecondary">
                                     Removing user <strong>{row.user_identifier}</strong> will revoke their access to
-                                    project.
+                                    project. Are you sure you want to proceed?
                                   </Typography>
-                                  <Typography variant="body1" color="textPrimary">
-                                    Are you sure you want to proceed?
-                                  </Typography>
-                                </>
-                              ),
-                              yesButtonProps: { color: 'secondary' },
-                              onYes: () => {
-                                handleRemoveProjectParticipant(row.project_participation_id);
-                                dialogContext.setYesNoDialog({ open: false });
-                                dialogContext.setSnackbar({
-                                  open: true,
-                                  snackbarMessage: (
-                                    <Typography variant="body2" component="div">
-                                      User <strong>{row.user_identifier}</strong> removed from project.
-                                    </Typography>
-                                  )
-                                });
-                              }
-                            })
-                          }>
-                          <strong>Remove</strong>
-                        </Button>
+                                ),
+                                yesButtonProps: { color: 'secondary' },
+                                onYes: () => {
+                                  handleRemoveProjectParticipant(row.project_participation_id);
+                                  dialogContext.setYesNoDialog({ open: false });
+                                  dialogContext.setSnackbar({
+                                    open: true,
+                                    snackbarMessage: (
+                                      <Typography variant="body2" component="div">
+                                        User <strong>{row.user_identifier}</strong> removed from project.
+                                      </Typography>
+                                    )
+                                  });
+                                }
+                              })
+                            }>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
                 {!hasProjectParticipants && (
                   <TableRow>
-                    <TableCell colSpan={5}>
+                    <TableCell colSpan={3}>
                       <Box display="flex" justifyContent="center">
-                        No Results
+                        No Team Members
                       </Box>
                     </TableCell>
                   </TableRow>
@@ -331,11 +325,9 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change Project Role?',
       dialogContent: (
-        <>
-          <Typography color="textPrimary">
-            Change user <strong>{item.user_identifier}</strong>'s role to <strong>{newRole}</strong>?
-          </Typography>
-        </>
+        <Typography variant="body1" color="textSecondary">
+          Change user <strong>{item.user_identifier}</strong>'s role to <strong>{newRole}</strong>?
+        </Typography>
       ),
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
