@@ -3,11 +3,23 @@ import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
 import { getUserByIdSQL } from '../../queries/users/user-queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}');
 
-export const GET: Operation = [getUser()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser'
+        }
+      ]
+    };
+  }),
+  getUser()
+];
 
 GET.apiDoc = {
   description: 'Get user details for the currently authenticated user.',
@@ -83,6 +95,7 @@ export function getUser(): RequestHandler {
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

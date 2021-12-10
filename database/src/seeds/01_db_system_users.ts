@@ -17,7 +17,7 @@ const systemUsers = [
   { identifier: 'tadekens', type: 'IDIR', roleId: 1 },
   { identifier: 'test1', type: 'BCEID', roleId: 1 },
   { identifier: 'test2', type: 'BCEID', roleId: 1 },
-  { identifier: 'test3', type: 'IDIR', roleId: 2 },
+  { identifier: 'test3', type: 'IDIR', roleId: 1 },
   { identifier: 'test4', type: 'IDIR', roleId: 2 },
   { identifier: 'test5', type: 'IDIR', roleId: 2 },
   { identifier: 'test6', type: 'IDIR', roleId: 6 },

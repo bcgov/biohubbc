@@ -1,19 +1,33 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   getSurveyAttachmentS3KeySQL,
   getSurveyReportAttachmentS3KeySQL
 } from '../../../../../../../queries/survey/survey-attachments-queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getS3SignedURL } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/getSignedUrl');
 
-export const GET: Operation = [getSurveyAttachmentSignedURL()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSurveyAttachmentSignedURL()
+];
 
 GET.apiDoc = {
   description: 'Retrieves the signed url of a survey attachment.',

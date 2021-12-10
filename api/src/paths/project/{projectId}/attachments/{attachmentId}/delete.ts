@@ -3,6 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/CustomError';
 import {
@@ -10,6 +11,7 @@ import {
   deleteProjectReportAttachmentSQL
 } from '../../../../../queries/project/project-attachments-queries';
 import { unsecureAttachmentRecordSQL } from '../../../../../queries/security/security-queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../utils/shared-api-docs';
@@ -17,7 +19,20 @@ import { deleteProjectReportAttachmentAuthors } from '../report/upload';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/delete');
 
-export const POST: Operation = [deleteAttachment()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  deleteAttachment()
+];
 
 POST.apiDoc = {
   ...attachmentApiDocObject(

@@ -20,7 +20,7 @@ export const POST: Operation = [
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
         }
@@ -137,6 +137,9 @@ export function uploadMedia(): RequestHandler {
       if (!virusScanResult) {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
+
+      // TODO: TEMP - To test Goat templates, use templateMethodologyId 4 or 5
+      // TODO: TEMP - To test Sheep templates, use templateMethodologyId 6 or 7
 
       const templateMethodologyId = await getTemplateMethodologySpeciesId(Number(req.params.surveyId), connection);
 
