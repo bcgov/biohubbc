@@ -5,6 +5,7 @@ import {
   IAddProjectParticipant,
   ICreateProjectRequest,
   ICreateProjectResponse,
+  IGetUserProjectsListResponse,
   IGetProjectAttachmentsResponse,
   IGetProjectForUpdateResponse,
   IGetProjectForViewResponse,
@@ -25,6 +26,19 @@ import qs from 'qs';
  * @return {*} object whose properties are supported api methods.
  */
 const useProjectApi = (axios: AxiosInstance) => {
+
+  /**
+   * Get projects from userId
+   *
+   * @param {number} userId
+   * @return {*} {Promise<IGetProjectsListResponse[]>}
+   */
+   const getAllUserProjectsForView = async (userId: number): Promise<IGetUserProjectsListResponse[]> => {
+    const { data } = await axios.post(`/api/user-projects`, {userId: userId});
+    return data;
+  };
+
+
   /**
    * Get project attachments based on project ID
    *
@@ -425,6 +439,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   return {
+    getAllUserProjectsForView,
     getProjectsList,
     createProject,
     getProjectForView,

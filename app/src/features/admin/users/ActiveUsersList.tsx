@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { Grid } from '@material-ui/core';
-import { mdiPlus } from '@mdi/js';
+import { mdiInformationOutline, mdiPlus } from '@mdi/js';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -27,7 +27,7 @@ import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import EditDialog from 'components/dialog/EditDialog';
-
+import { useHistory } from 'react-router';
 import AddSystemUsersForm, {
   AddSystemUsersFormInitialValues,
   AddSystemUsersFormYupSchema,
@@ -61,6 +61,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const classes = useStyles();
   const biohubApi = useBiohubApi();
   const { activeUsers, codes } = props;
+  const history = useHistory();
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
@@ -298,6 +299,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                           buttonTitle="Actions"
                           buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
                           menuItems={[
+                            {
+                              menuIcon: <Icon path={mdiInformationOutline} size={0.875} />,
+                              menuLabel: 'View Users Details',
+                              menuOnClick: () => history.push({
+                                pathname: `/admin/users/${row.id}`, 
+                                state:  row})
+                            },
                             {
                               menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,
                               menuLabel: 'Remove User',
