@@ -96,7 +96,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       display: 'block',
       padding: theme.spacing(2),
       color: 'inherit',
-      fontSize: '0.875rem',
+      fontSize: '1rem',
       textDecoration: 'none'
     },
     '& a:hover': {
@@ -274,7 +274,7 @@ const Header: React.FC = () => {
         <DialogTitle>Need Help?</DialogTitle>
         <DialogContent>
           <Typography variant="body1" gutterBottom>
-            For technical support or questions about this application, please contact:
+            For technical support or questions about this application, please contact:&nbsp;
             <OtherLink
               href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
               underline="always"
