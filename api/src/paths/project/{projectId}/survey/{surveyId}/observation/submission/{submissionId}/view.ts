@@ -88,7 +88,6 @@ GET.apiDoc = {
                         type: 'string'
                       }
                     },
-
                     rows: {
                       type: 'array',
                       items: {

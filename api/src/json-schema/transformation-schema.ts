@@ -112,7 +112,8 @@ export const submissionTransformationSchema = {
                         }
                       ]
                     }
-                  }
+                  },
+                  additionalProperties: false
                 }
               },
               additionalProperties: false
@@ -164,23 +165,41 @@ export const submissionTransformationSchema = {
                 source: {
                   oneOf: [
                     {
-                      type: 'string',
-                      description: 'The name of a source property'
+                      type: 'object',
+                      required: ['columns'],
+                      properties: {
+                        columns: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
+                        },
+                        separator: {
+                          type: 'string'
+                        },
+                        unique: {
+                          type: 'string'
+                        }
+                      },
+                      additionalProperties: false
                     },
                     {
-                      type: 'array',
-                      items: {
-                        type: 'string'
+                      type: 'object',
+                      required: ['value'],
+                      properties: {
+                        value: {
+                          type: ['string', 'number']
+                        }
                       },
-                      description:
-                        'An array of source properties. The first property with a defined value will be used.'
+                      additionalProperties: false
                     }
                   ]
                 },
                 target: {
                   type: 'string'
                 }
-              }
+              },
+              additionalProperties: false
             }
           },
           conditionalFields: {

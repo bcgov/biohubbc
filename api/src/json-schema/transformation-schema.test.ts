@@ -208,40 +208,71 @@ describe('example submission transformation schema', () => {
       {
         fileName: 'event',
         columns: [
-          { source: 'id', target: 'id' },
-          { source: 'eventID', target: 'eventID' },
-          { source: 'eventDate', target: 'eventDate' },
-          { source: ['verbatimCoordinatesUTM', 'verbatimCoordinatesLatLong'], target: 'verbatimCoordinates' }
+          { source: { columns: ['id'] }, target: 'id' },
+          { source: { columns: ['eventID'] }, target: 'eventID' },
+          { source: { columns: ['eventDate'] }, target: 'eventDate' },
+          {
+            source: { columns: ['verbatimCoordinatesUTM', 'verbatimCoordinatesLatLong'] },
+            target: 'verbatimCoordinates'
+          }
         ]
       },
       {
         fileName: 'occurrence',
         conditionalFields: ['individualCount'],
         columns: [
-          { source: 'id', target: 'id' },
-          { source: 'occurrenceID', target: 'occurrenceID' },
-          { source: 'individualCount', target: 'individualCount' },
-          { source: 'vernacularName', target: 'associatedTaxa' },
-          { source: 'lifeStage', target: 'lifeStage' },
-          { source: 'sex', target: 'sex' }
+          { source: { columns: ['id'] }, target: 'id' },
+          { source: { columns: ['occurrenceID'] }, target: 'occurrenceID' },
+          { source: { columns: ['individualCount'] }, target: 'individualCount' },
+          { source: { columns: ['vernacularName'] }, target: 'associatedTaxa' },
+          { source: { columns: ['lifeStage'] }, target: 'lifeStage' },
+          { source: { columns: ['sex'] }, target: 'sex' },
+          { source: { value: 'Approved' }, target: 'Status' }
         ]
       },
       {
         fileName: 'taxon',
         columns: [
-          { source: 'id', target: 'id' },
-          { source: 'occurrenceID', target: 'occurrenceID' },
-          { source: 'vernacularName', target: 'vernacularName' }
+          { source: { columns: ['id'] }, target: 'id' },
+          { source: { columns: ['occurrenceID'] }, target: 'occurrenceID' },
+          { source: { columns: ['vernacularName'] }, target: 'vernacularName' }
         ]
       },
       {
         fileName: 'resourcerelationship',
         conditionalFields: ['resourceID'],
         columns: [
-          { source: 'id', target: 'id' },
-          { source: 'resourceID', target: 'resourceID' },
-          { source: 'relatedResourceID', target: 'relatedResourceID' },
-          { source: 'relationshipOfResource', target: 'relationshipOfResource' }
+          { source: { columns: ['id'] }, target: 'id' },
+          { source: { columns: ['resourceID'] }, target: 'resourceID' },
+          { source: { columns: ['relatedResourceID'] }, target: 'relatedResourceID' },
+          { source: { columns: ['relationshipOfResource'] }, target: 'relationshipOfResource' }
+        ]
+      },
+      {
+        fileName: 'measurementorfact',
+        columns: [
+          { source: { columns: ['id'] }, target: 'id' },
+          { source: { columns: ['eventID'] }, target: 'measurementID' },
+          { source: { value: 'Habitat Description' }, target: 'measurementType' },
+          { source: { columns: ['effort_habitat_description'] }, target: 'measurementValue' }
+        ]
+      },
+      {
+        fileName: 'measurementorfact',
+        columns: [
+          { source: { columns: ['id'] }, target: 'id' },
+          { source: { columns: ['occurrenceID'] }, target: 'measurementID' },
+          { source: { value: 'Stratum' }, target: 'measurementType' },
+          { source: { columns: ['summary_stratum'] }, target: 'measurementValue' }
+        ]
+      },
+      {
+        fileName: 'measurementorfact',
+        columns: [
+          { source: { columns: ['id'] }, target: 'id' },
+          { source: { columns: ['occurrenceID'] }, target: 'measurementID' },
+          { source: { value: 'Activity' }, target: 'measurementType' },
+          { source: { columns: ['observation_activity'] }, target: 'measurementValue' }
         ]
       }
     ]

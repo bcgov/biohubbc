@@ -1,0 +1,2694 @@
+{
+  "flatten": [
+    {
+      "fileName": "Effort & Site Conditions",
+      "uniqueId": ["Survey Area", "Block ID/SU ID"]
+    },
+    {
+      "fileName": "Block Summary",
+      "uniqueId": ["Survey Area", "Block ID/SU ID", "Stratum"],
+      "parent": {
+        "fileName": "Effort & Site Conditions",
+        "uniqueId": ["Survey Area", "Block ID/SU ID"]
+      }
+    },
+    {
+      "fileName": "Observations",
+      "uniqueId": ["GPS Unit Name", "Waypoint"],
+      "parent": {
+        "fileName": "Block Summary",
+        "uniqueId": ["Survey Area", "Block ID/SU ID", "Stratum"]
+      }
+    },
+    {
+      "fileName": "UTM_LatLong",
+      "uniqueId": ["GPS Unit Name", "Waypoint"],
+      "parent": {
+        "fileName": "Observations",
+        "uniqueId": ["GPS Unit Name", "Waypoint"]
+      }
+    },
+    {
+      "fileName": "Strata Metadata",
+      "uniqueId": ["Stratum"],
+      "parent": {
+        "fileName": "Observations",
+        "uniqueId": ["Stratum"]
+      }
+    }
+  ],
+  "transform": [
+    {
+      "condition": {
+        "if": {
+          "columns": ["Yearling Bulls"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Yearling Bulls"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Yearling"
+            },
+            "sex": {
+              "value": "Male"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "separator": ":"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Sub-Prime Bulls"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Sub-Prime Bulls"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Sub-Prime"
+            },
+            "sex": {
+              "value": "Male"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Prime Bulls"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Prime Bulls"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Prime"
+            },
+            "sex": {
+              "value": "Male"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Senior Bulls"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Senior Bulls"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Senior"
+            },
+            "sex": {
+              "value": "Male"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Bulls - Unclassified"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Bulls - Unclassified"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Unknown"
+            },
+            "sex": {
+              "value": "Male"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Adult Bulls - Unclassified"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Adult Bulls - Unclassified"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Unknown"
+            },
+            "sex": {
+              "value": "Male"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Lone Cows"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Lone Cows"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Female"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Cow W/1 calf"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Cow W/1 calf"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Female"
+            },
+            "resourceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "relatedResourceID": {
+              "value": ""
+            },
+            "relationshipOfResource": {
+              "value": "mother of"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        },
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "value": 1
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Juvenile"
+            },
+            "sex": {
+              "value": "Unknown"
+            },
+            "resourceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "relatedResourceID": {
+              "value": ""
+            },
+            "relationshipOfResource": {
+              "value": "offspring of"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ],
+      "postTransformations": [
+        {
+          "relationship": {
+            "spreadColumn": "individualCount",
+            "uniqueIdColumn": "occurrenceID"
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Cow W/2 calves"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Cow W/2 calves"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Female"
+            },
+            "resourceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "relatedResourceID": {
+              "value": ""
+            },
+            "relationshipOfResource": {
+              "value": "mother of"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        },
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "value": 2
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Juvenile"
+            },
+            "sex": {
+              "value": "Unknown"
+            },
+            "resourceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "relatedResourceID": {
+              "value": ""
+            },
+            "relationshipOfResource": {
+              "value": "offspring of"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ],
+      "postTransformations": [
+        {
+          "relationship": {
+            "spreadColumn": "individualCount",
+            "uniqueIdColumn": "occurrenceID"
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Lone calf"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Lone calf"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Yearling"
+            },
+            "sex": {
+              "value": "Unknown"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Unclassified"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "effort_total_area": {
+              "columns": ["Block Area (km2)"]
+            },
+            "effort_start_time_1": {
+              "columns": ["Start Time 1 (24hrs)"]
+            },
+            "effort_end_time_1": {
+              "columns": ["End Time 1 (24hrs)"]
+            },
+            "effort_start_time_2": {
+              "columns": ["Start Time 2 (24hrs)"]
+            },
+            "effort_end_time_2": {
+              "columns": ["End Time 2 (24hrs)"]
+            },
+            "effort_time_per_area": {
+              "columns": ["Time (mins)/block area (km2)"]
+            },
+            "effort_aircraft_company": {
+              "columns": ["Aircraft Company"]
+            },
+            "effort_aircraft_type": {
+              "columns": ["Aircraft Type"]
+            },
+            "effort_aircraft_registration": {
+              "columns": ["Aircraft Registration"]
+            },
+            "effort_aircraft_call_sign": {
+              "columns": ["Aircraft Call Sign"]
+            },
+            "effort_pilot": {
+              "columns": ["Pilot"]
+            },
+            "effort_navigator": {
+              "columns": ["Navigator"]
+            },
+            "effort_rear_left_observer": {
+              "columns": ["Rear Left Observer"]
+            },
+            "effort_rear_right_observer": {
+              "columns": ["Rear Right Observer"]
+            },
+            "effort_air_temperature": {
+              "columns": ["Air Temperature (C)"]
+            },
+            "effort_visibility": {
+              "columns": ["Visibility"]
+            },
+            "effort_cloud_cover": {
+              "columns": ["Cloud Cover (%)"]
+            },
+            "effort_wind_speed": {
+              "columns": ["Wind Speed"]
+            },
+            "effort_precipitation": {
+              "columns": ["Precipitation"]
+            },
+            "effort_light": {
+              "columns": ["Light"]
+            },
+            "effort_snow_cover": {
+              "columns": ["Snow Cover"]
+            },
+            "effort_snow_depth": {
+              "columns": ["Snow Depth"]
+            },
+            "effort_days_since_snowfall": {
+              "columns": ["Days Since Snowfall"]
+            },
+            "effort_weather_description": {
+              "columns": ["Weather Description"]
+            },
+            "effort_habitat_description": {
+              "columns": ["Habitat Description"]
+            },
+            "effort_comments": {
+              "columns": ["Effort & Site Comments"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "gps_datum": {
+              "columns": ["GPS Datum"]
+            },
+            "waypoint_elevation": {
+              "columns": ["Waypoint Elevation (m)"]
+            },
+            "waypoint_time": {
+              "columns": ["Time"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "location_comments": {
+              "columns": ["Location Comments"]
+            },
+            "occurrenceID": {
+              "columns": ["GPS Unit Name", "Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Unclassified"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Unknown"
+            },
+            "sex": {
+              "value": "Unknown"
+            },
+            "observation_no_spike_fork": {
+              "columns": ["No. Spike/Fork"]
+            },
+            "observation_3_brow_10_points": {
+              "columns": ["3 brow/10 points"]
+            },
+            "observation_percent_veg_cover": {
+              "columns": ["% Veg Cover"]
+            },
+            "observation_percent_snow_cover": {
+              "columns": ["% Snow Cover"]
+            },
+            "observation_activity": {
+              "columns": ["Activity"]
+            },
+            "observation_comments": {
+              "columns": ["Observation Comments"]
+            },
+            "observation_photos": {
+              "columns": ["Photos"]
+            },
+            "eventMeasurementID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "unique": "occ"
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_area": {
+              "columns": ["Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "parse": [
+    {
+      "fileName": "event",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
+        { "source": { "columns": ["eventDate"] }, "target": "eventDate" },
+        {
+          "source": { "columns": ["verbatimCoordinatesUTM", "verbatimCoordinatesLatLong"] },
+          "target": "verbatimCoordinates"
+        },
+        { "source": { "columns": ["gps_datum"] }, "target": "verbatimSRS" },
+        { "source": { "columns": ["waypoint_elevation"] }, "target": "verbatimElevation" },
+        { "source": { "columns": ["location_comments"] }, "target": "locationRemarks" },
+        { "source": { "columns": ["effort_comments"] }, "target": "eventRemarks" }
+      ]
+    },
+    {
+      "fileName": "occurrence",
+      "condition": {
+        "if": {
+          "columns": ["individualCount"]
+        }
+      },
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
+        { "source": { "columns": ["individualCount"] }, "target": "individualCount" },
+        { "source": { "columns": ["vernacularName"] }, "target": "associatedTaxa" },
+        { "source": { "columns": ["lifeStage"] }, "target": "lifeStage" },
+        { "source": { "columns": ["sex"] }, "target": "sex" },
+        { "source": { "columns": ["observation_comments"] }, "target": "occurrenceRemarks" }
+      ]
+    },
+    {
+      "fileName": "taxon",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
+        { "source": { "columns": ["vernacularName"] }, "target": "vernacularName" }
+      ]
+    },
+    {
+      "fileName": "resourcerelationship",
+      "condition": {
+        "if": {
+          "columns": ["resourceID"]
+        }
+      },
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["resourceID"] }, "target": "resourceID" },
+        { "source": { "columns": ["relatedResourceID"] }, "target": "relatedResourceID" },
+        { "source": { "columns": ["relationshipOfResource"] }, "target": "relationshipOfResource" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
+        { "source": { "value": "Area (km2)" }, "target": "measurementType" },
+        { "source": { "columns": ["summary_area"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
+        { "source": { "value": "Sampled (Y/N)" }, "target": "measurementType" },
+        { "source": { "columns": ["summary_sampled"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
+        { "source": { "value": "Block Area (km2)" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_total_area"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Start Time 1" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_start_time_1"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "End Time 1" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_end_time_1"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Start Time 2" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_start_time_2"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "End Time 2" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_end_time_2"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Time (mins)/block area (km2)" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_time_per_area"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Aircraft Company" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_aircraft_company"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Aircraft Type" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_aircraft_type"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Aircraft Registration" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_aircraft_registration"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Aircraft Call Sign" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_aircraft_call_sign"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Pilot" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_pilot"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Navigator" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_navigator"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Rear Left Observer" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_rear_left_observer"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Rear Right Observer" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_rear_right_observer"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Air Temperature" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_air_temperature"] }, "target": "measurementValue" },
+        { "source": { "value": "C" }, "target": "measurementUnit" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Visibility" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_visibility"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Cloud Cover" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_cloud_cover"] }, "target": "measurementValue" },
+        { "source": { "value": "%" }, "target": "measurementUnit" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Wind Speed" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_wind_speed"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Precipitation" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_precipitation"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Light" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_light"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Snow Cover" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_snow_cover"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Snow Depth" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_snow_depth"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Days Since Snowfall" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_days_since_snowfall"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "value": "Habitat Description" }, "target": "measurementType" },
+        { "source": { "columns": ["effort_habitat_description"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "Time" }, "target": "measurementType" },
+        { "source": { "columns": ["waypoint_time"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "Stratum" }, "target": "measurementType" },
+        { "source": { "columns": ["summary_stratum"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "No. Spike/Fork" }, "target": "measurementType" },
+        { "source": { "columns": ["observation_no_spike_fork"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "3 brow/10 points" }, "target": "measurementType" },
+        { "source": { "columns": ["observation_3_brow_10_points"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "% Veg Cover" }, "target": "measurementType" },
+        { "source": { "columns": ["observation_percent_veg_cover"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "% Snow Cover" }, "target": "measurementType" },
+        { "source": { "columns": ["observation_percent_snow_cover"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "Activity" }, "target": "measurementType" },
+        { "source": { "columns": ["observation_activity"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "value": "Photos" }, "target": "measurementType" },
+        { "source": { "columns": ["observation_photos"] }, "target": "measurementValue" }
+      ]
+    }
+  ]
+}

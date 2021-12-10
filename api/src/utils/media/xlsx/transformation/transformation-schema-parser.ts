@@ -41,7 +41,7 @@ export type TransformSchema = {
   postTransformations?: PostTransformationRelatopnshipSchema[];
 };
 
-export type ParseColumnSchema = { source: string; target: string };
+export type ParseColumnSchema = { source: { columns?: string[]; value?: any }; target: string };
 
 export type ParseSchema = {
   fileName: string;
