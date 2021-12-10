@@ -4,6 +4,51 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/permit/permit-create-queries');
 
 /**
+ * SQL query to get all projects from user Id.
+ *
+ * @param {userId} userId
+ * @returns {SQLStatement} sql query object
+ */
+export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getAllUserProjectsSQL',
+    message: 'params',
+    userId
+  });
+
+  if (!userId) {
+    return null;
+  }
+  console.log('INSIDE THE SQL CREATION ');
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      p.project_id,
+      p.name,
+      pp.system_user_id,
+      pp.project_role_id,
+      pp.project_participation_id
+    FROM
+      project_participation pp
+    LEFT JOIN
+      project p    
+    ON
+      pp.project_id = p.project_id
+    WHERE
+      pp.system_user_id = ${userId};
+  `;
+
+  defaultLog.debug({
+    label: 'getAllUserProjectsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to add a single project role to a user.
  *
  * @param {number} projectId

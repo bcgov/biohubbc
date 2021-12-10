@@ -48,6 +48,20 @@ export interface IGetProjectAttachmentsResponse {
  * Get projects list response object.
  *
  * @export
+ * @interface IGetUserProjectsListResponse
+ */
+ export interface IGetUserProjectsListResponse {
+  project_id: number;
+  name: string;
+  system_user_id: number;
+  project_role_id: number;
+  project_participation_id: number;
+}
+
+/**
+ * Get projects list response object.
+ *
+ * @export
  * @interface IGetProjectsListResponse
  */
 export interface IGetProjectsListResponse {

@@ -4,6 +4,7 @@ import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
 import PrivateRoute from 'utils/PrivateRoute';
 import ManageUsersPage from './users/ManageUsersPage';
+import UsersDetailPage from './users/UsersDetailPage';
 
 interface IAdminUsersRouterProps {
   classes: any;
@@ -23,6 +24,13 @@ const AdminUsersRouter: React.FC<IAdminUsersRouterProps> = (props) => {
         layout={AdminUsersLayout}
         path="/admin/users"
         component={ManageUsersPage}
+        componentProps={props}
+      />
+      <PrivateRoute
+        exact
+        layout={AdminUsersLayout}
+        path="/admin/users/:id"
+        component={UsersDetailPage}
         componentProps={props}
       />
       {/*  Catch any unknown routes, and re-direct to the not found page */}
