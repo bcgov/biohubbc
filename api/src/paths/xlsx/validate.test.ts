@@ -61,31 +61,36 @@ describe('getTemplateMethodologySpecies', () => {
   const dbConnectionObj = getMockDBConnection();
 
   it('should throw 400 error when failed to build getTemplateMethodologySpeciesSQL statement', async () => {
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(null);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(null);
 
     try {
-      await validate.getTemplateMethodologySpecies(1, { ...dbConnectionObj, systemUserId: () => 20 });
+      await validate.getTemplateMethodologySpeciesRecord(1234, 1, 1, { ...dbConnectionObj, systemUserId: () => 20 });
 
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).message).to.equal(
+        'Failed to build SQL get template methodology species record sql statement'
+      );
     }
   });
 
-  it('should return null when no rows', async () => {
-    const mockQuery = sinon.stub();
+  // it('should return null when no rows', async () => {
+  //   const mockQuery = sinon.stub();
 
-    mockQuery.resolves({
-      rows: [null]
-    });
+  //   mockQuery.resolves({
+  //     rows: [null]
+  //   });
 
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`something`);
+  //   sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
 
-    const result = await validate.getTemplateMethodologySpecies(1, { ...dbConnectionObj, systemUserId: () => 20 });
+  //   const result = await validate.getTemplateMethodologySpeciesRecord(123, 1, 1, {
+  //     ...dbConnectionObj,
+  //     systemUserId: () => 20
+  //   });
 
-    expect(result).to.equal(null);
-  });
+  //   expect(result).to.equal(null);
+  // });
 
   it('should return first row on success', async () => {
     const mockQuery = sinon.stub();
@@ -98,9 +103,9 @@ describe('getTemplateMethodologySpecies', () => {
       ]
     });
 
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
 
-    const result = await validate.getTemplateMethodologySpecies(1, {
+    const result = await validate.getTemplateMethodologySpeciesRecord(123, 1, 1, {
       ...dbConnectionObj,
       query: mockQuery,
       systemUserId: () => 20

@@ -6,8 +6,7 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/CustomError';
 import {
   insertSurveyOccurrenceSubmissionSQL,
-  updateSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesIdSQL
+  updateSurveyOccurrenceSubmissionSQL
 } from '../../../../../../../queries/survey/survey-occurrence-queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
@@ -138,13 +137,10 @@ export function uploadMedia(): RequestHandler {
         throw new HTTP400('Malicious content detected, upload cancelled');
       }
 
-      const templateMethodologyId = await getTemplateMethodologySpeciesId(Number(req.params.surveyId), connection);
-
       const response = await insertSurveyOccurrenceSubmission(
         Number(req.params.surveyId),
         'BioHub',
         rawMediaFile.originalname,
-        templateMethodologyId,
         connection
       );
 
@@ -195,14 +191,12 @@ export const insertSurveyOccurrenceSubmission = async (
   surveyId: number,
   source: string,
   inputFileName: string,
-  templateMethodologyId: number | null,
   connection: IDBConnection
 ): Promise<any> => {
   const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL({
     surveyId,
     source,
-    inputFileName,
-    templateMethodologyId
+    inputFileName
   });
 
   if (!insertSqlStatement) {
@@ -216,31 +210,6 @@ export const insertSurveyOccurrenceSubmission = async (
   }
 
   return insertResponse;
-};
-
-/**
- * Inserts a new record into the `occurrence_submission` table.
- *
- * @param {number} surveyId
- * @param {IDBConnection} connection
- * @return {*}  {Promise<void>}
- */
-export const getTemplateMethodologySpeciesId = async (
-  surveyId: number,
-  connection: IDBConnection
-): Promise<number | null> => {
-  const getIdSqlStatement = getTemplateMethodologySpeciesIdSQL(surveyId);
-
-  if (!getIdSqlStatement) {
-    throw new HTTP400('Failed to build SQL get template methodology species id sql statement');
-  }
-  const getIdResponse = await connection.query(getIdSqlStatement.text, getIdSqlStatement.values);
-
-  if (!getIdResponse) {
-    throw new HTTP400('Failed to query template methodology species table');
-  }
-
-  return getIdResponse?.rows?.[0]?.template_methodology_species_id || null;
 };
 
 /**
