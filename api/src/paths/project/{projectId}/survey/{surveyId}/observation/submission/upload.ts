@@ -19,7 +19,7 @@ export const POST: Operation = [
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
         }
