@@ -1,20 +1,26 @@
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-//import Button from '@material-ui/core/Button';
+import { Button } from '@material-ui/core';
 import Tooltip from '@material-ui/core/Tooltip';
-import IconButton from '@material-ui/core/IconButton';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Icon from '@mdi/react';
 import { mdiTrashCanOutline } from '@mdi/js';
-
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { ProjectParticipantsI18N } from 'constants/i18n';
+import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { IGetProjectParticipantsResponse } from 'interfaces/useProjectApi.interface';
+import { DialogContext , ISnackbarProps } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useHistory } from 'react-router';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
-import React from 'react';
+import React, {useCallback, useContext} from 'react';
+
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -68,8 +74,102 @@ export interface IUsersHeaderProps {
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   const classes = useStyles();
   const uHistory = useHistory();
+  const biohubApi = useBiohubApi();
+  const dialogContext = useContext(DialogContext);
 
   const { userDetails } = props;
+
+
+  const handleDeleteUser = async (userId: number) =>{
+    const apiCall = await biohubApi.project.getAllUserProjectsForView(userId);
+
+    for (const project of apiCall) {
+      const response = await biohubApi.project.getProjectParticipants(project.project_id);
+      const projectLeadAprroval = checkForProjectLead(response, project.project_participation_id);
+
+      if(!projectLeadAprroval){
+        
+        openErrorDialog({
+          dialogTitle: ProjectParticipantsI18N.deleteProjectLeadTitle,
+          dialogText: ProjectParticipantsI18N.deleteProjectLeadErrorText
+        });
+        return;
+      }
+    }
+    deActivateSystemUser(userDetails);
+
+  }
+
+  const checkForProjectLead = (
+    projectParticipants: IGetProjectParticipantsResponse,
+    projectParticipationId: number
+  ): boolean => {
+    for (const participant of projectParticipants.participants) {
+      if (participant.project_participation_id !== projectParticipationId && participant.project_role_id === 1) {
+        return true;
+      }
+    }
+    return false;
+  };
+
+  const deActivateSystemUser = async (user: IGetUserResponse) => {
+    if (!user?.id) {
+      return;
+    }
+    try {
+      await biohubApi.user.deleteSystemUser(user.id);
+
+      showSnackBar({
+        snackbarMessage: (
+          <>
+            <Typography variant="body2" component="div">
+              User <strong>{user.user_identifier}</strong> removed from application.
+            </Typography>
+          </>
+        ),
+        open: true
+      });
+
+      uHistory.push('/admin/users');
+    } catch (error) {
+      const apiError = error as APIError;
+      openErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+    }
+  };
+
+  
+  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
+    dialogContext.setSnackbar({ ...textDialogProps, open: true });
+  };
+
+  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
+    onClose: () => dialogContext.setErrorDialog({ open: false }),
+    onOk: () => dialogContext.setErrorDialog({ open: false })
+  };
+
+  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      ...yesNoDialogProps,
+      open: true
+    });
+  };
+
+  const openErrorDialog = useCallback(
+    (errorDialogProps?: Partial<IErrorDialogProps>) => {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        ...errorDialogProps,
+        open: true
+      });
+    },
+    [defaultErrorDialogProps, dialogContext]
+  );
 
   return (
     <Paper square={true}>
@@ -103,9 +203,36 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
           <Box ml={4} mb={4}>
             <Tooltip arrow color="secondary" title={'delete'}>
               <>
-                <IconButton>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </IconButton>
+              <Button
+                    title="Remove Participant"
+                    color="primary"
+                    variant="text"
+                    className={classes.actionButton}
+                    startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
+                    data-testid={'remove-participant-button'}
+                    onClick={() =>
+                      openYesNoDialog({
+                        dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
+                        dialogContent: (
+                          <>
+                            <Typography variant="body1" color="textPrimary">
+                              Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
+                              all projects.
+                            </Typography>
+                            <Typography variant="body1" color="textPrimary">
+                              Are you sure you want to proceed?
+                            </Typography>
+                          </>
+                        ),
+                        yesButtonProps: { color: 'secondary' },
+                        onYes: () => {
+                          handleDeleteUser(userDetails.id);
+                          dialogContext.setYesNoDialog({ open: false });
+                        }
+                      })
+                    }>
+                    <strong>Remove User</strong>
+                  </Button>
               </>
             </Tooltip>
           </Box>
