@@ -23,13 +23,11 @@ const UsersDetailPage: React.FC<IUsersHeaderProps> = (props) => {
   let userDetails = history?.location?.state;
 
   const [selectedUser, setSelectedUser] = useState<IGetUserResponse>(
-    JSON.parse(window.localStorage.getItem('selectedUser') || '') !== null
-      ? JSON.parse(window.localStorage.getItem('selectedUser') || '')
-      : userDetails
+    userDetails !== undefined ? userDetails
+    : JSON.parse(window.localStorage.getItem('selectedUser') || '')
   );
 
   useEffect(() => {
-    //console.log("EFFFECT TIME");
     getUser();
   }, []);
 
@@ -37,15 +35,10 @@ const UsersDetailPage: React.FC<IUsersHeaderProps> = (props) => {
     if (userDetails !== undefined) {
       setSelectedUser(userDetails);
       window.localStorage.setItem('selectedUser', JSON.stringify(userDetails));
-      //console.log("FIRST TIME");
     } else {
       setSelectedUser(JSON.parse(window.localStorage.getItem('selectedUser') || ''));
-      //console.log("ReLOADING COVER ME " +JSON.stringify(selectedUser));
     }
   };
-
-  //console.log("ssssrDETAILS " +JSON.stringify(selectedUser));
-  //console.log("THIS IS SESSION STORE: " +window.localStorage.getItem('selectedUser'));
 
   return (
     <>

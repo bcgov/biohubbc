@@ -72,7 +72,6 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const handleGetUserProjects = async (userId: number): Promise<IGetUserProjectsListResponse[]> => {
     const apiCall = await biohubApi.project.getAllUserProjectsForView(userId);
-    console.log('API Call: ' + JSON.stringify(apiCall));
     setAssignedProjects(apiCall);
     return apiCall;
   };
@@ -156,7 +155,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
             </Typography>
           )
         });
-        
+
         handleGetUserProjects(userDetails.id);
       } else {
         openErrorDialog({
