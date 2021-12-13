@@ -4,11 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as validate from './validate';
 import * as media_utils from '../../utils/media/media-utils';
-import * as survey_occurrence_queries from '../../queries/survey/survey-occurrence-queries';
+//import * as survey_occurrence_queries from '../../queries/survey/survey-occurrence-queries';
 import { ArchiveFile } from '../../utils/media/media-file';
-import { getMockDBConnection } from '../../__mocks__/db';
-import SQL from 'sql-template-strings';
-import { CustomError } from '../../errors/CustomError';
+//import { getMockDBConnection } from '../../__mocks__/db';
+// import SQL from 'sql-template-strings';
+// import { CustomError } from '../../errors/CustomError';
 
 chai.use(sinonChai);
 
@@ -53,59 +53,59 @@ describe('prepXLSX', () => {
   });
 });
 
-describe('getTemplateMethodologySpecies', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
+// describe('getTemplateMethodologySpecies', () => {
+//   afterEach(() => {
+//     sinon.restore();
+//   });
 
-  const dbConnectionObj = getMockDBConnection();
+//   const dbConnectionObj = getMockDBConnection();
 
-  it('should throw 400 error when failed to build getTemplateMethodologySpeciesSQL statement', async () => {
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(null);
+//   it('should throw 400 error when failed to build getTemplateMethodologySpeciesSQL statement', async () => {
+//     sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(null);
 
-    try {
-      await validate.getTemplateMethodologySpecies(1, { ...dbConnectionObj, systemUserId: () => 20 });
+//     try {
+//       await validate.getTemplateMethodologySpecies(1, { ...dbConnectionObj, systemUserId: () => 20 });
 
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
+//       expect.fail();
+//     } catch (actualError) {
+//       expect((actualError as CustomError).status).to.equal(400);
+//       expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+//     }
+//   });
 
-  it('should return null when no rows', async () => {
-    const mockQuery = sinon.stub();
+//   it('should return null when no rows', async () => {
+//     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({
-      rows: [null]
-    });
+//     mockQuery.resolves({
+//       rows: [null]
+//     });
 
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`something`);
+//     sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`something`);
 
-    const result = await validate.getTemplateMethodologySpecies(1, { ...dbConnectionObj, systemUserId: () => 20 });
+//     const result = await validate.getTemplateMethodologySpecies(1, { ...dbConnectionObj, systemUserId: () => 20 });
 
-    expect(result).to.equal(null);
-  });
+//     expect(result).to.equal(null);
+//   });
 
-  it('should return first row on success', async () => {
-    const mockQuery = sinon.stub();
+//   it('should return first row on success', async () => {
+//     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({
-      rows: [
-        {
-          id: 1
-        }
-      ]
-    });
+//     mockQuery.resolves({
+//       rows: [
+//         {
+//           id: 1
+//         }
+//       ]
+//     });
 
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`something`);
+//     sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesSQL').returns(SQL`something`);
 
-    const result = await validate.getTemplateMethodologySpecies(1, {
-      ...dbConnectionObj,
-      query: mockQuery,
-      systemUserId: () => 20
-    });
+//     const result = await validate.getTemplateMethodologySpecies(1, {
+//       ...dbConnectionObj,
+//       query: mockQuery,
+//       systemUserId: () => 20
+//     });
 
-    expect(result).to.eql({ id: 1 });
-  });
-});
+//     expect(result).to.eql({ id: 1 });
+//   });
+// });

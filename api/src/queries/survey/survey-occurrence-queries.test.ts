@@ -5,76 +5,76 @@ import {
   getLatestSurveyOccurrenceSubmissionSQL,
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesSQL,
-  getTemplateMethodologySpeciesIdSQL,
-  insertSurveyOccurrenceSubmissionSQL,
-  insertOccurrenceSubmissionMessageSQL,
+  //getTemplateMethodologySpeciesSQL,
+  //getTemplateMethodologySpeciesIdSQL,
+  // insertSurveyOccurrenceSubmissionSQL,
+  // insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
   updateSurveyOccurrenceSubmissionSQL,
   deleteOccurrenceSubmissionSQL
 } from './survey-occurrence-queries';
 
-describe('insertSurveyOccurrenceSubmissionSQL', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: (null as unknown) as number,
-      source: 'fileSource',
-      inputKey: 'fileKey',
-      templateMethodologyId: 1
-    });
+// describe('insertSurveyOccurrenceSubmissionSQL', () => {
+//   it('returns null response when null surveyId provided', () => {
+//     const response = insertSurveyOccurrenceSubmissionSQL({
+//       surveyId: (null as unknown) as number,
+//       source: 'fileSource',
+//       inputKey: 'fileKey',
+//       templateMethodologyId: 1
+//     });
 
-    expect(response).to.be.null;
-  });
+//     expect(response).to.be.null;
+//   });
 
-  it('returns null response when null source provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: (null as unknown) as string,
-      inputKey: 'fileKey',
-      templateMethodologyId: 1
-    });
+//   it('returns null response when null source provided', () => {
+//     const response = insertSurveyOccurrenceSubmissionSQL({
+//       surveyId: 1,
+//       source: (null as unknown) as string,
+//       inputKey: 'fileKey',
+//       templateMethodologyId: 1
+//     });
 
-    expect(response).to.be.null;
-  });
+//     expect(response).to.be.null;
+//   });
 
-  it('returns non null response when null templateMethodologyId provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputKey: 'fileKey',
-      templateMethodologyId: null
-    });
+//   it('returns non null response when null templateMethodologyId provided', () => {
+//     const response = insertSurveyOccurrenceSubmissionSQL({
+//       surveyId: 1,
+//       source: 'fileSource',
+//       inputKey: 'fileKey',
+//       templateMethodologyId: null
+//     });
 
-    expect(response).to.not.be.null;
-  });
+//     expect(response).to.not.be.null;
+//   });
 
-  it('returns non null response when all valid params provided without inputKey', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputFileName: 'inputFileName',
-      outputFileName: 'outputFileName',
-      outputKey: 'outputfileKey',
-      templateMethodologyId: 1
-    });
+//   it('returns non null response when all valid params provided without inputKey', () => {
+//     const response = insertSurveyOccurrenceSubmissionSQL({
+//       surveyId: 1,
+//       source: 'fileSource',
+//       inputFileName: 'inputFileName',
+//       outputFileName: 'outputFileName',
+//       outputKey: 'outputfileKey',
+//       templateMethodologyId: 1
+//     });
 
-    expect(response).to.not.be.null;
-  });
+//     expect(response).to.not.be.null;
+//   });
 
-  it('returns non null response when all valid params provided with inputKey', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputFileName: 'inputFileName',
-      inputKey: 'inputfileKey',
-      outputFileName: 'outputFileName',
-      outputKey: 'outputfileKey',
-      templateMethodologyId: 1
-    });
+//   it('returns non null response when all valid params provided with inputKey', () => {
+//     const response = insertSurveyOccurrenceSubmissionSQL({
+//       surveyId: 1,
+//       source: 'fileSource',
+//       inputFileName: 'inputFileName',
+//       inputKey: 'inputfileKey',
+//       outputFileName: 'outputFileName',
+//       outputKey: 'outputfileKey',
+//       templateMethodologyId: 1
+//     });
 
-    expect(response).to.not.be.null;
-  });
-});
+//     expect(response).to.not.be.null;
+//   });
+// });
 
 describe('deleteOccurrenceSubmissionSQL', () => {
   it('returns null response when null submissionId provided', () => {
@@ -220,31 +220,31 @@ describe('insertSurveySubmissionStatusSQL', () => {
   });
 });
 
-describe('insertSurveySubmissionMessageSQL', () => {
-  it('returns null response when null occurrenceSubmissionId provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message', 'errorcode');
+// describe('insertSurveySubmissionMessageSQL', () => {
+//   it('returns null response when null occurrenceSubmissionId provided', () => {
+//     const response = insertOccurrenceSubmissionMessageSQL((null as unknown) as number, 'type', 'message', 'errorcode');
 
-    expect(response).to.be.null;
-  });
+//     expect(response).to.be.null;
+//   });
 
-  it('returns null response when null submissionStatusType provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message', 'errorcode');
+//   it('returns null response when null submissionStatusType provided', () => {
+//     const response = insertOccurrenceSubmissionMessageSQL(1, (null as unknown) as string, 'message', 'errorcode');
 
-    expect(response).to.be.null;
-  });
+//     expect(response).to.be.null;
+//   });
 
-  it('returns null response when null submissionMessage provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string, 'errorcode');
+//   it('returns null response when null submissionMessage provided', () => {
+//     const response = insertOccurrenceSubmissionMessageSQL(1, 'type', (null as unknown) as string, 'errorcode');
 
-    expect(response).to.be.null;
-  });
+//     expect(response).to.be.null;
+//   });
 
-  it('returns non null response when valid params provided', () => {
-    const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message', 'errorcode');
+//   it('returns non null response when valid params provided', () => {
+//     const response = insertOccurrenceSubmissionMessageSQL(1, 'type', 'message', 'errorcode');
 
-    expect(response).to.not.be.null;
-  });
-});
+//     expect(response).to.not.be.null;
+//   });
+// });
 
 describe('getOccurrenceSubmissionMessagesSQL', () => {
   it('returns null response when null occurrenceSubmissionId provided', () => {
@@ -260,30 +260,30 @@ describe('getOccurrenceSubmissionMessagesSQL', () => {
   });
 });
 
-describe('getTemplateMethodologySpeciesIdSQL', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQL((null as unknown) as number);
+// describe('getTemplateMethodologySpeciesIdSQL', () => {
+//   it('returns null response when null surveyId provided', () => {
+//     const response = getTemplateMethodologySpeciesIdSQL((null as unknown) as number);
 
-    expect(response).to.be.null;
-  });
+//     expect(response).to.be.null;
+//   });
 
-  it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQL(1);
+//   it('returns non null response when valid params provided', () => {
+//     const response = getTemplateMethodologySpeciesIdSQL(1);
 
-    expect(response).to.not.be.null;
-  });
-});
+//     expect(response).to.not.be.null;
+//   });
+// });
 
-describe('getTemplateMethodologySpeciesSQL', () => {
-  it('returns null response when null occurrenceId provided', () => {
-    const response = getTemplateMethodologySpeciesSQL((null as unknown) as number);
+// describe('getTemplateMethodologySpeciesSQL', () => {
+//   it('returns null response when null occurrenceId provided', () => {
+//     const response = getTemplateMethodologySpeciesSQL((null as unknown) as number);
 
-    expect(response).to.be.null;
-  });
+//     expect(response).to.be.null;
+//   });
 
-  it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesSQL(1);
+//   it('returns non null response when valid params provided', () => {
+//     const response = getTemplateMethodologySpeciesSQL(1);
 
-    expect(response).to.not.be.null;
-  });
-});
+//     expect(response).to.not.be.null;
+//   });
+// });
