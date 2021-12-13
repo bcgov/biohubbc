@@ -193,7 +193,6 @@ export const CustomMenuIconButton: React.FC<ICustomMenuIconButtonProps> = (props
         id={buttonId}
         data-testid={buttonId}
         title={props.buttonTitle}
-        color="primary"
         aria-label="icon button menu"
         aria-controls="basic-icon-menu"
         aria-haspopup="true"
