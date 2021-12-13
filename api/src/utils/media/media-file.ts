@@ -33,7 +33,14 @@ export class MediaFile implements IMediaFile {
    * @memberof MediaFile
    */
   get name(): string {
-    return this.fileName.split('.')[0];
+    const lastPeriodindex = this.fileName.lastIndexOf('.');
+
+    if (lastPeriodindex >= 0) {
+      // strip out the file extension, if it exists
+      return this.fileName.substring(0, lastPeriodindex);
+    } else {
+      return this.fileName;
+    }
   }
 
   /**
@@ -84,7 +91,14 @@ export class ArchiveFile implements IMediaFile {
    * @memberof ArchiveFile
    */
   get name(): string {
-    return this.fileName.split('.')[0];
+    const lastPeriodindex = this.fileName.lastIndexOf('.');
+
+    if (lastPeriodindex >= 0) {
+      // strip out the file extension, if it exists
+      return this.fileName.substring(0, lastPeriodindex);
+    } else {
+      return this.fileName;
+    }
   }
 
   /**

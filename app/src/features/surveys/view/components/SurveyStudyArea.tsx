@@ -208,7 +208,12 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             setInferredLayersInfo={setInferredLayersInfo}
             additionalLayers={
               survey_details.occurrence_submission_id
-                ? [<OccurrenceFeatureGroup occurrenceSubmissionId={survey_details.occurrence_submission_id} />]
+                ? [
+                    <OccurrenceFeatureGroup
+                      projectId={projectForViewData.id}
+                      occurrenceSubmissionId={survey_details.occurrence_submission_id}
+                    />
+                  ]
                 : undefined
             }
           />

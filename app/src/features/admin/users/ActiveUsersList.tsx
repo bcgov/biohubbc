@@ -50,7 +50,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const biohubApi = useBiohubApi();
   const { activeUsers, codes } = props;
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [page, setPage] = useState(0);
   const dialogContext = useContext(DialogContext);
 
@@ -78,15 +78,10 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Remove user?',
       dialogContent: (
-        <>
-          <Typography variant="body1" color="textPrimary">
-            Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
-            related projects.
-          </Typography>
-          <Typography variant="body1" color="textPrimary">
-            Are you sure you want to proceed?
-          </Typography>
-        </>
+        <Typography variant="body1" component="div" color="textSecondary">
+          Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
+          related projects. Are you sure you want to proceed?
+        </Typography>
       ),
       yesButtonLabel: 'Remove User',
       noButtonLabel: 'Cancel',
@@ -134,11 +129,9 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change User Role?',
       dialogContent: (
-        <>
-          <Typography color="textPrimary">
-            Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRoleName}</strong>?
-          </Typography>
-        </>
+        <Typography variant="body1" color="textSecondary">
+          Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRoleName}</strong>?
+        </Typography>
       ),
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
@@ -214,9 +207,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
               {activeUsers.length > 0 &&
                 activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
-                    <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
                     <TableCell>
-                      <Box my={-1}>
+                      <strong>{row.user_identifier || 'Not Applicable'}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <Box m={-1}>
                         <CustomMenuButton
                           buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                           buttonTitle={'Change User Permissions'}
@@ -239,7 +234,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                       <Box my={-1}>
                         <CustomMenuIconButton
                           buttonTitle="Actions"
-                          buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
+                          buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
                           menuItems={[
                             {
                               menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,

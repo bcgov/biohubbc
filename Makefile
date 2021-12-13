@@ -31,10 +31,8 @@ web: | close build-web run-web ## Performs all commands necessary to run all bac
 db-setup: | build-db-setup run-db-setup ## Performs all commands necessary to run the database migrations and seeding
 db-migrate: | build-db-migrate run-db-migrate ## Performs all commands necessary to run the database migrations
 db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necessary to rollback the latest database migrations
-
 n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to run the n8n setup
 n8n-export: | build-n8n-export run-n8n-export ## Performs all commands necessary to export the latest n8n credentials and workflows
-
 clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
 
 ## ------------------------------------------------------------------------------
@@ -367,4 +365,4 @@ log-n8n-nginx: ## Runs `docker logs <container> -f` for the n8n nginx container
 ## ------------------------------------------------------------------------------
 
 help:	## Display this help screen.
-	@grep -h -E '^[a-zA-Z_-]+:.*?##.*$$|^##.*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[33m%-20s\033[0m %s\n", $$1, $$2}' | awk 'BEGIN {FS = "## "}; {printf "\033[36m%-1s\033[0m %s\n", $$2, $$1}'
+	@grep -h -E '^[0-9a-zA-Z_-]+:.*?##.*$$|^##.*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[33m%-20s\033[0m %s\n", $$1, $$2}' | awk 'BEGIN {FS = "## "}; {printf "\033[36m%-1s\033[0m %s\n", $$2, $$1}'

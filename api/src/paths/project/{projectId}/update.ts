@@ -69,7 +69,7 @@ export const GET: Operation = [
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
         }
@@ -422,7 +422,7 @@ export const PUT: Operation = [
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
         }

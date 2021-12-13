@@ -25,8 +25,8 @@ export const POST: Operation = [
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
-          projectId: Number(req.params.projectId),
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.body.project_id),
           discriminator: 'ProjectRole'
         }
       ]
@@ -60,8 +60,11 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
         'application/json': {
           schema: {
             type: 'object',
-            required: ['occurrence_submission_id'],
+            required: ['project_id', 'occurrence_submission_id'],
             properties: {
+              project_id: {
+                type: 'number'
+              },
               occurrence_submission_id: {
                 description: 'A survey occurrence submission ID',
                 type: 'number',
@@ -140,6 +143,8 @@ export function getOccurrenceSubmission(): RequestHandler {
       await connection.open();
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      await connection.commit();
 
       if (!response || !response.rows.length) {
         throw new HTTP400('Failed to get survey occurrence submission');

@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../../errors/CustomError';
 import {
@@ -9,10 +9,24 @@ import {
 } from '../../../../../../../../queries/survey/survey-attachments-queries';
 import { getLogger } from '../../../../../../../../utils/logger';
 import { GetReportAttachmentMetadata } from '../../../../../../../../models/project-survey-attachments';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
-export const GET: Operation = [getSurveyReportMetaData()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSurveyReportMetaData()
+];
 
 GET.apiDoc = {
   description: 'Retrieves the report metadata of a project attachment if filetype is Report.',
