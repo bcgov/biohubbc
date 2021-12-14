@@ -13,7 +13,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline,  mdiPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
