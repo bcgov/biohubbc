@@ -149,9 +149,13 @@ export function getTransformationSchema(): RequestHandler {
         connection
       );
 
+      console.log('templateMethodologySpeciesRecord is:', templateMethodologySpeciesRecord);
+
       await connection.commit();
 
       const transformationSchema = templateMethodologySpeciesRecord?.transform;
+
+      console.log('transform schema is: ', transformationSchema);
 
       if (!transformationSchema) {
         // TODO handle errors if no transformation schema is found?
@@ -162,6 +166,8 @@ export function getTransformationSchema(): RequestHandler {
           reason: 'Unable to fetch an appropriate transformation schema for your submission'
         });
       }
+
+      console.log('transformation exists');
 
       req['transformationSchema'] = transformationSchema;
 

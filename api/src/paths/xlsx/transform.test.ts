@@ -48,59 +48,59 @@ describe('persistParseErrors', () => {
   });
 });
 
-// describe('getTransformationSchema', () => {
-//   const sampleReq = {
-//     keycloak_token: {},
-//     body: {
-//       occurrence_submission_id: 1
-//     }
-//   } as any;
+describe('getTransformationSchema', () => {
+  // const sampleReq = {
+  //   keycloak_token: {},
+  //   body: {
+  //     occurrence_submission_id: 1
+  //   }
+  // } as any;
 
-//   let actualResult: any = null;
+  // let actualResult: any = null;
 
-//   const sampleRes = {
-//     status: () => {
-//       return {
-//         json: (result: any) => {
-//           actualResult = result;
-//         }
-//       };
-//     }
-//   };
+  // const sampleRes = {
+  //   status: () => {
+  //     return {
+  //       json: (result: any) => {
+  //         actualResult = result;
+  //       }
+  //     };
+  //   }
+  // };
 
-//   const dbConnectionObj = getMockDBConnection();
+  // const dbConnectionObj = getMockDBConnection();
 
-//   afterEach(() => {
-//     sinon.restore();
-//   });
+  afterEach(() => {
+    sinon.restore();
+  });
 
-//   // it('should return with a failed status if no transformationSchema', async () => {
-//   //   sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, systemUserId: () => 20 });
-//   //   sinon.stub(validate, 'getTemplateMethodologySpecies').resolves({
-//   //     transform: null
-//   //   });
+  // it.only('should return with a failed status if no transformationSchema', async () => {
+  //   sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, systemUserId: () => 20 });
+  //   sinon.stub(validate, 'getTemplateMethodologySpeciesRecord').resolves(null);
 
-//   //   const result = transform.getTransformationSchema();
-//   //   await result(sampleReq, sampleRes as any, (null as unknown) as any);
+  //   //mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
-//   //   expect(actualResult).to.eql({
-//   //     status: 'failed',
-//   //     reason: 'Unable to fetch an appropriate transformation schema for your submission'
-//   //   });
-//   // });
+  //   const result = transform.getTransformationSchema();
+  //   await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-//   // it('should set the transformationSchema in the request and call next on success', async () => {
-//   //   const nextSpy = sinon.spy();
+  //   expect(actualResult).to.eql({
+  //     status: 'failed',
+  //     reason: 'Unable to fetch an appropriate transformation schema for your submission'
+  //   });
+  // });
 
-//   //   sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, systemUserId: () => 20 });
-//   //   sinon.stub(validate, 'getTemplateMethodologySpecies').resolves({
-//   //     transform: 'transform'
-//   //   });
+  // it('should set the transformationSchema in the request and call next on success', async () => {
+  //   const nextSpy = sinon.spy();
 
-//   //   const result = transform.getTransformationSchema();
-//   //   await result(sampleReq, (null as unknown) as any, nextSpy as any);
+  //   sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, systemUserId: () => 20 });
+  //   sinon.stub(validate, 'getTemplateMethodologySpeciesRecord').resolves({
+  //     transform: 'transform'
+  //   });
 
-//   //   expect(sampleReq.transformationSchema).to.eql('transform');
-//   //   expect(nextSpy).to.have.been.called;
-//   // });
-// });
+  //   const result = transform.getTransformationSchema();
+  //   await result(sampleReq, (null as unknown) as any, nextSpy as any);
+
+  //   expect(sampleReq.transformationSchema).to.eql('transform');
+  //   expect(nextSpy).to.have.been.called;
+  // });
+});
