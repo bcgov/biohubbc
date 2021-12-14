@@ -276,7 +276,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
             {!hasFundingSources && (
               <TableRow>
-                <TableCell colSpan={3}>No Funding Sources</TableCell>
+                <TableCell colSpan={5}>No Funding Sources</TableCell>
               </TableRow>
             )}
           </TableBody>

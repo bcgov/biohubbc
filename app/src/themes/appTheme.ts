@@ -73,6 +73,9 @@ const appTheme = createMuiTheme({
       },
       outlinedPrimary: {
         background: '#ffffff'
+      },
+      endIcon: {
+        marginLeft: '4px'
       }
     },
     MuiContainer: {
@@ -85,6 +88,11 @@ const appTheme = createMuiTheme({
     MuiDialog: {
       paperWidthXl: {
         width: '800px'
+      }
+    },
+    MuiDialogContent: {
+      root: {
+        paddingTop: 0
       }
     },
     MuiDialogTitle: {
@@ -100,7 +108,8 @@ const appTheme = createMuiTheme({
     MuiLink: {
       root: {
         textAlign: 'left',
-        color: '#1a5a96'
+        color: '#1a5a96',
+        cursor: 'pointer'
       }
     },
     MuiLinearProgress: {

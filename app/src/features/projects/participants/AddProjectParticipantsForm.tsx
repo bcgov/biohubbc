@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Grid from '@material-ui/core/Grid';
 import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -56,82 +55,89 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
       <FieldArray
         name="participants"
         render={(arrayHelpers) => (
-          <Box>
-            <Grid container direction="row" spacing={2}>
+          <>
+            <Box>
               {values.participants?.map((participant, index) => {
                 const userIdentifierMeta = getFieldMeta(`participants.[${index}].userIdentifier`);
                 const identitySourceMeta = getFieldMeta(`participants.[${index}].identitySource`);
                 const roleIdMeta = getFieldMeta(`participants.[${index}].roleId`);
 
                 return (
-                  <Grid item xs={12} key={index}>
-                    <Box display="flex">
-                      <Box flexBasis="35%">
-                        <CustomTextField
-                          name={`participants.[${index}].userIdentifier`}
-                          label="Username"
-                          other={{
-                            required: true,
-                            value: participant.userIdentifier,
-                            error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
-                            helperText: userIdentifierMeta.touched && userIdentifierMeta.error
-                          }}
-                        />
-                      </Box>
-                      <Box flexBasis="30%" pl={1}>
-                        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="loginMethod" required={false}>
-                            Login Method
-                          </InputLabel>
-                          <Select
-                            id={`participants.[${index}].identitySource`}
-                            name={`participants.[${index}].identitySource`}
-                            labelId="login_method"
-                            label="Login Method"
-                            value={participant.identitySource}
-                            labelWidth={300}
-                            onChange={handleChange}
-                            error={identitySourceMeta.touched && Boolean(identitySourceMeta.error)}
-                            displayEmpty
-                            inputProps={{ 'aria-label': 'Login Method' }}>
-                            <MenuItem key={'IDIR'} value={'IDIR'}>
-                              IDIR
-                            </MenuItem>
-                            <MenuItem key={'BCEID'} value={'BCEID'}>
-                              BCEID
-                            </MenuItem>
-                          </Select>
-                          <FormHelperText>{identitySourceMeta.touched && identitySourceMeta.error}</FormHelperText>
-                        </FormControl>
-                      </Box>
-                      <Box flexBasis="35%" pl={1}>
-                        <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-                          <InputLabel id="Id" required={false}>
-                            Project Role
-                          </InputLabel>
-                          <Select
-                            id={`participants.[${index}].roleId`}
-                            name={`participants.[${index}].roleId`}
-                            labelId="project_role"
-                            label="Project Role"
-                            value={participant.roleId}
-                            labelWidth={300}
-                            onChange={handleChange}
-                            error={roleIdMeta.touched && Boolean(roleIdMeta.error)}
-                            displayEmpty
-                            inputProps={{ 'aria-label': 'Project Role' }}>
-                            {props.project_roles.map((item) => (
-                              <MenuItem key={item.value} value={item.value}>
-                                {item.label}
+                  <Box key={index}>
+                    <Box display="flex" overflow="visible" m={-0.5}>
+                      <Box display="flex" flex="1 1 auto">
+                        <Box py={1} px={0.5} flex="0 0 33.3333%">
+                          <CustomTextField
+                            name={`participants.[${index}].userIdentifier`}
+                            label="Username"
+                            other={{
+                              required: true,
+                              value: participant.userIdentifier,
+                              error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
+                              helperText: userIdentifierMeta.touched && userIdentifierMeta.error
+                            }}
+                          />
+                        </Box>
+                        <Box py={1} px={0.5} flex="0 0 33.3333%">
+                          <FormControl
+                            fullWidth
+                            variant="outlined"
+                            required={true}
+                            error={identitySourceMeta.touched && Boolean(identitySourceMeta.error)}>
+                            <InputLabel id="loginMethod" required={false}>
+                              Login Method
+                            </InputLabel>
+                            <Select
+                              id={`participants.[${index}].identitySource`}
+                              name={`participants.[${index}].identitySource`}
+                              labelId="login_method"
+                              label="Login Method"
+                              value={participant.identitySource}
+                              labelWidth={300}
+                              onChange={handleChange}
+                              displayEmpty
+                              inputProps={{ 'aria-label': 'Login Method' }}>
+                              <MenuItem key={'IDIR'} value={'IDIR'}>
+                                IDIR
                               </MenuItem>
-                            ))}
-                          </Select>
-                          <FormHelperText>{roleIdMeta.touched && roleIdMeta.error}</FormHelperText>
-                        </FormControl>
+                              <MenuItem key={'BCEID'} value={'BCEID'}>
+                                BCEID
+                              </MenuItem>
+                            </Select>
+                            <FormHelperText>{identitySourceMeta.touched && identitySourceMeta.error}</FormHelperText>
+                          </FormControl>
+                        </Box>
+                        <Box py={1} px={0.5} flex="0 0 33.3333%">
+                          <FormControl
+                            fullWidth
+                            variant="outlined"
+                            required={true}
+                            error={roleIdMeta.touched && Boolean(roleIdMeta.error)}>
+                            <InputLabel id="Id" required={false}>
+                              Project Role
+                            </InputLabel>
+                            <Select
+                              id={`participants.[${index}].roleId`}
+                              name={`participants.[${index}].roleId`}
+                              labelId="project_role"
+                              label="Project Role"
+                              value={participant.roleId}
+                              labelWidth={300}
+                              onChange={handleChange}
+                              displayEmpty
+                              inputProps={{ 'aria-label': 'Project Role' }}>
+                              {props.project_roles.map((item) => (
+                                <MenuItem key={item.value} value={item.value}>
+                                  {item.label}
+                                </MenuItem>
+                              ))}
+                            </Select>
+                            <FormHelperText>{roleIdMeta.touched && roleIdMeta.error}</FormHelperText>
+                          </FormControl>
+                        </Box>
                       </Box>
-                      <Box pt={0.5} pl={1}>
+                      <Box pt={1.5} pl={1} flex="0 0 auto">
                         <IconButton
-                          color="primary"
                           data-testid="delete-icon"
                           aria-label="remove participant"
                           onClick={() => arrayHelpers.remove(index)}>
@@ -139,23 +145,23 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                         </IconButton>
                       </Box>
                     </Box>
-                  </Grid>
+                  </Box>
                 );
               })}
-            </Grid>
-            <Box pt={2}>
+            </Box>
+            <Box mt={1}>
               <Button
                 type="button"
                 variant="text"
                 color="primary"
-                aria-label="add participant"
+                aria-label="add new team member"
                 data-testid="add-participant-button"
                 startIcon={<Icon path={mdiPlus} size={1} />}
                 onClick={() => arrayHelpers.push(AddProjectParticipantsFormArrayItemInitialValues)}>
-                <strong>Add Team Members</strong>
+                <strong>Add New</strong>
               </Button>
             </Box>
-          </Box>
+          </>
         )}
       />
     </form>
