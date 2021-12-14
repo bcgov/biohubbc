@@ -56,7 +56,7 @@ export const ensureSystemUser = async (
  * @param {IDBConnection} connection
  * @return {*}  {(Promise<object | null>)}
  */
-export const getSystemUser = async (userIdentifier: string, connection: IDBConnection): Promise<any | null> => {
+export const getSystemUser = async (userIdentifier: string, connection: IDBConnection): Promise<UserObject | null> => {
   const sqlStatement = getUserByUserIdentifierSQL(userIdentifier);
 
   if (!sqlStatement) {

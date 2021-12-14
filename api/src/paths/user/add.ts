@@ -112,7 +112,10 @@ export function addSystemRoleUser(): RequestHandler {
       await connection.commit();
 
       const data = await getSystemUser(userIdentifier, connection);
-      await addUserSystemRoles(data.id, roles, connection);
+
+      if (data) {
+        await addUserSystemRoles(data.id, roles, connection);
+      }
 
       return res.send(200);
     } catch (error) {

@@ -63,4 +63,17 @@ describe('ActiveUsersList', () => {
       expect(getByTestId('custom-menu-button-NotApplicable')).toBeInTheDocument();
     });
   });
+
+  it('renders the button correctly', async () => {
+    const mockGetUsers = jest.fn();
+    const { getByText } = renderContainer({
+      activeUsers: [],
+      codes: codes,
+      getUsers: mockGetUsers
+    });
+
+    await waitFor(() => {
+      expect(getByText('New Users')).toBeVisible();
+    });
+  });
 });
