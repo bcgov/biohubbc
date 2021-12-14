@@ -4,10 +4,6 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
 import { getMockDBConnection } from '../../__mocks__/db';
-
-//import { MediaFile } from '../../utils/media/media-file';
-
-//import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 import * as transform from './transform';
 import * as validate from './validate';
 
