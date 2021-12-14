@@ -109,8 +109,6 @@ export function getValidationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      //const xlsxCsv: XLSXCSV = req['xlsx'];
-
       const template_id = req['template_id'];
       const species_id = req['species_id'];
       const csm_id = req['csm_id'];

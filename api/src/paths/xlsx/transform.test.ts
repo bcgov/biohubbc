@@ -94,7 +94,7 @@ describe('getTransformationSchema', () => {
     });
   });
 
-  it.only('should set the transformationSchema in the request and call next on success', async () => {
+  it('should set the transformationSchema in the request and call next on success', async () => {
     const nextSpy = sinon.spy();
 
     sinon.stub(db, 'getDBConnection').returns({ ...dbConnectionObj, systemUserId: () => 20 });
