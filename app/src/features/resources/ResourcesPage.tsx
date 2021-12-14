@@ -43,6 +43,22 @@ const ResourcesPage: React.FC = () => {
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '10 KB'
+    },
+    {
+      id: '4',
+      name: 'Goat Aerial Composition Survey',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '10 KB'
+    },
+    {
+      id: '5',
+      name: 'Sheep Aerial Composition Statistics',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '10 KB'
     }
   ];
 
