@@ -62,7 +62,6 @@ describe('uploadObservationSubmission', () => {
       await result({ ...mockReq, files: [] }, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      console.log(actualStatus);
       expect((actualError as CustomError).status).to.equal(400);
       expect((actualError as CustomError).message).to.equal('Missing upload data');
     }
