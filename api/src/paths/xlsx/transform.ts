@@ -136,11 +136,9 @@ export function getTransformationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      const xlsxCsv: XLSXCSV = req['xlsx'];
-
-      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
-      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+      const template_id = req['template_id'];
+      const species_id = req['species_id'];
+      const csm_id = req['csm_id'];
 
       const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
         Number(species_id),
@@ -149,13 +147,9 @@ export function getTransformationSchema(): RequestHandler {
         connection
       );
 
-      console.log('templateMethodologySpeciesRecord is:', templateMethodologySpeciesRecord);
-
       await connection.commit();
 
       const transformationSchema = templateMethodologySpeciesRecord?.transform;
-
-      console.log('transform schema is: ', transformationSchema);
 
       if (!transformationSchema) {
         // TODO handle errors if no transformation schema is found?
@@ -166,8 +160,6 @@ export function getTransformationSchema(): RequestHandler {
           reason: 'Unable to fetch an appropriate transformation schema for your submission'
         });
       }
-
-      console.log('transformation exists');
 
       req['transformationSchema'] = transformationSchema;
 
