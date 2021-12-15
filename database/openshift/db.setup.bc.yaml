@@ -94,7 +94,7 @@ objects:
           cpu: '1'
           memory: 1.5Gi
         requests:
-          cpu: 500m
+          cpu: 100m
           memory: 512Mi
       runPolicy: SerialLatestOnly
       source:

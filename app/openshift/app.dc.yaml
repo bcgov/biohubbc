@@ -43,13 +43,13 @@ parameters:
     value: '7100-tcp'
   - name: CPU_REQUEST
     description: CPU REQUEST for deployment config
-    value: '200m'
+    value: '100m'
   - name: CPU_LIMIT
     description: CPU LIMIT for dc
     value: '500m'
   - name: MEMORY_REQUEST
     description: MEMORY REQUEST for dc
-    value: '1Gi'
+    value: '512Mi'
   - name: MEMORY_LIMIT
     description: MEMORY LIMIT for dc
     value: '2Gi'
