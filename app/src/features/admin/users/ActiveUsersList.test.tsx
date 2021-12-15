@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { getByTestId, render, waitFor } from '@testing-library/react';
 import { IActiveUsersListProps } from './ActiveUsersList';
 import React from 'react';
 import ActiveUsersList from './ActiveUsersList';
@@ -66,14 +66,14 @@ describe('ActiveUsersList', () => {
 
   it('renders the button correctly', async () => {
     const mockGetUsers = jest.fn();
-    const { getByText } = renderContainer({
+    const { getByTestId } = renderContainer({
       activeUsers: [],
       codes: codes,
       getUsers: mockGetUsers
     });
 
     await waitFor(() => {
-      expect(getByText('New Users')).toBeVisible();
+      expect(getByTestId('invite-project-users-button')).toBeVisible();
     });
   });
 });

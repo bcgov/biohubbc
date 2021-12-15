@@ -90,7 +90,6 @@ export function addSystemRoleUser(): RequestHandler {
     const userIdentifier = req.body?.userIdentifier || null;
     const identitySource = req.body?.identitySource || null;
     const roleId = req.body?.roleId || null;
-    const roles = [roleId];
 
     if (!userIdentifier) {
       throw new HTTP400('Missing required body param: userIdentifier');
@@ -112,8 +111,8 @@ export function addSystemRoleUser(): RequestHandler {
       await connection.commit();
 
       const data = await getSystemUser(userIdentifier, connection);
-
       if (data) {
+        const roles = [roleId];
         await addUserSystemRoles(data.id, roles, connection);
       }
 
