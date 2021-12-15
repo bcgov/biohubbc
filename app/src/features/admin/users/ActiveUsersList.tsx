@@ -192,17 +192,31 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     setOpenAddUserDialog(false);
 
     try {
-      for (const participant of values.participants) {
+      for (const systemUser of values.systemUsers) {
         await biohubApi.admin.addSystemUser(
-          participant.userIdentifier,
-          participant.identitySource,
-          participant.system_role
+          systemUser.userIdentifier,
+          systemUser.identitySource,
+          systemUser.system_role
         );
       }
 
       props.refresh();
+
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {values.systemUsers.length} system {values.systemUsers.length > 1 ? 'users' : 'user'} added.
+          </Typography>
+        )
+      });
     } catch (error) {
-      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogError: (error as APIError).message,
+        dialogErrorDetails: (error as APIError).errors
+      });
     }
   };
 
@@ -226,7 +240,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   color="primary"
                   variant="outlined"
                   disableElevation
-                  data-testid="invite-project-users-button"
+                  data-testid="invite-system-users-button"
                   aria-label={'New Users'}
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={() => setOpenAddUserDialog(true)}>
@@ -337,14 +351,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         onSave={(values) => {
           handleAddSystemUsersSave(values);
           setOpenAddUserDialog(false);
-          dialogContext.setSnackbar({
-            open: true,
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                {values.participants.length} team {values.participants.length > 1 ? 'members' : 'member'} added.
-              </Typography>
-            )
-          });
         }}
       />
     </>

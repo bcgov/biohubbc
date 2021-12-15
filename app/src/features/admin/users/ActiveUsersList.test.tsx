@@ -64,7 +64,7 @@ describe('ActiveUsersList', () => {
     });
   });
 
-  it('renders the button correctly', async () => {
+  it('renders the add new users button correctly', async () => {
     const mockGetUsers = jest.fn();
     const { getByTestId } = renderContainer({
       activeUsers: [],
@@ -73,7 +73,7 @@ describe('ActiveUsersList', () => {
     });
 
     await waitFor(() => {
-      expect(getByTestId('invite-project-users-button')).toBeVisible();
+      expect(getByTestId('invite-system-users-button')).toBeVisible();
     });
   });
 });
