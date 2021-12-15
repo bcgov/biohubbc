@@ -45,7 +45,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
   codes: IGetAllCodeSetsResponse;
-  getUsers: (forceFetch: boolean) => void;
   refresh: () => void;
 }
 
@@ -130,7 +129,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         open: true
       });
 
-      props.getUsers(true);
+      props.refresh();
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -182,7 +181,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         open: true
       });
 
-      props.getUsers(true);
+      props.refresh();
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -193,18 +192,15 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     setOpenAddUserDialog(false);
 
     try {
-      let response = '';
       for (const participant of values.participants) {
-        const res = await biohubApi.admin.addSystemUser(
+        await biohubApi.admin.addSystemUser(
           participant.userIdentifier,
           participant.identitySource,
           participant.system_role
         );
-        response += res;
       }
 
       props.refresh();
-      return response;
     } catch (error) {
       dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
     }
