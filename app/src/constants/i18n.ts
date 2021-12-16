@@ -233,5 +233,5 @@ export const SystemUserI18N = {
   removeSystemUserTitle: 'Remove System User ',
   removeUserErrorTitle: 'Error Removing User From Team',
   removeUserErrorText:
-    'An error has occurred while attempting to remove the user from the team, please try again. If the error persists, please contact your system administrator.',
-  };
+    'An error has occurred while attempting to remove the user from the team, please try again. If the error persists, please contact your system administrator.'
+};

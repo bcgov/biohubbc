@@ -5,9 +5,8 @@ import Grid from '@material-ui/core/Grid';
 import UsersDetailHeader from './UsersDetailHeader';
 import UsersDetailProjects from './UsersDetailProjects';
 
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import React from 'react';
 
 export interface IUsersHeaderProps {
   history: any;

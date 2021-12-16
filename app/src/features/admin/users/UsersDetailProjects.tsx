@@ -121,9 +121,9 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.getProjectParticipants(projectId);
+      const projectResponse = await biohubApi.project.getProjectParticipants(projectId);
 
-      const projectLeadAprroval = checkForProjectLead(response, projectParticipationId);
+      const projectLeadAprroval = checkForProjectLead(projectResponse, projectParticipationId);
 
       if (projectLeadAprroval) {
         const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
