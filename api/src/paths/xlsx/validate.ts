@@ -90,9 +90,6 @@ export function prepXLSX(): RequestHandler {
       }
 
       req['xlsx'] = xlsxCsv;
-      req['template_id'] = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      req['species_id'] = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
-      req['csm_id'] = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
       next();
     } catch (error) {
@@ -109,9 +106,10 @@ export function getValidationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      const template_id = req['template_id'];
-      const species_id = req['species_id'];
-      const csm_id = req['csm_id'];
+      const xlsxCsv = req['xlsx'];
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
+      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
       const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
         Number(species_id),

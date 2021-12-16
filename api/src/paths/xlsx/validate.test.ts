@@ -53,14 +53,14 @@ describe('prepXLSX', () => {
   });
 });
 
-describe('getTemplateMethodologySpecies', () => {
+describe('getTemplateMethodologySpeciesRecord', () => {
   afterEach(() => {
     sinon.restore();
   });
 
   const dbConnectionObj = getMockDBConnection();
 
-  it('should throw 400 error when failed to build getTemplateMethodologySpeciesSQL statement', async () => {
+  it('should throw 400 error when failed to build getTemplateMethodologySpeciesRecordSQL statement', async () => {
     sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(null);
 
     try {
