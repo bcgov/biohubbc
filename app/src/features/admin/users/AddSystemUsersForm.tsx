@@ -21,7 +21,7 @@ export interface IAddSystemUsersFormArrayItem {
 }
 
 export interface IAddSystemUsersForm {
-  participants: IAddSystemUsersFormArrayItem[];
+  systemUsers: IAddSystemUsersFormArrayItem[];
 }
 
 export const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayItem = {
@@ -31,11 +31,11 @@ export const AddSystemUsersFormArrayItemInitialValues: IAddSystemUsersFormArrayI
 };
 
 export const AddSystemUsersFormInitialValues: IAddSystemUsersForm = {
-  participants: [AddSystemUsersFormArrayItemInitialValues]
+  systemUsers: [AddSystemUsersFormArrayItemInitialValues]
 };
 
 export const AddSystemUsersFormYupSchema = yup.object().shape({
-  participants: yup.array().of(
+  systemUsers: yup.array().of(
     yup.object().shape({
       userIdentifier: yup.string().required('Username is required'),
       identitySource: yup.string().required('Login Method is required'),
@@ -54,25 +54,25 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <FieldArray
-        name="participants"
+        name="systemUsers"
         render={(arrayHelpers) => (
           <Box>
             <Grid container direction="row" spacing={2}>
-              {values.participants?.map((participant, index) => {
-                const userIdentifierMeta = getFieldMeta(`participants.[${index}].userIdentifier`);
-                const identitySourceMeta = getFieldMeta(`participants.[${index}].identitySource`);
-                const systemRoleMeta = getFieldMeta(`participants.[${index}].roleId`);
+              {values.systemUsers?.map((systemUser, index) => {
+                const userIdentifierMeta = getFieldMeta(`systemUsers.[${index}].userIdentifier`);
+                const identitySourceMeta = getFieldMeta(`systemUsers.[${index}].identitySource`);
+                const systemRoleMeta = getFieldMeta(`systemUsers.[${index}].roleId`);
 
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
                       <Box flexBasis="35%">
                         <CustomTextField
-                          name={`participants.[${index}].userIdentifier`}
+                          name={`systemUsers.[${index}].userIdentifier`}
                           label="Username"
                           other={{
                             required: true,
-                            value: participant.userIdentifier,
+                            value: systemUser.userIdentifier,
                             error: userIdentifierMeta.touched && Boolean(userIdentifierMeta.error),
                             helperText: userIdentifierMeta.touched && userIdentifierMeta.error
                           }}
@@ -84,11 +84,11 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             Login Method
                           </InputLabel>
                           <Select
-                            id={`participants.[${index}].identitySource`}
-                            name={`participants.[${index}].identitySource`}
+                            id={`systemUsers.[${index}].identitySource`}
+                            name={`systemUsers.[${index}].identitySource`}
                             labelId="login_method"
                             label="Login Method"
-                            value={participant.identitySource}
+                            value={systemUser.identitySource}
                             labelWidth={300}
                             onChange={handleChange}
                             error={identitySourceMeta.touched && Boolean(identitySourceMeta.error)}
@@ -110,11 +110,11 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             System Role
                           </InputLabel>
                           <Select
-                            id={`participants.[${index}].system_role`}
-                            name={`participants.[${index}].system_role`}
+                            id={`systemUsers.[${index}].system_role`}
+                            name={`systemUsers.[${index}].system_role`}
                             labelId="system_role"
                             label="System Role"
-                            value={participant.system_role}
+                            value={systemUser.system_role}
                             labelWidth={300}
                             onChange={handleChange}
                             error={systemRoleMeta.touched && Boolean(systemRoleMeta.error)}

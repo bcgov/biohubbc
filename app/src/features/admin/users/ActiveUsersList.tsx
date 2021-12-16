@@ -2,7 +2,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { Grid } from '@material-ui/core';
-import { mdiInformationOutline, mdiPlus } from '@mdi/js';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
@@ -14,7 +13,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
+import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline, mdiPlus } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
@@ -27,13 +26,11 @@ import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import EditDialog from 'components/dialog/EditDialog';
-import { useHistory } from 'react-router';
 import AddSystemUsersForm, {
   AddSystemUsersFormInitialValues,
   AddSystemUsersFormYupSchema,
   IAddSystemUsersForm
 } from './AddSystemUsersForm';
-//import { identity } from 'lodash';
 
 const useStyles = makeStyles((theme: Theme) => ({
   table: {
@@ -47,7 +44,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IActiveUsersListProps {
   activeUsers: IGetUserResponse[];
   codes: IGetAllCodeSetsResponse;
-  getUsers: (forceFetch: boolean) => void;
   refresh: () => void;
 }
 
@@ -63,7 +59,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const { activeUsers, codes } = props;
   const history = useHistory();
 
-  const [rowsPerPage, setRowsPerPage] = useState(5);
+  const [rowsPerPage, setRowsPerPage] = useState(20);
   const [page, setPage] = useState(0);
   const dialogContext = useContext(DialogContext);
 
@@ -93,15 +89,10 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Remove user?',
       dialogContent: (
-        <>
-          <Typography variant="body1" color="textPrimary">
-            Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
-            related projects.
-          </Typography>
-          <Typography variant="body1" color="textPrimary">
-            Are you sure you want to proceed?
-          </Typography>
-        </>
+        <Typography variant="body1" component="div" color="textSecondary">
+          Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
+          related projects. Are you sure you want to proceed?
+        </Typography>
       ),
       yesButtonLabel: 'Remove User',
       noButtonLabel: 'Cancel',
@@ -138,7 +129,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         open: true
       });
 
-      props.getUsers(true);
+      props.refresh();
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -149,11 +140,9 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     dialogContext.setYesNoDialog({
       dialogTitle: 'Change User Role?',
       dialogContent: (
-        <>
-          <Typography color="textPrimary">
-            Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRoleName}</strong>?
-          </Typography>
-        </>
+        <Typography variant="body1" color="textSecondary">
+          Change user <strong>{row.user_identifier}</strong>'s role to <strong>{newRoleName}</strong>?
+        </Typography>
       ),
       yesButtonLabel: 'Change Role',
       noButtonLabel: 'Cancel',
@@ -192,7 +181,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         open: true
       });
 
-      props.getUsers(true);
+      props.refresh();
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -203,20 +192,31 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     setOpenAddUserDialog(false);
 
     try {
-      let response = '';
-      for (const participant of values.participants) {
-        const res = await biohubApi.admin.addSystemUser(
-          participant.userIdentifier,
-          participant.identitySource,
-          participant.system_role
+      for (const systemUser of values.systemUsers) {
+        await biohubApi.admin.addSystemUser(
+          systemUser.userIdentifier,
+          systemUser.identitySource,
+          systemUser.system_role
         );
-        response += res;
       }
 
       props.refresh();
-      return response;
+
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            {values.systemUsers.length} system {values.systemUsers.length > 1 ? 'users' : 'user'} added.
+          </Typography>
+        )
+      });
     } catch (error) {
-      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogError: (error as APIError).message,
+        dialogErrorDetails: (error as APIError).errors
+      });
     }
   };
 
@@ -240,7 +240,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   color="primary"
                   variant="outlined"
                   disableElevation
-                  data-testid="invite-project-users-button"
+                  data-testid="invite-system-users-button"
                   aria-label={'New Users'}
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={() => setOpenAddUserDialog(true)}>
@@ -272,9 +272,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
               {activeUsers.length > 0 &&
                 activeUsers.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
                   <TableRow data-testid={`active-user-row-${index}`} key={row.id}>
-                    <TableCell>{row.user_identifier || 'Not Applicable'}</TableCell>
                     <TableCell>
-                      <Box my={-1}>
+                      <strong>{row.user_identifier || 'Not Applicable'}</strong>
+                    </TableCell>
+                    <TableCell>
+                      <Box m={-1}>
                         <CustomMenuButton
                           buttonLabel={row.role_names.join(', ') || 'Not Applicable'}
                           buttonTitle={'Change User Permissions'}
@@ -297,13 +299,13 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                       <Box my={-1}>
                         <CustomMenuIconButton
                           buttonTitle="Actions"
-                          buttonIcon={<Icon path={mdiDotsVertical} size={0.875} />}
+                          buttonIcon={<Icon path={mdiDotsVertical} size={1} />}
                           menuItems={[
                             {
                               menuIcon: <Icon path={mdiInformationOutline} size={0.875} />,
                               menuLabel: 'View Users Details',
                               menuOnClick: () => history.push({
-                                pathname: `/admin/users/${row.id}`, 
+                                pathname: `/admin/users/${row.id}`,
                                 state:  row})
                             },
                             {
@@ -356,14 +358,6 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
         onSave={(values) => {
           handleAddSystemUsersSave(values);
           setOpenAddUserDialog(false);
-          dialogContext.setSnackbar({
-            open: true,
-            snackbarMessage: (
-              <Typography variant="body2" component="div">
-                {values.participants.length} team {values.participants.length > 1 ? 'members' : 'member'} added.
-              </Typography>
-            )
-          });
         }}
       />
     </>
