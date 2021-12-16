@@ -71,7 +71,13 @@ describe('user', () => {
     it('gets an existing system user and re-activates it', async () => {
       const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
 
-      const existingSystemUser = { id: 2, user_record_end_date: '2021-11-22' };
+      const existingSystemUser = {
+        id: 2,
+        user_record_end_date: '2021-11-22',
+        user_identifier: 'idir',
+        role_ids: [1],
+        role_names: ['Editor']
+      };
       const getSystemUserStub = sinon.stub(system_user, 'getSystemUser').resolves(existingSystemUser);
 
       const addedSystemUser = null;

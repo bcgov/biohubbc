@@ -72,4 +72,20 @@ describe('useAdminApi', () => {
 
     expect(result).toEqual(10);
   });
+
+  it('addSystemUserRoles works as expected', async () => {
+    mock.onPost(`/api/user/1/system-roles/create`).reply(200, true);
+
+    const result = await useAdminApi(axios).addSystemUserRoles(1, [2]);
+
+    expect(result).toEqual(true);
+  });
+
+  it('addSystemUser works as expected', async () => {
+    mock.onPost(`/api/user/add`).reply(200, true);
+
+    const result = await useAdminApi(axios).addSystemUser('userIdentifier', 'identitySource', 1);
+
+    expect(result).toEqual(true);
+  });
 });
