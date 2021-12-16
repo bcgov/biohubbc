@@ -29,7 +29,7 @@ const AdminUsersRouter: React.FC<IAdminUsersRouterProps> = (props) => {
       <PrivateRoute
         exact
         layout={AdminUsersLayout}
-        path="/admin/users/:id"
+        path="/admin/users/details"
         component={UsersDetailPage}
         componentProps={props}
       />

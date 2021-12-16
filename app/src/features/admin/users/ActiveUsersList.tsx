@@ -13,7 +13,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline, mdiPlus } from '@mdi/js';
+import { mdiDotsVertical, mdiMenuDown, mdiTrashCanOutline, mdiPlus, mdiInformationOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/ActionToolbars';
@@ -23,6 +23,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { useHistory } from 'react-router';
 import React, { useContext, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import EditDialog from 'components/dialog/EditDialog';
@@ -87,7 +88,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
   const handleRemoveUserClick = (row: IGetUserResponse) => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Remove user?',
+      dialogTitle: 'Remove User?',
       dialogContent: (
         <Typography variant="body1" component="div" color="textSecondary">
           Removing user <strong>{row.user_identifier}</strong> will revoke their access to this application and all
@@ -304,9 +305,11 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                             {
                               menuIcon: <Icon path={mdiInformationOutline} size={0.875} />,
                               menuLabel: 'View Users Details',
-                              menuOnClick: () => history.push({
-                                pathname: `/admin/users/${row.id}`,
-                                state:  row})
+                              menuOnClick: () =>
+                                history.push({
+                                  pathname: `/admin/users/details`,
+                                  state: row
+                                })
                             },
                             {
                               menuIcon: <Icon path={mdiTrashCanOutline} size={0.875} />,

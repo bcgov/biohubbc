@@ -6,7 +6,7 @@ import UsersDetailHeader from './UsersDetailHeader';
 import UsersDetailProjects from './UsersDetailProjects';
 
 import { useEffect, useState } from 'react';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
 import React from 'react';
 
 export interface IUsersHeaderProps {
@@ -23,15 +23,10 @@ const UsersDetailPage: React.FC<IUsersHeaderProps> = (props) => {
   let userDetails = history?.location?.state;
 
   const [selectedUser, setSelectedUser] = useState<IGetUserResponse>(
-    userDetails !== undefined ? userDetails
-    : JSON.parse(window.localStorage.getItem('selectedUser') || '')
+    userDetails !== undefined ? userDetails : JSON.parse(window.localStorage.getItem('selectedUser') || '')
   );
 
-  useEffect(() => {
-    getUser();
-  }, []);
-
-  const getUser =  () => {
+  const getUser = () => {
     if (userDetails !== undefined) {
       setSelectedUser(userDetails);
       window.localStorage.setItem('selectedUser', JSON.stringify(userDetails));
@@ -39,6 +34,10 @@ const UsersDetailPage: React.FC<IUsersHeaderProps> = (props) => {
       setSelectedUser(JSON.parse(window.localStorage.getItem('selectedUser') || ''));
     }
   };
+
+  useEffect(() => {
+    getUser();
+  }, []);
 
   return (
     <>

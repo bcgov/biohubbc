@@ -50,7 +50,7 @@ export interface IGetProjectAttachmentsResponse {
  * @export
  * @interface IGetUserProjectsListResponse
  */
- export interface IGetUserProjectsListResponse {
+export interface IGetUserProjectsListResponse {
   project_id: number;
   name: string;
   system_user_id: number;

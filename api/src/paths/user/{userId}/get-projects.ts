@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import { projectIdResponseObject } from '../openapi/schemas/project';
-import { getAllUserProjectsSQL } from '../queries/project-participation/project-participation-queries';
-import { getLogger } from '../utils/logger';
+import { getDBConnection } from '../../../database/db';
+import { HTTP400 } from '../../../errors/CustomError';
+import { projectIdResponseObject } from '../../../openapi/schemas/project';
+import { getAllUserProjectsSQL } from '../../../queries/project-participation/project-participation-queries';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/projects');
 export const POST: Operation = [getAllUserProjects()];
@@ -22,14 +22,13 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-            title: 'Project Response Object',
-            required: ['userId'],
+          title: 'Project Response Object',
+          required: ['userId'],
           properties: {
             userId: {
               type: 'number',
               nullable: false
-            },
-           
+            }
           }
         }
       }
@@ -72,15 +71,19 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
- function getAllUserProjects(): RequestHandler {
+function getAllUserProjects(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
     const userId = Number(req?.body?.userId);
 
+    if (!userId) {
+      throw new HTTP400('Missing required body param: userId');
+    }
+
     try {
       await connection.open();
-    
+
       const getAllUserProjectsSQLStatement = getAllUserProjectsSQL(userId);
 
       if (!getAllUserProjectsSQLStatement) {
@@ -119,24 +122,24 @@ POST.apiDoc = {
  * @param {any[]} rows DB query result rows
  * @return {any[]} An array of project data
  */
- export function _extractProjects(rows: any[]): any[] {
-    if (!rows || !rows.length) {
-      return [];
-    }
-  
-    const projects: any[] = [];
-  
-    rows.forEach((row) => {
-      const project: any = {
-        project_id: row.project_id,
-        name: row.name,
-        system_user_id: row.system_user_id,
-        project_role_id: row.project_role_id,
-        project_participation_id: row.project_participation_id
-      };
-  
-      projects.push(project);
-    });
-  
-    return projects;
+export function _extractProjects(rows: any[]): any[] {
+  if (!rows || !rows.length) {
+    return [];
   }
+
+  const projects: any[] = [];
+
+  rows.forEach((row) => {
+    const project: any = {
+      project_id: row.project_id,
+      name: row.name,
+      system_user_id: row.system_user_id,
+      project_role_id: row.project_role_id,
+      project_participation_id: row.project_participation_id
+    };
+
+    projects.push(project);
+  });
+
+  return projects;
+}

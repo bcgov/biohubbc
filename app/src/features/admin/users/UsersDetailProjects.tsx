@@ -13,39 +13,29 @@ import Link from '@material-ui/core/Link';
 import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import { makeStyles } from '@material-ui/core/styles';
 import Icon from '@mdi/react';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
-import { IGetUserProjectsListResponse, IGetProjectParticipantsResponse } from 'interfaces/useProjectApi.interface';
-import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
-import { ProjectParticipantsI18N } from 'constants/i18n';
-import { APIError } from 'hooks/api/useAxios';
-import { CodeSet, IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import {
+  IGetUserProjectsListResponse,
+  IGetProjectParticipantsResponse
+} from '../../../interfaces/useProjectApi.interface';
+import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
+import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
+import { CustomMenuButton } from '../../../components/toolbar/ActionToolbars';
+import { ProjectParticipantsI18N, SystemUserI18N } from '../../../constants/i18n';
+import { APIError } from '../../../hooks/api/useAxios';
+import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
 
-import { DialogContext } from 'contexts/dialogContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { DialogContext } from '../../../contexts/dialogContext';
+import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { useHistory, useParams } from 'react-router';
 import React, { useCallback, useEffect, useContext, useState } from 'react';
 
-const useStyles = makeStyles((theme) => ({
+const useStyles = makeStyles(() => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  teamMembersToolbar: {
-    paddingLeft: theme.spacing(2),
-    paddingRight: theme.spacing(2)
-  },
-  teamMembersTable: {
-    tableLayout: 'fixed',
-    '& td': {
-      verticalAlign: 'middle'
-    }
-  },
-  tableColumn: {
-    width: '30%'
   }
 }));
 
@@ -68,12 +58,11 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
-  const [assignedProjects, setAssignedProjects] = useState<IGetUserProjectsListResponse[]>();
 
-  const handleGetUserProjects = async (userId: number): Promise<IGetUserProjectsListResponse[]> => {
+  const [assignedProjects, setAssignedProjects] = useState<IGetUserProjectsListResponse[]>();
+  const handleGetUserProjects = async (userId: number) => {
     const apiCall = await biohubApi.project.getAllUserProjectsForView(userId);
     setAssignedProjects(apiCall);
-    return apiCall;
   };
 
   const refresh = () => () => {
@@ -82,7 +71,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   useEffect(() => {
     handleGetUserProjects(userDetails.id);
-  }, [props]);
+  }, [props, userDetails.id]);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -106,17 +95,6 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     onOk: () => dialogContext.setErrorDialog({ open: false })
   };
 
-  const openErrorDialog = useCallback(
-    (errorDialogProps?: Partial<IErrorDialogProps>) => {
-      dialogContext.setErrorDialog({
-        ...defaultErrorDialogProps,
-        ...errorDialogProps,
-        open: true
-      });
-    },
-    [defaultErrorDialogProps, dialogContext]
-  );
-
   const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false })
@@ -130,6 +108,17 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     });
   };
 
+  const openErrorDialog = useCallback(
+    (errorDialogProps?: Partial<IErrorDialogProps>) => {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        ...errorDialogProps,
+        open: true
+      });
+    },
+    [defaultErrorDialogProps, dialogContext]
+  );
+
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
       const response = await biohubApi.project.getProjectParticipants(projectId);
@@ -141,8 +130,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
         if (!response) {
           openErrorDialog({
-            dialogTitle: ProjectParticipantsI18N.removeParticipantErrorTitle,
-            dialogText: ProjectParticipantsI18N.removeParticipantErrorText
+            dialogTitle: SystemUserI18N.removeUserErrorTitle,
+            dialogText: SystemUserI18N.removeUserErrorText
           });
           return;
         }
@@ -159,15 +148,15 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
         handleGetUserProjects(userDetails.id);
       } else {
         openErrorDialog({
-          dialogTitle: ProjectParticipantsI18N.deleteProjectLeadTitle,
-          dialogText: ProjectParticipantsI18N.deleteProjectLeadErrorText
+          dialogTitle: SystemUserI18N.deleteProjectLeadErrorTitle,
+          dialogText: SystemUserI18N.deleteProjectLeadErrorText
         });
         return;
       }
     } catch (error) {
       openErrorDialog({
-        dialogTitle: ProjectParticipantsI18N.removeParticipantErrorTitle,
-        dialogText: ProjectParticipantsI18N.removeParticipantErrorText,
+        dialogTitle: SystemUserI18N.removeUserErrorTitle,
+        dialogText: SystemUserI18N.removeUserErrorText,
         dialogError: (error as APIError).message
       });
     }
@@ -228,7 +217,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                     data-testid={'remove-project-participant-button'}
                     onClick={() =>
                       openYesNoDialog({
-                        dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
+                        dialogTitle: SystemUserI18N.removeSystemUserTitle,
                         dialogContent: (
                           <>
                             <Typography variant="body1" color="textPrimary">
@@ -376,8 +365,8 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         });
       } else {
         showErrorDialog({
-          dialogTitle: ProjectParticipantsI18N.updateProjectLeadRoleErrorTitle,
-          dialogText: ProjectParticipantsI18N.updateProjectLeadRoleErrorText
+          dialogTitle: SystemUserI18N.updateProjectLeadRoleErrorTitle,
+          dialogText: SystemUserI18N.updateProjectLeadRoleErrorText
         });
       }
 

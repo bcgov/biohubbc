@@ -8,50 +8,23 @@ import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import Icon from '@mdi/react';
 import { mdiTrashCanOutline } from '@mdi/js';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ProjectParticipantsI18N } from 'constants/i18n';
-import { IYesNoDialogProps } from 'components/dialog/YesNoDialog';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { IGetProjectParticipantsResponse } from 'interfaces/useProjectApi.interface';
-import { DialogContext , ISnackbarProps } from 'contexts/dialogContext';
-import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { SystemUserI18N } from '../../../constants/i18n';
+import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
+import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
+import { IGetProjectParticipantsResponse } from '../../../interfaces/useProjectApi.interface';
+import { DialogContext, ISnackbarProps } from '../../../contexts/dialogContext';
+import { APIError } from '../../../hooks/api/useAxios';
 import { useHistory } from 'react-router';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
-import React, {useCallback, useContext} from 'react';
+import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import React, { useCallback, useContext } from 'react';
 
-
-const useStyles = makeStyles((theme: Theme) => ({
-  projectNav: {
-    minWidth: '15rem',
-    '& a': {
-      color: theme.palette.text.secondary,
-      '&:hover': {
-        background: 'rgba(0, 51, 102, 0.05)'
-      }
-    },
-    '& a.active': {
-      color: theme.palette.primary.main,
-      background: 'rgba(0, 51, 102, 0.05)',
-      '& svg': {
-        color: theme.palette.primary.main
-      }
-    }
-  },
+const useStyles = makeStyles(() => ({
   breadCrumbLink: {
     display: 'flex',
     alignItems: 'center',
     cursor: 'pointer'
-  },
-  chip: {
-    color: '#ffffff'
-  },
-  chipActive: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipCompleted: {
-    backgroundColor: theme.palette.primary.main
   },
   spacingRight: {
     paddingRight: '1rem'
@@ -72,33 +45,29 @@ export interface IUsersHeaderProps {
 }
 
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
+  const { userDetails } = props;
   const classes = useStyles();
   const uHistory = useHistory();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
-  const { userDetails } = props;
-
-
-  const handleDeleteUser = async (userId: number) =>{
+  const handleDeleteUser = async (userId: number) => {
     const apiCall = await biohubApi.project.getAllUserProjectsForView(userId);
 
     for (const project of apiCall) {
       const response = await biohubApi.project.getProjectParticipants(project.project_id);
       const projectLeadAprroval = checkForProjectLead(response, project.project_participation_id);
 
-      if(!projectLeadAprroval){
-        
+      if (!projectLeadAprroval) {
         openErrorDialog({
-          dialogTitle: ProjectParticipantsI18N.deleteProjectLeadTitle,
-          dialogText: ProjectParticipantsI18N.deleteProjectLeadErrorText
+          dialogTitle: SystemUserI18N.deleteProjectLeadErrorTitle,
+          dialogText: SystemUserI18N.deleteProjectLeadErrorText
         });
         return;
       }
     }
     deActivateSystemUser(userDetails);
-
-  }
+  };
 
   const checkForProjectLead = (
     projectParticipants: IGetProjectParticipantsResponse,
@@ -137,7 +106,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     }
   };
 
-  
   const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
     dialogContext.setSnackbar({ ...textDialogProps, open: true });
   };
@@ -194,45 +162,44 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
               </Typography>
             </Box>
             <Box mb={0.75} display="flex" alignItems="center">
-              &nbsp;&nbsp;
               <Typography component="span" variant="subtitle1" color="textSecondary">
-                {userDetails.role_names[0]}
+                &nbsp;&nbsp;{userDetails.role_names[0]}
               </Typography>
             </Box>
           </Box>
           <Box ml={4} mb={4}>
             <Tooltip arrow color="secondary" title={'delete'}>
               <>
-              <Button
-                    title="Remove Participant"
-                    color="primary"
-                    variant="text"
-                    className={classes.actionButton}
-                    startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
-                    data-testid={'remove-participant-button'}
-                    onClick={() =>
-                      openYesNoDialog({
-                        dialogTitle: ProjectParticipantsI18N.removeParticipantTitle,
-                        dialogContent: (
-                          <>
-                            <Typography variant="body1" color="textPrimary">
-                              Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
-                              all projects.
-                            </Typography>
-                            <Typography variant="body1" color="textPrimary">
-                              Are you sure you want to proceed?
-                            </Typography>
-                          </>
-                        ),
-                        yesButtonProps: { color: 'secondary' },
-                        onYes: () => {
-                          handleDeleteUser(userDetails.id);
-                          dialogContext.setYesNoDialog({ open: false });
-                        }
-                      })
-                    }>
-                    <strong>Remove User</strong>
-                  </Button>
+                <Button
+                  title="Remove User"
+                  color="primary"
+                  variant="text"
+                  className={classes.actionButton}
+                  startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
+                  data-testid={'remove-user-button'}
+                  onClick={() =>
+                    openYesNoDialog({
+                      dialogTitle: SystemUserI18N.removeSystemUserTitle,
+                      dialogContent: (
+                        <>
+                          <Typography variant="body1" color="textPrimary">
+                            Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to all
+                            projects.
+                          </Typography>
+                          <Typography variant="body1" color="textPrimary">
+                            Are you sure you want to proceed?
+                          </Typography>
+                        </>
+                      ),
+                      yesButtonProps: { color: 'secondary' },
+                      onYes: () => {
+                        handleDeleteUser(userDetails.id);
+                        dialogContext.setYesNoDialog({ open: false });
+                      }
+                    })
+                  }>
+                  <strong>Remove User</strong>
+                </Button>
               </>
             </Tooltip>
           </Box>
