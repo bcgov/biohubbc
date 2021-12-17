@@ -55,7 +55,7 @@ export enum ClassGrouping {
   WARNING = 'Warning'
 }
 
-const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'System Error'];
+const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'Template Transformed', 'System Error'];
 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
