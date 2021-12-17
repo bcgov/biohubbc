@@ -22,39 +22,42 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose SRB Composition Survey 2.3',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_Composition_Survey_2.3.xlsx',
+      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.3',
+      url:
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.3.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '80 KB'
+      fileSize: '110 KB'
     },
     {
       id: '2',
-      name: 'Moose Recruitment Survey',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Survey.xlsx',
+      name: 'Moose Recruitment Using Telemetry Survey 1.0',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Using_Telemetry_Survey_1.0.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '36 KB'
+      fileSize: '93 KB'
     },
     {
       id: '3',
-      name: 'Moose Summary Statistics',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
+      name: 'Goat Aerial Population Composition Recruitment Survey 1.3',
+      url:
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.3.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '10 KB'
+      fileSize: '161 KB'
     },
     {
       id: '4',
-      name: 'Goat Aerial Composition Survey',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
+      name: 'Sheep Aerial Population Composition Recruitment Survey 1.1',
+      url:
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.1.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '10 KB'
+      fileSize: '103 KB'
     },
     {
       id: '5',
-      name: 'Sheep Aerial Composition Statistics',
+      name: 'Moose Summary Statistics',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
