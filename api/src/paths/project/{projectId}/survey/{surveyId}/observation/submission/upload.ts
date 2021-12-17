@@ -183,7 +183,6 @@ export function uploadMedia(): RequestHandler {
  * @param {number} surveyId
  * @param {string} source
  * @param {string} inputFileName
- * @param {(number | null)} templateMethodologyId
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
