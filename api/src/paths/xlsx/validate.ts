@@ -23,6 +23,7 @@ import {
   persistValidationResults,
   sendResponse
 } from '../dwc/validate';
+//import xlsx from 'xlsx';
 
 const defaultLog = getLogger('paths/xlsx/validate');
 
@@ -79,8 +80,23 @@ export function prepXLSX(): RequestHandler {
         return next();
       }
 
+
+
       const xlsxCsv = new XLSXCSV(parsedMedia);
 
+<<<<<<< Updated upstream
+=======
+      console.log('xlsxCsv is : ', xlsxCsv);
+
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
+      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      if (!template_id || !species_id || !csm_id) {
+        req['parseError'] = 'Failed to parse submission, template identification properties are missing';
+      }
+
+>>>>>>> Stashed changes
       req['xlsx'] = xlsxCsv;
 
       next();
