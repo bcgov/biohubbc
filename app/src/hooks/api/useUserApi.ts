@@ -20,6 +20,17 @@ const useUserApi = (axios: AxiosInstance) => {
   };
 
   /**
+   * Get user from userId
+   *
+   * @param {number} userId
+   * @return {*}  {Promise<IGetUserResponse>}
+   */
+  const getUserById = async (userId: number): Promise<IGetUserResponse> => {
+    const { data } = await axios.get(`/api/user/${userId}/get`, { params: { userId: userId } });
+    return data;
+  };
+
+  /**
    * Get user details for all users.
    *
    * @return {*}  {Promise<IGetUserResponse[]>}
@@ -67,6 +78,7 @@ const useUserApi = (axios: AxiosInstance) => {
 
   return {
     getUser,
+    getUserById,
     getUsersList,
     deleteSystemUser,
     updateSystemUserRoles,

@@ -307,7 +307,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                               menuLabel: 'View Users Details',
                               menuOnClick: () =>
                                 history.push({
-                                  pathname: `/admin/users/details`,
+                                  pathname: `/admin/users/${row.id}`,
                                   state: row
                                 })
                             },

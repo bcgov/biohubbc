@@ -19,7 +19,6 @@ export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
   if (!userId) {
     return null;
   }
-  console.log('INSIDE THE SQL CREATION ');
 
   const sqlStatement: SQLStatement = SQL`
     SELECT
@@ -31,7 +30,7 @@ export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
     FROM
       project_participation pp
     LEFT JOIN
-      project p    
+      project p
     ON
       pp.project_id = p.project_id
     WHERE

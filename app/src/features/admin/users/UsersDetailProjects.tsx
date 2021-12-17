@@ -14,21 +14,17 @@ import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import { makeStyles } from '@material-ui/core/styles';
 import Icon from '@mdi/react';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import {
-  IGetUserProjectsListResponse,
-  IGetProjectParticipantsResponse
-} from '../../../interfaces/useProjectApi.interface';
-import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
+import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
 import { CustomMenuButton } from '../../../components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N, SystemUserI18N } from '../../../constants/i18n';
 import { APIError } from '../../../hooks/api/useAxios';
 import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
-
+import { IShowSnackBar, IOpenErrorDialog, IOpenYesNoDialog, ICheckForProjectLead } from './UserDetailFunctionTypes';
 import { DialogContext } from '../../../contexts/dialogContext';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { useHistory, useParams } from 'react-router';
-import React, { useCallback, useEffect, useContext, useState } from 'react';
+import React, { useEffect, useContext, useState } from 'react';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -41,6 +37,10 @@ const useStyles = makeStyles(() => ({
 
 export interface IProjectDetailsProps {
   userDetails: IGetUserResponse;
+  showSnackBar: IShowSnackBar;
+  openYesNoDialog: IOpenYesNoDialog;
+  openErrorDialog: IOpenErrorDialog;
+  checkForProjectLead: ICheckForProjectLead;
 }
 
 /**
@@ -49,7 +49,7 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
-  const { userDetails } = props;
+  const { userDetails, openYesNoDialog, openErrorDialog, checkForProjectLead } = props;
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -89,35 +89,6 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
       setIsLoadingCodes(false);
     }
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
-  };
-
-  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
-  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
-    dialogContext.setYesNoDialog({
-      ...defaultYesNoDialogProps,
-      ...yesNoDialogProps,
-      open: true
-    });
-  };
-
-  const openErrorDialog = useCallback(
-    (errorDialogProps?: Partial<IErrorDialogProps>) => {
-      dialogContext.setErrorDialog({
-        ...defaultErrorDialogProps,
-        ...errorDialogProps,
-        open: true
-      });
-    },
-    [defaultErrorDialogProps, dialogContext]
-  );
 
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
@@ -204,6 +175,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                       user_identifier={props.userDetails.user_identifier}
                       projectRoleCodes={codes.project_roles}
                       refresh={refresh()}
+                      checkForProjectLead={checkForProjectLead}
                     />
                   </Box>
                 </TableCell>
@@ -261,27 +233,16 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
 export default UsersDetailProjects;
 
-const checkForProjectLead = (
-  projectParticipants: IGetProjectParticipantsResponse,
-  projectParticipationId: number
-): boolean => {
-  for (const participant of projectParticipants.participants) {
-    if (participant.project_participation_id !== projectParticipationId && participant.project_role_id === 1) {
-      return true;
-    }
-  }
-  return false;
-};
-
 export interface IChangeProjectRoleMenuProps {
   row: IGetUserProjectsListResponse;
   user_identifier: string;
   projectRoleCodes: CodeSet;
   refresh: () => void;
+  checkForProjectLead: ICheckForProjectLead;
 }
 
 const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => {
-  const { row, user_identifier, projectRoleCodes, refresh } = props;
+  const { row, user_identifier, projectRoleCodes, refresh, checkForProjectLead } = props;
 
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();

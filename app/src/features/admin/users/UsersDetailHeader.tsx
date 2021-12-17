@@ -10,15 +10,13 @@ import Icon from '@mdi/react';
 import { mdiTrashCanOutline } from '@mdi/js';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { SystemUserI18N } from '../../../constants/i18n';
-import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
-import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
-import { IGetProjectParticipantsResponse } from '../../../interfaces/useProjectApi.interface';
-import { DialogContext, ISnackbarProps } from '../../../contexts/dialogContext';
+import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
 import { useHistory } from 'react-router';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import React, { useCallback, useContext } from 'react';
+import { IShowSnackBar, IOpenErrorDialog, IOpenYesNoDialog, ICheckForProjectLead } from './UserDetailFunctionTypes';
+import React, { useContext } from 'react';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -42,10 +40,14 @@ const useStyles = makeStyles(() => ({
 
 export interface IUsersHeaderProps {
   userDetails: IGetUserResponse;
+  showSnackBar: IShowSnackBar;
+  openYesNoDialog: IOpenYesNoDialog;
+  openErrorDialog: IOpenErrorDialog;
+  checkForProjectLead: ICheckForProjectLead;
 }
 
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
-  const { userDetails } = props;
+  const { userDetails, showSnackBar, openYesNoDialog, openErrorDialog, checkForProjectLead } = props;
   const classes = useStyles();
   const uHistory = useHistory();
   const biohubApi = useBiohubApi();
@@ -67,18 +69,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
       }
     }
     deActivateSystemUser(userDetails);
-  };
-
-  const checkForProjectLead = (
-    projectParticipants: IGetProjectParticipantsResponse,
-    projectParticipationId: number
-  ): boolean => {
-    for (const participant of projectParticipants.participants) {
-      if (participant.project_participation_id !== projectParticipationId && participant.project_role_id === 1) {
-        return true;
-      }
-    }
-    return false;
   };
 
   const deActivateSystemUser = async (user: IGetUserResponse) => {
@@ -105,39 +95,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
       openErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
   };
-
-  const showSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => {
-    dialogContext.setSnackbar({ ...textDialogProps, open: true });
-  };
-
-  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
-    onClose: () => dialogContext.setErrorDialog({ open: false }),
-    onOk: () => dialogContext.setErrorDialog({ open: false })
-  };
-
-  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
-    onClose: () => dialogContext.setYesNoDialog({ open: false }),
-    onNo: () => dialogContext.setYesNoDialog({ open: false })
-  };
-
-  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
-    dialogContext.setYesNoDialog({
-      ...defaultYesNoDialogProps,
-      ...yesNoDialogProps,
-      open: true
-    });
-  };
-
-  const openErrorDialog = useCallback(
-    (errorDialogProps?: Partial<IErrorDialogProps>) => {
-      dialogContext.setErrorDialog({
-        ...defaultErrorDialogProps,
-        ...errorDialogProps,
-        open: true
-      });
-    },
-    [defaultErrorDialogProps, dialogContext]
-  );
 
   return (
     <Paper square={true}>

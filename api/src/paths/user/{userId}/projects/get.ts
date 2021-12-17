@@ -1,15 +1,15 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
-import { projectIdResponseObject } from '../../../openapi/schemas/project';
-import { getAllUserProjectsSQL } from '../../../queries/project-participation/project-participation-queries';
-import { getLogger } from '../../../utils/logger';
+import { getDBConnection } from '../../../../database/db';
+import { HTTP400 } from '../../../../errors/CustomError';
+import { projectIdResponseObject } from '../../../../openapi/schemas/project';
+import { getAllUserProjectsSQL } from '../../../../queries/project-participation/project-participation-queries';
+import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/projects');
-export const POST: Operation = [getAllUserProjects()];
+export const GET: Operation = [getAllUserProjects()];
 
-POST.apiDoc = {
+GET.apiDoc = {
   description: 'Gets a list of projects based on user Id.',
   tags: ['projects'],
   security: [
@@ -17,23 +17,16 @@ POST.apiDoc = {
       Bearer: []
     }
   ],
-  requestBody: {
-    description: 'Project list user ID.',
-    content: {
-      'application/json': {
-        schema: {
-          title: 'Project Response Object',
-          required: ['userId'],
-          properties: {
-            userId: {
-              type: 'number',
-              nullable: false
-            }
-          }
-        }
-      }
+  parameters: [
+    {
+      in: 'path',
+      name: 'userId',
+      schema: {
+        type: 'number'
+      },
+      required: true
     }
-  },
+  ],
   responses: {
     200: {
       description: 'Project response object.',
@@ -73,15 +66,15 @@ POST.apiDoc = {
  */
 function getAllUserProjects(): RequestHandler {
   return async (req, res) => {
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const userId = Number(req?.body?.userId);
-
-    if (!userId) {
-      throw new HTTP400('Missing required body param: userId');
+    if (!req.params.userId) {
+      throw new HTTP400('Missing required param: userId');
     }
 
+    const connection = getDBConnection(req['keycloak_token']);
+
     try {
+      const userId = Number(req.params.userId);
+
       await connection.open();
 
       const getAllUserProjectsSQLStatement = getAllUserProjectsSQL(userId);
@@ -103,7 +96,7 @@ function getAllUserProjects(): RequestHandler {
         rows = getUserProjectsListResponse.rows;
       }
 
-      const result: any[] = _extractProjects(rows);
+      const result: any[] = _extractUserProjects(rows);
 
       return res.status(200).json(result);
     } catch (error) {
@@ -122,7 +115,7 @@ function getAllUserProjects(): RequestHandler {
  * @param {any[]} rows DB query result rows
  * @return {any[]} An array of project data
  */
-export function _extractProjects(rows: any[]): any[] {
+export function _extractUserProjects(rows: any[]): any[] {
   if (!rows || !rows.length) {
     return [];
   }
