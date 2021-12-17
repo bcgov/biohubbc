@@ -524,7 +524,7 @@ export const getTemplateMethodologySpeciesRecordSQL = (
   templateId: number
 ): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesRecordSQLStatement',
+    label: 'getTemplateMethodologySpeciesRecordSQL',
     message: 'params',
     speciesId,
     methodologyId,
@@ -549,7 +549,7 @@ export const getTemplateMethodologySpeciesRecordSQL = (
     `;
 
   defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesIdSQL',
+    label: 'getTemplateMethodologySpeciesRecordSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
