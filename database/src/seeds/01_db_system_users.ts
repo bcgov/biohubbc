@@ -22,7 +22,8 @@ const systemUsers = [
   { identifier: 'test5', type: 'IDIR', roleId: 2 },
   { identifier: 'test6', type: 'IDIR', roleId: 6 },
   { identifier: 'test7', type: 'IDIR', roleId: 6 },
-  { identifier: 'cypress', type: 'IDIR', roleId: 1 }
+  { identifier: 'cypress', type: 'IDIR', roleId: 1 },
+  { identifier: 'keinarss', type: 'IDIR', roleId: 1 }
 ];
 
 /**

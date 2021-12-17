@@ -1,4 +1,4 @@
-import { render, waitFor } from '@testing-library/react';
+import { getByTestId, render, waitFor } from '@testing-library/react';
 import { IActiveUsersListProps } from './ActiveUsersList';
 import React from 'react';
 import ActiveUsersList from './ActiveUsersList';
@@ -61,6 +61,19 @@ describe('ActiveUsersList', () => {
 
     await waitFor(() => {
       expect(getByTestId('custom-menu-button-NotApplicable')).toBeInTheDocument();
+    });
+  });
+
+  it('renders the add new users button correctly', async () => {
+    const mockGetUsers = jest.fn();
+    const { getByTestId } = renderContainer({
+      activeUsers: [],
+      codes: codes,
+      getUsers: mockGetUsers
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('invite-system-users-button')).toBeVisible();
     });
   });
 });
