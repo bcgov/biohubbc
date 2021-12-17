@@ -26,7 +26,7 @@ const useUserApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetUserResponse>}
    */
   const getUserById = async (userId: number): Promise<IGetUserResponse> => {
-    const { data } = await axios.get(`/api/user/${userId}/get`, { params: { userId: userId } });
+    const { data } = await axios.get(`/api/user/${userId}/get`);
     return data;
   };
 
