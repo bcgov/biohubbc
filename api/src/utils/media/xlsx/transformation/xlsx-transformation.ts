@@ -65,9 +65,24 @@ export class XLSXTransformation {
   _flattenData(): FlattenedRowPartsBySourceFile[][] {
     let rowsBySourceFileArray: FlattenedRowPartsBySourceFile[][] = [];
 
-    // Iterate over each worksheet in the workbook
-    Object.entries(this.xlsxCsv.workbook.worksheets).forEach(([worksheetName, worksheet]) => {
-      // Get the file structure schema for the worksheet, based on the worksheet name
+    // Get all flatten schemas
+    const flattenSchemas = this.transformationSchemaParser.getAllFlattenSchemas();
+
+    // Build an array of [worksheetName, worksheet] based on the order of the flatten schemas. This is necessary
+    // because the flattening process requires parsing the worksheets in a specific order, as specified by the flatten
+    // section of the transformation schema.
+    const orderedWorksheetsByFlattenSchema: [string, CSVWorksheet][] = [];
+    flattenSchemas.forEach((flattenSchema) => {
+      const worksheet = this.xlsxCsv.workbook.worksheets[flattenSchema.fileName];
+
+      if (worksheet) {
+        orderedWorksheetsByFlattenSchema.push([flattenSchema.fileName, worksheet]);
+      }
+    });
+
+    // Iterate over each worksheet in the ordered array of worksheets
+    orderedWorksheetsByFlattenSchema.forEach(([worksheetName, worksheet]) => {
+      // Get the flatten file structure schema for the worksheet, based on the worksheet name
       const flattenSchema = this.transformationSchemaParser.getFlattenSchemas(worksheetName);
 
       if (!flattenSchema) {

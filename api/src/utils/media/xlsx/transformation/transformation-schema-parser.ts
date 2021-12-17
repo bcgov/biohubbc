@@ -59,8 +59,12 @@ export class TransformationSchemaParser {
     }
   }
 
+  getAllFlattenSchemas(): FlattenSchema[] | [] {
+    return jsonpath.query(this.transformationSchema, this.getFlattenJsonPath())?.[0] || [];
+  }
+
   getFlattenSchemas(fileName: string): FlattenSchema | null {
-    return jsonpath.query(this.transformationSchema, this.getFlattenJsonPath(fileName))?.[0] || null;
+    return jsonpath.query(this.transformationSchema, this.getFlattenJsonPathByFileName(fileName))?.[0] || null;
   }
 
   getTransformSchemas(): TransformSchema[] {
@@ -71,7 +75,11 @@ export class TransformationSchemaParser {
     return jsonpath.query(this.transformationSchema, this.getParseJsonPath())?.[0] || [];
   }
 
-  getFlattenJsonPath(fileName: string): string {
+  getFlattenJsonPath(): string {
+    return `$.flatten`;
+  }
+
+  getFlattenJsonPathByFileName(fileName: string): string {
     return `$.flatten[?(@.fileName == '${fileName}')]`;
   }
 
