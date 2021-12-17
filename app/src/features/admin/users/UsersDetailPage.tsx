@@ -1,16 +1,27 @@
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
+import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
 import { DialogContext, ISnackbarProps } from '../../../contexts/dialogContext';
+import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { IGetProjectParticipantsResponse } from '../../../interfaces/useProjectApi.interface';
+import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
 import UsersDetailHeader from './UsersDetailHeader';
 import UsersDetailProjects from './UsersDetailProjects';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { IGetProjectParticipantsResponse } from '../../../interfaces/useProjectApi.interface';
-import { IShowSnackBar, IOpenErrorDialog, IOpenYesNoDialog, ICheckForProjectLead } from './UserDetailFunctionTypes';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import React, { useCallback, useEffect, useState, useContext } from 'react';
+import CircularProgress from '@material-ui/core/CircularProgress';
+
+export type IShowSnackBar = (textDialogProps?: Partial<ISnackbarProps>) => void;
+
+export type IOpenYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => void;
+
+export type IOpenErrorDialog = (errorDialogProps?: Partial<IErrorDialogProps>) => void;
+
+export type ICheckForProjectLead = (
+  projectParticipants: IGetProjectParticipantsResponse,
+  projectParticipationId: number
+) => boolean;
 
 export interface IUsersHeaderProps {
   history: any;
@@ -28,21 +39,12 @@ const UsersDetailPage: React.FC<IUsersHeaderProps> = (props) => {
 
   const dialogContext = useContext(DialogContext);
 
-  let temp: IGetUserResponse = {
-    id: 1,
-    user_record_end_date: '',
-    user_identifier: '',
-    role_names: ['']
-  };
-
-  const [selectedUser, setSelectedUser] = useState<IGetUserResponse>(userDetails !== undefined ? userDetails : temp);
+  const [selectedUser, setSelectedUser] = useState<IGetUserResponse>(userDetails);
 
   const getUser = async () => {
     var id = window.location.pathname.replace(/^\D+/g, '');
     const user = await biohubApi.user.getUserById(Number(id));
-    console.log(JSON.stringify(user));
     setSelectedUser(user);
-    return user;
   };
 
   useEffect(() => {
@@ -93,6 +95,10 @@ const UsersDetailPage: React.FC<IUsersHeaderProps> = (props) => {
     }
     return false;
   };
+
+  if(selectedUser === undefined){
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <>

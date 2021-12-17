@@ -46,10 +46,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             title: 'User Response Object',
-            type: 'object',
-            properties: {
-              // TODO needs finalizing (here and in the user-queries.ts SQL)
-            }
+            type: 'object'
           }
         }
       }

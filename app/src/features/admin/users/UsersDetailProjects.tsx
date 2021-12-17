@@ -1,7 +1,9 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -9,22 +11,20 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import Link from '@material-ui/core/Link';
 import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
-import { makeStyles } from '@material-ui/core/styles';
 import Icon from '@mdi/react';
-import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
+import React, { useContext, useEffect, useState } from 'react';
+import { useHistory, useParams } from 'react-router';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
 import { CustomMenuButton } from '../../../components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N, SystemUserI18N } from '../../../constants/i18n';
-import { APIError } from '../../../hooks/api/useAxios';
-import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
-import { IShowSnackBar, IOpenErrorDialog, IOpenYesNoDialog, ICheckForProjectLead } from './UserDetailFunctionTypes';
 import { DialogContext } from '../../../contexts/dialogContext';
+import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import { useHistory, useParams } from 'react-router';
-import React, { useEffect, useContext, useState } from 'react';
+import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
+import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
+import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
+import { ICheckForProjectLead, IOpenErrorDialog, IOpenYesNoDialog, IShowSnackBar } from './UsersDetailPage';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -247,7 +247,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
 
-  const defaultErrorDialogProps = {
+  const errorDialogProps = {
     dialogTitle: ProjectParticipantsI18N.updateParticipantRoleErrorTitle,
     dialogText: ProjectParticipantsI18N.updateParticipantRoleErrorText,
     open: false,
@@ -259,8 +259,8 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
   };
 
-  const showErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...defaultErrorDialogProps, ...textDialogProps, open: true });
+  const displayErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({ ...errorDialogProps, ...textDialogProps, open: true });
   };
 
   const handleChangeUserPermissionsClick = (item: IGetUserProjectsListResponse, newRole: string, newRoleId: number) => {
@@ -312,7 +312,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
         );
 
         if (!status) {
-          showErrorDialog();
+          displayErrorDialog();
           return;
         }
 
@@ -325,7 +325,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
           )
         });
       } else {
-        showErrorDialog({
+        displayErrorDialog({
           dialogTitle: SystemUserI18N.updateProjectLeadRoleErrorTitle,
           dialogText: SystemUserI18N.updateProjectLeadRoleErrorText
         });
@@ -334,7 +334,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
       refresh();
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogErrorDetails: apiError.errors, open: true });
+      displayErrorDialog({ dialogErrorDetails: apiError.errors, open: true });
     }
   };
 

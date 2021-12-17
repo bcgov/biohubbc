@@ -1,22 +1,22 @@
+import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import { Button } from '@material-ui/core';
-import Tooltip from '@material-ui/core/Tooltip';
 import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
-import Icon from '@mdi/react';
+import makeStyles from '@material-ui/core/styles/makeStyles';
+import Tooltip from '@material-ui/core/Tooltip';
+import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import Icon from '@mdi/react';
+import React, { useContext } from 'react';
+import { useHistory } from 'react-router';
 import { SystemUserI18N } from '../../../constants/i18n';
 import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
-import { useHistory } from 'react-router';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { IShowSnackBar, IOpenErrorDialog, IOpenYesNoDialog, ICheckForProjectLead } from './UserDetailFunctionTypes';
-import React, { useContext } from 'react';
+import { ICheckForProjectLead, IOpenErrorDialog, IOpenYesNoDialog, IShowSnackBar } from './UsersDetailPage';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
