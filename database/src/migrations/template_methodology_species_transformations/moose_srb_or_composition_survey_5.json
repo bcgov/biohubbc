@@ -58,7 +58,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -193,13 +193,13 @@
             },
             "eventMeasurementID": {
               "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "separator": ":"
+              "unique": "occ"
             },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -231,7 +231,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -371,8 +371,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -404,7 +404,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -544,8 +544,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -577,7 +577,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -717,8 +717,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -750,7 +750,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -890,8 +890,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -923,7 +923,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -1063,8 +1063,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -1096,7 +1096,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -1236,8 +1236,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -1269,7 +1269,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -1419,8 +1419,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -1443,7 +1443,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -1593,8 +1593,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -1634,7 +1634,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -1784,8 +1784,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -1808,7 +1808,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -1958,8 +1958,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -1999,7 +1999,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -2139,8 +2139,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -2172,7 +2172,7 @@
             "eventDate": {
               "columns": ["Date"]
             },
-            "effort_total_area": {
+            "effort_block_area": {
               "columns": ["Block Area (km2)"]
             },
             "effort_start_time_1": {
@@ -2312,8 +2312,8 @@
             "summary_stratum": {
               "columns": ["Stratum"]
             },
-            "summary_area": {
-              "columns": ["Area (km2)"]
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
             },
             "summary_sampled": {
               "columns": ["Sampled (Y/N)"]
@@ -2387,8 +2387,8 @@
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
-        { "source": { "value": "Area (km2)" }, "target": "measurementType" },
-        { "source": { "columns": ["summary_area"] }, "target": "measurementValue" }
+        { "source": { "value": "Stratum Area (km2)" }, "target": "measurementType" },
+        { "source": { "columns": ["summary_stratum_area"] }, "target": "measurementValue" }
       ]
     },
     {
@@ -2406,7 +2406,7 @@
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
         { "source": { "value": "Block Area (km2)" }, "target": "measurementType" },
-        { "source": { "columns": ["effort_total_area"] }, "target": "measurementValue" }
+        { "source": { "columns": ["effort_block_area"] }, "target": "measurementValue" }
       ]
     },
     {
