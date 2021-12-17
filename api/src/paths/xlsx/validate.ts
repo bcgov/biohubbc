@@ -68,6 +68,8 @@ export function prepXLSX(): RequestHandler {
 
       const parsedMedia = parseUnknownMedia(s3File);
 
+      console.log('parsedMedia is: ', parsedMedia);
+
       if (!parsedMedia) {
         req['parseError'] = 'Failed to parse submission, file was empty';
 
@@ -76,27 +78,27 @@ export function prepXLSX(): RequestHandler {
 
       if (!(parsedMedia instanceof MediaFile)) {
         req['parseError'] = 'Failed to parse submission, not a valid XLSX CSV file';
+        console.log('parsedMedia is not an instance of MediaFile');
 
         return next();
       }
 
-
-
       const xlsxCsv = new XLSXCSV(parsedMedia);
 
-<<<<<<< Updated upstream
-=======
       console.log('xlsxCsv is : ', xlsxCsv);
 
       const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
       const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
       const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
+      console.log('template_id: ', template_id);
+      console.log('species_id: ', species_id);
+      console.log('csm_id: ', csm_id);
+
       if (!template_id || !species_id || !csm_id) {
         req['parseError'] = 'Failed to parse submission, template identification properties are missing';
       }
 
->>>>>>> Stashed changes
       req['xlsx'] = xlsxCsv;
 
       next();

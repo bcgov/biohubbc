@@ -8,7 +8,8 @@ import { CustomError } from '../../errors/CustomError';
 import * as survey_occurrence_queries from '../../queries/survey/survey-occurrence-queries';
 import * as media_utils from '../../utils/media/media-utils';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { ArchiveFile, MediaFile} from '../../utils/media/media-file';
+import { ArchiveFile, MediaFile } from '../../utils/media/media-file';
+//import { ArchiveFile } from '../../utils/media/media-file';
 import * as validate from './validate';
 
 chai.use(sinonChai);
@@ -60,23 +61,46 @@ describe('prepXLSX', () => {
     //assign new props
     //turn that into a buffer
 
-
     const newWorkbook = xlsx.utils.book_new();
-    newWorkbook.Custprops = { sims_template_id: 1 };
-    // newWorkbook.Custprops['sims_template_id'] = 1;
-    // newWorkbook.Custprops['sims_csm_id'] = 2;
-    // newWorkbook.Custprops['sims_species_id'] = 1234;
-    xlsx.write(newWorkbook, { type: 'buffer', bookType: 'xlsx' });
 
-    console.log('newWorkbook:', newWorkbook);
+    console.log('newWorkbook: ', newWorkbook);
 
-    const mediaFile = new MediaFile('fileName', 'mimetype',Buffer.from(newWorkbook.Workbook));
+    if (!newWorkbook.Custprops) {
+      newWorkbook.Custprops = {};
+    }
+    newWorkbook.Custprops['sims_template_id'] = 1;
+    newWorkbook.Custprops['sims_csm_id'] = 1;
+    newWorkbook.Custprops['sims_species_id'] = 1234;
+
+    console.log('newWorkbook.Custprops:', newWorkbook.Custprops);
+
+    //xlsx.utils.book_append_sheet(newWorkbook, worksheet, DEFAULT_XLSX_SHEET);
+
+    const ws_name = 'SheetJS';
+
+    /* make worksheet */
+    const ws_data = [
+      ['S', 'h', 'e', 'e', 't', 'J', 'S'],
+      [1, 2, 3, 4, 5]
+    ];
+    const ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+    /* Add the worksheet to the workbook */
+    xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
+
+    const buffer = xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
+
+    //xlsx.writeFile(newWorkbook, 'workbook', { type: 'buffer' });
+
+    // console.log('newWorkbook after converted to Buffer:', workbook);
+
+    const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
 
     sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
 
-    const result = validate.prepXLSX();
-    console.log('result is: ', result);
-    const temp = await result(sampleReq, (null as unknown) as any, nextSpy as any);
+    const requestHandler = validate.prepXLSX();
+    //console.log('result is: ', result);
+    const temp = await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
 
     console.log('temp is : ', temp);
 
