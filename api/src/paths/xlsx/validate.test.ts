@@ -26,6 +26,18 @@ describe('prepXLSX', () => {
     }
   } as any;
 
+  //let actualResult: any = null;
+
+  const sampleRes = {
+    status: () => {
+      return {
+        json: (result: any) => {
+          //actualResult = result;
+        }
+      };
+    }
+  };
+
   afterEach(() => {
     sinon.restore();
   });
@@ -54,7 +66,43 @@ describe('prepXLSX', () => {
     expect(nextSpy).to.have.been.called;
   });
 
-  it.only('should set parseError when no custom props set for the XLSX CSV file', async () => {
+  it('should set parseError when no custom props set for the XLSX CSV file', async () => {
+    const nextSpy = sinon.spy();
+
+    const newWorkbook = xlsx.utils.book_new();
+
+    console.log('newWorkbook: ', newWorkbook);
+
+    if (!newWorkbook.Custprops) {
+      newWorkbook.Custprops = {};
+    }
+
+    const ws_name = 'SheetJS';
+
+    /* make worksheet */
+    const ws_data = [
+      ['S', 'h', 'e', 'e', 't', 'J', 'S'],
+      [1, 2, 3, 4, 5]
+    ];
+    const ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+    /* Add the worksheet to the workbook */
+    xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
+
+    const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
+
+    const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
+
+    sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
+
+    const requestHandler = validate.prepXLSX();
+    await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
+
+    expect(sampleReq.parseError).to.eql('Failed to parse submission, template identification properties are missing');
+    expect(nextSpy).to.have.been.called;
+  });
+
+  it.only('should call next when parameters are valid', async () => {
     const nextSpy = sinon.spy();
 
     //TODO:  create new workbook
@@ -72,10 +120,6 @@ describe('prepXLSX', () => {
     newWorkbook.Custprops['sims_csm_id'] = 1;
     newWorkbook.Custprops['sims_species_id'] = 1234;
 
-    console.log('newWorkbook.Custprops:', newWorkbook.Custprops);
-
-    //xlsx.utils.book_append_sheet(newWorkbook, worksheet, DEFAULT_XLSX_SHEET);
-
     const ws_name = 'SheetJS';
 
     /* make worksheet */
@@ -88,23 +132,19 @@ describe('prepXLSX', () => {
     /* Add the worksheet to the workbook */
     xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
 
-    const buffer = xlsx.write(newWorkbook, { type: 'buffer', bookType: 'csv' });
+    console.log('newWorkbook.Custprops v2:', newWorkbook.Custprops);
 
-    //xlsx.writeFile(newWorkbook, 'workbook', { type: 'buffer' });
-
-    // console.log('newWorkbook after converted to Buffer:', workbook);
+    const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
 
     const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
 
     sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
 
     const requestHandler = validate.prepXLSX();
-    //console.log('result is: ', result);
-    const temp = await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
+    await requestHandler(sampleReq, sampleRes as any, nextSpy as any);
 
-    console.log('temp is : ', temp);
+    expect(sampleReq['xlsx']).to.eql(mediaFile);
 
-    expect(sampleReq.parseError).to.eql('Failed to parse submission, template identification properties are missing');
     expect(nextSpy).to.have.been.called;
   });
 });

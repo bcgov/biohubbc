@@ -23,7 +23,6 @@ import {
   persistValidationResults,
   sendResponse
 } from '../dwc/validate';
-//import xlsx from 'xlsx';
 
 const defaultLog = getLogger('paths/xlsx/validate');
 
@@ -68,8 +67,6 @@ export function prepXLSX(): RequestHandler {
 
       const parsedMedia = parseUnknownMedia(s3File);
 
-      console.log('parsedMedia is: ', parsedMedia);
-
       if (!parsedMedia) {
         req['parseError'] = 'Failed to parse submission, file was empty';
 
@@ -85,15 +82,9 @@ export function prepXLSX(): RequestHandler {
 
       const xlsxCsv = new XLSXCSV(parsedMedia);
 
-      console.log('xlsxCsv is : ', xlsxCsv);
-
       const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
       const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
       const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
-
-      console.log('template_id: ', template_id);
-      console.log('species_id: ', species_id);
-      console.log('csm_id: ', csm_id);
 
       if (!template_id || !species_id || !csm_id) {
         req['parseError'] = 'Failed to parse submission, template identification properties are missing';
