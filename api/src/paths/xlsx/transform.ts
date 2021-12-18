@@ -18,7 +18,7 @@ import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
-import { getTemplateMethodologySpecies, prepXLSX } from './validate';
+import { getTemplateMethodologySpeciesRecord, prepXLSX } from './validate';
 
 const defaultLog = getLogger('paths/xlsx/transform');
 
@@ -136,8 +136,15 @@ export function getTransformationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      const templateMethodologySpeciesRecord = await getTemplateMethodologySpecies(
-        req.body.occurrence_submission_id,
+      const xlsxCsv = req['xlsx'];
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
+      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
+        Number(species_id),
+        Number(csm_id),
+        Number(template_id),
         connection
       );
 

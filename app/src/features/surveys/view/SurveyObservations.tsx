@@ -62,8 +62,8 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const urlParams = useParams();
   const config = useContext(ConfigContext);
 
-  const projectId = urlParams['id'];
-  const surveyId = urlParams['survey_id'];
+  const projectId = Number(urlParams['id']);
+  const surveyId = Number(urlParams['survey_id']);
   const [occurrenceSubmissionId, setOccurrenceSubmissionId] = useState<number | null>(null);
   const [openImportObservations, setOpenImportObservations] = useState(false);
 

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/CustomError';
-import { getTemplateMethodologySpeciesSQL } from '../../queries/survey/survey-occurrence-queries';
+import { getTemplateMethodologySpeciesRecordSQL } from '../../queries/survey/survey-occurrence-queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
@@ -107,8 +107,15 @@ export function getValidationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      const templateMethodologySpeciesRecord = await getTemplateMethodologySpecies(
-        req.body.occurrence_submission_id,
+      const xlsxCsv = req['xlsx'];
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
+      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
+        Number(species_id),
+        Number(csm_id),
+        Number(template_id),
         connection
       );
 
@@ -126,7 +133,7 @@ export function getValidationSchema(): RequestHandler {
         await insertSubmissionMessage(
           submissionStatusId,
           'Error',
-          `Unable to fetch an appropriate validation schema for your submission`,
+          `Unable to fetch an appropriate template validation schema for your submission`,
           'Missing Validation Schema',
           connection
         );
@@ -180,23 +187,28 @@ export function validateXLSX(): RequestHandler {
 }
 
 /**
- * Get a template_methodology_species record from the template table.
+ * Get a template_methodology_species record from the template_methodologies_species table
  *
- * @param {number} occurrenceSubmissionId
+ * @param {number} surveyId
  * @param {IDBConnection} connection
- * @return {*}  {Promise<any>}
+ * @return {*}  {Promise<void>}
  */
-export const getTemplateMethodologySpecies = async (
-  occurrenceSubmissionId: number,
+export const getTemplateMethodologySpeciesRecord = async (
+  speciesId: number,
+  surveyMethodology: number,
+  templateId: number,
   connection: IDBConnection
 ): Promise<any> => {
-  const sqlStatement = getTemplateMethodologySpeciesSQL(occurrenceSubmissionId);
+  const sqlStatement = getTemplateMethodologySpeciesRecordSQL(speciesId, surveyMethodology, templateId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
+    throw new HTTP400('Failed to build SQL get template methodology species record sql statement');
   }
-
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to query template methodology species table');
+  }
 
   return (response && response.rows && response.rows[0]) || null;
 };
