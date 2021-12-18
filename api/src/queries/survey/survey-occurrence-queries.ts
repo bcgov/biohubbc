@@ -23,7 +23,6 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 export const insertSurveyOccurrenceSubmissionSQL = (data: {
   surveyId: number;
   source: string;
-  templateMethodologyId: number | null;
   inputFileName?: string;
   inputKey?: string;
   outputFileName?: string;
@@ -68,7 +67,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     INSERT INTO occurrence_submission (
       survey_id,
       source,
-      template_methodology_species_id,
       event_timestamp,
   `;
 
@@ -78,7 +76,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     ) VALUES (
       ${data.surveyId},
       ${data.source},
-      ${data.templateMethodologyId},
       now(),
   `);
 
@@ -514,46 +511,6 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
 };
 
 /**
- * SQL query to get a template_methodology_species record for a submission based on the occurrence_submission_id.
- *
- * @param {number} occurrenceId
- * @returns {SQLStatement} sql query object
- */
-export const getTemplateMethodologySpeciesSQL = (occurrenceId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesSQL',
-    message: 'params',
-    occurrenceId
-  });
-
-  if (!occurrenceId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    SELECT
-      tms.*
-    FROM
-      occurrence_submission os
-    LEFT OUTER JOIN
-      template_methodology_species tms on os.template_methodology_species_id = tms.template_methodology_species_id
-    LEFT OUTER JOIN
-      template t on tms.template_id = t.template_id
-    WHERE
-      os.occurrence_submission_id = ${occurrenceId};
-  `;
-
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to get a template methodology species id.
  *
  * @param {number} surveyId
@@ -561,34 +518,38 @@ export const getTemplateMethodologySpeciesSQL = (occurrenceId: number): SQLState
  * @param {string} inputKey
  * @return {*}  {(SQLStatement | null)}
  */
-export const getTemplateMethodologySpeciesIdSQL = (surveyId: number): SQLStatement | null => {
+export const getTemplateMethodologySpeciesRecordSQL = (
+  speciesId: number,
+  methodologyId: number,
+  templateId: number
+): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesIdSQLStatement',
+    label: 'getTemplateMethodologySpeciesRecordSQL',
     message: 'params',
-    surveyId
+    speciesId,
+    methodologyId,
+    templateId
   });
 
-  if (!surveyId) {
+  if (!speciesId || !methodologyId || !templateId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`
-    SELECT
-      tms.template_methodology_species_id
+    SELECT *
     FROM
       template_methodology_species tms
-    LEFT OUTER JOIN
-      template t on tms.template_id = t.template_id
-    LEFT OUTER JOIN
-      common_survey_methodology csm  on tms.common_survey_methodology_id = csm.common_survey_methodology_id
-    LEFT OUTER JOIN
-      survey s on csm.common_survey_methodology_id = s.common_survey_methodology_id
     WHERE
-      s.survey_id = ${surveyId};
+      tms.common_survey_methodology_id = ${methodologyId}
+    AND
+      tms.wldtaxonomic_units_id = ${speciesId}
+    AND
+      tms.template_id = ${templateId}
+    ;
     `;
 
   defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesIdSQL',
+    label: 'getTemplateMethodologySpeciesRecordSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
