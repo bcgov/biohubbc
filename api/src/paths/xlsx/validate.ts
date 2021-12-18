@@ -75,7 +75,6 @@ export function prepXLSX(): RequestHandler {
 
       if (!(parsedMedia instanceof MediaFile)) {
         req['parseError'] = 'Failed to parse submission, not a valid XLSX CSV file';
-        console.log('parsedMedia is not an instance of MediaFile');
 
         return next();
       }

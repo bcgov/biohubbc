@@ -11,6 +11,7 @@ import { getMockDBConnection } from '../../__mocks__/db';
 import { ArchiveFile, MediaFile } from '../../utils/media/media-file';
 //import { ArchiveFile } from '../../utils/media/media-file';
 import * as validate from './validate';
+//import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 
 chai.use(sinonChai);
 
@@ -26,17 +27,17 @@ describe('prepXLSX', () => {
     }
   } as any;
 
-  //let actualResult: any = null;
+  // let actualResult: any = null;
 
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          //actualResult = result;
-        }
-      };
-    }
-  };
+  // const sampleRes = {
+  //   status: () => {
+  //     return {
+  //       json: (result: any) => {
+  //         //actualResult = result;
+  //       }
+  //     };
+  //   }
+  // };
 
   afterEach(() => {
     sinon.restore();
@@ -71,8 +72,6 @@ describe('prepXLSX', () => {
 
     const newWorkbook = xlsx.utils.book_new();
 
-    console.log('newWorkbook: ', newWorkbook);
-
     if (!newWorkbook.Custprops) {
       newWorkbook.Custprops = {};
     }
@@ -102,16 +101,10 @@ describe('prepXLSX', () => {
     expect(nextSpy).to.have.been.called;
   });
 
-  it.only('should call next when parameters are valid', async () => {
+  it('should call next when parameters are valid', async () => {
     const nextSpy = sinon.spy();
 
-    //TODO:  create new workbook
-    //assign new props
-    //turn that into a buffer
-
     const newWorkbook = xlsx.utils.book_new();
-
-    console.log('newWorkbook: ', newWorkbook);
 
     if (!newWorkbook.Custprops) {
       newWorkbook.Custprops = {};
@@ -132,18 +125,16 @@ describe('prepXLSX', () => {
     /* Add the worksheet to the workbook */
     xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
 
-    console.log('newWorkbook.Custprops v2:', newWorkbook.Custprops);
-
     const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
 
     const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
 
     sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
 
-    const requestHandler = validate.prepXLSX();
-    await requestHandler(sampleReq, sampleRes as any, nextSpy as any);
+    //const xlsxCsv = (null as unknown) as XLSXCSV;
 
-    expect(sampleReq['xlsx']).to.eql(mediaFile);
+    const requestHandler = validate.prepXLSX();
+    await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
 
     expect(nextSpy).to.have.been.called;
   });
