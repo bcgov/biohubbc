@@ -13,9 +13,10 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useCallback } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
+import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
 import { CustomMenuButton } from '../../../components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N, SystemUserI18N } from '../../../constants/i18n';
 import { DialogContext } from '../../../contexts/dialogContext';
@@ -24,7 +25,7 @@ import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { ICheckForProjectLead, IOpenErrorDialog, IOpenYesNoDialog, IShowSnackBar } from './UsersDetailPage';
+import { ICheckForProjectLead } from './UsersDetailPage';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -37,9 +38,6 @@ const useStyles = makeStyles(() => ({
 
 export interface IProjectDetailsProps {
   userDetails: IGetUserResponse;
-  showSnackBar: IShowSnackBar;
-  openYesNoDialog: IOpenYesNoDialog;
-  openErrorDialog: IOpenErrorDialog;
   checkForProjectLead: ICheckForProjectLead;
 }
 
@@ -49,7 +47,7 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
-  const { userDetails, openYesNoDialog, openErrorDialog, checkForProjectLead } = props;
+  const { userDetails, checkForProjectLead } = props;
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -132,6 +130,35 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
       });
     }
   };
+
+  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
+    onClose: () => dialogContext.setErrorDialog({ open: false }),
+    onOk: () => dialogContext.setErrorDialog({ open: false })
+  };
+
+  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      ...yesNoDialogProps,
+      open: true
+    });
+  };
+
+  const openErrorDialog = useCallback(
+    (errorDialogProps?: Partial<IErrorDialogProps>) => {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        ...errorDialogProps,
+        open: true
+      });
+    },
+    [defaultErrorDialogProps, dialogContext]
+  );
 
   const getProjectList = () => {
     if (!codes) {

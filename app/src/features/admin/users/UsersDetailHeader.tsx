@@ -9,14 +9,16 @@ import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useContext } from 'react';
+import React, { useCallback, useContext } from 'react';
 import { useHistory } from 'react-router';
+import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
+import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
 import { SystemUserI18N } from '../../../constants/i18n';
 import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { ICheckForProjectLead, IOpenErrorDialog, IOpenYesNoDialog, IShowSnackBar } from './UsersDetailPage';
+import { ICheckForProjectLead } from './UsersDetailPage';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -40,18 +42,44 @@ const useStyles = makeStyles(() => ({
 
 export interface IUsersHeaderProps {
   userDetails: IGetUserResponse;
-  showSnackBar: IShowSnackBar;
-  openYesNoDialog: IOpenYesNoDialog;
-  openErrorDialog: IOpenErrorDialog;
   checkForProjectLead: ICheckForProjectLead;
 }
 
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
-  const { userDetails, showSnackBar, openYesNoDialog, openErrorDialog, checkForProjectLead } = props;
+  const { userDetails, checkForProjectLead } = props;
   const classes = useStyles();
   const uHistory = useHistory();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
+
+  const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
+    onClose: () => dialogContext.setErrorDialog({ open: false }),
+    onOk: () => dialogContext.setErrorDialog({ open: false })
+  };
+
+  const defaultYesNoDialogProps: Partial<IYesNoDialogProps> = {
+    onClose: () => dialogContext.setYesNoDialog({ open: false }),
+    onNo: () => dialogContext.setYesNoDialog({ open: false })
+  };
+
+  const openYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
+    dialogContext.setYesNoDialog({
+      ...defaultYesNoDialogProps,
+      ...yesNoDialogProps,
+      open: true
+    });
+  };
+
+  const openErrorDialog = useCallback(
+    (errorDialogProps?: Partial<IErrorDialogProps>) => {
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        ...errorDialogProps,
+        open: true
+      });
+    },
+    [defaultErrorDialogProps, dialogContext]
+  );
 
   const handleDeleteUser = async (userId: number) => {
     const apiCall = await biohubApi.project.getAllUserProjectsForView(userId);
@@ -78,7 +106,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     try {
       await biohubApi.user.deleteSystemUser(user.id);
 
-      showSnackBar({
+      dialogContext.setSnackbar({
         snackbarMessage: (
           <>
             <Typography variant="body2" component="div">
