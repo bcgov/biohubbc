@@ -77,7 +77,7 @@ GET.apiDoc = {
 export function getUserById(): RequestHandler {
   return async (req, res) => {
     if (!req.params) {
-      throw new HTTP400('Missing required p      arams');
+      throw new HTTP400('Missing required params');
     }
 
     if (!req.params.userId) {
