@@ -161,7 +161,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   );
 
   const getProjectList = () => {
-    if (!codes) {
+    if (!codes || !assignedProjects) {
       return <CircularProgress className="pageProgress" size={40} />;
     }
 
@@ -182,7 +182,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
             </TableRow>
           </TableHead>
           <TableBody data-testid="resources-table">
-            {assignedProjects?.map((row) => (
+            { assignedProjects && assignedProjects.length > 0 && assignedProjects?.map((row) => (
               <TableRow key={row.project_id}>
                 <TableCell>
                   <Box pt={1}>
@@ -240,6 +240,13 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                 </TableCell>
               </TableRow>
             ))}
+            {!assignedProjects.length && (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No Projects
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </TableContainer>
