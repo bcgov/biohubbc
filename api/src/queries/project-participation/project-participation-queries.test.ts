@@ -8,7 +8,7 @@ import {
   addProjectRoleByRoleNameSQL
 } from './project-participation-queries';
 
-describe.only('getAllUserProjectsSQL', () => {
+describe('getAllUserProjectsSQL', () => {
   it('returns null response when null userId provided', () => {
     const response = getAllUserProjectsSQL((null as unknown) as number);
 
