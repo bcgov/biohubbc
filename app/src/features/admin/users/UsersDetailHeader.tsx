@@ -158,7 +158,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
                 <Button
                   title="Remove User"
                   color="primary"
-                  variant="text"
+                  variant="outlined"
                   className={classes.actionButton}
                   startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
                   data-testid={'remove-user-button'}

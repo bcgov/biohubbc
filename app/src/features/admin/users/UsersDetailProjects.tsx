@@ -257,7 +257,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     <>
       <Box component={Paper} pt={3}>
         <Box mb={3} ml={3} display="flex" justifyContent="space-between">
-          <Typography variant="h2">Assigned Projects: {userDetails.user_identifier}</Typography>
+          <Typography variant="h2">Assigned Projects ({assignedProjects?.length})</Typography>
         </Box>
         <Box>{getProjectList()}</Box>
       </Box>
