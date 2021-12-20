@@ -33,7 +33,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @return {*} {Promise<IGetProjectsListResponse[]>}
    */
   const getAllUserProjectsForView = async (userId: number): Promise<IGetUserProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/user/${userId}/projects/get`, { params: { userId: userId } });
+    const { data } = await axios.get(`/api/user/${userId}/projects/get`);
     return data;
   };
 

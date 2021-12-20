@@ -1,11 +1,19 @@
-import { getByTestId, render, waitFor } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import { IActiveUsersListProps } from './ActiveUsersList';
 import React from 'react';
 import ActiveUsersList from './ActiveUsersList';
 import { codes } from 'test-helpers/code-helpers';
+import { createMemoryHistory } from 'history';
+import { Router } from 'react-router';
+
+const history = createMemoryHistory();
 
 const renderContainer = (props: IActiveUsersListProps) => {
-  return render(<ActiveUsersList {...props} />);
+  return render(
+    <Router history={history}>
+      <ActiveUsersList {...props} />
+    </Router>
+  );
 };
 
 describe('ActiveUsersList', () => {

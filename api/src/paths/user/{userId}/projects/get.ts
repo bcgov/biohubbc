@@ -64,8 +64,12 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getAllUserProjects(): RequestHandler {
+export function getAllUserProjects(): RequestHandler {
   return async (req, res) => {
+    if (!req.params) {
+      throw new HTTP400('Missing required params');
+    }
+
     if (!req.params.userId) {
       throw new HTTP400('Missing required param: userId');
     }
