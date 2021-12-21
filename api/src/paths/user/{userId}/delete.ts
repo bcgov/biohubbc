@@ -3,7 +3,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection } from '../../../database/db';
+import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400, HTTP500 } from '../../../errors/CustomError';
 import {
   deActivateSystemUserSQL,
@@ -13,6 +13,7 @@ import {
 } from '../../../queries/users/user-queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
+import { getParticipantsFromAllSystemUsersProjectsSQL } from '../../../queries/project-participation/project-participation-queries';
 
 const defaultLog = getLogger('paths/user/{userId}/delete');
 
@@ -83,14 +84,24 @@ export function removeSystemUser(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      await connection.open();
+
+      const getAllParticipantsResponse = await getAllParticipantsFromSystemUsersProjects(userId, connection);
+
+      const onlyProjectLeadResponse = ChecksIfOnlyProjectLead(getAllParticipantsResponse);
+
+      console.log('HEEEELEELELELLEELLELELELEELE' + onlyProjectLeadResponse);
+
+      if (onlyProjectLeadResponse) {
+        throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects');
+      }
+
       // Get the system user
       const getUserSQLStatement = getUserByIdSQL(userId);
 
       if (!getUserSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
-
-      await connection.open();
 
       const getUserResponse = await connection.query(getUserSQLStatement.text, getUserSQLStatement.values);
 
@@ -160,3 +171,51 @@ export function removeSystemUser(): RequestHandler {
     }
   };
 }
+
+//collect all participants associated with user
+export const getAllParticipantsFromSystemUsersProjects = async (
+  userId: number,
+  connection: IDBConnection
+): Promise<any[]> => {
+  const getParticipantsFromAllSystemUsersProjectsSQLStatment = getParticipantsFromAllSystemUsersProjectsSQL(userId);
+
+  if (!getParticipantsFromAllSystemUsersProjectsSQLStatment) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(
+    getParticipantsFromAllSystemUsersProjectsSQLStatment.text,
+    getParticipantsFromAllSystemUsersProjectsSQLStatment.values
+  );
+
+  if (!response || !response.rowCount) {
+    throw new HTTP500('Failed to get user projects');
+  }
+
+  let rows: any[] = [];
+
+  if (response && response.rows) {
+    rows = response.rows;
+  }
+
+  return rows;
+};
+
+//check if associates are project lead
+export const ChecksIfOnlyProjectLead = (rows: any[]): boolean => {
+  const projectCount = {};
+
+  rows.forEach((row) => {
+    if (row.project_role_name === 'Project Lead') {
+      const key = row.project_id;
+      projectCount[key] = (projectCount[key] || 0) + 1;
+    }
+  });
+
+  for (const count of Object.values(projectCount)) {
+    if ((count as number) <= 1) {
+      return true;
+    }
+  }
+  return false;
+};

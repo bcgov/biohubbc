@@ -25,7 +25,6 @@ import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { ICheckForProjectLead } from './UsersDetailPage';
 
 const useStyles = makeStyles(() => ({
   actionButton: {
@@ -38,7 +37,6 @@ const useStyles = makeStyles(() => ({
 
 export interface IProjectDetailsProps {
   userDetails: IGetUserResponse;
-  checkForProjectLead: ICheckForProjectLead;
 }
 
 /**
@@ -47,7 +45,7 @@ export interface IProjectDetailsProps {
  * @return {*}
  */
 const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
-  const { userDetails, checkForProjectLead } = props;
+  const { userDetails } = props;
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
@@ -90,38 +88,26 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
-      const projectResponse = await biohubApi.project.getProjectParticipants(projectId);
+      const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
 
-      const projectLeadAprroval = checkForProjectLead(projectResponse, projectParticipationId);
-
-      if (projectLeadAprroval) {
-        const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
-
-        if (!response) {
-          openErrorDialog({
-            dialogTitle: SystemUserI18N.removeUserErrorTitle,
-            dialogText: SystemUserI18N.removeUserErrorText
-          });
-          return;
-        }
-
-        dialogContext.setSnackbar({
-          open: true,
-          snackbarMessage: (
-            <Typography variant="body2" component="div">
-              User <strong>{userDetails.user_identifier}</strong> removed from project.
-            </Typography>
-          )
-        });
-
-        handleGetUserProjects(userDetails.id);
-      } else {
+      if (!response) {
         openErrorDialog({
-          dialogTitle: SystemUserI18N.deleteProjectLeadErrorTitle,
-          dialogText: SystemUserI18N.deleteProjectLeadErrorText
+          dialogTitle: SystemUserI18N.removeUserErrorTitle,
+          dialogText: SystemUserI18N.removeUserErrorText
         });
         return;
       }
+
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            User <strong>{userDetails.user_identifier}</strong> removed from project.
+          </Typography>
+        )
+      });
+
+      handleGetUserProjects(userDetails.id);
     } catch (error) {
       openErrorDialog({
         dialogTitle: SystemUserI18N.removeUserErrorTitle,
@@ -182,64 +168,65 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
             </TableRow>
           </TableHead>
           <TableBody data-testid="resources-table">
-            { assignedProjects && assignedProjects.length > 0 && assignedProjects?.map((row) => (
-              <TableRow key={row.project_id}>
-                <TableCell>
-                  <Box pt={1}>
-                    <Link
-                      color="primary"
-                      onClick={() => uHistory.push(`/admin/projects/${row.project_id}/details`)}
-                      aria-current="page">
-                      <Typography variant="body2">{row.name}</Typography>
-                    </Link>
-                  </Box>
-                </TableCell>
+            {assignedProjects &&
+              assignedProjects.length > 0 &&
+              assignedProjects?.map((row) => (
+                <TableRow key={row.project_id}>
+                  <TableCell>
+                    <Box pt={1}>
+                      <Link
+                        color="primary"
+                        onClick={() => uHistory.push(`/admin/projects/${row.project_id}/details`)}
+                        aria-current="page">
+                        <Typography variant="body2">{row.name}</Typography>
+                      </Link>
+                    </Box>
+                  </TableCell>
 
-                <TableCell>
-                  <Box>
-                    <ChangeProjectRoleMenu
-                      row={row}
-                      user_identifier={props.userDetails.user_identifier}
-                      projectRoleCodes={codes.project_roles}
-                      refresh={refresh()}
-                      checkForProjectLead={checkForProjectLead}
-                    />
-                  </Box>
-                </TableCell>
-                <TableCell width="10%" align="center">
-                  <Button
-                    title="Remove Project Participant"
-                    color="primary"
-                    variant="text"
-                    className={classes.actionButton}
-                    startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
-                    data-testid={'remove-project-participant-button'}
-                    onClick={() =>
-                      openYesNoDialog({
-                        dialogTitle: SystemUserI18N.removeSystemUserTitle,
-                        dialogContent: (
-                          <>
-                            <Typography variant="body1" color="textPrimary">
-                              Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
-                              project.
-                            </Typography>
-                            <Typography variant="body1" color="textPrimary">
-                              Are you sure you want to proceed?
-                            </Typography>
-                          </>
-                        ),
-                        yesButtonProps: { color: 'secondary' },
-                        onYes: () => {
-                          handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
-                          dialogContext.setYesNoDialog({ open: false });
-                        }
-                      })
-                    }>
-                    <strong>Remove</strong>
-                  </Button>
-                </TableCell>
-              </TableRow>
-            ))}
+                  <TableCell>
+                    <Box>
+                      <ChangeProjectRoleMenu
+                        row={row}
+                        user_identifier={props.userDetails.user_identifier}
+                        projectRoleCodes={codes.project_roles}
+                        refresh={refresh()}
+                      />
+                    </Box>
+                  </TableCell>
+                  <TableCell width="10%" align="center">
+                    <Button
+                      title="Remove Project Participant"
+                      color="primary"
+                      variant="text"
+                      className={classes.actionButton}
+                      startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
+                      data-testid={'remove-project-participant-button'}
+                      onClick={() =>
+                        openYesNoDialog({
+                          dialogTitle: SystemUserI18N.removeSystemUserTitle,
+                          dialogContent: (
+                            <>
+                              <Typography variant="body1" color="textPrimary">
+                                Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
+                                project.
+                              </Typography>
+                              <Typography variant="body1" color="textPrimary">
+                                Are you sure you want to proceed?
+                              </Typography>
+                            </>
+                          ),
+                          yesButtonProps: { color: 'secondary' },
+                          onYes: () => {
+                            handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
+                            dialogContext.setYesNoDialog({ open: false });
+                          }
+                        })
+                      }>
+                      <strong>Remove</strong>
+                    </Button>
+                  </TableCell>
+                </TableRow>
+              ))}
             {!assignedProjects.length && (
               <TableRow>
                 <TableCell colSpan={5} align="center">
@@ -257,7 +244,9 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     <>
       <Box component={Paper} pt={3}>
         <Box mb={3} ml={3} display="flex" justifyContent="space-between">
-          <Typography variant="h2">Assigned Projects ({assignedProjects?.length})</Typography>
+          <Typography data-testid="projects_header" variant="h2">
+            Assigned Projects ({assignedProjects?.length})
+          </Typography>
         </Box>
         <Box>{getProjectList()}</Box>
       </Box>
@@ -272,11 +261,10 @@ export interface IChangeProjectRoleMenuProps {
   user_identifier: string;
   projectRoleCodes: CodeSet;
   refresh: () => void;
-  checkForProjectLead: ICheckForProjectLead;
 }
 
 const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => {
-  const { row, user_identifier, projectRoleCodes, refresh, checkForProjectLead } = props;
+  const { row, user_identifier, projectRoleCodes, refresh } = props;
 
   const dialogContext = useContext(DialogContext);
   const biohubApi = useBiohubApi();
@@ -334,41 +322,30 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
 
     try {
-      const response = await biohubApi.project.getProjectParticipants(row.project_id);
+      const status = await biohubApi.project.updateProjectParticipantRole(
+        item.project_id,
+        item.project_participation_id,
+        newRoleId
+      );
 
-      const projectLeadAprroval = checkForProjectLead(response, row.project_participation_id);
-
-      if (projectLeadAprroval) {
-        const status = await biohubApi.project.updateProjectParticipantRole(
-          item.project_id,
-          item.project_participation_id,
-          newRoleId
-        );
-
-        if (!status) {
-          displayErrorDialog();
-          return;
-        }
-
-        dialogContext.setSnackbar({
-          open: true,
-          snackbarMessage: (
-            <Typography variant="body2" component="div">
-              User <strong>{user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.
-            </Typography>
-          )
-        });
-      } else {
-        displayErrorDialog({
-          dialogTitle: SystemUserI18N.updateProjectLeadRoleErrorTitle,
-          dialogText: SystemUserI18N.updateProjectLeadRoleErrorText
-        });
+      if (!status) {
+        displayErrorDialog();
+        return;
       }
+
+      dialogContext.setSnackbar({
+        open: true,
+        snackbarMessage: (
+          <Typography variant="body2" component="div">
+            User <strong>{user_identifier}</strong>'s role changed to <strong>{newRole}</strong>.
+          </Typography>
+        )
+      });
 
       refresh();
     } catch (error) {
       const apiError = error as APIError;
-      displayErrorDialog({ dialogErrorDetails: apiError.errors, open: true });
+      displayErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
     }
   };
 

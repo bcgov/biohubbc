@@ -7,6 +7,8 @@ import { addProjectParticipant } from '../../../../../paths-helpers/project-part
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 import { deleteProjectParticipationRecord } from './delete';
+import { ChecksIfOnlyProjectLead } from '../../../../user/{userId}/delete';
+import { getProjectParticipants } from '../get';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
 
@@ -109,6 +111,10 @@ export function updateProjectParticipantRole(): RequestHandler {
     try {
       await connection.open();
 
+      const projectParticipantsResponse2 = await getProjectParticipants(Number(req.params.projectId), connection);
+
+      console.log(JSON.stringify(projectParticipantsResponse2));
+
       // Delete the user's old participation record, returning the old record
       const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
 
@@ -123,6 +129,16 @@ export function updateProjectParticipantRole(): RequestHandler {
         Number(req.body.roleId),
         connection
       );
+
+      const projectParticipantsResponse = await getProjectParticipants(Number(req.params.projectId), connection);
+
+      console.log(JSON.stringify(projectParticipantsResponse));
+
+      const onlyProjectLeadResponse = ChecksIfOnlyProjectLead(projectParticipantsResponse);
+
+      if (onlyProjectLeadResponse) {
+        throw new HTTP400('Cannot update project user. User is the only Project Lead for the project');
+      }
 
       await connection.commit();
 

@@ -18,7 +18,6 @@ import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { ICheckForProjectLead } from './UsersDetailPage';
 
 const useStyles = makeStyles(() => ({
   breadCrumbLink: {
@@ -42,11 +41,10 @@ const useStyles = makeStyles(() => ({
 
 export interface IUsersHeaderProps {
   userDetails: IGetUserResponse;
-  checkForProjectLead: ICheckForProjectLead;
 }
 
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
-  const { userDetails, checkForProjectLead } = props;
+  const { userDetails } = props;
   const classes = useStyles();
   const uHistory = useHistory();
   const biohubApi = useBiohubApi();
@@ -81,23 +79,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     [defaultErrorDialogProps, dialogContext]
   );
 
-  const handleDeleteUser = async (userId: number) => {
-    const apiCall = await biohubApi.project.getAllUserProjectsForView(userId);
-
-    for (const project of apiCall) {
-      const response = await biohubApi.project.getProjectParticipants(project.project_id);
-      const projectLeadAprroval = checkForProjectLead(response, project.project_participation_id);
-
-      if (!projectLeadAprroval) {
-        openErrorDialog({
-          dialogTitle: SystemUserI18N.deleteProjectLeadErrorTitle,
-          dialogText: SystemUserI18N.deleteProjectLeadErrorText
-        });
-        return;
-      }
-    }
-    deActivateSystemUser(userDetails);
-  };
 
   const deActivateSystemUser = async (user: IGetUserResponse) => {
     if (!user?.id) {
@@ -142,7 +123,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box pb={3}>
             <Box mb={1.5} display="flex">
-              <Typography className={classes.spacingRight} variant="h1">
+              <Typography data-testid="title" className={classes.spacingRight} variant="h1">
                 User - <span className={classes.projectTitle}>{userDetails.user_identifier}</span>
               </Typography>
             </Box>
@@ -178,7 +159,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
                       ),
                       yesButtonProps: { color: 'secondary' },
                       onYes: () => {
-                        handleDeleteUser(userDetails.id);
+                        deActivateSystemUser(userDetails);
                         dialogContext.setYesNoDialog({ open: false });
                       }
                     })
