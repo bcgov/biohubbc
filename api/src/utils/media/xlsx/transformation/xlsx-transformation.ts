@@ -4,6 +4,7 @@ import { CSVWorksheet } from '../../csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
 import {
   Condition,
+  FlattenSchema,
   PostTransformationRelatopnshipSchema,
   TransformationFieldSchema,
   TransformationSchemaParser,
@@ -62,49 +63,55 @@ export class XLSXTransformation {
    * @memberof XLSXTransformation
    */
   _flattenData(): FlattenedRowPartsBySourceFile[][] {
-    const rowsBySourceFileArray: FlattenedRowPartsBySourceFile[][] = [];
+    let rowsBySourceFileArray: FlattenedRowPartsBySourceFile[][] = [];
 
-    Object.entries(this.xlsxCsv.workbook.worksheets).forEach(([worksheetName, worksheet]) => {
-      // Get the file structure schema for the given fileName
-      const fileStructure = this.transformationSchemaParser.getFlattenSchemas(worksheetName);
+    // Get all flatten schemas
+    const flattenSchemas = this.transformationSchemaParser.getAllFlattenSchemas();
 
-      if (!fileStructure) {
+    // Build an array of [worksheetName, worksheet] based on the order of the flatten schemas. This is necessary
+    // because the flattening process requires parsing the worksheets in a specific order, as specified by the flatten
+    // section of the transformation schema.
+    const orderedWorksheetsByFlattenSchema: [string, CSVWorksheet][] = [];
+    flattenSchemas.forEach((flattenSchema) => {
+      const worksheet = this.xlsxCsv.workbook.worksheets[flattenSchema.fileName];
+
+      if (worksheet) {
+        orderedWorksheetsByFlattenSchema.push([flattenSchema.fileName, worksheet]);
+      }
+    });
+
+    // Iterate over each worksheet in the ordered array of worksheets
+    orderedWorksheetsByFlattenSchema.forEach(([worksheetName, worksheet]) => {
+      // Get the flatten file structure schema for the worksheet, based on the worksheet name
+      const flattenSchema = this.transformationSchemaParser.getFlattenSchemas(worksheetName);
+
+      if (!flattenSchema) {
+        // No schema for this worksheet, skip it
         return;
       }
 
-      // Get all rows, as objects
+      // Get all worksheet rows as an array of objects
       const rowObjects = worksheet.getRowObjects();
 
-      if (!fileStructure.parent) {
+      if (!flattenSchema.parent) {
         // Handle root records, that have no parent record
-
-        rowObjects.forEach((rowObject, rowIndex) => {
-          const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, fileStructure.uniqueId);
-
-          const newRecord = {
-            sourceFile: fileStructure.fileName,
-            uniqueId: uniqueId,
-            row: rowObject
-          };
-
-          rowsBySourceFileArray.push([newRecord]);
-        });
+        const flattenedRootRecords = this._flattenRootRecords(flattenSchema, worksheet, rowObjects);
+        rowsBySourceFileArray = rowsBySourceFileArray.concat(flattenedRootRecords);
       } else {
         // Handle child records, that have a parent record
+        const parentFileName = flattenSchema.parent.fileName.toLowerCase();
+        const parentUniqueIdColumns = flattenSchema.parent.uniqueId;
 
-        const parentFileName = fileStructure.parent.fileName.toLowerCase();
-        const parentUniqueIdColumns = fileStructure.parent.uniqueId;
-
-        const fileName = fileStructure.fileName;
-        const uniqueIdColumns = fileStructure.uniqueId;
+        const childFileName = flattenSchema.fileName;
+        const childUniqueIdColumns = flattenSchema.uniqueId;
 
         rowObjects.forEach((rowObject, rowIndex) => {
           const parentUniqueId = this._buildMultiColumnID(worksheet, rowIndex, parentUniqueIdColumns).toLowerCase();
 
-          const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, uniqueIdColumns);
+          const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, childUniqueIdColumns);
 
           const newRecord = {
-            sourceFile: fileName,
+            sourceFile: childFileName,
             uniqueId: uniqueId,
             row: rowObject
           };
@@ -143,7 +150,7 @@ export class XLSXTransformation {
                 };
 
                 foundRecordToModify = true;
-              } else if (existingRowFileName === fileName.toLowerCase()) {
+              } else if (existingRowFileName === childFileName.toLowerCase()) {
                 // This array already contains a record from the same file as `newRecord` and will need to be duplicated
                 recordsToModify[recordsToModifyIndex] = {
                   ...recordsToModify[recordsToModifyIndex],
@@ -246,6 +253,28 @@ export class XLSXTransformation {
     });
 
     return rowsBySourceFileArray;
+  }
+
+  _flattenRootRecords(
+    flattenSchema: FlattenSchema,
+    worksheet: CSVWorksheet,
+    rowObjects: object[]
+  ): FlattenedRowPartsBySourceFile[][] {
+    const newRecords: FlattenedRowPartsBySourceFile[][] = [];
+
+    rowObjects.forEach((rowObject, rowIndex) => {
+      const uniqueId = this._buildMultiColumnID(worksheet, rowIndex, flattenSchema.uniqueId);
+
+      const newRecord = {
+        sourceFile: flattenSchema.fileName,
+        uniqueId: uniqueId,
+        row: rowObject
+      };
+
+      newRecords.push([newRecord]);
+    });
+
+    return newRecords;
   }
 
   _buildMultiColumnID(worksheet: CSVWorksheet, rowIndex: number, columnNames: string[]) {
@@ -477,17 +506,24 @@ export class XLSXTransformation {
     const columnValueParts = this._getColumnValueParts(rowObject, condition.if.columns);
 
     if (!columnValueParts || !columnValueParts.length) {
+      if (condition.if.not) {
+        // return true if no condition column values are defined, when condition is inverted
+        return true;
+      }
+
+      // return false if no condition column values are defined
       return false;
     }
 
-    for (const columnValuePart in columnValueParts) {
-      if (columnValuePart === undefined || columnValuePart === null || columnValuePart === '') {
-        return false;
-      }
+    if (condition.if.not) {
+      // return false if any condition column values are defined, when condition is inverted
+      return false;
     }
 
-    // all conditions met
-    return true;
+    // return true if all condition columns are defined
+    return !columnValueParts.every(
+      (columnValuePart) => columnValuePart === undefined || columnValuePart === null || columnValuePart === ''
+    );
   }
 
   /**
@@ -520,9 +556,9 @@ export class XLSXTransformation {
         const newRowObject = {};
 
         for (const column of columns) {
-          if (Array.isArray(column.source)) {
+          if (column.source.columns && column.source.columns?.length) {
             // iterate over source columns
-            for (const sourceColumn of column.source) {
+            for (const sourceColumn of column.source.columns) {
               const sourceValue = rowObject[sourceColumn];
 
               if (sourceValue) {
@@ -531,24 +567,13 @@ export class XLSXTransformation {
                 break;
               }
             }
-          } else {
-            const sourceValue = rowObject[column.source];
-
-            if (sourceValue) {
-              newRowObject[column.target] = sourceValue;
-            }
+          } else if (column.source.value) {
+            newRowObject[column.target] = column.source.value;
           }
         }
 
-        const newRowObjectKeys = Object.keys(newRowObject);
-
-        if (
-          parseSchema?.condition &&
-          !parseSchema?.condition?.if?.columns.every((conditionalFields) =>
-            newRowObjectKeys.includes(conditionalFields)
-          )
-        ) {
-          // If the `newRowObject` is missing any of the conditional fields, skip this record
+        if (!Object.keys(newRowObject).length) {
+          // row object is empty, skip
           return;
         }
 
