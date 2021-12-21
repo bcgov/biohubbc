@@ -49,7 +49,8 @@ describe('example submission transformation schema', () => {
       {
         condition: {
           if: {
-            columns: ['Lone Cows']
+            columns: ['Lone Cows'],
+            not: true
           }
         },
         transformations: [

@@ -39,6 +39,63 @@
   ],
   "transform": [
     {
+      "transformations": [
+        {
+          "fields": {
+            "root_id": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "root_eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["GPS Unit Name", "Waypoint"],
+          "not": true
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
+              "separator": ":"
+            },
+            "parentEventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "summary_stratum": {
+              "columns": ["Stratum"]
+            },
+            "summary_stratum_area": {
+              "columns": ["Stratum Area (km2)"]
+            },
+            "summary_sampled": {
+              "columns": ["Sampled (Y/N)"]
+            },
+            "summary_comments": {
+              "columns": ["Block Summary Comments"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "condition": {
         "if": {
           "columns": ["Yearling Bulls"]
@@ -52,6 +109,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -191,10 +252,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -225,6 +282,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -364,10 +425,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -398,6 +455,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -537,10 +598,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -571,6 +628,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -710,10 +771,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -744,6 +801,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -883,10 +944,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -917,6 +974,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -1056,10 +1117,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -1090,6 +1147,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -1229,10 +1290,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -1263,6 +1320,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -1412,10 +1473,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -1437,6 +1494,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -1586,10 +1647,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -1628,6 +1685,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -1777,10 +1838,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -1802,6 +1859,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -1951,10 +2012,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -1993,6 +2050,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -2132,10 +2193,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -2166,6 +2223,10 @@
               "separator": ":"
             },
             "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID", "GPS Unit Name", "Waypoint"],
+              "separator": ":"
+            },
+            "parentEventID": {
               "columns": ["Survey Area", "Block ID/SU ID"],
               "separator": ":"
             },
@@ -2305,10 +2366,6 @@
             "observation_photos": {
               "columns": ["Photos"]
             },
-            "eventMeasurementID": {
-              "columns": ["Survey Area", "Block ID/SU ID", "Stratum"],
-              "unique": "occ"
-            },
             "summary_stratum": {
               "columns": ["Stratum"]
             },
@@ -2329,9 +2386,22 @@
   "parse": [
     {
       "fileName": "event",
+      "condition": {
+        "if": {
+          "columns": ["root_eventID"]
+        }
+      },
+      "columns": [
+        { "source": { "columns": ["root_id"] }, "target": "id" },
+        { "source": { "columns": ["root_eventID"] }, "target": "eventID" }
+      ]
+    },
+    {
+      "fileName": "event",
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "eventID" },
+        { "source": { "columns": ["parentEventID"] }, "target": "parentEventID" },
         { "source": { "columns": ["eventDate"] }, "target": "eventDate" },
         {
           "source": { "columns": ["verbatimCoordinatesUTM", "verbatimCoordinatesLatLong"] },
@@ -2362,6 +2432,11 @@
     },
     {
       "fileName": "taxon",
+      "condition": {
+        "if": {
+          "columns": ["vernacularName"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
@@ -2384,153 +2459,285 @@
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["summary_stratum"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
-        { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
+        { "source": { "value": "Stratum" }, "target": "measurementType" },
+        { "source": { "columns": ["summary_stratum"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["summary_stratum_area"]
+        }
+      },
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Stratum Area (km2)" }, "target": "measurementType" },
         { "source": { "columns": ["summary_stratum_area"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["summary_sampled"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
-        { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Sampled (Y/N)" }, "target": "measurementType" },
         { "source": { "columns": ["summary_sampled"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["summary_comments"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
-        { "source": { "columns": ["eventMeasurementID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
+        { "source": { "value": "Block Summary Comments" }, "target": "measurementType" },
+        { "source": { "columns": ["summary_comments"] }, "target": "measurementValue" }
+      ]
+    },
+    {
+      "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_block_area"]
+        }
+      },
+      "columns": [
+        { "source": { "columns": ["id"] }, "target": "id" },
+        { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Block Area (km2)" }, "target": "measurementType" },
         { "source": { "columns": ["effort_block_area"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_start_time_1"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Start Time 1" }, "target": "measurementType" },
         { "source": { "columns": ["effort_start_time_1"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_end_time_1"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "End Time 1" }, "target": "measurementType" },
         { "source": { "columns": ["effort_end_time_1"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_start_time_2"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Start Time 2" }, "target": "measurementType" },
         { "source": { "columns": ["effort_start_time_2"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_end_time_2"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "End Time 2" }, "target": "measurementType" },
         { "source": { "columns": ["effort_end_time_2"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_time_per_area"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Time (mins)/block area (km2)" }, "target": "measurementType" },
         { "source": { "columns": ["effort_time_per_area"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_aircraft_company"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Aircraft Company" }, "target": "measurementType" },
         { "source": { "columns": ["effort_aircraft_company"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_aircraft_type"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Aircraft Type" }, "target": "measurementType" },
         { "source": { "columns": ["effort_aircraft_type"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_aircraft_registration"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Aircraft Registration" }, "target": "measurementType" },
         { "source": { "columns": ["effort_aircraft_registration"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_aircraft_call_sign"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Aircraft Call Sign" }, "target": "measurementType" },
         { "source": { "columns": ["effort_aircraft_call_sign"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_pilot"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Pilot" }, "target": "measurementType" },
         { "source": { "columns": ["effort_pilot"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_navigator"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Navigator" }, "target": "measurementType" },
         { "source": { "columns": ["effort_navigator"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_rear_left_observer"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Rear Left Observer" }, "target": "measurementType" },
         { "source": { "columns": ["effort_rear_left_observer"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_rear_right_observer"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Rear Right Observer" }, "target": "measurementType" },
         { "source": { "columns": ["effort_rear_right_observer"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_air_temperature"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Air Temperature" }, "target": "measurementType" },
         { "source": { "columns": ["effort_air_temperature"] }, "target": "measurementValue" },
         { "source": { "value": "C" }, "target": "measurementUnit" }
@@ -2538,18 +2745,30 @@
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_visibility"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Visibility" }, "target": "measurementType" },
         { "source": { "columns": ["effort_visibility"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_cloud_cover"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Cloud Cover" }, "target": "measurementType" },
         { "source": { "columns": ["effort_cloud_cover"] }, "target": "measurementValue" },
         { "source": { "value": "%" }, "target": "measurementUnit" }
@@ -2557,135 +2776,210 @@
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_wind_speed"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Wind Speed" }, "target": "measurementType" },
         { "source": { "columns": ["effort_wind_speed"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_precipitation"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Precipitation" }, "target": "measurementType" },
         { "source": { "columns": ["effort_precipitation"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_light"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Light" }, "target": "measurementType" },
         { "source": { "columns": ["effort_light"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_snow_cover"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Snow Cover" }, "target": "measurementType" },
         { "source": { "columns": ["effort_snow_cover"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_snow_depth"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Snow Depth" }, "target": "measurementType" },
         { "source": { "columns": ["effort_snow_depth"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_days_since_snowfall"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Days Since Snowfall" }, "target": "measurementType" },
         { "source": { "columns": ["effort_days_since_snowfall"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["effort_habitat_description"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["eventID"] }, "target": "measurementID" },
+        { "source": { "columns": ["eventID"] }, "target": "eventID" },
         { "source": { "value": "Habitat Description" }, "target": "measurementType" },
         { "source": { "columns": ["effort_habitat_description"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["waypoint_time"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
         { "source": { "value": "Time" }, "target": "measurementType" },
         { "source": { "columns": ["waypoint_time"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["observation_no_spike_fork"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
-        { "source": { "value": "Stratum" }, "target": "measurementType" },
-        { "source": { "columns": ["summary_stratum"] }, "target": "measurementValue" }
-      ]
-    },
-    {
-      "fileName": "measurementorfact",
-      "columns": [
-        { "source": { "columns": ["id"] }, "target": "id" },
-        { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
         { "source": { "value": "No. Spike/Fork" }, "target": "measurementType" },
         { "source": { "columns": ["observation_no_spike_fork"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["observation_3_brow_10_points"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
         { "source": { "value": "3 brow/10 points" }, "target": "measurementType" },
         { "source": { "columns": ["observation_3_brow_10_points"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["observation_percent_veg_cover"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
         { "source": { "value": "% Veg Cover" }, "target": "measurementType" },
         { "source": { "columns": ["observation_percent_veg_cover"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["observation_percent_snow_cover"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
         { "source": { "value": "% Snow Cover" }, "target": "measurementType" },
         { "source": { "columns": ["observation_percent_snow_cover"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["observation_activity"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
         { "source": { "value": "Activity" }, "target": "measurementType" },
         { "source": { "columns": ["observation_activity"] }, "target": "measurementValue" }
       ]
     },
     {
       "fileName": "measurementorfact",
+      "condition": {
+        "if": {
+          "columns": ["observation_photos"]
+        }
+      },
       "columns": [
         { "source": { "columns": ["id"] }, "target": "id" },
         { "source": { "columns": ["occurrenceID"] }, "target": "measurementID" },
+        { "source": { "columns": ["occurrenceID"] }, "target": "occurrenceID" },
         { "source": { "value": "Photos" }, "target": "measurementType" },
         { "source": { "columns": ["observation_photos"] }, "target": "measurementValue" }
       ]

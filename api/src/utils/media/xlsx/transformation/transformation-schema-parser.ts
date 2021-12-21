@@ -21,6 +21,7 @@ export type TransformationFieldsSchema = {
 export type Condition = {
   if: {
     columns: string[];
+    not?: boolean;
   };
 };
 

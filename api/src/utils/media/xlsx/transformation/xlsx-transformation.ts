@@ -506,17 +506,24 @@ export class XLSXTransformation {
     const columnValueParts = this._getColumnValueParts(rowObject, condition.if.columns);
 
     if (!columnValueParts || !columnValueParts.length) {
+      if (condition.if.not) {
+        // return true if no condition column values are defined, when condition is inverted
+        return true;
+      }
+
+      // return false if no condition column values are defined
       return false;
     }
 
-    for (const columnValuePart in columnValueParts) {
-      if (columnValuePart === undefined || columnValuePart === null || columnValuePart === '') {
-        return false;
-      }
+    if (condition.if.not) {
+      // return false if any condition column values are defined, when condition is inverted
+      return false;
     }
 
-    // all conditions met
-    return true;
+    // return true if all condition columns are defined
+    return !columnValueParts.every(
+      (columnValuePart) => columnValuePart === undefined || columnValuePart === null || columnValuePart === ''
+    );
   }
 
   /**
@@ -565,15 +572,8 @@ export class XLSXTransformation {
           }
         }
 
-        const newRowObjectKeys = Object.keys(newRowObject);
-
-        if (
-          parseSchema?.condition &&
-          !parseSchema?.condition?.if?.columns.every((conditionalFields) =>
-            newRowObjectKeys.includes(conditionalFields)
-          )
-        ) {
-          // If the `newRowObject` is missing any of the conditional fields, skip this record
+        if (!Object.keys(newRowObject).length) {
+          // row object is empty, skip
           return;
         }
 

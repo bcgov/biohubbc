@@ -56,12 +56,16 @@ export const submissionTransformationSchema = {
             properties: {
               if: {
                 type: 'object',
+                required: ['columns'],
                 properties: {
                   columns: {
                     type: 'array',
                     items: {
                       type: 'string'
                     }
+                  },
+                  not: {
+                    type: 'boolean'
                   }
                 },
                 additionalProperties: false
