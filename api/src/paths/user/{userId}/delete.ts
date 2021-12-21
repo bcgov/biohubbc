@@ -88,12 +88,10 @@ export function removeSystemUser(): RequestHandler {
 
       const getAllParticipantsResponse = await getAllParticipantsFromSystemUsersProjects(userId, connection);
 
-      const onlyProjectLeadResponse = ChecksIfOnlyProjectLead(getAllParticipantsResponse);
-
-      console.log('HEEEELEELELELLEELLELELELEELE' + onlyProjectLeadResponse);
+      const onlyProjectLeadResponse = ChecksIfOnlyProjectLead(getAllParticipantsResponse, userId);
 
       if (onlyProjectLeadResponse) {
-        throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects');
+        throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects.');
       }
 
       // Get the system user
@@ -172,7 +170,13 @@ export function removeSystemUser(): RequestHandler {
   };
 }
 
-//collect all participants associated with user
+/**
+ * collect all participants associated with user across all projects.
+ *
+ * @param {number} userId
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<any[]>}
+ */
 export const getAllParticipantsFromSystemUsersProjects = async (
   userId: number,
   connection: IDBConnection
@@ -201,19 +205,31 @@ export const getAllParticipantsFromSystemUsersProjects = async (
   return rows;
 };
 
-//check if associates are project lead
-export const ChecksIfOnlyProjectLead = (rows: any[]): boolean => {
-  const projectCount = {};
+/**
+ * For all projects user is participant of, return true if removing them results in no more project leads left in any
+ * project given. return false otherwise.
+ *
+ * @param {any[]} rows
+ * @param {number} userId
+ * @return {*}  {boolean}
+ */
+export const ChecksIfOnlyProjectLead = (rows: any[], userId: number): boolean => {
+  const porjectLeadsPerProject = {};
 
   rows.forEach((row) => {
-    if (row.project_role_name === 'Project Lead') {
+    if (row.project_role_name === 'Project Lead' && row.system_user_id !== userId) {
       const key = row.project_id;
-      projectCount[key] = (projectCount[key] || 0) + 1;
+      porjectLeadsPerProject[key] = (porjectLeadsPerProject[key] || 0) + 1;
     }
   });
 
-  for (const count of Object.values(projectCount)) {
-    if ((count as number) <= 1) {
+  const projectLeadCounts = Object.values(porjectLeadsPerProject);
+
+  if (!projectLeadCounts || !projectLeadCounts.length) {
+    return true;
+  }
+  for (const count of projectLeadCounts) {
+    if (!count) {
       return true;
     }
   }

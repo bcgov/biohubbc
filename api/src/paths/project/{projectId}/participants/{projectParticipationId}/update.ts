@@ -111,10 +111,6 @@ export function updateProjectParticipantRole(): RequestHandler {
     try {
       await connection.open();
 
-      const projectParticipantsResponse2 = await getProjectParticipants(Number(req.params.projectId), connection);
-
-      console.log(JSON.stringify(projectParticipantsResponse2));
-
       // Delete the user's old participation record, returning the old record
       const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
 
@@ -132,12 +128,10 @@ export function updateProjectParticipantRole(): RequestHandler {
 
       const projectParticipantsResponse = await getProjectParticipants(Number(req.params.projectId), connection);
 
-      console.log(JSON.stringify(projectParticipantsResponse));
-
-      const onlyProjectLeadResponse = ChecksIfOnlyProjectLead(projectParticipantsResponse);
+      const onlyProjectLeadResponse = ChecksIfOnlyProjectLead(projectParticipantsResponse, result.system_user_id);
 
       if (onlyProjectLeadResponse) {
-        throw new HTTP400('Cannot update project user. User is the only Project Lead for the project');
+        throw new HTTP400('Cannot update project user. User is the only Project Lead for the project.');
       }
 
       await connection.commit();

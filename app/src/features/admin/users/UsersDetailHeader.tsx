@@ -100,8 +100,11 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
 
       uHistory.push('/admin/users');
     } catch (error) {
-      const apiError = error as APIError;
-      openErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+      openErrorDialog({
+        dialogTitle: SystemUserI18N.removeUserErrorTitle,
+        dialogText: SystemUserI18N.removeUserErrorText,
+        dialogError: (error as APIError).message
+      });
     }
   };
 
@@ -129,7 +132,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
             </Box>
             <Box mb={0.75} display="flex" alignItems="center">
               <Typography component="span" variant="subtitle1" color="textSecondary">
-                &nbsp;&nbsp;{userDetails.role_names[0]}
+                {userDetails.role_names[0]}
               </Typography>
             </Box>
           </Box>

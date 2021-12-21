@@ -26,7 +26,7 @@ export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: numbe
       pp.project_id,
       pp.system_user_id,
       pp.project_role_id,
-      pr.name
+      pr.name project_role_name
     FROM
       project_participation pp
     LEFT JOIN
