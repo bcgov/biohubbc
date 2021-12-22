@@ -46,7 +46,7 @@ describe('UsersDetailPage', () => {
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('loading').length).toEqual(1);
+      expect(getAllByTestId('page-loading').length).toEqual(1);
     });
   });
 
@@ -75,7 +75,7 @@ describe('UsersDetailPage', () => {
     );
 
     await waitFor(() => {
-      expect(getAllByTestId('title').length).toEqual(1);
+      expect(getAllByTestId('user-detail-title').length).toEqual(1);
       expect(getAllByTestId('projects_header').length).toEqual(1);
     });
   });

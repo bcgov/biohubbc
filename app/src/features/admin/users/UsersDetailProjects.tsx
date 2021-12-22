@@ -147,7 +147,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   );
 
   if (!codes || !assignedProjects) {
-    return <CircularProgress className="pageProgress" size={40} />;
+    return <CircularProgress data-testid='project-loading' className="pageProgress" size={40} />;
   }
 
   return (
@@ -209,12 +209,12 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                           data-testid={'remove-project-participant-button'}
                           onClick={() =>
                             openYesNoDialog({
-                              dialogTitle: SystemUserI18N.removeSystemUserTitle,
+                              dialogTitle: SystemUserI18N.removeUserFromProject,
                               dialogContent: (
                                 <>
                                   <Typography variant="body1" color="textPrimary">
                                     Removing user <strong>{userDetails.user_identifier}</strong> will revoke their
-                                    access to project.
+                                    access to the project.
                                   </Typography>
                                   <Typography variant="body1" color="textPrimary">
                                     Are you sure you want to proceed?

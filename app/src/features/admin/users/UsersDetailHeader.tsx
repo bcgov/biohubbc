@@ -126,7 +126,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
         <Box display="flex" justifyContent="space-between" alignItems="flex-start">
           <Box pb={3}>
             <Box mb={1.5} display="flex">
-              <Typography data-testid="title" className={classes.spacingRight} variant="h1">
+              <Typography data-testid="user-detail-title" className={classes.spacingRight} variant="h1">
                 User - <span className={classes.projectTitle}>{userDetails.user_identifier}</span>
               </Typography>
             </Box>
