@@ -35,7 +35,7 @@ const UsersDetailPage: React.FC = (props) => {
   }, [getUser, selectedUser]);
 
   if (!selectedUser) {
-    return <CircularProgress data-testid="loading" className="pageProgress" size={40} />;
+    return <CircularProgress data-testid="page-loading" className="pageProgress" size={40} />;
   }
 
   return (
