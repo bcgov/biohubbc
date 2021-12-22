@@ -147,7 +147,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   );
 
   if (!codes || !assignedProjects) {
-    return <CircularProgress data-testid='project-loading' className="pageProgress" size={40} />;
+    return <CircularProgress data-testid="project-loading" className="pageProgress" size={40} />;
   }
 
   return (

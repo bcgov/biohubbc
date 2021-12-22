@@ -13,7 +13,7 @@ jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   user: {
     deleteSystemUser: jest.fn<Promise<number>, []>()
-  },
+  }
 };
 
 const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
@@ -28,7 +28,6 @@ const mockUser = {
 };
 
 describe('UsersDetailHeader', () => {
-
   afterEach(() => {
     cleanup();
   });
@@ -120,7 +119,6 @@ describe('UsersDetailHeader', () => {
     });
 
     it('deletes the user and routes user back to Manage Users page', async () => {
-
       mockBiohubApi().user.deleteSystemUser.mockResolvedValue({
         response: 200
       } as any);

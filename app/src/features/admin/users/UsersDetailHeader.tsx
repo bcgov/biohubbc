@@ -79,7 +79,6 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
     [defaultErrorDialogProps, dialogContext]
   );
 
-
   const deActivateSystemUser = async (user: IGetUserResponse) => {
     if (!user?.id) {
       return;

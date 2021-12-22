@@ -453,7 +453,6 @@ describe('UsersDetailProjects', () => {
       await waitFor(() => {
         expect(getAllByText('Editor').length).toEqual(1);
       });
-
     });
   });
 });
