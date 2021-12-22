@@ -13,7 +13,7 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiMenuDown, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { IErrorDialogProps } from '../../../components/dialog/ErrorDialog';
 import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
@@ -49,7 +49,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   const urlParams = useParams();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
-  const uHistory = useHistory();
+  const history = useHistory();
   const classes = useStyles();
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
@@ -57,8 +57,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const [assignedProjects, setAssignedProjects] = useState<IGetUserProjectsListResponse[]>();
   const handleGetUserProjects = async (userId: number) => {
-    const apiCall = await biohubApi.project.getAllUserProjectsForView(userId);
-    setAssignedProjects(apiCall);
+    const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(userId);
+    setAssignedProjects(userProjectsListResponse);
   };
 
   const refresh = () => () => {
@@ -146,99 +146,9 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
     [defaultErrorDialogProps, dialogContext]
   );
 
-  const getProjectList = () => {
-    if (!codes || !assignedProjects) {
-      return <CircularProgress className="pageProgress" size={40} />;
-    }
-
-    return (
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell width="40%" align="left">
-                Project Name
-              </TableCell>
-              <TableCell width="40%" align="left">
-                Project Role
-              </TableCell>
-              <TableCell width="20%" align="center">
-                Actions
-              </TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody data-testid="resources-table">
-            {assignedProjects &&
-              assignedProjects.length > 0 &&
-              assignedProjects?.map((row) => (
-                <TableRow key={row.project_id}>
-                  <TableCell>
-                    <Box pt={1}>
-                      <Link
-                        color="primary"
-                        onClick={() => uHistory.push(`/admin/projects/${row.project_id}/details`)}
-                        aria-current="page">
-                        <Typography variant="body2">{row.name}</Typography>
-                      </Link>
-                    </Box>
-                  </TableCell>
-
-                  <TableCell>
-                    <Box>
-                      <ChangeProjectRoleMenu
-                        row={row}
-                        user_identifier={props.userDetails.user_identifier}
-                        projectRoleCodes={codes.project_roles}
-                        refresh={refresh()}
-                      />
-                    </Box>
-                  </TableCell>
-                  <TableCell width="10%" align="center">
-                    <Button
-                      title="Remove Project Participant"
-                      color="primary"
-                      variant="text"
-                      className={classes.actionButton}
-                      startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
-                      data-testid={'remove-project-participant-button'}
-                      onClick={() =>
-                        openYesNoDialog({
-                          dialogTitle: SystemUserI18N.removeSystemUserTitle,
-                          dialogContent: (
-                            <>
-                              <Typography variant="body1" color="textPrimary">
-                                Removing user <strong>{userDetails.user_identifier}</strong> will revoke their access to
-                                project.
-                              </Typography>
-                              <Typography variant="body1" color="textPrimary">
-                                Are you sure you want to proceed?
-                              </Typography>
-                            </>
-                          ),
-                          yesButtonProps: { color: 'secondary' },
-                          onYes: () => {
-                            handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
-                            dialogContext.setYesNoDialog({ open: false });
-                          }
-                        })
-                      }>
-                      <strong>Remove</strong>
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            {!assignedProjects.length && (
-              <TableRow>
-                <TableCell colSpan={5} align="center">
-                  No Projects
-                </TableCell>
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </TableContainer>
-    );
-  };
+  if (!codes || !assignedProjects) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
 
   return (
     <>
@@ -248,7 +158,92 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
             Assigned Projects ({assignedProjects?.length})
           </Typography>
         </Box>
-        <Box>{getProjectList()}</Box>
+        <Box>
+          <TableContainer>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell width="40%" align="left">
+                    Project Name
+                  </TableCell>
+                  <TableCell width="40%" align="left">
+                    Project Role
+                  </TableCell>
+                  <TableCell width="20%" align="center">
+                    Actions
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody data-testid="resources-table">
+                {assignedProjects.length > 0 &&
+                  assignedProjects?.map((row) => (
+                    <TableRow key={row.project_id}>
+                      <TableCell>
+                        <Box pt={1}>
+                          <Link
+                            color="primary"
+                            onClick={() => history.push(`/admin/projects/${row.project_id}/details`)}
+                            aria-current="page">
+                            <Typography variant="body2">{row.name}</Typography>
+                          </Link>
+                        </Box>
+                      </TableCell>
+
+                      <TableCell>
+                        <Box>
+                          <ChangeProjectRoleMenu
+                            row={row}
+                            user_identifier={props.userDetails.user_identifier}
+                            projectRoleCodes={codes.project_roles}
+                            refresh={refresh()}
+                          />
+                        </Box>
+                      </TableCell>
+                      <TableCell width="10%" align="center">
+                        <Button
+                          title="Remove Project Participant"
+                          color="primary"
+                          variant="text"
+                          className={classes.actionButton}
+                          startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
+                          data-testid={'remove-project-participant-button'}
+                          onClick={() =>
+                            openYesNoDialog({
+                              dialogTitle: SystemUserI18N.removeSystemUserTitle,
+                              dialogContent: (
+                                <>
+                                  <Typography variant="body1" color="textPrimary">
+                                    Removing user <strong>{userDetails.user_identifier}</strong> will revoke their
+                                    access to project.
+                                  </Typography>
+                                  <Typography variant="body1" color="textPrimary">
+                                    Are you sure you want to proceed?
+                                  </Typography>
+                                </>
+                              ),
+                              yesButtonProps: { color: 'secondary' },
+                              onYes: () => {
+                                handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
+                                dialogContext.setYesNoDialog({ open: false });
+                              }
+                            })
+                          }>
+                          <strong>Remove</strong>
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                {!assignedProjects.length && (
+                  <TableRow>
+                    <TableCell colSpan={5} align="center">
+                      No Projects
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
       </Box>
     </>
   );
@@ -344,8 +339,11 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
 
       refresh();
     } catch (error) {
-      const apiError = error as APIError;
-      displayErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
+      displayErrorDialog({
+        dialogTitle: SystemUserI18N.updateProjectLeadRoleErrorTitle,
+        dialogText: SystemUserI18N.updateProjectLeadRoleErrorText,
+        dialogError: (error as APIError).message
+      });
     }
   };
 

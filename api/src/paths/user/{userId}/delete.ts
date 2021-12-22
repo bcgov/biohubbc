@@ -214,24 +214,31 @@ export const getAllParticipantsFromSystemUsersProjects = async (
  * @return {*}  {boolean}
  */
 export const ChecksIfOnlyProjectLead = (rows: any[], userId: number): boolean => {
-  const porjectLeadsPerProject = {};
+  const projectLeadsPerProject = {};
 
   rows.forEach((row) => {
+    const key = row.project_id;
+
+    if (!projectLeadsPerProject[key]) {
+      projectLeadsPerProject[key] = 0;
+    }
+
     if (row.project_role_name === 'Project Lead' && row.system_user_id !== userId) {
-      const key = row.project_id;
-      porjectLeadsPerProject[key] = (porjectLeadsPerProject[key] || 0) + 1;
+      projectLeadsPerProject[key] += 1;
     }
   });
 
-  const projectLeadCounts = Object.values(porjectLeadsPerProject);
+  const projectLeadCounts = Object.values(projectLeadsPerProject);
 
   if (!projectLeadCounts || !projectLeadCounts.length) {
     return true;
   }
+
   for (const count of projectLeadCounts) {
     if (!count) {
       return true;
     }
   }
+
   return false;
 };

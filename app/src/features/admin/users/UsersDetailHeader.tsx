@@ -46,7 +46,7 @@ export interface IUsersHeaderProps {
 const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   const { userDetails } = props;
   const classes = useStyles();
-  const uHistory = useHistory();
+  const history = useHistory();
   const biohubApi = useBiohubApi();
   const dialogContext = useContext(DialogContext);
 
@@ -98,7 +98,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
         open: true
       });
 
-      uHistory.push('/admin/users');
+      history.push('/admin/users');
     } catch (error) {
       openErrorDialog({
         dialogTitle: SystemUserI18N.removeUserErrorTitle,
@@ -115,7 +115,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
           <Breadcrumbs>
             <Link
               color="primary"
-              onClick={() => uHistory.push('/admin/users')}
+              onClick={() => history.push('/admin/users')}
               aria-current="page"
               className={classes.breadCrumbLink}>
               <Typography variant="body2">Manage Users</Typography>
