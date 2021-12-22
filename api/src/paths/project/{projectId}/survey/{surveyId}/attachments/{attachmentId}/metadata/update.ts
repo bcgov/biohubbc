@@ -1,5 +1,3 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../../constants/attachments';
@@ -41,6 +39,14 @@ PUT.apiDoc = {
     {
       in: 'path',
       name: 'projectId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    },
+    {
+      in: 'path',
+      name: 'surveyId',
       schema: {
         type: 'number'
       },
@@ -146,6 +152,10 @@ export function updateSurveyReportMetadata(): RequestHandler {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
+    }
+
     if (!req.params.attachmentId) {
       throw new HTTP400('Missing required path param `attachmentId`');
     }
@@ -167,7 +177,7 @@ export function updateSurveyReportMetadata(): RequestHandler {
 
         // Update the metadata fields of the attachment record
         await updateSurveyReportAttachmentMetadata(
-          Number(req.params.projectId),
+          Number(req.params.surveyId),
           Number(req.params.attachmentId),
           metadata,
           connection
@@ -202,12 +212,12 @@ export function updateSurveyReportMetadata(): RequestHandler {
 }
 
 const updateSurveyReportAttachmentMetadata = async (
-  projectId: number,
+  surveyId: number,
   attachmentId: number,
   metadata: PutReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = updateSurveyReportAttachmentMetadataSQL(projectId, attachmentId, metadata);
+  const sqlStatement = updateSurveyReportAttachmentMetadataSQL(surveyId, attachmentId, metadata);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update attachment report statement');

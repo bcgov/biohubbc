@@ -635,8 +635,8 @@ describe('getSystemUserWithRoles', function () {
     expect(result).to.be.null;
   });
 
-  it('returns null if the query response is null', async function () {
-    const mockQueryResponse = (null as unknown) as QueryResult<any>;
+  it('returns null if the query response has no rows', async function () {
+    const mockQueryResponse = ({ rowCount: 1, rows: [] } as unknown) as QueryResult<any>;
     const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
@@ -740,19 +740,6 @@ describe('getProjectUserWithRoles', function () {
     expect(result).to.be.null;
   });
 
-  it('returns null if the query response is null', async function () {
-    const mockQueryResponse = (null as unknown) as QueryResult<any>;
-    const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
-    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
-
-    const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-    sinon.stub(projectParticipationQueries, 'getProjectParticipationBySystemUserSQL').returns(mockUsersByIdSQLResponse);
-
-    const result = await authorization.getProjectUserWithRoles(1, mockDBConnection);
-
-    expect(result).to.be.null;
-  });
-
   it('returns the first row of the response', async function () {
     const mockResponseRow = { 'Test Column': 'Test Value' };
     const mockQueryResponse = ({ rowCount: 1, rows: [mockResponseRow] } as unknown) as QueryResult<any>;
@@ -763,6 +750,51 @@ describe('getProjectUserWithRoles', function () {
     sinon.stub(projectParticipationQueries, 'getProjectParticipationBySystemUserSQL').returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getProjectUserWithRoles(1, mockDBConnection);
+
+    expect(result).to.eql(mockResponseRow);
+  });
+});
+
+describe('getSystemUserById', function () {
+  afterEach(() => {
+    sinon.restore();
+  });
+
+  it('returns null if the get user by id SQL statement is null', async function () {
+    const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const mockUsersByIdSQLResponse = null;
+    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+
+    const result = await authorization.getSystemUserById(1, mockDBConnection);
+
+    expect(result).to.be.null;
+  });
+
+  it('returns null if the query response has no rows', async function () {
+    const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
+    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+
+    const result = await authorization.getSystemUserById(1, mockDBConnection);
+
+    expect(result).to.be.null;
+  });
+
+  it('returns the first row of the response', async function () {
+    const mockResponseRow = { 'Test Column': 'Test Value' };
+    const mockQueryResponse = ({ rows: [mockResponseRow] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
+    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+
+    const result = await authorization.getSystemUserById(1, mockDBConnection);
 
     expect(result).to.eql(mockResponseRow);
   });

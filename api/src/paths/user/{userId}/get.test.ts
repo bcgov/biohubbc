@@ -4,65 +4,33 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { CustomError } from '../../../errors/CustomError';
-import { getMockDBConnection } from '../../../__mocks__/db';
+import * as authorization from '../../../request-handlers/security/authorization';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as user from './get';
-import * as user_view_queries from '../../../queries/users/user-queries';
-import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
 
 describe('user', () => {
-  const dbConnectionObj = getMockDBConnection();
-
   describe('getUserById', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    const sampleReq = {
-      keycloak_token: {},
-      params: {
-        userId: 1
-      }
-    } as any;
-
-    let actualResult: any = null;
-
-    const sampleRes = {
-      status: () => {
-        return {
-          json: (result: any) => {
-            actualResult = result;
-          }
-        };
-      }
-    };
-
-    it('should throw a 400 error when no params are sent', async () => {
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      try {
-        const result = user.getUserById();
-
-        await result({ ...(sampleReq as any), params: null }, (null as unknown) as any, (null as unknown) as any);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required params');
-      }
-    });
-
     it('should throw a 400 error when no user Id is sent', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      try {
-        const result = user.getUserById();
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        await result(
-          { ...(sampleReq as any), params: { ...sampleReq.params, userId: null } },
-          (null as unknown) as any,
-          (null as unknown) as any
-        );
+      mockReq.params = {
+        userId: ''
+      };
+
+      try {
+        const requestHandler = user.getUserById();
+
+        await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
         expect((actualError as CustomError).status).to.equal(400);
@@ -70,47 +38,58 @@ describe('user', () => {
       }
     });
 
-    it('should throw a 400 error when no sql statement returned for getProjectSQL', async () => {
-      sinon.stub(db, 'getDBConnection').returns({
-        ...dbConnectionObj,
-        systemUserId: () => {
-          return 20;
-        }
-      });
+    it('should throw a 400 error if it fails to get the system user', async () => {
+      const dbConnectionObj = getMockDBConnection();
 
-      sinon.stub(user_view_queries, 'getUserByIdSQL').returns(null);
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.params = {
+        userId: '1'
+      };
+
+      sinon.stub(authorization, 'getSystemUserById').resolves(null);
 
       try {
-        const result = user.getUserById();
+        const requestHandler = user.getUserById();
 
-        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+        await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
         expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as CustomError).message).to.equal('Failed to get system user');
       }
     });
 
-    it('finds user by Id and returns 200 and result on success', async () => {
-      const mockQuery = sinon.stub();
+    it('finds user by Id and returns 200 and requestHandler on success', async () => {
+      const dbConnectionObj = getMockDBConnection();
 
-      mockQuery.resolves({ rows: [{ id: 123, userIdentifer: 'test' }] });
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(db, 'getDBConnection').returns({
-        ...dbConnectionObj,
-        systemUserId: () => {
-          return 20;
-        },
-        query: mockQuery
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      mockReq.params = {
+        userId: '1'
+      };
+
+      sinon.stub(authorization, 'getSystemUserById').resolves({
+        id: 1,
+        uis_id: 'uis_id',
+        user_identifier: 'user_identifier',
+        record_effective_date: null
       });
 
-      sinon.stub(user_view_queries, 'getUserByIdSQL').returns(SQL`something`);
+      const requestHandler = user.getUserById();
 
-      const result = user.getUserById();
+      await requestHandler(mockReq, mockRes, mockNext);
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-      expect(actualResult).to.eql({ id: 123, userIdentifer: 'test' });
+      expect(mockRes.jsonValue).to.eql({
+        id: 1,
+        uis_id: 'uis_id',
+        user_identifier: 'user_identifier',
+        record_effective_date: null
+      });
     });
   });
 });

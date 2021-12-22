@@ -204,7 +204,7 @@ export const insertSurveyOccurrenceSubmission = async (
 
   const insertResponse = await connection.query(insertSqlStatement.text, insertSqlStatement.values);
 
-  if (!insertResponse || !insertResponse.rowCount) {
+  if (!insertResponse.rowCount) {
     throw new HTTP400('Failed to insert survey occurrence submission record');
   }
 

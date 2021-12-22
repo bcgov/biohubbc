@@ -2,8 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/CustomError';
-import { getUserByIdSQL } from '../../../queries/users/user-queries';
-import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { authorizeRequestHandler, getSystemUserById } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}');
@@ -76,10 +75,6 @@ GET.apiDoc = {
  */
 export function getUserById(): RequestHandler {
   return async (req, res) => {
-    if (!req.params) {
-      throw new HTTP400('Missing required params');
-    }
-
     if (!req.params.userId) {
       throw new HTTP400('Missing required param: userId');
     }
@@ -91,19 +86,15 @@ export function getUserById(): RequestHandler {
 
       await connection.open();
 
-      const getUserbyIdSQLStatement = getUserByIdSQL(userId);
+      const userResult = await getSystemUserById(userId, connection);
 
-      if (!getUserbyIdSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
+      if (!userResult) {
+        throw new HTTP400('Failed to get system user');
       }
-
-      const response = await connection.query(getUserbyIdSQLStatement.text, getUserbyIdSQLStatement.values);
 
       await connection.commit();
 
-      const result = (response && response.rows && response.rows[0]) || null;
-
-      return res.status(200).json(result);
+      return res.status(200).json(userResult);
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
       await connection.rollback();

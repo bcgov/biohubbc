@@ -2,13 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as self from './self';
 import * as db from '../../database/db';
-import * as user_queries from '../../queries/users/user-queries';
-import { QueryResult } from 'pg';
-import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../../__mocks__/db';
 import { CustomError } from '../../errors/CustomError';
+import * as authorization from '../../request-handlers/security/authorization';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
+import * as self from './self';
 
 chai.use(sinonChai);
 
@@ -17,36 +15,17 @@ describe('getUser', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {}
-  } as any;
-
-  let actualResult = {
-    id: null,
-    user_identifier: null,
-    role_ids: null,
-    role_names: null
-  };
-
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
-
   it('should throw a 400 error when no system user id', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = self.getUser();
+      const requestHandler = self.getUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -55,59 +34,54 @@ describe('getUser', () => {
   });
 
   it('should throw a 400 error when no sql statement produced', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(null);
+    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(authorization, 'getSystemUserById').resolves(null);
 
     try {
-      const result = self.getUser();
+      const requestHandler = self.getUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as CustomError).message).to.equal('Failed to get system user');
     }
   });
 
   it('should return the user row on success', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: async () => {
-        return {
-          rowCount: 1,
-          rows: [
-            {
-              id: 1,
-              user_identifier: 'identifier',
-              role_ids: [1, 2],
-              role_names: ['role 1', 'role 2']
-            }
-          ]
-        } as QueryResult<any>;
-      }
+    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'identifier',
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
+    const requestHandler = self.getUser();
 
-    const result = self.getUser();
+    await requestHandler(mockReq, mockRes, mockNext);
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult.id).to.equal(1);
-    expect(actualResult.user_identifier).to.equal('identifier');
-    expect(actualResult.role_ids).to.eql([1, 2]);
-    expect(actualResult.role_names).to.eql(['role 1', 'role 2']);
+    expect(mockRes.jsonValue.id).to.equal(1);
+    expect(mockRes.jsonValue.user_identifier).to.equal('identifier');
+    expect(mockRes.jsonValue.role_ids).to.eql([1, 2]);
+    expect(mockRes.jsonValue.role_names).to.eql(['role 1', 'role 2']);
   });
 
   it('should throw an error when a failure occurs', async () => {
+    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 1 });
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
     const expectedError = new Error('cannot process query');
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -118,35 +92,12 @@ describe('getUser', () => {
     });
 
     try {
-      const result = self.getUser();
+      const requestHandler = self.getUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal(expectedError.message);
+      expect((actualError as CustomError).message).to.equal(expectedError.message);
     }
-  });
-
-  it('should return null when response has no rowCount (no user found)', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: async () => {
-        return ({
-          rowCount: 0,
-          rows: []
-        } as unknown) as QueryResult<any>;
-      }
-    });
-
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-
-    const result = self.getUser();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.be.null;
   });
 });
