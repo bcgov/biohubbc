@@ -473,7 +473,7 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
     });
 
     describe('user is on multiple projects', () => {
-      it('should return false if the user is not the only Project Lead on all projects', () => {
+      it('should return true if the user is not the only Project Lead on all projects', () => {
         const userId = 10;
 
         const rows = [
@@ -556,7 +556,7 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
 
   describe('user does not have Project Lead role', () => {
     describe('user is on 1 project', () => {
-      it('should return false', () => {
+      it('should return true', () => {
         const userId = 10;
 
         const rows = [
@@ -583,7 +583,7 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
     });
 
     describe('user is on multiple projects', () => {
-      it('should return false', () => {
+      it('should return true', () => {
         const userId = 10;
 
         const rows = [
@@ -649,5 +649,127 @@ describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
 
       expect(result).to.equal(true);
     });
+  });
+});
+
+describe('doAllProjectsHaveAProjectLead', () => {
+  it('should return false if no user has Project Lead role', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 10,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
+
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
+
+    expect(result).to.equal(false);
+  });
+
+  it('should return true if one Project Lead role exists per project', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 12,
+        project_role_id: 1,
+        project_role_name: 'Project Lead' // Only Project Lead on project 1
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
+
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
+
+    expect(result).to.equal(true);
+  });
+
+  it('should return true if one Project Lead exists on all projects', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 10,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      },
+      {
+        project_participation_id: 1,
+        project_id: 2,
+        system_user_id: 10,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 2,
+        system_user_id: 2,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
+
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
+
+    expect(result).to.equal(true);
+  });
+
+  it('should return false if no Project Lead exists on any one project', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 10,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      },
+      {
+        project_participation_id: 1,
+        project_id: 2,
+        system_user_id: 10,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 2,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
+
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
+
+    expect(result).to.equal(false);
   });
 });

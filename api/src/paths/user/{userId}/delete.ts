@@ -192,25 +192,24 @@ export const getAllParticipantsFromSystemUsersProjects = async (
  * @return {*}  {boolean}
  */
 export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
-  // remove any rows that dont have role Project Lead
-  const rowsWithOnlyProjectLeads = rows.filter((row) => row.project_role_name === 'Project Lead');
-
   // No project with project lead
-  if (!rowsWithOnlyProjectLeads.length) {
+  if (!rows.length) {
     return false;
   }
 
   const projectLeadsPerProject: { [key: string]: any } = {};
 
   // count how many Project Lead roles there are per project
-  rowsWithOnlyProjectLeads.forEach((row) => {
+  rows.forEach((row) => {
     const key = row.project_id;
 
     if (!projectLeadsPerProject[key]) {
       projectLeadsPerProject[key] = 0;
     }
 
-    projectLeadsPerProject[key] += 1;
+    if (row.project_role_name === 'Project Lead') {
+      projectLeadsPerProject[key] += 1;
+    }
   });
 
   const projectLeadCounts = Object.values(projectLeadsPerProject);
@@ -236,25 +235,22 @@ export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
  * @return {*}  {boolean}
  */
 export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId: number): boolean => {
-  // remove any rows that dont have role Project Lead
-  const rowsWithOnlyProjectLeads = rows.filter((row) => row.project_role_name === 'Project Lead');
-
   // No project with project lead
-  if (!rowsWithOnlyProjectLeads.length) {
+  if (!rows.length) {
     return false;
   }
 
   const projectLeadsPerProject: { [key: string]: any } = {};
 
   // count how many Project Lead roles there are per project
-  rowsWithOnlyProjectLeads.forEach((row) => {
+  rows.forEach((row) => {
     const key = row.project_id;
 
     if (!projectLeadsPerProject[key]) {
       projectLeadsPerProject[key] = 0;
     }
 
-    if (row.system_user_id !== userId) {
+    if (row.system_user_id !== userId && row.project_role_name === 'Project Lead') {
       projectLeadsPerProject[key] += 1;
     }
   });
