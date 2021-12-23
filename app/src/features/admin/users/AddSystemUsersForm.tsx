@@ -152,7 +152,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                 data-testid="add-participant-button"
                 startIcon={<Icon path={mdiPlus} size={1} />}
                 onClick={() => arrayHelpers.push(AddSystemUsersFormArrayItemInitialValues)}>
-                <strong>Add System Users</strong>
+                <strong>Add New</strong>
               </Button>
             </Box>
           </Box>

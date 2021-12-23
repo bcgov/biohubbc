@@ -1,5 +1,5 @@
+import { Container, IconButton, Toolbar } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
@@ -7,7 +7,6 @@ import { makeStyles } from '@material-ui/core/styles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
@@ -26,11 +25,21 @@ import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesAp
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles((theme) => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {
       marginLeft: '0.5rem'
+    }
+  },
+  projectMembersToolbar: {
+    paddingLeft: theme.spacing(2),
+    paddingRight: theme.spacing(2)
+  },
+  projectMembersTable: {
+    tableLayout: 'fixed',
+    '& td': {
+      verticalAlign: 'middle'
     }
   }
 }));
@@ -151,25 +160,21 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   }
 
   return (
-    <>
-      <Box component={Paper} pt={3}>
-        <Box mb={3} ml={3} display="flex" justifyContent="space-between">
-          <Typography data-testid="projects_header" variant="h2">
-            Assigned Projects ({assignedProjects?.length})
-          </Typography>
-        </Box>
-        <Box>
-          <TableContainer>
-            <Table>
+    <Container maxWidth="xl">
+      <Box pt={3}>
+        <Paper>
+          <Toolbar className={classes.projectMembersToolbar}>
+            <Typography data-testid="projects_header" variant="h2">
+              Assigned Projects ({assignedProjects?.length})
+            </Typography>
+          </Toolbar>
+          <Box>
+            <Table className={classes.projectMembersTable}>
               <TableHead>
                 <TableRow>
-                  <TableCell width="40%" align="left">
-                    Project Name
-                  </TableCell>
-                  <TableCell width="40%" align="left">
-                    Project Role
-                  </TableCell>
-                  <TableCell width="20%" align="center">
+                  <TableCell>Project Name</TableCell>
+                  <TableCell>Project Role</TableCell>
+                  <TableCell width="100px" align="center">
                     Actions
                   </TableCell>
                 </TableRow>
@@ -178,19 +183,19 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                 {assignedProjects.length > 0 &&
                   assignedProjects?.map((row) => (
                     <TableRow key={row.project_id}>
-                      <TableCell>
-                        <Box pt={1}>
-                          <Link
-                            color="primary"
-                            onClick={() => history.push(`/admin/projects/${row.project_id}/details`)}
-                            aria-current="page">
-                            <Typography variant="body2">{row.name}</Typography>
-                          </Link>
-                        </Box>
+                      <TableCell scope="row">
+                        <Link
+                          color="primary"
+                          onClick={() => history.push(`/admin/projects/${row.project_id}/details`)}
+                          aria-current="page">
+                          <Typography variant="body2">
+                            <strong>{row.name}</strong>
+                          </Typography>
+                        </Link>
                       </TableCell>
 
                       <TableCell>
-                        <Box>
+                        <Box m={-1}>
                           <ChangeProjectRoleMenu
                             row={row}
                             user_identifier={props.userDetails.user_identifier}
@@ -199,53 +204,53 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                           />
                         </Box>
                       </TableCell>
-                      <TableCell width="10%" align="center">
-                        <Button
-                          title="Remove Project Participant"
-                          color="primary"
-                          variant="text"
-                          className={classes.actionButton}
-                          startIcon={<Icon path={mdiTrashCanOutline} size={0.875} />}
-                          data-testid={'remove-project-participant-button'}
-                          onClick={() =>
-                            openYesNoDialog({
-                              dialogTitle: SystemUserI18N.removeUserFromProject,
-                              dialogContent: (
-                                <>
-                                  <Typography variant="body1" color="textPrimary">
-                                    Removing user <strong>{userDetails.user_identifier}</strong> will revoke their
-                                    access to the project.
-                                  </Typography>
-                                  <Typography variant="body1" color="textPrimary">
-                                    Are you sure you want to proceed?
-                                  </Typography>
-                                </>
-                              ),
-                              yesButtonProps: { color: 'secondary' },
-                              onYes: () => {
-                                handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
-                                dialogContext.setYesNoDialog({ open: false });
-                              }
-                            })
-                          }>
-                          <strong>Remove</strong>
-                        </Button>
+                      <TableCell align="center">
+                        <Box m={-1}>
+                          <IconButton
+                            title="Remove Project Participant"
+                            data-testid={'remove-project-participant-button'}
+                            onClick={() =>
+                              openYesNoDialog({
+                                dialogTitle: SystemUserI18N.removeUserFromProject,
+                                dialogContent: (
+                                  <>
+                                    <Typography variant="body1" color="textPrimary">
+                                      Removing user <strong>{userDetails.user_identifier}</strong> will revoke their
+                                      access to the project.
+                                    </Typography>
+                                    <Typography variant="body1" color="textPrimary">
+                                      Are you sure you want to proceed?
+                                    </Typography>
+                                  </>
+                                ),
+                                yesButtonProps: { color: 'secondary' },
+                                onYes: () => {
+                                  handleRemoveProjectParticipant(row.project_id, row.project_participation_id);
+                                  dialogContext.setYesNoDialog({ open: false });
+                                }
+                              })
+                            }>
+                            <Icon path={mdiTrashCanOutline} size={1} />
+                          </IconButton>
+                        </Box>
                       </TableCell>
                     </TableRow>
                   ))}
                 {!assignedProjects.length && (
                   <TableRow>
-                    <TableCell colSpan={5} align="center">
-                      No Projects
+                    <TableCell colSpan={3}>
+                      <Box display="flex" justifyContent="center">
+                        No Projects
+                      </Box>
                     </TableCell>
                   </TableRow>
                 )}
               </TableBody>
             </Table>
-          </TableContainer>
-        </Box>
+          </Box>
+        </Paper>
       </Box>
-    </>
+    </Container>
   );
 };
 

@@ -117,9 +117,17 @@ export function removeSystemUser(): RequestHandler {
 export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, connection: IDBConnection) => {
   const getAllParticipantsResponse = await getAllParticipantsFromSystemUsersProjects(userId, connection);
 
-  const onlyProjectLeadResponse = checksIfOnlyProjectLead(getAllParticipantsResponse, userId);
+  console.log('//////////////////////////////////');
+  console.log(getAllParticipantsResponse, userId);
 
-  if (onlyProjectLeadResponse) {
+  // No projects associated to user, skip Project Lead role check
+  if (!getAllParticipantsResponse.length) {
+    return;
+  }
+
+  const onlyProjectLeadResponse = doAllProjectsHaveAProjectLeadIfUserIsRemoved(getAllParticipantsResponse, userId);
+
+  if (!onlyProjectLeadResponse) {
     throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects.');
   }
 };
@@ -180,39 +188,90 @@ export const getAllParticipantsFromSystemUsersProjects = async (
 };
 
 /**
- * For all projects user is participant of, return true if removing them results in no more project leads left in any
- * project given. return false otherwise.
+ * Given an array of project participation role objects, return false if any project has no Project Lead role. Return
+ * true otherwise.
  *
  * @param {any[]} rows
- * @param {number} userId
  * @return {*}  {boolean}
  */
-export const checksIfOnlyProjectLead = (rows: any[], userId: number): boolean => {
-  const projectLeadsPerProject = {};
+export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
+  // remove any rows that dont have role Project Lead
+  const rowsWithOnlyProjectLeads = rows.filter((row) => row.project_role_name === 'Project Lead');
 
-  rows.forEach((row) => {
+  // No project with project lead
+  if (!rowsWithOnlyProjectLeads.length) {
+    return false;
+  }
+
+  const projectLeadsPerProject: { [key: string]: any } = {};
+
+  // count how many Project Lead roles there are per project
+  rowsWithOnlyProjectLeads.forEach((row) => {
     const key = row.project_id;
 
     if (!projectLeadsPerProject[key]) {
       projectLeadsPerProject[key] = 0;
     }
 
-    if (row.project_role_name === 'Project Lead' && row.system_user_id !== userId) {
+    projectLeadsPerProject[key] += 1;
+  });
+
+  const projectLeadCounts = Object.values(projectLeadsPerProject);
+
+  // check if any projects would be left with no Project Lead
+  for (const count of projectLeadCounts) {
+    if (!count) {
+      // found a project with no Project Lead
+      return false;
+    }
+  }
+
+  // all projects have a Project Lead
+  return true;
+};
+
+/**
+ * Given an array of project participation role objects, return true if any project has no Project Lead role after
+ * removing all rows associated with the provided `userId`. Return false otherwise.
+ *
+ * @param {any[]} rows
+ * @param {number} userId
+ * @return {*}  {boolean}
+ */
+export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId: number): boolean => {
+  // remove any rows that dont have role Project Lead
+  const rowsWithOnlyProjectLeads = rows.filter((row) => row.project_role_name === 'Project Lead');
+
+  // No project with project lead
+  if (!rowsWithOnlyProjectLeads.length) {
+    return false;
+  }
+
+  const projectLeadsPerProject: { [key: string]: any } = {};
+
+  // count how many Project Lead roles there are per project
+  rowsWithOnlyProjectLeads.forEach((row) => {
+    const key = row.project_id;
+
+    if (!projectLeadsPerProject[key]) {
+      projectLeadsPerProject[key] = 0;
+    }
+
+    if (row.system_user_id !== userId) {
       projectLeadsPerProject[key] += 1;
     }
   });
 
   const projectLeadCounts = Object.values(projectLeadsPerProject);
 
-  if (!projectLeadCounts || !projectLeadCounts.length) {
-    return true;
-  }
-
+  // check if any projects would be left with no Project Lead
   for (const count of projectLeadCounts) {
     if (!count) {
-      return true;
+      // found a project with no Project Lead
+      return false;
     }
   }
 
-  return false;
+  // all projects have a Project Lead
+  return true;
 };

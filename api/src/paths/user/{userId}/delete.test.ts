@@ -108,6 +108,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
+      console.log('//////////////////////////////////');
+      console.log(actualError);
       expect((actualError as CustomError).status).to.equal(400);
       expect((actualError as CustomError).message).to.equal(
         'Cannot remove user. User is the only Project Lead for one or more projects.'
@@ -418,7 +420,7 @@ describe('removeSystemUser', () => {
   });
 });
 
-describe('checksIfOnlyProjectLead', () => {
+describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
   describe('user has Project Lead role', () => {
     describe('user is on 1 project', () => {
       it('should return false if the user is not the only Project Lead role', () => {
@@ -441,9 +443,9 @@ describe('checksIfOnlyProjectLead', () => {
           }
         ];
 
-        const result = delete_endpoint.checksIfOnlyProjectLead(rows, userId);
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
 
-        expect(result).to.equal(false);
+        expect(result).to.equal(true);
       });
 
       it('should return true if the user is the only Project Lead role', () => {
@@ -466,9 +468,9 @@ describe('checksIfOnlyProjectLead', () => {
           }
         ];
 
-        const result = delete_endpoint.checksIfOnlyProjectLead(rows, userId);
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
 
-        expect(result).to.equal(true);
+        expect(result).to.equal(false);
       });
     });
 
@@ -507,12 +509,12 @@ describe('checksIfOnlyProjectLead', () => {
           }
         ];
 
-        const result = delete_endpoint.checksIfOnlyProjectLead(rows, userId);
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
 
-        expect(result).to.equal(false);
+        expect(result).to.equal(true);
       });
 
-      it('should return true if the user the only Project Lead on any project', () => {
+      it('should return false if the user the only Project Lead on any project', () => {
         const userId = 10;
 
         // User is on 1 project, and is not the only Project Lead
@@ -547,9 +549,9 @@ describe('checksIfOnlyProjectLead', () => {
           }
         ];
 
-        const result = delete_endpoint.checksIfOnlyProjectLead(rows, userId);
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
 
-        expect(result).to.equal(true);
+        expect(result).to.equal(false);
       });
     });
   });
@@ -576,9 +578,9 @@ describe('checksIfOnlyProjectLead', () => {
           }
         ];
 
-        const result = delete_endpoint.checksIfOnlyProjectLead(rows, userId);
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
 
-        expect(result).to.equal(false);
+        expect(result).to.equal(true);
       });
     });
 
@@ -617,9 +619,9 @@ describe('checksIfOnlyProjectLead', () => {
           }
         ];
 
-        const result = delete_endpoint.checksIfOnlyProjectLead(rows, userId);
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
 
-        expect(result).to.equal(false);
+        expect(result).to.equal(true);
       });
     });
   });
@@ -645,9 +647,9 @@ describe('checksIfOnlyProjectLead', () => {
         }
       ];
 
-      const result = delete_endpoint.checksIfOnlyProjectLead(rows, userId);
+      const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
 
-      expect(result).to.equal(false);
+      expect(result).to.equal(true);
     });
   });
 });

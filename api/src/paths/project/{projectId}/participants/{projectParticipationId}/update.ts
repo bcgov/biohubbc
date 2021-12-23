@@ -7,7 +7,7 @@ import { addProjectParticipant } from '../../../../../paths-helpers/project-part
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 import { deleteProjectParticipationRecord } from './delete';
-import { checksIfOnlyProjectLead } from '../../../../user/{userId}/delete';
+import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
 import { getProjectParticipants } from '../get';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
@@ -128,9 +128,9 @@ export function updateProjectParticipantRole(): RequestHandler {
 
       const projectParticipantsResponse = await getProjectParticipants(Number(req.params.projectId), connection);
 
-      const onlyProjectLeadResponse = checksIfOnlyProjectLead(projectParticipantsResponse, result.system_user_id);
+      const projectHasLeadResponse = doAllProjectsHaveAProjectLead(projectParticipantsResponse);
 
-      if (onlyProjectLeadResponse) {
+      if (!projectHasLeadResponse) {
         throw new HTTP400('Cannot update project user. User is the only Project Lead for the project.');
       }
 

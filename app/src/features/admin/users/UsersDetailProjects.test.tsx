@@ -207,7 +207,7 @@ describe('UsersDetailProjects', () => {
         }
       ]);
 
-      const { getAllByText, getByText } = render(
+      const { getAllByText, getByTestId, getByText } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -219,7 +219,7 @@ describe('UsersDetailProjects', () => {
         expect(getAllByText('projectName').length).toEqual(1);
       });
 
-      fireEvent.click(getByText('Remove'));
+      fireEvent.click(getByTestId('remove-project-participant-button'));
 
       await waitFor(() => {
         expect(getAllByText('Remove User From Project').length).toEqual(1);
@@ -259,7 +259,7 @@ describe('UsersDetailProjects', () => {
         }
       ]);
 
-      const { getAllByText, getByText } = render(
+      const { getAllByText, getByText, getAllByTestId } = render(
         <DialogContextProvider>
           <Router history={history}>
             <UsersDetailProjects userDetails={mockUser} />
@@ -283,7 +283,7 @@ describe('UsersDetailProjects', () => {
         }
       ]);
 
-      fireEvent.click(getAllByText('Remove')[0]);
+      fireEvent.click(getAllByTestId('remove-project-participant-button')[0]);
 
       await waitFor(() => {
         expect(getAllByText('Remove User From Project').length).toEqual(1);
