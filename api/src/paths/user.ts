@@ -101,7 +101,7 @@ export function addUser(): RequestHandler {
 
       await connection.commit();
 
-      return res.send(200);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
       await connection.rollback();

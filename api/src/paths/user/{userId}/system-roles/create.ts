@@ -7,8 +7,7 @@ import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
 import { UserObject } from '../../../../models/user';
 import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
-import { getUserByIdSQL } from '../../../../queries/users/user-queries';
-import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { authorizeRequestHandler, getSystemUserById } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}/system-roles/create');
@@ -89,7 +88,12 @@ POST.apiDoc = {
 
 export function getAddSystemRolesHandler(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'addSystemRoles', message: 'params', req_params: req.params, req_body: req.body });
+    defaultLog.debug({
+      label: 'getAddSystemRolesHandler',
+      message: 'params',
+      req_params: req.params,
+      req_body: req.body
+    });
 
     if (!req.params || !req.params.userId) {
       throw new HTTP400('Missing required path param: userId');
@@ -106,16 +110,7 @@ export function getAddSystemRolesHandler(): RequestHandler {
     try {
       await connection.open();
 
-      // Get the system user and their current roles
-      const getUserSQLStatement = getUserByIdSQL(userId);
-
-      if (!getUserSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const getUserResponse = await connection.query(getUserSQLStatement.text, getUserSQLStatement.values);
-
-      const userResult = (getUserResponse && getUserResponse.rowCount && getUserResponse.rows[0]) || null;
+      const userResult = await getSystemUserById(userId, connection);
 
       if (!userResult) {
         throw new HTTP400('Failed to get system user');
@@ -137,7 +132,7 @@ export function getAddSystemRolesHandler(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'addSystemRoles', message: 'error', error });
+      defaultLog.error({ label: 'getAddSystemRolesHandler', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -166,8 +161,7 @@ export const addSystemRoles = async (userId: number, roleIds: number[], connecti
     postSystemRolesSqlStatement.values
   );
 
-  if (!postSystemRolesResponse || !postSystemRolesResponse.rowCount) {
+  if (!postSystemRolesResponse.rowCount) {
     throw new HTTP400('Failed to add system roles');
   }
-  return true;
 };

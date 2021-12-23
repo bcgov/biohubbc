@@ -33,12 +33,12 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
   };
 };
 
-export type ExtendedMockReq = MockReq & Request & { [key: string]: any };
+export type ExtendedMockReq = MockReq & Request;
 export class MockReq {
   query = {};
   params = {};
   body = {};
-  files = [];
+  files: any[] = [];
 }
 
 export type ExtendedMockRes = MockRes & Response;

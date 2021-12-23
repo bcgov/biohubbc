@@ -6,6 +6,8 @@ import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
 import { deleteProjectParticipationSQL } from '../../../../../queries/project-participation/project-participation-queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
+import { checksIfOnlyProjectLead } from '../../../../user/{userId}/delete';
+import { getProjectParticipants } from '../get';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/delete');
 
@@ -89,7 +91,20 @@ export function deleteProjectParticipant(): RequestHandler {
     try {
       await connection.open();
 
-      await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+      const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+
+      if (!result || !result.system_user_id) {
+        // The delete result is missing necesary data, fail the request
+        throw new HTTP500('Failed to delete project participant');
+      }
+
+      const projectParticipantsResponse = await getProjectParticipants(Number(req.params.projectId), connection);
+
+      const onlyProjectLeadResponse = checksIfOnlyProjectLead(projectParticipantsResponse, result.system_user_id);
+
+      if (onlyProjectLeadResponse) {
+        throw new HTTP400('Cannot delete project user. User is the only Project Lead for the project');
+      }
 
       await connection.commit();
 

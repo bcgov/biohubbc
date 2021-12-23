@@ -4,6 +4,109 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('queries/permit/permit-create-queries');
 
 /**
+ * SQL query to get all projects from user Id.
+ *
+ * @param {userId} userId
+ * @returns {SQLStatement} sql query object
+ */
+export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getParticipantsFromAllSystemUsersProjectsSQL',
+    message: 'params',
+    systemUserId
+  });
+
+  if (!systemUserId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      pp.project_participation_id,
+      pp.project_id,
+      pp.system_user_id,
+      pp.project_role_id,
+      pr.name project_role_name
+    FROM
+      project_participation pp
+    LEFT JOIN
+      project p
+    ON
+      pp.project_id = p.project_id
+    LEFT JOIN
+      project_role pr
+    ON
+      pr.project_role_id = pp.project_role_id
+    WHERE
+      pp.project_id in (
+        SELECT
+          p.project_id
+        FROM
+          project_participation pp
+        LEFT JOIN
+          project p
+        ON
+          pp.project_id = p.project_id
+        WHERE
+          pp.system_user_id = ${systemUserId}
+      );
+  `;
+
+  defaultLog.debug({
+    label: 'getParticipantsFromAllSystemUsersProjectsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get all projects from user Id.
+ *
+ * @param {userId} userId
+ * @returns {SQLStatement} sql query object
+ */
+export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getAllUserProjectsSQL',
+    message: 'params',
+    userId
+  });
+
+  if (!userId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    SELECT
+      p.project_id,
+      p.name,
+      pp.system_user_id,
+      pp.project_role_id,
+      pp.project_participation_id
+    FROM
+      project_participation pp
+    LEFT JOIN
+      project p
+    ON
+      pp.project_id = p.project_id
+    WHERE
+      pp.system_user_id = ${userId};
+  `;
+
+  defaultLog.debug({
+    label: 'getAllUserProjectsSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to add a single project role to a user.
  *
  * @param {number} projectId
@@ -55,7 +158,7 @@ export const getProjectParticipationBySystemUserSQL = (
     su.record_end_date ;
   `;
 
-  defaultLog.info({
+  defaultLog.debug({
     label: 'getProjectParticipationBySystemUserSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
@@ -88,6 +191,7 @@ export const getAllProjectParticipants = (projectId: number): SQLStatement | nul
       pp.project_id,
       pp.system_user_id,
       pp.project_role_id,
+      pr.name project_role_name,
       su.user_identifier,
       su.user_identity_source_id
     FROM
@@ -96,6 +200,10 @@ export const getAllProjectParticipants = (projectId: number): SQLStatement | nul
       system_user su
     ON
       pp.system_user_id = su.system_user_id
+    LEFT JOIN
+      project_role pr
+    ON
+      pr.project_role_id = pp.project_role_id
     WHERE
       pp.project_id = ${projectId};
   `;
@@ -155,7 +263,7 @@ export const addProjectRoleByRoleNameSQL = (
       *;
   `;
 
-  defaultLog.info({
+  defaultLog.debug({
     label: 'postProjectRoleSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
@@ -204,7 +312,7 @@ export const addProjectRoleByRoleIdSQL = (
       *;
   `;
 
-  defaultLog.info({
+  defaultLog.debug({
     label: 'addProjectRoleByRoleIdSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
@@ -240,7 +348,7 @@ export const deleteProjectParticipationSQL = (projectParticipationId: number): S
       *;
   `;
 
-  defaultLog.info({
+  defaultLog.debug({
     label: 'deleteProjectParticipantSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,

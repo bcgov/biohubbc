@@ -2,11 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/CustomError';
 import { UserObject } from '../../../../models/user';
 import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
-import { deleteAllSystemRolesSQL, getUserByIdSQL } from '../../../../queries/users/user-queries';
-import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { deleteAllSystemRolesSQL } from '../../../../queries/users/user-queries';
+import { authorizeRequestHandler, getSystemUserById } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}/system-roles/update');
@@ -87,7 +87,12 @@ PATCH.apiDoc = {
 
 export function updateSystemRolesHandler(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'updateSystemRoles', message: 'params', req_params: req.params, req_body: req.body });
+    defaultLog.debug({
+      label: 'updateSystemRolesHandler',
+      message: 'params',
+      req_params: req.params,
+      req_body: req.body
+    });
 
     if (!req.params || !req.params.userId) {
       throw new HTTP400('Missing required path param: userId');
@@ -104,16 +109,7 @@ export function updateSystemRolesHandler(): RequestHandler {
     try {
       await connection.open();
 
-      // Get the system user and their current roles
-      const getUserSQLStatement = getUserByIdSQL(userId);
-
-      if (!getUserSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const getUserResponse = await connection.query(getUserSQLStatement.text, getUserSQLStatement.values);
-
-      const userResult = (getUserResponse && getUserResponse.rowCount && getUserResponse.rows[0]) || null;
+      const userResult = await getSystemUserById(userId, connection);
 
       if (!userResult) {
         throw new HTTP400('Failed to get system user');
@@ -127,11 +123,12 @@ export function updateSystemRolesHandler(): RequestHandler {
 
       //add new user system roles
       await addUserSystemRoles(userId, roles, connection);
+
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'addSystemRoles', message: 'error', error });
+      defaultLog.error({ label: 'updateSystemRolesHandler', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -154,18 +151,7 @@ export const deleteUserSystemRoles = async (userId: number, connection: IDBConne
     throw new HTTP400('Failed to build SQL delete statement');
   }
 
-  const deleteSystemRolesResponse = await connection.query(
-    deleteSystemRolesSqlStatement.text,
-    deleteSystemRolesSqlStatement.values
-  );
-
-  const result = deleteSystemRolesResponse || null;
-
-  if (!result) {
-    throw new HTTP500('Failed to delete user roles');
-  }
-
-  return result;
+  return connection.query(deleteSystemRolesSqlStatement.text, deleteSystemRolesSqlStatement.values);
 };
 
 /**

@@ -25,6 +25,7 @@ describe('useProjectApi', () => {
     mock.restore();
   });
 
+  const userId = 123;
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
@@ -45,6 +46,28 @@ describe('useProjectApi', () => {
     year_published: 2000,
     revision_count: 1
   };
+
+  it('getAllUserProjectsForView works as expected', async () => {
+    mock.onGet(`/api/user/${userId}/projects/get`).reply(200, [
+      {
+        project_id: 321,
+        name: 'test',
+        system_user_id: 1,
+        project_role_id: 2,
+        project_participation_id: 3
+      }
+    ]);
+
+    const result = await useProjectApi(axios).getAllUserProjectsForView(123);
+
+    expect(result[0]).toEqual({
+      project_id: 321,
+      name: 'test',
+      system_user_id: 1,
+      project_role_id: 2,
+      project_participation_id: 3
+    });
+  });
 
   it('getProjectAttachments works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/attachments/list`).reply(200, {

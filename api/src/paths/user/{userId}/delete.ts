@@ -1,17 +1,15 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection } from '../../../database/db';
-import { HTTP400, HTTP500 } from '../../../errors/CustomError';
+import { getDBConnection, IDBConnection } from '../../../database/db';
+import { HTTP400 } from '../../../errors/CustomError';
+import { getParticipantsFromAllSystemUsersProjectsSQL } from '../../../queries/project-participation/project-participation-queries';
 import {
   deActivateSystemUserSQL,
   deleteAllProjectRolesSQL,
-  deleteAllSystemRolesSQL,
-  getUserByIdSQL
+  deleteAllSystemRolesSQL
 } from '../../../queries/users/user-queries';
-import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { authorizeRequestHandler, getSystemUserById } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}/delete');
@@ -83,18 +81,11 @@ export function removeSystemUser(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      // Get the system user
-      const getUserSQLStatement = getUserByIdSQL(userId);
-
-      if (!getUserSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const getUserResponse = await connection.query(getUserSQLStatement.text, getUserSQLStatement.values);
+      await checkIfUserIsOnlyProjectLeadOnAnyProject(userId, connection);
 
-      const userResult = (getUserResponse && getUserResponse.rowCount && getUserResponse.rows[0]) || null;
+      const userResult = await getSystemUserById(userId, connection);
 
       if (!userResult) {
         throw new HTTP400('Failed to get system user');
@@ -104,51 +95,13 @@ export function removeSystemUser(): RequestHandler {
         throw new HTTP400('The system user is not active');
       }
 
-      const deleteAllProjectRolesSqlStatement = deleteAllProjectRolesSQL(userId);
+      await deleteAllProjectRoles(userId, connection);
 
-      if (!deleteAllProjectRolesSqlStatement) {
-        throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
-      }
+      await deleteAllSystemRoles(userId, connection);
 
-      const deleteProjectRolesResponse = await connection.query(
-        deleteAllProjectRolesSqlStatement.text,
-        deleteAllProjectRolesSqlStatement.values
-      );
-
-      if (!deleteProjectRolesResponse) {
-        throw new HTTP400('Failed to the delete project roles');
-      }
-
-      const deleteSystemRoleSqlStatement = deleteAllSystemRolesSQL(userId);
-
-      if (!deleteSystemRoleSqlStatement) {
-        throw new HTTP400('Failed to build SQL delete statement for deleting system roles');
-      }
-
-      const deleteSystemRolesResponse = await connection.query(
-        deleteSystemRoleSqlStatement.text,
-        deleteSystemRoleSqlStatement.values
-      );
-
-      if (!deleteSystemRolesResponse) {
-        throw new HTTP400('Failed to delete the user system roles');
-      }
-
-      const deleteSystemUserSqlStatement = deActivateSystemUserSQL(userId);
-
-      if (!deleteSystemUserSqlStatement) {
-        throw new HTTP400('Failed to build SQL delete statement to deactivate system user');
-      }
-
-      const response = await connection.query(deleteSystemUserSqlStatement.text, deleteSystemUserSqlStatement.values);
+      await deActivateSystemUser(userId, connection);
 
       await connection.commit();
-
-      const result = (response && response.rowCount) || null;
-
-      if (!result) {
-        throw new HTTP500('Failed to remove user from the system');
-      }
 
       return res.status(200).send();
     } catch (error) {
@@ -160,3 +113,106 @@ export function removeSystemUser(): RequestHandler {
     }
   };
 }
+
+export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, connection: IDBConnection) => {
+  const getAllParticipantsResponse = await getAllParticipantsFromSystemUsersProjects(userId, connection);
+
+  const onlyProjectLeadResponse = checksIfOnlyProjectLead(getAllParticipantsResponse, userId);
+
+  if (onlyProjectLeadResponse) {
+    throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects.');
+  }
+};
+
+export const deleteAllProjectRoles = async (userId: number, connection: IDBConnection) => {
+  const sqlStatement = deleteAllProjectRolesSQL(userId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
+  }
+
+  connection.query(sqlStatement.text, sqlStatement.values);
+};
+
+export const deleteAllSystemRoles = async (userId: number, connection: IDBConnection) => {
+  const sqlStatement = deleteAllSystemRolesSQL(userId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete statement for deleting system roles');
+  }
+
+  connection.query(sqlStatement.text, sqlStatement.values);
+};
+
+export const deActivateSystemUser = async (userId: number, connection: IDBConnection) => {
+  const sqlStatement = deActivateSystemUserSQL(userId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL delete statement to deactivate system user');
+  }
+
+  connection.query(sqlStatement.text, sqlStatement.values);
+};
+
+/**
+ * collect all participants associated with user across all projects.
+ *
+ * @param {number} userId
+ * @param {IDBConnection} connection
+ * @return {*}  {Promise<any[]>}
+ */
+export const getAllParticipantsFromSystemUsersProjects = async (
+  userId: number,
+  connection: IDBConnection
+): Promise<any[]> => {
+  const getParticipantsFromAllSystemUsersProjectsSQLStatment = getParticipantsFromAllSystemUsersProjectsSQL(userId);
+
+  if (!getParticipantsFromAllSystemUsersProjectsSQLStatment) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(
+    getParticipantsFromAllSystemUsersProjectsSQLStatment.text,
+    getParticipantsFromAllSystemUsersProjectsSQLStatment.values
+  );
+
+  return response.rows || [];
+};
+
+/**
+ * For all projects user is participant of, return true if removing them results in no more project leads left in any
+ * project given. return false otherwise.
+ *
+ * @param {any[]} rows
+ * @param {number} userId
+ * @return {*}  {boolean}
+ */
+export const checksIfOnlyProjectLead = (rows: any[], userId: number): boolean => {
+  const projectLeadsPerProject = {};
+
+  rows.forEach((row) => {
+    const key = row.project_id;
+
+    if (!projectLeadsPerProject[key]) {
+      projectLeadsPerProject[key] = 0;
+    }
+
+    if (row.project_role_name === 'Project Lead' && row.system_user_id !== userId) {
+      projectLeadsPerProject[key] += 1;
+    }
+  });
+
+  const projectLeadCounts = Object.values(projectLeadsPerProject);
+
+  if (!projectLeadCounts || !projectLeadCounts.length) {
+    return true;
+  }
+
+  for (const count of projectLeadCounts) {
+    if (!count) {
+      return true;
+    }
+  }
+
+  return false;
+};
