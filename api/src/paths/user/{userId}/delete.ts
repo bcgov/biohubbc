@@ -117,9 +117,6 @@ export function removeSystemUser(): RequestHandler {
 export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, connection: IDBConnection) => {
   const getAllParticipantsResponse = await getAllParticipantsFromSystemUsersProjects(userId, connection);
 
-  console.log('//////////////////////////////////');
-  console.log(getAllParticipantsResponse, userId);
-
   // No projects associated to user, skip Project Lead role check
   if (!getAllParticipantsResponse.length) {
     return;

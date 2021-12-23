@@ -108,8 +108,6 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      console.log('//////////////////////////////////');
-      console.log(actualError);
       expect((actualError as CustomError).status).to.equal(400);
       expect((actualError as CustomError).message).to.equal(
         'Cannot remove user. User is the only Project Lead for one or more projects.'
