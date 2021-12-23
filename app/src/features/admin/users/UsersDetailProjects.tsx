@@ -54,20 +54,25 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(true);
-
   const [assignedProjects, setAssignedProjects] = useState<IGetUserProjectsListResponse[]>();
-  const handleGetUserProjects = async (userId: number) => {
-    const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(userId);
-    setAssignedProjects(userProjectsListResponse);
-  };
 
-  const refresh = () => () => {
-    handleGetUserProjects(userDetails.id);
-  };
+  const handleGetUserProjects = useCallback(
+    async (userId: number) => {
+      const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(userId);
+      setAssignedProjects(userProjectsListResponse);
+    },
+    [biohubApi.project]
+  );
+
+  const refresh = () => handleGetUserProjects(userDetails.id);
 
   useEffect(() => {
+    if (assignedProjects) {
+      return;
+    }
+
     handleGetUserProjects(userDetails.id);
-  }, [props, userDetails.id]);
+  }, [userDetails.id, assignedProjects, handleGetUserProjects]);
 
   useEffect(() => {
     const getCodes = async () => {
@@ -112,7 +117,8 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
       openErrorDialog({
         dialogTitle: SystemUserI18N.removeUserErrorTitle,
         dialogText: SystemUserI18N.removeUserErrorText,
-        dialogError: (error as APIError).message
+        dialogError: (error as APIError).message,
+        dialogErrorDetails: (error as APIError).errors
       });
     }
   };
@@ -195,7 +201,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
                             row={row}
                             user_identifier={props.userDetails.user_identifier}
                             projectRoleCodes={codes.project_roles}
-                            refresh={refresh()}
+                            refresh={refresh}
                           />
                         </Box>
                       </TableCell>
@@ -342,7 +348,8 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
       displayErrorDialog({
         dialogTitle: SystemUserI18N.updateProjectLeadRoleErrorTitle,
         dialogText: SystemUserI18N.updateProjectLeadRoleErrorText,
-        dialogError: (error as APIError).message
+        dialogError: (error as APIError).message,
+        dialogErrorDetails: (error as APIError).errors
       });
     }
   };

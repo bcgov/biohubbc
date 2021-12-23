@@ -20,19 +20,19 @@ const UsersDetailPage: React.FC = (props) => {
 
   const [selectedUser, setSelectedUser] = useState<IGetUserResponse | null>(null);
 
-  const getUser = async () => {
-    var id = urlParams['id'];
-    const user = await biohubApi.user.getUserById(Number(id));
-    setSelectedUser(user);
-  };
-
   useEffect(() => {
     if (selectedUser) {
       return;
     }
 
+    const getUser = async () => {
+      var id = urlParams['id'];
+      const user = await biohubApi.user.getUserById(Number(id));
+      setSelectedUser(user);
+    };
+
     getUser();
-  }, [getUser, selectedUser]);
+  }, [biohubApi.user, urlParams, selectedUser]);
 
   if (!selectedUser) {
     return <CircularProgress data-testid="page-loading" className="pageProgress" size={40} />;
