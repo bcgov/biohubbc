@@ -122,5 +122,7 @@ export const getTaxonsSQL = (): SQLStatement =>
       wldtaxonomic_units
     WHERE
       tty_name = 'SPECIES'
+    and 
+      end_date is null
     ORDER BY
       name;`;
