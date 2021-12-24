@@ -1666,7 +1666,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_45"
                             type="radio"
                           />
                           <span>
@@ -1678,7 +1678,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_45"
                             type="radio"
                           />
                           <span>

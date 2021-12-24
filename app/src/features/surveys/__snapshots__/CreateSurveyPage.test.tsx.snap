@@ -1402,7 +1402,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                   <input
                                     checked="checked"
                                     class="leaflet-control-layers-selector"
-                                    name="leaflet-base-layers_43"
+                                    name="leaflet-base-layers_45"
                                     type="radio"
                                   />
                                   <span>
@@ -1414,7 +1414,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 <div>
                                   <input
                                     class="leaflet-control-layers-selector"
-                                    name="leaflet-base-layers_43"
+                                    name="leaflet-base-layers_45"
                                     type="radio"
                                   />
                                   <span>

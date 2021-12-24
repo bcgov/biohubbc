@@ -200,7 +200,7 @@ exports[`SurveyStudyArea renders correctly 1`] = `
                       <input
                         checked="checked"
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_36"
+                        name="leaflet-base-layers_38"
                         type="radio"
                       />
                       <span>
@@ -212,7 +212,7 @@ exports[`SurveyStudyArea renders correctly 1`] = `
                     <div>
                       <input
                         class="leaflet-control-layers-selector"
-                        name="leaflet-base-layers_36"
+                        name="leaflet-base-layers_38"
                         type="radio"
                       />
                       <span>
