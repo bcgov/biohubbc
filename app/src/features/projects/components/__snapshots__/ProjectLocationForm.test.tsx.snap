@@ -390,7 +390,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_45"
                             type="radio"
                           />
                           <span>
@@ -402,7 +402,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_43"
+                            name="leaflet-base-layers_45"
                             type="radio"
                           />
                           <span>
@@ -854,7 +854,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_96"
+                            name="leaflet-base-layers_97"
                             type="radio"
                           />
                           <span>
@@ -866,7 +866,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_96"
+                            name="leaflet-base-layers_97"
                             type="radio"
                           />
                           <span>
@@ -1330,7 +1330,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                           <input
                             checked="checked"
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>
@@ -1342,7 +1342,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                         <div>
                           <input
                             class="leaflet-control-layers-selector"
-                            name="leaflet-base-layers_71"
+                            name="leaflet-base-layers_72"
                             type="radio"
                           />
                           <span>

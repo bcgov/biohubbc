@@ -395,7 +395,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                         <input
                           checked="checked"
                           class="leaflet-control-layers-selector"
-                          name="leaflet-base-layers_43"
+                          name="leaflet-base-layers_45"
                           type="radio"
                         />
                         <span>
@@ -407,7 +407,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
                       <div>
                         <input
                           class="leaflet-control-layers-selector"
-                          name="leaflet-base-layers_43"
+                          name="leaflet-base-layers_45"
                           type="radio"
                         />
                         <span>
@@ -854,7 +854,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                         <input
                           checked="checked"
                           class="leaflet-control-layers-selector"
-                          name="leaflet-base-layers_71"
+                          name="leaflet-base-layers_72"
                           type="radio"
                         />
                         <span>
@@ -866,7 +866,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                       <div>
                         <input
                           class="leaflet-control-layers-selector"
-                          name="leaflet-base-layers_71"
+                          name="leaflet-base-layers_72"
                           type="radio"
                         />
                         <span>
@@ -1339,7 +1339,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                         <input
                           checked="checked"
                           class="leaflet-control-layers-selector"
-                          name="leaflet-base-layers_96"
+                          name="leaflet-base-layers_97"
                           type="radio"
                         />
                         <span>
@@ -1351,7 +1351,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                       <div>
                         <input
                           class="leaflet-control-layers-selector"
-                          name="leaflet-base-layers_96"
+                          name="leaflet-base-layers_97"
                           type="radio"
                         />
                         <span>

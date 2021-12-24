@@ -407,6 +407,31 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     [geometryState?.geometry, nonEditableGeometries]
   );
 
+  const FullScreenEventHandler: React.FC<{ bounds?: any[] }> = ({ bounds }) => {
+    const map = useMap();
+
+    map.on('fullscreenchange', function () {
+      if (map.isFullscreen()) {
+        if (!scrollWheelZoom) {
+          // don't change scroll wheel zoom settings if it was enabled by default via props
+          map.scrollWheelZoom.enable();
+        }
+      } else {
+        if (!scrollWheelZoom) {
+          // don't change scroll wheel zoom settings if it was enabled by default via props
+          map.scrollWheelZoom.disable();
+        }
+
+        if (bounds && bounds.length) {
+          // reset bounds, if provided, on exit fullscreen
+          map.fitBounds(bounds);
+        }
+      }
+    });
+
+    return null;
+  };
+
   return (
     <LeafletMapContainer
       className={classes?.map}
@@ -415,11 +440,10 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       center={[55, -128]}
       zoom={zoom || 5}
       maxZoom={17}
-      scrollWheelZoom={scrollWheelZoom || false}
-      whenCreated={(map: any) => {
-        //@ts-ignore
-        new L.Control.Fullscreen({ position: 'topleft' }).addTo(map);
-      }}>
+      fullscreenControl={true}
+      scrollWheelZoom={scrollWheelZoom || false}>
+      <FullScreenEventHandler bounds={bounds} />
+
       <MapBounds bounds={bounds} />
 
       <FeatureGroup>

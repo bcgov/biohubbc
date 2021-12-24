@@ -177,6 +177,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           <MapContainer
             mapId="project_location_form_map"
             hideDrawControls={true}
+            scrollWheelZoom={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
