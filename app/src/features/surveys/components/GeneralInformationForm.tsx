@@ -58,7 +58,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
       .string()
       .max(3000, 'Cannot exceed 3000 characters')
       .required('You must provide a purpose for the survey'),
-    focal_species: yup.array().required('Required'),
+    focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
     ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique'),
     biologist_first_name: yup.string().required('Required'),
     biologist_last_name: yup.string().required('Required'),
