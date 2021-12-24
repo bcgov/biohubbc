@@ -407,7 +407,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     [geometryState?.geometry, nonEditableGeometries]
   );
 
-  const FullScreenEventHandler: React.FC<{ bounds?: any[] }> = ({ bounds }) => {
+  const FullScreenEventHandler: React.FC<{ bounds?: any[] }> = (props) => {
     const map = useMap();
 
     map.on('fullscreenchange', function () {
@@ -422,9 +422,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           map.scrollWheelZoom.disable();
         }
 
-        if (bounds && bounds.length) {
+        if (props.bounds && props.bounds.length) {
           // reset bounds, if provided, on exit fullscreen
-          map.fitBounds(bounds);
+          map.fitBounds(props.bounds);
         }
       }
     });
