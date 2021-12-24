@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/CustomError';
 import { getParticipantsFromAllSystemUsersProjectsSQL } from '../../../queries/project-participation/project-participation-queries';
@@ -117,9 +117,14 @@ export function removeSystemUser(): RequestHandler {
 export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, connection: IDBConnection) => {
   const getAllParticipantsResponse = await getAllParticipantsFromSystemUsersProjects(userId, connection);
 
-  const onlyProjectLeadResponse = checksIfOnlyProjectLead(getAllParticipantsResponse, userId);
+  // No projects associated to user, skip Project Lead role check
+  if (!getAllParticipantsResponse.length) {
+    return;
+  }
 
-  if (onlyProjectLeadResponse) {
+  const onlyProjectLeadResponse = doAllProjectsHaveAProjectLeadIfUserIsRemoved(getAllParticipantsResponse, userId);
+
+  if (!onlyProjectLeadResponse) {
     throw new HTTP400('Cannot remove user. User is the only Project Lead for one or more projects.');
   }
 };
@@ -180,16 +185,21 @@ export const getAllParticipantsFromSystemUsersProjects = async (
 };
 
 /**
- * For all projects user is participant of, return true if removing them results in no more project leads left in any
- * project given. return false otherwise.
+ * Given an array of project participation role objects, return false if any project has no Project Lead role. Return
+ * true otherwise.
  *
  * @param {any[]} rows
- * @param {number} userId
  * @return {*}  {boolean}
  */
-export const checksIfOnlyProjectLead = (rows: any[], userId: number): boolean => {
-  const projectLeadsPerProject = {};
+export const doAllProjectsHaveAProjectLead = (rows: any[]): boolean => {
+  // No project with project lead
+  if (!rows.length) {
+    return false;
+  }
 
+  const projectLeadsPerProject: { [key: string]: any } = {};
+
+  // count how many Project Lead roles there are per project
   rows.forEach((row) => {
     const key = row.project_id;
 
@@ -197,22 +207,64 @@ export const checksIfOnlyProjectLead = (rows: any[], userId: number): boolean =>
       projectLeadsPerProject[key] = 0;
     }
 
-    if (row.project_role_name === 'Project Lead' && row.system_user_id !== userId) {
+    if (row.project_role_name === PROJECT_ROLE.PROJECT_LEAD) {
       projectLeadsPerProject[key] += 1;
     }
   });
 
   const projectLeadCounts = Object.values(projectLeadsPerProject);
 
-  if (!projectLeadCounts || !projectLeadCounts.length) {
-    return true;
-  }
-
+  // check if any projects would be left with no Project Lead
   for (const count of projectLeadCounts) {
     if (!count) {
-      return true;
+      // found a project with no Project Lead
+      return false;
     }
   }
 
-  return false;
+  // all projects have a Project Lead
+  return true;
+};
+
+/**
+ * Given an array of project participation role objects, return true if any project has no Project Lead role after
+ * removing all rows associated with the provided `userId`. Return false otherwise.
+ *
+ * @param {any[]} rows
+ * @param {number} userId
+ * @return {*}  {boolean}
+ */
+export const doAllProjectsHaveAProjectLeadIfUserIsRemoved = (rows: any[], userId: number): boolean => {
+  // No project with project lead
+  if (!rows.length) {
+    return false;
+  }
+
+  const projectLeadsPerProject: { [key: string]: any } = {};
+
+  // count how many Project Lead roles there are per project
+  rows.forEach((row) => {
+    const key = row.project_id;
+
+    if (!projectLeadsPerProject[key]) {
+      projectLeadsPerProject[key] = 0;
+    }
+
+    if (row.system_user_id !== userId && row.project_role_name === PROJECT_ROLE.PROJECT_LEAD) {
+      projectLeadsPerProject[key] += 1;
+    }
+  });
+
+  const projectLeadCounts = Object.values(projectLeadsPerProject);
+
+  // check if any projects would be left with no Project Lead
+  for (const count of projectLeadCounts) {
+    if (!count) {
+      // found a project with no Project Lead
+      return false;
+    }
+  }
+
+  // all projects have a Project Lead
+  return true;
 };
