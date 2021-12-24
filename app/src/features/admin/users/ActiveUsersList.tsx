@@ -242,10 +242,10 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
                   variant="outlined"
                   disableElevation
                   data-testid="invite-system-users-button"
-                  aria-label={'New Users'}
+                  aria-label={'Add Users'}
                   startIcon={<Icon path={mdiPlus} size={1} />}
                   onClick={() => setOpenAddUserDialog(true)}>
-                  <strong>New Users</strong>
+                  <strong>Add Users</strong>
                 </Button>
               </Box>
             </Grid>
@@ -341,7 +341,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       </Paper>
 
       <EditDialog
-        dialogTitle={'Add System Users'}
+        dialogTitle={'Add Users'}
         open={openAddUserDialog}
         dialogSaveButtonLabel={'Add'}
         component={{

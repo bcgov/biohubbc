@@ -7,7 +7,7 @@ import { addProjectParticipant } from '../../../../../paths-helpers/project-part
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 import { deleteProjectParticipationRecord } from './delete';
-import { checksIfOnlyProjectLead } from '../../../../user/{userId}/delete';
+import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
 import { getProjectParticipants } from '../get';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
@@ -111,6 +111,10 @@ export function updateProjectParticipantRole(): RequestHandler {
     try {
       await connection.open();
 
+      //Check project lead roles before updating user
+      const projectParticipantsResponse1 = await getProjectParticipants(Number(req.params.projectId), connection);
+      const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
+
       // Delete the user's old participation record, returning the old record
       const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
 
@@ -126,12 +130,15 @@ export function updateProjectParticipantRole(): RequestHandler {
         connection
       );
 
-      const projectParticipantsResponse = await getProjectParticipants(Number(req.params.projectId), connection);
+      //if Project Lead roles are invalide skip check to prevent removal of only Project Lead of project
+      //(Project is already missing Project Lead and is in a bad state)
+      if (projectHasLeadResponse1) {
+        const projectParticipantsResponse2 = await getProjectParticipants(Number(req.params.projectId), connection);
+        const projectHasLeadResponse2 = doAllProjectsHaveAProjectLead(projectParticipantsResponse2);
 
-      const onlyProjectLeadResponse = checksIfOnlyProjectLead(projectParticipantsResponse, result.system_user_id);
-
-      if (onlyProjectLeadResponse) {
-        throw new HTTP400('Cannot update project user. User is the only Project Lead for the project.');
+        if (!projectHasLeadResponse2) {
+          throw new HTTP400('Cannot update project user. User is the only Project Lead for the project.');
+        }
       }
 
       await connection.commit();
