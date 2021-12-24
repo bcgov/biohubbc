@@ -163,6 +163,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           <MapContainer
             mapId="project_location_form_map"
             hideDrawControls={true}
+            scrollWheelZoom={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
