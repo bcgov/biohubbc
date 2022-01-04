@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+//import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
@@ -23,6 +24,18 @@ describe('creates a list of project participants', () => {
       projectId: 1
     }
   } as any;
+
+  // let actualResult: number = (null as unknown) as number;
+
+  // const sampleRes = {
+  //   status: (status: number) => {
+  //     return {
+  //       send: () => {
+  //         actualResult = status;
+  //       }
+  //     };
+  //   }
+  // };
 
   afterEach(() => {
     sinon.restore();
