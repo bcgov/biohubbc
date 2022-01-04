@@ -379,7 +379,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
       refresh();
     } catch (error) {
       const apiError = error as APIError;
-      showErrorDialog({ dialogErrorDetails: apiError.errors, open: true });
+      showErrorDialog({ dialogError: apiError.message, dialogErrorDetails: apiError.errors });
     }
   };
 

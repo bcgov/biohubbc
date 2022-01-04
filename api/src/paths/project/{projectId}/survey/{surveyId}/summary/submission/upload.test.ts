@@ -7,7 +7,7 @@ import * as db from '../../../../../../../database/db';
 import { CustomError } from '../../../../../../../errors/CustomError';
 import * as survey_summary_queries from '../../../../../../../queries/survey/survey-summary-queries';
 import * as file_utils from '../../../../../../../utils/file-utils';
-import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
 
 chai.use(sinonChai);
@@ -17,50 +17,23 @@ describe('uploadSummarySubmission', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
-
-  const mockReq = {
-    keycloak_token: {},
-    params: {
-      projectId: 1,
-      surveyId: 2
-    },
-    body: {},
-    files: [
-      {
-        fieldname: 'media',
-        originalname: 'test.txt',
-        encoding: '7bit',
-        mimetype: 'text/plain',
-        size: 340
-      }
-    ]
-  } as any;
-
-  let actualResult: any = null;
-
-  const mockRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    },
-    send: (status: number) => {
-      actualResult = status;
-    }
-  } as any;
-
-  const mockNext = {} as any;
-
   it('should throw a 400 error when files are missing', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [];
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = upload.uploadMedia();
+      const requestHandler = upload.uploadMedia();
 
-      await result({ ...mockReq, files: [] }, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -69,12 +42,29 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when more than 1 file uploaded', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'file1'
+      },
+      {
+        fieldname: 'file2'
+      }
+    ] as any;
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = upload.uploadMedia();
+      const requestHandler = upload.uploadMedia();
 
-      await result({ ...mockReq, files: ['file1', 'file2'] }, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -83,12 +73,30 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when projectId is missing', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = upload.uploadMedia();
+      const requestHandler = upload.uploadMedia();
 
-      await result({ ...mockReq, params: { ...mockReq.params, projectId: null } }, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -97,12 +105,30 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when surveyId is missing', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: ''
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = upload.uploadMedia();
+      const requestHandler = upload.uploadMedia();
 
-      await result({ ...mockReq, params: { ...mockReq.params, surveyId: null } }, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -111,15 +137,33 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when no sql statement returned', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(null);
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
-    const result = upload.uploadMedia();
+    const requestHandler = upload.uploadMedia();
 
     try {
-      await result(mockReq, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -128,19 +172,32 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when file contains malicious content', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
       }
-    });
+    ] as any;
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
-    const result = upload.uploadMedia();
+    const requestHandler = upload.uploadMedia();
 
     try {
-      await result(mockReq, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -149,25 +206,40 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when it fails to insert a record in the database', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 0 });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
 
-    const result = upload.uploadMedia();
+    const requestHandler = upload.uploadMedia();
 
     try {
-      await result(mockReq, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -176,15 +248,30 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when it fails to get the update SQL', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     const mockQuery = sinon.stub();
 
     mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
@@ -192,10 +279,10 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_summary_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(null);
 
-    const result = upload.uploadMedia();
+    const requestHandler = upload.uploadMedia();
 
     try {
-      await result(mockReq, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -204,6 +291,24 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when it fails to get the update the record in the database', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     const mockQuery = sinon.stub();
 
     mockQuery.onCall(0).resolves({ rowCount: 1, rows: [{ id: 1 }] });
@@ -211,9 +316,6 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
@@ -221,10 +323,10 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
     sinon.stub(survey_summary_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
 
-    const result = upload.uploadMedia();
+    const requestHandler = upload.uploadMedia();
 
     try {
-      await result(mockReq, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -233,15 +335,30 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should throw a 400 error when it fails to insert a record in S3', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
@@ -250,10 +367,10 @@ describe('uploadSummarySubmission', () => {
     sinon.stub(survey_summary_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
-    const result = upload.uploadMedia();
+    const requestHandler = upload.uploadMedia();
 
     try {
-      await result(mockReq, mockRes, mockNext);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).name).to.equal('Failed to insert occurrence submission data');
@@ -261,16 +378,34 @@ describe('uploadSummarySubmission', () => {
   });
 
   it('should return 200 on success with no methodology selected', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+    mockReq['auth_payload'] = {
+      preferred_username: 'user',
+      email: 'example@email.com'
+    };
+
     const mockQuery = sinon.stub();
-    const nextSpy = sinon.spy();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
@@ -280,79 +415,121 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
-    const result = upload.uploadMedia();
+    const requestHandler = upload.uploadMedia();
 
-    await result(
-      { ...mockReq, auth_payload: { preferred_username: 'user', email: 'example@email.com' } },
-      mockRes,
-      nextSpy as any
-    );
+    await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(nextSpy).to.have.been.called;
+    expect(mockNext).to.have.been.called;
   });
 
   it('should return with a 200 if errors messages exist and they are persisted', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+    mockReq['parseError'] = 'some error exists';
+
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
     sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
 
-    const result = upload.persistSummaryParseErrors();
+    const requestHandler = upload.persistSummaryParseErrors();
 
-    await result({ ...mockReq, parseError: 'some error exists' }, mockRes as any, (null as unknown) as any);
+    await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(actualResult).to.equal(200);
+    expect(mockRes.statusValue).to.equal(200);
   });
 
   it('should move on the next step is there are no errors to be persisted', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+
     const mockQuery = sinon.stub();
-    const nextSpy = sinon.spy();
 
     mockQuery.resolves({ rowCount: 1, rows: [{ id: 1 }] });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
-    const result = upload.persistSummaryParseErrors();
+    const requestHandler = upload.persistSummaryParseErrors();
 
-    await result(mockReq, mockRes as any, nextSpy);
+    await requestHandler(mockReq, mockRes, mockNext);
 
-    expect(nextSpy).to.have.been.called;
+    expect(mockNext).to.have.been.called;
   });
 
   it('should throw an error if there are errors when persisting error messages', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = {
+      projectId: '1',
+      surveyId: '2'
+    };
+    mockReq.files = [
+      {
+        fieldname: 'media',
+        originalname: 'test.txt',
+        encoding: '7bit',
+        mimetype: 'text/plain',
+        size: 340
+      }
+    ] as any;
+    mockReq['parseError'] = 'some error exists';
+
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({});
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
     sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
 
-    const result = upload.persistSummaryParseErrors();
+    const requestHandler = upload.persistSummaryParseErrors();
 
     try {
-      await result({ ...mockReq, parseError: 'some error exists' }, mockRes as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).message).to.equal('Failed to insert summary submission message data');

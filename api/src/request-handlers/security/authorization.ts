@@ -339,15 +339,7 @@ export const getSystemUserWithRoles = async (connection: IDBConnection) => {
     return null;
   }
 
-  const sqlStatement = getUserByIdSQL(systemUserId);
-
-  if (!sqlStatement) {
-    return null;
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  return (response && response.rowCount && response.rows[0]) || null;
+  return getSystemUserById(systemUserId, connection);
 };
 
 export const getProjectUserObject = async (
@@ -391,9 +383,17 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!response || !response?.rows?.[0]) {
+  return response.rows[0] || null;
+};
+
+export const getSystemUserById = async (userId: number, connection: IDBConnection): Promise<any> => {
+  const sqlStatement = getUserByIdSQL(userId);
+
+  if (!sqlStatement) {
     return null;
   }
 
-  return response.rows[0];
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (response.rows && response.rows[0]) || null;
 };

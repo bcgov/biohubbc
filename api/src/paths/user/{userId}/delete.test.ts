@@ -2,12 +2,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as delete_system_user from './delete';
-import * as db from '../../../database/db';
-import * as user_queries from '../../../queries/users/user-queries';
 import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../../../__mocks__/db';
+import * as db from '../../../database/db';
 import { CustomError } from '../../../errors/CustomError';
+import * as project_participation_queries from '../../../queries/project-participation/project-participation-queries';
+import * as user_queries from '../../../queries/users/user-queries';
+import * as authorization from '../../../request-handlers/security/authorization';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
+import * as delete_endpoint from './delete';
 
 chai.use(sinonChai);
 
@@ -16,49 +18,16 @@ describe('removeSystemUser', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {},
-    params: {
-      userId: 1
-    },
-    body: {
-      roles: [1, 2]
-    }
-  } as any;
-
-  let actualResult: any = null;
-
-  const sampleRes = {
-    status: (status: number) => {
-      return {
-        send: () => {
-          actualResult = status;
-        }
-        // json: (status: any) => {
-        //   actualResult = status;
-        // }
-      };
-    }
-  };
-
   it('should throw a 400 error when missing required path param: userId', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = delete_system_user.removeSystemUser();
-
-      await result(
-        { ...sampleReq, params: { ...sampleReq.params, userId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
+      const requestHandler = delete_endpoint.removeSystemUser();
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -66,20 +35,22 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
+  it('should throw a 400 error when no sql statement returned from `getParticipantsFromAllSystemUsersProjectsSQL`', async () => {
+    const dbConnectionObj = getMockDBConnection();
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(null);
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(project_participation_queries, 'getParticipantsFromAllSystemUsersProjectsSQL').returns(null);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -87,62 +58,112 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when no result or rowCount on getting userResult', async () => {
+  it('should throw a 400 error if the user is the only Project Lead role on one or more projects', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = { userId: '33' };
+    mockReq.body = { roles: [1, 2] };
+
     const mockQuery = sinon.stub();
 
-    mockQuery.resolves({ rows: [null] });
+    mockQuery.resolves({
+      rowCount: 2,
+      rows: [
+        {
+          project_participation_id: 47,
+          project_id: 3,
+          system_user_id: 33,
+          project_role_id: 1,
+          project_role_name: 'Project Lead'
+        },
+        {
+          project_participation_id: 57,
+          project_id: 1,
+          system_user_id: 33,
+          project_role_id: 3,
+          project_role_name: 'Viewer'
+        },
+        {
+          project_participation_id: 40,
+          project_id: 1,
+          system_user_id: 27,
+          project_role_id: 1,
+          project_role_name: 'Project Lead'
+        }
+      ]
+    });
 
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
       query: mockQuery
     });
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
+    sinon.stub(project_participation_queries, 'getParticipantsFromAllSystemUsersProjectsSQL').returns(SQL`some query`);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as CustomError).message).to.equal(
+        'Cannot remove user. User is the only Project Lead for one or more projects.'
+      );
+    }
+  });
+
+  it('should throw a 400 error when it fails to get the system user', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves(null);
+
+    try {
+      const requestHandler = delete_endpoint.removeSystemUser();
+
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (actualError) {
       expect((actualError as CustomError).message).to.equal('Failed to get system user');
+      expect((actualError as CustomError).status).to.equal(400);
     }
   });
 
   it('should throw a 400 error when user record has expired', async () => {
-    const mockQuery = sinon.stub();
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: '2020-10-10',
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
-        }
-      ],
-      rowCount: 1
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: '2010-10-10',
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
 
       expect.fail();
     } catch (actualError) {
@@ -151,37 +172,32 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for deleteAllProjectRolesSql', async () => {
-    const mockQuery = sinon.stub();
+  it('should throw a 400 error when no sql statement returned for `deleteAllProjectRolesSql`', async () => {
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: null,
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
-        }
-      ],
-      rowCount: 1
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
     sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(null);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -191,77 +207,67 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when the query to delete project roles fails', async () => {
-    const mockQuery = sinon.stub();
+  it('should catch and re-throw an error if the database fails to delete all project roles', async () => {
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: null,
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
-        }
-      ],
-      rowCount: 1
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(SQL`some query`);
+    const expectedError = new Error('A database error');
+    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').rejects(expectedError);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to the delete project roles');
+      expect(actualError).to.equal(expectedError);
     }
   });
 
-  it('should throw a 400 error when there is not SQL statement returned for deleteAllSystemRolesSQL', async () => {
-    const mockQuery = sinon.stub();
+  it('should throw a 400 error when there is not SQL statement returned for `deleteAllSystemRolesSQL`', async () => {
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: null,
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
-        }
-      ],
-      rowCount: 1
-    });
-    mockQuery.onCall(1).resolves({ rowCount: 1 });
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(SQL`some query`);
+    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+
     sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(null);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -271,81 +277,70 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when delete system roles fails', async () => {
-    const mockQuery = sinon.stub();
+  it('should catch and re-throw an error if the database fails to delete all system roles', async () => {
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: null,
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
-        }
-      ],
-      rowCount: 1
-    });
-    mockQuery.onCall(1).resolves({ rowCount: 1 });
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(SQL`some query`);
+    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+
+    const expectedError = new Error('A database error');
+    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').rejects(expectedError);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to delete the user system roles');
+      expect(actualError).to.equal(expectedError);
     }
   });
 
-  it('should throw a 400 error when there is no SQL for deActivateSystemUserSQL', async () => {
-    const mockQuery = sinon.stub();
+  it('should throw a 400 error when there is no SQL for `deActivateSystemUserSQL`', async () => {
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: null,
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
-        }
-      ],
-      rowCount: 1
-    });
-    mockQuery.onCall(1).resolves({ rowCount: 1 });
-    mockQuery.onCall(2).resolves({ rowCount: 1 });
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(SQL`some query`);
+    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').resolves();
+
     sinon.stub(user_queries, 'deActivateSystemUserSQL').returns(null);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as CustomError).status).to.equal(400);
@@ -355,84 +350,426 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 500 error when unable to delete a system user', async () => {
-    const mockQuery = sinon.stub();
+  it('should catch and re-throw an error if the database fails to deactivate the system user', async () => {
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: null,
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
-        }
-      ],
-      rowCount: 1
-    });
-    mockQuery.onCall(1).resolves({ rowCount: 1 });
-    mockQuery.onCall(2).resolves({ rowCount: 1 });
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
     });
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deActivateSystemUserSQL').returns(SQL`some query`);
+    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').resolves();
+
+    const expectedError = new Error('A database error');
+    sinon.stub(delete_endpoint, 'deActivateSystemUser').rejects(expectedError);
 
     try {
-      const result = delete_system_user.removeSystemUser();
+      const requestHandler = delete_endpoint.removeSystemUser();
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(500);
-      expect((actualError as CustomError).message).to.equal('Failed to remove user from the system');
+      expect(actualError).to.equal(expectedError);
     }
   });
 
   it('should return 200 on success', async () => {
-    const mockQuery = sinon.stub();
+    const dbConnectionObj = getMockDBConnection();
 
-    mockQuery.onCall(0).resolves({
-      rows: [
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.params = { userId: '1' };
+    mockReq.body = { roles: [1, 2] };
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
+
+    sinon.stub(authorization, 'getSystemUserById').resolves({
+      id: 1,
+      user_identifier: 'testname',
+      record_end_date: null,
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
+    });
+
+    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
+    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').resolves();
+    sinon.stub(delete_endpoint, 'deActivateSystemUser').resolves();
+
+    const requestHandler = delete_endpoint.removeSystemUser();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(mockRes.statusValue).to.equal(200);
+  });
+});
+
+describe('doAllProjectsHaveAProjectLeadIfUserIsRemoved', () => {
+  describe('user has Project Lead role', () => {
+    describe('user is on 1 project', () => {
+      it('should return false if the user is not the only Project Lead role', () => {
+        const userId = 10;
+
+        const rows = [
+          {
+            project_participation_id: 1,
+            project_id: 1,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          },
+          {
+            project_participation_id: 2,
+            project_id: 1,
+            system_user_id: 20,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          }
+        ];
+
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+
+        expect(result).to.equal(true);
+      });
+
+      it('should return true if the user is the only Project Lead role', () => {
+        const userId = 10;
+
+        const rows = [
+          {
+            project_participation_id: 1,
+            project_id: 1,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Project Lead' // Only Project Lead on project 1
+          },
+          {
+            project_participation_id: 2,
+            project_id: 1,
+            system_user_id: 20,
+            project_role_id: 2,
+            project_role_name: 'Editor'
+          }
+        ];
+
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+
+        expect(result).to.equal(false);
+      });
+    });
+
+    describe('user is on multiple projects', () => {
+      it('should return true if the user is not the only Project Lead on all projects', () => {
+        const userId = 10;
+
+        const rows = [
+          {
+            project_participation_id: 1,
+            project_id: 1,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          },
+          {
+            project_participation_id: 2,
+            project_id: 1,
+            system_user_id: 2,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          },
+          {
+            project_participation_id: 1,
+            project_id: 2,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          },
+          {
+            project_participation_id: 2,
+            project_id: 2,
+            system_user_id: 2,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          }
+        ];
+
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+
+        expect(result).to.equal(true);
+      });
+
+      it('should return false if the user the only Project Lead on any project', () => {
+        const userId = 10;
+
+        // User is on 1 project, and is not the only Project Lead
+        const rows = [
+          {
+            project_participation_id: 1,
+            project_id: 1,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          },
+          {
+            project_participation_id: 2,
+            project_id: 1,
+            system_user_id: 2,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          },
+          {
+            project_participation_id: 1,
+            project_id: 2,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Project Lead' // Only Project Lead on project 2
+          },
+          {
+            project_participation_id: 2,
+            project_id: 2,
+            system_user_id: 2,
+            project_role_id: 1,
+            project_role_name: 'Editor'
+          }
+        ];
+
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+
+        expect(result).to.equal(false);
+      });
+    });
+  });
+
+  describe('user does not have Project Lead role', () => {
+    describe('user is on 1 project', () => {
+      it('should return true', () => {
+        const userId = 10;
+
+        const rows = [
+          {
+            project_participation_id: 1,
+            project_id: 1,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Editor'
+          },
+          {
+            project_participation_id: 2,
+            project_id: 1,
+            system_user_id: 20,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          }
+        ];
+
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+
+        expect(result).to.equal(true);
+      });
+    });
+
+    describe('user is on multiple projects', () => {
+      it('should return true', () => {
+        const userId = 10;
+
+        const rows = [
+          {
+            project_participation_id: 1,
+            project_id: 1,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Editor'
+          },
+          {
+            project_participation_id: 2,
+            project_id: 1,
+            system_user_id: 2,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          },
+          {
+            project_participation_id: 1,
+            project_id: 2,
+            system_user_id: userId,
+            project_role_id: 1,
+            project_role_name: 'Viewer'
+          },
+          {
+            project_participation_id: 2,
+            project_id: 2,
+            system_user_id: 2,
+            project_role_id: 1,
+            project_role_name: 'Project Lead'
+          }
+        ];
+
+        const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+
+        expect(result).to.equal(true);
+      });
+    });
+  });
+
+  describe('user is on no projects', () => {
+    it('should return false', () => {
+      const userId = 10;
+
+      const rows = [
         {
-          id: 1,
-          user_identifier: 'testname',
-          record_end_date: null,
-          role_ids: [1, 2],
-          role_names: ['role 1', 'role 2']
+          project_participation_id: 1,
+          project_id: 1,
+          system_user_id: 20,
+          project_role_id: 1,
+          project_role_name: 'Editor'
+        },
+        {
+          project_participation_id: 2,
+          project_id: 1,
+          system_user_id: 30,
+          project_role_id: 1,
+          project_role_name: 'Project Lead'
         }
-      ],
-      rowCount: 1
-    });
-    mockQuery.onCall(1).resolves({ rowCount: 1 });
-    mockQuery.onCall(2).resolves({ rowCount: 1 });
-    mockQuery.onCall(3).resolves({ rowCount: 1 });
+      ];
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+      const result = delete_endpoint.doAllProjectsHaveAProjectLeadIfUserIsRemoved(rows, userId);
+
+      expect(result).to.equal(true);
+    });
+  });
+});
+
+describe('doAllProjectsHaveAProjectLead', () => {
+  it('should return false if no user has Project Lead role', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 10,
+        project_role_id: 2,
+        project_role_name: 'Editor'
       },
-      query: mockQuery
-    });
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
 
-    sinon.stub(user_queries, 'getUserByIdSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllProjectRolesSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(SQL`some query`);
-    sinon.stub(user_queries, 'deActivateSystemUserSQL').returns(SQL`some query`);
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
 
-    const result = delete_system_user.removeSystemUser();
+    expect(result).to.equal(false);
+  });
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+  it('should return true if one Project Lead role exists per project', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 12,
+        project_role_id: 1,
+        project_role_name: 'Project Lead' // Only Project Lead on project 1
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
 
-    expect(actualResult).to.equal(200);
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
+
+    expect(result).to.equal(true);
+  });
+
+  it('should return true if one Project Lead exists on all projects', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 10,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 2,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      },
+      {
+        project_participation_id: 1,
+        project_id: 2,
+        system_user_id: 10,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 2,
+        system_user_id: 2,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
+
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
+
+    expect(result).to.equal(true);
+  });
+
+  it('should return false if no Project Lead exists on any one project', () => {
+    const rows = [
+      {
+        project_participation_id: 1,
+        project_id: 1,
+        system_user_id: 10,
+        project_role_id: 1,
+        project_role_name: 'Project Lead'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 1,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      },
+      {
+        project_participation_id: 1,
+        project_id: 2,
+        system_user_id: 10,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      },
+      {
+        project_participation_id: 2,
+        project_id: 2,
+        system_user_id: 20,
+        project_role_id: 2,
+        project_role_name: 'Editor'
+      }
+    ];
+
+    const result = delete_endpoint.doAllProjectsHaveAProjectLead(rows);
+
+    expect(result).to.equal(false);
   });
 });

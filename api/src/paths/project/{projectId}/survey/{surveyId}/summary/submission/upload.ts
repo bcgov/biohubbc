@@ -294,7 +294,7 @@ export function persistSummaryParseErrors(): RequestHandler {
       await connection.commit();
 
       // archive is not parsable, don't continue to next step and return early
-      return res.send(200);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
       await connection.rollback();
@@ -531,7 +531,7 @@ export function persistSummaryValidationResults(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
+      defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

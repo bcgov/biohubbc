@@ -55,7 +55,7 @@ export enum ClassGrouping {
   WARNING = 'Warning'
 }
 
-const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'System Error'];
+const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'Template Transformed', 'System Error'];
 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
@@ -133,7 +133,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }, [biohubApi.observation, projectId, surveyId]);
 
-  useInterval(fetchObservationSubmission, pollingTime);
+  useInterval(fetchObservationSubmission, pollingTime, 60000);
 
   useEffect(() => {
     if (isLoading) {
@@ -141,7 +141,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
 
     if (isPolling && !pollingTime) {
-      setPollingTime(2000);
+      setPollingTime(5000);
     }
   }, [
     biohubApi,

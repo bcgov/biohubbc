@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { authorizeRequestHandler, getSystemUserById } from '../../request-handlers/security/authorization';
-import { getLogger } from '../../utils/logger';
+import { getDBConnection } from '../../../database/db';
+import { HTTP400 } from '../../../errors/CustomError';
+import { authorizeRequestHandler, getSystemUserById } from '../../../request-handlers/security/authorization';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}');
 
@@ -17,28 +17,35 @@ export const GET: Operation = [
       ]
     };
   }),
-  getUser()
+  getUserById()
 ];
 
 GET.apiDoc = {
-  description: 'Get user details for the currently authenticated user.',
+  description: 'Get user details from userId.',
   tags: ['user'],
   security: [
     {
       Bearer: []
     }
   ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'userId',
+      schema: {
+        type: 'number'
+      },
+      required: true
+    }
+  ],
   responses: {
     200: {
-      description: 'User details for the currently authenticated user.',
+      description: 'User details for userId.',
       content: {
         'application/json': {
           schema: {
             title: 'User Response Object',
-            type: 'object',
-            properties: {
-              // TODO needs finalizing (here and in the user-queries.ts SQL)
-            }
+            type: 'object'
           }
         }
       }
@@ -66,18 +73,18 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getUser(): RequestHandler {
+export function getUserById(): RequestHandler {
   return async (req, res) => {
+    if (!req.params.userId) {
+      throw new HTTP400('Missing required param: userId');
+    }
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
+      const userId = Number(req.params.userId);
+
       await connection.open();
-
-      const userId = connection.systemUserId();
-
-      if (!userId) {
-        throw new HTTP400('Failed to identify system user ID');
-      }
 
       const userResult = await getSystemUserById(userId, connection);
 

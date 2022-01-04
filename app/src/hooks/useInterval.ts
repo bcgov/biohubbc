@@ -1,18 +1,25 @@
 import { useRef, useEffect } from 'react';
 
 /**
- * Runs a `callback` function on a timer, once every `delay` milliseconds.
+ * Runs a `callback` function on a timer, once every `period` milliseconds.
  *
- * Note: Does nothing if either `callback` or `delay` are null/undefined/falsy.
+ * Note: Does nothing if either `callback` or `period` are null/undefined/falsy.
  *
- * Note: If both `callback` and `delay` are valid, the `callback` function will run for the first time after `delay`
+ * Note: If both `callback` and `period` are valid, the `callback` function will run for the first time after `period`
  * milliseconds (it will not run at time=0).
  *
  * @param {(Function | null | undefined)} callback the function to run at each interval. Set to a falsy value to stop
  * the interval.
- * @param {(number | null | undefined)} delay timer delay in milliseconds. Set to a falsy value to stop the interval.
+ * @param {(number | null | undefined)} period interval period in milliseconds. How often the `callback` should run.
+ * Set to a falsy value to stop the interval.
+ * @param {(number)} [timeout] timeout in milliseconds. The total polling time before the interval times out and
+ * automatically stops.
  */
-export const useInterval = (callback: Function | null | undefined, delay: number | null | undefined): void => {
+export const useInterval = (
+  callback: Function | null | undefined,
+  period: number | null | undefined,
+  timeout?: number
+): void => {
   const savedCallback = useRef(callback);
 
   useEffect(() => {
@@ -20,12 +27,24 @@ export const useInterval = (callback: Function | null | undefined, delay: number
   }, [callback]);
 
   useEffect(() => {
-    if (!delay || !savedCallback?.current) {
+    if (!period || !savedCallback?.current) {
       return;
     }
 
-    const timeout = setInterval(() => savedCallback?.current?.(), delay);
+    const interval = setInterval(() => savedCallback?.current?.(), period);
 
-    return () => clearInterval(timeout);
-  }, [delay]);
+    let intervalTimeout: NodeJS.Timeout | undefined;
+
+    if (timeout) {
+      intervalTimeout = setTimeout(() => clearInterval(interval), timeout);
+    }
+
+    return () => {
+      clearInterval(interval);
+
+      if (intervalTimeout) {
+        clearTimeout(intervalTimeout);
+      }
+    };
+  }, [period, timeout]);
 };

@@ -22,9 +22,9 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.3',
+      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.4',
       url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.3.xlsx',
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.4.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '110 KB'

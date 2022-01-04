@@ -222,3 +222,17 @@ export const ProjectParticipantsI18N = {
   updateParticipantRoleErrorText:
     "An error has occurred while attempting to update the user's project role, please try again. If the error persists, please contact your system administrator."
 };
+
+export const SystemUserI18N = {
+  deleteProjectLeadErrorTitle: 'Error Deleting Project Lead',
+  deleteProjectLeadErrorText:
+    'An error has occurred while attempting to delete the project lead, please assign a different project lead before removing. Please try again, if the error persists please contact your system administrator.',
+  updateProjectLeadRoleErrorTitle: 'Error Updating Project Lead Role',
+  updateProjectLeadRoleErrorText:
+    "An error has occurred while attempting to update the user's project lead role, please assign a different project lead before changing. Please try again, if the error persists please contact your system administrator.",
+  removeSystemUserTitle: 'Remove System User ',
+  removeUserFromProject: 'Remove User From Project',
+  removeUserErrorTitle: 'Error Removing User From Team',
+  removeUserErrorText:
+    'An error has occurred while attempting to remove the user from the team, please try again. If the error persists, please contact your system administrator.'
+};

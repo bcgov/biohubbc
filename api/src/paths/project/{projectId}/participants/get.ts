@@ -67,6 +67,9 @@ GET.apiDoc = {
                     project_role_id: {
                       type: 'number'
                     },
+                    project_role_name: {
+                      type: 'string'
+                    },
                     user_identifier: {
                       type: 'string'
                     },

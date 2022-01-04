@@ -116,7 +116,7 @@ export function addSystemRoleUser(): RequestHandler {
         await addUserSystemRoles(data.id, roles, connection);
       }
 
-      return res.send(200);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
       await connection.rollback();
