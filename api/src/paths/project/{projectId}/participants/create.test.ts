@@ -1,6 +1,5 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
-//import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
@@ -24,18 +23,6 @@ describe('creates a list of project participants', () => {
       projectId: 1
     }
   } as any;
-
-  // let actualResult: number = (null as unknown) as number;
-
-  // const sampleRes = {
-  //   status: (status: number) => {
-  //     return {
-  //       send: () => {
-  //         actualResult = status;
-  //       }
-  //     };
-  //   }
-  // };
 
   afterEach(() => {
     sinon.restore();
@@ -94,19 +81,4 @@ describe('creates a list of project participants', () => {
       expect((actualError as CustomError).message).to.equal('Failed to get system user');
     }
   });
-
-  // it.only('should return a 200 on success', async () => {
-  //   const mockQuery = sinon.stub();
-
-  //   mockQuery.resolves({ rows: [{ id: 1 }] });
-
-  //   sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-  //   sinon.stub(user_queries, 'getUserByUserIdentifierSQL').returns(SQL`something`);
-
-  //   const result = create_project_participants.createProjectParticipants();
-
-  //   await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-  //   expect(actualResult).to.eql({ participants: [{ id: 1 }] });
-  // });
 });

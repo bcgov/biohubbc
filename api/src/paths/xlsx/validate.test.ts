@@ -9,9 +9,7 @@ import * as survey_occurrence_queries from '../../queries/survey/survey-occurren
 import * as media_utils from '../../utils/media/media-utils';
 import { getMockDBConnection } from '../../__mocks__/db';
 import { ArchiveFile, MediaFile } from '../../utils/media/media-file';
-//import { ArchiveFile } from '../../utils/media/media-file';
 import * as validate from './validate';
-//import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
 
 chai.use(sinonChai);
 
@@ -26,18 +24,6 @@ describe('prepXLSX', () => {
       size: 340
     }
   } as any;
-
-  // let actualResult: any = null;
-
-  // const sampleRes = {
-  //   status: () => {
-  //     return {
-  //       json: (result: any) => {
-  //         //actualResult = result;
-  //       }
-  //     };
-  //   }
-  // };
 
   afterEach(() => {
     sinon.restore();
