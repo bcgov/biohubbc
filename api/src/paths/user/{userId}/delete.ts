@@ -4,7 +4,8 @@ import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/custom-error';
 import { queries } from '../../../queries/queries';
-import { authorizeRequestHandler, getSystemUserById } from '../../../request-handlers/security/authorization';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { UserService } from '../../../services/user-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}/delete');
@@ -80,21 +81,23 @@ export function removeSystemUser(): RequestHandler {
 
       await checkIfUserIsOnlyProjectLeadOnAnyProject(userId, connection);
 
-      const userResult = await getSystemUserById(userId, connection);
+      const userService = new UserService(connection);
 
-      if (!userResult) {
+      const usrObject = await userService.getUserById(userId);
+
+      if (!usrObject) {
         throw new HTTP400('Failed to get system user');
       }
 
-      if (userResult.record_end_date) {
+      if (usrObject.record_end_date) {
         throw new HTTP400('The system user is not active');
       }
 
       await deleteAllProjectRoles(userId, connection);
 
-      await deleteAllSystemRoles(userId, connection);
+      await userService.deleteUserSystemRoles(userId);
 
-      await deActivateSystemUser(userId, connection);
+      await userService.deactivateSystemUser(userId);
 
       await connection.commit();
 
@@ -129,26 +132,6 @@ export const deleteAllProjectRoles = async (userId: number, connection: IDBConne
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
-  }
-
-  connection.query(sqlStatement.text, sqlStatement.values);
-};
-
-export const deleteAllSystemRoles = async (userId: number, connection: IDBConnection) => {
-  const sqlStatement = queries.users.deleteAllSystemRolesSQL(userId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement for deleting system roles');
-  }
-
-  connection.query(sqlStatement.text, sqlStatement.values);
-};
-
-export const deActivateSystemUser = async (userId: number, connection: IDBConnection) => {
-  const sqlStatement = queries.users.deActivateSystemUserSQL(userId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement to deactivate system user');
   }
 
   connection.query(sqlStatement.text, sqlStatement.values);

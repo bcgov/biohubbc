@@ -22,6 +22,19 @@ export class ApiError extends Error {
 }
 
 /**
+ * Api encountered an error.
+ *
+ * @export
+ * @class ApiGeneralError
+ * @extends {ApiError}
+ */
+export class ApiGeneralError extends ApiError {
+  constructor(message: string, errors?: (string | object)[]) {
+    super(ApiErrorType.UNKNOWN, message, errors);
+  }
+}
+
+/**
  * API encountered an unknown/unexpected error.
  *
  * @export
@@ -176,7 +189,7 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
   }
 
   if (error instanceof Error) {
-    return new HTTP500(error.message || error.name, [error.stack || '']);
+    return new HTTP500('Unexpected Error', [error.name, error.message]);
   }
 
   return new HTTP500('Unexpected Error');

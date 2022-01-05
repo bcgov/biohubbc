@@ -2,15 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/custom-error';
-import system_role_queries from '../../../../queries/users';
-import user_queries from '../../../../queries/users';
-import * as authorization from '../../../../request-handlers/security/authorization';
+import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as system_roles from './update';
-import * as update_endpoint from './update';
 
 chai.use(sinonChai);
 
@@ -83,7 +79,7 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(authorization, 'getSystemUserById').resolves(null);
+    sinon.stub(UserService.prototype, 'getUserById').resolves(null);
 
     try {
       const requestHandler = system_roles.updateSystemRolesHandler();
@@ -96,8 +92,10 @@ describe('updateSystemRolesHandler', () => {
     }
   });
 
-  it('should throw a 400 when fails to build SQL delete statement (user has roles to be deleted)', async () => {
+  it('re-throws the error thrown by UserService.deleteUserSystemRoles', async () => {
     const dbConnectionObj = getMockDBConnection();
+
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -108,22 +106,15 @@ describe('updateSystemRolesHandler', () => {
       roles: [1]
     };
 
-    const mockQuery = sinon.stub();
-
-    mockQuery.onCall(0).resolves({
-      rowCount: 1
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
+      id: 1,
+      user_identifier: 'test name',
+      record_end_date: '',
+      role_ids: [11, 22],
+      role_names: ['role 11', 'role 22']
     });
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 11', 'role 22'] });
-
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(null);
+    sinon.stub(UserService.prototype, 'deleteUserSystemRoles').rejects(new Error('a delete error'));
 
     try {
       const requestHandler = system_roles.updateSystemRolesHandler();
@@ -131,51 +122,11 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).message).to.equal('a delete error');
     }
   });
 
-  it('should throw a 400 when fails to build SQL insert statement', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      userId: '1'
-    };
-    mockReq.body = {
-      roles: [1]
-    };
-
-    const mockQuery = sinon.stub();
-
-    mockQuery.onCall(0).resolves({ rows: [], rowCount: 1 });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
-    });
-
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 11', 'role 22'] });
-
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(SQL`some query`);
-    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(null);
-
-    try {
-      const requestHandler = system_roles.updateSystemRolesHandler();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
-    }
-  });
-
-  it('should throw a 500 when fails to insert user role', async () => {
+  it('re-throws the error thrown by UserService.addUserSystemRoles', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -200,12 +151,16 @@ describe('updateSystemRolesHandler', () => {
       query: mockQuery
     });
 
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 11', 'role 22'] });
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
+      id: 1,
+      user_identifier: 'test name',
+      record_end_date: '',
+      role_ids: [11, 22],
+      role_names: ['role 11', 'role 22']
+    });
 
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(SQL`some query`);
-    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(SQL`some query`);
+    sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
+    sinon.stub(UserService.prototype, 'addUserSystemRoles').rejects(new Error('an add error'));
 
     try {
       const requestHandler = system_roles.updateSystemRolesHandler();
@@ -213,8 +168,7 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to insert user roles');
+      expect((actualError as HTTPError).message).to.equal('an add error');
     }
   });
 
@@ -232,12 +186,16 @@ describe('updateSystemRolesHandler', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 1', 'role 2'] });
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
+      id: 1,
+      user_identifier: 'test name',
+      record_end_date: '',
+      role_ids: [11, 22],
+      role_names: ['role 1', 'role 2']
+    });
 
-    const deleteUserSystemRolesStub = sinon.stub(update_endpoint, 'deleteUserSystemRoles').resolves();
-    sinon.stub(update_endpoint, 'addUserSystemRoles').resolves();
+    const deleteUserSystemRolesStub = sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
+    sinon.stub(UserService.prototype, 'addUserSystemRoles').resolves();
 
     const requestHandler = system_roles.updateSystemRolesHandler();
 
@@ -271,11 +229,11 @@ describe('updateSystemRolesHandler', () => {
     });
 
     sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [], role_names: [] });
+      .stub(UserService.prototype, 'getUserById')
+      .resolves({ id: 1, user_identifier: 'test name', record_end_date: '', role_ids: [], role_names: [] });
 
-    const deleteUserSystemRolesStub = sinon.stub(update_endpoint, 'deleteUserSystemRoles').resolves();
-    sinon.stub(update_endpoint, 'addUserSystemRoles').resolves();
+    const deleteUserSystemRolesStub = sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
+    sinon.stub(UserService.prototype, 'addUserSystemRoles').resolves();
 
     const requestHandler = system_roles.updateSystemRolesHandler();
 

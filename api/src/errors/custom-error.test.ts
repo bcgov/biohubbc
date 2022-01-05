@@ -72,6 +72,7 @@ describe('ensureHTTPError', () => {
     expect(ensuredError).to.be.instanceof(HTTPError);
 
     expect(ensuredError.status).to.equal(500);
-    expect(ensuredError.message).to.equal('a non http error');
+    expect(ensuredError.message).to.equal('Unexpected Error');
+    expect(ensuredError.errors).to.eql(['Error', 'a non http error']);
   });
 });

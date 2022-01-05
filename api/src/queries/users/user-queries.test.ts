@@ -5,7 +5,7 @@ import {
   getUserByIdSQL,
   getUserByUserIdentifierSQL,
   getUserListSQL,
-  deActivateSystemUserSQL,
+  deactivateSystemUserSQL,
   activateSystemUserSQL,
   deleteAllSystemRolesSQL,
   deleteAllProjectRolesSQL
@@ -73,15 +73,15 @@ describe('addSystemUserSQL', () => {
   });
 });
 
-describe('deActivateSystemUserSQL', () => {
+describe('deactivateSystemUserSQL', () => {
   it('returns null response when null userIdentifier provided', () => {
-    const response = deActivateSystemUserSQL((null as unknown) as number);
+    const response = deactivateSystemUserSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid parameters provided', () => {
-    const response = deActivateSystemUserSQL(1);
+    const response = deactivateSystemUserSQL(1);
 
     expect(response).to.not.be.null;
   });

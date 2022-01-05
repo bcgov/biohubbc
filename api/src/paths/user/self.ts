@@ -2,7 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/custom-error';
-import { authorizeRequestHandler, getSystemUserById } from '../../request-handlers/security/authorization';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}');
@@ -105,15 +106,17 @@ export function getUser(): RequestHandler {
         throw new HTTP400('Failed to identify system user ID');
       }
 
-      const userResult = await getSystemUserById(userId, connection);
+      const userService = new UserService(connection);
 
-      if (!userResult) {
+      const userObject = await userService.getUserById(userId);
+
+      if (!userObject) {
         throw new HTTP400('Failed to get system user');
       }
 
       await connection.commit();
 
-      return res.status(200).json(userResult);
+      return res.status(200).json(userObject);
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
       await connection.rollback();

@@ -4,40 +4,32 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
-import { getMockDBConnection } from '../../__mocks__/db';
+import { UserObject } from '../../models/user';
+import { UserService } from '../../services/user-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as user from './add';
-import * as system_user from '../../paths-helpers/system-user';
-import * as system_roles from './{userId}/system-roles/update';
 
 chai.use(sinonChai);
 
 describe('user', () => {
-  const dbConnectionObj = getMockDBConnection();
-
   describe('addSystemRoleUser', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    const sampleReq = {
-      keycloak_token: {},
-      params: {
-        userId: 2
-      },
-      body: {
-        userIdentifier: 'uid',
-        identitySource: 'idsource',
-        roles: [1]
-      }
-    } as any;
-
     it('should throw a 400 error when no req body', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      try {
-        const result = user.addSystemRoleUser();
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        await result({ ...(sampleReq as any), body: null }, (null as unknown) as any, (null as unknown) as any);
+      mockReq.body = undefined;
+
+      try {
+        const requestHandler = user.addSystemRoleUser();
+
+        await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(400);
@@ -46,16 +38,21 @@ describe('user', () => {
     });
 
     it('should throw a 400 error when no userIdentifier', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      try {
-        const result = user.addSystemRoleUser();
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        await result(
-          { ...(sampleReq as any), body: { ...sampleReq.body, userIdentifier: null } },
-          (null as unknown) as any,
-          (null as unknown) as any
-        );
+      mockReq.body = {
+        identitySource: 'IDIR',
+        roleId: 1
+      };
+
+      try {
+        const requestHandler = user.addSystemRoleUser();
+
+        await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(400);
@@ -64,16 +61,21 @@ describe('user', () => {
     });
 
     it('should throw a 400 error when no identitySource', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      try {
-        const result = user.addSystemRoleUser();
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        await result(
-          { ...(sampleReq as any), body: { ...sampleReq.body, identitySource: null } },
-          (null as unknown) as any,
-          (null as unknown) as any
-        );
+      mockReq.body = {
+        userIdentifier: 'username',
+        roleId: 1
+      };
+
+      try {
+        const requestHandler = user.addSystemRoleUser();
+
+        await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(400);
@@ -82,16 +84,21 @@ describe('user', () => {
     });
 
     it('should throw a 400 error when no roleId', async () => {
+      const dbConnectionObj = getMockDBConnection();
+
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      try {
-        const result = user.addSystemRoleUser();
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-        await result(
-          { ...(sampleReq as any), body: { ...sampleReq.body, roleId: null } },
-          (null as unknown) as any,
-          (null as unknown) as any
-        );
+      mockReq.body = {
+        userIdentifier: 'username',
+        identitySource: 'IDIR'
+      };
+
+      try {
+        const requestHandler = user.addSystemRoleUser();
+
+        await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
         expect((actualError as HTTPError).status).to.equal(400);
@@ -100,57 +107,36 @@ describe('user', () => {
     });
 
     it('adds a system user and returns 200 on success', async () => {
-      const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
+      const dbConnectionObj = getMockDBConnection();
 
-      const existingSystemUser = null;
-      const getSystemUserStub = sinon.stub(system_user, 'getSystemUser').resolves(existingSystemUser);
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      const addedSystemUser = { id: 2, user_record_end_date: null };
-      const addSystemUserStub = sinon.stub(system_user, 'addSystemUser').resolves(addedSystemUser);
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-      const activateDeactivatedSystemUserStub = sinon
-        .stub(system_user, 'activateDeactivatedSystemUser')
-        .resolves(addedSystemUser);
+      mockReq.body = {
+        userIdentifier: 'username',
+        identitySource: 'IDIR',
+        roleId: 1
+      };
 
-      const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const mockUserObject: UserObject = {
+        id: 1,
+        user_identifier: '',
+        record_end_date: '',
+        role_ids: [1],
+        role_names: []
+      };
 
-      const result = await system_user.ensureSystemUser(userIdentifier, identitySource, mockDBConnection);
+      const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockUserObject);
 
-      expect(result.id).to.equal(2);
-      expect(result.user_record_end_date).to.equal(null);
+      const adduserSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
 
-      expect(getSystemUserStub).to.have.been.calledOnce;
-      expect(addSystemUserStub).to.have.been.calledOnce;
-      expect(activateDeactivatedSystemUserStub).not.to.have.been.called;
-    });
+      const requestHandler = user.addSystemRoleUser();
 
-    it('should return status 200 on success', async () => {
-      const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
+      await requestHandler(mockReq, mockRes, mockNext);
 
-      const existingSystemUser = null;
-      const getSystemUserStub = sinon.stub(system_user, 'getSystemUser').resolves(existingSystemUser);
-
-      const addedSystemUser = { id: 2, user_record_end_date: null };
-      const addSystemUserStub = sinon.stub(system_user, 'addSystemUser').resolves(addedSystemUser);
-
-      const activateDeactivatedSystemUserStub = sinon
-        .stub(system_user, 'activateDeactivatedSystemUser')
-        .resolves(addedSystemUser);
-
-      const userIdentifier = 'username';
-      const identitySource = 'idir';
-
-      const result = await system_user.ensureSystemUser(userIdentifier, identitySource, mockDBConnection);
-
-      expect(result.id).to.equal(2);
-      expect(result.user_record_end_date).to.equal(null);
-
-      sinon.stub(system_roles, 'addUserSystemRoles');
-
-      expect(getSystemUserStub).to.have.been.calledOnce;
-      expect(addSystemUserStub).to.have.been.calledOnce;
-      expect(activateDeactivatedSystemUserStub).not.to.have.been.called;
+      expect(ensureSystemUserStub).to.have.been.calledOnce;
+      expect(adduserSystemRolesStub).to.have.been.calledOnce;
     });
   });
 });

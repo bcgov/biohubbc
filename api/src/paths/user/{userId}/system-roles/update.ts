@@ -1,11 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../database/db';
+import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
-import { UserObject } from '../../../../models/user';
-import { queries } from '../../../../queries/queries';
-import { authorizeRequestHandler, getSystemUserById } from '../../../../request-handlers/security/authorization';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { UserService } from '../../../../services/user-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}/system-roles/update');
@@ -108,20 +107,20 @@ export function updateSystemRolesHandler(): RequestHandler {
     try {
       await connection.open();
 
-      const userResult = await getSystemUserById(userId, connection);
+      const userService = new UserService(connection);
 
-      if (!userResult) {
+      const userObject = await userService.getUserById(userId);
+
+      if (!userObject) {
         throw new HTTP400('Failed to get system user');
       }
 
-      const userObject = new UserObject(userResult);
-
       if (userObject.role_ids.length) {
-        await deleteUserSystemRoles(userId, connection);
+        await userService.deleteUserSystemRoles(userId);
       }
 
       //add new user system roles
-      await addUserSystemRoles(userId, roles, connection);
+      await userService.addUserSystemRoles(userId, roles);
 
       await connection.commit();
 
@@ -135,44 +134,3 @@ export function updateSystemRolesHandler(): RequestHandler {
     }
   };
 }
-
-/**
- * Deleted the all the system roles for the user.
- *
- * @param {number} userId
- * @param {number[]} roleIds
- * @param {IDBConnection} connection
- */
-export const deleteUserSystemRoles = async (userId: number, connection: IDBConnection) => {
-  const deleteSystemRolesSqlStatement = queries.users.deleteAllSystemRolesSQL(userId);
-
-  if (!deleteSystemRolesSqlStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  return connection.query(deleteSystemRolesSqlStatement.text, deleteSystemRolesSqlStatement.values);
-};
-
-/**
- * Adds the specified roleIds to the user.
- *
- * @param {number} userId
- * @param {number[]} roleIds
- * @param {IDBConnection} connection
- */
-export const addUserSystemRoles = async (userId: number, roleIds: number[], connection: IDBConnection) => {
-  const postSystemRolesSqlStatement = queries.users.postSystemRolesSQL(userId, roleIds);
-
-  if (!postSystemRolesSqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const postSystemRolesResponse = await connection.query(
-    postSystemRolesSqlStatement.text,
-    postSystemRolesSqlStatement.values
-  );
-
-  if (!postSystemRolesResponse || !postSystemRolesResponse.rowCount) {
-    throw new HTTP400('Failed to insert user roles');
-  }
-};

@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
-import * as authorization from '../../request-handlers/security/authorization';
+import { UserService } from '../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as self from './self';
 
@@ -40,7 +40,7 @@ describe('getUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(authorization, 'getSystemUserById').resolves(null);
+    sinon.stub(UserService.prototype, 'getUserById').resolves(null);
 
     try {
       const requestHandler = self.getUser();
@@ -60,9 +60,10 @@ describe('getUser', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(authorization, 'getSystemUserById').resolves({
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'identifier',
+      record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });
