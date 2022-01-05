@@ -1,6 +1,16 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { ApiError, ensureHTTPError, HTTP400, HTTP401, HTTP403, HTTP409, HTTP500, HTTPError } from './custom-error';
+import {
+  ApiError,
+  ApiErrorType,
+  ensureHTTPError,
+  HTTP400,
+  HTTP401,
+  HTTP403,
+  HTTP409,
+  HTTP500,
+  HTTPError
+} from './custom-error';
 
 describe('HTTPError', () => {
   describe('No error value provided', () => {
@@ -44,7 +54,7 @@ describe('ensureHTTPError', () => {
   });
 
   it('returns a HTTPError when an ApiError provided', function () {
-    const apiError = new ApiError('an api error', 'an api error message');
+    const apiError = new ApiError(ApiErrorType.UNKNOWN, 'an api error message');
 
     const ensuredError = ensureHTTPError(apiError);
 
