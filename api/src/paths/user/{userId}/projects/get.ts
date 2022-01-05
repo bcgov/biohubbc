@@ -2,11 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/CustomError';
-import { projectIdResponseObject } from '../../../../openapi/schemas/project';
 import { getAllUserProjectsSQL } from '../../../../queries/project-participation/project-participation-queries';
 import { getLogger } from '../../../../utils/logger';
 
-const defaultLog = getLogger('paths/projects');
+const defaultLog = getLogger('paths/user/{userId}/projects/get');
 export const GET: Operation = [getAllUserProjects()];
 
 GET.apiDoc = {
@@ -29,13 +28,31 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Project response object.',
+      description: 'Projects response object for given user.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
-              ...(projectIdResponseObject as object)
+              title: 'Project Get Response Object',
+              type: 'object',
+              properties: {
+                project_id: {
+                  type: 'number'
+                },
+                name: {
+                  type: 'string'
+                },
+                system_user_id: {
+                  type: 'number'
+                },
+                project_role_id: {
+                  type: 'number'
+                },
+                project_participation_id: {
+                  type: 'number'
+                }
+              }
             }
           }
         }

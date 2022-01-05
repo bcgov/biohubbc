@@ -37,7 +37,32 @@ GET.apiDoc = {
             title: 'User Response Object',
             type: 'object',
             properties: {
-              // TODO needs finalizing (here and in the user-queries.ts SQL)
+              id: {
+                description: 'user id',
+                type: 'number'
+              },
+              user_identifier: {
+                description: 'The unique user identifier',
+                type: 'string'
+              },
+              record_end_date: {
+                description: 'Determines is the user record has expired',
+                type: 'string'
+              },
+              role_ids: {
+                description: 'list of role ids for the user',
+                type: 'array',
+                items: {
+                  type: 'number'
+                }
+              },
+              role_names: {
+                description: 'list of role names for the user',
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              }
             }
           }
         }
