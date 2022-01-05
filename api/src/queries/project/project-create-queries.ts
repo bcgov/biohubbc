@@ -3,12 +3,12 @@ import {
   PostCoordinatorData,
   PostFundingSource,
   PostLocationData,
-  PostProjectData,
   PostObjectivesData,
+  PostProjectData,
   PostProjectObject
 } from '../../models/project-create';
 import { getLogger } from '../../utils/logger';
-import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
+import { queries } from '../queries';
 
 const defaultLog = getLogger('queries/project/project-create-queries');
 
@@ -62,7 +62,7 @@ export const postProjectSQL = (
   `;
 
   if (project.geometry && project.geometry.length) {
-    const geometryCollectionSQL = generateGeometryCollectionSQL(project.geometry);
+    const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(project.geometry);
 
     sqlStatement.append(SQL`
       ,public.geography(

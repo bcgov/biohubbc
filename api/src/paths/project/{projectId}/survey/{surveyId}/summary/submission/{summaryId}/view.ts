@@ -1,11 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../../../../errors/CustomError';
-import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-summary-queries';
+import { HTTP400, HTTP500 } from '../../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, getFileFromS3 } from '../../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../../utils/logger';
@@ -139,7 +137,7 @@ export function getSummarySubmissionCSVForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSubmissionSQLStatement = getSurveySummarySubmissionSQL(Number(req.params.summaryId));
+      const getSubmissionSQLStatement = queries.survey.getSurveySummarySubmissionSQL(Number(req.params.summaryId));
 
       if (!getSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

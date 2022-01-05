@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as delete_submission from './delete';
 import * as db from '../../../../../../../../database/db';
-import * as survey_summary_queries from '../../../../../../../../queries/survey/survey-summary-queries';
+import survey_queries from '../../../../../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
-import { CustomError } from '../../../../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -51,8 +51,8 @@ describe('deleteSummarySubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -68,8 +68,8 @@ describe('deleteSummarySubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -85,8 +85,8 @@ describe('deleteSummarySubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `summaryId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `summaryId`');
     }
   });
 
@@ -98,7 +98,7 @@ describe('deleteSummarySubmission', () => {
       }
     });
 
-    sinon.stub(survey_summary_queries, 'deleteSummarySubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'deleteSummarySubmissionSQL').returns(null);
 
     try {
       const result = delete_submission.deleteSummarySubmission();
@@ -106,8 +106,8 @@ describe('deleteSummarySubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -124,7 +124,7 @@ describe('deleteSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'deleteSummarySubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSummarySubmissionSQL').returns(SQL`something`);
 
     const result = delete_submission.deleteSummarySubmission();
 
@@ -146,7 +146,7 @@ describe('deleteSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'deleteSummarySubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSummarySubmissionSQL').returns(SQL`something`);
 
     const result = delete_submission.deleteSummarySubmission();
 

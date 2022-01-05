@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as makeUnsecure from './makeUnsecure';
 import * as db from '../../../../../database/db';
-import * as security_queries from '../../../../../queries/security/security-queries';
+import security_queries from '../../../../../queries/security';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import { CustomError } from '../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -55,8 +55,8 @@ describe('makeProjectAttachmentUnsecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -73,8 +73,8 @@ describe('makeProjectAttachmentUnsecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -87,8 +87,8 @@ describe('makeProjectAttachmentUnsecure', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required request body');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required request body');
     }
   });
 
@@ -105,8 +105,8 @@ describe('makeProjectAttachmentUnsecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required request body');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required request body');
     }
   });
 
@@ -123,8 +123,8 @@ describe('makeProjectAttachmentUnsecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required request body');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required request body');
     }
   });
 
@@ -138,8 +138,8 @@ describe('makeProjectAttachmentUnsecure', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL unsecure record statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL unsecure record statement');
     }
   });
 
@@ -159,8 +159,8 @@ describe('makeProjectAttachmentUnsecure', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to unsecure record');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to unsecure record');
     }
   });
 

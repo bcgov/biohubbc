@@ -2,14 +2,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as search from './search';
-import * as db from '../database/db';
-import * as search_queries from '../queries/search-queries';
 import SQL from 'sql-template-strings';
-import * as authorization from '../request-handlers/security/authorization';
 import { SYSTEM_ROLE } from '../constants/roles';
+import * as db from '../database/db';
+import { HTTPError } from '../errors/custom-error';
+import search_queries from '../queries/search';
+import * as authorization from '../request-handlers/security/authorization';
 import { getMockDBConnection } from '../__mocks__/db';
-import { CustomError } from '../errors/CustomError';
+import * as search from './search';
 
 chai.use(sinonChai);
 
@@ -56,8 +56,8 @@ describe('search', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
       }
     });
 

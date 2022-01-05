@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
+import { HTTP400 } from '../errors/custom-error';
 import { draftResponseObject } from '../openapi/schemas/draft';
-import { getDraftsSQL } from '../queries/draft-queries';
+import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
@@ -80,7 +80,7 @@ export function getDraftList(): RequestHandler {
         throw new HTTP400('Failed to identify system user ID');
       }
 
-      const getDraftsSQLStatement = getDraftsSQL(systemUserId);
+      const getDraftsSQLStatement = queries.project.draft.getDraftsSQL(systemUserId);
 
       if (!getDraftsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

@@ -1,13 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import {
-  getPublicProjectReportAttachmentSQL,
-  getProjectReportAuthorsSQL
-} from '../../../../../../../queries/public/project-queries';
-import { getLogger } from '../../../../../../../utils/logger';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
 import { GetReportAttachmentMetadata } from '../../../../../../../models/project-survey-attachments';
+import { queries } from '../../../../../../../queries/queries';
+import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
@@ -76,12 +73,14 @@ export function getPublicReportMetaData(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const getPublicProjectReportAttachmentSQLStatement = getPublicProjectReportAttachmentSQL(
+      const getPublicProjectReportAttachmentSQLStatement = queries.public.getPublicProjectReportAttachmentSQL(
         Number(req.params.projectId),
         Number(req.params.attachmentId)
       );
 
-      const getProjectReportAuthorsSQLStatement = getProjectReportAuthorsSQL(Number(req.params.attachmentId));
+      const getProjectReportAuthorsSQLStatement = queries.public.getProjectReportAuthorsSQL(
+        Number(req.params.attachmentId)
+      );
 
       if (!getPublicProjectReportAttachmentSQLStatement || !getProjectReportAuthorsSQLStatement) {
         throw new HTTP400('Failed to build metadata SQLStatement');

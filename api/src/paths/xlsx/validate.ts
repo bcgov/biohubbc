@@ -2,8 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getTemplateMethodologySpeciesRecordSQL } from '../../queries/survey/survey-occurrence-queries';
+import { HTTP400 } from '../../errors/custom-error';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
@@ -198,7 +198,7 @@ export const getTemplateMethodologySpeciesRecord = async (
   templateId: number,
   connection: IDBConnection
 ): Promise<any> => {
-  const sqlStatement = getTemplateMethodologySpeciesRecordSQL(speciesId, surveyMethodology, templateId);
+  const sqlStatement = queries.survey.getTemplateMethodologySpeciesRecordSQL(speciesId, surveyMethodology, templateId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get template methodology species record sql statement');

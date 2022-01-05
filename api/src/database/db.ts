@@ -1,6 +1,6 @@
 import * as pg from 'pg';
-import { HTTP400, HTTP500 } from '../errors/CustomError';
-import { setSystemUserContextSQL } from '../queries/user-context-queries';
+import { HTTP400, HTTP500 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
 import { getUserIdentifier, getUserIdentitySource } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
 
@@ -268,7 +268,10 @@ export const getDBConnection = function (keycloakToken: object): IDBConnection {
     }
 
     // Set the user context for all queries made using this connection
-    const setSystemUserContextSQLStatement = setSystemUserContextSQL(userIdentifier, userIdentitySource);
+    const setSystemUserContextSQLStatement = queries.database.setSystemUserContextSQL(
+      userIdentifier,
+      userIdentitySource
+    );
 
     if (!setSystemUserContextSQLStatement) {
       throw new HTTP400('Failed to build SQL user context statement');

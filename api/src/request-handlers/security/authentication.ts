@@ -1,7 +1,7 @@
 import { Request } from 'express';
 import { decode, GetPublicKeyOrSecret, Secret, verify, VerifyErrors } from 'jsonwebtoken';
 import { JwksClient } from 'jwks-rsa';
-import { HTTP401 } from '../../errors/CustomError';
+import { HTTP401 } from '../../errors/custom-error';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('request-handlers/security/authentication');

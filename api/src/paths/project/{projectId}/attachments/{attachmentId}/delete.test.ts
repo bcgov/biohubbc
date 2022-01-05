@@ -4,13 +4,13 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as delete_attachment from './delete';
 import * as db from '../../../../../database/db';
-import * as project_attachments_queries from '../../../../../queries/project/project-attachments-queries';
-import * as security_queries from '../../../../../queries/security/security-queries';
+import project_queries from '../../../../../queries/project';
+import security_queries from '../../../../../queries/security';
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../utils/file-utils';
 import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import { CustomError } from '../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -61,8 +61,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -79,8 +79,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -97,8 +97,8 @@ describe('deleteAttachment', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body param `attachmentType`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param `attachmentType`');
     }
   });
 
@@ -118,8 +118,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL unsecure record statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL unsecure record statement');
     }
   });
 
@@ -144,8 +144,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to unsecure record');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to unsecure record');
     }
   });
 
@@ -163,7 +163,7 @@ describe('deleteAttachment', () => {
     });
 
     sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(null);
+    sinon.stub(project_queries, 'deleteProjectAttachmentSQL').returns(null);
 
     try {
       const result = delete_attachment.deleteAttachment();
@@ -171,8 +171,8 @@ describe('deleteAttachment', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete project attachment statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete project attachment statement');
     }
   });
 
@@ -194,7 +194,7 @@ describe('deleteAttachment', () => {
     });
 
     sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
+    sinon.stub(project_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
 
     const result = delete_attachment.deleteAttachment();
@@ -222,7 +222,7 @@ describe('deleteAttachment', () => {
     });
 
     sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_attachments_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
+    sinon.stub(project_queries, 'deleteProjectAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
 
     const result = delete_attachment.deleteAttachment();
@@ -252,7 +252,7 @@ describe('deleteAttachment', () => {
     });
 
     sinon.stub(security_queries, 'unsecureAttachmentRecordSQL').returns(SQL`something`);
-    sinon.stub(project_attachments_queries, 'deleteProjectReportAttachmentSQL').returns(SQL`some query`);
+    sinon.stub(project_queries, 'deleteProjectReportAttachmentSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
 
     const result = delete_attachment.deleteAttachment();

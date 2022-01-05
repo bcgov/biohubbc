@@ -174,9 +174,9 @@ export const getProjectParticipationBySystemUserSQL = (
  * @param {projectId} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getAllProjectParticipants = (projectId: number): SQLStatement | null => {
+export const getAllProjectParticipantsSQL = (projectId: number): SQLStatement | null => {
   defaultLog.debug({
-    label: 'getAllProjectParticipants',
+    label: 'getAllProjectParticipantsSQL',
     message: 'params',
     projectId
   });
@@ -209,7 +209,7 @@ export const getAllProjectParticipants = (projectId: number): SQLStatement | nul
   `;
 
   defaultLog.debug({
-    label: 'getAllProjectParticipants',
+    label: 'getAllProjectParticipantsSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -4,8 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as view from './view';
 import * as db from '../../../../database/db';
-import * as public_project_view_queries from '../../../../queries/public/project-queries';
-//import * as project_view_update_queries from '../../../../queries/project/project-view-update-queries';
+import public_queries from '../../../../queries/public';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import SQL from 'sql-template-strings';
 import {
@@ -17,7 +16,7 @@ import {
 } from '../../../../models/project-view';
 import { GetPublicProjectData, GetPublicCoordinatorData } from '../../../../models/public/project';
 import { GetFundingData } from '../../../../models/project-view-update';
-import { CustomError } from '../../../../errors/CustomError';
+import { HTTPError } from '../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -57,15 +56,15 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -77,8 +76,8 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
@@ -86,8 +85,8 @@ describe('getPublicProjectForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -99,9 +98,9 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
@@ -109,8 +108,8 @@ describe('getPublicProjectForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -122,10 +121,10 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getActivitiesByPublicProjectSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getActivitiesByPublicProjectSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
@@ -133,8 +132,8 @@ describe('getPublicProjectForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -146,11 +145,11 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
@@ -158,8 +157,8 @@ describe('getPublicProjectForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -171,12 +170,12 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getFundingSourceByPublicProjectSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getFundingSourceByPublicProjectSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
@@ -184,8 +183,8 @@ describe('getPublicProjectForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -197,13 +196,13 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
@@ -211,8 +210,8 @@ describe('getPublicProjectForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -224,14 +223,14 @@ describe('getPublicProjectForView', () => {
       }
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getStakeholderPartnershipsByPublicProjectSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getStakeholderPartnershipsByPublicProjectSQL').returns(null);
 
     try {
       const result = view.getPublicProjectForView();
@@ -239,8 +238,8 @@ describe('getPublicProjectForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -259,14 +258,14 @@ describe('getPublicProjectForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getStakeholderPartnershipsByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getStakeholderPartnershipsByPublicProjectSQL').returns(SQL`some`);
 
     const result = view.getPublicProjectForView();
 
@@ -402,14 +401,14 @@ describe('getPublicProjectForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(public_project_view_queries, 'getPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(SQL`some`);
-    sinon.stub(public_project_view_queries, 'getStakeholderPartnershipsByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getPublicProjectPermitsSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getLocationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getActivitiesByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIUCNActionClassificationByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getFundingSourceByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getIndigenousPartnershipsByPublicProjectSQL').returns(SQL`some`);
+    sinon.stub(public_queries, 'getStakeholderPartnershipsByPublicProjectSQL').returns(SQL`some`);
 
     const result = view.getPublicProjectForView();
 

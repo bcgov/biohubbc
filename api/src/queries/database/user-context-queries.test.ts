@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import { setSystemUserContextSQL } from './user-context-queries';
 
 describe('setSystemUserContextSQL', () => {

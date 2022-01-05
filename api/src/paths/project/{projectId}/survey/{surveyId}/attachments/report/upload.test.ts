@@ -6,7 +6,7 @@ import * as upload from './upload';
 import * as db from '../../../../../../../database/db';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
-import { CustomError } from '../../../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -66,8 +66,8 @@ describe('uploadMedia', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing projectId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing projectId');
     }
   });
 
@@ -84,8 +84,8 @@ describe('uploadMedia', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing surveyId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing surveyId');
     }
   });
 
@@ -98,8 +98,8 @@ describe('uploadMedia', () => {
       await result({ ...sampleReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing upload data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing upload data');
     }
   });
 
@@ -119,8 +119,8 @@ describe('uploadMedia', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey attachment data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey attachment data');
     }
   });
 
@@ -142,8 +142,8 @@ describe('uploadMedia', () => {
       await result(sampleReq, sampleRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Malicious content detected, upload cancelled');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
     }
   });
 

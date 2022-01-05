@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as list from './list';
 import * as db from '../../../../../database/db';
-import * as survey_view_queries from '../../../../../queries/survey/survey-view-queries';
+import survey_queries from '../../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import { CustomError } from '../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -55,8 +55,8 @@ describe('getSurveyPermits', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -68,7 +68,7 @@ describe('getSurveyPermits', () => {
       }
     });
 
-    sinon.stub(survey_view_queries, 'getAllAssignablePermitsForASurveySQL').returns(null);
+    sinon.stub(survey_queries, 'getAllAssignablePermitsForASurveySQL').returns(null);
 
     try {
       const result = list.getSurveyPermits();
@@ -76,8 +76,8 @@ describe('getSurveyPermits', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -105,7 +105,7 @@ describe('getSurveyPermits', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getAllAssignablePermitsForASurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getAllAssignablePermitsForASurveySQL').returns(SQL`some query`);
 
     const result = list.getSurveyPermits();
 
@@ -127,7 +127,7 @@ describe('getSurveyPermits', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getAllAssignablePermitsForASurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getAllAssignablePermitsForASurveySQL').returns(SQL`some query`);
 
     const result = list.getSurveyPermits();
 

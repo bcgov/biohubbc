@@ -4,13 +4,12 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as delete_survey from './delete';
 import * as db from '../../../../../database/db';
-import * as survey_attachments_queries from '../../../../../queries/survey/survey-attachments-queries';
-import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
+import survey_queries from '../../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../utils/file-utils';
 import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import { CustomError } from '../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -54,8 +53,8 @@ describe('deleteSurvey', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -67,7 +66,7 @@ describe('deleteSurvey', () => {
       }
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(null);
 
     try {
       const result = delete_survey.deleteSurvey();
@@ -75,8 +74,8 @@ describe('deleteSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -93,7 +92,7 @@ describe('deleteSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
 
     try {
       const result = delete_survey.deleteSurvey();
@@ -101,8 +100,8 @@ describe('deleteSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to get survey attachments');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get survey attachments');
     }
   });
 
@@ -119,8 +118,8 @@ describe('deleteSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveySQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSurveySQL').returns(null);
 
     try {
       const result = delete_survey.deleteSurvey();
@@ -128,8 +127,8 @@ describe('deleteSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -146,8 +145,8 @@ describe('deleteSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSurveySQL').returns(SQL`something`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
 
     const result = delete_survey.deleteSurvey();
@@ -170,8 +169,8 @@ describe('deleteSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSurveySQL').returns(SQL`something`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
 
     const result = delete_survey.deleteSurvey();

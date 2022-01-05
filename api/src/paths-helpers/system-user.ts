@@ -1,7 +1,7 @@
 import { IDBConnection } from '../database/db';
-import { HTTP400, HTTP500 } from '../errors/CustomError';
+import { HTTP400, HTTP500 } from '../errors/custom-error';
 import { UserObject } from '../models/user';
-import { activateSystemUserSQL, addSystemUserSQL, getUserByUserIdentifierSQL } from '../queries/users/user-queries';
+import { queries } from '../queries/queries';
 
 /**
  * Gets a system user, adding them if they do not already exist, or activating them if they had been deactivated (soft
@@ -57,7 +57,7 @@ export const ensureSystemUser = async (
  * @return {*}  {(Promise<UserObject | null>)}
  */
 export const getSystemUser = async (userIdentifier: string, connection: IDBConnection): Promise<UserObject | null> => {
-  const sqlStatement = getUserByUserIdentifierSQL(userIdentifier);
+  const sqlStatement = queries.users.getUserByUserIdentifierSQL(userIdentifier);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -82,7 +82,7 @@ export const getSystemUser = async (userIdentifier: string, connection: IDBConne
  * @param {IDBConnection} connection
  */
 export const addSystemUser = async (userIdentifier: string, identitySource: string, connection: IDBConnection) => {
-  const addSystemUserSQLStatement = addSystemUserSQL(userIdentifier, identitySource);
+  const addSystemUserSQLStatement = queries.users.addSystemUserSQL(userIdentifier, identitySource);
 
   if (!addSystemUserSQLStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -107,7 +107,7 @@ export const addSystemUser = async (userIdentifier: string, identitySource: stri
  * @return {*}  {Promise<any>}
  */
 export const activateDeactivatedSystemUser = async (systemUserId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = activateSystemUserSQL(systemUserId);
+  const sqlStatement = queries.users.activateSystemUserSQL(systemUserId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

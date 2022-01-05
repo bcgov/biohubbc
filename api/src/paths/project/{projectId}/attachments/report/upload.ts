@@ -1,22 +1,14 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../errors/custom-error';
 import {
   IReportAttachmentAuthor,
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata
 } from '../../../../../models/project-survey-attachments';
-import {
-  deleteProjectReportAttachmentAuthorsSQL,
-  getProjectReportAttachmentByFileNameSQL,
-  insertProjectReportAttachmentAuthorSQL,
-  postProjectReportAttachmentSQL,
-  putProjectReportAttachmentSQL
-} from '../../../../../queries/project/project-attachments-queries';
+import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
@@ -197,7 +189,7 @@ export const upsertProjectReportAttachment = async (
   attachmentMeta: any,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number; key: string }> => {
-  const getSqlStatement = getProjectReportAttachmentByFileNameSQL(projectId, file.originalname);
+  const getSqlStatement = queries.project.getProjectReportAttachmentByFileNameSQL(projectId, file.originalname);
 
   if (!getSqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -248,7 +240,13 @@ export const insertProjectReportAttachment = async (
   key: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = postProjectReportAttachmentSQL(file.originalname, file.size, projectId, key, attachmentMeta);
+  const sqlStatement = queries.project.postProjectReportAttachmentSQL(
+    file.originalname,
+    file.size,
+    projectId,
+    key,
+    attachmentMeta
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -269,7 +267,7 @@ export const updateProjectReportAttachment = async (
   attachmentMeta: PutReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = putProjectReportAttachmentSQL(projectId, file.originalname, attachmentMeta);
+  const sqlStatement = queries.project.putProjectReportAttachmentSQL(projectId, file.originalname, attachmentMeta);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -288,7 +286,7 @@ export const deleteProjectReportAttachmentAuthors = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = deleteProjectReportAttachmentAuthorsSQL(attachmentId);
+  const sqlStatement = queries.project.deleteProjectReportAttachmentAuthorsSQL(attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete attachment report authors statement');
@@ -306,7 +304,7 @@ export const insertProjectReportAttachmentAuthor = async (
   author: IReportAttachmentAuthor,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertProjectReportAttachmentAuthorSQL(attachmentId, author);
+  const sqlStatement = queries.project.insertProjectReportAttachmentAuthorSQL(attachmentId, author);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert attachment report author statement');

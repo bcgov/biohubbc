@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as db from '../../database/db';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 import * as eml from './eml';
-import * as eml_queries from '../../queries/dwc/dwc-queries';
+import eml_queries from '../../queries/dwc';
 import SQL from 'sql-template-strings';
 
 chai.use(sinonChai);
@@ -41,8 +41,8 @@ describe('getSurveyDataPackageEML', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Missing required body param `data_package_id`.');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param `data_package_id`.');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -67,10 +67,10 @@ describe('getSurveyOccurrenceSubmission', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).message).to.equal(
         'Failed to acquire distinct survey occurrence submission record'
       );
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -84,8 +84,8 @@ describe('getSurveyOccurrenceSubmission', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -108,10 +108,10 @@ describe('getSurveyOccurrenceSubmission', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).message).to.equal(
         'Failed to acquire distinct survey occurrence submission record'
       );
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -136,8 +136,8 @@ describe('getDataPackage', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to acquire data package record');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to acquire data package record');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -151,8 +151,8 @@ describe('getDataPackage', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -175,8 +175,8 @@ describe('getDataPackage', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to acquire data package record');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to acquire data package record');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -203,8 +203,8 @@ describe('getPublishedSurveyStatus', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -231,8 +231,8 @@ describe('getSurvey', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -259,8 +259,8 @@ describe('getProject', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -287,8 +287,8 @@ describe('getSurveyFundingSource', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -315,8 +315,8 @@ describe('getProjectFundingSource', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -343,8 +343,8 @@ describe('getSurveyBoundingBox', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -371,8 +371,8 @@ describe('getProjectBoundingBox', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -399,8 +399,8 @@ describe('getProjectBoundingBox', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -427,8 +427,8 @@ describe('getSurveyPolygons', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -455,8 +455,8 @@ describe('getProjectPolygons', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -483,8 +483,8 @@ describe('getFocalTaxonomicCoverage', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -511,8 +511,8 @@ describe('getProjectIucnConservation', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -539,8 +539,8 @@ describe('getProjectStakeholderPartnership', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -567,8 +567,8 @@ describe('getProjectActivity', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -595,8 +595,8 @@ describe('getProjectClimateInitiative', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -623,8 +623,8 @@ describe('getProjectFirstNations', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });
@@ -651,8 +651,8 @@ describe('getProjectManagementActions', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });

@@ -4,11 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as deleteFundingSource from './delete';
 import * as db from '../../../../../database/db';
-import * as project_delete_queries from '../../../../../queries/project/project-delete-queries';
-import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
+import project_queries from '../../../../../queries/project';
+import survey_queries from '../../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import { CustomError } from '../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -52,8 +52,8 @@ describe('delete a funding source', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -69,8 +69,8 @@ describe('delete a funding source', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `pfsId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `pfsId`');
     }
   });
 
@@ -82,8 +82,8 @@ describe('delete a funding source', () => {
       }
     });
 
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(null);
-    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(null);
+    sinon.stub(project_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some`);
 
     try {
       const result = deleteFundingSource.deleteFundingSource();
@@ -91,8 +91,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -104,8 +104,8 @@ describe('delete a funding source', () => {
       }
     });
 
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
-    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(null);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_queries, 'deleteProjectFundingSourceSQL').returns(null);
 
     try {
       const result = deleteFundingSource.deleteFundingSource();
@@ -113,8 +113,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -131,8 +131,8 @@ describe('delete a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
-    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_queries, 'deleteProjectFundingSourceSQL').returns(SQL`something`);
 
     const result = deleteFundingSource.deleteFundingSource();
 
@@ -154,8 +154,8 @@ describe('delete a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
-    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some query`);
 
     try {
       const result = deleteFundingSource.deleteFundingSource();
@@ -163,8 +163,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to delete survey funding source');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to delete survey funding source');
     }
   });
 
@@ -181,8 +181,8 @@ describe('delete a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
-    sinon.stub(project_delete_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
+    sinon.stub(project_queries, 'deleteProjectFundingSourceSQL').returns(SQL`some query`);
 
     try {
       const result = deleteFundingSource.deleteFundingSource();
@@ -190,8 +190,8 @@ describe('delete a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to delete project funding source');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to delete project funding source');
     }
   });
 });

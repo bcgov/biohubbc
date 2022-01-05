@@ -1,6 +1,6 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { getLogger } from '../utils/logger';
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('queries/user-context-queries');
 

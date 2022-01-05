@@ -1,5 +1,5 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('queries/draft-queries');
 

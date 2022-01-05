@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as get_no_sampling from './get-no-sampling';
 import * as db from '../../database/db';
-import * as permit_view_queries from '../../queries/permit/permit-view-queries';
+import permit_queries from '../../queries/permit';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -42,7 +42,7 @@ describe('getNonSamplingPermits', () => {
       }
     });
 
-    sinon.stub(permit_view_queries, 'getNonSamplingPermitsSQL').returns(null);
+    sinon.stub(permit_queries, 'getNonSamplingPermitsSQL').returns(null);
 
     try {
       const result = get_no_sampling.getNonSamplingPermits();
@@ -50,8 +50,8 @@ describe('getNonSamplingPermits', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -81,7 +81,7 @@ describe('getNonSamplingPermits', () => {
       query: mockQuery
     });
 
-    sinon.stub(permit_view_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
+    sinon.stub(permit_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
 
     const result = get_no_sampling.getNonSamplingPermits();
 
@@ -103,7 +103,7 @@ describe('getNonSamplingPermits', () => {
       query: mockQuery
     });
 
-    sinon.stub(permit_view_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
+    sinon.stub(permit_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
 
     const result = get_no_sampling.getNonSamplingPermits();
 

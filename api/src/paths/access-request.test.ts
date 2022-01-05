@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../database/db';
-import { CustomError } from '../errors/CustomError';
+import { HTTPError } from '../errors/custom-error';
 import { UserObject } from '../models/user';
 import * as system_user from '../paths-helpers/system-user';
 import * as administrative_activity from '../paths/administrative-activity';
@@ -39,8 +39,8 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body param: userIdentifier');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: userIdentifier');
     }
   });
 
@@ -55,8 +55,8 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body param: identitySource');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: identitySource');
     }
   });
 
@@ -71,8 +71,8 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body param: requestId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: requestId');
     }
   });
 
@@ -87,8 +87,8 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body param: requestStatusTypeId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: requestStatusTypeId');
     }
   });
 
@@ -119,7 +119,7 @@ describe('updateAccessRequest', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('test error');
+      expect((actualError as HTTPError).message).to.equal('test error');
     }
   });
 

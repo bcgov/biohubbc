@@ -1,23 +1,7 @@
-import { IDBConnection } from '../database/db';
-import {
-  getFirstNationsSQL,
-  getFundingSourceSQL,
-  getInvestmentActionCategorySQL,
-  getManagementActionTypeSQL,
-  getIUCNConservationActionLevel1ClassificationSQL,
-  getIUCNConservationActionLevel2SubclassificationSQL,
-  getIUCNConservationActionLevel3SubclassificationSQL,
-  getActivitySQL,
-  getProjectTypeSQL,
-  getSystemRolesSQL,
-  getProprietorTypeSQL,
-  getAdministrativeActivityStatusTypeSQL,
-  getTaxonsSQL,
-  getCommonSurveyMethodologiesSQL,
-  getProjectRolesSQL
-} from '../queries/codes/code-queries';
-import { getLogger } from '../utils/logger';
 import { coordinator_agency, region, regional_offices } from '../constants/codes';
+import { IDBConnection } from '../database/db';
+import { queries } from '../queries/queries';
+import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('queries/code-queries');
 
@@ -86,21 +70,21 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     species,
     common_survey_methodologies
   ] = await Promise.all([
-    await connection.query(getManagementActionTypeSQL().text),
-    await connection.query(getFirstNationsSQL().text),
-    await connection.query(getFundingSourceSQL().text),
-    await connection.query(getInvestmentActionCategorySQL().text),
-    await connection.query(getActivitySQL().text),
-    await connection.query(getIUCNConservationActionLevel1ClassificationSQL().text),
-    await connection.query(getIUCNConservationActionLevel2SubclassificationSQL().text),
-    await connection.query(getIUCNConservationActionLevel3SubclassificationSQL().text),
-    await connection.query(getProprietorTypeSQL().text),
-    await connection.query(getProjectTypeSQL().text),
-    await connection.query(getSystemRolesSQL().text),
-    await connection.query(getProjectRolesSQL().text),
-    await connection.query(getAdministrativeActivityStatusTypeSQL().text),
-    await connection.query(getTaxonsSQL().text),
-    await connection.query(getCommonSurveyMethodologiesSQL().text)
+    await connection.query(queries.codes.getManagementActionTypeSQL().text),
+    await connection.query(queries.codes.getFirstNationsSQL().text),
+    await connection.query(queries.codes.getFundingSourceSQL().text),
+    await connection.query(queries.codes.getInvestmentActionCategorySQL().text),
+    await connection.query(queries.codes.getActivitySQL().text),
+    await connection.query(queries.codes.getIUCNConservationActionLevel1ClassificationSQL().text),
+    await connection.query(queries.codes.getIUCNConservationActionLevel2SubclassificationSQL().text),
+    await connection.query(queries.codes.getIUCNConservationActionLevel3SubclassificationSQL().text),
+    await connection.query(queries.codes.getProprietorTypeSQL().text),
+    await connection.query(queries.codes.getProjectTypeSQL().text),
+    await connection.query(queries.codes.getSystemRolesSQL().text),
+    await connection.query(queries.codes.getProjectRolesSQL().text),
+    await connection.query(queries.codes.getAdministrativeActivityStatusTypeSQL().text),
+    await connection.query(queries.codes.getTaxonsSQL().text),
+    await connection.query(queries.codes.getCommonSurveyMethodologiesSQL().text)
   ]);
 
   await connection.commit();

@@ -1,14 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import {
-  getLatestSurveyOccurrenceSubmissionSQL,
-  getOccurrenceSubmissionMessagesSQL
-} from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -116,7 +111,9 @@ export function getOccurrenceSubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getOccurrenceSubmissionSQLStatement = getLatestSurveyOccurrenceSubmissionSQL(Number(req.params.surveyId));
+      const getOccurrenceSubmissionSQLStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(
+        Number(req.params.surveyId)
+      );
 
       if (!getOccurrenceSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement');
@@ -146,7 +143,9 @@ export function getOccurrenceSubmission(): RequestHandler {
       if (errorStatus === 'Rejected' || errorStatus === 'System Error') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
 
-        const getSubmissionErrorListSQLStatement = getOccurrenceSubmissionMessagesSQL(Number(occurrence_submission_id));
+        const getSubmissionErrorListSQLStatement = queries.survey.getOccurrenceSubmissionMessagesSQL(
+          Number(occurrence_submission_id)
+        );
 
         if (!getSubmissionErrorListSQLStatement) {
           throw new HTTP400('Failed to build SQL getOccurrenceSubmissionMessagesSQL statement');

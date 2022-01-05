@@ -4,11 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as create from './create';
 import * as db from '../../../../database/db';
-import * as survey_create_queries from '../../../../queries/survey/survey-create-queries';
-import * as survey_update_queries from '../../../../queries/survey/survey-update-queries';
+import survey_queries from '../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../__mocks__/db';
-import { CustomError } from '../../../../errors/CustomError';
+import { HTTPError } from '../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -70,8 +69,8 @@ describe('createSurvey', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -89,8 +88,8 @@ describe('createSurvey', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing survey data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing survey data');
     }
   });
 
@@ -102,7 +101,7 @@ describe('createSurvey', () => {
       }
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(null);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(null);
 
     try {
       const result = create.createSurvey();
@@ -110,8 +109,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build survey SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build survey SQL insert statement');
     }
   });
 
@@ -128,7 +127,7 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`some query`);
 
     try {
       const result = create.createSurvey();
@@ -136,8 +135,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey data');
     }
   });
 
@@ -154,7 +153,7 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`some query`);
 
     try {
       const result = create.createSurvey();
@@ -162,8 +161,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey data');
     }
   });
 
@@ -180,8 +179,8 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
-    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(null);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveyProprietorSQL').returns(null);
 
     try {
       const result = create.createSurvey();
@@ -189,8 +188,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -207,7 +206,7 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`something`);
 
     const result = create.createSurvey();
 
@@ -235,7 +234,7 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(create, 'insertSurveyPermit').resolves();
     sinon.stub(create, 'insertSurveyFundingSource').resolves();
 
@@ -268,7 +267,7 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`something`);
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(1);
 
@@ -310,8 +309,8 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`something`);
-    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
 
     const result = create.createSurvey();
 
@@ -339,8 +338,8 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
-    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
 
     try {
       const result = create.createSurvey();
@@ -348,8 +347,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey proprietor data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey proprietor data');
     }
   });
 
@@ -370,8 +369,8 @@ describe('createSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_create_queries, 'postSurveySQL').returns(SQL`some query`);
-    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
+    sinon.stub(survey_queries, 'postSurveySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'postSurveyProprietorSQL').returns(SQL`something else`);
 
     try {
       const result = create.createSurvey();
@@ -379,8 +378,8 @@ describe('createSurvey', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey proprietor data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey proprietor data');
     }
   });
 });
@@ -402,15 +401,15 @@ describe('insertFocalSpecies', () => {
   it('should throw an error when cannot generate post sql statement', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_create_queries, 'postFocalSpeciesSQL').returns(null);
+    sinon.stub(survey_queries, 'postFocalSpeciesSQL').returns(null);
 
     try {
       await create.insertFocalSpecies(focalSpeciesId, surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -419,15 +418,15 @@ describe('insertFocalSpecies', () => {
 
     mockQuery.resolves({ rows: [null] });
 
-    sinon.stub(survey_create_queries, 'postFocalSpeciesSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postFocalSpeciesSQL').returns(SQL`some`);
 
     try {
       await create.insertFocalSpecies(focalSpeciesId, surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert focal species data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert focal species data');
     }
   });
 
@@ -436,15 +435,15 @@ describe('insertFocalSpecies', () => {
 
     mockQuery.resolves({ rows: [{ id: null }] });
 
-    sinon.stub(survey_create_queries, 'postFocalSpeciesSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postFocalSpeciesSQL').returns(SQL`some`);
 
     try {
       await create.insertFocalSpecies(focalSpeciesId, surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert focal species data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert focal species data');
     }
   });
 
@@ -453,7 +452,7 @@ describe('insertFocalSpecies', () => {
 
     mockQuery.resolves({ rows: [{ id: 12 }] });
 
-    sinon.stub(survey_create_queries, 'postFocalSpeciesSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postFocalSpeciesSQL').returns(SQL`some`);
 
     const res = await create.insertFocalSpecies(focalSpeciesId, surveyId, { ...dbConnectionObj, query: mockQuery });
 
@@ -478,15 +477,15 @@ describe('insertAncillarySpecies', () => {
   it('should throw an error when cannot generate post sql statement', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_create_queries, 'postAncillarySpeciesSQL').returns(null);
+    sinon.stub(survey_queries, 'postAncillarySpeciesSQL').returns(null);
 
     try {
       await create.insertAncillarySpecies(ancillarySpeciesId, surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -495,15 +494,15 @@ describe('insertAncillarySpecies', () => {
 
     mockQuery.resolves({ rows: [null] });
 
-    sinon.stub(survey_create_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
 
     try {
       await create.insertAncillarySpecies(ancillarySpeciesId, surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert ancillary species data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert ancillary species data');
     }
   });
 
@@ -512,15 +511,15 @@ describe('insertAncillarySpecies', () => {
 
     mockQuery.resolves({ rows: [{ id: null }] });
 
-    sinon.stub(survey_create_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
 
     try {
       await create.insertAncillarySpecies(ancillarySpeciesId, surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert ancillary species data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert ancillary species data');
     }
   });
 
@@ -529,7 +528,7 @@ describe('insertAncillarySpecies', () => {
 
     mockQuery.resolves({ rows: [{ id: 12 }] });
 
-    sinon.stub(survey_create_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postAncillarySpeciesSQL').returns(SQL`some`);
 
     const res = await create.insertAncillarySpecies(ancillarySpeciesId, surveyId, {
       ...dbConnectionObj,
@@ -558,30 +557,30 @@ describe('insertSurveyPermit', () => {
   it('should throw an error when cannot generate post sql statement', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_create_queries, 'postNewSurveyPermitSQL').returns(null);
+    sinon.stub(survey_queries, 'postNewSurveyPermitSQL').returns(null);
 
     try {
       await create.insertSurveyPermit(permitNumber, 'type', projectId, surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement for insertSurveyPermit');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement for insertSurveyPermit');
     }
   });
 
   it('should throw an error when cannot generate put sql statement', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_update_queries, 'putNewSurveyPermitNumberSQL').returns(null);
+    sinon.stub(survey_queries, 'putNewSurveyPermitNumberSQL').returns(null);
 
     try {
       await create.insertSurveyPermit(permitNumber, null, projectId, surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement for insertSurveyPermit');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement for insertSurveyPermit');
     }
   });
 
@@ -590,7 +589,7 @@ describe('insertSurveyPermit', () => {
 
     mockQuery.resolves(null);
 
-    sinon.stub(survey_create_queries, 'postNewSurveyPermitSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postNewSurveyPermitSQL').returns(SQL`some`);
 
     try {
       await create.insertSurveyPermit(permitNumber, 'type', projectId, surveyId, {
@@ -600,8 +599,8 @@ describe('insertSurveyPermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey permit number data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey permit number data');
     }
   });
 
@@ -610,7 +609,7 @@ describe('insertSurveyPermit', () => {
 
     mockQuery.resolves(null);
 
-    sinon.stub(survey_update_queries, 'putNewSurveyPermitNumberSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'putNewSurveyPermitNumberSQL').returns(SQL`some`);
 
     try {
       await create.insertSurveyPermit(permitNumber, null, projectId, surveyId, {
@@ -620,8 +619,8 @@ describe('insertSurveyPermit', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey permit number data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey permit number data');
     }
   });
 });
@@ -642,15 +641,15 @@ describe('insertSurveyFundingSource', () => {
   it('should throw an error when cannot generate sql statement', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_create_queries, 'insertSurveyFundingSourceSQL').returns(null);
+    sinon.stub(survey_queries, 'insertSurveyFundingSourceSQL').returns(null);
 
     try {
       await create.insertSurveyFundingSource(fundingSourceId, surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
         'Failed to build SQL statement for insertSurveyFundingSource'
       );
     }
@@ -661,15 +660,15 @@ describe('insertSurveyFundingSource', () => {
 
     mockQuery.resolves(null);
 
-    sinon.stub(survey_create_queries, 'insertSurveyFundingSourceSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'insertSurveyFundingSourceSQL').returns(SQL`something`);
 
     try {
       await create.insertSurveyFundingSource(fundingSourceId, surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey funding source data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey funding source data');
     }
   });
 });

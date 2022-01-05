@@ -4,8 +4,8 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
-import { CustomError } from '../errors/CustomError';
-import * as user_queries from '../queries/users/user-queries';
+import { HTTPError } from '../errors/custom-error';
+import user_queries from '../queries/users';
 import { getMockDBConnection } from '../__mocks__/db';
 import * as system_user from './system-user';
 
@@ -34,8 +34,8 @@ describe('user', () => {
         await system_user.ensureSystemUser(userIdentifier, identitySource, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to identify system user ID');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to identify system user ID');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
 
       expect(getSystemUserStub).to.have.been.calledOnce;
@@ -118,8 +118,8 @@ describe('user', () => {
         await system_user.getSystemUser(userIdentifier, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -168,8 +168,8 @@ describe('user', () => {
         await system_user.addSystemUser(userIdentifier, identitySource, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -186,8 +186,8 @@ describe('user', () => {
         await system_user.addSystemUser(userIdentifier, identitySource, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to insert system user');
-        expect((actualError as CustomError).status).to.equal(500);
+        expect((actualError as HTTPError).message).to.equal('Failed to insert system user');
+        expect((actualError as HTTPError).status).to.equal(500);
       }
     });
 
@@ -226,8 +226,8 @@ describe('user', () => {
         await system_user.activateDeactivatedSystemUser(systemuserId, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -243,8 +243,8 @@ describe('user', () => {
         await system_user.activateDeactivatedSystemUser(systemuserId, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to activate system user');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to activate system user');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -262,6 +262,65 @@ describe('user', () => {
       expect(result).to.eql(mockRowObj);
 
       expect(activateSystemUserSQLStub).to.have.been.calledOnce;
+      expect(mockQuery).to.have.been.calledOnce;
+    });
+  });
+
+  describe('addSystemUser', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should throw a 400 error when no sql statement produced', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      sinon.stub(user_queries, 'addSystemUserSQL').returns(null);
+
+      const userIdentifier = 'username';
+      const identitySource = 'idir';
+
+      try {
+        await system_user.addSystemUser(userIdentifier, identitySource, mockDBConnection);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+      }
+    });
+
+    it('should throw a 400 response when response has no rows', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+      sinon.stub(user_queries, 'addSystemUserSQL').returns(SQL`valid sql`);
+
+      const userIdentifier = 'username';
+      const identitySource = 'idir';
+
+      try {
+        await system_user.addSystemUser(userIdentifier, identitySource, mockDBConnection);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal('Failed to insert system user');
+        expect((actualError as HTTPError).status).to.equal(500);
+      }
+    });
+
+    it('should not throw an error on success', async () => {
+      const mockRowObj = { id: 123 };
+      const mockQueryResponse = ({ rows: [mockRowObj] } as unknown) as QueryResult<any>;
+      const mockQuery = sinon.fake.resolves(mockQueryResponse);
+      const mockDBConnection = getMockDBConnection({ query: mockQuery });
+
+      const addSystemUserSQLStub = sinon.stub(user_queries, 'addSystemUserSQL').returns(SQL`valid sql`);
+
+      const userIdentifier = 'username';
+      const identitySource = 'idir';
+
+      const result = await system_user.addSystemUser(userIdentifier, identitySource, mockDBConnection);
+      expect(result).to.eql(mockRowObj);
+
+      expect(addSystemUserSQLStub).to.have.been.calledOnce;
       expect(mockQuery).to.have.been.calledOnce;
     });
   });

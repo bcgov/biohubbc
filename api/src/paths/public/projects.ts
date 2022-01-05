@@ -1,11 +1,11 @@
-import { COMPLETION_STATUS } from '../../constants/status';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import moment from 'moment';
+import { COMPLETION_STATUS } from '../../constants/status';
 import { getAPIUserDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
+import { HTTP400 } from '../../errors/custom-error';
 import { projectIdResponseObject } from '../../openapi/schemas/project';
-import { getPublicProjectListSQL } from '../../queries/public/project-queries';
+import { queries } from '../../queries/queries';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/public/projects');
@@ -54,7 +54,7 @@ export function getPublicProjectsList(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const getProjectListSQLStatement = getPublicProjectListSQL();
+      const getProjectListSQLStatement = queries.public.getPublicProjectListSQL();
 
       if (!getProjectListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

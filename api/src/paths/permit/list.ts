@@ -1,11 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getAllPermitsSQL } from '../../queries/permit/permit-view-queries';
+import { HTTP400 } from '../../errors/custom-error';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 
@@ -88,7 +86,7 @@ export function getAllPermits(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const getPermitsSQLStatement = getAllPermitsSQL(systemUserId);
+      const getPermitsSQLStatement = queries.permit.getAllPermitsSQL(systemUserId);
 
       if (!getPermitsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

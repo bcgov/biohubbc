@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import {
   getAllUserProjectsSQL,
   deleteProjectParticipationSQL,
-  getAllProjectParticipants,
+  getAllProjectParticipantsSQL,
   getProjectParticipationBySystemUserSQL,
   addProjectRoleByRoleNameSQL
 } from './project-participation-queries';
@@ -42,15 +42,15 @@ describe('getProjectParticipationBySystemUserSQL', () => {
   });
 });
 
-describe('getAllProjectParticipants', () => {
+describe('getAllProjectParticipantsSQL', () => {
   it('returns null response when null projectId provided', () => {
-    const response = getAllProjectParticipants((null as unknown) as number);
+    const response = getAllProjectParticipantsSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when valid params provided', () => {
-    const response = getAllProjectParticipants(1);
+    const response = getAllProjectParticipantsSQL(1);
 
     expect(response).to.not.be.null;
   });

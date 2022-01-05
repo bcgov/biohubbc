@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as get_survey_metadata from './get';
 import * as db from '../../../../../../../../database/db';
-import * as survey_attachment_queries from '../../../../../../../../queries/survey/survey-attachments-queries';
+import survey_queries from '../../../../../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
-import { CustomError } from '../../../../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -52,8 +52,8 @@ describe('gets metadata for a survey report', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -69,8 +69,8 @@ describe('gets metadata for a survey report', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -86,8 +86,8 @@ describe('gets metadata for a survey report', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -99,7 +99,7 @@ describe('gets metadata for a survey report', () => {
       }
     });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyReportAttachmentSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyReportAttachmentSQL').returns(null);
 
     try {
       const result = get_survey_metadata.getSurveyReportMetaData();
@@ -107,8 +107,8 @@ describe('gets metadata for a survey report', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build metadata SQLStatement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
     }
   });
 
@@ -120,7 +120,7 @@ describe('gets metadata for a survey report', () => {
       }
     });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyReportAuthorsSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyReportAuthorsSQL').returns(null);
 
     try {
       const result = get_survey_metadata.getSurveyReportMetaData();
@@ -128,8 +128,8 @@ describe('gets metadata for a survey report', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build metadata SQLStatement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
     }
   });
 
@@ -159,8 +159,8 @@ describe('gets metadata for a survey report', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyReportAttachmentSQL').returns(SQL`something`);
-    sinon.stub(survey_attachment_queries, 'getSurveyReportAuthorsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyReportAttachmentSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyReportAuthorsSQL').returns(SQL`something`);
 
     const result = get_survey_metadata.getSurveyReportMetaData();
 

@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as get_project_metadata from './get';
 import * as db from '../../../../../../../database/db';
-import * as project_queries from '../../../../../../../queries/public/project-queries';
+import public_queries from '../../../../../../../queries/public';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
-import { CustomError } from '../../../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -51,8 +51,8 @@ describe('gets metadata for a project report', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -68,8 +68,8 @@ describe('gets metadata for a project report', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -81,7 +81,7 @@ describe('gets metadata for a project report', () => {
       }
     });
 
-    sinon.stub(project_queries, 'getPublicProjectReportAttachmentSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectReportAttachmentSQL').returns(null);
 
     try {
       const result = get_project_metadata.getPublicReportMetaData();
@@ -89,8 +89,8 @@ describe('gets metadata for a project report', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build metadata SQLStatement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
     }
   });
 
@@ -102,7 +102,7 @@ describe('gets metadata for a project report', () => {
       }
     });
 
-    sinon.stub(project_queries, 'getProjectReportAuthorsSQL').returns(null);
+    sinon.stub(public_queries, 'getProjectReportAuthorsSQL').returns(null);
 
     try {
       const result = get_project_metadata.getPublicReportMetaData();
@@ -110,8 +110,8 @@ describe('gets metadata for a project report', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build metadata SQLStatement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build metadata SQLStatement');
     }
   });
 
@@ -141,8 +141,8 @@ describe('gets metadata for a project report', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectReportAttachmentSQL').returns(SQL`something`);
-    sinon.stub(project_queries, 'getProjectReportAuthorsSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getPublicProjectReportAttachmentSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getProjectReportAuthorsSQL').returns(SQL`something`);
 
     const result = get_project_metadata.getPublicReportMetaData();
 

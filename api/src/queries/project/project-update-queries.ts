@@ -1,13 +1,13 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import {
   PutCoordinatorData,
+  PutFundingSource,
   PutLocationData,
   PutObjectivesData,
-  PutProjectData,
-  PutFundingSource
+  PutProjectData
 } from '../../models/project-update';
 import { getLogger } from '../../utils/logger';
-import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
+import { queries } from '../queries';
 
 const defaultLog = getLogger('queries/project/project-update-queries');
 
@@ -250,7 +250,7 @@ export const putProjectSQL = (
     const geometrySQLStatement = SQL`geography = `;
 
     if (location.geometry && location.geometry.length) {
-      const geometryCollectionSQL = generateGeometryCollectionSQL(location.geometry);
+      const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(location.geometry);
 
       geometrySQLStatement.append(SQL`
         public.geography(
