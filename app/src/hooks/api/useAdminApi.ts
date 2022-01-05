@@ -11,6 +11,24 @@ import qs from 'qs';
  */
 const useAdminApi = (axios: AxiosInstance) => {
   /**
+   * Send notification to recipient
+   *
+   * @param {string} recipientAddress
+   * @param {object} message
+   * @param {string} templateFormat
+   * @return {*}  {Promise<number>}
+   */
+  const sendGCNotification = async (recipientAddress: string, message: object, templateFormat: string): Promise<boolean> => {
+    const { status } = await axios.post(`/api/gcnotify/send`, {
+      recipientAddress,
+      message,
+      templateFormat
+    });
+
+    return status === 200;
+  };
+
+  /**
    * Get user access requests
    *
    * @param {AdministrativeActivityStatusType[]} [status=[]]
@@ -134,6 +152,7 @@ const useAdminApi = (axios: AxiosInstance) => {
   };
 
   return {
+    sendGCNotification,
     getAccessRequests,
     updateAccessRequest,
     updateAdministrativeActivity,
