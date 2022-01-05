@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
-import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
+import { getLogger } from '../../utils/logger';
+import { queries } from '../queries';
 
 const defaultLog = getLogger('queries/survey/survey-create-queries');
 
@@ -51,7 +51,7 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
   `;
 
   if (survey.geometry && survey.geometry.length) {
-    const geometryCollectionSQL = generateGeometryCollectionSQL(survey.geometry);
+    const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(survey.geometry);
 
     sqlStatement.append(SQL`
       ,public.geography(

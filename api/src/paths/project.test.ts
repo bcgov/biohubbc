@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as project from './project';
 import * as db from '../database/db';
-import * as project_create_queries from '../queries/project/project-create-queries';
+import project_queries from '../queries/project';
 import { getMockDBConnection } from '../__mocks__/db';
-import { CustomError } from '../errors/CustomError';
+import { HTTPError } from '../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -70,8 +70,8 @@ describe('createProject', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert project general information data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert project general information data');
     }
   });
 
@@ -83,7 +83,7 @@ describe('createProject', () => {
       }
     });
 
-    sinon.stub(project_create_queries, 'postProjectSQL').returns(null);
+    sinon.stub(project_queries, 'postProjectSQL').returns(null);
 
     try {
       const result = project.createProject();
@@ -91,8 +91,8 @@ describe('createProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 });

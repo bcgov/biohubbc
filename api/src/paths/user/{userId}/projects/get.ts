@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/custom-error';
 import { projectIdResponseObject } from '../../../../openapi/schemas/project';
-import { getAllUserProjectsSQL } from '../../../../queries/project-participation/project-participation-queries';
+import { queries } from '../../../../queries/queries';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/projects');
@@ -81,7 +81,7 @@ export function getAllUserProjects(): RequestHandler {
 
       await connection.open();
 
-      const getAllUserProjectsSQLStatement = getAllUserProjectsSQL(userId);
+      const getAllUserProjectsSQLStatement = queries.projectParticipation.getAllUserProjectsSQL(userId);
 
       if (!getAllUserProjectsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

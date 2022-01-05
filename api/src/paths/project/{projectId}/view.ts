@@ -2,30 +2,19 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
+import { HTTP400 } from '../../../errors/custom-error';
 import {
   GetCoordinatorData,
   GetIUCNClassificationData,
+  GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetProjectData,
-  GetLocationData,
-  GetPermitData
+  GetPermitData,
+  GetProjectData
 } from '../../../models/project-view';
 import { GetFundingData } from '../../../models/project-view-update';
 import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
-import {
-  getIndigenousPartnershipsByProjectSQL,
-  getIUCNActionClassificationByProjectSQL,
-  getProjectSQL,
-  getProjectPermitsSQL
-} from '../../../queries/project/project-view-queries';
-import {
-  getStakeholderPartnershipsByProjectSQL,
-  getLocationByProjectSQL,
-  getActivitiesByProjectSQL,
-  getFundingSourceByProjectSQL
-} from '../../../queries/project/project-view-update-queries';
+import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
@@ -103,18 +92,20 @@ export function getProjectForView(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
-      const getProjectPermitsSQLStatement = getProjectPermitsSQL(Number(req.params.projectId));
-      const getProjectLocationSQLStatement = getLocationByProjectSQL(Number(req.params.projectId));
-      const getProjectActivitiesSQLStatement = getActivitiesByProjectSQL(Number(req.params.projectId));
-      const getProjectIUCNActionClassificationSQLStatement = getIUCNActionClassificationByProjectSQL(
+      const getProjectSQLStatement = queries.project.getProjectSQL(Number(req.params.projectId));
+      const getProjectPermitsSQLStatement = queries.project.getProjectPermitsSQL(Number(req.params.projectId));
+      const getProjectLocationSQLStatement = queries.project.getLocationByProjectSQL(Number(req.params.projectId));
+      const getProjectActivitiesSQLStatement = queries.project.getActivitiesByProjectSQL(Number(req.params.projectId));
+      const getProjectIUCNActionClassificationSQLStatement = queries.project.getIUCNActionClassificationByProjectSQL(
         Number(req.params.projectId)
       );
-      const getProjectFundingSourceSQLStatement = getFundingSourceByProjectSQL(Number(req.params.projectId));
-      const getProjectIndigenousPartnershipsSQLStatement = getIndigenousPartnershipsByProjectSQL(
+      const getProjectFundingSourceSQLStatement = queries.project.getFundingSourceByProjectSQL(
         Number(req.params.projectId)
       );
-      const getProjectStakeholderPartnershipsSQLStatement = getStakeholderPartnershipsByProjectSQL(
+      const getProjectIndigenousPartnershipsSQLStatement = queries.project.getIndigenousPartnershipsByProjectSQL(
+        Number(req.params.projectId)
+      );
+      const getProjectStakeholderPartnershipsSQLStatement = queries.project.getStakeholderPartnershipsByProjectSQL(
         Number(req.params.projectId)
       );
 

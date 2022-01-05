@@ -1,26 +1,20 @@
-'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
 import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
-import {
-  insertSurveySummaryDetailsSQL,
-  insertSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL,
-  insertSurveySummarySubmissionMessageSQL
-} from '../../../../../../../queries/survey/survey-summary-queries';
+import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
+import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
+import { queries } from '../../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
+import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
+import { IMediaState } from '../../../../../../../utils/media/media-file';
+import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
-import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
-import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
-import { IMediaState } from '../../../../../../../utils/media/media-file';
-import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
-import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -229,7 +223,7 @@ export const insertSurveySummarySubmission = async (
   file_name: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveySummarySubmissionSQL(surveyId, source, file_name);
+  const insertSqlStatement = queries.survey.insertSurveySummarySubmissionSQL(surveyId, source, file_name);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -257,7 +251,7 @@ export const updateSurveySummarySubmissionWithKey = async (
   key: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const updateSqlStatement = updateSurveySummarySubmissionWithKeySQL(submissionId, key);
+  const updateSqlStatement = queries.survey.updateSurveySummarySubmissionWithKeySQL(submissionId, key);
 
   if (!updateSqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -653,7 +647,7 @@ export const uploadScrapedSummarySubmission = async (
   scrapedSummaryDetail: any,
   connection: IDBConnection
 ) => {
-  const sqlStatement = insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
+  const sqlStatement = queries.survey.insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL post statement');
@@ -683,7 +677,7 @@ export const insertSummarySubmissionMessage = async (
   errorCode: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertSurveySummarySubmissionMessageSQL(
+  const sqlStatement = queries.survey.insertSurveySummarySubmissionMessageSQL(
     submissionStatusId,
     submissionMessageType,
     message,

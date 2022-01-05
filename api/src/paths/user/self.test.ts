@@ -3,7 +3,7 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 import * as authorization from '../../request-handlers/security/authorization';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import * as self from './self';
@@ -28,8 +28,8 @@ describe('getUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to identify system user ID');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to identify system user ID');
     }
   });
 
@@ -48,8 +48,8 @@ describe('getUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to get system user');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get system user');
     }
   });
 
@@ -97,7 +97,7 @@ describe('getUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal(expectedError.message);
+      expect((actualError as HTTPError).message).to.equal(expectedError.message);
     }
   });
 });

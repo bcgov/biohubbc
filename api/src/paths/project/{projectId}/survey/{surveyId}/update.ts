@@ -2,11 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
+import { HTTP400, HTTP409 } from '../../../../../errors/custom-error';
+import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 import {
+  GetUpdateSurveyDetailsData,
   PutSurveyDetailsData,
-  PutSurveyProprietorData,
-  GetUpdateSurveyDetailsData
+  PutSurveyProprietorData
 } from '../../../../../models/survey-update';
 import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
 import {
@@ -14,26 +15,10 @@ import {
   surveyUpdateGetResponseObject,
   surveyUpdatePutRequestObject
 } from '../../../../../openapi/schemas/survey';
-import {
-  getSurveyDetailsForUpdateSQL,
-  getSurveyProprietorForUpdateSQL
-} from '../../../../../queries/survey/survey-view-update-queries';
-import {
-  unassociatePermitFromSurveySQL,
-  putSurveyDetailsSQL,
-  putSurveyProprietorSQL
-} from '../../../../../queries/survey/survey-update-queries';
-import {
-  deleteFocalSpeciesSQL,
-  deleteAncillarySpeciesSQL,
-  deleteSurveyProprietorSQL,
-  deleteSurveyFundingSourcesBySurveyIdSQL
-} from '../../../../../queries/survey/survey-delete-queries';
+import { queries } from '../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 import { insertAncillarySpecies, insertFocalSpecies, insertSurveyFundingSource, insertSurveyPermit } from '../create';
-import { postSurveyProprietorSQL } from '../../../../../queries/survey/survey-create-queries';
-import { PostSurveyProprietorData } from '../../../../../models/survey-create';
-import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 
 export interface IUpdateSurvey {
   survey_details: object | null;
@@ -276,7 +261,7 @@ export const getSurveyDetailsData = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<GetUpdateSurveyDetailsData> => {
-  const sqlStatement = getSurveyDetailsForUpdateSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveyDetailsForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey details SQL get statement');
@@ -297,7 +282,7 @@ export const getSurveyProprietorData = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<GetSurveyProprietorData | null> => {
-  const sqlStatement = getSurveyProprietorForUpdateSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey proprietor SQL get statement');
@@ -376,7 +361,12 @@ export const updateSurveyDetailsData = async (
     throw new HTTP400('Failed to parse request body');
   }
 
-  const updateSurveySQLStatement = putSurveyDetailsSQL(projectId, surveyId, putDetailsData, revision_count);
+  const updateSurveySQLStatement = queries.survey.putSurveyDetailsSQL(
+    projectId,
+    surveyId,
+    putDetailsData,
+    revision_count
+  );
 
   if (!updateSurveySQLStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -388,9 +378,9 @@ export const updateSurveyDetailsData = async (
     throw new HTTP409('Failed to update stale survey data');
   }
 
-  const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
-  const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
-  const sqlDeleteSurveyFundingSourcesStatement = deleteSurveyFundingSourcesBySurveyIdSQL(surveyId);
+  const sqlDeleteFocalSpeciesStatement = queries.survey.deleteFocalSpeciesSQL(surveyId);
+  const sqlDeleteAncillarySpeciesStatement = queries.survey.deleteAncillarySpeciesSQL(surveyId);
+  const sqlDeleteSurveyFundingSourcesStatement = queries.survey.deleteSurveyFundingSourcesBySurveyIdSQL(surveyId);
 
   if (
     !sqlDeleteFocalSpeciesStatement ||
@@ -485,17 +475,20 @@ export const updateSurveyProprietorData = async (
     // 2. did have proprietor data; no longer requires proprietor data
     // delete old record
 
-    sqlStatement = deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
+    sqlStatement = queries.survey.deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
   } else if (!wasProprietary && isProprietary) {
     // 3. did not have proprietor data; now requires proprietor data
     // insert new record
 
-    sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(entities.survey_proprietor));
+    sqlStatement = queries.survey.postSurveyProprietorSQL(
+      surveyId,
+      new PostSurveyProprietorData(entities.survey_proprietor)
+    );
   } else {
     // 4. did have proprietor data; updating proprietor data
     // update existing record
 
-    sqlStatement = putSurveyProprietorSQL(surveyId, putProprietorData);
+    sqlStatement = queries.survey.putSurveyProprietorSQL(surveyId, putProprietorData);
   }
 
   if (!sqlStatement) {
@@ -510,7 +503,7 @@ export const updateSurveyProprietorData = async (
 };
 
 export const unassociatePermitFromSurvey = async (survey_id: number, connection: IDBConnection): Promise<void> => {
-  const sqlStatement = unassociatePermitFromSurveySQL(survey_id);
+  const sqlStatement = queries.survey.unassociatePermitFromSurveySQL(survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

@@ -2,13 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400, HTTP500 } from '../../errors/CustomError';
-import {
-  getSurveyOccurrenceSubmissionSQL,
-  insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL,
-  updateSurveyOccurrenceSubmissionSQL
-} from '../../queries/survey/survey-occurrence-queries';
+import { HTTP400, HTTP500 } from '../../errors/custom-error';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
@@ -134,7 +129,7 @@ export function getOccurrenceSubmission(): RequestHandler {
     }
 
     try {
-      const sqlStatement = getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
+      const sqlStatement = queries.survey.getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -464,7 +459,7 @@ export const insertSubmissionStatus = async (
   submissionStatusType: string,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
+  const sqlStatement = queries.survey.insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -497,7 +492,7 @@ export const insertSubmissionMessage = async (
   errorCode: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertOccurrenceSubmissionMessageSQL(
+  const sqlStatement = queries.survey.insertOccurrenceSubmissionMessageSQL(
     submissionStatusId,
     submissionMessageType,
     message,
@@ -530,7 +525,11 @@ export const updateSurveyOccurrenceSubmissionWithOutputKey = async (
   outputKey: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const updateSqlStatement = updateSurveyOccurrenceSubmissionSQL({ submissionId, outputFileName, outputKey });
+  const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({
+    submissionId,
+    outputFileName,
+    outputKey
+  });
 
   if (!updateSqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

@@ -2,18 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/custom-error';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../../../models/survey-create';
 import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
-import {
-  insertSurveyFundingSourceSQL,
-  postAncillarySpeciesSQL,
-  postFocalSpeciesSQL,
-  postNewSurveyPermitSQL,
-  postSurveyProprietorSQL,
-  postSurveySQL
-} from '../../../../queries/survey/survey-create-queries';
-import { putNewSurveyPermitNumberSQL } from '../../../../queries/survey/survey-update-queries';
+import { queries } from '../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
@@ -108,7 +100,7 @@ export function createSurvey(): RequestHandler {
     }
 
     try {
-      const postSurveySQLStatement = postSurveySQL(projectId, sanitizedPostSurveyData);
+      const postSurveySQLStatement = queries.survey.postSurveySQL(projectId, sanitizedPostSurveyData);
 
       if (!postSurveySQLStatement) {
         throw new HTTP400('Failed to build survey SQL insert statement');
@@ -200,7 +192,7 @@ export const insertFocalSpecies = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postFocalSpeciesSQL(focal_species_id, survey_id);
+  const sqlStatement = queries.survey.postFocalSpeciesSQL(focal_species_id, survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -221,7 +213,7 @@ export const insertAncillarySpecies = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postAncillarySpeciesSQL(ancillary_species_id, survey_id);
+  const sqlStatement = queries.survey.postAncillarySpeciesSQL(ancillary_species_id, survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -242,7 +234,7 @@ export const insertSurveyProprietor = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postSurveyProprietorSQL(survey_id, survey_proprietor);
+  const sqlStatement = queries.survey.postSurveyProprietorSQL(survey_id, survey_proprietor);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -268,11 +260,11 @@ export const insertSurveyPermit = async (
   let sqlStatement;
 
   if (!permitType) {
-    sqlStatement = putNewSurveyPermitNumberSQL(surveyId, permitNumber);
+    sqlStatement = queries.survey.putNewSurveyPermitNumberSQL(surveyId, permitNumber);
   } else {
     const systemUserId = connection.systemUserId();
 
-    sqlStatement = postNewSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
+    sqlStatement = queries.survey.postNewSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
   }
 
   if (!sqlStatement) {
@@ -291,7 +283,7 @@ export const insertSurveyFundingSource = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertSurveyFundingSourceSQL(survey_id, funding_source_id);
+  const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(survey_id, funding_source_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement for insertSurveyFundingSource');

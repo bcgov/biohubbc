@@ -4,8 +4,8 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
-import { CustomError } from '../errors/CustomError';
-import * as project_participation_queries from '../queries/project-participation/project-participation-queries';
+import { HTTPError } from '../errors/custom-error';
+import { queries } from '../queries/queries';
 import { getMockDBConnection } from '../__mocks__/db';
 import * as project_participation from './project-participation';
 
@@ -80,7 +80,7 @@ describe('user', () => {
     it('should throw a 400 error when no sql statement produced', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      sinon.stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL').returns(null);
+      sinon.stub(queries.projectParticipation, 'getProjectParticipationBySystemUserSQL').returns(null);
 
       const projectId = 1;
       const systemUserId = 1;
@@ -89,8 +89,8 @@ describe('user', () => {
         await project_participation.getProjectParticipant(projectId, systemUserId, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -98,7 +98,7 @@ describe('user', () => {
       const mockQueryResponse = (null as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
 
-      sinon.stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL').returns(SQL`valid sql`);
+      sinon.stub(queries.projectParticipation, 'getProjectParticipationBySystemUserSQL').returns(SQL`valid sql`);
 
       const projectId = 1;
       const systemUserId = 1;
@@ -107,8 +107,8 @@ describe('user', () => {
         await project_participation.getProjectParticipant(projectId, systemUserId, mockDBConnection);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to get project team member');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to get project team member');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -116,7 +116,7 @@ describe('user', () => {
       const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
 
-      sinon.stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL').returns(SQL`valid sql`);
+      sinon.stub(queries.projectParticipation, 'getProjectParticipationBySystemUserSQL').returns(SQL`valid sql`);
 
       const projectId = 1;
       const systemUserId = 1;
@@ -131,7 +131,7 @@ describe('user', () => {
       const mockQueryResponse = ({ rows: [mockRowObj] } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
 
-      sinon.stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL').returns(SQL`valid sql`);
+      sinon.stub(queries.projectParticipation, 'getProjectParticipationBySystemUserSQL').returns(SQL`valid sql`);
 
       const projectId = 1;
       const systemUserId = 1;
@@ -150,7 +150,7 @@ describe('user', () => {
     it('should throw a 400 error when no sql statement produced', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      sinon.stub(project_participation_queries, 'addProjectRoleByRoleIdSQL').returns(null);
+      sinon.stub(queries.projectParticipation, 'addProjectRoleByRoleIdSQL').returns(null);
 
       const projectId = 1;
       const systemUserId = 1;
@@ -165,8 +165,8 @@ describe('user', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -174,7 +174,7 @@ describe('user', () => {
       const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
 
-      sinon.stub(project_participation_queries, 'addProjectRoleByRoleIdSQL').returns(SQL`valid sql`);
+      sinon.stub(queries.projectParticipation, 'addProjectRoleByRoleIdSQL').returns(SQL`valid sql`);
 
       const projectId = 1;
       const systemUserId = 1;
@@ -189,8 +189,8 @@ describe('user', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Failed to insert project team member');
-        expect((actualError as CustomError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to insert project team member');
+        expect((actualError as HTTPError).status).to.equal(400);
       }
     });
 
@@ -200,7 +200,7 @@ describe('user', () => {
       const mockDBConnection = getMockDBConnection({ query: mockQuery });
 
       const addProjectRoleByRoleIdSQLStub = sinon
-        .stub(project_participation_queries, 'addProjectRoleByRoleIdSQL')
+        .stub(queries.projectParticipation, 'addProjectRoleByRoleIdSQL')
         .returns(SQL`valid sql`);
 
       const projectId = 1;

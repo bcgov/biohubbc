@@ -1,7 +1,7 @@
 import { expect } from 'chai';
 import { Request } from 'express';
 import { describe } from 'mocha';
-import { HTTP401 } from '../../errors/CustomError';
+import { HTTP401 } from '../../errors/custom-error';
 import * as authentication from './authentication';
 
 describe('authenticateRequest', function () {

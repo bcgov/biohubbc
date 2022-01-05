@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as list from './list';
 import * as db from '../../../../../database/db';
-import * as project_queries from '../../../../../queries/public/project-queries';
+import public_queries from '../../../../../queries/public';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import { CustomError } from '../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -50,8 +50,8 @@ describe('getPublicProjectAttachments', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -63,7 +63,7 @@ describe('getPublicProjectAttachments', () => {
       }
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(null);
 
     try {
       const result = list.getPublicProjectAttachments();
@@ -71,8 +71,8 @@ describe('getPublicProjectAttachments', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -117,7 +117,7 @@ describe('getPublicProjectAttachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = list.getPublicProjectAttachments();
 
@@ -172,7 +172,7 @@ describe('getPublicProjectAttachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = list.getPublicProjectAttachments();
 
@@ -199,7 +199,7 @@ describe('getPublicProjectAttachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = list.getPublicProjectAttachments();
 

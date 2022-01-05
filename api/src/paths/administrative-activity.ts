@@ -2,16 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getAPIUserDBConnection, getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400, HTTP500 } from '../errors/CustomError';
+import { HTTP400, HTTP500 } from '../errors/custom-error';
 import {
   administrativeActivityResponseObject,
   hasPendingAdministrativeActivitiesResponseObject
 } from '../openapi/schemas/administrative-activity';
-import {
-  countPendingAdministrativeActivitiesSQL,
-  postAdministrativeActivitySQL,
-  putAdministrativeActivitySQL
-} from '../queries/administrative-activity/administrative-activity-queries';
+import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
@@ -138,7 +134,10 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to identify system user ID');
       }
 
-      const postAdministrativeActivitySQLStatement = postAdministrativeActivitySQL(systemUserId, req?.body);
+      const postAdministrativeActivitySQLStatement = queries.administrativeActivity.postAdministrativeActivitySQL(
+        systemUserId,
+        req?.body
+      );
 
       if (!postAdministrativeActivitySQLStatement) {
         throw new HTTP500('Failed to build SQL insert statement');
@@ -190,7 +189,7 @@ export function getPendingAccessRequestsCount(): RequestHandler {
         throw new HTTP400('Missing required userIdentifier');
       }
 
-      const sqlStatement = countPendingAdministrativeActivitiesSQL(userIdentifier);
+      const sqlStatement = queries.administrativeActivity.countPendingAdministrativeActivitiesSQL(userIdentifier);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -336,7 +335,10 @@ export const updateAdministrativeActivity = async (
   administrativeActivityStatusTypeId: number,
   connection: IDBConnection
 ) => {
-  const sqlStatement = putAdministrativeActivitySQL(administrativeActivityId, administrativeActivityStatusTypeId);
+  const sqlStatement = queries.administrativeActivity.putAdministrativeActivitySQL(
+    administrativeActivityId,
+    administrativeActivityStatusTypeId
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL put statement');

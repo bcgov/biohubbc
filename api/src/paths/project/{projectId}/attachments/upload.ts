@@ -1,16 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
-import {
-  getProjectAttachmentByFileNameSQL,
-  postProjectAttachmentSQL,
-  putProjectAttachmentSQL
-} from '../../../../queries/project/project-attachments-queries';
+import { HTTP400 } from '../../../../errors/custom-error';
+import { queries } from '../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../utils/file-utils';
 import { getLogger } from '../../../../utils/logger';
@@ -162,7 +156,7 @@ export const upsertProjectAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number; key: string }> => {
-  const getSqlStatement = getProjectAttachmentByFileNameSQL(projectId, file.originalname);
+  const getSqlStatement = queries.project.getProjectAttachmentByFileNameSQL(projectId, file.originalname);
 
   if (!getSqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -192,7 +186,13 @@ export const insertProjectAttachment = async (
   key: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = postProjectAttachmentSQL(file.originalname, file.size, attachmentType, projectId, key);
+  const sqlStatement = queries.project.postProjectAttachmentSQL(
+    file.originalname,
+    file.size,
+    attachmentType,
+    projectId,
+    key
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -213,7 +213,7 @@ export const updateProjectAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
+  const sqlStatement = queries.project.putProjectAttachmentSQL(projectId, file.originalname, attachmentType);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

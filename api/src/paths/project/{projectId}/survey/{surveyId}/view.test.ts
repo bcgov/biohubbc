@@ -5,9 +5,8 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../../../../constants/status';
 import * as db from '../../../../../database/db';
-import { CustomError } from '../../../../../errors/CustomError';
-import * as survey_view_queries from '../../../../../queries/survey/survey-view-queries';
-import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
+import { HTTPError } from '../../../../../errors/custom-error';
+import survey_queries from '../../../../../queries/survey';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
 import * as view from './view';
 
@@ -58,18 +57,18 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyBasicDataForViewSQL').returns(null);
-    sinon.stub(survey_view_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
       const requestHandler = view.getSurveyForView();
       await requestHandler(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -102,18 +101,18 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
       const requestHandler = view.getSurveyForView();
       await requestHandler(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to get survey basic data');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get survey basic data');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -128,18 +127,18 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(null);
-    sinon.stub(survey_view_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
       const requestHandler = view.getSurveyForView();
       await requestHandler(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -154,18 +153,18 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveySpeciesDataForViewSQL').returns(null);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
       const requestHandler = view.getSurveyForView();
       await requestHandler(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -198,18 +197,18 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
       const requestHandler = view.getSurveyForView();
       await requestHandler(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to get survey species data');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get survey species data');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -224,18 +223,18 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
 
     try {
       const requestHandler = view.getSurveyForView();
       await requestHandler(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -313,10 +312,10 @@ describe('getSurveyForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     const result = view.getSurveyForView();
 

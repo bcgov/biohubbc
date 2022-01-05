@@ -1,13 +1,9 @@
-'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import {
-  insertSurveyOccurrenceSubmissionSQL,
-  updateSurveyOccurrenceSubmissionSQL
-} from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -192,7 +188,7 @@ export const insertSurveyOccurrenceSubmission = async (
   inputFileName: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveyOccurrenceSubmissionSQL({
+  const insertSqlStatement = queries.survey.insertSurveyOccurrenceSubmissionSQL({
     surveyId,
     source,
     inputFileName
@@ -224,7 +220,7 @@ export const updateSurveyOccurrenceSubmissionWithKey = async (
   inputKey: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const updateSqlStatement = updateSurveyOccurrenceSubmissionSQL({ submissionId, inputKey });
+  const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({ submissionId, inputKey });
 
   if (!updateSqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

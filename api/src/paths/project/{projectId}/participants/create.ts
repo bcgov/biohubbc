@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/custom-error';
 import { ensureProjectParticipant } from '../../../../paths-helpers/project-participation';
 import { ensureSystemUser } from '../../../../paths-helpers/system-user';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';

@@ -1,12 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { deleteProjectFundingSourceSQL } from '../../../../../queries/project/project-delete-queries';
-import { deleteSurveyFundingSourceByProjectFundingSourceIdSQL } from '../../../../../queries/survey/survey-delete-queries';
+import { HTTP400 } from '../../../../../errors/custom-error';
+import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 import { deleteFundingSourceApiDocObject } from '../../../../../utils/shared-api-docs';
@@ -50,10 +47,10 @@ export function deleteFundingSource(): RequestHandler {
     try {
       await connection.open();
 
-      const surveyFundingSourceDeleteStatement = deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
+      const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
         Number(req.params.pfsId)
       );
-      const deleteProjectFundingSourceSQLStatement = deleteProjectFundingSourceSQL(
+      const deleteProjectFundingSourceSQLStatement = queries.project.deleteProjectFundingSourceSQL(
         Number(req.params.projectId),
         Number(req.params.pfsId)
       );

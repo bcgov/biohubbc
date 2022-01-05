@@ -2,7 +2,7 @@ import winston from 'winston';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { HTTP400 } from '../errors/CustomError';
+import { HTTP400 } from '../errors/custom-error';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 
 export const GET: Operation = [

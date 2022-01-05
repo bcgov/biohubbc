@@ -3,11 +3,8 @@ import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import {
-  getSurveyAttachmentS3KeySQL,
-  getSurveyReportAttachmentS3KeySQL
-} from '../../../../../../../queries/survey/survey-attachments-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getS3SignedURL } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
@@ -166,7 +163,7 @@ export const getSurveyAttachmentS3Key = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<string> => {
-  const sqlStatement = getSurveyAttachmentS3KeySQL(surveyId, attachmentId);
+  const sqlStatement = queries.survey.getSurveyAttachmentS3KeySQL(surveyId, attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build attachment S3 key SQLstatement');
@@ -186,7 +183,7 @@ export const getSurveyReportAttachmentS3Key = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<string> => {
-  const sqlStatement = getSurveyReportAttachmentS3KeySQL(surveyId, attachmentId);
+  const sqlStatement = queries.survey.getSurveyReportAttachmentS3KeySQL(surveyId, attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build report attachment S3 key SQLstatement');

@@ -2,14 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
-import {
-  getProjectReportAttachmentSQL,
-  getProjectReportAuthorsSQL
-} from '../../../../../../queries/project/project-attachments-queries';
-import { getLogger } from '../../../../../../utils/logger';
+import { HTTP400 } from '../../../../../../errors/custom-error';
 import { GetReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
+import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
+import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/{attachmentId}/getSignedUrl');
 
@@ -96,12 +93,14 @@ export function getProjectReportMetaData(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectReportAttachmentSQLStatement = getProjectReportAttachmentSQL(
+      const getProjectReportAttachmentSQLStatement = queries.project.getProjectReportAttachmentSQL(
         Number(req.params.projectId),
         Number(req.params.attachmentId)
       );
 
-      const getProjectReportAuthorsSQLStatement = getProjectReportAuthorsSQL(Number(req.params.attachmentId));
+      const getProjectReportAuthorsSQLStatement = queries.project.getProjectReportAuthorsSQL(
+        Number(req.params.attachmentId)
+      );
 
       if (!getProjectReportAttachmentSQLStatement || !getProjectReportAuthorsSQLStatement) {
         throw new HTTP400('Failed to build metadata SQLStatement');

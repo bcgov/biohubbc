@@ -2,11 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getLogger } from '../../utils/logger';
-import { getOccurrencesForViewSQL } from '../../queries/occurrence/occurrence-view-queries';
+import { HTTP400 } from '../../errors/custom-error';
 import { GetOccurrencesViewData } from '../../models/occurrence-view';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/dwc/view-occurrences');
 
@@ -101,7 +101,7 @@ export function getOccurrencesForView(): RequestHandler {
     try {
       await connection.open();
 
-      const sqlStatement = getOccurrencesForViewSQL(Number(req.body.occurrence_submission_id));
+      const sqlStatement = queries.occurrence.getOccurrencesForViewSQL(Number(req.body.occurrence_submission_id));
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get occurrences for view statement');

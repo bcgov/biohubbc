@@ -7,10 +7,10 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 import { ProjectUserObject, UserObject } from '../../models/user';
-import * as projectParticipationQueries from '../../queries/project-participation/project-participation-queries';
-import * as userQueries from '../../queries/users/user-queries';
+import project_participation_queries from '../../queries/project-participation';
+import user_queries from '../../queries/users';
 import { getMockDBConnection } from '../../__mocks__/db';
 import * as authorization from './authorization';
 
@@ -575,8 +575,8 @@ describe('getSystemUserObject', function () {
       await authorization.getSystemUserObject(mockDBConnection);
       expect.fail();
     } catch (error) {
-      expect((error as CustomError).message).to.equal('failed to get system user');
-      expect((error as CustomError).status).to.equal(500);
+      expect((error as HTTPError).message).to.equal('failed to get system user');
+      expect((error as HTTPError).status).to.equal(500);
     }
   });
 
@@ -591,8 +591,8 @@ describe('getSystemUserObject', function () {
       await authorization.getSystemUserObject(mockDBConnection);
       expect.fail();
     } catch (error) {
-      expect((error as CustomError).message).to.equal('system user was null');
-      expect((error as CustomError).status).to.equal(500);
+      expect((error as HTTPError).message).to.equal('system user was null');
+      expect((error as HTTPError).status).to.equal(500);
     }
   });
 
@@ -628,7 +628,7 @@ describe('getSystemUserWithRoles', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = null;
-    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getSystemUserWithRoles(mockDBConnection);
 
@@ -641,7 +641,7 @@ describe('getSystemUserWithRoles', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getSystemUserWithRoles(mockDBConnection);
 
@@ -655,7 +655,7 @@ describe('getSystemUserWithRoles', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getSystemUserWithRoles(mockDBConnection);
 
@@ -680,8 +680,8 @@ describe('getProjectUserObject', function () {
       await authorization.getProjectUserObject(1, mockDBConnection);
       expect.fail();
     } catch (error) {
-      expect((error as CustomError).message).to.equal('failed to get project user');
-      expect((error as CustomError).status).to.equal(500);
+      expect((error as HTTPError).message).to.equal('failed to get project user');
+      expect((error as HTTPError).status).to.equal(500);
     }
   });
 
@@ -696,8 +696,8 @@ describe('getProjectUserObject', function () {
       await authorization.getProjectUserObject(1, mockDBConnection);
       expect.fail();
     } catch (error) {
-      expect((error as CustomError).message).to.equal('project user was null');
-      expect((error as CustomError).status).to.equal(500);
+      expect((error as HTTPError).message).to.equal('project user was null');
+      expect((error as HTTPError).status).to.equal(500);
     }
   });
 
@@ -733,7 +733,9 @@ describe('getProjectUserWithRoles', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = null;
-    sinon.stub(projectParticipationQueries, 'getProjectParticipationBySystemUserSQL').returns(mockUsersByIdSQLResponse);
+    sinon
+      .stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL')
+      .returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getProjectUserWithRoles(1, mockDBConnection);
 
@@ -747,7 +749,9 @@ describe('getProjectUserWithRoles', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-    sinon.stub(projectParticipationQueries, 'getProjectParticipationBySystemUserSQL').returns(mockUsersByIdSQLResponse);
+    sinon
+      .stub(project_participation_queries, 'getProjectParticipationBySystemUserSQL')
+      .returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getProjectUserWithRoles(1, mockDBConnection);
 
@@ -765,7 +769,7 @@ describe('getSystemUserById', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = null;
-    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getSystemUserById(1, mockDBConnection);
 
@@ -778,7 +782,7 @@ describe('getSystemUserById', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getSystemUserById(1, mockDBConnection);
 
@@ -792,7 +796,7 @@ describe('getSystemUserById', function () {
     sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
     const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-    sinon.stub(userQueries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
+    sinon.stub(user_queries, 'getUserByIdSQL').returns(mockUsersByIdSQLResponse);
 
     const result = await authorization.getSystemUserById(1, mockDBConnection);
 

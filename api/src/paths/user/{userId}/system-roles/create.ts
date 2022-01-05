@@ -1,12 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/custom-error';
 import { UserObject } from '../../../../models/user';
-import { postSystemRolesSQL } from '../../../../queries/users/system-role-queries';
+import { queries } from '../../../../queries/queries';
 import { authorizeRequestHandler, getSystemUserById } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
@@ -150,7 +148,7 @@ export function getAddSystemRolesHandler(): RequestHandler {
  * @param {IDBConnection} connection
  */
 export const addSystemRoles = async (userId: number, roleIds: number[], connection: IDBConnection) => {
-  const postSystemRolesSqlStatement = postSystemRolesSQL(userId, roleIds);
+  const postSystemRolesSqlStatement = queries.users.postSystemRolesSQL(userId, roleIds);
 
   if (!postSystemRolesSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

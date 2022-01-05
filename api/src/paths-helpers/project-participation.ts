@@ -1,9 +1,6 @@
 import { IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import {
-  addProjectRoleByRoleIdSQL,
-  getProjectParticipationBySystemUserSQL
-} from '../queries/project-participation/project-participation-queries';
+import { HTTP400 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
 
 /**
  * Gets the project participant, adding them if they do not already exist.
@@ -44,7 +41,7 @@ export const getProjectParticipant = async (
   systemUserId: number,
   connection: IDBConnection
 ): Promise<any> => {
-  const sqlStatement = getProjectParticipationBySystemUserSQL(projectId, systemUserId);
+  const sqlStatement = queries.projectParticipation.getProjectParticipationBySystemUserSQL(projectId, systemUserId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -76,7 +73,11 @@ export const addProjectParticipant = async (
   projectParticipantRoleId: number,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = addProjectRoleByRoleIdSQL(projectId, systemUserId, projectParticipantRoleId);
+  const sqlStatement = queries.projectParticipation.addProjectRoleByRoleIdSQL(
+    projectId,
+    systemUserId,
+    projectParticipantRoleId
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

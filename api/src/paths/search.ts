@@ -1,12 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import { searchResponseObject } from '../openapi/schemas/search';
-import { getLogger } from '../utils/logger';
-import { getSpatialSearchResultsSQL } from '../queries/search-queries';
 import { SYSTEM_ROLE } from '../constants/roles';
+import { getDBConnection } from '../database/db';
+import { HTTP400 } from '../errors/custom-error';
+import { searchResponseObject } from '../openapi/schemas/search';
+import { queries } from '../queries/queries';
 import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
+import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/search');
 
@@ -69,7 +69,7 @@ export function getSearchResults(): RequestHandler {
       const systemUserId = connection.systemUserId();
       const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
 
-      const getSpatialSearchResultsSQLStatement = getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
+      const getSpatialSearchResultsSQLStatement = queries.search.getSpatialSearchResultsSQL(isUserAdmin, systemUserId);
 
       if (!getSpatialSearchResultsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

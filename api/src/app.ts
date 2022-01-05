@@ -3,7 +3,7 @@ import { initialize } from 'express-openapi';
 import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureCustomError } from './errors/CustomError';
+import { ensureHTTPError } from './errors/custom-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
@@ -79,13 +79,15 @@ initialize({
     defaultLog.error({ label: 'errorTransformer', message: 'ajvError', ajvError });
     return ajvError;
   },
-  // If `next` is not inclduded express will silently skip calling the `errorMiddleware` entirely.
+  // If `next` is not included express will silently skip calling the `errorMiddleware` entirely.
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
   errorMiddleware: function (error, req, res, next) {
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
-    const httpError = ensureCustomError(error);
+    const httpError = ensureHTTPError(error);
 
-    res.status(httpError.status).json(httpError);
+    res
+      .status(httpError.status)
+      .json({ name: httpError.name, status: httpError.status, message: httpError.message, errors: httpError.errors });
   }
 });
 

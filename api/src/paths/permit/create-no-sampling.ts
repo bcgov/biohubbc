@@ -2,12 +2,12 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
+import { HTTP400 } from '../../errors/custom-error';
 import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../../models/permit-no-sampling';
 import { PostCoordinatorData } from '../../models/project-create';
 import { PutCoordinatorData } from '../../models/project-update';
 import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../../openapi/schemas/permit-no-sampling';
-import { postPermitNoSamplingSQL } from '../../queries/permit/permit-create-queries';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 
@@ -127,7 +127,7 @@ export const insertNoSamplePermit = async (
 ): Promise<number> => {
   const systemUserId = connection.systemUserId();
 
-  const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
+  const sqlStatement = queries.permit.postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

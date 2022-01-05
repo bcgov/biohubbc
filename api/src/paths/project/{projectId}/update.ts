@@ -2,23 +2,24 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
-import { HTTP400, HTTP409 } from '../../../errors/CustomError';
+import { HTTP400, HTTP409 } from '../../../errors/custom-error';
+import { IPostExistingPermit, IPostPermit, PostPermitData } from '../../../models/project-create';
 import {
   GetCoordinatorData,
   GetIUCNClassificationData,
-  GetPartnershipsData,
+  GetLocationData,
   GetObjectivesData,
+  GetPartnershipsData,
+  GetPermitData,
   GetProjectData,
+  IGetPutIUCN,
   PutCoordinatorData,
-  PutPartnershipsData,
+  PutFundingSource,
+  PutIUCNData,
   PutLocationData,
   PutObjectivesData,
-  PutProjectData,
-  PutIUCNData,
-  IGetPutIUCN,
-  GetLocationData,
-  PutFundingSource,
-  GetPermitData
+  PutPartnershipsData,
+  PutProjectData
 } from '../../../models/project-update';
 import { GetFundingData } from '../../../models/project-view-update';
 import {
@@ -26,41 +27,17 @@ import {
   projectUpdateGetResponseObject,
   projectUpdatePutRequestObject
 } from '../../../openapi/schemas/project';
-import {
-  getCoordinatorByProjectSQL,
-  getIndigenousPartnershipsByProjectSQL,
-  getIUCNActionClassificationByProjectSQL,
-  getObjectivesByProjectSQL,
-  getPermitsByProjectSQL,
-  getProjectByProjectSQL,
-  putProjectFundingSourceSQL,
-  putProjectSQL
-} from '../../../queries/project/project-update-queries';
-import {
-  deleteActivitiesSQL,
-  deleteIUCNSQL,
-  deleteIndigenousPartnershipsSQL,
-  deleteStakeholderPartnershipsSQL,
-  deleteProjectFundingSourceSQL,
-  deletePermitSQL
-} from '../../../queries/project/project-delete-queries';
-import {
-  getStakeholderPartnershipsByProjectSQL,
-  getLocationByProjectSQL,
-  getActivitiesByProjectSQL
-} from '../../../queries/project/project-view-update-queries';
+import { queries } from '../../../queries/queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 import {
+  associateExistingPermitToProject,
   insertClassificationDetail,
   insertIndigenousNation,
-  insertProjectActivity,
-  insertStakeholderPartnership,
   insertPermit,
-  associateExistingPermitToProject
+  insertProjectActivity,
+  insertStakeholderPartnership
 } from '../../project';
-import { IPostExistingPermit, IPostPermit, PostPermitData } from '../../../models/project-create';
-import { deleteSurveyFundingSourceByProjectFundingSourceIdSQL } from '../../../queries/survey/survey-delete-queries';
-import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('paths/project/{projectId}');
 
@@ -273,7 +250,7 @@ function getProjectForUpdate(): RequestHandler {
 }
 
 export const getPermitData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getPermitsByProjectSQL(projectId);
+  const sqlStatement = queries.project.getPermitsByProjectSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -291,7 +268,7 @@ export const getPermitData = async (projectId: number, connection: IDBConnection
 };
 
 export const getLocationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getLocationByProjectSQL(projectId);
+  const sqlStatement = queries.project.getLocationByProjectSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -309,7 +286,7 @@ export const getLocationData = async (projectId: number, connection: IDBConnecti
 };
 
 export const getIUCNClassificationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getIUCNActionClassificationByProjectSQL(projectId);
+  const sqlStatement = queries.project.getIUCNActionClassificationByProjectSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -330,7 +307,7 @@ export const getProjectCoordinatorData = async (
   projectId: number,
   connection: IDBConnection
 ): Promise<GetCoordinatorData> => {
-  const sqlStatement = getCoordinatorByProjectSQL(projectId);
+  const sqlStatement = queries.project.getCoordinatorByProjectSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -348,8 +325,8 @@ export const getProjectCoordinatorData = async (
 };
 
 export const getPartnershipsData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatementIndigenous = getIndigenousPartnershipsByProjectSQL(projectId);
-  const sqlStatementStakeholder = getStakeholderPartnershipsByProjectSQL(projectId);
+  const sqlStatementIndigenous = queries.project.getIndigenousPartnershipsByProjectSQL(projectId);
+  const sqlStatementStakeholder = queries.project.getStakeholderPartnershipsByProjectSQL(projectId);
 
   if (!sqlStatementIndigenous || !sqlStatementStakeholder) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -373,7 +350,7 @@ export const getPartnershipsData = async (projectId: number, connection: IDBConn
 };
 
 export const getObjectivesData = async (projectId: number, connection: IDBConnection): Promise<GetObjectivesData> => {
-  const sqlStatement = getObjectivesByProjectSQL(projectId);
+  const sqlStatement = queries.project.getObjectivesByProjectSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -391,8 +368,8 @@ export const getObjectivesData = async (projectId: number, connection: IDBConnec
 };
 
 export const getProjectData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatementDetails = getProjectByProjectSQL(projectId);
-  const sqlStatementActivities = getActivitiesByProjectSQL(projectId);
+  const sqlStatementDetails = queries.project.getProjectByProjectSQL(projectId);
+  const sqlStatementActivities = queries.project.getActivitiesByProjectSQL(projectId);
 
   if (!sqlStatementDetails || !sqlStatementActivities) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -564,7 +541,7 @@ export const updateProjectPermitData = async (
 
   const putPermitData = new PostPermitData(entities.permit);
 
-  const sqlDeleteStatement = deletePermitSQL(projectId);
+  const sqlDeleteStatement = queries.project.deletePermitSQL(projectId);
 
   if (!sqlDeleteStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
@@ -597,7 +574,7 @@ export const updateProjectIUCNData = async (
 ): Promise<void> => {
   const putIUCNData = (entities?.iucn && new PutIUCNData(entities.iucn)) || null;
 
-  const sqlDeleteStatement = deleteIUCNSQL(projectId);
+  const sqlDeleteStatement = queries.project.deleteIUCNSQL(projectId);
 
   if (!sqlDeleteStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
@@ -624,8 +601,8 @@ export const updateProjectPartnershipsData = async (
 ): Promise<void> => {
   const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
 
-  const sqlDeleteIndigenousPartnershipsStatement = deleteIndigenousPartnershipsSQL(projectId);
-  const sqlDeleteStakeholderPartnershipsStatement = deleteStakeholderPartnershipsSQL(projectId);
+  const sqlDeleteIndigenousPartnershipsStatement = queries.project.deleteIndigenousPartnershipsSQL(projectId);
+  const sqlDeleteStakeholderPartnershipsStatement = queries.project.deleteStakeholderPartnershipsSQL(projectId);
 
   if (!sqlDeleteIndigenousPartnershipsStatement || !sqlDeleteStakeholderPartnershipsStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
@@ -689,7 +666,7 @@ export const updateProjectData = async (
     throw new HTTP400('Failed to parse request body');
   }
 
-  const sqlUpdateProject = putProjectSQL(
+  const sqlUpdateProject = queries.project.putProjectSQL(
     projectId,
     putProjectData,
     putLocationData,
@@ -710,7 +687,7 @@ export const updateProjectData = async (
     throw new HTTP409('Failed to update stale project data');
   }
 
-  const sqlDeleteActivities = deleteActivitiesSQL(projectId);
+  const sqlDeleteActivities = queries.project.deleteActivitiesSQL(projectId);
 
   if (!sqlDeleteActivities) {
     throw new HTTP400('Failed to build SQL delete statement');
@@ -737,8 +714,13 @@ export const updateProjectFundingData = async (
 ): Promise<void> => {
   const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
 
-  const surveyFundingSourceDeleteStatement = deleteSurveyFundingSourceByProjectFundingSourceIdSQL(putFundingSource?.id);
-  const projectFundingSourceDeleteStatement = deleteProjectFundingSourceSQL(projectId, putFundingSource?.id);
+  const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
+    putFundingSource?.id
+  );
+  const projectFundingSourceDeleteStatement = queries.project.deleteProjectFundingSourceSQL(
+    projectId,
+    putFundingSource?.id
+  );
 
   if (!projectFundingSourceDeleteStatement || !surveyFundingSourceDeleteStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
@@ -762,7 +744,7 @@ export const updateProjectFundingData = async (
     throw new HTTP409('Failed to delete project funding source');
   }
 
-  const sqlInsertStatement = putProjectFundingSourceSQL(putFundingSource, projectId);
+  const sqlInsertStatement = queries.project.putProjectFundingSourceSQL(putFundingSource, projectId);
 
   if (!sqlInsertStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

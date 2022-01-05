@@ -4,11 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as validate from './validate';
 import * as media_utils from '../../utils/media/media-utils';
-import * as survey_occurrence_queries from '../../queries/survey/survey-occurrence-queries';
+import survey_queries from '../../queries/survey';
 import { ArchiveFile } from '../../utils/media/media-file';
 import { getMockDBConnection } from '../../__mocks__/db';
 import SQL from 'sql-template-strings';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -61,15 +61,15 @@ describe('getTemplateMethodologySpeciesRecord', () => {
   const dbConnectionObj = getMockDBConnection();
 
   it('should throw 400 error when failed to build getTemplateMethodologySpeciesRecordSQL statement', async () => {
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(null);
+    sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(null);
 
     try {
       await validate.getTemplateMethodologySpeciesRecord(1234, 1, 1, { ...dbConnectionObj, systemUserId: () => 20 });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
         'Failed to build SQL get template methodology species record sql statement'
       );
     }
@@ -82,7 +82,7 @@ describe('getTemplateMethodologySpeciesRecord', () => {
       rows: [null]
     });
 
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
 
     try {
       await validate.getTemplateMethodologySpeciesRecord(1234, 1, 1, {
@@ -91,8 +91,8 @@ describe('getTemplateMethodologySpeciesRecord', () => {
       });
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to query template methodology species table');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to query template methodology species table');
     }
   });
 
@@ -107,7 +107,7 @@ describe('getTemplateMethodologySpeciesRecord', () => {
       ]
     });
 
-    sinon.stub(survey_occurrence_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
 
     const result = await validate.getTemplateMethodologySpeciesRecord(1234, 1, 1, {
       ...dbConnectionObj,

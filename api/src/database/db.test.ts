@@ -3,8 +3,8 @@ import { describe } from 'mocha';
 import * as pg from 'pg';
 import Sinon from 'sinon';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
-import { CustomError } from '../errors/CustomError';
-import { setSystemUserContextSQL } from '../queries/user-context-queries';
+import { HTTPError } from '../errors/custom-error';
+import { setSystemUserContextSQL } from '../queries/database/user-context-queries';
 import * as db from './db';
 import { getAPIUserDBConnection, getDBConnection, getDBPool, IDBConnection, initDBPool } from './db';
 
@@ -37,7 +37,7 @@ describe('db', () => {
 
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal('Keycloak token is undefined');
+        expect((actualError as HTTPError).message).to.equal('Keycloak token is undefined');
       }
     });
 
@@ -119,7 +119,7 @@ describe('db', () => {
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error;
+              expectedError = error as Error;
             }
 
             expect(expectedError.message).to.equal('DBPool is not initialized');
@@ -198,7 +198,7 @@ describe('db', () => {
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error;
+              expectedError = error as Error;
             }
 
             expect(expectedError.message).to.equal('DBConnection is not open');
@@ -229,7 +229,7 @@ describe('db', () => {
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error;
+              expectedError = error as Error;
             }
 
             expect(expectedError.message).to.equal('DBConnection is not open');
@@ -270,7 +270,7 @@ describe('db', () => {
 
               expect.fail('Expected an error to be thrown');
             } catch (error) {
-              expectedError = error;
+              expectedError = error as Error;
             }
 
             expect(expectedError.message).to.equal('DBConnection is not open');

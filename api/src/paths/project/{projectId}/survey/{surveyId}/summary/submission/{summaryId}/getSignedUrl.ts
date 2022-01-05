@@ -1,15 +1,13 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { HTTP400 } from '../../../../../../../../errors/CustomError';
-import { getLogger } from '../../../../../../../../utils/logger';
-import { getDBConnection } from '../../../../../../../../database/db';
-import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
-import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
-import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-summary-queries';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../utils/logger';
+import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/{summaryId}/getSignedUrl');
 
@@ -80,7 +78,9 @@ export function getSingleSummarySubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySummarySubmissionSQLStatement = getSurveySummarySubmissionSQL(Number(req.params.summaryId));
+      const getSurveySummarySubmissionSQLStatement = queries.survey.getSurveySummarySubmissionSQL(
+        Number(req.params.summaryId)
+      );
 
       if (!getSurveySummarySubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

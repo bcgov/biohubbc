@@ -5,10 +5,10 @@ import sinonChai from 'sinon-chai';
 import * as update from './update';
 import * as db from '../../../database/db';
 import { IUpdateProject } from './update';
-import * as project_delete_queries from '../../../queries/project/project-delete-queries';
+import project_queries from '../../../queries/project';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../__mocks__/db';
-import { CustomError } from '../../../errors/CustomError';
+import { HTTPError } from '../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -52,8 +52,8 @@ describe('updateProjectPermitData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing request body entity `permit`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing request body entity `permit`');
     }
   });
 
@@ -65,15 +65,15 @@ describe('updateProjectPermitData', () => {
       }
     });
 
-    sinon.stub(project_delete_queries, 'deletePermitSQL').returns(null);
+    sinon.stub(project_queries, 'deletePermitSQL').returns(null);
 
     try {
       await update.updateProjectPermitData(projectId, entities, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -90,15 +90,15 @@ describe('updateProjectPermitData', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_delete_queries, 'deletePermitSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'deletePermitSQL').returns(SQL`something`);
 
     try {
       await update.updateProjectPermitData(projectId, entities, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to delete project permit data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to delete project permit data');
     }
   });
 });
