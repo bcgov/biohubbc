@@ -85,7 +85,9 @@ initialize({
     // Ensure all errors (intentionally thrown or not) are in the same format as specified by the schema
     const httpError = ensureHTTPError(error);
 
-    res.status(httpError.status).json(httpError);
+    res
+      .status(httpError.status)
+      .json({ name: httpError.name, status: httpError.status, message: httpError.message, errors: httpError.errors });
   }
 });
 

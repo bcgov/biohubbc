@@ -1,69 +1,158 @@
-export interface IApiError {
-  name: string;
-  message: string;
-  errors?: (string | object)[];
+export enum ApiErrorType {
+  BUILD_SQL = 'Error constructing SQL query',
+  EXECUTE_SQL = 'Error executing SQL query',
+  UNKNOWN = 'Unknown Error'
 }
 
-export class ApiError implements IApiError, Error {
-  name: string;
-  message: string;
+export class ApiError extends Error {
   errors?: (string | object)[];
 
-  constructor(name: string, message: string, errors?: (string | object)[]) {
+  constructor(name: ApiErrorType, message: string, errors?: (string | object)[], stack?: string) {
+    super(message);
+
     this.name = name;
     this.message = message;
     this.errors = errors || [];
+    this.stack = stack;
+
+    if (!stack) {
+      Error.captureStackTrace(this);
+    }
   }
 }
 
-export interface IHTTPError {
-  name: string;
-  status: number;
-  message: string;
-  errors?: (string | object)[];
+/**
+ * API encountered an unknown/unexpected error.
+ *
+ * @export
+ * @class ApiUnknownError
+ * @extends {ApiError}
+ */
+export class ApiUnknownError extends ApiError {
+  constructor(message: string, errors?: (string | object)[]) {
+    super(ApiErrorType.UNKNOWN, message, errors);
+  }
 }
 
-export class HTTPError implements IApiError, IHTTPError, Error {
-  name: string;
+/**
+ * API failed to build SQL a query.
+ *
+ * @export
+ * @class ApiBuildSQLError
+ * @extends {ApiError}
+ */
+export class ApiBuildSQLError extends ApiError {
+  constructor(message: string, errors?: (string | object)[]) {
+    super(ApiErrorType.BUILD_SQL, message, errors);
+  }
+}
+
+/**
+ * API executed a query against the database, but the response was missing data, or indicated the query failed.
+ *
+ * Examples:
+ * - A query to select rows that are expected to exist returns with `rows=[]`.
+ * - A query to insert a new record returns with `rowCount=0` indicating no new row was added.
+ *
+ * @export
+ * @class ApiExecuteSQLError
+ * @extends {ApiError}
+ */
+export class ApiExecuteSQLError extends ApiError {
+  constructor(message: string, errors?: (string | object)[]) {
+    super(ApiErrorType.UNKNOWN, message, errors);
+  }
+}
+
+export enum HTTPErrorType {
+  BAD_REQUEST = 'Bad Request',
+  UNAUTHORIZE = 'Unauthorized',
+  FORBIDDEN = 'Forbidden',
+  CONFLICT = 'Conflict',
+  INTERNAL_SERVER_ERROR = 'Internal Server Error'
+}
+
+export class HTTPError extends Error {
   status: number;
-  message: string;
   errors?: (string | object)[];
 
-  constructor(name: string, status: number, message: string, errors?: (string | object)[]) {
+  constructor(name: HTTPErrorType, status: number, message: string, errors?: (string | object)[], stack?: string) {
+    super(message);
+
     this.name = name;
     this.status = status;
     this.message = message;
     this.errors = errors || [];
+    this.stack = stack;
+
+    if (!stack) {
+      Error.captureStackTrace(this);
+    }
   }
 }
 
+/**
+ * HTTP `400 Bad Request` error.
+ *
+ * @export
+ * @class HTTP400
+ * @extends {HTTPError}
+ */
 export class HTTP400 extends HTTPError {
   constructor(message: string, errors?: (string | object)[]) {
-    super('Bad Request', 400, message, errors);
+    super(HTTPErrorType.BAD_REQUEST, 400, message, errors);
   }
 }
 
+/**
+ * HTTP `401 Unauthorized` error.
+ *
+ * @export
+ * @class HTTP401
+ * @extends {HTTPError}
+ */
 export class HTTP401 extends HTTPError {
   constructor(message: string, errors?: (string | object)[]) {
-    super('Unauthorized', 401, message, errors);
+    super(HTTPErrorType.UNAUTHORIZE, 401, message, errors);
   }
 }
 
+/**
+ * HTTP `403 Forbidden` error.
+ *
+ * @export
+ * @class HTTP403
+ * @extends {HTTPError}
+ */
 export class HTTP403 extends HTTPError {
   constructor(message: string, errors?: (string | object)[]) {
-    super('Forbidden', 403, message, errors);
+    super(HTTPErrorType.FORBIDDEN, 403, message, errors);
   }
 }
 
+/**
+ * HTTP `409 Conflict` error.
+ *
+ * @export
+ * @class HTTP409
+ * @extends {HTTPError}
+ */
 export class HTTP409 extends HTTPError {
   constructor(message: string, errors?: (string | object)[]) {
-    super('Conflict', 409, message, errors);
+    super(HTTPErrorType.CONFLICT, 409, message, errors);
   }
 }
 
+/**
+ * HTTP `500 Internal Server Error` error.
+ *
+ * @export
+ * @class HTTP500
+ * @extends {HTTPError}
+ */
 export class HTTP500 extends HTTPError {
   constructor(message: string, errors?: (string | object)[]) {
-    super('Internal Server Error', 500, message, errors);
+    super(HTTPErrorType.INTERNAL_SERVER_ERROR, 500, message, errors);
   }
 }
 
@@ -83,7 +172,7 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
   }
 
   if (error instanceof ApiError) {
-    return new HTTP500(error.message, error.errors);
+    return new HTTPError(HTTPErrorType.INTERNAL_SERVER_ERROR, 500, error.message, error.errors, error.stack);
   }
 
   if (error instanceof Error) {

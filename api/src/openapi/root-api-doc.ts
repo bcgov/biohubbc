@@ -80,6 +80,7 @@ export const rootAPIDoc = {
     schemas: {
       Error: {
         description: 'Error response object',
+        required: ['name', 'status', 'message'],
         properties: {
           name: {
             type: 'string'
