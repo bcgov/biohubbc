@@ -117,8 +117,6 @@ describe('prepXLSX', () => {
 
     sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
 
-    //const xlsxCsv = (null as unknown) as XLSXCSV;
-
     const requestHandler = validate.prepXLSX();
     await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
 

@@ -49,7 +49,8 @@ POST.apiDoc = {
               enum: ['idir', 'bceid']
             },
             roleId: {
-              type: 'number'
+              type: 'number',
+              minimum: 1
             }
           }
         }

@@ -13,6 +13,7 @@ import {
   GetProjectData
 } from '../../../models/project-view';
 import { GetFundingData } from '../../../models/project-view-update';
+import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
@@ -60,6 +61,17 @@ GET.apiDoc = {
           schema: {
             title: 'Project get response object, for view purposes',
             type: 'object',
+            required: [
+              'id',
+              'project',
+              'permit',
+              'coordinator',
+              'objectives',
+              'location',
+              'iucn',
+              'funding',
+              'partnerships'
+            ],
             properties: {
               id: {
                 description: 'Project id',
@@ -68,6 +80,16 @@ GET.apiDoc = {
               project: {
                 description: 'Basic project metadata',
                 type: 'object',
+                required: [
+                  'project_name',
+                  'project_type',
+                  'project_activities',
+                  'start_date',
+                  'end_date',
+                  'comments',
+                  'completion_status',
+                  'publish_date'
+                ],
                 properties: {
                   project_name: {
                     type: 'string'
@@ -83,10 +105,12 @@ GET.apiDoc = {
                   },
                   start_date: {
                     type: 'string',
+                    format: 'date',
                     description: 'ISO 8601 date string'
                   },
                   end_date: {
                     type: 'string',
+                    format: 'date',
                     description: 'ISO 8601 date string'
                   },
                   comments: {
@@ -99,21 +123,28 @@ GET.apiDoc = {
                   },
                   publish_date: {
                     description: 'Status of the project being active/completed',
+                    format: 'date',
                     type: 'string'
                   }
                 }
               },
-              permits: {
-                type: 'array',
-                items: {
-                  title: 'Project permit',
-                  type: 'object',
-                  properties: {
-                    permit_number: {
-                      type: 'string'
-                    },
-                    permit_type: {
-                      type: 'string'
+              permit: {
+                type: 'object',
+                required: ['permits'],
+                properties: {
+                  permits: {
+                    type: 'array',
+                    items: {
+                      title: 'Project permit',
+                      type: 'object',
+                      properties: {
+                        permit_number: {
+                          type: 'string'
+                        },
+                        permit_type: {
+                          type: 'string'
+                        }
+                      }
                     }
                   }
                 }
@@ -121,6 +152,7 @@ GET.apiDoc = {
               coordinator: {
                 title: 'Project coordinator',
                 type: 'object',
+                required: ['first_name', 'last_name', 'email_address', 'coordinator_agency', 'share_contact_details'],
                 properties: {
                   first_name: {
                     type: 'string'
@@ -143,6 +175,7 @@ GET.apiDoc = {
               objectives: {
                 description: 'The project objectives and caveats',
                 type: 'object',
+                required: ['objectives', 'caveats'],
                 properties: {
                   objectives: {
                     type: 'string'
@@ -155,6 +188,7 @@ GET.apiDoc = {
               location: {
                 description: 'The project location object',
                 type: 'object',
+                required: ['location_description', 'geometry'],
                 properties: {
                   location_description: {
                     type: 'string'
@@ -162,16 +196,7 @@ GET.apiDoc = {
                   geometry: {
                     type: 'array',
                     items: {
-                      type: 'object',
-                      properties: {
-                        id: {
-                          type: 'string'
-                        },
-                        type: {
-                          type: 'string'
-                          //TODO: figure out how to document a geometry feature
-                        }
-                      }
+                      ...(geoJsonFeature as object)
                     }
                   }
                 }
@@ -179,6 +204,7 @@ GET.apiDoc = {
               iucn: {
                 description: 'The International Union for Conservation of Nature number',
                 type: 'object',
+                required: ['classificationDetails'],
                 properties: {
                   classificationDetails: {
                     type: 'array',
@@ -202,6 +228,7 @@ GET.apiDoc = {
               funding: {
                 description: 'The project funding details',
                 type: 'object',
+                required: ['fundingSources'],
                 properties: {
                   fundingSources: {
                     type: 'array',
@@ -228,10 +255,12 @@ GET.apiDoc = {
                         },
                         start_date: {
                           type: 'string',
+                          format: 'date',
                           description: 'ISO 8601 date string'
                         },
                         end_date: {
                           type: 'string',
+                          format: 'date',
                           description: 'ISO 8601 date string'
                         },
                         agency_project_id: {
@@ -248,6 +277,7 @@ GET.apiDoc = {
               partnerships: {
                 description: 'The project partners',
                 type: 'object',
+                required: ['indigenous_partnerships', 'stakeholder_partnerships'],
                 properties: {
                   indigenous_partnerships: {
                     type: 'array',
