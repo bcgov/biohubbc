@@ -4,8 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
-import { getMockDBConnection } from '../../../../__mocks__/db';
 import { HTTPError } from '../../../../errors/custom-error';
+import { getMockDBConnection } from '../../../../__mocks__/db';
+import * as create_project_participants from './create';
+import user_queries from '../../../../queries/users';
 
 chai.use(sinonChai);
 
@@ -75,8 +77,8 @@ describe('creates a list of project participants', () => {
       await result({ ...sampleReq }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to get system user');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get system user');
     }
   });
 });
