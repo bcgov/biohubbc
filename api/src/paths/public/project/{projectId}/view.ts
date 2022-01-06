@@ -21,7 +21,6 @@ import {
 } from '../../../../models/project-view';
 import { GetPublicProjectData, GetPublicCoordinatorData } from '../../../../models/public/project';
 import { GetFundingData } from '../../../../models/project-view-update';
-import { projectViewGetResponseObject } from '../../../../openapi/schemas/project';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/public/project/{projectId}/view');
@@ -46,9 +45,7 @@ GET.apiDoc = {
       description: 'Project with matching projectId.',
       content: {
         'application/json': {
-          schema: {
-            ...(projectViewGetResponseObject as object)
-          }
+          schema: {}
         }
       }
     },

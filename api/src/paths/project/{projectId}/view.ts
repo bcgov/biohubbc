@@ -13,7 +13,6 @@ import {
   GetPermitData
 } from '../../../models/project-view';
 import { GetFundingData } from '../../../models/project-view-update';
-import { projectViewGetResponseObject } from '../../../openapi/schemas/project';
 import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
@@ -70,7 +69,195 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(projectViewGetResponseObject as object)
+            title: 'Project get response object, for view purposes',
+            type: 'object',
+            properties: {
+              id: {
+                description: 'Project id',
+                type: 'number'
+              },
+              project: {
+                description: 'Basic project metadata',
+                type: 'object',
+                properties: {
+                  project_name: {
+                    type: 'string'
+                  },
+                  project_type: {
+                    type: 'number'
+                  },
+                  project_activities: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  start_date: {
+                    type: 'string',
+                    description: 'ISO 8601 date string'
+                  },
+                  end_date: {
+                    type: 'string',
+                    description: 'ISO 8601 date string'
+                  },
+                  comments: {
+                    type: 'string',
+                    description: 'Comments'
+                  },
+                  completion_status: {
+                    description: 'Status of the project being active/completed',
+                    type: 'string'
+                  },
+                  publish_date: {
+                    description: 'Status of the project being active/completed',
+                    type: 'string'
+                  }
+                }
+              },
+              permits: {
+                type: 'array',
+                items: {
+                  title: 'Project permit',
+                  type: 'object',
+                  properties: {
+                    permit_number: {
+                      type: 'string'
+                    },
+                    permit_type: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              coordinator: {
+                title: 'Project coordinator',
+                type: 'object',
+                properties: {
+                  first_name: {
+                    type: 'string'
+                  },
+                  last_name: {
+                    type: 'string'
+                  },
+                  email_address: {
+                    type: 'string'
+                  },
+                  coordinator_agency: {
+                    type: 'string'
+                  },
+                  share_contact_details: {
+                    type: 'string',
+                    enum: ['true', 'false']
+                  }
+                }
+              },
+              objectives: {
+                description: 'The project objectives and caveats',
+                type: 'object',
+                properties: {
+                  objectives: {
+                    type: 'string'
+                  },
+                  caveats: {
+                    type: 'string'
+                  }
+                }
+              },
+              location: {
+                description: 'The project location object',
+                type: 'object',
+                properties: {
+                  //TODO: figure out how to document a geometry feature
+                }
+              },
+              iucn: {
+                description: 'The International Union for Conservation of Nature number',
+                type: 'object',
+                properties: {
+                  classificationDetails: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        classification: {
+                          type: 'string'
+                        },
+                        subClassification1: {
+                          type: 'string'
+                        },
+                        subClassification2: {
+                          type: 'string'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              funding: {
+                description: 'The project funding details',
+                type: 'object',
+                properties: {
+                  fundingSources: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'number'
+                        },
+                        agency_id: {
+                          type: 'number'
+                        },
+                        investment_action_category: {
+                          type: 'number'
+                        },
+                        investment_action_category_name: {
+                          type: 'string'
+                        },
+                        agency_name: {
+                          type: 'string'
+                        },
+                        funding_amount: {
+                          type: 'number'
+                        },
+                        start_date: {
+                          type: 'string',
+                          description: 'ISO 8601 date string'
+                        },
+                        end_date: {
+                          type: 'string',
+                          description: 'ISO 8601 date string'
+                        },
+                        agency_project_id: {
+                          type: 'string'
+                        },
+                        revision_count: {
+                          type: 'number'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              partnerships: {
+                description: 'The project partners',
+                type: 'object',
+                properties: {
+                  indigenous_partnerships: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  stakeholder_partnerships: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
