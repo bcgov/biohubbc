@@ -167,7 +167,24 @@ GET.apiDoc = {
                 description: 'The project location object',
                 type: 'object',
                 properties: {
-                  //TODO: figure out how to document a geometry feature
+                  location_description: {
+                    type: 'string'
+                  },
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'string'
+                        },
+                        type: {
+                          type: 'string'
+                          //TODO: figure out how to document a geometry feature
+                        }
+                      }
+                    }
+                  }
                 }
               },
               iucn: {
