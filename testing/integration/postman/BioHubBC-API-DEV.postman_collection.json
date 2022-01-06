@@ -137,7 +137,7 @@
 			"name": "project",
 			"item": [
 				{
-					"name": "3",
+					"name": "1",
 					"item": [
 						{
 							"name": "attachments",
@@ -602,7 +602,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": ""
+									"raw": "{{BASEURL}}/project/1/view",
+									"host": [
+										"{{BASEURL}}"
+									],
+									"path": [
+										"project",
+										"1",
+										"view"
+									]
 								}
 							},
 							"response": []
@@ -758,9 +766,16 @@
 						},
 						{
 							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
 							"request": {
 								"method": "GET",
 								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
 								"url": {
 									"raw": "{{BASEURL}}/user/{userId}/get",
 									"host": [
@@ -846,6 +861,41 @@
 						}
 					},
 					"response": []
+				}
+			]
+		},
+		{
+			"name": "public",
+			"item": [
+				{
+					"name": "project",
+					"item": [
+						{
+							"name": "1",
+							"item": [
+								{
+									"name": "view",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASEURL}}/public/project/1/view",
+											"host": [
+												"{{BASEURL}}"
+											],
+											"path": [
+												"public",
+												"project",
+												"1",
+												"view"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
 				}
 			]
 		},

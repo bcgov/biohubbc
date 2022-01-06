@@ -46,7 +46,7 @@ GET.apiDoc = {
                 type: 'string'
               },
               record_end_date: {
-                description: 'Determines is the user record has expired',
+                description: 'Determines if the user record has expired',
                 type: 'string',
                 format: 'date'
               },

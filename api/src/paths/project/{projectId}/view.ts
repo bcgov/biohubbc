@@ -106,12 +106,12 @@ GET.apiDoc = {
                   start_date: {
                     type: 'string',
                     format: 'date',
-                    description: 'ISO 8601 date string'
+                    description: 'ISO 8601 date string for the project start date'
                   },
                   end_date: {
                     type: 'string',
                     format: 'date',
-                    description: 'ISO 8601 date string'
+                    description: 'ISO 8601 date string for the project end date'
                   },
                   comments: {
                     type: 'string',
@@ -122,7 +122,7 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   publish_date: {
-                    description: 'Status of the project being active/completed',
+                    description: 'Status of the project being published/unpublished',
                     format: 'date',
                     type: 'string'
                   }
@@ -256,12 +256,12 @@ GET.apiDoc = {
                         start_date: {
                           type: 'string',
                           format: 'date',
-                          description: 'ISO 8601 date string'
+                          description: 'ISO 8601 date string for the funding start date'
                         },
                         end_date: {
                           type: 'string',
                           format: 'date',
-                          description: 'ISO 8601 date string'
+                          description: 'ISO 8601 date string for the funding end_date'
                         },
                         agency_project_id: {
                           type: 'string'
