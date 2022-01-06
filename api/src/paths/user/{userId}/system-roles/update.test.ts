@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
-import { CustomError } from '../../../../errors/CustomError';
-import * as system_role_queries from '../../../../queries/users/system-role-queries';
-import * as user_queries from '../../../../queries/users/user-queries';
+import { HTTPError } from '../../../../errors/custom-error';
+import system_role_queries from '../../../../queries/users';
+import user_queries from '../../../../queries/users';
 import * as authorization from '../../../../request-handlers/security/authorization';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as system_roles from './update';
@@ -39,8 +39,8 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param: userId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param: userId');
     }
   });
 
@@ -64,8 +64,8 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body param: roles');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: roles');
     }
   });
 
@@ -91,8 +91,8 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to get system user');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get system user');
     }
   });
 
@@ -131,8 +131,8 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -170,8 +170,8 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -213,8 +213,8 @@ describe('updateSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert user roles');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert user roles');
     }
   });
 

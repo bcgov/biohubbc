@@ -4,11 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as surveys from './surveys';
 import * as db from '../../../database/db';
-import * as survey_view_queries from '../../../queries/survey/survey-view-queries';
+import survey_queries from '../../../queries/survey';
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../../constants/status';
 import { getMockDBConnection } from '../../../__mocks__/db';
-import { CustomError } from '../../../errors/CustomError';
+import { HTTPError } from '../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -56,8 +56,8 @@ describe('getSurveyList', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -69,7 +69,7 @@ describe('getSurveyList', () => {
       }
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyListSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyListSQL').returns(null);
 
     try {
       const result = surveys.getSurveyList();
@@ -77,8 +77,8 @@ describe('getSurveyList', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -104,7 +104,7 @@ describe('getSurveyList', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyListSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyListSQL').returns(SQL`some query`);
 
     const result = surveys.getSurveyList();
 
@@ -145,7 +145,7 @@ describe('getSurveyList', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyListSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyListSQL').returns(SQL`some query`);
 
     const result = surveys.getSurveyList();
 
@@ -177,7 +177,7 @@ describe('getSurveyList', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_queries, 'getSurveyListSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyListSQL').returns(SQL`some query`);
 
     const result = surveys.getSurveyList();
 

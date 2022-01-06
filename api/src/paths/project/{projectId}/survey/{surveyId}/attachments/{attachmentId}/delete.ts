@@ -1,21 +1,15 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { unsecureAttachmentRecordSQL } from '../../../../../../../queries/security/security-queries';
+import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import {
-  deleteSurveyAttachmentSQL,
-  deleteSurveyReportAttachmentSQL
-} from '../../../../../../../queries/survey/survey-attachments-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../utils/shared-api-docs';
-import { ATTACHMENT_TYPE } from '../../../../../../../constants/attachments';
 import { deleteSurveyReportAttachmentAuthors } from '../report/upload';
-import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
-import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/delete');
 
@@ -135,8 +129,8 @@ const unsecureSurveyAttachmentRecord = async (
 ): Promise<void> => {
   const unsecureRecordSQLStatement =
     attachmentType === 'Report'
-      ? unsecureAttachmentRecordSQL('survey_report_attachment', securityToken)
-      : unsecureAttachmentRecordSQL('survey_attachment', securityToken);
+      ? queries.security.unsecureAttachmentRecordSQL('survey_report_attachment', securityToken)
+      : queries.security.unsecureAttachmentRecordSQL('survey_attachment', securityToken);
 
   if (!unsecureRecordSQLStatement) {
     throw new HTTP400('Failed to build SQL unsecure record statement');
@@ -156,7 +150,7 @@ export const deleteSurveyAttachment = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<{ key: string }> => {
-  const sqlStatement = deleteSurveyAttachmentSQL(attachmentId);
+  const sqlStatement = queries.survey.deleteSurveyAttachmentSQL(attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete project attachment statement');
@@ -175,7 +169,7 @@ export const deleteSurveyReportAttachment = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<{ key: string }> => {
-  const sqlStatement = deleteSurveyReportAttachmentSQL(attachmentId);
+  const sqlStatement = queries.survey.deleteSurveyReportAttachmentSQL(attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete project report attachment statement');

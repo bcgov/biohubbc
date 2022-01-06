@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
+import { HTTP400 } from '../errors/custom-error';
 import {
   IPostExistingPermit,
   IPostIUCN,
@@ -11,17 +11,7 @@ import {
   PostProjectObject
 } from '../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../openapi/schemas/project';
-import { postProjectPermitSQL } from '../queries/permit/permit-create-queries';
-import { associatePermitToProjectSQL } from '../queries/permit/permit-update-queries';
-import { addProjectRoleByRoleNameSQL } from '../queries/project-participation/project-participation-queries';
-import {
-  postProjectActivitySQL,
-  postProjectFundingSourceSQL,
-  postProjectIndigenousNationSQL,
-  postProjectIUCNSQL,
-  postProjectSQL,
-  postProjectStakeholderPartnershipSQL
-} from '../queries/project/project-create-queries';
+import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
@@ -100,7 +90,7 @@ export function createProject(): RequestHandler {
     const sanitizedProjectPostData = new PostProjectObject(req.body);
 
     try {
-      const postProjectSQLStatement = postProjectSQL({
+      const postProjectSQLStatement = queries.project.postProjectSQL({
         ...sanitizedProjectPostData.project,
         ...sanitizedProjectPostData.location,
         ...sanitizedProjectPostData.objectives,
@@ -222,7 +212,7 @@ export const insertFundingSource = async (
   project_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectFundingSourceSQL(fundingSource, project_id);
+  const sqlStatement = queries.project.postProjectFundingSourceSQL(fundingSource, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -244,7 +234,7 @@ export const insertIndigenousNation = async (
   project_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectIndigenousNationSQL(indigenousNationId, project_id);
+  const sqlStatement = queries.project.postProjectIndigenousNationSQL(indigenousNationId, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -266,7 +256,7 @@ export const insertStakeholderPartnership = async (
   project_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectStakeholderPartnershipSQL(stakeholderPartner, project_id);
+  const sqlStatement = queries.project.postProjectStakeholderPartnershipSQL(stakeholderPartner, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -295,7 +285,7 @@ export const insertPermit = async (
     throw new HTTP400('Failed to identify system user ID');
   }
 
-  const sqlStatement = postProjectPermitSQL(permitNumber, permitType, projectId, systemUserId);
+  const sqlStatement = queries.permit.postProjectPermitSQL(permitNumber, permitType, projectId, systemUserId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -317,7 +307,7 @@ export const associateExistingPermitToProject = async (
   projectId: number,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = associatePermitToProjectSQL(permitId, projectId);
+  const sqlStatement = queries.permit.associatePermitToProjectSQL(permitId, projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement for associatePermitToProjectSQL');
@@ -337,7 +327,7 @@ export const insertClassificationDetail = async (
   project_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectIUCNSQL(iucn3_id, project_id);
+  const sqlStatement = queries.project.postProjectIUCNSQL(iucn3_id, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -359,7 +349,7 @@ export const insertProjectActivity = async (
   projectId: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postProjectActivitySQL(activityId, projectId);
+  const sqlStatement = queries.project.postProjectActivitySQL(activityId, projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -387,7 +377,11 @@ export const insertProjectParticipantRole = async (
     throw new HTTP400('Failed to identify system user ID');
   }
 
-  const sqlStatement = addProjectRoleByRoleNameSQL(projectId, systemUserId, projectParticipantRole);
+  const sqlStatement = queries.projectParticipation.addProjectRoleByRoleNameSQL(
+    projectId,
+    systemUserId,
+    projectParticipantRole
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

@@ -1,13 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../errors/custom-error';
 import { PutReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
-import { updateProjectReportAttachmentMetadataSQL } from '../../../../../../queries/project/project-attachments-queries';
+import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../utils/logger';
 import { deleteProjectReportAttachmentAuthors, insertProjectReportAttachmentAuthor } from '../../report/upload';
@@ -207,7 +205,7 @@ const updateProjectReportAttachmentMetadata = async (
   metadata: PutReportAttachmentMetadata,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = updateProjectReportAttachmentMetadataSQL(projectId, attachmentId, metadata);
+  const sqlStatement = queries.project.updateProjectReportAttachmentMetadataSQL(projectId, attachmentId, metadata);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update attachment report statement');

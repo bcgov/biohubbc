@@ -4,8 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../database/db';
-import { CustomError } from '../../../../../../../errors/CustomError';
-import * as survey_summary_queries from '../../../../../../../queries/survey/survey-summary-queries';
+import { HTTPError } from '../../../../../../../errors/custom-error';
+import survey_queries from '../../../../../../../queries/survey';
 import * as file_utils from '../../../../../../../utils/file-utils';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../../__mocks__/db';
 import * as upload from './upload';
@@ -36,8 +36,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing upload data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing upload data');
     }
   });
 
@@ -67,8 +67,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Too many files uploaded, expected 1');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Too many files uploaded, expected 1');
     }
   });
 
@@ -99,8 +99,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param: projectId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param: projectId');
     }
   });
 
@@ -131,8 +131,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param: surveyId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param: surveyId');
     }
   });
 
@@ -157,7 +157,7 @@ describe('uploadSummarySubmission', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(null);
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const requestHandler = upload.uploadMedia();
@@ -166,8 +166,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -200,8 +200,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Malicious content detected, upload cancelled');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
     }
   });
 
@@ -234,7 +234,7 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
 
     const requestHandler = upload.uploadMedia();
 
@@ -242,8 +242,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to insert survey summary submission record');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey summary submission record');
     }
   });
 
@@ -276,8 +276,8 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_summary_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(null);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(null);
 
     const requestHandler = upload.uploadMedia();
 
@@ -285,8 +285,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -320,8 +320,8 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_summary_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
 
     const requestHandler = upload.uploadMedia();
 
@@ -329,8 +329,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to update survey summary submission record');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to update survey summary submission record');
     }
   });
 
@@ -363,8 +363,8 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_summary_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'uploadFileToS3').rejects('Failed to insert occurrence submission data');
 
     const requestHandler = upload.uploadMedia();
@@ -373,7 +373,7 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).name).to.equal('Failed to insert occurrence submission data');
+      expect((actualError as HTTPError).name).to.equal('Failed to insert occurrence submission data');
     }
   });
 
@@ -410,8 +410,8 @@ describe('uploadSummarySubmission', () => {
     });
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
-    sinon.stub(survey_summary_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'updateSurveySummarySubmissionWithKeySQL').returns(SQL`some query`);
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ key: 'projects/1/surveys/1/test.txt' } as any);
 
@@ -451,7 +451,7 @@ describe('uploadSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
 
     const requestHandler = upload.persistSummaryParseErrors();
 
@@ -524,7 +524,7 @@ describe('uploadSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'insertSurveySummarySubmissionMessageSQL').returns(SQL`some query`);
 
     const requestHandler = upload.persistSummaryParseErrors();
 
@@ -532,8 +532,8 @@ describe('uploadSummarySubmission', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to insert summary submission message data');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert summary submission message data');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });

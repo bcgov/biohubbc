@@ -1,13 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import { getLogger } from '../../../../../../../utils/logger';
-import { unsecureAttachmentRecordSQL } from '../../../../../../../queries/security/security-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/makeUnsecure');
 
@@ -122,8 +120,8 @@ export function makeSurveyAttachmentUnsecure(): RequestHandler {
 
       const unsecureRecordSQLStatement =
         req.body.attachmentType === 'Report'
-          ? unsecureAttachmentRecordSQL('survey_report_attachment', req.body.securityToken)
-          : unsecureAttachmentRecordSQL('survey_attachment', req.body.securityToken);
+          ? queries.security.unsecureAttachmentRecordSQL('survey_report_attachment', req.body.securityToken)
+          : queries.security.unsecureAttachmentRecordSQL('survey_attachment', req.body.securityToken);
 
       if (!unsecureRecordSQLStatement) {
         throw new HTTP400('Failed to build SQL unsecure record statement');

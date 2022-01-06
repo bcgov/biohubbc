@@ -2,16 +2,11 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../errors/custom-error';
 import { GetViewSurveyDetailsData } from '../../../../../models/survey-view';
 import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
-import {
-  getSurveyBasicDataForViewSQL,
-  getSurveyFundingSourcesDataForViewSQL,
-  getSurveySpeciesDataForViewSQL
-} from '../../../../../queries/survey/survey-view-queries';
-import { getSurveyProprietorForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -139,7 +134,7 @@ export function getSurveyForView(): RequestHandler {
 }
 
 export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
-  const sqlStatement = getSurveyBasicDataForViewSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveyBasicDataForViewSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -158,7 +153,7 @@ export const getSurveyFundingSourcesDataForView = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<any[]> => {
-  const sqlStatement = getSurveyFundingSourcesDataForViewSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -174,7 +169,7 @@ export const getSurveyFundingSourcesDataForView = async (
 };
 
 export const getSurveySpeciesDataForView = async (surveyId: number, connection: IDBConnection): Promise<any[]> => {
-  const sqlStatement = getSurveySpeciesDataForViewSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveySpeciesDataForViewSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -190,7 +185,7 @@ export const getSurveySpeciesDataForView = async (surveyId: number, connection: 
 };
 
 export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {
-  const sqlStatement = getSurveyProprietorForUpdateSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');

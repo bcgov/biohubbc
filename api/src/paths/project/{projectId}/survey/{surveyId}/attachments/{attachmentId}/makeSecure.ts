@@ -1,13 +1,11 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import { getLogger } from '../../../../../../../utils/logger';
-import { secureAttachmentRecordSQL } from '../../../../../../../queries/security/security-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
+import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/makeSecure');
 
@@ -122,12 +120,12 @@ export function makeSurveyAttachmentSecure(): RequestHandler {
 
       const secureRecordSQLStatement =
         req.body.attachmentType === 'Report'
-          ? secureAttachmentRecordSQL(
+          ? queries.security.secureAttachmentRecordSQL(
               Number(req.params.attachmentId),
               'survey_report_attachment',
               Number(req.params.projectId)
             )
-          : secureAttachmentRecordSQL(
+          : queries.security.secureAttachmentRecordSQL(
               Number(req.params.attachmentId),
               'survey_attachment',
               Number(req.params.projectId)

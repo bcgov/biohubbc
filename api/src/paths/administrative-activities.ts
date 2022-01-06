@@ -2,8 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import { getAdministrativeActivitiesSQL } from '../queries/administrative-activity/administrative-activity-queries';
+import { HTTP400 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
@@ -146,7 +146,7 @@ export function getAdministrativeActivities(): RequestHandler {
       const administrativeActivityStatusTypes: string[] =
         (req.query?.status as string[]) || getAllAdministrativeActivityStatusTypes();
 
-      const sqlStatement = getAdministrativeActivitiesSQL(
+      const sqlStatement = queries.administrativeActivity.getAdministrativeActivitiesSQL(
         administrativeActivityTypeName,
         administrativeActivityStatusTypes
       );

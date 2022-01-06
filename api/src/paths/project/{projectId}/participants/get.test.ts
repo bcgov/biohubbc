@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as get_project_participants from './get';
 import * as db from '../../../../database/db';
-import * as project_participation_queries from '../../../../queries/project-participation/project-participation-queries';
+import project_participation_queries from '../../../../queries/project-participation';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../__mocks__/db';
-import { CustomError } from '../../../../errors/CustomError';
+import { HTTPError } from '../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -50,12 +50,12 @@ describe('gets a list of project participants', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required param `projectId`');
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getAllProjectParticipants', async () => {
+  it('should throw a 400 error when no sql statement returned for getAllProjectParticipantsSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -63,7 +63,7 @@ describe('gets a list of project participants', () => {
       }
     });
 
-    sinon.stub(project_participation_queries, 'getAllProjectParticipants').returns(null);
+    sinon.stub(project_participation_queries, 'getAllProjectParticipantsSQL').returns(null);
 
     try {
       const result = get_project_participants.getParticipants();
@@ -71,12 +71,12 @@ describe('gets a list of project participants', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
-  it('should throw a 400 error when getAllProjectParticipants query fails', async () => {
+  it('should throw a 400 error when getAllProjectParticipantsSQL query fails', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({
@@ -91,7 +91,7 @@ describe('gets a list of project participants', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_participation_queries, 'getAllProjectParticipants').returns(SQL`something`);
+    sinon.stub(project_participation_queries, 'getAllProjectParticipantsSQL').returns(SQL`something`);
 
     try {
       const result = get_project_participants.getParticipants();
@@ -99,8 +99,8 @@ describe('gets a list of project participants', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to get project participants');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get project participants');
     }
   });
 
@@ -117,7 +117,7 @@ describe('gets a list of project participants', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_participation_queries, 'getAllProjectParticipants').returns(SQL`something`);
+    sinon.stub(project_participation_queries, 'getAllProjectParticipantsSQL').returns(SQL`something`);
 
     const result = get_project_participants.getParticipants();
 

@@ -3,12 +3,12 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as administrative_activity from './administrative-activity';
-import * as administrative_queries from '../queries/administrative-activity/administrative-activity-queries';
+import administrative_queries from '../queries/administrative-activity';
 import * as db from '../database/db';
 import { getMockDBConnection } from '../__mocks__/db';
 import SQL from 'sql-template-strings';
 import * as keycloak_utils from '../utils/keycloak-utils';
-import { CustomError } from '../errors/CustomError';
+import { HTTPError } from '../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -49,8 +49,8 @@ describe('updateAccessRequest', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(500);
-      expect((actualError as CustomError).message).to.equal('Failed to identify system user ID');
+      expect((actualError as HTTPError).status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to identify system user ID');
     }
   });
 
@@ -69,8 +69,8 @@ describe('updateAccessRequest', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(500);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
@@ -96,8 +96,8 @@ describe('updateAccessRequest', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(500);
-      expect((actualError as CustomError).message).to.equal('Failed to submit administrative activity');
+      expect((actualError as HTTPError).status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to submit administrative activity');
     }
   });
 
@@ -128,8 +128,8 @@ describe('updateAccessRequest', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(500);
-      expect((actualError as CustomError).message).to.equal('Failed to submit administrative activity');
+      expect((actualError as HTTPError).status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to submit administrative activity');
     }
   });
 
@@ -197,8 +197,8 @@ describe('getPendingAccessRequestsCount', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required userIdentifier');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required userIdentifier');
     }
   });
 
@@ -218,8 +218,8 @@ describe('getPendingAccessRequestsCount', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -294,8 +294,8 @@ describe('getUpdateAdministrativeActivityHandler', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body parameter: id');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body parameter: id');
     }
   });
 
@@ -310,8 +310,8 @@ describe('getUpdateAdministrativeActivityHandler', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body parameter: status');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body parameter: status');
     }
   });
 });
@@ -336,8 +336,8 @@ describe('updateAdministrativeActivity', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL put statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL put statement');
     }
   });
 
@@ -361,8 +361,8 @@ describe('updateAdministrativeActivity', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(500);
-      expect((actualError as CustomError).message).to.equal('Failed to update administrative activity');
+      expect((actualError as HTTPError).status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to update administrative activity');
     }
   });
 });

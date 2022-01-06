@@ -3,11 +3,8 @@ import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import {
-  getProjectAttachmentS3KeySQL,
-  getProjectReportAttachmentS3KeySQL
-} from '../../../../../queries/project/project-attachments-queries';
+import { HTTP400 } from '../../../../../errors/custom-error';
+import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getS3SignedURL } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
@@ -160,7 +157,7 @@ export const getProjectAttachmentS3Key = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<string> => {
-  const sqlStatement = getProjectAttachmentS3KeySQL(projectId, attachmentId);
+  const sqlStatement = queries.project.getProjectAttachmentS3KeySQL(projectId, attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build attachment S3 key SQLstatement');
@@ -180,7 +177,7 @@ export const getProjectReportAttachmentS3Key = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<string> => {
-  const sqlStatement = getProjectReportAttachmentS3KeySQL(projectId, attachmentId);
+  const sqlStatement = queries.project.getProjectReportAttachmentS3KeySQL(projectId, attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build report attachment S3 key SQLstatement');

@@ -5,8 +5,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../database/db';
-import { CustomError } from '../errors/CustomError';
-import * as draft_queries from '../queries/draft-queries';
+import { HTTPError } from '../errors/custom-error';
+import draft_queries from '../queries/project/draft';
 import { getMockDBConnection } from '../__mocks__/db';
 import * as draft from './draft';
 
@@ -53,8 +53,8 @@ describe('draft', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to identify system user ID');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to identify system user ID');
       }
     });
 
@@ -73,8 +73,8 @@ describe('draft', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL insert statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
       }
     });
 
@@ -96,8 +96,8 @@ describe('draft', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required param name');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required param name');
       }
     });
 
@@ -119,8 +119,8 @@ describe('draft', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required param data');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required param data');
       }
     });
 
@@ -150,8 +150,8 @@ describe('draft', () => {
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to save draft');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to save draft');
       }
     });
 
@@ -176,8 +176,8 @@ describe('draft', () => {
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to save draft');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to save draft');
       }
     });
 
@@ -256,7 +256,7 @@ describe('draft', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).message).to.equal(expectedError.message);
+        expect((actualError as HTTPError).message).to.equal(expectedError.message);
       }
     });
   });
@@ -284,8 +284,8 @@ describe('draft', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required param id');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required param id');
       }
     });
 
@@ -307,8 +307,8 @@ describe('draft', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required param name');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required param name');
       }
     });
 
@@ -330,8 +330,8 @@ describe('draft', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required param data');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required param data');
       }
     });
 
@@ -350,8 +350,8 @@ describe('draft', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
       }
     });
 
@@ -381,8 +381,8 @@ describe('draft', () => {
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to update draft');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to update draft');
       }
     });
 
@@ -407,8 +407,8 @@ describe('draft', () => {
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to update draft');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to update draft');
       }
     });
 

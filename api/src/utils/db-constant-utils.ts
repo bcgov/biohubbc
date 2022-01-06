@@ -1,6 +1,6 @@
 import { IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
+import { HTTP400 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
 
 /**
  * Get db character metadata constants.
@@ -13,7 +13,7 @@ export const getDbCharacterSystemMetaDataConstant = async (
   constantName: string,
   connection: IDBConnection
 ): Promise<string | null> => {
-  const sqlStatement = getDbCharacterSystemMetaDataConstantSQL(constantName);
+  const sqlStatement = queries.codes.getDbCharacterSystemMetaDataConstantSQL(constantName);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

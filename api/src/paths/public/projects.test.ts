@@ -4,11 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as projects from './projects';
 import * as db from '../../database/db';
-import * as project_queries from '../../queries/public/project-queries';
+import public_queries from '../../queries/public';
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../constants/status';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -43,7 +43,7 @@ describe('getPublicProjectsList', () => {
       }
     });
 
-    sinon.stub(project_queries, 'getPublicProjectListSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectListSQL').returns(null);
 
     try {
       const result = projects.getPublicProjectsList();
@@ -51,8 +51,8 @@ describe('getPublicProjectsList', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -81,7 +81,7 @@ describe('getPublicProjectsList', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectListSQL').returns(SQL`some query`);
+    sinon.stub(public_queries, 'getPublicProjectListSQL').returns(SQL`some query`);
 
     const result = projects.getPublicProjectsList();
 

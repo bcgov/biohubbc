@@ -4,11 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as get_signed_url from './getSignedUrl';
 import * as db from '../../../../../../database/db';
-import * as project_queries from '../../../../../../queries/public/project-queries';
+import public_queries from '../../../../../../queries/public';
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
-import { CustomError } from '../../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../../errors/custom-error';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 
 chai.use(sinonChai);
@@ -56,8 +56,8 @@ describe('getAttachmentSignedURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -74,8 +74,8 @@ describe('getAttachmentSignedURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -92,8 +92,8 @@ describe('getAttachmentSignedURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required query param `attachmentType`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required query param `attachmentType`');
     }
   });
 
@@ -110,7 +110,7 @@ describe('getAttachmentSignedURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
     const result = get_signed_url.getAttachmentSignedURL();
@@ -129,7 +129,7 @@ describe('getAttachmentSignedURL', () => {
         }
       });
 
-      sinon.stub(project_queries, 'getPublicProjectAttachmentS3KeySQL').returns(null);
+      sinon.stub(public_queries, 'getPublicProjectAttachmentS3KeySQL').returns(null);
 
       try {
         const result = get_signed_url.getAttachmentSignedURL();
@@ -137,8 +137,8 @@ describe('getAttachmentSignedURL', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build attachment S3 key SQLstatement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build attachment S3 key SQLstatement');
       }
     });
 
@@ -155,7 +155,7 @@ describe('getAttachmentSignedURL', () => {
         query: mockQuery
       });
 
-      sinon.stub(project_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
+      sinon.stub(public_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
       sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
       const result = get_signed_url.getAttachmentSignedURL();
@@ -175,7 +175,7 @@ describe('getAttachmentSignedURL', () => {
         }
       });
 
-      sinon.stub(project_queries, 'getPublicProjectReportAttachmentS3KeySQL').returns(null);
+      sinon.stub(public_queries, 'getPublicProjectReportAttachmentS3KeySQL').returns(null);
 
       try {
         const result = get_signed_url.getAttachmentSignedURL();
@@ -192,8 +192,8 @@ describe('getAttachmentSignedURL', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build report attachment S3 key SQLstatement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build report attachment S3 key SQLstatement');
       }
     });
 
@@ -210,7 +210,7 @@ describe('getAttachmentSignedURL', () => {
         query: mockQuery
       });
 
-      sinon.stub(project_queries, 'getPublicProjectReportAttachmentS3KeySQL').returns(SQL`some query`);
+      sinon.stub(public_queries, 'getPublicProjectReportAttachmentS3KeySQL').returns(SQL`some query`);
       sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
       const result = get_signed_url.getAttachmentSignedURL();

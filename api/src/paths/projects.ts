@@ -4,9 +4,9 @@ import moment from 'moment';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
+import { HTTP400 } from '../errors/custom-error';
 import { projectIdResponseObject } from '../openapi/schemas/project';
-import { getProjectListSQL } from '../queries/project/project-view-queries';
+import { queries } from '../queries/queries';
 import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
@@ -143,7 +143,7 @@ function getProjectList(): RequestHandler {
       const systemUserId = connection.systemUserId();
       const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
 
-      const getProjectListSQLStatement = getProjectListSQL(isUserAdmin, systemUserId, filterFields);
+      const getProjectListSQLStatement = queries.project.getProjectListSQL(isUserAdmin, systemUserId, filterFields);
 
       if (!getProjectListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

@@ -2,13 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
-import { getParticipantsFromAllSystemUsersProjectsSQL } from '../../../queries/project-participation/project-participation-queries';
-import {
-  deActivateSystemUserSQL,
-  deleteAllProjectRolesSQL,
-  deleteAllSystemRolesSQL
-} from '../../../queries/users/user-queries';
+import { HTTP400 } from '../../../errors/custom-error';
+import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler, getSystemUserById } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
@@ -130,7 +125,7 @@ export const checkIfUserIsOnlyProjectLeadOnAnyProject = async (userId: number, c
 };
 
 export const deleteAllProjectRoles = async (userId: number, connection: IDBConnection) => {
-  const sqlStatement = deleteAllProjectRolesSQL(userId);
+  const sqlStatement = queries.users.deleteAllProjectRolesSQL(userId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete statement for deleting project roles');
@@ -140,7 +135,7 @@ export const deleteAllProjectRoles = async (userId: number, connection: IDBConne
 };
 
 export const deleteAllSystemRoles = async (userId: number, connection: IDBConnection) => {
-  const sqlStatement = deleteAllSystemRolesSQL(userId);
+  const sqlStatement = queries.users.deleteAllSystemRolesSQL(userId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete statement for deleting system roles');
@@ -150,7 +145,7 @@ export const deleteAllSystemRoles = async (userId: number, connection: IDBConnec
 };
 
 export const deActivateSystemUser = async (userId: number, connection: IDBConnection) => {
-  const sqlStatement = deActivateSystemUserSQL(userId);
+  const sqlStatement = queries.users.deActivateSystemUserSQL(userId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete statement to deactivate system user');
@@ -170,7 +165,9 @@ export const getAllParticipantsFromSystemUsersProjects = async (
   userId: number,
   connection: IDBConnection
 ): Promise<any[]> => {
-  const getParticipantsFromAllSystemUsersProjectsSQLStatment = getParticipantsFromAllSystemUsersProjectsSQL(userId);
+  const getParticipantsFromAllSystemUsersProjectsSQLStatment = queries.projectParticipation.getParticipantsFromAllSystemUsersProjectsSQL(
+    userId
+  );
 
   if (!getParticipantsFromAllSystemUsersProjectsSQLStatment) {
     throw new HTTP400('Failed to build SQL get statement');

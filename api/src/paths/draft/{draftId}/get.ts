@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
+import { HTTP400 } from '../../../errors/custom-error';
 import { draftGetResponseObject } from '../../../openapi/schemas/draft';
-import { getDraftSQL } from '../../../queries/draft-queries';
+import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
@@ -81,7 +81,7 @@ export function getSingleDraft(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getDraftSQLStatement = getDraftSQL(Number(req.params.draftId));
+      const getDraftSQLStatement = queries.project.draft.getDraftSQL(Number(req.params.draftId));
 
       if (!getDraftSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

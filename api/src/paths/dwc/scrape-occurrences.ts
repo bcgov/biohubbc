@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
+import { HTTP400 } from '../../errors/custom-error';
 import { PostOccurrence } from '../../models/occurrence-create';
-import { postOccurrenceSQL } from '../../queries/occurrence/occurrence-create-queries';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
@@ -200,7 +200,7 @@ export const uploadScrapedOccurrence = async (
   scrapedOccurrence: PostOccurrence,
   connection: IDBConnection
 ) => {
-  const sqlStatement = postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
+  const sqlStatement = queries.occurrence.postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL post statement');

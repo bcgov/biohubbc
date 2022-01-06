@@ -2,8 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
-import { getAllProjectParticipants } from '../../../../queries/project-participation/project-participation-queries';
+import { HTTP400 } from '../../../../errors/custom-error';
+import { queries } from '../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
@@ -126,7 +126,7 @@ export function getParticipants(): RequestHandler {
 
       return res.status(200).json({ participants: result });
     } catch (error) {
-      defaultLog.error({ label: 'getAllProjectParticipants', message: 'error', error });
+      defaultLog.error({ label: 'getAllProjectParticipantsSQL', message: 'error', error });
       throw error;
     } finally {
       connection.release();
@@ -142,7 +142,7 @@ export function getParticipants(): RequestHandler {
  * @return {*}  {Promise<object[]>}
  */
 export const getProjectParticipants = async (projectId: number, connection: IDBConnection): Promise<object[]> => {
-  const sqlStatement = getAllProjectParticipants(projectId);
+  const sqlStatement = queries.projectParticipation.getAllProjectParticipantsSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');

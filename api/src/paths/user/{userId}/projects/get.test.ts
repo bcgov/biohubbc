@@ -4,8 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
-import { CustomError } from '../../../../errors/CustomError';
-import * as projects_view_queries from '../../../../queries/project-participation/project-participation-queries';
+import { HTTPError } from '../../../../errors/custom-error';
+import project_participation_queries from '../../../../queries/project-participation';
 import { getMockDBConnection } from '../../../../__mocks__/db';
 import * as projects from './get';
 
@@ -47,8 +47,8 @@ describe('projects', () => {
         await result({ ...(sampleReq as any), params: null }, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required params');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required params');
       }
     });
 
@@ -65,8 +65,8 @@ describe('projects', () => {
         );
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Missing required param: userId');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Missing required param: userId');
       }
     });
 
@@ -78,7 +78,7 @@ describe('projects', () => {
         }
       });
 
-      sinon.stub(projects_view_queries, 'getAllUserProjectsSQL').returns(null);
+      sinon.stub(project_participation_queries, 'getAllUserProjectsSQL').returns(null);
 
       try {
         const result = projects.getAllUserProjects();
@@ -86,8 +86,8 @@ describe('projects', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
       }
     });
 
@@ -106,7 +106,7 @@ describe('projects', () => {
         query: mockQuery
       });
 
-      sinon.stub(projects_view_queries, 'getAllUserProjectsSQL').returns(SQL`something`);
+      sinon.stub(project_participation_queries, 'getAllUserProjectsSQL').returns(SQL`something`);
 
       const result = projects.getAllUserProjects();
 

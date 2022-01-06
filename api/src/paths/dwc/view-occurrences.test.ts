@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as view_occurrences from './view-occurrences';
 import * as db from '../../database/db';
-import * as occurrence_view_queries from '../../queries/occurrence/occurrence-view-queries';
+import occurrence_queries from '../../queries/occurrence';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -51,8 +51,8 @@ describe('getOccurrencesForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
         'Missing required request body param `occurrence_submission_id`'
       );
     }
@@ -66,7 +66,7 @@ describe('getOccurrencesForView', () => {
       }
     });
 
-    sinon.stub(occurrence_view_queries, 'getOccurrencesForViewSQL').returns(null);
+    sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(null);
 
     try {
       const result = view_occurrences.getOccurrencesForView();
@@ -78,8 +78,8 @@ describe('getOccurrencesForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get occurrences for view statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get occurrences for view statement');
     }
   });
 
@@ -98,7 +98,7 @@ describe('getOccurrencesForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(occurrence_view_queries, 'getOccurrencesForViewSQL').returns(SQL`something`);
+    sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(SQL`something`);
 
     try {
       const result = view_occurrences.getOccurrencesForView();
@@ -110,8 +110,8 @@ describe('getOccurrencesForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to get occurrences view data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get occurrences view data');
     }
   });
 
@@ -143,7 +143,7 @@ describe('getOccurrencesForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(occurrence_view_queries, 'getOccurrencesForViewSQL').returns(SQL`something`);
+    sinon.stub(occurrence_queries, 'getOccurrencesForViewSQL').returns(SQL`something`);
 
     const result = view_occurrences.getOccurrencesForView();
 

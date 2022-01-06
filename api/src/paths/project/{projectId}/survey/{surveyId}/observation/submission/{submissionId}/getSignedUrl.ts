@@ -1,15 +1,13 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { HTTP400 } from '../../../../../../../../errors/CustomError';
-import { getLogger } from '../../../../../../../../utils/logger';
-import { getDBConnection } from '../../../../../../../../database/db';
-import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
-import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
-import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
+import { getDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
+import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../utils/logger';
+import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger(
   '/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/getSignedUrl'
@@ -82,7 +80,7 @@ export function getSingleSubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyOccurrenceSubmissionSQLStatement = getSurveyOccurrenceSubmissionSQL(
+      const getSurveyOccurrenceSubmissionSQLStatement = queries.survey.getSurveyOccurrenceSubmissionSQL(
         Number(req.params.submissionId)
       );
 
