@@ -10,7 +10,7 @@
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help
-.PHONY : setup close clean build-backend run-backend build-web run-web database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav install test lint lint-fix format help
+.PHONY : setup close clean build-backend run-backend build-web run-web database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav swagger-ui install test lint lint-fix format help
 
 ## ------------------------------------------------------------------------------
 ## Alias Commands
@@ -34,6 +34,7 @@ db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necess
 n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to run the n8n setup
 n8n-export: | build-n8n-export run-n8n-export ## Performs all commands necessary to export the latest n8n credentials and workflows
 clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
+swagger-ui: | build-swagger-ui run-swagger-ui ## Performs all commands necessary to run swagger-ui
 
 ## ------------------------------------------------------------------------------
 ## Setup/Cleanup Commands
@@ -222,6 +223,22 @@ run-clamav: ## Run clamav
 	@echo "Make: run-clamav - running clamav"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml up -d clamav
+
+## ------------------------------------------------------------------------------
+## swagger ui commands
+## ------------------------------------------------------------------------------
+
+build-swagger-ui: ## Build the swagger ui image
+	@echo "==============================================="
+	@echo "Make: build-swagger-ui - building swagger ui image"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml build swagger-ui
+
+run-swagger-ui: ## Run swagger ui
+	@echo "==============================================="
+	@echo "Make: run-swagger-ui - running swagger ui"
+	@echo "==============================================="
+	@docker-compose -f docker-compose.yml up -d swagger-ui
 
 ## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects
