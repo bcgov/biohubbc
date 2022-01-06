@@ -1,16 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import {
-  deleteProjectAttachmentSQL,
-  deleteProjectReportAttachmentSQL
-} from '../../../../../queries/project/project-attachments-queries';
-import { unsecureAttachmentRecordSQL } from '../../../../../queries/security/security-queries';
+import { HTTP400 } from '../../../../../errors/custom-error';
+import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
@@ -130,8 +124,8 @@ const unsecureProjectAttachmentRecord = async (
 ): Promise<void> => {
   const unsecureRecordSQLStatement =
     attachmentType === 'Report'
-      ? unsecureAttachmentRecordSQL('project_report_attachment', securityToken)
-      : unsecureAttachmentRecordSQL('project_attachment', securityToken);
+      ? queries.security.unsecureAttachmentRecordSQL('project_report_attachment', securityToken)
+      : queries.security.unsecureAttachmentRecordSQL('project_attachment', securityToken);
 
   if (!unsecureRecordSQLStatement) {
     throw new HTTP400('Failed to build SQL unsecure record statement');
@@ -151,7 +145,7 @@ export const deleteProjectAttachment = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<{ key: string }> => {
-  const sqlStatement = deleteProjectAttachmentSQL(attachmentId);
+  const sqlStatement = queries.project.deleteProjectAttachmentSQL(attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete project attachment statement');
@@ -170,7 +164,7 @@ export const deleteProjectReportAttachment = async (
   attachmentId: number,
   connection: IDBConnection
 ): Promise<{ key: string }> => {
-  const sqlStatement = deleteProjectReportAttachmentSQL(attachmentId);
+  const sqlStatement = queries.project.deleteProjectReportAttachmentSQL(attachmentId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL delete project report attachment statement');

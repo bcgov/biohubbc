@@ -4,11 +4,11 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as get_signed_url from './getSignedUrl';
 import * as db from '../../../../../../../../database/db';
-import * as survey_summary_queries from '../../../../../../../../queries/survey/survey-summary-queries';
+import survey_queries from '../../../../../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
-import { CustomError } from '../../../../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -53,8 +53,8 @@ describe('getSingleSubmissionURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -71,8 +71,8 @@ describe('getSingleSubmissionURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -89,8 +89,8 @@ describe('getSingleSubmissionURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `summaryId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `summaryId`');
     }
   });
 
@@ -102,7 +102,7 @@ describe('getSingleSubmissionURL', () => {
       }
     });
 
-    sinon.stub(survey_summary_queries, 'getSurveySummarySubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveySummarySubmissionSQL').returns(null);
 
     try {
       const result = get_signed_url.getSingleSummarySubmissionURL();
@@ -110,8 +110,8 @@ describe('getSingleSubmissionURL', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -128,7 +128,7 @@ describe('getSingleSubmissionURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'getSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveySummarySubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
     const result = get_signed_url.getSingleSummarySubmissionURL();
@@ -151,7 +151,7 @@ describe('getSingleSubmissionURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'getSurveySummarySubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveySummarySubmissionSQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
 
     const result = get_signed_url.getSingleSummarySubmissionURL();

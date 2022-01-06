@@ -2,9 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { getSurveyAttachmentsSQL } from '../../../../../queries/survey/survey-attachments-queries';
-import { deleteSurveySQL } from '../../../../../queries/survey/survey-delete-queries';
+import { HTTP400 } from '../../../../../errors/custom-error';
+import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
@@ -96,7 +95,7 @@ export function deleteSurvey(): RequestHandler {
        * PART 2
        * Delete the survey and all associated records/resources from our DB
        */
-      const deleteSurveySQLStatement = deleteSurveySQL(Number(req.params.surveyId));
+      const deleteSurveySQLStatement = queries.survey.deleteSurveySQL(Number(req.params.surveyId));
 
       if (!deleteSurveySQLStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
@@ -128,7 +127,7 @@ export function deleteSurvey(): RequestHandler {
 }
 
 export const getSurveyAttachmentS3Keys = async (surveyId: number, connection: IDBConnection) => {
-  const getSurveyAttachmentSQLStatement = getSurveyAttachmentsSQL(surveyId);
+  const getSurveyAttachmentSQLStatement = queries.survey.getSurveyAttachmentsSQL(surveyId);
 
   if (!getSurveyAttachmentSQLStatement) {
     throw new HTTP400('Failed to build SQL get statement');

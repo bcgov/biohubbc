@@ -3,11 +3,11 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as administrative_activities from './administrative-activities';
-import * as administrative_queries from '../queries/administrative-activity/administrative-activity-queries';
+import administrative_queries from '../queries/administrative-activity';
 import * as db from '../database/db';
 import { getMockDBConnection } from '../__mocks__/db';
 import SQL from 'sql-template-strings';
-import { CustomError } from '../errors/CustomError';
+import { HTTPError } from '../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -48,8 +48,8 @@ describe('getAdministrativeActivities', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 

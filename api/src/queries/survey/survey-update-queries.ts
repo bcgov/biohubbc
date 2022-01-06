@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
 import { getLogger } from '../../utils/logger';
-import { generateGeometryCollectionSQL } from '../generate-geometry-collection';
+import { queries } from '../queries';
 
 const defaultLog = getLogger('queries/survey/survey-update-queries');
 
@@ -110,7 +110,7 @@ export const putSurveyDetailsSQL = (
   const geometrySqlStatement = SQL``;
 
   if (data.geometry && data.geometry.length) {
-    const geometryCollectionSQL = generateGeometryCollectionSQL(data.geometry);
+    const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(data.geometry);
 
     geometrySqlStatement.append(SQL`
       public.geography(

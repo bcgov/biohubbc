@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
+import { HTTP400 } from '../../../errors/custom-error';
 import { authorizeRequestHandler, getSystemUserById } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 

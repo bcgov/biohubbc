@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../utils/logger';
+import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('queries/search-queries');
+const defaultLog = getLogger('queries/search/search-queries');
 
 /**
  * SQL query to get project geometries

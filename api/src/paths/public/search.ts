@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
+import { HTTP400 } from '../../errors/custom-error';
 import { searchResponseObject } from '../../openapi/schemas/search';
+import { queries } from '../../queries/queries';
 import { getLogger } from '../../utils/logger';
-import { getPublicSpatialSearchResultsSQL } from '../../queries/public/search-queries';
 import { _extractResults } from '../search';
 
 const defaultLog = getLogger('paths/public/search');
@@ -47,7 +47,7 @@ export function getSearchResults(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const getSpatialSearchResultsSQLStatement = getPublicSpatialSearchResultsSQL();
+      const getSpatialSearchResultsSQLStatement = queries.public.getPublicSpatialSearchResultsSQL();
 
       if (!getSpatialSearchResultsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

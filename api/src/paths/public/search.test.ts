@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as search from './search';
 import * as db from '../../database/db';
-import * as search_queries from '../../queries/public/search-queries';
+import public_queries from '../../queries/public';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../__mocks__/db';
-import { CustomError } from '../../errors/CustomError';
+import { HTTPError } from '../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -42,7 +42,7 @@ describe('search', () => {
           return 20;
         }
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(null);
+      sinon.stub(public_queries, 'getPublicSpatialSearchResultsSQL').returns(null);
 
       try {
         const result = search.getSearchResults();
@@ -50,8 +50,8 @@ describe('search', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect((actualError as CustomError).status).to.equal(400);
-        expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
       }
     });
 
@@ -67,7 +67,7 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
+      sinon.stub(public_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
 
@@ -88,7 +88,7 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
+      sinon.stub(public_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
 
@@ -117,7 +117,7 @@ describe('search', () => {
         },
         query: mockQuery
       });
-      sinon.stub(search_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
+      sinon.stub(public_queries, 'getPublicSpatialSearchResultsSQL').returns(SQL`something`);
 
       const result = search.getSearchResults();
 

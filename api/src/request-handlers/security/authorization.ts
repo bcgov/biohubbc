@@ -2,10 +2,9 @@ import { Request } from 'express';
 import { RequestHandler } from 'express-serve-static-core';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP403, HTTP500 } from '../../errors/CustomError';
+import { HTTP403, HTTP500 } from '../../errors/custom-error';
 import { ProjectUserObject, UserObject } from '../../models/user';
-import { getProjectParticipationBySystemUserSQL } from '../../queries/project-participation/project-participation-queries';
-import { getUserByIdSQL } from '../../queries/users/user-queries';
+import { queries } from '../../queries/queries';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('request-handlers/security/authorization');
@@ -375,7 +374,7 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
     return null;
   }
 
-  const sqlStatement = getProjectParticipationBySystemUserSQL(projectId, systemUserId);
+  const sqlStatement = queries.projectParticipation.getProjectParticipationBySystemUserSQL(projectId, systemUserId);
 
   if (!sqlStatement) {
     return null;
@@ -387,7 +386,7 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
 };
 
 export const getSystemUserById = async (userId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getUserByIdSQL(userId);
+  const sqlStatement = queries.users.getUserByIdSQL(userId);
 
   if (!sqlStatement) {
     return null;

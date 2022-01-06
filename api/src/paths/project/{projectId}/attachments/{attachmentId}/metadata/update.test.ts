@@ -4,8 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../../database/db';
-import { CustomError } from '../../../../../../errors/CustomError';
-import * as project_attachment_queries from '../../../../../../queries/project/project-attachments-queries';
+import { HTTPError } from '../../../../../../errors/custom-error';
+import project_queries from '../../../../../../queries/project';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../../__mocks__/db';
 import * as update_project_metadata from './update';
 
@@ -49,8 +49,8 @@ describe('updates metadata for a project report', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -87,8 +87,8 @@ describe('updates metadata for a project report', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -125,8 +125,8 @@ describe('updates metadata for a project report', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Invalid body param `attachment_type`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Invalid body param `attachment_type`');
     }
   });
 
@@ -215,7 +215,7 @@ describe('updates metadata for a project report', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachment_queries, 'updateProjectReportAttachmentMetadataSQL').returns(null);
+    sinon.stub(project_queries, 'updateProjectReportAttachmentMetadataSQL').returns(null);
 
     const requestHandler = update_project_metadata.updateProjectAttachmentMetadata();
 
@@ -223,8 +223,8 @@ describe('updates metadata for a project report', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL update attachment report statement');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update attachment report statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -264,7 +264,7 @@ describe('updates metadata for a project report', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachment_queries, 'updateProjectReportAttachmentMetadataSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'updateProjectReportAttachmentMetadataSQL').returns(SQL`something`);
 
     const requestHandler = update_project_metadata.updateProjectAttachmentMetadata();
 
@@ -272,8 +272,8 @@ describe('updates metadata for a project report', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to update attachment report record');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to update attachment report record');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 });

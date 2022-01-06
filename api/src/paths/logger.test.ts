@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { CustomError } from '../errors/CustomError';
+import { HTTPError } from '../errors/custom-error';
 import * as logger from './logger';
 
 describe('logger', () => {
@@ -36,8 +36,8 @@ describe('logger', () => {
 
         expect.fail();
       } catch (error) {
-        expect((error as CustomError).status).to.equal(400);
-        expect((error as CustomError).message).to.equal('Missing required query param `level`');
+        expect((error as HTTPError).status).to.equal(400);
+        expect((error as HTTPError).message).to.equal('Missing required query param `level`');
       }
     });
 

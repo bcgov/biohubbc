@@ -1,18 +1,13 @@
-'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
-import {
-  getSurveyAttachmentByFileNameSQL,
-  postSurveyAttachmentSQL,
-  putSurveyAttachmentSQL
-} from '../../../../../../queries/survey/survey-attachments-queries';
+import { HTTP400 } from '../../../../../../errors/custom-error';
+import { queries } from '../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../utils/logger';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/upload');
 
@@ -170,7 +165,7 @@ export const upsertSurveyAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number; key: string }> => {
-  const getSqlStatement = getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
+  const getSqlStatement = queries.survey.getSurveyAttachmentByFileNameSQL(surveyId, file.originalname);
 
   if (!getSqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
@@ -207,7 +202,13 @@ export const insertSurveyAttachment = async (
     folder: 'reports'
   });
 
-  const sqlStatement = postSurveyAttachmentSQL(file.originalname, file.size, attachmentType, surveyId, key);
+  const sqlStatement = queries.survey.postSurveyAttachmentSQL(
+    file.originalname,
+    file.size,
+    attachmentType,
+    surveyId,
+    key
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -228,7 +229,7 @@ export const updateSurveyAttachment = async (
   attachmentType: string,
   connection: IDBConnection
 ): Promise<{ id: number; revision_count: number }> => {
-  const sqlStatement = putSurveyAttachmentSQL(surveyId, file.originalname, attachmentType);
+  const sqlStatement = queries.survey.putSurveyAttachmentSQL(surveyId, file.originalname, attachmentType);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

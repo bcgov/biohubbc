@@ -1,11 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../../errors/CustomError';
-import { deleteOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { HTTP400 } from '../../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../../utils/logger';
 
@@ -113,7 +111,9 @@ export function deleteOccurrenceSubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const deleteSubmissionSQLStatement = deleteOccurrenceSubmissionSQL(Number(req.params.submissionId));
+      const deleteSubmissionSQLStatement = queries.survey.deleteOccurrenceSubmissionSQL(
+        Number(req.params.submissionId)
+      );
 
       if (!deleteSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL delete statement');

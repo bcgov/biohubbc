@@ -4,10 +4,10 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as listAttachments from './list';
 import * as db from '../../../../../../database/db';
-import * as survey_attachments_queries from '../../../../../../queries/survey/survey-attachments-queries';
+import survey_queries from '../../../../../../queries/survey';
 import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
-import { CustomError } from '../../../../../../errors/CustomError';
+import { HTTPError } from '../../../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -51,8 +51,8 @@ describe('lists the survey attachments', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -64,7 +64,7 @@ describe('lists the survey attachments', () => {
       }
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(null);
 
     try {
       const result = listAttachments.getSurveyAttachments();
@@ -72,8 +72,8 @@ describe('lists the survey attachments', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -118,7 +118,7 @@ describe('lists the survey attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getSurveyAttachments();
 
@@ -187,7 +187,7 @@ describe('lists the survey attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getSurveyAttachments();
 
@@ -228,7 +228,7 @@ describe('lists the survey attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_attachments_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getSurveyAttachments();
 

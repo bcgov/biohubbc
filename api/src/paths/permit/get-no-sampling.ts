@@ -1,11 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getNonSamplingPermitsSQL } from '../../queries/permit/permit-view-queries';
+import { HTTP400 } from '../../errors/custom-error';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 
@@ -85,7 +83,7 @@ export function getNonSamplingPermits(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const getNonSamplingPermitsSQLStatement = getNonSamplingPermitsSQL(systemUserId);
+      const getNonSamplingPermitsSQLStatement = queries.permit.getNonSamplingPermitsSQL(systemUserId);
 
       if (!getNonSamplingPermitsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

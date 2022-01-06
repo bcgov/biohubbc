@@ -2,11 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
-import { getProjectAttachmentsSQL } from '../../../queries/project/project-attachments-queries';
-import { deleteProjectSQL } from '../../../queries/project/project-delete-queries';
-import { getProjectSQL } from '../../../queries/project/project-view-queries';
-import { getSurveyIdsSQL } from '../../../queries/survey/survey-view-queries';
+import { HTTP400 } from '../../../errors/custom-error';
+import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../utils/file-utils';
 import { getLogger } from '../../../utils/logger';
@@ -85,7 +82,7 @@ export function deleteProject(): RequestHandler {
        * Check that user is a project administrator - can delete a project (unpublished only)
        *
        */
-      const getProjectSQLStatement = getProjectSQL(Number(req.params.projectId));
+      const getProjectSQLStatement = queries.project.getProjectSQL(Number(req.params.projectId));
 
       if (!getProjectSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -113,8 +110,8 @@ export function deleteProject(): RequestHandler {
        * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
        * Used to delete them from S3 separately later
        */
-      const getProjectAttachmentSQLStatement = getProjectAttachmentsSQL(Number(req.params.projectId));
-      const getSurveyIdsSQLStatement = getSurveyIdsSQL(Number(req.params.projectId));
+      const getProjectAttachmentSQLStatement = queries.project.getProjectAttachmentsSQL(Number(req.params.projectId));
+      const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(Number(req.params.projectId));
 
       if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -150,7 +147,7 @@ export function deleteProject(): RequestHandler {
        * PART 3
        * Delete the project and all associated records/resources from our DB
        */
-      const deleteProjectSQLStatement = deleteProjectSQL(Number(req.params.projectId));
+      const deleteProjectSQLStatement = queries.project.deleteProjectSQL(Number(req.params.projectId));
 
       if (!deleteProjectSQLStatement) {
         throw new HTTP400('Failed to build SQL delete statement');

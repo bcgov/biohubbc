@@ -1,15 +1,10 @@
-'use strict';
-
-import { getAPIUserDBConnection } from '../../../../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { getLogger } from '../../../../../utils/logger';
-import {
-  getPublicProjectAttachmentsSQL,
-  getPublicProjectReportAttachmentsSQL
-} from '../../../../../queries/public/project-queries';
+import { getAPIUserDBConnection } from '../../../../../database/db';
+import { HTTP400 } from '../../../../../errors/custom-error';
 import { GetPublicAttachmentsData } from '../../../../../models/public/project';
+import { queries } from '../../../../../queries/queries';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/public/project/{projectId}/attachments/list');
 
@@ -72,8 +67,10 @@ export function getPublicProjectAttachments(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const getPublicProjectAttachmentsSQLStatement = getPublicProjectAttachmentsSQL(Number(req.params.projectId));
-      const getPublicProjectReportAttachmentsSQLStatement = getPublicProjectReportAttachmentsSQL(
+      const getPublicProjectAttachmentsSQLStatement = queries.public.getPublicProjectAttachmentsSQL(
+        Number(req.params.projectId)
+      );
+      const getPublicProjectReportAttachmentsSQLStatement = queries.public.getPublicProjectReportAttachmentsSQL(
         Number(req.params.projectId)
       );
 

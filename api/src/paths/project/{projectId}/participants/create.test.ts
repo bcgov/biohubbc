@@ -4,10 +4,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
-import { CustomError } from '../../../../errors/CustomError';
-import * as user_queries from '../../../../queries/users/user-queries';
 import { getMockDBConnection } from '../../../../__mocks__/db';
-import * as create_project_participants from './create';
+import { HTTPError } from '../../../../errors/custom-error';
 
 chai.use(sinonChai);
 
@@ -40,8 +38,8 @@ describe('creates a list of project participants', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required param `projectId`');
     }
   });
 
@@ -57,8 +55,8 @@ describe('creates a list of project participants', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required body param `participants`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param `participants`');
     }
   });
 

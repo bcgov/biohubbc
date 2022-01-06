@@ -2,13 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
+import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
 import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
-import {
-  deleteSurveyOccurrencesSQL,
-  getLatestSurveyOccurrenceSubmissionSQL
-} from '../../../../../queries/survey/survey-occurrence-queries';
-import { updateSurveyPublishStatusSQL } from '../../../../../queries/survey/survey-update-queries';
+import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -152,7 +148,7 @@ export function publishSurveyAndOccurrences(): RequestHandler {
 export const deleteOccurrences = async (surveyId: number, connection: IDBConnection) => {
   const occurrenceSubmission = await getSurveyOccurrenceSubmission(surveyId, connection);
 
-  const sqlStatement = deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
+  const sqlStatement = queries.survey.deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build delete survey occurrences SQL statement');
@@ -171,7 +167,7 @@ export const deleteOccurrences = async (surveyId: number, connection: IDBConnect
  * @returns {RequestHandler}
  */
 export const publishSurvey = async (surveyId: number, publish: boolean, connection: IDBConnection) => {
-  const sqlStatement = updateSurveyPublishStatusSQL(surveyId, publish);
+  const sqlStatement = queries.survey.updateSurveyPublishStatusSQL(surveyId, publish);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey publish SQL statement');
@@ -194,7 +190,7 @@ export const publishSurvey = async (surveyId: number, publish: boolean, connecti
  * @return {*}
  */
 export const getSurveyOccurrenceSubmission = async (surveyId: number, connection: IDBConnection) => {
-  const sqlStatement = getLatestSurveyOccurrenceSubmissionSQL(surveyId);
+  const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build get survey occurrence submission SQL statement');

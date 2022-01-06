@@ -1,15 +1,10 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../errors/custom-error';
 import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
-import {
-  getSurveyAttachmentsSQL,
-  getSurveyReportAttachmentsSQL
-} from '../../../../../../queries/survey/survey-attachments-queries';
+import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../utils/logger';
 
@@ -100,8 +95,10 @@ export function getSurveyAttachments(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyAttachmentsSQLStatement = getSurveyAttachmentsSQL(Number(req.params.surveyId));
-      const getSurveyReportAttachmentsSQLStatement = getSurveyReportAttachmentsSQL(Number(req.params.surveyId));
+      const getSurveyAttachmentsSQLStatement = queries.survey.getSurveyAttachmentsSQL(Number(req.params.surveyId));
+      const getSurveyReportAttachmentsSQLStatement = queries.survey.getSurveyReportAttachmentsSQL(
+        Number(req.params.surveyId)
+      );
 
       if (!getSurveyAttachmentsSQLStatement || !getSurveyReportAttachmentsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

@@ -4,9 +4,9 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../database/db';
-import { CustomError } from '../../../errors/CustomError';
-import * as project_participation_queries from '../../../queries/project-participation/project-participation-queries';
-import * as user_queries from '../../../queries/users/user-queries';
+import { HTTPError } from '../../../errors/custom-error';
+import project_participation_queries from '../../../queries/project-participation';
+import user_queries from '../../../queries/users';
 import * as authorization from '../../../request-handlers/security/authorization';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as delete_endpoint from './delete';
@@ -30,8 +30,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param: userId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param: userId');
     }
   });
 
@@ -53,8 +53,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -108,8 +108,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
         'Cannot remove user. User is the only Project Lead for one or more projects.'
       );
     }
@@ -135,8 +135,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).message).to.equal('Failed to get system user');
-      expect((actualError as CustomError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get system user');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -167,8 +167,8 @@ describe('removeSystemUser', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('The system user is not active');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('The system user is not active');
     }
   });
 
@@ -200,8 +200,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
         'Failed to build SQL delete statement for deleting project roles'
       );
     }
@@ -270,8 +270,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
         'Failed to build SQL delete statement for deleting system roles'
       );
     }
@@ -343,8 +343,8 @@ describe('removeSystemUser', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal(
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
         'Failed to build SQL delete statement to deactivate system user'
       );
     }

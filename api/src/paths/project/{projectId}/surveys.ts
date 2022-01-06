@@ -4,10 +4,10 @@ import moment from 'moment';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { COMPLETION_STATUS } from '../../../constants/status';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
+import { HTTP400 } from '../../../errors/custom-error';
 import { GetSurveyListData } from '../../../models/survey-view';
 import { surveyIdResponseObject } from '../../../openapi/schemas/survey';
-import { getSurveyListSQL } from '../../../queries/survey/survey-view-queries';
+import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
@@ -92,7 +92,7 @@ export function getSurveyList(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyListSQLStatement = getSurveyListSQL(Number(req.params.projectId));
+      const getSurveyListSQLStatement = queries.survey.getSurveyListSQL(Number(req.params.projectId));
 
       if (!getSurveyListSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

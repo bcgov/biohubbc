@@ -1,35 +1,17 @@
+import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import * as xml2js from 'xml2js';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400, HTTP500 } from '../../errors/CustomError';
-import {
-  getSurveyOccurrenceSubmissionSQL,
-  getDataPackageSQL,
-  getPublishedSurveyStatusSQL,
-  getSurveySQL,
-  getProjectSQL,
-  getSurveyFundingSourceSQL,
-  getProjectFundingSourceSQL,
-  getGeometryBoundingBoxSQL,
-  getGeometryPolygonsSQL,
-  getTaxonomicCoverageSQL,
-  getProjectIucnConservationSQL,
-  getProjectStakeholderPartnershipSQL,
-  getProjectActivitySQL,
-  getProjectClimateInitiativeSQL,
-  getProjectFirstNationsSQL,
-  getProjectManagementActionsSQL,
-  getSurveyProprietorSQL
-} from '../../queries/dwc/dwc-queries';
-import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
-import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
-import { MediaFile } from '../../utils/media/media-file';
-import AdmZip from 'adm-zip';
-import * as xml2js from 'xml2js';
-import { getDbCharacterSystemMetaDataConstant } from '../../utils/db-constant-utils';
-import { getLogger } from '../../utils/logger';
+import { HTTP400, HTTP500 } from '../../errors/custom-error';
+import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { getDbCharacterSystemMetaDataConstant } from '../../utils/db-constant-utils';
+import { getFileFromS3, uploadBufferToS3 } from '../../utils/file-utils';
+import { getLogger } from '../../utils/logger';
+import { MediaFile } from '../../utils/media/media-file';
+import { parseS3File, parseUnknownZipFile } from '../../utils/media/media-utils';
 
 const simsEmlVersion = '1.0.0';
 
@@ -574,7 +556,7 @@ const checkProvided = <T extends string | number | null>(valueToCheck: T): Strin
  * @return {*} {Promise<void>}
  */
 export const getSurveyOccurrenceSubmission = async (dataPackageId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getSurveyOccurrenceSubmissionSQL(dataPackageId);
+  const sqlStatement = queries.dwc.getSurveyOccurrenceSubmissionSQL(dataPackageId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -597,7 +579,7 @@ export const getSurveyOccurrenceSubmission = async (dataPackageId: number, conne
  * @return {*} {Promise<void>}
  */
 export const getDataPackage = async (dataPackageId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getDataPackageSQL(dataPackageId);
+  const sqlStatement = queries.dwc.getDataPackageSQL(dataPackageId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -623,7 +605,7 @@ export const getPublishedSurveyStatus = async (
   occurrenceSubmissionId: number,
   connection: IDBConnection
 ): Promise<any> => {
-  const sqlStatement = getPublishedSurveyStatusSQL(occurrenceSubmissionId);
+  const sqlStatement = queries.dwc.getPublishedSurveyStatusSQL(occurrenceSubmissionId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -640,7 +622,7 @@ export const getPublishedSurveyStatus = async (
  * @return {*} {Promise<void>}
  */
 export const getSurvey = async (surveyId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getSurveySQL(surveyId);
+  const sqlStatement = queries.dwc.getSurveySQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -657,7 +639,7 @@ export const getSurvey = async (surveyId: number, connection: IDBConnection): Pr
  * @return {*} {Promise<void>}
  */
 export const getProject = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getProjectSQL(projectId);
+  const sqlStatement = queries.dwc.getProjectSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -674,7 +656,7 @@ export const getProject = async (projectId: number, connection: IDBConnection): 
  * @return {*} {Promise<any[]>}
  */
 export const getSurveyFundingSource = async (surveyId: number, connection: IDBConnection): Promise<any[]> => {
-  const sqlStatement = getSurveyFundingSourceSQL(surveyId);
+  const sqlStatement = queries.dwc.getSurveyFundingSourceSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -691,7 +673,7 @@ export const getSurveyFundingSource = async (surveyId: number, connection: IDBCo
  * @return {*} {Promise<any[]>}
  */
 export const getProjectFundingSource = async (projectId: number, connection: IDBConnection): Promise<any[]> => {
-  const sqlStatement = getProjectFundingSourceSQL(projectId);
+  const sqlStatement = queries.dwc.getProjectFundingSourceSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -708,7 +690,7 @@ export const getProjectFundingSource = async (projectId: number, connection: IDB
  * @return {BoundingBox} {Promise<BoundingBox>}
  */
 export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getGeometryBoundingBoxSQL(surveyId, 'survey_id', 'survey');
+  const sqlStatement = queries.dwc.getGeometryBoundingBoxSQL(surveyId, 'survey_id', 'survey');
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -725,7 +707,7 @@ export const getSurveyBoundingBox = async (surveyId: number, connection: IDBConn
  * @return {BoundingBox} {Promise<BoundingBox>}
  */
 export const getProjectBoundingBox = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getGeometryBoundingBoxSQL(projectId, 'project_id', 'project');
+  const sqlStatement = queries.dwc.getGeometryBoundingBoxSQL(projectId, 'project_id', 'project');
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -742,7 +724,7 @@ export const getProjectBoundingBox = async (projectId: number, connection: IDBCo
  * @return {*} {Promise<void>}
  */
 export const getSurveyPolygons = async (surveyId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getGeometryPolygonsSQL(surveyId, 'survey_id', 'survey');
+  const sqlStatement = queries.dwc.getGeometryPolygonsSQL(surveyId, 'survey_id', 'survey');
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -759,7 +741,7 @@ export const getSurveyPolygons = async (surveyId: number, connection: IDBConnect
  * @return {*} {Promise<void>}
  */
 export const getProjectPolygons = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getGeometryPolygonsSQL(projectId, 'project_id', 'project');
+  const sqlStatement = queries.dwc.getGeometryPolygonsSQL(projectId, 'project_id', 'project');
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -776,7 +758,7 @@ export const getProjectPolygons = async (projectId: number, connection: IDBConne
  * @return {*} {Promise<void>}
  */
 export const getFocalTaxonomicCoverage = async (surveyId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getTaxonomicCoverageSQL(surveyId, true);
+  const sqlStatement = queries.dwc.getTaxonomicCoverageSQL(surveyId, true);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -793,7 +775,7 @@ export const getFocalTaxonomicCoverage = async (surveyId: number, connection: ID
  * @return {*} {Promise<void>}
  */
 export const getProjectIucnConservation = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getProjectIucnConservationSQL(projectId);
+  const sqlStatement = queries.dwc.getProjectIucnConservationSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -810,7 +792,7 @@ export const getProjectIucnConservation = async (projectId: number, connection: 
  * @return {*} {Promise<void>}
  */
 export const getProjectStakeholderPartnership = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getProjectStakeholderPartnershipSQL(projectId);
+  const sqlStatement = queries.dwc.getProjectStakeholderPartnershipSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -827,7 +809,7 @@ export const getProjectStakeholderPartnership = async (projectId: number, connec
  * @return {*} {Promise<void>}
  */
 export const getProjectActivity = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getProjectActivitySQL(projectId);
+  const sqlStatement = queries.dwc.getProjectActivitySQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -844,7 +826,7 @@ export const getProjectActivity = async (projectId: number, connection: IDBConne
  * @return {*} {Promise<void>}
  */
 export const getProjectClimateInitiative = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getProjectClimateInitiativeSQL(projectId);
+  const sqlStatement = queries.dwc.getProjectClimateInitiativeSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -861,7 +843,7 @@ export const getProjectClimateInitiative = async (projectId: number, connection:
  * @return {*} {Promise<void>}
  */
 export const getProjectFirstNations = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getProjectFirstNationsSQL(projectId);
+  const sqlStatement = queries.dwc.getProjectFirstNationsSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -878,7 +860,7 @@ export const getProjectFirstNations = async (projectId: number, connection: IDBC
  * @return {*} {Promise<void>}
  */
 export const getProjectManagementActions = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getProjectManagementActionsSQL(projectId);
+  const sqlStatement = queries.dwc.getProjectManagementActionsSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');
@@ -895,7 +877,7 @@ export const getProjectManagementActions = async (projectId: number, connection:
  * @return {*} {Promise<void>}
  */
 export const getSurveyProprietor = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getSurveyProprietorSQL(projectId);
+  const sqlStatement = queries.dwc.getSurveyProprietorSQL(projectId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement');

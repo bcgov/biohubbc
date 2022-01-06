@@ -5,8 +5,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../../../../database/db';
-import { CustomError } from '../../../../../../../../errors/CustomError';
-import * as survey_occurrence_queries from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { HTTPError } from '../../../../../../../../errors/custom-error';
+import survey_queries from '../../../../../../../../queries/survey';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { ArchiveFile, MediaFile } from '../../../../../../../../utils/media/media-file';
 import * as media_utils from '../../../../../../../../utils/media/media-utils';
@@ -56,8 +56,8 @@ describe('getObservationSubmissionCSVForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -73,8 +73,8 @@ describe('getObservationSubmissionCSVForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -90,8 +90,8 @@ describe('getObservationSubmissionCSVForView', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path param `submissionId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `submissionId`');
     }
   });
 
@@ -103,7 +103,7 @@ describe('getObservationSubmissionCSVForView', () => {
       }
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = view.getObservationSubmissionCSVForView();
@@ -111,8 +111,8 @@ describe('getObservationSubmissionCSVForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -136,7 +136,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves((null as unknown) as GetObjectOutput);
 
@@ -146,8 +146,8 @@ describe('getObservationSubmissionCSVForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(500);
-      expect((actualError as CustomError).message).to.equal('Failed to retrieve file from S3');
+      expect((actualError as HTTPError).status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to retrieve file from S3');
     }
   });
 
@@ -171,7 +171,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon.stub(media_utils, 'parseUnknownMedia').returns(null);
@@ -182,8 +182,8 @@ describe('getObservationSubmissionCSVForView', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to parse submission, file was empty');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to parse submission, file was empty');
     }
   });
 
@@ -207,7 +207,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon
@@ -243,7 +243,7 @@ describe('getObservationSubmissionCSVForView', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
     sinon.stub(file_utils, 'generateS3FileKey').resolves('validkey');
     sinon.stub(file_utils, 'getFileFromS3').resolves({ file: 'myfile' } as GetObjectOutput);
     sinon

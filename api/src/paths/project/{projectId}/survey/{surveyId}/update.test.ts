@@ -5,11 +5,8 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { COMPLETION_STATUS } from '../../../../../constants/status';
 import * as db from '../../../../../database/db';
-import { CustomError } from '../../../../../errors/CustomError';
-import * as survey_create_queries from '../../../../../queries/survey/survey-create-queries';
-import * as survey_delete_queries from '../../../../../queries/survey/survey-delete-queries';
-import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
-import * as survey_view_update_queries from '../../../../../queries/survey/survey-view-update-queries';
+import { HTTPError } from '../../../../../errors/custom-error';
+import survey_queries from '../../../../../queries/survey';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import * as create from '../create';
 import * as update from './update';
@@ -44,8 +41,8 @@ describe('getSurveyForUpdate', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path parameter: surveyId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path parameter: surveyId');
     }
   });
 
@@ -66,7 +63,7 @@ describe('getSurveyForUpdate', () => {
       }
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
 
     try {
       const requestHandler = update.getSurveyForUpdate();
@@ -74,8 +71,8 @@ describe('getSurveyForUpdate', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build survey details SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build survey details SQL get statement');
     }
   });
 
@@ -126,8 +123,8 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
 
     const requestHandler = update.getSurveyForUpdate();
 
@@ -198,7 +195,7 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
 
     const requestHandler = update.getSurveyForUpdate();
 
@@ -282,8 +279,8 @@ describe('getSurveyForUpdate', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
 
     const requestHandler = update.getSurveyForUpdate();
 
@@ -368,8 +365,8 @@ describe('updateSurvey', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path parameter: projectId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path parameter: projectId');
     }
   });
 
@@ -410,8 +407,8 @@ describe('updateSurvey', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required path parameter: surveyId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path parameter: surveyId');
     }
   });
 
@@ -439,8 +436,8 @@ describe('updateSurvey', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Missing required request body');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required request body');
     }
   });
 
@@ -481,8 +478,8 @@ describe('updateSurvey', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to parse request body');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to parse request body');
     }
   });
 
@@ -517,7 +514,7 @@ describe('updateSurvey', () => {
       }
     });
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(null);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(null);
 
     try {
       const requestHandler = update.updateSurvey();
@@ -525,8 +522,8 @@ describe('updateSurvey', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -566,7 +563,7 @@ describe('updateSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
 
     try {
       const requestHandler = update.updateSurvey();
@@ -574,8 +571,8 @@ describe('updateSurvey', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to update stale survey data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to update stale survey data');
     }
   });
 
@@ -615,7 +612,7 @@ describe('updateSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
 
     const requestHandler = update.updateSurvey();
 
@@ -652,7 +649,7 @@ describe('updateSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`some query`);
 
     const requestHandler = update.updateSurvey();
 
@@ -701,7 +698,7 @@ describe('updateSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_delete_queries, 'deleteSurveyProprietorSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'deleteSurveyProprietorSQL').returns(SQL`some query`);
 
     const requestHandler = update.updateSurvey();
 
@@ -750,7 +747,7 @@ describe('updateSurvey', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_delete_queries, 'deleteSurveyProprietorSQL').returns(null);
+    sinon.stub(survey_queries, 'deleteSurveyProprietorSQL').returns(null);
 
     try {
       const requestHandler = update.updateSurvey();
@@ -758,8 +755,8 @@ describe('updateSurvey', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
     }
   });
 });
@@ -787,15 +784,15 @@ describe('updateSurveyProprietorData', () => {
   it('should throw a 400 error when fails to build sql statement in case 3', async () => {
     const dbConnectionObj = getMockDBConnection();
 
-    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(null);
+    sinon.stub(survey_queries, 'postSurveyProprietorSQL').returns(null);
 
     try {
       await update.updateSurveyProprietorData(surveyId, entities, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
     }
   });
 
@@ -806,22 +803,22 @@ describe('updateSurveyProprietorData', () => {
 
     mockQuery.resolves({ rowCount: null });
 
-    sinon.stub(survey_create_queries, 'postSurveyProprietorSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'postSurveyProprietorSQL').returns(SQL`some`);
 
     try {
       await update.updateSurveyProprietorData(surveyId, entities, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to update survey proprietor data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to update survey proprietor data');
     }
   });
 
   it('should throw a 400 error when fails to build sql statement in case 4', async () => {
     const dbConnectionObj = getMockDBConnection();
 
-    sinon.stub(survey_update_queries, 'putSurveyProprietorSQL').returns(null);
+    sinon.stub(survey_queries, 'putSurveyProprietorSQL').returns(null);
 
     try {
       await update.updateSurveyProprietorData(
@@ -832,8 +829,8 @@ describe('updateSurveyProprietorData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL statement');
     }
   });
 
@@ -844,7 +841,7 @@ describe('updateSurveyProprietorData', () => {
 
     mockQuery.resolves({ rowCount: null });
 
-    sinon.stub(survey_update_queries, 'putSurveyProprietorSQL').returns(SQL`some`);
+    sinon.stub(survey_queries, 'putSurveyProprietorSQL').returns(SQL`some`);
 
     try {
       await update.updateSurveyProprietorData(
@@ -855,8 +852,8 @@ describe('updateSurveyProprietorData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to update survey proprietor data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to update survey proprietor data');
     }
   });
 });
@@ -892,23 +889,23 @@ describe('updateSurveyDetailsData', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to parse request body');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to parse request body');
     }
   });
 
   it('should throw a 400 error when no sql statement produced for putSurveyDetailsSQL', async () => {
     const dbConnectionObj = getMockDBConnection();
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(null);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(null);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -919,15 +916,15 @@ describe('updateSurveyDetailsData', () => {
 
     mockQuery.resolves({ rowCount: null });
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to update stale survey data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to update stale survey data');
     }
   });
 
@@ -938,17 +935,17 @@ describe('updateSurveyDetailsData', () => {
 
     mockQuery.resolves({ rowCount: 1 });
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(null);
-    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteFocalSpeciesSQL').returns(null);
+    sinon.stub(survey_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -959,17 +956,17 @@ describe('updateSurveyDetailsData', () => {
 
     mockQuery.resolves({ rowCount: 1 });
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(null);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteAncillarySpeciesSQL').returns(null);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -980,17 +977,17 @@ describe('updateSurveyDetailsData', () => {
 
     mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(null).onThirdCall().resolves(true);
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to delete survey focal species data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to delete survey focal species data');
     }
   });
 
@@ -1001,17 +998,17 @@ describe('updateSurveyDetailsData', () => {
 
     mockQuery.onFirstCall().resolves({ rowCount: 1 }).onSecondCall().resolves(true).onThirdCall().resolves(null);
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to delete survey ancillary species data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to delete survey ancillary species data');
     }
   });
 
@@ -1025,18 +1022,18 @@ describe('updateSurveyDetailsData', () => {
     mockQuery.onCall(2).resolves(true);
     mockQuery.onCall(3).resolves(null);
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
 
     try {
       await update.updateSurveyDetailsData(projectId, surveyId, data, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(409);
-      expect((actualError as CustomError).message).to.equal('Failed to delete survey funding sources data');
+      expect((actualError as HTTPError).status).to.equal(409);
+      expect((actualError as HTTPError).message).to.equal('Failed to delete survey funding sources data');
     }
   });
 
@@ -1050,10 +1047,10 @@ describe('updateSurveyDetailsData', () => {
     mockQuery.onCall(2).resolves(true);
     mockQuery.onCall(3).resolves(true);
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
@@ -1084,10 +1081,10 @@ describe('updateSurveyDetailsData', () => {
     mockQuery.onCall(3).resolves(true);
     mockQuery.onCall(4).resolves(true);
 
-    sinon.stub(survey_update_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
-    sinon.stub(survey_delete_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyDetailsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteFocalSpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteAncillarySpeciesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'deleteSurveyFundingSourcesBySurveyIdSQL').returns(SQL`something`);
 
     sinon.stub(create, 'insertFocalSpecies').resolves(1);
     sinon.stub(create, 'insertAncillarySpecies').resolves(2);
@@ -1119,15 +1116,15 @@ describe('unassociatePermitFromSurvey', () => {
   it('should throw a 400 error when no sql statement returned', async () => {
     const dbConnectionObj = getMockDBConnection();
 
-    sinon.stub(survey_update_queries, 'unassociatePermitFromSurveySQL').returns(null);
+    sinon.stub(survey_queries, 'unassociatePermitFromSurveySQL').returns(null);
 
     try {
       await update.unassociatePermitFromSurvey(surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build SQL update statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -1138,15 +1135,15 @@ describe('unassociatePermitFromSurvey', () => {
 
     mockQuery.resolves(null);
 
-    sinon.stub(survey_update_queries, 'unassociatePermitFromSurveySQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'unassociatePermitFromSurveySQL').returns(SQL`something`);
 
     try {
       await update.unassociatePermitFromSurvey(surveyId, { ...dbConnectionObj, query: mockQuery });
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to update survey permit number data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to update survey permit number data');
     }
   });
 });
@@ -1161,15 +1158,15 @@ describe('getSurveyDetailsData', () => {
   it('should throw a 400 error when no sql statement returned', async () => {
     const dbConnectionObj = getMockDBConnection();
 
-    sinon.stub(survey_view_update_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyDetailsForUpdateSQL').returns(null);
 
     try {
       await update.getSurveyDetailsData(surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build survey details SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build survey details SQL get statement');
     }
   });
 });
@@ -1184,15 +1181,15 @@ describe('getSurveyProprietorData', () => {
   it('should throw a 400 error when no sql statement returned', async () => {
     const dbConnectionObj = getMockDBConnection();
 
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
 
     try {
       await update.getSurveyProprietorData(surveyId, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect((actualError as CustomError).status).to.equal(400);
-      expect((actualError as CustomError).message).to.equal('Failed to build survey proprietor SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build survey proprietor SQL get statement');
     }
   });
 
@@ -1203,7 +1200,7 @@ describe('getSurveyProprietorData', () => {
 
     mockQuery.resolves({ rows: [] });
 
-    sinon.stub(survey_view_update_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`something`);
 
     const result = await update.getSurveyProprietorData(surveyId, { ...dbConnectionObj, query: mockQuery });
 

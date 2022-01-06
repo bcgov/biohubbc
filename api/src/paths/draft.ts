@@ -2,9 +2,9 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
+import { HTTP400 } from '../errors/custom-error';
 import { draftResponseObject } from '../openapi/schemas/draft';
-import { postDraftSQL, putDraftSQL } from '../queries/draft-queries';
+import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
 
@@ -171,7 +171,7 @@ export function createDraft(): RequestHandler {
         throw new HTTP400('Missing required param data');
       }
 
-      const postDraftSQLStatement = postDraftSQL(systemUserId, req.body.name, req.body.data);
+      const postDraftSQLStatement = queries.project.draft.postDraftSQL(systemUserId, req.body.name, req.body.data);
 
       if (!postDraftSQLStatement) {
         throw new HTTP400('Failed to build SQL insert statement');
@@ -220,7 +220,7 @@ export function updateDraft(): RequestHandler {
         throw new HTTP400('Missing required param data');
       }
 
-      const putDraftSQLStatement = putDraftSQL(req.body.id, req.body.name, req.body.data);
+      const putDraftSQLStatement = queries.project.draft.putDraftSQL(req.body.id, req.body.name, req.body.data);
 
       if (!putDraftSQLStatement) {
         throw new HTTP400('Failed to build SQL update statement');

@@ -1,14 +1,9 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import {
-  getLatestSurveySummarySubmissionSQL,
-  getSummarySubmissionMessagesSQL
-} from '../../../../../../../queries/survey/survey-summary-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../utils/logger';
 
@@ -112,7 +107,9 @@ export function getSurveySummarySubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySummarySubmissionSQLStatement = getLatestSurveySummarySubmissionSQL(Number(req.params.surveyId));
+      const getSurveySummarySubmissionSQLStatement = queries.survey.getLatestSurveySummarySubmissionSQL(
+        Number(req.params.surveyId)
+      );
 
       if (!getSurveySummarySubmissionSQLStatement) {
         throw new HTTP400('Failed to build getLatestSurveySummarySubmissionSQLStatement statement');
@@ -141,7 +138,7 @@ export function getSurveySummarySubmission(): RequestHandler {
       if (errorStatus === 'Error') {
         const summary_submission_id = summarySubmissionData.rows[0].id;
 
-        const getSummarySubmissionErrorListSQLStatement = getSummarySubmissionMessagesSQL(
+        const getSummarySubmissionErrorListSQLStatement = queries.survey.getSummarySubmissionMessagesSQL(
           Number(summary_submission_id)
         );
 
