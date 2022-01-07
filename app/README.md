@@ -1,8 +1,8 @@
-# bcgov/biohubbc/app
+# bcgov/restoration-tracker/app
 
-A standard React web-app for SIMS management activities.
+A standard React web-app for Restoration Tracking management activities.
 
-## Documenation
+## Documentation
 
 React: https://reactjs.org/docs/getting-started.html
 

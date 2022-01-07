@@ -208,7 +208,7 @@ const Header: React.FC = () => {
           <Toolbar className={classes.govHeaderToolbar}>
             <Container maxWidth="xl">
               <Box display="flex" justifyContent="space-between" width="100%">
-                <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
+                <Link to="/projects" className={classes.brand} aria-label="Go to Restoration Tracker Home">
                   <picture>
                     <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
                     <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
@@ -250,7 +250,6 @@ const Header: React.FC = () => {
                 <Link to="/admin/permits" id="menu_permits">
                   Permits
                 </Link>
-
               </AuthGuard>
               <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <Link to="/admin/users" id="menu_admin_users">

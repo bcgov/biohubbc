@@ -17,7 +17,7 @@ const AppRouter: React.FC = (props: any) => {
   const location = useLocation();
 
   const getTitle = (page: string) => {
-    return `SIMS - ${page}`;
+    return `Restoration-Tracker - ${page}`;
   };
 
   return (

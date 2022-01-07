@@ -12,9 +12,6 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
-
-
-
 export interface IIDIRRequestForm {
   role: number;
   comments: string;

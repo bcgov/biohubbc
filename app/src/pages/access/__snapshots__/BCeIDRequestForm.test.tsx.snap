@@ -62,7 +62,7 @@ exports[`BCeIDRequestForm matches the snapshot 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <h3>
-          Why are you requesting access to SIMS?
+          Why are you requesting access to Restoration Tracker?
         </h3>
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"

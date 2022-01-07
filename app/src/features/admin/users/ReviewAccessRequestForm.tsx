@@ -36,7 +36,6 @@ export interface IReviewAccessRequestFormProps {
 const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props) => {
   const { handleSubmit } = useFormikContext<IReviewAccessRequestForm>();
 
-
   const company = props.request.data.company || 'Not Applicable';
   const request_reason = props.request.data.request_reason || 'Not Applicable';
 
