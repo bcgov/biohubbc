@@ -15,7 +15,7 @@ import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import MapContainer from 'components/map/MapContainer';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+import { ProjectAttachmentValidExtensions } from 'constants/attachments';
 import { Feature } from 'geojson';
 import React, { useEffect, useState } from 'react';
 import {
@@ -103,7 +103,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
           <FileUpload
             uploadHandler={boundaryUploadHandler()}
             dropZoneProps={{
-              acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.SPATIAL
+              acceptedFileExtensions: ProjectAttachmentValidExtensions.SPATIAL
             }}
           />
         </Box>

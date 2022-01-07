@@ -3,7 +3,7 @@ export enum AttachmentType {
   OTHER = 'Other'
 }
 
-export enum ProjectSurveyAttachmentValidExtensions {
+export enum ProjectAttachmentValidExtensions {
   AUDIO = '.wav, .mp3, .mp4, .wma',
   DATA = '.txt, .xls, .xlsx, .xlsm, .xlsb, .accdb, .mdb, .ods, .csv',
   IMAGE = '.gif, .png, .jpg, .jpeg, .svg, .tiff, .bmp, .tif',

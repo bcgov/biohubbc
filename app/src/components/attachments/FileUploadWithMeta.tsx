@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+import { ProjectAttachmentValidExtensions } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
@@ -48,7 +48,7 @@ export const FileUploadWithMeta: React.FC<IFileUploadWithMetaProps> = (props) =>
             dropZoneProps={{
               maxNumFiles: 1,
               multiple: false,
-              acceptedFileExtensions: ProjectSurveyAttachmentValidExtensions.REPORT
+              acceptedFileExtensions: ProjectAttachmentValidExtensions.REPORT
             }}
             status={UploadFileStatus.STAGED}
             replace={true}
