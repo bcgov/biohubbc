@@ -114,29 +114,27 @@ const ManageUsersPage: React.FC = () => {
   }, [biohubApi.codes, isLoadingCodes, codes]);
 
   const sendEmail = () => {
-    const recipientAddress = 'Kjartan.Einarsson@gov.bc.ca';
+    const recipient = { emailAddress: 'Kjartan.Einarsson@gov.bc.ca' };
     const message = {
       header: 'Hello Kjartan,',
-      main_body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
-      main_body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
+      body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
+      body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
       footer: 'We will contact you after your request has been reviewed by a member of our team.'
     };
-    const templateFormat = 'email';
 
-    biohubApi.admin.sendGCNotification(recipientAddress, message, templateFormat);
+    biohubApi.admin.sendGCNotification(recipient, message);
   };
 
   const sendSms = () => {
-    const recipientAddress = '2505070444';
+    const recipient = { phoneNumber: '2505070444' };
     const message = {
       header: 'Hello Kjartan,',
-      main_body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
-      main_body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
+      body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
+      body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
       footer: 'We will contact you after your request has been reviewed by a member of our team.'
     };
-    const templateFormat = 'sms';
 
-    biohubApi.admin.sendGCNotification(recipientAddress, message, templateFormat);
+    biohubApi.admin.sendGCNotification(recipient, message);
   };
 
   if (!hasLoadedAccessRequests || !hasLoadedActiveUsers || !codes) {

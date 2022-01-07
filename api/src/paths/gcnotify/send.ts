@@ -1,10 +1,11 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { HTTP400 } from '../../errors/CustomError';
+import { HTTP400 } from '../../errors/custom-error';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
-import axios from 'axios';
+import { GCNotifyService } from '../../gcnotfiy-services/gcnotify-service';
+import { IgcNotfiyPostReturn } from '../../models/gcnotify';
 
 const defaultLog = getLogger('paths/gcnotify');
 
@@ -37,31 +38,39 @@ POST.apiDoc = {
         schema: {
           title: 'User Response Object',
           type: 'object',
-          required: ['recipientAddress', 'message', 'templateFormat'],
+          required: ['recipient', 'message'],
           properties: {
-            recipientAddress: {
-              type: 'string'
+            recipient: {
+              type: 'object',
+              properties: {
+                emailAddress: {
+                  type: 'string'
+                },
+                phoneNumber: {
+                  type: 'string'
+                },
+                userId: {
+                  type: 'number'
+                }
+              }
             },
             message: {
               type: 'object',
-              required: ['header', 'main_body1', 'main_body2', 'footer'],
+              required: ['header', 'body1', 'body2', 'footer'],
               properties: {
                 header: {
                   type: 'string'
                 },
-                main_body1: {
+                body1: {
                   type: 'string'
                 },
-                main_body2: {
+                body2: {
                   type: 'string'
                 },
                 footer: {
                   type: 'string'
                 }
               }
-            },
-            templateFormat: {
-              type: 'string'
             }
           }
         }
@@ -105,16 +114,15 @@ POST.apiDoc = {
  */
 export function sendNotification(): RequestHandler {
   return async (req, res) => {
-    const recipientAddress = req.body?.recipientAddress || null;
+    const recipient = req.body?.recipient || null;
     const message = req.body?.message || null;
-    const templateFormat = req.body?.templateFormat || null;
 
-    if (!recipientAddress) {
-      throw new HTTP400('Missing required body param: recipientAddress');
+    if (!req.body) {
+      throw new HTTP400('Missing required param: body');
     }
 
-    if (!templateFormat) {
-      throw new HTTP400('Missing required body param: templateFormat');
+    if (!recipient) {
+      throw new HTTP400('Missing required body param: recipient');
     }
 
     if (!message) {
@@ -125,94 +133,46 @@ export function sendNotification(): RequestHandler {
       throw new HTTP400('Missing required body param: message.header');
     }
 
-    if (!message.main_body1) {
-      throw new HTTP400('Missing required body param: message.main_body1');
+    if (!message.body1) {
+      throw new HTTP400('Missing required body param: message.body1');
     }
 
-    if (!message.main_body2) {
-      throw new HTTP400('Missing required body param: message.main_body2');
+    if (!message.body2) {
+      throw new HTTP400('Missing required body param: message.body2');
     }
 
     if (!message.footer) {
       throw new HTTP400('Missing required body param: message.footer');
     }
 
-    const api_key = process.env.GCNOTIFY_SECRET_API_KEY;
-    const config = {
-      headers: {
-        Authorization: api_key,
-        'Content-Type': 'application/json'
-      }
-    };
+    try {
+      const gcNotfiyService = new GCNotifyService();
+      let response = {} as IgcNotfiyPostReturn;
 
-    if (templateFormat === 'email') {
-      const template = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE;
-
-      const data = {
-        email_address: recipientAddress,
-        template_id: template,
-        personalisation: {
-          header: message.header,
-          main_body1: message.main_body1,
-          main_body2: message.main_body2,
-          footer: message.footer
+      const api_key = process.env.GCNOTIFY_SECRET_API_KEY;
+      const config = {
+        headers: {
+          Authorization: api_key,
+          'Content-Type': 'application/json'
         }
       };
 
-      try {
-        await axios
-          .post('https://api.notification.canada.ca/v2/notifications/email', data, config)
-          .then((response: any) => {
-            console.log(response);
-            return res.status(200);
-          })
-          .catch((error: any) => {
-            console.log(error.response.data.errors);
-          });
-      } catch (error) {
-        defaultLog.error({ label: 'send gcNotfiy', message: 'error', error });
-        throw error;
+      if (recipient.emailAddress !== null) {
+        response = await gcNotfiyService.sendEmailGCNotification(recipient.emailAddress, config, message);
       }
-    } else if (templateFormat === 'sms') {
-      const template = process.env.GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE;
 
-      const data = {
-        phone_number: recipientAddress,
-        template_id: template,
-        personalisation: {
-          header: message.header,
-          main_body1: message.main_body1,
-          main_body2: message.main_body2,
-          footer: message.footer
-        }
-      };
-
-      try {
-        await axios
-          .post('https://api.notification.canada.ca/v2/notifications/sms', data, config)
-          .then((response: any) => {
-            console.log(response);
-            return res.status(200);
-          })
-          .catch((error: any) => {
-            console.log(error.response.data.errors);
-          });
-      } catch (error) {
-        defaultLog.error({ label: 'send gcNotfiy', message: 'error', error });
-        throw error;
+      if (recipient.phoneNumber !== null) {
+        response = await gcNotfiyService.sendSmsGCNotification(recipient.phoneNumber, config, message);
       }
-    } else {
-      throw new HTTP400('invalid template format given');
+
+      if (recipient.userId) {
+        defaultLog.error({ label: 'send gcNotfiy', message: 'email and sms from Id not implemented yet' });
+      }
+
+      return res.status(200).json(response);
+    } catch (error) {
+      defaultLog.error({ label: 'send gcNotfiy', message: 'error', error });
+      throw error;
     }
   };
 }
-
-/*
-console.log('//////////////////////////////////////////////');
-    console.log(recipientAddress);
-    console.log('//////////////////////////////////////////////');
-    console.log(JSON.stringify(message));
-    console.log('//////////////////////////////////////////////');
-    console.log(api_key);
-    console.log('//////////////////////////////////////////////');
-    */
