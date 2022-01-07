@@ -5,7 +5,7 @@ import { HTTP400 } from '../../../errors/custom-error';
 import { authorizeRequestHandler, getSystemUserById } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
 
-const defaultLog = getLogger('paths/user/{userId}');
+const defaultLog = getLogger('paths/user/{userId}/get');
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -45,7 +45,35 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             title: 'User Response Object',
-            type: 'object'
+            type: 'object',
+            properties: {
+              id: {
+                description: 'user id',
+                type: 'number'
+              },
+              user_identifier: {
+                description: 'The unique user identifier',
+                type: 'string'
+              },
+              record_end_date: {
+                description: 'Determines if the user record has expired',
+                type: 'string'
+              },
+              role_ids: {
+                description: 'list of role ids for the user',
+                type: 'array',
+                items: {
+                  type: 'number'
+                }
+              },
+              role_names: {
+                description: 'list of role names for the user',
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              }
+            }
           }
         }
       }

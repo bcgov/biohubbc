@@ -2,13 +2,14 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as validate from './validate';
-import * as media_utils from '../../utils/media/media-utils';
-import survey_queries from '../../queries/survey';
-import { ArchiveFile } from '../../utils/media/media-file';
-import { getMockDBConnection } from '../../__mocks__/db';
 import SQL from 'sql-template-strings';
+import xlsx from 'xlsx';
 import { HTTPError } from '../../errors/custom-error';
+import survey_queries from '../../queries/survey';
+import { ArchiveFile, MediaFile } from '../../utils/media/media-file';
+import * as media_utils from '../../utils/media/media-utils';
+import { getMockDBConnection } from '../../__mocks__/db';
+import * as validate from './validate';
 
 chai.use(sinonChai);
 
@@ -49,6 +50,76 @@ describe('prepXLSX', () => {
     await result(sampleReq, (null as unknown) as any, nextSpy as any);
 
     expect(sampleReq.parseError).to.eql('Failed to parse submission, not a valid XLSX CSV file');
+    expect(nextSpy).to.have.been.called;
+  });
+
+  it('should set parseError when no custom props set for the XLSX CSV file', async () => {
+    const nextSpy = sinon.spy();
+
+    const newWorkbook = xlsx.utils.book_new();
+
+    if (!newWorkbook.Custprops) {
+      newWorkbook.Custprops = {};
+    }
+
+    const ws_name = 'SheetJS';
+
+    /* make worksheet */
+    const ws_data = [
+      ['S', 'h', 'e', 'e', 't', 'J', 'S'],
+      [1, 2, 3, 4, 5]
+    ];
+    const ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+    /* Add the worksheet to the workbook */
+    xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
+
+    const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
+
+    const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
+
+    sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
+
+    const requestHandler = validate.prepXLSX();
+    await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
+
+    expect(sampleReq.parseError).to.eql('Failed to parse submission, template identification properties are missing');
+    expect(nextSpy).to.have.been.called;
+  });
+
+  it('should call next when parameters are valid', async () => {
+    const nextSpy = sinon.spy();
+
+    const newWorkbook = xlsx.utils.book_new();
+
+    if (!newWorkbook.Custprops) {
+      newWorkbook.Custprops = {};
+    }
+    newWorkbook.Custprops['sims_template_id'] = 1;
+    newWorkbook.Custprops['sims_csm_id'] = 1;
+    newWorkbook.Custprops['sims_species_id'] = 1234;
+
+    const ws_name = 'SheetJS';
+
+    /* make worksheet */
+    const ws_data = [
+      ['S', 'h', 'e', 'e', 't', 'J', 'S'],
+      [1, 2, 3, 4, 5]
+    ];
+    const ws = xlsx.utils.aoa_to_sheet(ws_data);
+
+    /* Add the worksheet to the workbook */
+    xlsx.utils.book_append_sheet(newWorkbook, ws, ws_name);
+
+    const buffer = xlsx.write(newWorkbook, { type: 'buffer' });
+
+    const mediaFile = new MediaFile('fileName', 'text/csv', buffer);
+
+    sinon.stub(media_utils, 'parseUnknownMedia').returns(mediaFile);
+
+    const requestHandler = validate.prepXLSX();
+    await requestHandler(sampleReq, (null as unknown) as any, nextSpy as any);
+
     expect(nextSpy).to.have.been.called;
   });
 });
