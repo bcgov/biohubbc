@@ -1,4 +1,4 @@
-export interface IgcNotfiyPostReturn {
+export interface IgcNotifyPostReturn {
   content: object;
   id: string;
   reference: string;
@@ -7,9 +7,16 @@ export interface IgcNotfiyPostReturn {
   uri: string;
 }
 
-export interface IgcNotfiyGenericMessage {
+export interface IgcNotifyGenericMessage {
   header: string;
   body1: string;
   body2: string;
   footer: string;
+}
+
+export interface IgcNotifyConfig {
+  headers: {
+    Authorization: string;
+    'Content-Type': string;
+  };
 }

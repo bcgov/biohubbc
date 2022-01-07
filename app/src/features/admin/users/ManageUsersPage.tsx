@@ -1,4 +1,3 @@
-import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
@@ -113,30 +112,6 @@ const ManageUsersPage: React.FC = () => {
     getCodes();
   }, [biohubApi.codes, isLoadingCodes, codes]);
 
-  const sendEmail = () => {
-    const recipient = { emailAddress: 'Kjartan.Einarsson@gov.bc.ca' };
-    const message = {
-      header: 'Hello Kjartan,',
-      body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
-      body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
-      footer: 'We will contact you after your request has been reviewed by a member of our team.'
-    };
-
-    biohubApi.admin.sendGCNotification(recipient, message);
-  };
-
-  const sendSms = () => {
-    const recipient = { phoneNumber: '2505070444' };
-    const message = {
-      header: 'Hello Kjartan,',
-      body1: 'This is a message from the Species Inventory Management System (((env))) ((url)).',
-      body2: 'Your request to become an ((request_type)) was received on ((request_date)).',
-      footer: 'We will contact you after your request has been reviewed by a member of our team.'
-    };
-
-    biohubApi.admin.sendGCNotification(recipient, message);
-  };
-
   if (!hasLoadedAccessRequests || !hasLoadedActiveUsers || !codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
@@ -146,12 +121,6 @@ const ManageUsersPage: React.FC = () => {
       <Container maxWidth="xl">
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h1">Manage Users</Typography>
-        </Box>
-        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Button onClick={sendEmail}> TEMP TEST EMAIL SEND</Button>
-        </Box>
-        <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
-          <Button onClick={sendSms}> TEMP TEST SMS SEND</Button>
         </Box>
 
         <Box>

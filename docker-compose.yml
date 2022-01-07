@@ -65,6 +65,8 @@ services:
       - GCNOTIFY_SECRET_API_KEY=${GCNOTIFY_SECRET_API_KEY}
       - GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE=${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
       - GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE=${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
+      - GCNOTIFY_EMAIL_URL=${GCNOTIFY_EMAIL_URL}
+      - GCNOTIFY_SMS_URL=${GCNOTIFY_SMS_URL}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules

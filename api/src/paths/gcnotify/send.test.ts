@@ -6,7 +6,7 @@ import { HTTPError } from '../../errors/custom-error';
 import { getRequestHandlerMocks } from '../../__mocks__/db';
 import axios from 'axios';
 
-import * as notfiy from './send';
+import * as notify from './send';
 
 chai.use(sinonChai);
 
@@ -51,7 +51,7 @@ describe('gcnotify', () => {
       mockReq.body = null;
 
       try {
-        const requestHandler = notfiy.sendNotification();
+        const requestHandler = notify.sendNotification();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -68,7 +68,7 @@ describe('gcnotify', () => {
       mockReq.body = { ...sampleReq.body, recipient: null };
 
       try {
-        const requestHandler = notfiy.sendNotification();
+        const requestHandler = notify.sendNotification();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -85,7 +85,7 @@ describe('gcnotify', () => {
       mockReq.body = { ...sampleReq.body, message: null };
 
       try {
-        const requestHandler = notfiy.sendNotification();
+        const requestHandler = notify.sendNotification();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -102,7 +102,7 @@ describe('gcnotify', () => {
       mockReq.body = { ...sampleReq.body, message: { ...sampleReq.body.message, header: null } };
 
       try {
-        const requestHandler = notfiy.sendNotification();
+        const requestHandler = notify.sendNotification();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -119,7 +119,7 @@ describe('gcnotify', () => {
       mockReq.body = { ...sampleReq.body, message: { ...sampleReq.body.message, body1: null } };
 
       try {
-        const requestHandler = notfiy.sendNotification();
+        const requestHandler = notify.sendNotification();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -136,7 +136,7 @@ describe('gcnotify', () => {
       mockReq.body = { ...sampleReq.body, message: { ...sampleReq.body.message, body2: null } };
 
       try {
-        const requestHandler = notfiy.sendNotification();
+        const requestHandler = notify.sendNotification();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -153,7 +153,7 @@ describe('gcnotify', () => {
       mockReq.body = { ...sampleReq.body, message: { ...sampleReq.body.message, footer: null } };
 
       try {
-        const requestHandler = notfiy.sendNotification();
+        const requestHandler = notify.sendNotification();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
@@ -172,7 +172,7 @@ describe('gcnotify', () => {
 
       const sendEmailGCNotification = sinon.stub(axios, 'post').resolves(sampleRes);
 
-      const requestHandler = notfiy.sendNotification();
+      const requestHandler = notify.sendNotification();
 
       await requestHandler(mockReq, mockRes, mockNext);
 
@@ -195,13 +195,13 @@ describe('gcnotify', () => {
       };
       process.env.GCNOTIFY_SECRET_API_KEY = 'temp';
 
-      const sendSmsGCNotification = sinon.stub(axios, 'post').resolves(sampleRes);
+      const sendPhoneNumberGCNotification = sinon.stub(axios, 'post').resolves(sampleRes);
 
-      const requestHandler = notfiy.sendNotification();
+      const requestHandler = notify.sendNotification();
 
       await requestHandler(mockReq, mockRes, mockNext);
 
-      expect(sendSmsGCNotification).to.have.been.calledOnce;
+      expect(sendPhoneNumberGCNotification).to.have.been.calledOnce;
       expect(mockRes.statusValue).to.equal(200);
     });
   });

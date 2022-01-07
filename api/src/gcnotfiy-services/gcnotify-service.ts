@@ -1,45 +1,30 @@
 import axios from 'axios';
 import { ApiError, ApiErrorType } from '../errors/custom-error';
-import { IgcNotfiyPostReturn, IgcNotfiyGenericMessage } from '../models/gcnotify';
+import { IgcNotifyPostReturn, IgcNotifyGenericMessage, IgcNotifyConfig } from '../models/gcnotify';
+
+const EMAIL_TEMPLATE: string = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE || '';
+const SMS_TEMPLATE: string = process.env.GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE || '';
+const EMAIL_URL = process.env.GCNOTIFY_EMAIL_URL || '';
+const SMS_URL = process.env.GCNOTIFY_SMS_URL || '';
 
 export class GCNotifyService {
-  /**
-   * Sends api call to gcnotify to send notification
-   *
-   *
-   * @param {string} url
-   * @param {object} config
-   * @param {object} data
-   */
-  async sendGCNotification(url: string, config: object, data: object): Promise<IgcNotfiyPostReturn> {
-    const response = await axios.post(url, data, config);
-
-    const result = (response && response.data) || null;
-
-    if (!result) {
-      throw new ApiError(ApiErrorType.UNKNOWN, 'Failed to send Notification');
-    }
-
-    return result;
-  }
-
   /**
    * Send email notification to recipient
    *
    *
    * @param {string} emailAddress
-   * @param {object} config
-   * @param {object} message
+   * @param {IgcNotifyConfig} config
+   * @param {IgcNotifyGenericMessage} message
+   * @returns {IgcNotifyPostReturn}
    */
   async sendEmailGCNotification(
     emailAddress: string,
-    config: object,
-    message: IgcNotfiyGenericMessage
-  ): Promise<IgcNotfiyPostReturn> {
-    const template = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE;
+    config: IgcNotifyConfig,
+    message: IgcNotifyGenericMessage
+  ): Promise<IgcNotifyPostReturn> {
     const data = {
       email_address: emailAddress,
-      template_id: template,
+      template_id: EMAIL_TEMPLATE,
       personalisation: {
         header: message.header,
         main_body1: message.body1,
@@ -48,7 +33,7 @@ export class GCNotifyService {
       }
     };
 
-    const response = await axios.post('https://api.notification.canada.ca/v2/notifications/email', data, config);
+    const response = await axios.post(EMAIL_URL, data, config);
 
     const result = (response && response.data) || null;
 
@@ -64,18 +49,18 @@ export class GCNotifyService {
    *
    *
    * @param {string} sms
-   * @param {object} config
-   * @param {object} message
+   * @param {IgcNotifyConfig} config
+   * @param {IgcNotifyGenericMessage} message
+   * @returns {IgcNotifyPostReturn}
    */
-  async sendSmsGCNotification(
+  async sendPhoneNumberGCNotification(
     sms: string,
-    config: object,
-    message: IgcNotfiyGenericMessage
-  ): Promise<IgcNotfiyPostReturn> {
-    const template = process.env.GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE;
+    config: IgcNotifyConfig,
+    message: IgcNotifyGenericMessage
+  ): Promise<IgcNotifyPostReturn> {
     const data = {
       phone_number: sms,
-      template_id: template,
+      template_id: SMS_TEMPLATE,
       personalisation: {
         header: message.header,
         main_body1: message.body1,
@@ -84,7 +69,7 @@ export class GCNotifyService {
       }
     };
 
-    const response = await axios.post('https://api.notification.canada.ca/v2/notifications/sms', data, config);
+    const response = await axios.post(SMS_URL, data, config);
 
     const result = (response && response.data) || null;
 

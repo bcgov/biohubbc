@@ -1,6 +1,6 @@
 import { AxiosInstance } from 'axios';
 import { AdministrativeActivityType, AdministrativeActivityStatusType } from 'constants/misc';
-import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import { IgcNotifyGenericMessage, IgcNotifyRecipient, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
 /**
@@ -13,11 +13,11 @@ const useAdminApi = (axios: AxiosInstance) => {
   /**
    * Send notification to recipient
    *
-   * @param {object} recipient
-   * @param {object} message
+   * @param {IgcNotifyRecipient} recipient
+   * @param {IgcNotifyGenericMessage} message
    * @return {*}  {Promise<number>}
    */
-  const sendGCNotification = async (recipient: object, message: object): Promise<boolean> => {
+  const sendGCNotification = async (recipient: IgcNotifyRecipient, message: IgcNotifyGenericMessage): Promise<boolean> => {
     const { status } = await axios.post(`/api/gcnotify/send`, {
       recipient,
       message

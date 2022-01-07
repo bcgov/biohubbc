@@ -5,7 +5,7 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 import { GCNotifyService } from '../../gcnotfiy-services/gcnotify-service';
-import { IgcNotfiyPostReturn } from '../../models/gcnotify';
+import { IgcNotifyPostReturn, IgcNotifyConfig } from '../../models/gcnotify';
 
 const defaultLog = getLogger('paths/gcnotify');
 
@@ -15,7 +15,7 @@ export const POST: Operation = [
       and: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-          discriminator: 'SystemUser'
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -146,8 +146,8 @@ export function sendNotification(): RequestHandler {
     }
 
     try {
-      const gcNotfiyService = new GCNotifyService();
-      let response = {} as IgcNotfiyPostReturn;
+      const gcnotifyService = new GCNotifyService();
+      let response = {} as IgcNotifyPostReturn;
 
       const api_key = process.env.GCNOTIFY_SECRET_API_KEY;
       const config = {
@@ -155,23 +155,23 @@ export function sendNotification(): RequestHandler {
           Authorization: api_key,
           'Content-Type': 'application/json'
         }
-      };
+      } as IgcNotifyConfig;
 
       if (recipient.emailAddress) {
-        response = await gcNotfiyService.sendEmailGCNotification(recipient.emailAddress, config, message);
+        response = await gcnotifyService.sendEmailGCNotification(recipient.emailAddress, config, message);
       }
 
       if (recipient.phoneNumber) {
-        response = await gcNotfiyService.sendSmsGCNotification(recipient.phoneNumber, config, message);
+        response = await gcnotifyService.sendPhoneNumberGCNotification(recipient.phoneNumber, config, message);
       }
 
       if (recipient.userId) {
-        defaultLog.error({ label: 'send gcNotfiy', message: 'email and sms from Id not implemented yet' });
+        defaultLog.error({ label: 'send gcnotify', message: 'email and sms from Id not implemented yet' });
       }
 
       return res.status(200).json(response);
     } catch (error) {
-      defaultLog.error({ label: 'send gcNotfiy', message: 'error', error });
+      defaultLog.error({ label: 'send gcnotify', message: 'error', error });
       throw error;
     }
   };
