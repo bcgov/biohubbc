@@ -177,6 +177,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
+              regional_offices={codes?.regional_offices}
             />
           )
         }}

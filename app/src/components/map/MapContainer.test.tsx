@@ -4,7 +4,6 @@ import MapContainer, { INonEditableGeometries } from './MapContainer';
 import { Feature } from 'geojson';
 import bbox from '@turf/bbox';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { SearchFeaturePopup } from './SearchFeaturePopup';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router-dom';
 
@@ -125,16 +124,7 @@ describe('MapContainer', () => {
             coordinates: [125.6, 10.1]
           },
           type: 'Feature'
-        },
-        popupComponent: (
-          <SearchFeaturePopup
-            featureData={{
-              id: 1,
-              name: 'Name',
-              objectives: 'Objectives'
-            }}
-          />
-        )
+        }
       }
     ];
 

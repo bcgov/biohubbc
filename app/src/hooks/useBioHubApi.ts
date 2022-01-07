@@ -8,7 +8,6 @@ import useProjectApi, { usePublicProjectApi } from './api/useProjectApi';
 import useSearchApi, { usePublicSearchApi } from './api/useSearchApi';
 import useUserApi from './api/useUserApi';
 import usePermitApi from './api/usePermitApi';
-import useObservationApi from './api/useObservationApi';
 import { useContext } from 'react';
 import { ConfigContext } from 'contexts/configContext';
 
@@ -35,8 +34,6 @@ export const useBiohubApi = () => {
 
   const admin = useAdminApi(apiAxios);
 
-  const observation = useObservationApi(apiAxios);
-
   const external = useExternalApi(axios);
 
   const publicApis = {
@@ -48,7 +45,6 @@ export const useBiohubApi = () => {
     project,
     permit,
     search,
-    observation,
     codes,
     draft,
     user,

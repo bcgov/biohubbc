@@ -10,7 +10,6 @@ import LogOutPage from 'pages/logout/LogOutPage';
 import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
-import SearchPage from 'features/search/SearchPage';
 import PermitsRouter from 'features/permits/PermitsRouter';
 import PublicProjectsRouter from 'features/projects/PublicProjectsRouter';
 
@@ -26,7 +25,6 @@ const AppRouter: React.FC = (props: any) => {
       <Redirect from="/:url*(/+)" to={location.pathname.slice(0, -1)} />
       <Redirect exact from="/" to="/projects" />
       <AppRoute path="/projects" title={getTitle('Projects')} component={PublicProjectsRouter} />
-      <AppRoute path="/search" title={getTitle('Search')} component={SearchPage} layout={PublicLayout} />
       <AppRoute
         anyAuth
         path="/page-not-found"
@@ -77,13 +75,6 @@ const AppRouter: React.FC = (props: any) => {
         component={PermitsRouter}
         layout={PublicLayout}
         title={getTitle('Permits')}
-      />
-      <AppRoute
-        protected
-        path="/admin/search"
-        component={SearchPage}
-        layout={PublicLayout}
-        title={getTitle('Search')}
       />
       <AppRoute protected path="/logout" component={LogOutPage} layout={PublicLayout} title={getTitle('Logout')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />

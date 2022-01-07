@@ -13,6 +13,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { useFormikContext } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
@@ -133,6 +134,21 @@ const IDIRRequestForm: React.FC<IIDIRRequestFormProps> = (props) => {
           </Grid>
         )}
       </Grid>
+
+      {values.work_from_regional_office === 'true' && (
+        <Box>
+          <Typography variant="h3">Which Regional Offices do you work for?</Typography>
+          <MultiAutocompleteFieldVariableSize
+            id={'regional_offices'}
+            label={'Regional Offices'}
+            options={
+              codes?.regional_offices?.map((item) => {
+                return { value: item.id, label: item.name };
+              }) || []
+            }
+          />
+        </Box>
+      )}
 
       <Box mt={3}>
         <Typography variant="h3">Reason for your request</Typography>
