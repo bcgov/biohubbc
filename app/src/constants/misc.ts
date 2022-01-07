@@ -15,4 +15,3 @@ export enum ProjectStatusType {
   ACTIVE = 'Active',
   DRAFT = 'Draft'
 }
-
