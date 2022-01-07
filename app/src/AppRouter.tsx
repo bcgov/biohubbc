@@ -12,7 +12,6 @@ import { Redirect, Switch, useLocation } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
 import SearchPage from 'features/search/SearchPage';
 import PermitsRouter from 'features/permits/PermitsRouter';
-import ResourcesRouter from 'features/resources/ResourcesRouter';
 import PublicProjectsRouter from 'features/projects/PublicProjectsRouter';
 
 const AppRouter: React.FC = (props: any) => {
@@ -85,13 +84,6 @@ const AppRouter: React.FC = (props: any) => {
         component={SearchPage}
         layout={PublicLayout}
         title={getTitle('Search')}
-      />
-      <AppRoute
-        protected
-        path="/admin/resources"
-        component={ResourcesRouter}
-        layout={PublicLayout}
-        title={getTitle('Resources')}
       />
       <AppRoute protected path="/logout" component={LogOutPage} layout={PublicLayout} title={getTitle('Logout')} />
       <AppRoute title="*" path="*" component={() => <Redirect to="/page-not-found" />} />
