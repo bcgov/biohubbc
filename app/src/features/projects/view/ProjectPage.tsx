@@ -5,7 +5,6 @@ import Grid from '@material-ui/core/Grid';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
-import SurveysListPage from 'features/surveys/list/SurveysListPage';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
@@ -79,9 +78,6 @@ const ProjectPage: React.FC = () => {
             <Grid item xs={12} lg={8}>
               <Box>
                 <ProjectDetails projectForViewData={projectWithDetails} codes={codes} refresh={getProject} />
-              </Box>
-              <Box mt={3}>
-                <SurveysListPage projectForViewData={projectWithDetails} />
               </Box>
               <Box mt={3}>
                 <ProjectAttachments projectForViewData={projectWithDetails} />
