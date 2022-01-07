@@ -9,6 +9,8 @@ import { IgcNotifyPostReturn, IgcNotifyConfig } from '../../models/gcnotify';
 
 const defaultLog = getLogger('paths/gcnotify');
 
+const api_key = process.env.GCNOTIFY_SECRET_API_KEY;
+
 export const POST: Operation = [
   authorizeRequestHandler(() => {
     return {
@@ -149,7 +151,6 @@ export function sendNotification(): RequestHandler {
       const gcnotifyService = new GCNotifyService();
       let response = {} as IgcNotifyPostReturn;
 
-      const api_key = process.env.GCNOTIFY_SECRET_API_KEY;
       const config = {
         headers: {
           Authorization: api_key,
