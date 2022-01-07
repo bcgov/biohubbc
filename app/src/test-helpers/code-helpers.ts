@@ -25,14 +25,9 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Project Role 1' },
     { id: 2, name: 'Project Role 2' }
   ],
-  regional_offices: [{ id: 1, name: 'Office 1' }],
   administrative_activity_status_type: [
     { id: 1, name: 'Pending' },
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
-  ],
-  common_survey_methodologies: [
-    { id: 1, name: 'Recruitment' },
-    { id: 2, name: 'SRB' }
   ]
 };
