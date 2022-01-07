@@ -10,7 +10,7 @@ import * as notfiy from './send';
 
 chai.use(sinonChai);
 
-describe.only('gcnotify', () => {
+describe('gcnotify', () => {
   describe('sendNotification', () => {
     const env = Object.assign({}, process.env);
     afterEach(() => {

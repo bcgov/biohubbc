@@ -17,10 +17,7 @@ const useAdminApi = (axios: AxiosInstance) => {
    * @param {object} message
    * @return {*}  {Promise<number>}
    */
-  const sendGCNotification = async (
-    recipient: object,
-    message: object,
-  ): Promise<boolean> => {
+  const sendGCNotification = async (recipient: object, message: object): Promise<boolean> => {
     const { status } = await axios.post(`/api/gcnotify/send`, {
       recipient,
       message
