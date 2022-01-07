@@ -4,7 +4,7 @@ import { HTTP400 } from '../../errors/custom-error';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
-import { GCNotifyService } from '../../gcnotfiy-services/gcnotify-service';
+import { GCNotifyService } from '../../services/gcnotify-service';
 import { IgcNotifyPostReturn, IgcNotifyConfig } from '../../models/gcnotify';
 
 const defaultLog = getLogger('paths/gcnotify');
