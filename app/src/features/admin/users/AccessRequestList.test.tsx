@@ -61,7 +61,6 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: [1, 2],
             comments: 'test comment'
           },
           create_date: '2020-04-20'
@@ -97,7 +96,6 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: [1, 2],
             comments: 'test comment'
           },
           create_date: '2020-04-20'
@@ -133,7 +131,7 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: [1, 2],
+
             comments: 'test comment'
           },
           create_date: '2020-04-20'
@@ -196,7 +194,6 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: [1, 2],
             comments: 'test comment'
           },
           create_date: '2020-04-20'
@@ -243,7 +240,6 @@ describe('AccessRequestList', () => {
             role: 1,
             identitySource: 'idir',
             company: 'test company',
-            regional_offices: [1, 2],
             comments: 'test comment'
           },
           create_date: '2020-04-20'

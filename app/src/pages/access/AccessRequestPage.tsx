@@ -30,8 +30,6 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 interface IAccessRequestForm {
   role: number;
-  work_from_regional_office: string;
-  regional_offices: number[];
   comments: string;
 }
 

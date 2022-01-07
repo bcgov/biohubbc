@@ -21,7 +21,6 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Role 1' },
     { id: 2, name: 'Role 2' }
   ],
-  regional_offices: [{ id: 1, name: 'Office 1' }],
   project_roles: [
     { id: 1, name: 'Project Role 1' },
     { id: 2, name: 'Project Role 2' }

@@ -93,7 +93,6 @@ describe('Header', () => {
 
     expect(getByText('Projects')).toBeVisible();
     expect(getByText('Permits')).toBeVisible();
-    expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
   });
 

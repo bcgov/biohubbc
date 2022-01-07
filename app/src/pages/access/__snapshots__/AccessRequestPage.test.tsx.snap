@@ -30,7 +30,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
         >
           <form>
             <div
-              class="MuiBox-root MuiBox-root-7"
+              class="MuiBox-root MuiBox-root-6"
             >
               <div
                 class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -44,7 +44,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                     What role do you want to be assigned?
                   </h3>
                   <div
-                    class="MuiBox-root MuiBox-root-8"
+                    class="MuiBox-root MuiBox-root-7"
                   >
                     <div
                       class="MuiFormControl-root MuiFormControl-fullWidth"
@@ -99,10 +99,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-11"
+                            class="PrivateNotchedOutline-legendLabelled-10"
                           >
                             <span>
                               Role
@@ -118,7 +118,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-13"
+                class="MuiBox-root MuiBox-root-12"
               >
                 <h3
                   class="MuiTypography-root MuiTypography-h3"
@@ -126,7 +126,7 @@ exports[`AccessRequestPage renders correctly 1`] = `
                   Reason for your request
                 </h3>
                 <div
-                  class="MuiBox-root MuiBox-root-14"
+                  class="MuiBox-root MuiBox-root-13"
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -151,10 +151,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-9 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-8 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-11"
+                          class="PrivateNotchedOutline-legendLabelled-10"
                         >
                           <span>
                             Reason
@@ -167,10 +167,10 @@ exports[`AccessRequestPage renders correctly 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-15"
+              class="MuiBox-root MuiBox-root-14"
             >
               <div
-                class="MuiBox-root MuiBox-root-16 buttonWrapper"
+                class="MuiBox-root MuiBox-root-15 buttonWrapper"
               >
                 <button
                   class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-1 MuiButton-containedPrimary"
