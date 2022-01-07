@@ -11,7 +11,7 @@ export class GCNotifyService {
    * @param {object} config
    * @param {object} data
    */
-  sendGCNotification = async (url: string, config: object, data: object): Promise<IgcNotfiyPostReturn> => {
+  async sendGCNotification(url: string, config: object, data: object): Promise<IgcNotfiyPostReturn> {
     const response = await axios.post(url, data, config);
 
     const result = (response && response.data) || null;
@@ -21,7 +21,7 @@ export class GCNotifyService {
     }
 
     return result;
-  };
+  }
 
   /**
    * Send email notification to recipient
@@ -31,11 +31,11 @@ export class GCNotifyService {
    * @param {object} config
    * @param {object} message
    */
-  sendEmailGCNotification = async (
+  async sendEmailGCNotification(
     emailAddress: string,
     config: object,
     message: IgcNotfiyGenericMessage
-  ): Promise<IgcNotfiyPostReturn> => {
+  ): Promise<IgcNotfiyPostReturn> {
     const template = process.env.GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE;
     const data = {
       email_address: emailAddress,
@@ -57,7 +57,7 @@ export class GCNotifyService {
     }
 
     return result;
-  };
+  }
 
   /**
    * Send email notification to recipient
@@ -67,11 +67,11 @@ export class GCNotifyService {
    * @param {object} config
    * @param {object} message
    */
-  sendSmsGCNotification = async (
+  async sendSmsGCNotification(
     sms: string,
     config: object,
     message: IgcNotfiyGenericMessage
-  ): Promise<IgcNotfiyPostReturn> => {
+  ): Promise<IgcNotfiyPostReturn> {
     const template = process.env.GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE;
     const data = {
       phone_number: sms,
@@ -93,5 +93,5 @@ export class GCNotifyService {
     }
 
     return result;
-  };
+  }
 }

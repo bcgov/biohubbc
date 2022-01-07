@@ -157,11 +157,11 @@ export function sendNotification(): RequestHandler {
         }
       };
 
-      if (recipient.emailAddress !== null) {
+      if (recipient.emailAddress) {
         response = await gcNotfiyService.sendEmailGCNotification(recipient.emailAddress, config, message);
       }
 
-      if (recipient.phoneNumber !== null) {
+      if (recipient.phoneNumber) {
         response = await gcNotfiyService.sendSmsGCNotification(recipient.phoneNumber, config, message);
       }
 
