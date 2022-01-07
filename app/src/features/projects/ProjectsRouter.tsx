@@ -2,8 +2,6 @@ import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import ProjectsListPage from 'features/projects/list/ProjectsListPage';
 import ProjectsLayout from 'features/projects/ProjectsLayout';
 import ProjectPage from 'features/projects/view/ProjectPage';
-import CreateSurveyPage from 'features/surveys/CreateSurveyPage';
-import SurveyPage from 'features/surveys/view/SurveyPage';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
@@ -57,41 +55,6 @@ const ProjectsRouter: React.FC<IProjectsRouterProps> = (props) => {
         layout={ProjectsLayout}
         path="/admin/projects/:id?/surveys"
         component={ProjectPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={ProjectsLayout}
-        path="/admin/projects/:id?/surveys/:survey_id?/details"
-        component={SurveyPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={ProjectsLayout}
-        path="/admin/projects/:id?/surveys/:survey_id?/attachments"
-        component={SurveyPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={ProjectsLayout}
-        path="/admin/projects/:id?/surveys/:survey_id?/observations"
-        component={SurveyPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={ProjectsLayout}
-        path="/admin/projects/:id?/surveys/:survey_id?/results"
-        component={SurveyPage}
-        componentProps={props}
-      />
-      <PrivateRoute
-        exact
-        layout={ProjectsLayout}
-        path="/admin/projects/:id?/survey/create"
-        component={CreateSurveyPage}
         componentProps={props}
       />
       <PrivateRoute
