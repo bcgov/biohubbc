@@ -17,9 +17,6 @@ parameters:
   - name: REACT_APP_API_HOST
     description: API host for application backend
     value: ''
-  - name: REACT_APP_N8N_HOST
-    description: N8N host for application backend
-    value: ''
   - name: REACT_APP_SITEMINDER_LOGOUT_URL
     description: Siteminder URL to log out and clear the session for the logged in user
     value: ''
@@ -124,8 +121,6 @@ objects:
                   value: ${CHANGE_ID}
                 - name: REACT_APP_API_HOST
                   value: ${REACT_APP_API_HOST}
-                - name: REACT_APP_N8N_HOST
-                  value: ${REACT_APP_N8N_HOST}
                 - name: REACT_APP_SITEMINDER_LOGOUT_URL
                   value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
                 - name: REACT_APP_MAX_UPLOAD_NUM_FILES

@@ -12,7 +12,6 @@ import usePermitApi from './api/usePermitApi';
 import useObservationApi from './api/useObservationApi';
 import { useContext } from 'react';
 import { ConfigContext } from 'contexts/configContext';
-import useN8NApi from './api/useN8NApi';
 
 /**
  * Returns a set of supported api methods.
@@ -22,7 +21,6 @@ import useN8NApi from './api/useN8NApi';
 export const useBiohubApi = () => {
   const config = useContext(ConfigContext);
   const apiAxios = useAxios(config?.API_HOST);
-  const n8nAxios = useAxios(config?.N8N_HOST);
 
   const project = useProjectApi(apiAxios);
 
@@ -42,8 +40,6 @@ export const useBiohubApi = () => {
 
   const observation = useObservationApi(apiAxios);
 
-  const n8n = useN8NApi(n8nAxios);
-
   const external = useExternalApi(axios);
 
   const publicApis = {
@@ -61,7 +57,6 @@ export const useBiohubApi = () => {
     draft,
     user,
     admin,
-    n8n,
     external,
     public: publicApis
   };

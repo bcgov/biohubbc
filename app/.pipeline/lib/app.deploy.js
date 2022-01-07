@@ -24,7 +24,6 @@ module.exports = (settings) => {
         HOST: phases[phase].host,
         CHANGE_ID: phases.build.changeId || changeId,
         REACT_APP_API_HOST: phases[phase].apiHost,
-        REACT_APP_N8N_HOST: phases[phase].n8nHost,
         REACT_APP_SITEMINDER_LOGOUT_URL: phases[phase].siteminderLogoutURL,
         REACT_APP_MAX_UPLOAD_NUM_FILES: phases[phase].maxUploadNumFiles,
         REACT_APP_MAX_UPLOAD_FILE_SIZE: phases[phase].maxUploadFileSize,
