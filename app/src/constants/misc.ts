@@ -16,9 +16,3 @@ export enum ProjectStatusType {
   DRAFT = 'Draft'
 }
 
-export enum SurveyStatusType {
-  UNPUBLISHED = 'Unpublished',
-  PUBLISHED = 'Published',
-  COMPLETED = 'Completed',
-  ACTIVE = 'Active'
-}

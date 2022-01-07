@@ -27,7 +27,6 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
@@ -53,7 +52,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface IAttachmentsListProps {
   projectId: number;
   surveyId?: number;
-  attachmentsList: (IGetProjectAttachment | IGetSurveyAttachment)[];
+  attachmentsList: IGetProjectAttachment[];
   getAttachments: (forceFetch: boolean) => void;
 }
 
@@ -68,17 +67,17 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const [showViewFileWithMetaDialog, setShowViewFileWithMetaDialog] = useState<boolean>(false);
   const [showEditFileWithMetaDialog, setShowEditFileWithMetaDialog] = useState<boolean>(false);
 
-  const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | IGetSurveyAttachment | null>(null);
+  const [currentAttachment, setCurrentAttachment] = useState<IGetProjectAttachment | null>(null);
 
-  const handleDownloadFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const handleDownloadFileClick = (attachment: IGetProjectAttachment) => {
     openAttachment(attachment);
   };
 
-  const handleDeleteFileClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const handleDeleteFileClick = (attachment: IGetProjectAttachment) => {
     showDeleteAttachmentDialog(attachment);
   };
 
-  const handleViewDetailsClick = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const handleViewDetailsClick = (attachment: IGetProjectAttachment) => {
     setCurrentAttachment(attachment);
     getReportMeta(attachment);
   };
@@ -116,7 +115,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   }, [reportMetaData, currentAttachment]);
 
-  const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const showDeleteAttachmentDialog = (attachment: IGetProjectAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
@@ -127,7 +126,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const showToggleSecurityStatusAttachmentDialog = (attachment: IGetProjectAttachment) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       dialogTitle: 'Change Security Status',
@@ -146,28 +145,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     });
   };
 
-  const deleteAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const deleteAttachment = async (attachment: IGetProjectAttachment) => {
     if (!attachment?.id) {
       return;
     }
 
     try {
-      if (!props.surveyId) {
-        await biohubApi.project.deleteProjectAttachment(
-          props.projectId,
-          attachment.id,
-          attachment.fileType,
-          attachment.securityToken
-        );
-      } else if (props.surveyId) {
-        await biohubApi.survey.deleteSurveyAttachment(
-          props.projectId,
-          props.surveyId,
-          attachment.id,
-          attachment.fileType,
-          attachment.securityToken
-        );
-      }
+      await biohubApi.project.deleteProjectAttachment(
+        props.projectId,
+        attachment.id,
+        attachment.fileType,
+        attachment.securityToken
+      );
 
       props.getAttachments(true);
     } catch (error) {
@@ -182,15 +171,9 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const getReportMeta = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const getReportMeta = async (attachment: IGetProjectAttachment) => {
     try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.getSurveyReportMetadata(props.projectId, props.surveyId, attachment.id);
-      } else {
-        response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
-      }
+      const response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
 
       if (!response) {
         return;
@@ -202,20 +185,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const openAttachment = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const openAttachment = async (attachment: IGetProjectAttachment) => {
     try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.getSurveyAttachmentSignedURL(
-          props.projectId,
-          props.surveyId,
-          attachment.id,
-          attachment.fileType
-        );
-      } else {
-        response = await biohubApi.project.getAttachmentSignedURL(props.projectId, attachment.id, attachment.fileType);
-      }
+      const response = await biohubApi.project.getAttachmentSignedURL(
+        props.projectId,
+        attachment.id,
+        attachment.fileType
+      );
 
       if (!response) {
         return;
@@ -245,24 +221,17 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     setShowEditFileWithMetaDialog(true);
   };
 
-  const makeAttachmentSecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const makeAttachmentSecure = async (attachment: IGetProjectAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
 
     try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.makeAttachmentSecure(
-          props.projectId,
-          props.surveyId,
-          attachment.id,
-          attachment.fileType
-        );
-      } else {
-        response = await biohubApi.project.makeAttachmentSecure(props.projectId, attachment.id, attachment.fileType);
-      }
+      const response = await biohubApi.project.makeAttachmentSecure(
+        props.projectId,
+        attachment.id,
+        attachment.fileType
+      );
 
       if (!response) {
         return;
@@ -274,30 +243,18 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
   };
 
-  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment | IGetSurveyAttachment) => {
+  const makeAttachmentUnsecure = async (attachment: IGetProjectAttachment) => {
     if (!attachment || !attachment.id) {
       return;
     }
 
     try {
-      let response;
-
-      if (props.surveyId) {
-        response = await biohubApi.survey.makeAttachmentUnsecure(
-          props.projectId,
-          props.surveyId,
-          attachment.id,
-          attachment.securityToken,
-          attachment.fileType
-        );
-      } else {
-        response = await biohubApi.project.makeAttachmentUnsecure(
-          props.projectId,
-          attachment.id,
-          attachment.securityToken,
-          attachment.fileType
-        );
-      }
+      const response = await biohubApi.project.makeAttachmentUnsecure(
+        props.projectId,
+        attachment.id,
+        attachment.securityToken,
+        attachment.fileType
+      );
 
       if (!response) {
         return;
@@ -317,24 +274,13 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     const fileMeta = values;
 
     try {
-      if (props.surveyId) {
-        await biohubApi.survey.updateSurveyReportMetadata(
-          props.projectId,
-          props.surveyId,
-          reportMetaData.attachment_id,
-          AttachmentType.REPORT,
-          fileMeta,
-          reportMetaData.revision_count
-        );
-      } else {
-        await biohubApi.project.updateProjectReportMetadata(
-          props.projectId,
-          reportMetaData.attachment_id,
-          AttachmentType.REPORT,
-          fileMeta,
-          reportMetaData.revision_count
-        );
-      }
+      await biohubApi.project.updateProjectReportMetadata(
+        props.projectId,
+        reportMetaData.attachment_id,
+        AttachmentType.REPORT,
+        fileMeta,
+        reportMetaData.revision_count
+      );
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -449,10 +395,10 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 export default AttachmentsList;
 
 interface IAttachmentItemMenuButtonProps {
-  attachment: IGetProjectAttachment | IGetSurveyAttachment;
-  handleDownloadFileClick: (attachment: IGetProjectAttachment | IGetSurveyAttachment) => void;
-  handleDeleteFileClick: (attachment: IGetProjectAttachment | IGetSurveyAttachment) => void;
-  handleViewDetailsClick: (attachment: IGetProjectAttachment | IGetSurveyAttachment) => void;
+  attachment: IGetProjectAttachment;
+  handleDownloadFileClick: (attachment: IGetProjectAttachment) => void;
+  handleDeleteFileClick: (attachment: IGetProjectAttachment) => void;
+  handleViewDetailsClick: (attachment: IGetProjectAttachment) => void;
 }
 
 const AttachmentItemMenuButton: React.FC<IAttachmentItemMenuButtonProps> = (props) => {

@@ -26,9 +26,6 @@ const mockUseBiohubApi = {
     deleteProject: jest.fn(),
     publishProject: jest.fn()
   },
-  survey: {
-    getSurveysList: jest.fn()
-  },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   }
@@ -63,7 +60,6 @@ describe('ProjectPage', () => {
     // clear mocks before each test
     mockBiohubApi().project.deleteProject.mockClear();
     mockBiohubApi().project.getProjectForView.mockClear();
-    mockBiohubApi().survey.getSurveysList.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().project.publishProject.mockClear();
   });

@@ -6,7 +6,6 @@ import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
 import useProjectApi, { usePublicProjectApi } from './api/useProjectApi';
 import useSearchApi, { usePublicSearchApi } from './api/useSearchApi';
-import useSurveyApi from './api/useSurveyApi';
 import useUserApi from './api/useUserApi';
 import usePermitApi from './api/usePermitApi';
 import useObservationApi from './api/useObservationApi';
@@ -27,8 +26,6 @@ export const useBiohubApi = () => {
   const permit = usePermitApi(apiAxios);
 
   const search = useSearchApi(apiAxios);
-
-  const survey = useSurveyApi(apiAxios);
 
   const codes = useCodesApi(apiAxios);
 
@@ -51,7 +48,6 @@ export const useBiohubApi = () => {
     project,
     permit,
     search,
-    survey,
     observation,
     codes,
     draft,
