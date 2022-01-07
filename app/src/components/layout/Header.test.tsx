@@ -95,7 +95,6 @@ describe('Header', () => {
     expect(getByText('Permits')).toBeVisible();
     expect(getByText('Map')).toBeVisible();
     expect(getByText('Manage Users')).toBeVisible();
-    expect(getByText('Resources')).toBeVisible();
   });
 
   it('renders the username and logout button', () => {
