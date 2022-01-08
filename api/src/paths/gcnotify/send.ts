@@ -5,11 +5,9 @@ import { SYSTEM_ROLE } from '../../constants/roles';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 import { GCNotifyService } from '../../services/gcnotify-service';
-import { IgcNotifyPostReturn, IgcNotifyConfig } from '../../models/gcnotify';
+import { IgcNotifyPostReturn } from '../../models/gcnotify';
 
 const defaultLog = getLogger('paths/gcnotify');
-
-const api_key = process.env.GCNOTIFY_SECRET_API_KEY;
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -86,7 +84,27 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             title: 'User Response Object',
-            type: 'object'
+            type: 'object',
+            properties: {
+              content: {
+                type: 'object'
+              },
+              id: {
+                type: 'string'
+              },
+              reference: {
+                type: 'string'
+              },
+              scheduled_for: {
+                type: 'string'
+              },
+              template: {
+                type: 'object'
+              },
+              uri: {
+                type: 'string'
+              }
+            }
           }
         }
       }
@@ -151,19 +169,12 @@ export function sendNotification(): RequestHandler {
       const gcnotifyService = new GCNotifyService();
       let response = {} as IgcNotifyPostReturn;
 
-      const config = {
-        headers: {
-          Authorization: api_key,
-          'Content-Type': 'application/json'
-        }
-      } as IgcNotifyConfig;
-
       if (recipient.emailAddress) {
-        response = await gcnotifyService.sendEmailGCNotification(recipient.emailAddress, config, message);
+        response = await gcnotifyService.sendEmailGCNotification(recipient.emailAddress, message);
       }
 
       if (recipient.phoneNumber) {
-        response = await gcnotifyService.sendPhoneNumberGCNotification(recipient.phoneNumber, config, message);
+        response = await gcnotifyService.sendPhoneNumberGCNotification(recipient.phoneNumber, message);
       }
 
       if (recipient.userId) {

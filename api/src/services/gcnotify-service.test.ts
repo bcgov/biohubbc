@@ -5,7 +5,7 @@ import sinonChai from 'sinon-chai';
 import { ApiError } from '../errors/custom-error';
 import { GCNotifyService } from './gcnotify-service';
 import axios from 'axios';
-import { IgcNotifyGenericMessage, IgcNotifyConfig } from '../models/gcnotify';
+import { IgcNotifyGenericMessage } from '../models/gcnotify';
 
 chai.use(sinonChai);
 
@@ -17,13 +17,6 @@ describe('GCNotifyService', () => {
 
     const emailAddress = 'test@email.com';
 
-    const config = {
-      headers: {
-        Authorization: 'api_key',
-        'Content-Type': 'application/json'
-      }
-    };
-
     const message = {
       header: 'message.header',
       body1: 'message.body1',
@@ -31,26 +24,13 @@ describe('GCNotifyService', () => {
       footer: 'message.footer'
     };
 
-    it('should throw a 400 error when no url is given', async () => {
+    it('should throw a 400 error when no email is given', async () => {
       const gcNotifyServiece = new GCNotifyService();
 
       sinon.stub(axios, 'post').resolves({ data: null });
 
       try {
-        await gcNotifyServiece.sendEmailGCNotification('', config, message);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiError).message).to.equal('Failed to send Notification');
-      }
-    });
-
-    it('should throw a 400 error when no config is given', async () => {
-      const gcNotifyServiece = new GCNotifyService();
-
-      sinon.stub(axios, 'post').resolves({ data: null });
-
-      try {
-        await gcNotifyServiece.sendEmailGCNotification(emailAddress, {} as IgcNotifyConfig, message);
+        await gcNotifyServiece.sendEmailGCNotification('', message);
         expect.fail();
       } catch (actualError) {
         expect((actualError as ApiError).message).to.equal('Failed to send Notification');
@@ -63,7 +43,7 @@ describe('GCNotifyService', () => {
       sinon.stub(axios, 'post').resolves({ data: null });
 
       try {
-        await gcNotifyServiece.sendEmailGCNotification(emailAddress, config, message);
+        await gcNotifyServiece.sendEmailGCNotification(emailAddress, message);
         expect.fail();
       } catch (actualError) {
         expect((actualError as ApiError).message).to.equal('Failed to send Notification');
@@ -75,11 +55,7 @@ describe('GCNotifyService', () => {
 
       sinon.stub(axios, 'post').resolves({ data: 201 });
 
-      const result = await gcNotifyServiece.sendEmailGCNotification(
-        emailAddress,
-        config,
-        {} as IgcNotifyGenericMessage
-      );
+      const result = await gcNotifyServiece.sendEmailGCNotification(emailAddress, {} as IgcNotifyGenericMessage);
 
       expect(result).to.eql(201);
     });
@@ -92,13 +68,6 @@ describe('GCNotifyService', () => {
 
     const sms = '2501231234';
 
-    const config = {
-      headers: {
-        Authorization: 'api_key',
-        'Content-Type': 'application/json'
-      }
-    };
-
     const message = {
       header: 'message.header',
       body1: 'message.body1',
@@ -106,26 +75,13 @@ describe('GCNotifyService', () => {
       footer: 'message.footer'
     };
 
-    it('should throw a 400 error when no url is given', async () => {
+    it('should throw a 400 error when no phone number is given', async () => {
       const gcNotifyServiece = new GCNotifyService();
 
       sinon.stub(axios, 'post').resolves({ data: null });
 
       try {
-        await gcNotifyServiece.sendPhoneNumberGCNotification('', config, message);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiError).message).to.equal('Failed to send Notification');
-      }
-    });
-
-    it('should throw a 400 error when no config is given', async () => {
-      const gcNotifyServiece = new GCNotifyService();
-
-      sinon.stub(axios, 'post').resolves({ data: null });
-
-      try {
-        await gcNotifyServiece.sendPhoneNumberGCNotification(sms, {} as IgcNotifyConfig, message);
+        await gcNotifyServiece.sendPhoneNumberGCNotification('', message);
         expect.fail();
       } catch (actualError) {
         expect((actualError as ApiError).message).to.equal('Failed to send Notification');
@@ -138,7 +94,7 @@ describe('GCNotifyService', () => {
       sinon.stub(axios, 'post').resolves({ data: null });
 
       try {
-        await gcNotifyServiece.sendPhoneNumberGCNotification(sms, config, message);
+        await gcNotifyServiece.sendPhoneNumberGCNotification(sms, message);
         expect.fail();
       } catch (actualError) {
         expect((actualError as ApiError).message).to.equal('Failed to send Notification');
@@ -150,7 +106,7 @@ describe('GCNotifyService', () => {
 
       sinon.stub(axios, 'post').resolves({ data: 201 });
 
-      const result = await gcNotifyServiece.sendPhoneNumberGCNotification(sms, config, {} as IgcNotifyGenericMessage);
+      const result = await gcNotifyServiece.sendPhoneNumberGCNotification(sms, {} as IgcNotifyGenericMessage);
 
       expect(result).to.eql(201);
     });

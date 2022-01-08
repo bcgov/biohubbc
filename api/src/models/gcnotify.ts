@@ -13,10 +13,3 @@ export interface IgcNotifyGenericMessage {
   body2: string;
   footer: string;
 }
-
-export interface IgcNotifyConfig {
-  headers: {
-    Authorization: string;
-    'Content-Type': string;
-  };
-}
