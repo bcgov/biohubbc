@@ -17,9 +17,9 @@ const mockuseRestorationTrackerApi = {
   }
 };
 
-const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
-  mockuseRestorationTrackerApi
-);
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<
+  typeof mockuseRestorationTrackerApi
+>).mockReturnValue(mockuseRestorationTrackerApi);
 
 describe('FundingSource', () => {
   beforeEach(() => {
@@ -205,7 +205,9 @@ describe('FundingSource', () => {
   });
 
   it('shows error dialog with API error message when deleting a funding source fails', async () => {
-    mockRestorationTrackerApi().project.deleteFundingSource = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.deleteFundingSource = jest.fn(() =>
+      Promise.reject(new Error('API Error is Here'))
+    );
 
     const { getByText, queryByText, getByTestId } = render(
       <DialogContextProvider>

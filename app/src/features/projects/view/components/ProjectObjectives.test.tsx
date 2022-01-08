@@ -15,9 +15,9 @@ const mockuseRestorationTrackerApi = {
   }
 };
 
-const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
-  mockuseRestorationTrackerApi
-);
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<
+  typeof mockuseRestorationTrackerApi
+>).mockReturnValue(mockuseRestorationTrackerApi);
 
 const mockRefresh = jest.fn();
 
@@ -235,7 +235,9 @@ describe('ProjectObjectives', () => {
   });
 
   it('shows error dialog with API error message when getting objectives data for update fails', async () => {
-    mockRestorationTrackerApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.getProjectForUpdate = jest.fn(() =>
+      Promise.reject(new Error('API Error is Here'))
+    );
 
     const { getByText, queryByText } = renderContainer();
 

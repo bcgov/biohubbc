@@ -38,7 +38,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
   const history = useHistory();
   const urlParams = useParams();
   const dialogContext = useContext(DialogContext);
-const restorationTrackerApi = useRestorationTrackerApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [openAddParticipantsDialog, setOpenAddParticipantsDialog] = useState(false);
 

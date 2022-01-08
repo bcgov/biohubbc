@@ -13,9 +13,9 @@ const mockuseRestorationTrackerApi = {
   }
 };
 
-const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
-  mockuseRestorationTrackerApi
-);
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<
+  typeof mockuseRestorationTrackerApi
+>).mockReturnValue(mockuseRestorationTrackerApi);
 
 const renderContainer = (
   accessRequests: IGetAccessRequestsListResponse[],
@@ -216,7 +216,9 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockRestorationTrackerApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockRestorationTrackerApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [2]);
+      expect(mockRestorationTrackerApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [
+        2
+      ]);
     });
   });
 

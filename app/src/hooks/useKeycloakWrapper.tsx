@@ -194,7 +194,14 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     }
 
     getSystemAccessRequest();
-  }, [keycloak, restorationTrackerApi.admin, getUserIdentifier, hasAccessRequest, keycloakUser, shouldLoadAccessRequest]);
+  }, [
+    keycloak,
+    restorationTrackerApi.admin,
+    getUserIdentifier,
+    hasAccessRequest,
+    keycloakUser,
+    shouldLoadAccessRequest
+  ]);
 
   useEffect(() => {
     const getKeycloakUser = async () => {

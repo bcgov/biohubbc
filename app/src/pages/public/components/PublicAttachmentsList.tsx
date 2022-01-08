@@ -69,7 +69,10 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
   const handleReportMetaDialog = async (attachment: IGetProjectAttachment) => {
     setCurrentAttachment(attachment);
     try {
-      const response = await restorationTrackerApi.public.project.getPublicProjectReportMetadata(props.projectId, attachment.id);
+      const response = await restorationTrackerApi.public.project.getPublicProjectReportMetadata(
+        props.projectId,
+        attachment.id
+      );
 
       if (!response) {
         return;

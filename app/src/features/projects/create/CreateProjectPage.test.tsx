@@ -38,9 +38,9 @@ const mockuseRestorationTrackerApi = {
   }
 };
 
-const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
-  mockuseRestorationTrackerApi
-);
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<
+  typeof mockuseRestorationTrackerApi
+>).mockReturnValue(mockuseRestorationTrackerApi);
 
 const renderContainer = () => {
   return render(
@@ -72,7 +72,9 @@ describe('CreateProjectPage', () => {
     mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+      { permit_id: 1, number: 1, type: 'Wildlife' }
+    ]);
 
     const { getByText, getAllByText, asFragment } = renderContainer();
 
@@ -101,7 +103,9 @@ describe('CreateProjectPage', () => {
     mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+      { permit_id: 1, number: 1, type: 'Wildlife' }
+    ]);
 
     const { findByText } = renderContainer();
     const PageTitle = await findByText('Create Project');
@@ -113,7 +117,9 @@ describe('CreateProjectPage', () => {
     mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+      { permit_id: 1, number: 1, type: 'Wildlife' }
+    ]);
 
     const { getByText, getAllByText, queryByLabelText } = renderContainer();
 
@@ -142,7 +148,9 @@ describe('CreateProjectPage', () => {
       mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+        { permit_id: 1, number: 1, type: 'Wildlife' }
+      ]);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -164,7 +172,9 @@ describe('CreateProjectPage', () => {
       mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+        { permit_id: 1, number: 1, type: 'Wildlife' }
+      ]);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -184,7 +194,9 @@ describe('CreateProjectPage', () => {
       mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+        { permit_id: 1, number: 1, type: 'Wildlife' }
+      ]);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -206,7 +218,9 @@ describe('CreateProjectPage', () => {
       mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+        { permit_id: 1, number: 1, type: 'Wildlife' }
+      ]);
     });
 
     it('preloads draft data and populates on form fields', async () => {

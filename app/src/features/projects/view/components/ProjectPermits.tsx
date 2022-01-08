@@ -19,7 +19,7 @@ import ProjectPermitForm, {
   ProjectPermitFormInitialValues
 } from 'features/projects/components/ProjectPermitForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useRestorationTrackerApi} from 'hooks/useRestorationTrackerApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
 import {
@@ -79,7 +79,10 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
 
     try {
       const [projectForUpdateResponse, existingPermitsResponse] = await Promise.all([
-        restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.permit, UPDATE_GET_ENTITIES.coordinator]),
+        restorationTrackerApi.project.getProjectForUpdate(id, [
+          UPDATE_GET_ENTITIES.permit,
+          UPDATE_GET_ENTITIES.coordinator
+        ]),
         restorationTrackerApi.permit.getNonSamplingPermits()
       ]);
 

@@ -1,4 +1,4 @@
-import { coordinator_agency, region, regional_offices } from '../constants/codes';
+import { coordinator_agency, region } from '../constants/codes';
 import { IDBConnection } from '../database/db';
 import { queries } from '../queries/queries';
 import { getLogger } from '../utils/logger';
@@ -37,7 +37,6 @@ export interface IAllCodeSets {
   iucn_conservation_action_level_3_subclassification: CodeSet<{ id: number; iucn2_id: number; name: string }>;
   system_roles: CodeSet;
   project_roles: CodeSet;
-  regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
 }
 
@@ -109,7 +108,6 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     species: (species && species.rows) || [],
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
-    region,
-    regional_offices
+    region
   };
 }

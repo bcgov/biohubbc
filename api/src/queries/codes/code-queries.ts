@@ -39,7 +39,6 @@ export const getProprietorTypeSQL = (): SQLStatement =>
  */
 export const getActivitySQL = (): SQLStatement => SQL`SELECT activity_id as id, name from activity;`;
 
-
 /**
  * SQL query to fetch project type codes.
  *

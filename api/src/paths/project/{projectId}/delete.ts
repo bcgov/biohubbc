@@ -124,7 +124,6 @@ export function deleteProject(): RequestHandler {
         throw new HTTP400('Failed to get project attachments');
       }
 
-
       const projectAttachmentS3Keys: string[] = getProjectAttachmentsResult.rows.map((attachment: any) => {
         return attachment.key;
       });

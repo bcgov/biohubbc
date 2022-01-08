@@ -19,9 +19,9 @@ const mockuseRestorationTrackerApi = {
   }
 };
 
-const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
-  mockuseRestorationTrackerApi
-);
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<
+  typeof mockuseRestorationTrackerApi
+>).mockReturnValue(mockuseRestorationTrackerApi);
 
 const renderContainer = () => {
   const authState = {
@@ -196,7 +196,9 @@ describe('AccessRequestPage', () => {
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
-    mockRestorationTrackerApi().admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().admin.createAdministrativeActivity = jest.fn(() =>
+      Promise.reject(new Error('API Error is Here'))
+    );
 
     const { getByText, getAllByRole, getByRole, queryByText } = renderContainer();
 

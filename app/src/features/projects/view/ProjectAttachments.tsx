@@ -69,15 +69,22 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
     return (file, cancelToken, handleFileUploadProgress) => {
-      return restorationTrackerApi.project.uploadProjectAttachments(projectId, file, cancelToken, handleFileUploadProgress);
+      return restorationTrackerApi.project.uploadProjectAttachments(
+        projectId,
+        file,
+        cancelToken,
+        handleFileUploadProgress
+      );
     };
   };
 
   const getFinishHandler = () => {
     return (fileMeta: IReportMetaForm) => {
-      return restorationTrackerApi.project.uploadProjectReports(projectId, fileMeta.attachmentFile, fileMeta).finally(() => {
-        setOpenUploadAttachments(false);
-      });
+      return restorationTrackerApi.project
+        .uploadProjectReports(projectId, fileMeta.attachmentFile, fileMeta)
+        .finally(() => {
+          setOpenUploadAttachments(false);
+        });
     };
   };
 

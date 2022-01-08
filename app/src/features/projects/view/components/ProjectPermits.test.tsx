@@ -18,9 +18,9 @@ const mockuseRestorationTrackerApi = {
   }
 };
 
-const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
-  mockuseRestorationTrackerApi
-);
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<
+  typeof mockuseRestorationTrackerApi
+>).mockReturnValue(mockuseRestorationTrackerApi);
 
 const mockRefresh = jest.fn();
 
@@ -86,7 +86,9 @@ describe('ProjectPermits', () => {
         revision_count: 1
       }
     });
-    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+      { permit_id: 1, number: 1, type: 'Wildlife' }
+    ]);
 
     const { getByText, queryByText } = renderContainer();
 
@@ -150,7 +152,9 @@ describe('ProjectPermits', () => {
     mockRestorationTrackerApi().project.getProjectForUpdate.mockResolvedValue({
       permit: null
     });
-    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+      { permit_id: 1, number: 1, type: 'Wildlife' }
+    ]);
 
     const { getByText, queryByText } = renderContainer();
 
@@ -172,8 +176,12 @@ describe('ProjectPermits', () => {
   });
 
   it('shows error dialog with API error message when getting permit data for update fails', async () => {
-    mockRestorationTrackerApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
-    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().project.getProjectForUpdate = jest.fn(() =>
+      Promise.reject(new Error('API Error is Here'))
+    );
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+      { permit_id: 1, number: 1, type: 'Wildlife' }
+    ]);
 
     const { getByText, queryByText } = renderContainer();
 
@@ -213,7 +221,9 @@ describe('ProjectPermits', () => {
         revision_count: 1
       }
     });
-    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([
+      { permit_id: 1, number: 1, type: 'Wildlife' }
+    ]);
     mockRestorationTrackerApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = renderContainer();

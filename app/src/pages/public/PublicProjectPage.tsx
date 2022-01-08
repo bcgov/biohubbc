@@ -72,7 +72,9 @@ const PublicProjectPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
 
   const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await restorationTrackerApi.public.project.getProjectForView(urlParams['id'] || 1);
+    const projectWithDetailsResponse = await restorationTrackerApi.public.project.getProjectForView(
+      urlParams['id'] || 1
+    );
 
     if (!projectWithDetailsResponse) {
       // TODO error handling/messaging
