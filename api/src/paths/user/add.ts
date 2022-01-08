@@ -8,7 +8,7 @@ import { ensureSystemUser, getSystemUser } from '../../paths-helpers/system-user
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('paths/user');
+const defaultLog = getLogger('paths/user/add');
 
 export const POST: Operation = [
   authorizeRequestHandler(() => {
@@ -49,7 +49,8 @@ POST.apiDoc = {
               enum: ['idir', 'bceid']
             },
             roleId: {
-              type: 'number'
+              type: 'number',
+              minimum: 1
             }
           }
         }
