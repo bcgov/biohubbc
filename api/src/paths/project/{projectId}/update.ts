@@ -714,25 +714,13 @@ export const updateProjectFundingData = async (
 ): Promise<void> => {
   const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
 
-  const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
-    putFundingSource?.id
-  );
   const projectFundingSourceDeleteStatement = queries.project.deleteProjectFundingSourceSQL(
     projectId,
     putFundingSource?.id
   );
 
-  if (!projectFundingSourceDeleteStatement || !surveyFundingSourceDeleteStatement) {
+  if (!projectFundingSourceDeleteStatement) {
     throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const surveyFundingSourceDeleteResult = await connection.query(
-    surveyFundingSourceDeleteStatement.text,
-    surveyFundingSourceDeleteStatement.values
-  );
-
-  if (!surveyFundingSourceDeleteResult) {
-    throw new HTTP409('Failed to delete survey funding source');
   }
 
   const projectFundingSourceDeleteResult = await connection.query(

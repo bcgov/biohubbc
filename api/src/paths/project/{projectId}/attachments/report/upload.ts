@@ -7,7 +7,7 @@ import {
   IReportAttachmentAuthor,
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata
-} from '../../../../../models/project-survey-attachments';
+} from '../../../../../models/project-attachments';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../utils/file-utils';

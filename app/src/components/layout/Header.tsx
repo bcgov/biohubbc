@@ -215,7 +215,7 @@ const Header: React.FC = () => {
                     <img src={headerImageSmall} alt={'Government of British Columbia'} />
                   </picture>
                   <span>
-                    Species Inventory Management System
+                    Restoration Tracker
                     <BetaLabel />
                     <EnvironmentLabel />
                   </span>

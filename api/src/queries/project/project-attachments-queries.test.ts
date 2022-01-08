@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutReportAttachmentMetadata, IReportAttachmentAuthor } from '../../models/project-survey-attachments';
+import { PutReportAttachmentMetadata, IReportAttachmentAuthor } from '../../models/project-attachments';
 import {
   getProjectAttachmentsSQL,
   deleteProjectAttachmentSQL,

@@ -3,7 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/custom-error';
-import { GetReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
+import { GetReportAttachmentMetadata } from '../../../../../../models/project-attachments';
 import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../utils/logger';

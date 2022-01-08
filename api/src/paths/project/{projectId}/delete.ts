@@ -7,7 +7,6 @@ import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler, userHasValidRole } from '../../../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../../../utils/file-utils';
 import { getLogger } from '../../../utils/logger';
-import { getSurveyAttachmentS3Keys } from './survey/{surveyId}/delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/delete');
 
@@ -111,9 +110,8 @@ export function deleteProject(): RequestHandler {
        * Used to delete them from S3 separately later
        */
       const getProjectAttachmentSQLStatement = queries.project.getProjectAttachmentsSQL(Number(req.params.projectId));
-      const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(Number(req.params.projectId));
 
-      if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
+      if (!getProjectAttachmentSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');
       }
 
@@ -126,18 +124,6 @@ export function deleteProject(): RequestHandler {
         throw new HTTP400('Failed to get project attachments');
       }
 
-      const getSurveyIdsResult = await connection.query(getSurveyIdsSQLStatement.text, getSurveyIdsSQLStatement.values);
-
-      if (!getSurveyIdsResult || !getSurveyIdsResult.rows) {
-        throw new HTTP400('Failed to get survey ids associated to project');
-      }
-
-      const surveyAttachmentS3Keys: string[] = Array.prototype.concat.apply(
-        [],
-        await Promise.all(
-          getSurveyIdsResult.rows.map((survey: any) => getSurveyAttachmentS3Keys(survey.id, connection))
-        )
-      );
 
       const projectAttachmentS3Keys: string[] = getProjectAttachmentsResult.rows.map((attachment: any) => {
         return attachment.key;
@@ -157,11 +143,10 @@ export function deleteProject(): RequestHandler {
 
       /**
        * PART 3
-       * Delete the project and survey attachments from S3
+       * Delete the project attachments from S3
        */
       const deleteResult = [
-        ...(await Promise.all(projectAttachmentS3Keys.map((projectS3Key: string) => deleteFileFromS3(projectS3Key)))),
-        ...(await Promise.all(surveyAttachmentS3Keys.map((surveyS3Key: string) => deleteFileFromS3(surveyS3Key))))
+        ...(await Promise.all(projectAttachmentS3Keys.map((projectS3Key: string) => deleteFileFromS3(projectS3Key))))
       ];
 
       if (deleteResult.some((deleteResult) => !deleteResult)) {

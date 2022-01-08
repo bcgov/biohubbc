@@ -4,7 +4,7 @@ import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
 import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../database/db';
 import { HTTP400 } from '../../../../../../errors/custom-error';
-import { PutReportAttachmentMetadata } from '../../../../../../models/project-survey-attachments';
+import { PutReportAttachmentMetadata } from '../../../../../../models/project-attachments';
 import { queries } from '../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../utils/logger';

@@ -3,7 +3,7 @@ import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
   IReportAttachmentAuthor
-} from '../../models/project-survey-attachments';
+} from '../../models/project-attachments';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('queries/project/project-attachments-queries');

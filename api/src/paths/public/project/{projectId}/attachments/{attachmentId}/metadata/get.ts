@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { GetReportAttachmentMetadata } from '../../../../../../../models/project-survey-attachments';
+import { GetReportAttachmentMetadata } from '../../../../../../../models/project-attachments';
 import { queries } from '../../../../../../../queries/queries';
 import { getLogger } from '../../../../../../../utils/logger';
 

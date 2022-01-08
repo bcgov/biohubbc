@@ -6,7 +6,7 @@ import {
   PutReportAttachmentMetadata,
   GetReportAttachmentMetadata,
   GetReportAttachmentAuthor
-} from './project-survey-attachments';
+} from './project-attachments';
 
 describe('GetAttachmentsData', () => {
   describe('No values provided', () => {

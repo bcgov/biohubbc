@@ -47,25 +47,13 @@ export function deleteFundingSource(): RequestHandler {
     try {
       await connection.open();
 
-      const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
-        Number(req.params.pfsId)
-      );
       const deleteProjectFundingSourceSQLStatement = queries.project.deleteProjectFundingSourceSQL(
         Number(req.params.projectId),
         Number(req.params.pfsId)
       );
 
-      if (!deleteProjectFundingSourceSQLStatement || !surveyFundingSourceDeleteStatement) {
+      if (!deleteProjectFundingSourceSQLStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
-      }
-
-      const surveyFundingSourceDeleteResponse = await connection.query(
-        surveyFundingSourceDeleteStatement.text,
-        surveyFundingSourceDeleteStatement.values
-      );
-
-      if (!surveyFundingSourceDeleteResponse || !surveyFundingSourceDeleteResponse.rowCount) {
-        throw new HTTP400('Failed to delete survey funding source');
       }
 
       const projectFundingSourceDeleteResponse = await connection.query(

@@ -7,10 +7,8 @@ import SQL from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
 import project_queries from '../../../queries/project';
-import survey_queries from '../../../queries/survey';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import * as delete_project from './delete';
-import * as survey_delete from './survey/{surveyId}/delete';
 import * as file_utils from '../../../utils/file-utils';
 import { HTTPError } from '../../../errors/custom-error';
 
@@ -176,38 +174,6 @@ describe('deleteProject', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getSurveyIdsSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: async () => {
-        return {
-          rowCount: 1,
-          rows: [
-            {
-              id: 1
-            }
-          ]
-        } as QueryResult<any>;
-      }
-    });
-
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`some nice query`);
-    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(null);
-
-    try {
-      const result = delete_project.deleteProject();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
   it('should throw a 400 error when failed to get result for project attachments', async () => {
     const mockQuery = sinon.stub();
 
@@ -233,7 +199,6 @@ describe('deleteProject', () => {
     });
 
     sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
 
     try {
       const result = delete_project.deleteProject();
@@ -243,47 +208,6 @@ describe('deleteProject', () => {
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
       expect((actualError as HTTPError).message).to.equal('Failed to get project attachments');
-    }
-  });
-
-  it('should throw a 400 error when failed to get result for survey ids', async () => {
-    const mockQuery = sinon.stub();
-
-    // mock project query
-    mockQuery.onCall(0).resolves({
-      rowCount: 1,
-      rows: [
-        {
-          id: 1
-        }
-      ]
-    });
-
-    // mock attachments query
-    mockQuery.onCall(1).resolves({ rows: [] });
-
-    // mock survey query
-    mockQuery.onCall(2).resolves({ rows: null });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
-
-    try {
-      const result = delete_project.deleteProject();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to get survey ids associated to project');
     }
   });
 
@@ -315,8 +239,6 @@ describe('deleteProject', () => {
     });
 
     sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
     sinon.stub(project_queries, 'deleteProjectSQL').returns(null);
 
     try {
@@ -361,8 +283,6 @@ describe('deleteProject', () => {
     });
 
     sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
     sinon.stub(project_queries, 'deleteProjectSQL').returns(SQL`some`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
 
@@ -404,8 +324,6 @@ describe('deleteProject', () => {
     });
 
     sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
-    sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
     sinon.stub(project_queries, 'deleteProjectSQL').returns(SQL`some`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves({});
 

@@ -115,9 +115,6 @@ export async function getS3SignedURL(key: string): Promise<string | null> {
 
 export interface IS3FileKey {
   projectId: number;
-  surveyId?: number;
-  submissionId?: number;
-  summaryId?: number;
   folder?: string;
   fileName: string;
 }
@@ -128,21 +125,6 @@ export function generateS3FileKey(options: IS3FileKey): string {
   if (options.projectId) {
     keyParts.push('projects');
     keyParts.push(options.projectId);
-  }
-
-  if (options.surveyId) {
-    keyParts.push('surveys');
-    keyParts.push(options.surveyId);
-  }
-
-  if (options.submissionId) {
-    keyParts.push('submissions');
-    keyParts.push(options.submissionId);
-  }
-
-  if (options.summaryId) {
-    keyParts.push('summaryresults');
-    keyParts.push(options.summaryId);
   }
 
   if (options.folder) {

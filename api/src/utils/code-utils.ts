@@ -39,7 +39,6 @@ export interface IAllCodeSets {
   project_roles: CodeSet;
   regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
-  common_survey_methodologies: CodeSet;
 }
 
 /**
@@ -67,8 +66,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     system_roles,
     project_roles,
     administrative_activity_status_type,
-    species,
-    common_survey_methodologies
+    species
   ] = await Promise.all([
     await connection.query(queries.codes.getManagementActionTypeSQL().text),
     await connection.query(queries.codes.getFirstNationsSQL().text),
@@ -83,8 +81,7 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     await connection.query(queries.codes.getSystemRolesSQL().text),
     await connection.query(queries.codes.getProjectRolesSQL().text),
     await connection.query(queries.codes.getAdministrativeActivityStatusTypeSQL().text),
-    await connection.query(queries.codes.getTaxonsSQL().text),
-    await connection.query(queries.codes.getCommonSurveyMethodologiesSQL().text)
+    await connection.query(queries.codes.getTaxonsSQL().text)
   ]);
 
   await connection.commit();
@@ -110,7 +107,6 @@ export async function getAllCodeSets(connection: IDBConnection): Promise<IAllCod
     administrative_activity_status_type:
       (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
     species: (species && species.rows) || [],
-    common_survey_methodologies: (common_survey_methodologies && common_survey_methodologies.rows) || [],
     // TODO Temporarily hard coded list of code values below
     coordinator_agency,
     region,
