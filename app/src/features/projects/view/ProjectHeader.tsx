@@ -21,7 +21,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext } from 'react';
 import { useHistory } from 'react-router';
@@ -89,7 +89,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
   const classes = useStyles();
   const history = useHistory();
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const dialogContext = useContext(DialogContext);
 
@@ -122,7 +122,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.project.publishProject(projectWithDetails.id, publish);
+      const response = await restorationTrackerApi.project.publishProject(projectWithDetails.id, publish);
 
       if (!response) {
         showPublishErrorDialog({ open: true });
@@ -154,7 +154,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.project.deleteProject(projectWithDetails.id);
+      const response = await restorationTrackerApi.project.deleteProject(projectWithDetails.id);
 
       if (!response) {
         showDeleteErrorDialog({ open: true });

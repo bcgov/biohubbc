@@ -7,7 +7,7 @@ import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import FileUploadWithMetaDialog from 'components/dialog/FileUploadWithMetaDialog';
 import { H2MenuToolbar } from 'components/toolbar/ActionToolbars';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import {
   IGetProjectAttachment,
   IGetProjectForViewResponse,
@@ -29,7 +29,7 @@ export interface IProjectAttachmentsProps {
 const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
   const urlParams = useParams();
   const projectId = urlParams['id'];
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [openUploadAttachments, setOpenUploadAttachments] = useState(false);
   const [attachmentType, setAttachmentType] = useState<AttachmentType.REPORT | AttachmentType.OTHER>(
@@ -53,7 +53,7 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
       }
 
       try {
-        const response = await biohubApi.project.getProjectAttachments(projectId);
+        const response = await restorationTrackerApi.project.getProjectAttachments(projectId);
 
         if (!response?.attachmentsList) {
           return;
@@ -64,18 +64,18 @@ const ProjectAttachments: React.FC<IProjectAttachmentsProps> = () => {
         return error;
       }
     },
-    [biohubApi.project, projectId, attachmentsList.length]
+    [restorationTrackerApi.project, projectId, attachmentsList.length]
   );
 
   const getUploadHandler = (): IUploadHandler<IUploadAttachmentResponse> => {
     return (file, cancelToken, handleFileUploadProgress) => {
-      return biohubApi.project.uploadProjectAttachments(projectId, file, cancelToken, handleFileUploadProgress);
+      return restorationTrackerApi.project.uploadProjectAttachments(projectId, file, cancelToken, handleFileUploadProgress);
     };
   };
 
   const getFinishHandler = () => {
     return (fileMeta: IReportMetaForm) => {
-      return biohubApi.project.uploadProjectReports(projectId, fileMeta.attachmentFile, fileMeta).finally(() => {
+      return restorationTrackerApi.project.uploadProjectReports(projectId, fileMeta.attachmentFile, fileMeta).finally(() => {
         setOpenUploadAttachments(false);
       });
     };

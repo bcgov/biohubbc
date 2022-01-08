@@ -12,7 +12,7 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 import { IGetPermitsListResponse } from 'interfaces/usePermitApi.interface';
@@ -24,7 +24,7 @@ import { IGetPermitsListResponse } from 'interfaces/usePermitApi.interface';
  */
 const PermitsPage: React.FC = () => {
   const history = useHistory();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [permits, setPermits] = useState<IGetPermitsListResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -37,7 +37,7 @@ const PermitsPage: React.FC = () => {
 
   useEffect(() => {
     const getPermits = async () => {
-      const permitsResponse = await biohubApi.permit.getPermitsList();
+      const permitsResponse = await restorationTrackerApi.permit.getPermitsList();
 
       setPermits(() => {
         setIsLoading(false);
@@ -48,7 +48,7 @@ const PermitsPage: React.FC = () => {
     if (isLoading) {
       getPermits();
     }
-  }, [biohubApi, isLoading]);
+  }, [restorationTrackerApi, isLoading]);
 
   const getPermitsTableData = () => {
     const hasPermits = permits?.length > 0;

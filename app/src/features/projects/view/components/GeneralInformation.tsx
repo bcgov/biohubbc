@@ -16,7 +16,7 @@ import {
   ProjectDetailsFormYupSchema
 } from 'features/projects/components/ProjectDetailsForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForUpdateResponseDetails,
@@ -44,7 +44,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
     codes
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const dialogContext = useContext(DialogContext);
 
@@ -72,7 +72,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
     let detailsResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.project]);
+      const response = await restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.project]);
 
       if (!response?.project) {
         showErrorDialog({ open: true });
@@ -105,7 +105,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
     };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await restorationTrackerApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

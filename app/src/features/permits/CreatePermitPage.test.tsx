@@ -1,5 +1,5 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import CreatePermitPage from './CreatePermitPage';
@@ -9,9 +9,9 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 
 const history = createMemoryHistory();
 
-jest.mock('../../hooks/useBioHubApi');
+jest.mock('../../hooks/useRestorationTrackerApi');
 
-const mockUseBiohubApi = {
+const mockuseRestorationTrackerApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
@@ -20,15 +20,15 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('CreatePermitPage', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().permit.createPermits.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockRestorationTrackerApi().permit.createPermits.mockClear();
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockClear();
   });
 
   afterEach(() => {
@@ -48,7 +48,7 @@ describe('CreatePermitPage', () => {
   });
 
   it('renders correctly when codes are loaded', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
     } as any);
 
@@ -66,7 +66,7 @@ describe('CreatePermitPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }]
       } as any);
 
@@ -100,7 +100,7 @@ describe('CreatePermitPage', () => {
     });
 
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'agency 1' }]
       } as any);
 

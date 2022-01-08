@@ -2,22 +2,22 @@ import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { useRestorationTrackerApi } from '../../../hooks/useRestorationTrackerApi';
 import UsersDetailHeader from './UsersDetailHeader';
 import { DialogContextProvider } from 'contexts/dialogContext';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+jest.mock('../../../hooks/useRestorationTrackerApi');
 
-const mockUseBiohubApi = {
+const mockuseRestorationTrackerApi = {
   user: {
     deleteSystemUser: jest.fn<Promise<number>, []>()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 const mockUser = {
@@ -119,7 +119,7 @@ describe('UsersDetailHeader', () => {
     });
 
     it('deletes the user and routes user back to Manage Users page', async () => {
-      mockBiohubApi().user.deleteSystemUser.mockResolvedValue({
+      mockRestorationTrackerApi().user.deleteSystemUser.mockResolvedValue({
         response: 200
       } as any);
 

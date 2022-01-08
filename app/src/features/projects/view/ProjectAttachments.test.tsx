@@ -9,7 +9,7 @@ import {
 import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import React from 'react';
 import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -17,23 +17,23 @@ import ProjectAttachments from './ProjectAttachments';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   project: {
     getProjectAttachments: jest.fn(),
     deleteProjectAttachment: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('ProjectAttachments', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.getProjectAttachments.mockClear();
-    mockBiohubApi().project.deleteProjectAttachment.mockClear();
+    mockRestorationTrackerApi().project.getProjectAttachments.mockClear();
+    mockRestorationTrackerApi().project.deleteProjectAttachment.mockClear();
   });
 
   afterEach(() => {
@@ -76,7 +76,7 @@ describe('ProjectAttachments', () => {
   });
 
   it('renders correctly with attachments', async () => {
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectAttachments.mockResolvedValue({
       attachmentsList: [
         {
           id: 1,
@@ -99,8 +99,8 @@ describe('ProjectAttachments', () => {
   });
 
   it('deletes an attachment from the attachments list as expected', async () => {
-    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    mockRestorationTrackerApi().project.getProjectAttachments.mockResolvedValue({
       attachmentsList: [
         {
           id: 1,
@@ -132,7 +132,7 @@ describe('ProjectAttachments', () => {
       expect(queryByText('filename2.test')).toBeInTheDocument();
     });
 
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectAttachments.mockResolvedValue({
       attachmentsList: [
         {
           id: 2,
@@ -165,8 +165,8 @@ describe('ProjectAttachments', () => {
   });
 
   it('does not delete an attachment from the attachments when user selects no from dialog', async () => {
-    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    mockRestorationTrackerApi().project.getProjectAttachments.mockResolvedValue({
       attachmentsList: [
         {
           id: 1,
@@ -190,7 +190,7 @@ describe('ProjectAttachments', () => {
       expect(queryByText('filename.test')).toBeInTheDocument();
     });
 
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectAttachments.mockResolvedValue({
       attachmentsList: []
     });
 
@@ -214,8 +214,8 @@ describe('ProjectAttachments', () => {
   });
 
   it('does not delete an attachment from the attachments when user clicks outside the dialog', async () => {
-    mockBiohubApi().project.deleteProjectAttachment.mockResolvedValue(1);
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().project.deleteProjectAttachment.mockResolvedValue(1);
+    mockRestorationTrackerApi().project.getProjectAttachments.mockResolvedValue({
       attachmentsList: [
         {
           id: 1,
@@ -238,7 +238,7 @@ describe('ProjectAttachments', () => {
       expect(queryByText('filename.test')).toBeInTheDocument();
     });
 
-    mockBiohubApi().project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectAttachments.mockResolvedValue({
       attachmentsList: []
     });
 

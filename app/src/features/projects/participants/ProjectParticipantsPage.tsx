@@ -19,7 +19,7 @@ import { CustomMenuButton } from 'components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { CodeSet, IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForViewResponse,
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
 const ProjectParticipantsPage: React.FC = () => {
   const urlParams = useParams();
   const dialogContext = useContext(DialogContext);
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const classes = useStyles();
 
@@ -97,14 +97,14 @@ const ProjectParticipantsPage: React.FC = () => {
   };
 
   const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
+    const projectWithDetailsResponse = await restorationTrackerApi.project.getProjectForView(urlParams['id']);
 
     if (!projectWithDetailsResponse) {
       return;
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [restorationTrackerApi.project, urlParams]);
 
   useEffect(() => {
     if (isLoadingProject && !projectWithDetails) {
@@ -115,7 +115,7 @@ const ProjectParticipantsPage: React.FC = () => {
 
   useEffect(() => {
     const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
+      const codesResponse = await restorationTrackerApi.codes.getAllCodeSets();
 
       if (!codesResponse) {
         return;
@@ -128,11 +128,11 @@ const ProjectParticipantsPage: React.FC = () => {
       getCodes();
       setIsLoadingCodes(false);
     }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
+  }, [urlParams, restorationTrackerApi.codes, isLoadingCodes, codes]);
 
   const getProjectParticipants = useCallback(async () => {
     try {
-      const response = await biohubApi.project.getProjectParticipants(projectId);
+      const response = await restorationTrackerApi.project.getProjectParticipants(projectId);
 
       if (!response) {
         openErrorDialog({
@@ -153,7 +153,7 @@ const ProjectParticipantsPage: React.FC = () => {
       setProjectParticipants([]);
       return;
     }
-  }, [biohubApi.project, openErrorDialog, projectId]);
+  }, [restorationTrackerApi.project, openErrorDialog, projectId]);
 
   useEffect(() => {
     if (projectParticipants) {
@@ -161,11 +161,11 @@ const ProjectParticipantsPage: React.FC = () => {
     }
 
     getProjectParticipants();
-  }, [biohubApi, projectId, projectParticipants, getProjectParticipants]);
+  }, [restorationTrackerApi, projectId, projectParticipants, getProjectParticipants]);
 
   const handleRemoveProjectParticipant = async (projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
+      const response = await restorationTrackerApi.project.removeProjectParticipant(projectId, projectParticipationId);
 
       if (!response) {
         openErrorDialog({
@@ -299,7 +299,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
   const { row, projectRoleCodes, refresh } = props;
 
   const dialogContext = useContext(DialogContext);
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const defaultErrorDialogProps = {
     dialogTitle: ProjectParticipantsI18N.updateParticipantRoleErrorTitle,
@@ -356,7 +356,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
 
     try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
+      const status = await restorationTrackerApi.project.updateProjectParticipantRole(
         item.project_id,
         item.project_participation_id,
         newRoleId

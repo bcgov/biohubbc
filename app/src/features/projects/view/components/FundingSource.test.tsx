@@ -1,15 +1,15 @@
 import { fireEvent, render, waitFor, cleanup, within } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import FundingSource from './FundingSource';
-jest.mock('../../../../hooks/useBioHubApi');
+jest.mock('../../../../hooks/useRestorationTrackerApi');
 const mockRefresh = jest.fn();
 
-jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   project: {
     updateProject: jest.fn(),
     addFundingSource: jest.fn(),
@@ -17,16 +17,16 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('FundingSource', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.updateProject.mockClear();
-    mockBiohubApi().project.addFundingSource.mockClear();
-    mockBiohubApi().project.deleteFundingSource.mockClear();
+    mockRestorationTrackerApi().project.updateProject.mockClear();
+    mockRestorationTrackerApi().project.addFundingSource.mockClear();
+    mockRestorationTrackerApi().project.deleteFundingSource.mockClear();
   });
 
   afterEach(() => {
@@ -82,13 +82,13 @@ describe('FundingSource', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().project.updateProject).toHaveBeenCalledTimes(1);
       expect(mockRefresh).toBeCalledTimes(1);
     });
   });
 
   it('shows error dialog with API error message when editing a funding source fails', async () => {
-    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, getByTestId, queryByText, getAllByRole } = render(
       <DialogContextProvider>
@@ -145,7 +145,7 @@ describe('FundingSource', () => {
     fireEvent.click(getByText('Yes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.deleteFundingSource).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().project.deleteFundingSource).toHaveBeenCalledTimes(1);
       expect(mockRefresh).toBeCalledTimes(1);
     });
   });
@@ -205,7 +205,7 @@ describe('FundingSource', () => {
   });
 
   it('shows error dialog with API error message when deleting a funding source fails', async () => {
-    mockBiohubApi().project.deleteFundingSource = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.deleteFundingSource = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getByTestId } = render(
       <DialogContextProvider>
@@ -286,7 +286,7 @@ describe('FundingSource', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.addFundingSource).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().project.addFundingSource).toHaveBeenCalledTimes(1);
       expect(mockRefresh).toBeCalledTimes(1);
     });
   });

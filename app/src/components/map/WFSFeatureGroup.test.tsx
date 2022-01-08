@@ -1,25 +1,25 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import React from 'react';
 import { MapContainer } from 'react-leaflet';
 import { MapBounds } from './MapContainer';
 import WFSFeatureGroup from './WFSFeatureGroup';
 
-jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   external: {
     get: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('WFSFeatureGroup', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().external.get.mockClear();
+    mockRestorationTrackerApi().external.get.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -48,7 +48,7 @@ describe('WFSFeatureGroup', () => {
     }
   };
 
-  mockBiohubApi().external.get.mockResolvedValue({
+  mockRestorationTrackerApi().external.get.mockResolvedValue({
     features: [feature]
   });
 

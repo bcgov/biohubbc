@@ -1,5 +1,5 @@
 import { cleanup, render, fireEvent, getAllByText, waitFor } from '@testing-library/react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
@@ -7,16 +7,16 @@ import ProjectObjectives from './ProjectObjectives';
 import { codes } from 'test-helpers/code-helpers';
 import { DialogContextProvider } from 'contexts/dialogContext';
 
-jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   project: {
     getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 const mockRefresh = jest.fn();
@@ -32,8 +32,8 @@ const renderContainer = () => {
 describe('ProjectObjectives', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.getProjectForUpdate.mockClear();
-    mockBiohubApi().project.updateProject.mockClear();
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockClear();
+    mockRestorationTrackerApi().project.updateProject.mockClear();
   });
 
   afterEach(() => {
@@ -157,7 +157,7 @@ describe('ProjectObjectives', () => {
   });
 
   it('editing the project objectives works in the dialog', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockResolvedValue({
       objectives: {
         objectives: 'initial objectives',
         caveats: 'initial caveats',
@@ -174,7 +174,7 @@ describe('ProjectObjectives', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+      expect(mockRestorationTrackerApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
         UPDATE_GET_ENTITIES.objectives
       ]);
     });
@@ -198,8 +198,8 @@ describe('ProjectObjectives', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
+      expect(mockRestorationTrackerApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
         objectives: {
           objectives: 'initial objectives',
           caveats: 'initial caveats',
@@ -211,7 +211,7 @@ describe('ProjectObjectives', () => {
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockResolvedValue({
       objectives: undefined
     });
 
@@ -235,7 +235,7 @@ describe('ProjectObjectives', () => {
   });
 
   it('shows error dialog with API error message when getting objectives data for update fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText } = renderContainer();
 
@@ -257,14 +257,14 @@ describe('ProjectObjectives', () => {
   });
 
   it('shows error dialog with API error message when updating objectives data fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockResolvedValue({
       objectives: {
         objectives: 'initial objectives',
         caveats: 'initial caveats',
         revision_count: 0
       }
     });
-    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
@@ -275,7 +275,7 @@ describe('ProjectObjectives', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+      expect(mockRestorationTrackerApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
         UPDATE_GET_ENTITIES.objectives
       ]);
     });

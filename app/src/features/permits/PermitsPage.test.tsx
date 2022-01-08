@@ -2,25 +2,25 @@ import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import PermitsPage from './PermitsPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { createMemoryHistory } from 'history';
 
 const history = createMemoryHistory();
 
-jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   permit: {
     getPermitsList: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('PermitsPage', () => {
   beforeEach(() => {
-    mockBiohubApi().permit.getPermitsList.mockClear();
+    mockRestorationTrackerApi().permit.getPermitsList.mockClear();
   });
 
   afterEach(() => {
@@ -28,7 +28,7 @@ describe('PermitsPage', () => {
   });
 
   test('renders with the create non sampling permits button', async () => {
-    mockBiohubApi().permit.getPermitsList.mockResolvedValue([]);
+    mockRestorationTrackerApi().permit.getPermitsList.mockResolvedValue([]);
 
     const { baseElement } = render(
       <MemoryRouter>
@@ -42,7 +42,7 @@ describe('PermitsPage', () => {
   });
 
   test('renders with a proper list of permits', async () => {
-    mockBiohubApi().permit.getPermitsList.mockResolvedValue([
+    mockRestorationTrackerApi().permit.getPermitsList.mockResolvedValue([
       {
         id: 1,
         number: '123',
@@ -72,7 +72,7 @@ describe('PermitsPage', () => {
   });
 
   test('navigating to the create non sampling permit page works', async () => {
-    mockBiohubApi().permit.getPermitsList.mockResolvedValue([
+    mockRestorationTrackerApi().permit.getPermitsList.mockResolvedValue([
       {
         id: 1,
         number: '123',

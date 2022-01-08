@@ -11,7 +11,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { ProjectParticipantsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
@@ -38,7 +38,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
   const history = useHistory();
   const urlParams = useParams();
   const dialogContext = useContext(DialogContext);
-  const biohubApi = useBiohubApi();
+const restorationTrackerApi = useRestorationTrackerApi();
 
   const [openAddParticipantsDialog, setOpenAddParticipantsDialog] = useState(false);
 
@@ -59,7 +59,7 @@ const ProjectParticipantsHeader: React.FC<IProjectParticipantsHeaderProps> = (pr
 
   const handleAddProjectParticipantsSave = async (values: IAddProjectParticipantsForm) => {
     try {
-      const response = await biohubApi.project.addProjectParticipants(projectId, values.participants);
+      const response = await restorationTrackerApi.project.addProjectParticipants(projectId, values.participants);
 
       if (!response) {
         openErrorDialog({

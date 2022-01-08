@@ -15,7 +15,7 @@ import {
   ProjectCoordinatorYupSchema
 } from 'features/projects/components/ProjectCoordinatorForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForUpdateResponseCoordinator,
@@ -42,7 +42,7 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
     codes
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const dialogContext = useContext(DialogContext);
 
@@ -74,7 +74,7 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
     let coordinatorResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.coordinator]);
+      const response = await restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.coordinator]);
 
       if (!response?.coordinator) {
         showErrorDialog({ open: true });
@@ -107,7 +107,7 @@ const ProjectCoordinator: React.FC<IProjectCoordinatorProps> = (props) => {
     };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await restorationTrackerApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });

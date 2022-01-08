@@ -51,7 +51,7 @@ import ProjectPermitForm, {
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
@@ -112,7 +112,7 @@ const CreateProjectPage: React.FC = () => {
 
   const history = useHistory();
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const queryParams = useQuery();
 
@@ -185,7 +185,7 @@ const CreateProjectPage: React.FC = () => {
   // Get non-sampling permits that already exist in system
   useEffect(() => {
     const getNonSamplingPermits = async () => {
-      const response = await biohubApi.permit.getNonSamplingPermits();
+      const response = await restorationTrackerApi.permit.getNonSamplingPermits();
 
       if (!response) {
         return;
@@ -201,12 +201,12 @@ const CreateProjectPage: React.FC = () => {
       getNonSamplingPermits();
       setIsLoadingNonSamplingPermits(true);
     }
-  }, [biohubApi, isLoadingNonSamplingPermits, nonSamplingPermits]);
+  }, [restorationTrackerApi, isLoadingNonSamplingPermits, nonSamplingPermits]);
 
   // Get draft project fields if draft id exists
   useEffect(() => {
     const getDraftProjectFields = async () => {
-      const response = await biohubApi.draft.getDraft(queryParams.draftId);
+      const response = await restorationTrackerApi.draft.getDraft(queryParams.draftId);
 
       setHasLoadedDraftData(true);
 
@@ -222,13 +222,13 @@ const CreateProjectPage: React.FC = () => {
     }
 
     getDraftProjectFields();
-  }, [biohubApi.draft, hasLoadedDraftData, queryParams.draftId]);
+  }, [restorationTrackerApi.draft, hasLoadedDraftData, queryParams.draftId]);
 
   // Get code sets
   // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
   useEffect(() => {
     const getAllCodeSets = async () => {
-      const response = await biohubApi.codes.getAllCodeSets();
+      const response = await restorationTrackerApi.codes.getAllCodeSets();
 
       // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
 
@@ -242,7 +242,7 @@ const CreateProjectPage: React.FC = () => {
       getAllCodeSets();
       setIsLoadingCodes(true);
     }
-  }, [biohubApi, isLoadingCodes, codes]);
+  }, [restorationTrackerApi, isLoadingCodes, codes]);
 
   // Initialize the forms for each step of the workflow
   useEffect(() => {
@@ -475,9 +475,9 @@ const CreateProjectPage: React.FC = () => {
       const draftId = Number(queryParams.draftId) || draft?.id;
 
       if (draftId) {
-        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
+        response = await restorationTrackerApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
       } else {
-        response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
+        response = await restorationTrackerApi.draft.createDraft(values.draft_name, draftFormData);
       }
 
       setOpenDraftDialog(false);
@@ -559,7 +559,7 @@ const CreateProjectPage: React.FC = () => {
     }
 
     try {
-      await biohubApi.draft.deleteDraft(draftId);
+      await restorationTrackerApi.draft.deleteDraft(draftId);
     } catch (error) {
       return error;
     }
@@ -572,7 +572,7 @@ const CreateProjectPage: React.FC = () => {
    * @return {*}
    */
   const createProject = async (projectPostObject: ICreateProjectRequest) => {
-    const response = await biohubApi.project.createProject(projectPostObject);
+    const response = await restorationTrackerApi.project.createProject(projectPostObject);
 
     if (!response?.id) {
       showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });

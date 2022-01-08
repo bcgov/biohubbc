@@ -5,7 +5,7 @@ import Grid from '@material-ui/core/Grid';
 import LocationBoundary from 'features/projects/view/components/LocationBoundary';
 import ProjectAttachments from 'features/projects/view/ProjectAttachments';
 import ProjectDetails from 'features/projects/view/ProjectDetails';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -20,7 +20,7 @@ import ProjectHeader from './ProjectHeader';
 const ProjectPage: React.FC = () => {
   const urlParams = useParams();
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -30,7 +30,7 @@ const ProjectPage: React.FC = () => {
 
   useEffect(() => {
     const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
+      const codesResponse = await restorationTrackerApi.codes.getAllCodeSets();
 
       if (!codesResponse) {
         // TODO error handling/messaging
@@ -44,10 +44,10 @@ const ProjectPage: React.FC = () => {
       getCodes();
       setIsLoadingCodes(true);
     }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
+  }, [urlParams, restorationTrackerApi.codes, isLoadingCodes, codes]);
 
   const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
+    const projectWithDetailsResponse = await restorationTrackerApi.project.getProjectForView(urlParams['id']);
 
     if (!projectWithDetailsResponse) {
       // TODO error handling/messaging
@@ -55,7 +55,7 @@ const ProjectPage: React.FC = () => {
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
+  }, [restorationTrackerApi.project, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {

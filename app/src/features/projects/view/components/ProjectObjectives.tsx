@@ -14,7 +14,7 @@ import {
   ProjectObjectivesFormYupSchema
 } from 'features/projects/components/ProjectObjectivesForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForUpdateResponseObjectives,
@@ -41,7 +41,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     codes
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const dialogContext = useContext(DialogContext);
 
@@ -74,7 +74,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     let objectivesResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.objectives]);
+      const response = await restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.objectives]);
 
       if (!response?.objectives) {
         showErrorDialog({ open: true });
@@ -104,7 +104,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
     };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await restorationTrackerApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });

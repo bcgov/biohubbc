@@ -12,7 +12,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiInformationOutline, mdiPaperclip } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams, useLocation } from 'react-router';
@@ -64,7 +64,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const PublicProjectPage = () => {
   const urlParams = useParams();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const classes = useStyles();
   const location = useLocation();
 
@@ -72,7 +72,7 @@ const PublicProjectPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
 
   const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.public.project.getProjectForView(urlParams['id'] || 1);
+    const projectWithDetailsResponse = await restorationTrackerApi.public.project.getProjectForView(urlParams['id'] || 1);
 
     if (!projectWithDetailsResponse) {
       // TODO error handling/messaging
@@ -80,7 +80,7 @@ const PublicProjectPage = () => {
     }
 
     setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.public.project, urlParams]);
+  }, [restorationTrackerApi.public.project, urlParams]);
 
   useEffect(() => {
     if (!isLoadingProject && !projectWithDetails) {

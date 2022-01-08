@@ -267,10 +267,10 @@ const Header: React.FC = () => {
           <Typography variant="body1" gutterBottom>
             For technical support or questions about this application, please contact:&nbsp;
             <OtherLink
-              href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
+              href="mailto:restoration-tracker@gov.bc.ca?subject=Restoration Tracker - Secure Document Access Request"
               underline="always"
               onClick={preventDefault}>
-              biohub@gov.bc.ca
+              restoration-tracker@gov.bc.ca
             </OtherLink>
             .
           </Typography>

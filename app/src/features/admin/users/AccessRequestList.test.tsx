@@ -4,17 +4,17 @@ import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   admin: {
     updateAccessRequest: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 const renderContainer = (
@@ -28,7 +28,7 @@ const renderContainer = (
 describe('AccessRequestList', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().admin.updateAccessRequest.mockClear();
+    mockRestorationTrackerApi().admin.updateAccessRequest.mockClear();
   });
 
   afterEach(() => {
@@ -215,8 +215,8 @@ describe('AccessRequestList', () => {
 
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [2]);
+      expect(mockRestorationTrackerApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [2]);
     });
   });
 
@@ -261,8 +261,8 @@ describe('AccessRequestList', () => {
 
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 3);
+      expect(mockRestorationTrackerApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 3);
     });
   });
 });

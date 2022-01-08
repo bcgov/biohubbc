@@ -2,10 +2,10 @@ import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
 import { cleanup, render, waitFor } from '@testing-library/react';
 import PublicProjectsListPage from './PublicProjectsListPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 
-jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../hooks/useRestorationTrackerApi');
+const mockUseRestorationTrackerApi = {
   public: {
     project: {
       getProjectsList: jest.fn()
@@ -13,13 +13,13 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockUseRestorationTrackerApi>).mockReturnValue(
+  mockUseRestorationTrackerApi
 );
 
 describe('PublicProjectsListPage', () => {
   beforeEach(() => {
-    mockBiohubApi().public.project.getProjectsList.mockClear();
+    mockRestorationTrackerApi().public.project.getProjectsList.mockClear();
   });
 
   afterEach(() => {
@@ -27,7 +27,7 @@ describe('PublicProjectsListPage', () => {
   });
 
   test('renders with a proper list of projects when completed', async () => {
-    mockBiohubApi().public.project.getProjectsList.mockResolvedValue([
+    mockRestorationTrackerApi().public.project.getProjectsList.mockResolvedValue([
       {
         id: 1,
         name: 'Project 1',
@@ -53,7 +53,7 @@ describe('PublicProjectsListPage', () => {
   });
 
   test('renders with a proper list of projects when active', async () => {
-    mockBiohubApi().public.project.getProjectsList.mockResolvedValue([
+    mockRestorationTrackerApi().public.project.getProjectsList.mockResolvedValue([
       {
         id: 1,
         name: 'Project 1',

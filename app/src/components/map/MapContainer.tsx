@@ -23,7 +23,7 @@ import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import { throttle } from 'lodash-es';
 import { ReProjector } from 'reproj-helper';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import {
   determineMapGeometries,
   getInferredLayersInfoByProjectedGeometry,
@@ -221,7 +221,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     additionalLayers
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [preDefinedGeometry, setPreDefinedGeometry] = useState<Feature>();
 
@@ -376,7 +376,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             requestBody.append('CQL_FILTER', filterData);
 
             wfsPromises.push(
-              biohubApi.external.post(url, requestBody).catch(() => {
+              restorationTrackerApi.external.post(url, requestBody).catch(() => {
                 /* catch and ignore errors */
               })
             );

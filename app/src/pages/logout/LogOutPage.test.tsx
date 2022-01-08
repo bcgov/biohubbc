@@ -22,7 +22,7 @@ describe('LogOutPage', () => {
     // @ts-ignore
     window.location = {
       href: '',
-      origin: 'https://biohub.com/logout',
+      origin: 'https://restoration-tracker.com/logout',
       replace: replace
     };
   });

@@ -2,7 +2,7 @@ import { cleanup, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import UsersDetailPage from './UsersDetailPage';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { useRestorationTrackerApi } from '../../../hooks/useRestorationTrackerApi';
 import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -10,9 +10,9 @@ import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
+jest.mock('../../../hooks/useRestorationTrackerApi');
 
-const mockUseBiohubApi = {
+const mockuseRestorationTrackerApi = {
   user: {
     getUserById: jest.fn<Promise<IGetUserResponse>, []>()
   },
@@ -24,14 +24,14 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('UsersDetailPage', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().user.getUserById.mockClear();
+    mockRestorationTrackerApi().user.getUserById.mockClear();
   });
 
   afterEach(() => {
@@ -53,18 +53,18 @@ describe('UsersDetailPage', () => {
   it('renders correctly when selectedUser are loaded', async () => {
     history.push('/admin/users/1');
 
-    mockBiohubApi().user.getUserById.mockResolvedValue({
+    mockRestorationTrackerApi().user.getUserById.mockResolvedValue({
       id: 1,
       user_identifier: 'LongerUserName',
       user_record_end_date: 'end',
       role_names: ['role1', 'role2']
     });
 
-    mockBiohubApi().project.getAllUserProjectsForView.mockResolvedValue({
+    mockRestorationTrackerApi().project.getAllUserProjectsForView.mockResolvedValue({
       project: null
     } as any);
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'agency 1' }]
     } as any);
 

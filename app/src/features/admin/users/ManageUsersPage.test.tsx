@@ -1,5 +1,5 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import React from 'react';
 import ManageUsersPage from './ManageUsersPage';
 import { createMemoryHistory } from 'history';
@@ -15,8 +15,8 @@ const renderContainer = () => {
   );
 };
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   admin: {
     getAccessRequests: jest.fn()
   },
@@ -28,19 +28,19 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('ManageUsersPage', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().admin.getAccessRequests.mockClear();
-    mockBiohubApi().user.getUsersList.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockRestorationTrackerApi().admin.getAccessRequests.mockClear();
+    mockRestorationTrackerApi().user.getUsersList.mockClear();
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockClear();
 
     // mock code set response
-    mockBiohubApi().codes.getAllCodeSets.mockReturnValue({
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockReturnValue({
       system_roles: [{ id: 1, name: 'Role 1' }],
       administrative_activity_status_type: [
         { id: 1, name: 'Actioned' },
@@ -54,8 +54,8 @@ describe('ManageUsersPage', () => {
   });
 
   it('renders the main page content correctly', async () => {
-    mockBiohubApi().admin.getAccessRequests.mockReturnValue([]);
-    mockBiohubApi().user.getUsersList.mockReturnValue([]);
+    mockRestorationTrackerApi().admin.getAccessRequests.mockReturnValue([]);
+    mockRestorationTrackerApi().user.getUsersList.mockReturnValue([]);
 
     const { getByText } = renderContainer();
 
@@ -65,8 +65,8 @@ describe('ManageUsersPage', () => {
   });
 
   it('renders the access requests and active users component', async () => {
-    mockBiohubApi().admin.getAccessRequests.mockReturnValue([]);
-    mockBiohubApi().user.getUsersList.mockReturnValue([]);
+    mockRestorationTrackerApi().admin.getAccessRequests.mockReturnValue([]);
+    mockRestorationTrackerApi().user.getUsersList.mockReturnValue([]);
 
     const { getByText } = renderContainer();
 

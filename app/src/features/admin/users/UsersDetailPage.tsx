@@ -4,7 +4,7 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
 import UsersDetailHeader from './UsersDetailHeader';
 import UsersDetailProjects from './UsersDetailProjects';
@@ -16,7 +16,7 @@ import UsersDetailProjects from './UsersDetailProjects';
  */
 const UsersDetailPage: React.FC = (props) => {
   const urlParams = useParams();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [selectedUser, setSelectedUser] = useState<IGetUserResponse | null>(null);
 
@@ -27,12 +27,12 @@ const UsersDetailPage: React.FC = (props) => {
 
     const getUser = async () => {
       var id = urlParams['id'];
-      const user = await biohubApi.user.getUserById(Number(id));
+      const user = await restorationTrackerApi.user.getUserById(Number(id));
       setSelectedUser(user);
     };
 
     getUser();
-  }, [biohubApi.user, urlParams, selectedUser]);
+  }, [restorationTrackerApi.user, urlParams, selectedUser]);
 
   if (!selectedUser) {
     return <CircularProgress data-testid="page-loading" className="pageProgress" size={40} />;

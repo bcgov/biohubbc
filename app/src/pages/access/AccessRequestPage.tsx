@@ -12,7 +12,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
@@ -42,7 +42,7 @@ export const AccessRequestPage: React.FC = () => {
   const classes = useStyles();
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const history = useHistory();
 
   const { keycloakWrapper } = useContext(AuthStateContext);
@@ -65,7 +65,7 @@ export const AccessRequestPage: React.FC = () => {
 
   useEffect(() => {
     const getAllCodeSets = async () => {
-      const response = await biohubApi.codes.getAllCodeSets();
+      const response = await restorationTrackerApi.codes.getAllCodeSets();
 
       // TODO error handling/user messaging - Cant submit an access request if required code sets fail to fetch
 
@@ -79,7 +79,7 @@ export const AccessRequestPage: React.FC = () => {
       getAllCodeSets();
       setIsLoadingCodes(true);
     }
-  }, [biohubApi, isLoadingCodes, codes]);
+  }, [restorationTrackerApi, isLoadingCodes, codes]);
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -93,7 +93,7 @@ export const AccessRequestPage: React.FC = () => {
 
   const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
     try {
-      const response = await biohubApi.admin.createAdministrativeActivity({
+      const response = await restorationTrackerApi.admin.createAdministrativeActivity({
         ...values,
         name: keycloakWrapper?.displayName,
         username: keycloakWrapper?.getUserIdentifier(),

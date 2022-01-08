@@ -6,7 +6,7 @@ import {
   // waitFor
 } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
@@ -19,8 +19,8 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   project: {
     getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>(),
     deleteProject: jest.fn(),
@@ -31,8 +31,8 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 // const defaultAuthState = {
@@ -58,10 +58,10 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 describe('ProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.deleteProject.mockClear();
-    mockBiohubApi().project.getProjectForView.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().project.publishProject.mockClear();
+    mockRestorationTrackerApi().project.deleteProject.mockClear();
+    mockRestorationTrackerApi().project.getProjectForView.mockClear();
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockClear();
+    mockRestorationTrackerApi().project.publishProject.mockClear();
   });
 
   afterEach(() => {
@@ -81,8 +81,8 @@ describe('ProjectPage', () => {
   });
 
   // it('renders project page when project is loaded (project is active)', async () => {
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
 
@@ -103,11 +103,11 @@ describe('ProjectPage', () => {
   // });
 
   // it('renders project page when project is loaded (project is completed)', async () => {
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, completion_status: 'Completed' }
   //   });
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
 
@@ -128,11 +128,11 @@ describe('ProjectPage', () => {
   // });
 
   // it('deletes project and takes user to the projects list page when user is a system administrator', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-  //   mockBiohubApi().project.deleteProject.mockResolvedValue(true);
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+  //   mockRestorationTrackerApi().project.deleteProject.mockResolvedValue(true);
 
   //   const authState = {
   //     keycloakWrapper: {
@@ -171,11 +171,11 @@ describe('ProjectPage', () => {
   // });
 
   // it('shows basic error dialog when deleting project call has no response', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-  //   mockBiohubApi().project.deleteProject.mockResolvedValue(null);
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+  //   mockRestorationTrackerApi().project.deleteProject.mockResolvedValue(null);
 
   //   const authState = {
   //     keycloakWrapper: {
@@ -222,11 +222,11 @@ describe('ProjectPage', () => {
   // });
 
   // it('shows error dialog with API error message when deleting project fails', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
-  //   mockBiohubApi().project.deleteProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+  //   mockRestorationTrackerApi().project.deleteProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
   //   const authState = {
   //     keycloakWrapper: {
@@ -273,14 +273,14 @@ describe('ProjectPage', () => {
   // });
 
   // it('sees delete project button as enabled when accessing an unpublished project as a project administrator', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '' }
   //   });
-  //   mockBiohubApi().project.deleteProject.mockResolvedValue(true);
+  //   mockRestorationTrackerApi().project.deleteProject.mockResolvedValue(true);
 
   //   const authState = {
   //     keycloakWrapper: {
@@ -307,14 +307,14 @@ describe('ProjectPage', () => {
   // });
 
   // it('sees delete project button as disabled when accessing a published project as a project administrator', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '2021-07-07' }
   //   });
-  //   mockBiohubApi().project.deleteProject.mockResolvedValue(true);
+  //   mockRestorationTrackerApi().project.deleteProject.mockResolvedValue(true);
 
   //   const authState = {
   //     keycloakWrapper: {
@@ -341,10 +341,10 @@ describe('ProjectPage', () => {
   // });
 
   // it('does not see the delete button when accessing project as non admin user', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
   //   const authState = {
   //     keycloakWrapper: {
@@ -371,14 +371,14 @@ describe('ProjectPage', () => {
   // });
 
   // it('renders correctly with no end date', async () => {
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: {
   //       ...getProjectForViewResponse.project,
   //       end_date: (null as unknown) as string
   //     }
   //   });
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
 
@@ -397,14 +397,14 @@ describe('ProjectPage', () => {
   // });
 
   // it('publishes and unpublishes a project', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '' }
   //   });
-  //   mockBiohubApi().project.publishProject.mockResolvedValue({ id: 1 });
+  //   mockRestorationTrackerApi().project.publishProject.mockResolvedValue({ id: 1 });
 
   //   const { getByTestId, findByText } = render(
   //     <DialogContextProvider>
@@ -418,7 +418,7 @@ describe('ProjectPage', () => {
   //   expect(publishButtonText1).toBeVisible();
 
   //   //re-mock response to return the project with a non-null publish date
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '2021-10-10' }
   //   });
@@ -429,7 +429,7 @@ describe('ProjectPage', () => {
   //   expect(unpublishButtonText).toBeVisible();
 
   //   //re-mock response to return the project with a null publish date
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '' }
   //   });
@@ -441,14 +441,14 @@ describe('ProjectPage', () => {
   // });
 
   // it('shows API error when fails to publish project', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '' }
   //   });
-  //   mockBiohubApi().project.publishProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+  //   mockRestorationTrackerApi().project.publishProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
   //   const { getByTestId, findByText, queryByText, getAllByRole } = render(
   //     <DialogContextProvider>
@@ -462,7 +462,7 @@ describe('ProjectPage', () => {
   //   expect(publishButtonText1).toBeVisible();
 
   //   //re-mock response to return the project with a non-null publish date
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '2021-10-10' }
   //   });
@@ -483,14 +483,14 @@ describe('ProjectPage', () => {
   // });
 
   // it('shows basic error dialog when publish project returns null response', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+  //   mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
   //     activity: [{ id: 1, name: 'activity 1' }]
   //   } as any);
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '' }
   //   });
-  //   mockBiohubApi().project.publishProject.mockResolvedValue(null);
+  //   mockRestorationTrackerApi().project.publishProject.mockResolvedValue(null);
 
   //   const { getByTestId, findByText, queryByText, getAllByRole } = render(
   //     <DialogContextProvider>
@@ -504,7 +504,7 @@ describe('ProjectPage', () => {
   //   expect(publishButtonText1).toBeVisible();
 
   //   //re-mock response to return the project with a non-null publish date
-  //   mockBiohubApi().project.getProjectForView.mockResolvedValue({
+  //   mockRestorationTrackerApi().project.getProjectForView.mockResolvedValue({
   //     ...getProjectForViewResponse,
   //     project: { ...getProjectForViewResponse.project, publish_date: '2021-10-10' }
   //   });

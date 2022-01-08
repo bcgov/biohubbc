@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectAttachment, IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
@@ -18,7 +18,7 @@ export interface IPublicProjectAttachmentsProps {
 const PublicProjectAttachments: React.FC<IPublicProjectAttachmentsProps> = () => {
   const urlParams = useParams();
   const projectId = urlParams['id'];
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [attachmentsList, setAttachmentsList] = useState<IGetProjectAttachment[]>([]);
 
@@ -29,7 +29,7 @@ const PublicProjectAttachments: React.FC<IPublicProjectAttachmentsProps> = () =>
       }
 
       try {
-        const response = await biohubApi.public.project.getProjectAttachments(projectId);
+        const response = await restorationTrackerApi.public.project.getProjectAttachments(projectId);
 
         if (!response?.attachmentsList) {
           return;
@@ -40,7 +40,7 @@ const PublicProjectAttachments: React.FC<IPublicProjectAttachmentsProps> = () =>
         return error;
       }
     },
-    [attachmentsList.length, biohubApi.public.project, projectId]
+    [attachmentsList.length, restorationTrackerApi.public.project, projectId]
   );
 
   useEffect(() => {

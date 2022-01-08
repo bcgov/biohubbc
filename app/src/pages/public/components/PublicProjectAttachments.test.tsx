@@ -1,14 +1,14 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import React from 'react';
 import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import PublicProjectAttachments from './PublicProjectAttachments';
 
 const history = createMemoryHistory();
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   public: {
     project: {
       getProjectAttachments: jest.fn()
@@ -16,14 +16,14 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('PublicProjectAttachments', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().public.project.getProjectAttachments.mockClear();
+    mockRestorationTrackerApi().public.project.getProjectAttachments.mockClear();
   });
 
   afterEach(() => {
@@ -31,7 +31,7 @@ describe('PublicProjectAttachments', () => {
   });
 
   it('renders correctly with no attachments', async () => {
-    mockBiohubApi().public.project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().public.project.getProjectAttachments.mockResolvedValue({
       attachmentsList: []
     });
 
@@ -47,7 +47,7 @@ describe('PublicProjectAttachments', () => {
   });
 
   it('renders correctly with attachments', async () => {
-    mockBiohubApi().public.project.getProjectAttachments.mockResolvedValue({
+    mockRestorationTrackerApi().public.project.getProjectAttachments.mockResolvedValue({
       attachmentsList: [
         {
           id: 1,

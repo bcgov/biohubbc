@@ -1,11 +1,11 @@
 import { fireEvent, render, cleanup, waitFor, getByText as rawGetByText } from '@testing-library/react';
 import React from 'react';
 import PublicAttachmentsList from './PublicAttachmentsList';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { AttachmentType } from '../../../constants/attachments';
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   public: {
     project: {
       getAttachmentSignedURL: jest.fn(),
@@ -29,14 +29,14 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('PublicAttachmentsList', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().public.project.getAttachmentSignedURL.mockClear();
+    mockRestorationTrackerApi().public.project.getAttachmentSignedURL.mockClear();
   });
 
   afterEach(() => {
@@ -86,7 +86,7 @@ describe('PublicAttachmentsList', () => {
 
     const signedUrl = 'www.signedurl.com';
 
-    mockBiohubApi().public.project.getAttachmentSignedURL.mockResolvedValue(signedUrl);
+    mockRestorationTrackerApi().public.project.getAttachmentSignedURL.mockResolvedValue(signedUrl);
 
     const { getByText } = render(
       <PublicAttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
@@ -218,8 +218,8 @@ describe('PublicAttachmentsList', () => {
     fireEvent.click(getByTestId('attachment-view-meta'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().public.project.getPublicProjectReportMetadata).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().public.project.getPublicProjectReportMetadata()).resolves.toEqual({
+      expect(mockRestorationTrackerApi().public.project.getPublicProjectReportMetadata).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().public.project.getPublicProjectReportMetadata()).resolves.toEqual({
         attachment_id: 1,
         title: 'Title of my report',
         year_published: '2000',

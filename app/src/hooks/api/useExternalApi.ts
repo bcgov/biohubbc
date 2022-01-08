@@ -3,7 +3,7 @@ import { AxiosInstance, CancelTokenSource } from 'axios';
 /**
  * Returns a set of methods for working with external APIs.
  *
- * Note: Should not be used for internal BioHub API calls, as these methods will not include any auth tokens in the
+ * Note: Should not be used for internal Restoration Tracker API calls, as these methods will not include any auth tokens in the
  * request.
  *
  * @param {AxiosInstance} axios

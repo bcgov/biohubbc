@@ -3,20 +3,20 @@ import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import IUCNClassification from './IUCNClassification';
 import { codes } from 'test-helpers/code-helpers';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { DialogContextProvider } from 'contexts/dialogContext';
 
-jest.mock('../../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   project: {
     getProjectForUpdate: jest.fn<Promise<object>, []>(),
     updateProject: jest.fn()
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 const mockRefresh = jest.fn();
@@ -32,8 +32,8 @@ const renderContainer = () => {
 describe('IUCNClassification', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.getProjectForUpdate.mockClear();
-    mockBiohubApi().project.updateProject.mockClear();
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockClear();
+    mockRestorationTrackerApi().project.updateProject.mockClear();
   });
 
   afterEach(() => {
@@ -64,7 +64,7 @@ describe('IUCNClassification', () => {
   });
 
   it('editing the IUCN classification works in the dialog', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockResolvedValue({
       iucn: {
         classificationDetails: [
           {
@@ -85,7 +85,7 @@ describe('IUCNClassification', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+      expect(mockRestorationTrackerApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
         UPDATE_GET_ENTITIES.iucn
       ]);
     });
@@ -109,8 +109,8 @@ describe('IUCNClassification', () => {
     fireEvent.click(getByText('Save Changes'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.updateProject).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
+      expect(mockRestorationTrackerApi().project.updateProject).toHaveBeenCalledTimes(1);
+      expect(mockRestorationTrackerApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
         iucn: {
           classificationDetails: [
             {
@@ -127,7 +127,7 @@ describe('IUCNClassification', () => {
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockResolvedValue({
       iucn: null
     });
 
@@ -151,7 +151,7 @@ describe('IUCNClassification', () => {
   });
 
   it('shows error dialog with API error message when getting IUCN data for update fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.getProjectForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText } = renderContainer();
 
@@ -173,7 +173,7 @@ describe('IUCNClassification', () => {
   });
 
   it('shows error dialog with API error message when updating IUCN data fails', async () => {
-    mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
+    mockRestorationTrackerApi().project.getProjectForUpdate.mockResolvedValue({
       iucn: {
         classificationDetails: [
           {
@@ -184,7 +184,7 @@ describe('IUCNClassification', () => {
         ]
       }
     });
-    mockBiohubApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockRestorationTrackerApi().project.updateProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
@@ -195,7 +195,7 @@ describe('IUCNClassification', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
+      expect(mockRestorationTrackerApi().project.getProjectForUpdate).toBeCalledWith(getProjectForViewResponse.id, [
         UPDATE_GET_ENTITIES.iucn
       ]);
     });

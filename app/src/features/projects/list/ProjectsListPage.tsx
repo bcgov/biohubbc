@@ -28,7 +28,7 @@ import { SYSTEM_ROLE } from 'constants/roles';
 import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetDraftsListResponse } from 'interfaces/useDraftApi.interface';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 const ProjectsListPage: React.FC = () => {
   const history = useHistory();
   const classes = useStyles();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [projects, setProjects] = useState<IGetProjectsListResponse[]>([]);
   const [drafts, setDrafts] = useState<IGetDraftsListResponse[]>([]);
@@ -126,7 +126,7 @@ const ProjectsListPage: React.FC = () => {
 
   useEffect(() => {
     const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
+      const codesResponse = await restorationTrackerApi.codes.getAllCodeSets();
 
       if (!codesResponse) {
         return;
@@ -139,11 +139,11 @@ const ProjectsListPage: React.FC = () => {
       getCodes();
       setIsLoadingCodes(true);
     }
-  }, [biohubApi.codes, isLoadingCodes, codes]);
+  }, [restorationTrackerApi.codes, isLoadingCodes, codes]);
 
   useEffect(() => {
     const getProjects = async () => {
-      const projectsResponse = await biohubApi.project.getProjectsList();
+      const projectsResponse = await restorationTrackerApi.project.getProjectsList();
 
       setProjects(() => {
         setIsLoading(false);
@@ -152,7 +152,7 @@ const ProjectsListPage: React.FC = () => {
     };
 
     const getDrafts = async () => {
-      const draftsResponse = await biohubApi.draft.getDraftsList();
+      const draftsResponse = await restorationTrackerApi.draft.getDraftsList();
 
       setDrafts(() => {
         setIsLoading(false);
@@ -164,7 +164,7 @@ const ProjectsListPage: React.FC = () => {
       getProjects();
       getDrafts();
     }
-  }, [biohubApi, isLoading]);
+  }, [restorationTrackerApi, isLoading]);
 
   const showFilterErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -188,7 +188,7 @@ const ProjectsListPage: React.FC = () => {
     }
 
     try {
-      const response = await biohubApi.project.getProjectsList(formikRef.current.values);
+      const response = await restorationTrackerApi.project.getProjectsList(formikRef.current.values);
 
       if (!response) {
         return;

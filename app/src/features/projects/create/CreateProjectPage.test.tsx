@@ -17,14 +17,14 @@ import { ProjectPartnershipsFormInitialValues } from 'features/projects/componen
 import { ProjectPermitFormInitialValues } from 'features/projects/components/ProjectPermitForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   codes: {
     getAllCodeSets: jest.fn<Promise<object>, []>()
   },
@@ -38,8 +38,8 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 const renderContainer = () => {
@@ -55,11 +55,11 @@ const renderContainer = () => {
 describe('CreateProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
-    mockBiohubApi().draft.createDraft.mockClear();
-    mockBiohubApi().draft.updateDraft.mockClear();
-    mockBiohubApi().draft.getDraft.mockClear();
-    mockBiohubApi().permit.getNonSamplingPermits.mockClear();
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockClear();
+    mockRestorationTrackerApi().draft.createDraft.mockClear();
+    mockRestorationTrackerApi().draft.updateDraft.mockClear();
+    mockRestorationTrackerApi().draft.getDraft.mockClear();
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -69,10 +69,10 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
     const { getByText, getAllByText, asFragment } = renderContainer();
 
@@ -98,10 +98,10 @@ describe('CreateProjectPage', () => {
   });
 
   it('shows the page title', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
     const { findByText } = renderContainer();
     const PageTitle = await findByText('Create Project');
@@ -110,10 +110,10 @@ describe('CreateProjectPage', () => {
   });
 
   it('navigates to a different section on click of that section label', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
     const { getByText, getAllByText, queryByLabelText } = renderContainer();
 
@@ -139,10 +139,10 @@ describe('CreateProjectPage', () => {
 
   describe('Are you sure? Dialog', () => {
     it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -161,10 +161,10 @@ describe('CreateProjectPage', () => {
     });
 
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -181,10 +181,10 @@ describe('CreateProjectPage', () => {
     });
 
     it('does nothing if the user clicks `No`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -203,14 +203,14 @@ describe('CreateProjectPage', () => {
 
   describe('draft project', () => {
     beforeEach(() => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      mockRestorationTrackerApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
     });
 
     it('preloads draft data and populates on form fields', async () => {
-      mockBiohubApi().draft.getDraft.mockResolvedValue({
+      mockRestorationTrackerApi().draft.getDraft.mockResolvedValue({
         id: 1,
         name: 'My draft',
         data: {
@@ -277,7 +277,7 @@ describe('CreateProjectPage', () => {
     });
 
     it('calls the createDraft/updateDraft functions and closes the dialog on save button click', async () => {
-      mockBiohubApi().draft.createDraft.mockResolvedValue({
+      mockRestorationTrackerApi().draft.createDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
@@ -297,7 +297,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByText('Save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
+        expect(mockRestorationTrackerApi().draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
 
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
@@ -313,14 +313,14 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByText('Save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', expect.any(Object));
+        expect(mockRestorationTrackerApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', expect.any(Object));
 
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
       });
     });
 
     it('calls the createDraft/updateDraft functions with WIP form data', async () => {
-      mockBiohubApi().draft.createDraft.mockResolvedValue({
+      mockRestorationTrackerApi().draft.createDraft.mockResolvedValue({
         id: 1,
         date: '2021-01-20'
       });
@@ -348,7 +348,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByText('Save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', {
+        expect(mockRestorationTrackerApi().draft.createDraft).toHaveBeenCalledWith('draft name', {
           coordinator: {
             first_name: 'draft first name',
             last_name: '',
@@ -382,7 +382,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByText('Save'));
 
       await waitFor(() => {
-        expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', {
+        expect(mockRestorationTrackerApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', {
           coordinator: {
             first_name: 'draft first name',
             last_name: 'draft last name',
@@ -404,7 +404,7 @@ describe('CreateProjectPage', () => {
     });
 
     it('renders an error dialog if the draft submit request fails', async () => {
-      mockBiohubApi().draft.createDraft.mockImplementation(() => {
+      mockRestorationTrackerApi().draft.createDraft.mockImplementation(() => {
         throw new Error('Draft failed exception!');
       });
 

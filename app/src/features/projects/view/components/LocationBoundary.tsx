@@ -19,7 +19,7 @@ import {
 } from 'features/projects/components/ProjectLocationForm';
 import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import {
   IGetProjectForUpdateResponseLocation,
@@ -47,7 +47,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     codes
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const dialogContext = useContext(DialogContext);
 
@@ -84,7 +84,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     let locationResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.location]);
+      const response = await restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.location]);
 
       if (!response?.location) {
         showErrorDialog({ open: true });
@@ -114,7 +114,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await restorationTrackerApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });

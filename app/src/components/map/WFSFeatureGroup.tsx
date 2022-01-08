@@ -1,5 +1,5 @@
 import { Feature } from 'geojson';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import useIsMounted from 'hooks/useIsMounted';
 import throttle from 'lodash-es/throttle';
 import React, { useCallback, useEffect, useState } from 'react';
@@ -60,7 +60,7 @@ export const buildWFSURLByBoundingBox = (typeName: string, bbox: string, wfsPara
  */
 const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
   const map = useMap();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const isMounted = useIsMounted();
 
   const [features, setFeatures] = useState<Feature[]>();
@@ -98,7 +98,7 @@ const WFSFeatureGroup: React.FC<IWFSFeatureGroupProps> = (props) => {
     throttle(async (typeName: string, bbox: string, wfsParams?: IWFSParams) => {
       const url = buildWFSURLByBoundingBox(typeName, bbox, wfsParams);
 
-      const data = await biohubApi.external.get(url).catch(/* catch and ignore errors */);
+      const data = await restorationTrackerApi.external.get(url).catch(/* catch and ignore errors */);
 
       return data.features;
     }, 300),

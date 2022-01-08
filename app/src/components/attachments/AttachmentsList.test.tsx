@@ -1,11 +1,11 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import React from 'react';
 import AttachmentsList from './AttachmentsList';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { AttachmentType } from '../../constants/attachments';
 
-jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../hooks/useRestorationTrackerApi');
+const mockUseRestorationTrackerApi = {
   project: {
     getAttachmentSignedURL: jest.fn()
   },
@@ -14,15 +14,15 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockUseRestorationTrackerApi>).mockReturnValue(
+  mockUseRestorationTrackerApi
 );
 
 describe('AttachmentsList', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().project.getAttachmentSignedURL.mockClear();
-    mockBiohubApi().survey.getSurveyAttachmentSignedURL.mockClear();
+    mockRestorationTrackerApi().project.getAttachmentSignedURL.mockClear();
+    mockRestorationTrackerApi().survey.getSurveyAttachmentSignedURL.mockClear();
   });
 
   afterEach(() => {
@@ -80,7 +80,7 @@ describe('AttachmentsList', () => {
 
     const signedUrl = 'www.signedurl.com';
 
-    mockBiohubApi().project.getAttachmentSignedURL.mockResolvedValue(signedUrl);
+    mockRestorationTrackerApi().project.getAttachmentSignedURL.mockResolvedValue(signedUrl);
 
     const { getByText } = render(
       <AttachmentsList projectId={1} attachmentsList={attachmentsList} getAttachments={jest.fn()} />
@@ -100,7 +100,7 @@ describe('AttachmentsList', () => {
 
     const signedUrl = 'www.signedurl.com';
 
-    mockBiohubApi().survey.getSurveyAttachmentSignedURL.mockResolvedValue(signedUrl);
+    mockRestorationTrackerApi().survey.getSurveyAttachmentSignedURL.mockResolvedValue(signedUrl);
 
     const { getByText } = render(
       <AttachmentsList projectId={1} surveyId={32} attachmentsList={attachmentsList} getAttachments={jest.fn()} />

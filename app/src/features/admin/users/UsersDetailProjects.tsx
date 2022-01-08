@@ -20,7 +20,7 @@ import { CustomMenuButton } from '../../../components/toolbar/ActionToolbars';
 import { ProjectParticipantsI18N, SystemUserI18N } from '../../../constants/i18n';
 import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { CodeSet, IGetAllCodeSetsResponse } from '../../../interfaces/useCodesApi.interface';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
@@ -56,7 +56,7 @@ export interface IProjectDetailsProps {
 const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
   const { userDetails } = props;
   const urlParams = useParams();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const dialogContext = useContext(DialogContext);
   const history = useHistory();
   const classes = useStyles();
@@ -67,10 +67,10 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   const handleGetUserProjects = useCallback(
     async (userId: number) => {
-      const userProjectsListResponse = await biohubApi.project.getAllUserProjectsForView(userId);
+      const userProjectsListResponse = await restorationTrackerApi.project.getAllUserProjectsForView(userId);
       setAssignedProjects(userProjectsListResponse);
     },
-    [biohubApi.project]
+    [restorationTrackerApi.project]
   );
 
   const refresh = () => handleGetUserProjects(userDetails.id);
@@ -85,7 +85,7 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
 
   useEffect(() => {
     const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
+      const codesResponse = await restorationTrackerApi.codes.getAllCodeSets();
 
       if (!codesResponse) {
         return;
@@ -98,11 +98,11 @@ const UsersDetailProjects: React.FC<IProjectDetailsProps> = (props) => {
       getCodes();
       setIsLoadingCodes(false);
     }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
+  }, [urlParams, restorationTrackerApi.codes, isLoadingCodes, codes]);
 
   const handleRemoveProjectParticipant = async (projectId: number, projectParticipationId: number) => {
     try {
-      const response = await biohubApi.project.removeProjectParticipant(projectId, projectParticipationId);
+      const response = await restorationTrackerApi.project.removeProjectParticipant(projectId, projectParticipationId);
 
       if (!response) {
         openErrorDialog({
@@ -273,7 +273,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
   const { row, user_identifier, projectRoleCodes, refresh } = props;
 
   const dialogContext = useContext(DialogContext);
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const errorDialogProps = {
     dialogTitle: ProjectParticipantsI18N.updateParticipantRoleErrorTitle,
@@ -328,7 +328,7 @@ const ChangeProjectRoleMenu: React.FC<IChangeProjectRoleMenuProps> = (props) => 
     }
 
     try {
-      const status = await biohubApi.project.updateProjectParticipantRole(
+      const status = await restorationTrackerApi.project.updateProjectParticipantRole(
         item.project_id,
         item.project_participation_id,
         newRoleId

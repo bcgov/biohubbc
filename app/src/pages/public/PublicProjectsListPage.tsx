@@ -10,7 +10,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { AuthStateContext } from 'contexts/authStateContext';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
@@ -38,7 +38,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 const PublicProjectsListPage = () => {
   const { keycloakWrapper } = useContext(AuthStateContext);
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const classes = useStyles();
   const history = useHistory();
 
@@ -47,7 +47,7 @@ const PublicProjectsListPage = () => {
 
   useEffect(() => {
     const getProjects = async () => {
-      const projectsResponse = await biohubApi.public.project.getProjectsList();
+      const projectsResponse = await restorationTrackerApi.public.project.getProjectsList();
 
       setProjects(() => {
         setIsLoading(false);
@@ -58,7 +58,7 @@ const PublicProjectsListPage = () => {
     if (isLoading) {
       getProjects();
     }
-  }, [biohubApi, isLoading]);
+  }, [restorationTrackerApi, isLoading]);
 
   const getChipIcon = (status_name: string) => {
     let chipLabel;

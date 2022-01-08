@@ -20,7 +20,7 @@ import { CustomMenuButton, CustomMenuIconButton } from 'components/toolbar/Actio
 import { DeleteSystemUserI18N } from 'constants/i18n';
 import { DialogContext, ISnackbarProps } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import { useHistory } from 'react-router';
@@ -56,7 +56,7 @@ export interface IActiveUsersListProps {
  */
 const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
   const classes = useStyles();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const { activeUsers, codes } = props;
   const history = useHistory();
 
@@ -117,7 +117,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
       return;
     }
     try {
-      await biohubApi.user.deleteSystemUser(user.id);
+      await restorationTrackerApi.user.deleteSystemUser(user.id);
 
       showSnackBar({
         snackbarMessage: (
@@ -169,7 +169,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
     const roleIds = [roleId];
 
     try {
-      await biohubApi.user.updateSystemUserRoles(user.id, roleIds);
+      await restorationTrackerApi.user.updateSystemUserRoles(user.id, roleIds);
 
       showSnackBar({
         snackbarMessage: (
@@ -194,7 +194,7 @@ const ActiveUsersList: React.FC<IActiveUsersListProps> = (props) => {
 
     try {
       for (const systemUser of values.systemUsers) {
-        await biohubApi.admin.addSystemUser(
+        await restorationTrackerApi.admin.addSystemUser(
           systemUser.userIdentifier,
           systemUser.identitySource,
           systemUser.system_role

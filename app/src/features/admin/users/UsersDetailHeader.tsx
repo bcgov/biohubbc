@@ -16,7 +16,7 @@ import { IYesNoDialogProps } from '../../../components/dialog/YesNoDialog';
 import { SystemUserI18N } from '../../../constants/i18n';
 import { DialogContext } from '../../../contexts/dialogContext';
 import { APIError } from '../../../hooks/api/useAxios';
-import { useBiohubApi } from '../../../hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetUserResponse } from '../../../interfaces/useUserApi.interface';
 
 const useStyles = makeStyles(() => ({
@@ -47,7 +47,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
   const { userDetails } = props;
   const classes = useStyles();
   const history = useHistory();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const dialogContext = useContext(DialogContext);
 
   const defaultErrorDialogProps: Partial<IErrorDialogProps> = {
@@ -84,7 +84,7 @@ const UsersDetailHeader: React.FC<IUsersHeaderProps> = (props) => {
       return;
     }
     try {
-      await biohubApi.user.deleteSystemUser(user.id);
+      await restorationTrackerApi.user.deleteSystemUser(user.id);
 
       dialogContext.setSnackbar({
         snackbarMessage: (

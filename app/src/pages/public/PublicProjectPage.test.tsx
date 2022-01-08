@@ -1,6 +1,6 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
@@ -10,8 +10,8 @@ import { DialogContextProvider } from 'contexts/dialogContext';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
-jest.mock('../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   public: {
     project: {
       getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>()
@@ -19,14 +19,14 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('PublicProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().public.project.getProjectForView.mockClear();
+    mockRestorationTrackerApi().public.project.getProjectForView.mockClear();
   });
 
   afterEach(() => {
@@ -46,7 +46,7 @@ describe('PublicProjectPage', () => {
   });
 
   it('renders public project page when project is loaded (project is active)', async () => {
-    mockBiohubApi().public.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockRestorationTrackerApi().public.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -65,7 +65,7 @@ describe('PublicProjectPage', () => {
   });
 
   it('renders public project page when project is loaded (project is completed)', async () => {
-    mockBiohubApi().public.project.getProjectForView.mockResolvedValue({
+    mockRestorationTrackerApi().public.project.getProjectForView.mockResolvedValue({
       ...getProjectForViewResponse,
       project: { ...getProjectForViewResponse.project, completion_status: 'Completed' }
     });
@@ -87,7 +87,7 @@ describe('PublicProjectPage', () => {
   });
 
   it('renders correctly with no end date', async () => {
-    mockBiohubApi().public.project.getProjectForView.mockResolvedValue({
+    mockRestorationTrackerApi().public.project.getProjectForView.mockResolvedValue({
       ...getProjectForViewResponse,
       project: {
         ...getProjectForViewResponse.project,

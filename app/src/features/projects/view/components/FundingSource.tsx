@@ -23,7 +23,7 @@ import ProjectFundingItemForm, {
   ProjectFundingFormArrayItemYupSchema
 } from 'features/projects/components/ProjectFundingItemForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
@@ -56,7 +56,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     codes
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const dialogContext = useContext(DialogContext);
 
@@ -136,9 +136,9 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
 
     try {
       if (isEditing) {
-        await biohubApi.project.updateProject(id, projectData);
+        await restorationTrackerApi.project.updateProject(id, projectData);
       } else {
-        await biohubApi.project.addFundingSource(id, projectData.funding.fundingSources[0]);
+        await restorationTrackerApi.project.addFundingSource(id, projectData.funding.fundingSources[0]);
       }
 
       setOpenEditDialog(false);
@@ -163,7 +163,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     const fundingSource = funding.fundingSources[fundingFormData.index];
 
     try {
-      await biohubApi.project.deleteFundingSource(id, fundingSource.id);
+      await restorationTrackerApi.project.deleteFundingSource(id, fundingSource.id);
       showYesNoDialog({ open: false });
     } catch (error) {
       const apiError = error as APIError;

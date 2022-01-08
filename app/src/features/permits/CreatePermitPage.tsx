@@ -9,7 +9,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { CreatePermitsI18N } from 'constants/i18n';
 import { Formik, FormikProps } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -116,7 +116,7 @@ export const PermitsYupSchema = yup.object().shape({
 const CreatePermitPage = () => {
   const urlParams = useParams();
   const classes = useStyles();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const history = useHistory();
 
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
@@ -130,7 +130,7 @@ const CreatePermitPage = () => {
 
   useEffect(() => {
     const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
+      const codesResponse = await restorationTrackerApi.codes.getAllCodeSets();
 
       if (!codesResponse) {
         // TODO error handling/messaging
@@ -144,7 +144,7 @@ const CreatePermitPage = () => {
       getCodes();
       setIsLoadingCodes(true);
     }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
+  }, [urlParams, restorationTrackerApi.codes, isLoadingCodes, codes]);
 
   const defaultCancelDialogProps = {
     dialogTitle: CreatePermitsI18N.cancelTitle,
@@ -189,7 +189,7 @@ const CreatePermitPage = () => {
    * @return {*}
    */
   const createPermits = async (permitsPostObject: ICreatePermitsRequest) => {
-    const response = await biohubApi.permit.createPermits(permitsPostObject);
+    const response = await restorationTrackerApi.permit.createPermits(permitsPostObject);
 
     if (!response) {
       showCreateErrorDialog();

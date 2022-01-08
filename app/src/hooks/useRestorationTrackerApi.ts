@@ -16,7 +16,7 @@ import { ConfigContext } from 'contexts/configContext';
  *
  * @return {*} object whose properties are supported api methods.
  */
-export const useBiohubApi = () => {
+export const useRestorationTrackerApi = () => {
   const config = useContext(ConfigContext);
   const apiAxios = useAxios(config?.API_HOST);
 

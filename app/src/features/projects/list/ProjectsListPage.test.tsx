@@ -2,15 +2,15 @@ import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import ProjectsListPage from './ProjectsListPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { createMemoryHistory } from 'history';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { SYSTEM_ROLE } from 'constants/roles';
 
 const history = createMemoryHistory();
 
-jest.mock('../../../hooks/useBioHubApi');
-const mockUseBiohubApi = {
+jest.mock('../../../hooks/useRestorationTrackerApi');
+const mockuseRestorationTrackerApi = {
   project: {
     getProjectsList: jest.fn()
   },
@@ -22,15 +22,15 @@ const mockUseBiohubApi = {
   }
 };
 
-const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
-  mockUseBiohubApi
+const mockRestorationTrackerApi = ((useRestorationTrackerApi as unknown) as jest.Mock<typeof mockuseRestorationTrackerApi>).mockReturnValue(
+  mockuseRestorationTrackerApi
 );
 
 describe('ProjectsListPage', () => {
   beforeEach(() => {
-    mockBiohubApi().project.getProjectsList.mockClear();
-    mockBiohubApi().draft.getDraftsList.mockClear();
-    mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockRestorationTrackerApi().project.getProjectsList.mockClear();
+    mockRestorationTrackerApi().draft.getDraftsList.mockClear();
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockClear();
   });
 
   afterEach(() => {
@@ -38,7 +38,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with the create project button', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockRestorationTrackerApi().project.getProjectsList.mockResolvedValue([]);
 
     const authState = ({
       keycloakWrapper: {
@@ -73,10 +73,10 @@ describe('ProjectsListPage', () => {
   });
 
   test('renders with the open advanced filters button', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockRestorationTrackerApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockRestorationTrackerApi().project.getProjectsList.mockResolvedValue([]);
 
     const { getByText } = render(
       <MemoryRouter>
@@ -90,7 +90,7 @@ describe('ProjectsListPage', () => {
   });
 
   // test('renders with a proper list of projects when published and completed', async () => {
-  //   mockBiohubApi().project.getProjectsList.mockResolvedValue([
+  //   mockRestorationTrackerApi().project.getProjectsList.mockResolvedValue([
   //     {
   //       id: 1,
   //       name: 'Project 1',
@@ -118,7 +118,7 @@ describe('ProjectsListPage', () => {
   // });
 
   // test('renders with a proper list of projects when unpublished and active', async () => {
-  //   mockBiohubApi().project.getProjectsList.mockResolvedValue([
+  //   mockRestorationTrackerApi().project.getProjectsList.mockResolvedValue([
   //     {
   //       id: 1,
   //       name: 'Project 1',
@@ -146,13 +146,13 @@ describe('ProjectsListPage', () => {
   // });
 
   test('renders with a list of drafts', async () => {
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+    mockRestorationTrackerApi().draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
         name: 'Draft 1'
       }
     ]);
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockRestorationTrackerApi().project.getProjectsList.mockResolvedValue([]);
 
     const { getByText, getByTestId } = render(
       <MemoryRouter>
@@ -167,7 +167,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the create project page works', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([]);
+    mockRestorationTrackerApi().project.getProjectsList.mockResolvedValue([]);
 
     const authState = ({
       keycloakWrapper: {
@@ -209,7 +209,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the create project page works on draft projects', async () => {
-    mockBiohubApi().draft.getDraftsList.mockResolvedValue([
+    mockRestorationTrackerApi().draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
         name: 'Draft 1'
@@ -235,7 +235,7 @@ describe('ProjectsListPage', () => {
   });
 
   test('navigating to the project works', async () => {
-    mockBiohubApi().project.getProjectsList.mockResolvedValue([
+    mockRestorationTrackerApi().project.getProjectsList.mockResolvedValue([
       {
         id: 1,
         name: 'Project 1',

@@ -2,7 +2,7 @@ import { useKeycloak } from '@react-keycloak/web';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
 import { KeycloakInstance } from 'keycloak-js';
 import { useCallback, useEffect, useState } from 'react';
-import { useBiohubApi } from './useBioHubApi';
+import { useRestorationTrackerApi } from './useRestorationTrackerApi';
 
 /**
  * IUserInfo interface, represents the userinfo provided by keycloak.
@@ -94,10 +94,10 @@ export interface IKeycloakWrapper {
 function useKeycloakWrapper(): IKeycloakWrapper {
   const { keycloak } = useKeycloak();
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
-  const [bioHubUser, setBioHubUser] = useState<IGetUserResponse>();
-  const [isBioHubUserLoading, setIsBioHubUserLoading] = useState<boolean>(false);
+  const [restorationTrackerUser, setrestorationTrackerUser] = useState<IGetUserResponse>();
+  const [isrestorationTrackerUserLoading, setIsrestorationTrackerUserLoading] = useState<boolean>(false);
 
   const [keycloakUser, setKeycloakUser] = useState<IUserInfo | null>(null);
   const [isKeycloakUserLoading, setIsKeycloakUserLoading] = useState<boolean>(false);
@@ -140,14 +140,14 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloakUser]);
 
   useEffect(() => {
-    const getBioHubUser = async () => {
+    const getrestorationTrackerUser = async () => {
       let userDetails: IGetUserResponse;
 
       try {
-        userDetails = await biohubApi.user.getUser();
+        userDetails = await restorationTrackerApi.user.getUser();
       } catch {}
 
-      setBioHubUser(() => {
+      setrestorationTrackerUser(() => {
         if (userDetails?.role_names?.length && !userDetails?.user_record_end_date) {
           setHasLoadedAllUserInfo(true);
         } else {
@@ -162,21 +162,21 @@ function useKeycloakWrapper(): IKeycloakWrapper {
       return;
     }
 
-    if (bioHubUser || isBioHubUserLoading) {
+    if (restorationTrackerUser || isrestorationTrackerUserLoading) {
       return;
     }
 
-    setIsBioHubUserLoading(true);
+    setIsrestorationTrackerUserLoading(true);
 
-    getBioHubUser();
-  }, [keycloak, bioHubUser, isBioHubUserLoading, biohubApi.user]);
+    getrestorationTrackerUser();
+  }, [keycloak, restorationTrackerUser, isrestorationTrackerUserLoading, restorationTrackerApi.user]);
 
   useEffect(() => {
     const getSystemAccessRequest = async () => {
       let accessRequests: number;
 
       try {
-        accessRequests = await biohubApi.admin.hasPendingAdministrativeActivities();
+        accessRequests = await restorationTrackerApi.admin.hasPendingAdministrativeActivities();
       } catch {}
 
       setHasAccessRequest(() => {
@@ -194,7 +194,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     }
 
     getSystemAccessRequest();
-  }, [keycloak, biohubApi.admin, getUserIdentifier, hasAccessRequest, keycloakUser, shouldLoadAccessRequest]);
+  }, [keycloak, restorationTrackerApi.admin, getUserIdentifier, hasAccessRequest, keycloakUser, shouldLoadAccessRequest]);
 
   useEffect(() => {
     const getKeycloakUser = async () => {
@@ -216,7 +216,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   }, [keycloak, keycloakUser, isKeycloakUserLoading]);
 
   const getSystemRoles = (): string[] => {
-    return bioHubUser?.role_names || [];
+    return restorationTrackerUser?.role_names || [];
   };
 
   const hasSystemRole = (validSystemRoles?: string[]) => {

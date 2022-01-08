@@ -13,7 +13,7 @@ import {
   ProjectPartnershipsFormYupSchema
 } from 'features/projects/components/ProjectPartnershipsForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
@@ -39,7 +39,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     codes
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [partnershipsForUpdate, setPartnershipsForUpdate] = useState(ProjectPartnershipsFormInitialValues);
@@ -66,7 +66,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     let partnershipsResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.partnerships]);
+      const response = await restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.partnerships]);
 
       if (!response?.partnerships) {
         showErrorDialog({ open: true });
@@ -89,7 +89,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
     const projectData = { partnerships: values };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await restorationTrackerApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });

@@ -20,7 +20,7 @@ import { mdiInformationOutline, mdiLockOpenVariantOutline, mdiLockOutline } from
 import Icon from '@mdi/react';
 import ViewFileWithMetaDialog from 'components/dialog/ViewFileWithMetaDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import React, { useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
@@ -43,7 +43,7 @@ export interface IPublicAttachmentsListProps {
 const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
   const [reportMetaData, setReportMetaData] = useState<IGetReportMetaData | null>(null);
   const [showViewFileWithMetaDialog, setShowViewFileWithMetaDialog] = useState<boolean>(false);
@@ -69,7 +69,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
   const handleReportMetaDialog = async (attachment: IGetProjectAttachment) => {
     setCurrentAttachment(attachment);
     try {
-      const response = await biohubApi.public.project.getPublicProjectReportMetadata(props.projectId, attachment.id);
+      const response = await restorationTrackerApi.public.project.getPublicProjectReportMetadata(props.projectId, attachment.id);
 
       if (!response) {
         return;
@@ -84,7 +84,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
 
   const openAttachment = async (attachment: IGetProjectAttachment) => {
     try {
-      const response = await biohubApi.public.project.getAttachmentSignedURL(
+      const response = await restorationTrackerApi.public.project.getAttachmentSignedURL(
         props.projectId,
         attachment.id,
         attachment.fileType
@@ -195,10 +195,10 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
           <Typography variant="body1" color="textSecondary">
             To access secure documents, please submit your request to{' '}
             <Link
-              href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
+              href="mailto:retoration-tracker@gov.bc.ca?subject=Restoration Tracker - Secure Document Access Request"
               underline="always"
               onClick={preventDefault}>
-              biohub@gov.bc.ca
+              restoation-tracker@gov.bc.ca
             </Link>
             . A data manager will review your request and contact you as soon as possible.
           </Typography>

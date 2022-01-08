@@ -173,7 +173,7 @@ describe('getLogOutUrl', () => {
 
     // @ts-ignore
     window.location = {
-      origin: 'https://biohub.com'
+      origin: 'https://restoration-tracker.com'
     };
 
     const config = {
@@ -190,7 +190,7 @@ describe('getLogOutUrl', () => {
     };
 
     expect(getLogOutUrl(config)).toEqual(
-      'https://www.siteminderlogout.com?returl=https://www.keycloaklogout.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=https://biohub.com/&retnow=1'
+      'https://www.siteminderlogout.com?returl=https://www.keycloaklogout.com/auth/realms/myrealm/protocol/openid-connect/logout?redirect_uri=https://restoration-tracker.com/&retnow=1'
     );
   });
 });

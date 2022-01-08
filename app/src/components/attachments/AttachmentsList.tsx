@@ -25,7 +25,7 @@ import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
@@ -58,7 +58,7 @@ export interface IAttachmentsListProps {
 
 const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   const classes = useStyles();
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [rowsPerPage, setRowsPerPage] = useState(10);
   const [page, setPage] = useState(0);
@@ -151,7 +151,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
 
     try {
-      await biohubApi.project.deleteProjectAttachment(
+      await restorationTrackerApi.project.deleteProjectAttachment(
         props.projectId,
         attachment.id,
         attachment.fileType,
@@ -173,7 +173,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const getReportMeta = async (attachment: IGetProjectAttachment) => {
     try {
-      const response = await biohubApi.project.getProjectReportMetadata(props.projectId, attachment.id);
+      const response = await restorationTrackerApi.project.getProjectReportMetadata(props.projectId, attachment.id);
 
       if (!response) {
         return;
@@ -187,7 +187,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
 
   const openAttachment = async (attachment: IGetProjectAttachment) => {
     try {
-      const response = await biohubApi.project.getAttachmentSignedURL(
+      const response = await restorationTrackerApi.project.getAttachmentSignedURL(
         props.projectId,
         attachment.id,
         attachment.fileType
@@ -227,7 +227,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.project.makeAttachmentSecure(
+      const response = await restorationTrackerApi.project.makeAttachmentSecure(
         props.projectId,
         attachment.id,
         attachment.fileType
@@ -249,7 +249,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.project.makeAttachmentUnsecure(
+      const response = await restorationTrackerApi.project.makeAttachmentUnsecure(
         props.projectId,
         attachment.id,
         attachment.securityToken,
@@ -274,7 +274,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     const fileMeta = values;
 
     try {
-      await biohubApi.project.updateProjectReportMetadata(
+      await restorationTrackerApi.project.updateProjectReportMetadata(
         props.projectId,
         reportMetaData.attachment_id,
         AttachmentType.REPORT,

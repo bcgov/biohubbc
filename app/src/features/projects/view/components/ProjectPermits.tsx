@@ -19,7 +19,7 @@ import ProjectPermitForm, {
   ProjectPermitFormInitialValues
 } from 'features/projects/components/ProjectPermitForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi} from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
 import {
@@ -45,7 +45,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
     projectForViewData: { permit, id }
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const dialogContext = useContext(DialogContext);
 
@@ -79,8 +79,8 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
 
     try {
       const [projectForUpdateResponse, existingPermitsResponse] = await Promise.all([
-        biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.permit, UPDATE_GET_ENTITIES.coordinator]),
-        biohubApi.permit.getNonSamplingPermits()
+        restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.permit, UPDATE_GET_ENTITIES.coordinator]),
+        restorationTrackerApi.permit.getNonSamplingPermits()
       ]);
 
       if (!projectForUpdateResponse?.permit || !projectForUpdateResponse?.coordinator || !existingPermitsResponse) {
@@ -110,7 +110,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
     const projectData = { permit: values, coordinator: coordinatorData };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await restorationTrackerApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });

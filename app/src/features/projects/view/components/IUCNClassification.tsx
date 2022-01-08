@@ -19,7 +19,7 @@ import {
   ProjectIUCNFormYupSchema
 } from 'features/projects/components/ProjectIUCNForm';
 import { APIError } from 'hooks/api/useAxios';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse, UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useState } from 'react';
@@ -54,7 +54,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
     codes
   } = props;
 
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
   const classes = useStyles();
 
   const dialogContext = useContext(DialogContext);
@@ -83,7 +83,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
     let iucnResponseData;
 
     try {
-      const response = await biohubApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.iucn]);
+      const response = await restorationTrackerApi.project.getProjectForUpdate(id, [UPDATE_GET_ENTITIES.iucn]);
 
       if (!response?.iucn) {
         showErrorDialog({ open: true });
@@ -108,7 +108,7 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
     const projectData = { iucn: values };
 
     try {
-      await biohubApi.project.updateProject(id, projectData);
+      await restorationTrackerApi.project.updateProject(id, projectData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });

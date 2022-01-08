@@ -4,7 +4,7 @@ import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
 import { AdministrativeActivityStatusType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { useRestorationTrackerApi } from 'hooks/useRestorationTrackerApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetUserResponse } from 'interfaces/useUserApi.interface';
@@ -17,7 +17,7 @@ import ActiveUsersList from './ActiveUsersList';
  * @return {*}
  */
 const ManageUsersPage: React.FC = () => {
-  const biohubApi = useBiohubApi();
+  const restorationTrackerApi = useRestorationTrackerApi();
 
   const [accessRequests, setAccessRequests] = useState<IGetAccessRequestsListResponse[]>([]);
   const [isLoadingAccessRequests, setIsLoadingAccessRequests] = useState(false);
@@ -31,7 +31,7 @@ const ManageUsersPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
   const refreshAccessRequests = async () => {
-    const accessResponse = await biohubApi.admin.getAccessRequests([
+    const accessResponse = await restorationTrackerApi.admin.getAccessRequests([
       AdministrativeActivityStatusType.PENDING,
       AdministrativeActivityStatusType.REJECTED
     ]);
@@ -41,7 +41,7 @@ const ManageUsersPage: React.FC = () => {
 
   useEffect(() => {
     const getAccessRequests = async () => {
-      const accessResponse = await biohubApi.admin.getAccessRequests([
+      const accessResponse = await restorationTrackerApi.admin.getAccessRequests([
         AdministrativeActivityStatusType.PENDING,
         AdministrativeActivityStatusType.REJECTED
       ]);
@@ -60,17 +60,17 @@ const ManageUsersPage: React.FC = () => {
     setIsLoadingAccessRequests(true);
 
     getAccessRequests();
-  }, [biohubApi.admin, isLoadingAccessRequests, hasLoadedAccessRequests]);
+  }, [restorationTrackerApi.admin, isLoadingAccessRequests, hasLoadedAccessRequests]);
 
   const refreshActiveUsers = async () => {
-    const activeUsersResponse = await biohubApi.user.getUsersList();
+    const activeUsersResponse = await restorationTrackerApi.user.getUsersList();
 
     setActiveUsers(activeUsersResponse);
   };
 
   useEffect(() => {
     const getActiveUsers = async () => {
-      const activeUsersResponse = await biohubApi.user.getUsersList();
+      const activeUsersResponse = await restorationTrackerApi.user.getUsersList();
 
       setActiveUsers(() => {
         setHasLoadedActiveUsers(true);
@@ -86,11 +86,11 @@ const ManageUsersPage: React.FC = () => {
     setIsLoadingActiveUsers(true);
 
     getActiveUsers();
-  }, [biohubApi, isLoadingActiveUsers, hasLoadedActiveUsers]);
+  }, [restorationTrackerApi, isLoadingActiveUsers, hasLoadedActiveUsers]);
 
   useEffect(() => {
     const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
+      const codesResponse = await restorationTrackerApi.codes.getAllCodeSets();
 
       if (!codesResponse) {
         // TODO error handling/messaging
@@ -110,7 +110,7 @@ const ManageUsersPage: React.FC = () => {
     setIsLoadingCodes(true);
 
     getCodes();
-  }, [biohubApi.codes, isLoadingCodes, codes]);
+  }, [restorationTrackerApi.codes, isLoadingCodes, codes]);
 
   if (!hasLoadedAccessRequests || !hasLoadedActiveUsers || !codes) {
     return <CircularProgress className="pageProgress" size={40} />;
