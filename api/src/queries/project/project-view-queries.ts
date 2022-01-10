@@ -99,12 +99,6 @@ export const getProjectListSQL = (
       on pfs.investment_action_category_id = iac.investment_action_category_id
     left outer join funding_source as fs
       on iac.funding_source_id = fs.funding_source_id
-    left outer join survey as s
-      on s.project_id = p.project_id
-    left outer join study_species as sp
-      on sp.survey_id = s.survey_id
-    left outer join wldtaxonomic_units as wu
-      on wu.wldtaxonomic_units_id = sp.wldtaxonomic_units_id
     where 1 = 1
   `;
 

@@ -106,7 +106,7 @@ export function deleteProject(): RequestHandler {
 
       /**
        * PART 2
-       * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
+       * Get the attachment S3 keys for all attachments associated to this project
        * Used to delete them from S3 separately later
        */
       const getProjectAttachmentSQLStatement = queries.project.getProjectAttachmentsSQL(Number(req.params.projectId));

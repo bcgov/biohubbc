@@ -1,9 +1,9 @@
 import { getLogger } from '../utils/logger';
 
-const defaultLog = getLogger('models/project-survey-attachments');
+const defaultLog = getLogger('models/project-attachments');
 
 /**
- * Pre-processes GET project/survey attachments data
+ * Pre-processes GET project attachments data
  *
  * @export
  * @class GetAttachmentsData

@@ -56,7 +56,7 @@ GET.apiDoc = {
 export function getPublicReportMetaData(): RequestHandler {
   return async (req, res) => {
     defaultLog.debug({
-      label: 'getSurveyReportMetaData',
+      label: 'getPublicReportMetaData',
       message: 'params',
       req_params: req.params,
       req_query: req.query
