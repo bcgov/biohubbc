@@ -122,6 +122,7 @@ const ManageUsersPage: React.FC = () => {
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h1">Manage Users</Typography>
         </Box>
+
         <Box>
           <AccessRequestList
             accessRequests={accessRequests}
