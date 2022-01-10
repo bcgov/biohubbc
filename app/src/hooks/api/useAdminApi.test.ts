@@ -13,6 +13,14 @@ describe('useAdminApi', () => {
     mock.restore();
   });
 
+  it('sendGCNotification works as expected', async () => {
+    mock.onPost('/api/gcnotify/send').reply(200);
+
+    const result = await useAdminApi(axios).sendGCNotification({ emailAddress: 'test@@email.com' }, { body: 'test' });
+
+    expect(result).toEqual(true);
+  });
+
   it('getAccessRequests works as expected', async () => {
     const response = [
       {
