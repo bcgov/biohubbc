@@ -11,6 +11,8 @@ import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
+import { GCNotifyService } from '../services/gcnotify-service';
+import { ACCESS_REQUEST_MESSAGE } from '../constants/notifications';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 
@@ -159,6 +161,15 @@ export function createAdministrativeActivity(): RequestHandler {
       if (!administrativeActivityResult || !administrativeActivityResult.id) {
         throw new HTTP500('Failed to submit administrative activity');
       }
+
+      const gcnotifyService = new GCNotifyService();
+      const ADMIN_EMAIL = process.env.GCNOTIFY_ADMIN_EMAIL || '';
+      gcnotifyService.sendEmailGCNotification(ADMIN_EMAIL, {
+        header: ACCESS_REQUEST_MESSAGE.HEADER,
+        body1: ACCESS_REQUEST_MESSAGE.BODY_1,
+        body2: `In ${process.env.NODE_ENV} environment, url: ${req.hostname}`,
+        footer: ACCESS_REQUEST_MESSAGE.FOOTER
+      });
 
       return res
         .status(200)
