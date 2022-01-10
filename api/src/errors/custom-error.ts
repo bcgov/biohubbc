@@ -1,17 +1,40 @@
 export enum ApiErrorType {
   BUILD_SQL = 'Error constructing SQL query',
   EXECUTE_SQL = 'Error executing SQL query',
+  GENERAL = 'Error',
   UNKNOWN = 'Unknown Error'
 }
 
-export class ApiError extends Error {
+/**
+ * Allows custom error classes to extend default `Error` while maintaining prototype chain.
+ *
+ * @export
+ * @class ExtendableError
+ * @extends {Error}
+ */
+export class ExtendableError extends Error {
+  constructor(message?: string) {
+    // 'Error' breaks prototype chain here
+    super(message);
+
+    // restore prototype chain
+    const actualProto = new.target.prototype;
+
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(this, actualProto);
+    } else {
+      (this as any).__proto__ = actualProto;
+    }
+  }
+}
+
+export class ApiError extends ExtendableError {
   errors?: (string | object)[];
 
   constructor(name: ApiErrorType, message: string, errors?: (string | object)[], stack?: string) {
     super(message);
 
     this.name = name;
-    this.message = message;
     this.errors = errors || [];
     this.stack = stack;
 
@@ -30,7 +53,7 @@ export class ApiError extends Error {
  */
 export class ApiGeneralError extends ApiError {
   constructor(message: string, errors?: (string | object)[]) {
-    super(ApiErrorType.UNKNOWN, message, errors);
+    super(ApiErrorType.GENERAL, message, errors);
   }
 }
 
@@ -73,7 +96,7 @@ export class ApiBuildSQLError extends ApiError {
  */
 export class ApiExecuteSQLError extends ApiError {
   constructor(message: string, errors?: (string | object)[]) {
-    super(ApiErrorType.UNKNOWN, message, errors);
+    super(ApiErrorType.EXECUTE_SQL, message, errors);
   }
 }
 
@@ -85,7 +108,7 @@ export enum HTTPErrorType {
   INTERNAL_SERVER_ERROR = 'Internal Server Error'
 }
 
-export class HTTPError extends Error {
+export class HTTPError extends ExtendableError {
   status: number;
   errors?: (string | object)[];
 
@@ -94,7 +117,6 @@ export class HTTPError extends Error {
 
     this.name = name;
     this.status = status;
-    this.message = message;
     this.errors = errors || [];
     this.stack = stack;
 

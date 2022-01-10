@@ -3,22 +3,43 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { useMemo } from 'react';
 import { ensureProtocol } from 'utils/Utils';
 
-export class APIError {
-  name: string;
+/**
+ * Allows custom error classes to extend default `Error` while maintaining prototype chain.
+ *
+ * @export
+ * @class ExtendableError
+ * @extends {Error}
+ */
+export class ExtendableError extends Error {
+  constructor(message?: string) {
+    // 'Error' breaks prototype chain here
+    super(message);
+
+    // restore prototype chain
+    const actualProto = new.target.prototype;
+
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(this, actualProto);
+    } else {
+      (this as any).__proto__ = actualProto;
+    }
+  }
+}
+export class APIError extends ExtendableError {
   status: number;
-  message: string;
   errors?: (string | object)[];
   requestURL?: string;
-  responseURL?: string;
 
   constructor(error: AxiosError) {
-    this.name = error?.response?.data?.name || error.name;
-    this.status = error?.response?.data?.status || error?.response?.status || Number(error?.code);
-    this.message = error?.response?.data?.message || error.message;
-    this.errors = error?.response?.data?.errors || [];
+    super(error.response?.data?.message || error.message);
+
+    Error.captureStackTrace(this, this.constructor);
+
+    this.name = error.response?.data?.name || error.name;
+    this.status = error.response?.data?.status || error.response?.status;
+    this.errors = error.response?.data?.errors || [];
 
     this.requestURL = `${error?.config?.baseURL}${error?.config?.url}`;
-    this.responseURL = error?.request?.responseURL;
   }
 }
 

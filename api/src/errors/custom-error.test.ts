@@ -1,8 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  ApiBuildSQLError,
   ApiError,
   ApiErrorType,
+  ApiExecuteSQLError,
+  ApiGeneralError,
+  ApiUnknownError,
   ensureHTTPError,
   HTTP400,
   HTTP401,
@@ -11,6 +15,32 @@ import {
   HTTP500,
   HTTPError
 } from './custom-error';
+
+describe('ApiError', () => {
+  describe('No error value provided', () => {
+    let message: string;
+
+    before(() => {
+      message = 'response message';
+    });
+
+    it('Creates Api General error', function () {
+      expect(new ApiGeneralError(message).name).to.equal(ApiErrorType.GENERAL);
+    });
+
+    it('Creates Api Unknown error', function () {
+      expect(new ApiUnknownError(message).name).to.equal(ApiErrorType.UNKNOWN);
+    });
+
+    it('Creates Api build SQL error', function () {
+      expect(new ApiBuildSQLError(message).name).to.equal(ApiErrorType.BUILD_SQL);
+    });
+
+    it('Creates Api execute SQL error', function () {
+      expect(new ApiExecuteSQLError(message).name).to.equal(ApiErrorType.EXECUTE_SQL);
+    });
+  });
+});
 
 describe('HTTPError', () => {
   describe('No error value provided', () => {
