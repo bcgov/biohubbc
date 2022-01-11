@@ -5,30 +5,7 @@ export enum ApiErrorType {
   UNKNOWN = 'Unknown Error'
 }
 
-/**
- * Allows custom error classes to extend default `Error` while maintaining prototype chain.
- *
- * @export
- * @class ExtendableError
- * @extends {Error}
- */
-export class ExtendableError extends Error {
-  constructor(message?: string) {
-    // 'Error' breaks prototype chain here
-    super(message);
-
-    // restore prototype chain
-    const actualProto = new.target.prototype;
-
-    if (Object.setPrototypeOf) {
-      Object.setPrototypeOf(this, actualProto);
-    } else {
-      (this as any).__proto__ = actualProto;
-    }
-  }
-}
-
-export class ApiError extends ExtendableError {
+export class ApiError extends Error {
   errors?: (string | object)[];
 
   constructor(name: ApiErrorType, message: string, errors?: (string | object)[], stack?: string) {
@@ -38,7 +15,11 @@ export class ApiError extends ExtendableError {
     this.errors = errors || [];
     this.stack = stack;
 
-    if (!stack) {
+    if (stack) {
+      this.stack = stack;
+    }
+
+    if (!this.stack) {
       Error.captureStackTrace(this);
     }
   }
@@ -108,7 +89,7 @@ export enum HTTPErrorType {
   INTERNAL_SERVER_ERROR = 'Internal Server Error'
 }
 
-export class HTTPError extends ExtendableError {
+export class HTTPError extends Error {
   status: number;
   errors?: (string | object)[];
 
@@ -118,9 +99,12 @@ export class HTTPError extends ExtendableError {
     this.name = name;
     this.status = status;
     this.errors = errors || [];
-    this.stack = stack;
 
-    if (!stack) {
+    if (stack) {
+      this.stack = stack;
+    }
+
+    if (!this.stack) {
       Error.captureStackTrace(this);
     }
   }
