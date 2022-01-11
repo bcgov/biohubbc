@@ -1,6 +1,10 @@
 import { AxiosInstance } from 'axios';
 import { AdministrativeActivityType, AdministrativeActivityStatusType } from 'constants/misc';
-import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
+import {
+  IgcNotifyGenericMessage,
+  IgcNotifyRecipient,
+  IGetAccessRequestsListResponse
+} from 'interfaces/useAdminApi.interface';
 import qs from 'qs';
 
 /**
@@ -10,6 +14,25 @@ import qs from 'qs';
  * @return {*} object whose properties are supported api methods.
  */
 const useAdminApi = (axios: AxiosInstance) => {
+  /**
+   * Send notification to recipient
+   *
+   * @param {IgcNotifyRecipient} recipient
+   * @param {IgcNotifyGenericMessage} message
+   * @return {*}  {Promise<number>}
+   */
+  const sendGCNotification = async (
+    recipient: IgcNotifyRecipient,
+    message: IgcNotifyGenericMessage
+  ): Promise<boolean> => {
+    const { status } = await axios.post(`/api/gcnotify/send`, {
+      recipient,
+      message
+    });
+
+    return status === 200;
+  };
+
   /**
    * Get user access requests
    *
@@ -134,6 +157,7 @@ const useAdminApi = (axios: AxiosInstance) => {
   };
 
   return {
+    sendGCNotification,
     getAccessRequests,
     updateAccessRequest,
     updateAdministrativeActivity,
