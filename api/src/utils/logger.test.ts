@@ -185,7 +185,7 @@ describe('getPrintfFunction', () => {
       error: testError
     });
 
-    expect(result).to.equal(`[2021-10-20] (info) (logLabel): label - message \n${testError.stack} \n`);
+    expect(result).to.equal(`[2021-10-20] (info) (logLabel): label - message\n${testError.stack}`);
   });
 
   it('returns template string with additional objects', () => {
@@ -201,7 +201,7 @@ describe('getPrintfFunction', () => {
     });
 
     expect(result).to.equal(
-      `[2021-10-20] (info) (logLabel): label - message \n${testError.stack} \n{\n  "additionalObj": {\n    "a": 1\n  }\n}`
+      `[2021-10-20] (info) (logLabel): label - message\n${testError.stack}\n{\n  "additionalObj": {\n    "a": 1\n  }\n}`
     );
   });
 });
