@@ -1,3 +1,5 @@
+import { DatabaseError } from 'pg';
+
 export enum ApiErrorType {
   BUILD_SQL = 'Error constructing SQL query',
   EXECUTE_SQL = 'Error executing SQL query',
@@ -179,6 +181,7 @@ export class HTTP500 extends HTTPError {
  * Ensures that the incoming error is converted into an `HTTPError` if it is not one already.
  * If `error` is a `HTTPError`, then change nothing and return it.
  * If `error` is a `ApiError`, wrap it into an `HTTP500` error and return it.
+ * If `error` is a `DatabaseError`, wrap it into an `HTTP500` error and return it.
  * If `error` is a `Error`, wrap it into an `HTTP500` error and return it.
  * If `error` is none of the above, create a new generic `HTTP500` error and return it.
  *
@@ -192,6 +195,18 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
 
   if (error instanceof ApiError) {
     return new HTTPError(HTTPErrorType.INTERNAL_SERVER_ERROR, 500, error.message, error.errors, error.stack);
+  }
+
+  if (error instanceof DatabaseError) {
+    console.log(error);
+    console.log({ ...error });
+    return new HTTPError(
+      HTTPErrorType.INTERNAL_SERVER_ERROR,
+      500,
+      'Unexpected Database Error',
+      [{ ...error, message: error.message }],
+      error.stack
+    );
   }
 
   if (error instanceof Error) {
