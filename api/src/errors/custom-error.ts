@@ -198,8 +198,6 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
   }
 
   if (error instanceof DatabaseError) {
-    console.log(error);
-    console.log({ ...error });
     return new HTTPError(
       HTTPErrorType.INTERNAL_SERVER_ERROR,
       500,
