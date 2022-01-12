@@ -29,6 +29,7 @@ module.exports = (settings) => {
         VERSION: phases[phase].tag,
         HOST: phases[phase].host,
         CHANGE_ID: phases.build.changeId || changeId,
+        APP_HOST: phases[phase].appHost,
         NODE_ENV: phases[phase].env || 'dev',
         TZ: phases[phase].tz,
         DB_SERVICE_NAME: `${phases[phase].dbName}-postgresql${phases[phase].suffix}`,
