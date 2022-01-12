@@ -4,7 +4,7 @@ import moment from 'moment';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP500 } from '../errors/custom-error';
 import { projectIdResponseObject } from '../openapi/schemas/project';
 import { queries } from '../queries/queries';
 import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
@@ -131,7 +131,7 @@ POST.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getProjectList(): RequestHandler {
+export function getProjectList(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -146,7 +146,7 @@ function getProjectList(): RequestHandler {
       const getProjectListSQLStatement = queries.project.getProjectListSQL(isUserAdmin, systemUserId, filterFields);
 
       if (!getProjectListSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
+        throw new HTTP500('Failed to build SQL select statement');
       }
 
       const getProjectListResponse = await connection.query(
@@ -156,13 +156,7 @@ function getProjectList(): RequestHandler {
 
       await connection.commit();
 
-      let rows: any[] = [];
-
-      if (getProjectListResponse && getProjectListResponse.rows) {
-        rows = getProjectListResponse.rows;
-      }
-
-      const result: any[] = _extractProjects(rows);
+      const result: any[] = _extractProjects(getProjectListResponse.rows);
 
       return res.status(200).json(result);
     } catch (error) {

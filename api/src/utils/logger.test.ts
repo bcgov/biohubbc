@@ -1,6 +1,14 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { isObject, isObjectWithkeys, prettyPrint, getPrintfFunction, ILoggerMessage } from './logger';
+import { ApiError, ApiErrorType, HTTP500 } from '../errors/custom-error';
+import {
+  isObject,
+  isObjectWithkeys,
+  prettyPrint,
+  getPrintfFunction,
+  ILoggerMessage,
+  prettyPrintUnknown
+} from './logger';
 
 describe('isObject', () => {
   it('identifies if object is valid when undefined', () => {
@@ -116,6 +124,49 @@ describe('prettyPrint', () => {
   });
 });
 
+describe('prettyPrintUnknown', () => {
+  it('returns empty string if input is null', () => {
+    expect(prettyPrintUnknown('')).to.equal('');
+    expect(prettyPrintUnknown(null)).to.equal('');
+    expect(prettyPrintUnknown(undefined)).to.equal('');
+  });
+
+  it('returns formatted HTTPError', () => {
+    const testError = new HTTP500('a 500 error');
+    expect(prettyPrintUnknown(testError)).to.equal(`500 ${testError.stack}`);
+  });
+
+  it('returns formatted ApiError', () => {
+    const testError = new ApiError(ApiErrorType.GENERAL, 'an unknown error');
+    expect(prettyPrintUnknown(testError)).to.equal(`${testError.stack}`);
+  });
+
+  it('returns formatted Error', () => {
+    const testError = new Error('an error');
+    expect(prettyPrintUnknown(testError)).to.equal(`${testError.stack}`);
+  });
+
+  it('returns formatted object', () => {
+    expect(prettyPrintUnknown({ param1: 1, param2: 2 })).to.equal('{\n  "param1": 1,\n  "param2": 2\n}');
+  });
+
+  it('returns formatted array', () => {
+    expect(prettyPrintUnknown([1, 2, 3])).to.equal('[\n  1,\n  2,\n  3\n]');
+  });
+
+  it('returns original value if it is a string', () => {
+    expect(prettyPrintUnknown('a string')).to.equal('a string');
+  });
+
+  it('returns original value if it is a number', () => {
+    expect(prettyPrintUnknown(1234)).to.equal(1234);
+  });
+
+  it('returns empty string if input is an empty object', () => {
+    expect(prettyPrintUnknown({})).to.equal('');
+  });
+});
+
 describe('getPrintfFunction', () => {
   let printFunction: (args: ILoggerMessage) => string;
 
@@ -124,29 +175,33 @@ describe('getPrintfFunction', () => {
   });
 
   it('returns template string without additional objects', () => {
+    const testError = new Error('an error');
+
     const result = printFunction({
       timestamp: '2021-10-20',
       level: 'info',
       label: 'label',
       message: 'message',
-      error: new Error('an error')
+      error: testError
     });
 
-    expect(result).to.equal('[2021-10-20] (info) (logLabel): label - message \nError: an error ');
+    expect(result).to.equal(`[2021-10-20] (info) (logLabel): label - message\n${testError.stack}`);
   });
 
   it('returns template string with additional objects', () => {
+    const testError = new Error('an error');
+
     const result = printFunction({
       timestamp: '2021-10-20',
       level: 'info',
       label: 'label',
       message: 'message',
-      error: new Error('an error'),
+      error: testError,
       additionalObj: { a: 1 }
     });
 
     expect(result).to.equal(
-      '[2021-10-20] (info) (logLabel): label - message \nError: an error \n{\n  "additionalObj": {\n    "a": 1\n  }\n}'
+      `[2021-10-20] (info) (logLabel): label - message\n${testError.stack}\n{\n  "additionalObj": {\n    "a": 1\n  }\n}`
     );
   });
 });

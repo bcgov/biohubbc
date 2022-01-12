@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/custom-error';
-import * as authorization from '../../../request-handlers/security/authorization';
+import { UserService } from '../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as user from './get';
 
@@ -49,7 +49,7 @@ describe('user', () => {
         userId: '1'
       };
 
-      sinon.stub(authorization, 'getSystemUserById').resolves(null);
+      sinon.stub(UserService.prototype, 'getUserById').resolves(null);
 
       try {
         const requestHandler = user.getUserById();
@@ -73,11 +73,12 @@ describe('user', () => {
         userId: '1'
       };
 
-      sinon.stub(authorization, 'getSystemUserById').resolves({
+      sinon.stub(UserService.prototype, 'getUserById').resolves({
         id: 1,
-        uis_id: 'uis_id',
         user_identifier: 'user_identifier',
-        record_effective_date: null
+        record_end_date: '',
+        role_ids: [],
+        role_names: []
       });
 
       const requestHandler = user.getUserById();
@@ -86,9 +87,10 @@ describe('user', () => {
 
       expect(mockRes.jsonValue).to.eql({
         id: 1,
-        uis_id: 'uis_id',
         user_identifier: 'user_identifier',
-        record_effective_date: null
+        record_end_date: '',
+        role_ids: [],
+        role_names: []
       });
     });
   });

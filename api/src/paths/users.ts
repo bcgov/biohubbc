@@ -2,9 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/custom-error';
-import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
+import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('paths/user');
@@ -94,19 +93,15 @@ export function getUserList(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getUserListSQLStatement = queries.users.getUserListSQL();
-
-      if (!getUserListSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const getUserListResponse = await connection.query(getUserListSQLStatement.text, getUserListSQLStatement.values);
+      const userService = new UserService(connection);
+
+      const response = await userService.listSystemUsers();
 
       await connection.commit();
 
-      return res.status(200).json(getUserListResponse && getUserListResponse.rows);
+      return res.status(200).json(response);
     } catch (error) {
       defaultLog.error({ label: 'getUserList', message: 'error', error });
       throw error;

@@ -4,8 +4,8 @@ import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
 import { ensureProjectParticipant } from '../../../../paths-helpers/project-participation';
-import { ensureSystemUser } from '../../../../paths-helpers/system-user';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { UserService } from '../../../../services/user-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/create');
@@ -142,8 +142,10 @@ export const ensureSystemUserAndProjectParticipantUser = async (
   participant: { userIdentifier: string; identitySource: string; roleId: number },
   connection: IDBConnection
 ) => {
+  const userService = new UserService(connection);
+
   // Add a system user, unless they already have one
-  const systemUserObject = await ensureSystemUser(participant.userIdentifier, participant.identitySource, connection);
+  const systemUserObject = await userService.ensureSystemUser(participant.userIdentifier, participant.identitySource);
 
   // Add project role, unless they already have one
   await ensureProjectParticipant(projectId, systemUserObject.id, participant.roleId, connection);

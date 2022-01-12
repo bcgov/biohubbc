@@ -4,7 +4,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../database/db';
 import { HTTPError } from '../errors/custom-error';
-import * as system_user from '../paths-helpers/system-user';
+import { UserService } from '../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
 import * as user from './user';
 
@@ -94,7 +94,7 @@ describe('user', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(system_user, 'addSystemUser').resolves();
+      sinon.stub(UserService.prototype, 'addSystemUser').resolves();
 
       const requestHandler = user.addUser();
 

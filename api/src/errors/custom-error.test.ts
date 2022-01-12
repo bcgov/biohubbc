@@ -1,8 +1,13 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { DatabaseError } from 'pg';
 import {
+  ApiBuildSQLError,
   ApiError,
   ApiErrorType,
+  ApiExecuteSQLError,
+  ApiGeneralError,
+  ApiUnknownError,
   ensureHTTPError,
   HTTP400,
   HTTP401,
@@ -11,6 +16,32 @@ import {
   HTTP500,
   HTTPError
 } from './custom-error';
+
+describe('ApiError', () => {
+  describe('No error value provided', () => {
+    let message: string;
+
+    before(() => {
+      message = 'response message';
+    });
+
+    it('Creates Api General error', function () {
+      expect(new ApiGeneralError(message).name).to.equal(ApiErrorType.GENERAL);
+    });
+
+    it('Creates Api Unknown error', function () {
+      expect(new ApiUnknownError(message).name).to.equal(ApiErrorType.UNKNOWN);
+    });
+
+    it('Creates Api build SQL error', function () {
+      expect(new ApiBuildSQLError(message).name).to.equal(ApiErrorType.BUILD_SQL);
+    });
+
+    it('Creates Api execute SQL error', function () {
+      expect(new ApiExecuteSQLError(message).name).to.equal(ApiErrorType.EXECUTE_SQL);
+    });
+  });
+});
 
 describe('HTTPError', () => {
   describe('No error value provided', () => {
@@ -64,6 +95,24 @@ describe('ensureHTTPError', () => {
     expect(ensuredError.message).to.equal('an api error message');
   });
 
+  it('returns a HTTPError when a DatabaseError provided', function () {
+    const databaseError = new DatabaseError('a db error message', 1, 'error');
+
+    const ensuredError = ensureHTTPError(databaseError);
+
+    expect(ensuredError).to.be.instanceof(HTTPError);
+
+    expect(ensuredError.status).to.equal(500);
+    expect(ensuredError.message).to.equal('Unexpected Database Error');
+    expect(ensuredError.errors).to.eql([
+      {
+        length: 1,
+        message: 'a db error message',
+        name: 'error'
+      }
+    ]);
+  });
+
   it('returns a HTTPError when a non Http Error provided', function () {
     const nonHttpError = new Error('a non http error');
 
@@ -72,6 +121,19 @@ describe('ensureHTTPError', () => {
     expect(ensuredError).to.be.instanceof(HTTPError);
 
     expect(ensuredError.status).to.equal(500);
-    expect(ensuredError.message).to.equal('a non http error');
+    expect(ensuredError.message).to.equal('Unexpected Error');
+    expect(ensuredError.errors).to.eql(['Error', 'a non http error']);
+  });
+
+  it('returns a generic HTTPError when a non Error provided', function () {
+    const nonError = 'not an Error';
+
+    const ensuredError = ensureHTTPError(nonError);
+
+    expect(ensuredError).to.be.instanceof(HTTPError);
+
+    expect(ensuredError.status).to.equal(500);
+    expect(ensuredError.message).to.equal('Unexpected Error');
+    expect(ensuredError.errors).to.eql([]);
   });
 });
