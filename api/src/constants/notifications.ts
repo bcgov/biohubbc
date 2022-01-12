@@ -1,12 +1,10 @@
-/**
- * Generic notfication messages
- *
- * @export
- * @enum {number}
- */
-export enum ACCESS_REQUEST_MESSAGE {
-  HEADER = 'Attention: System access request received.',
-  BODY_1 = `There is a new access request for 'Species Inventory Management System' application.`,
-  BODY_2 = 'ADDITIONAL INFO',
-  FOOTER = 'Please contact your system administrator for additional details.'
-}
+import { IgcNotifyGenericMessage } from '../models/gcnotify';
+
+//admin email template for new access requests
+export const ACCESS_REQUEST_ADMIN_EMAIL: IgcNotifyGenericMessage = {
+  subject: 'SIMS: Your request for access has been received.',
+  header: 'A request for access to the Species Inventory Management System has been submitted.',
+  body1: `To review the request,`,
+  body2: 'This is an automated message from the BioHub Species Inventory Management System',
+  footer: ''
+};

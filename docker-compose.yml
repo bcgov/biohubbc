@@ -68,6 +68,7 @@ services:
       - GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE=${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
       - GCNOTIFY_EMAIL_URL=${GCNOTIFY_EMAIL_URL}
       - GCNOTIFY_SMS_URL=${GCNOTIFY_SMS_URL}
+      - APP_URL=${APP_URL}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules

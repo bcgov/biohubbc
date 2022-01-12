@@ -18,6 +18,7 @@ describe('GCNotifyService', () => {
     const emailAddress = 'test@email.com';
 
     const message = {
+      subject: 'message.subject',
       header: 'message.header',
       body1: 'message.body1',
       body2: 'message.body2',
@@ -69,6 +70,7 @@ describe('GCNotifyService', () => {
     const sms = '2501231234';
 
     const message = {
+      subject: 'message.subject',
       header: 'message.header',
       body1: 'message.body1',
       body2: 'message.body2',

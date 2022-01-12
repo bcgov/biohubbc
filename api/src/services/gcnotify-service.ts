@@ -28,6 +28,7 @@ export class GCNotifyService {
       email_address: emailAddress,
       template_id: EMAIL_TEMPLATE,
       personalisation: {
+        subject: message.subject,
         header: message.header,
         main_body1: message.body1,
         main_body2: message.body2,
