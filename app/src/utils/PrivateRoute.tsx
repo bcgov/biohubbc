@@ -2,6 +2,7 @@ import CircularProgress from '@material-ui/core/CircularProgress';
 import { AuthStateContext } from 'contexts/authStateContext';
 import React, { useContext } from 'react';
 import { Redirect, Route, RouteProps } from 'react-router-dom';
+import qs from 'qs';
 
 interface IPrivateRouteProps extends RouteProps {
   validRoles?: string[];
@@ -24,6 +25,16 @@ const PrivateRoute: React.FC<IPrivateRouteProps> = (props) => {
       {...rest}
       render={(props) => {
         if (!keycloakWrapper?.keycloak?.authenticated) {
+          const urlParams = qs.parse(props.location.search.replace('?', ''));
+          const authLoginUrlParam = urlParams.authLogin;
+          //check for urlParam to force login
+          if (authLoginUrlParam) {
+            //remove authLogin from url to stop possible loop redirect
+            const redirectUrlParams = qs.stringify(urlParams, { filter: (prefix) => prefix !== 'authLogin' });
+            const redirectUri = `${window.location.origin}${props.location.pathname}?${redirectUrlParams}`;
+            keycloakWrapper?.keycloak?.login({ redirectUri: redirectUri });
+          }
+
           // User is not logged in
           return <Redirect to="/" />;
         }
