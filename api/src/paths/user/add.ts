@@ -3,9 +3,8 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { HTTP400 } from '../../errors/custom-error';
-import { addUserSystemRoles } from './{userId}/system-roles/update';
-import { ensureSystemUser, getSystemUser } from '../../paths-helpers/system-user';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user/add');
@@ -107,15 +106,15 @@ export function addSystemRoleUser(): RequestHandler {
     try {
       await connection.open();
 
-      await ensureSystemUser(userIdentifier, identitySource, connection);
+      const userService = new UserService(connection);
+
+      const userObject = await userService.ensureSystemUser(userIdentifier, identitySource);
+
+      if (userObject) {
+        await userService.addUserSystemRoles(userObject.id, [roleId]);
+      }
 
       await connection.commit();
-
-      const data = await getSystemUser(userIdentifier, connection);
-      if (data) {
-        const roles = [roleId];
-        await addUserSystemRoles(data.id, roles, connection);
-      }
 
       return res.status(200).send();
     } catch (error) {

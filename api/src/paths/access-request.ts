@@ -3,11 +3,10 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/custom-error';
-import { ensureSystemUser } from '../paths-helpers/system-user';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
+import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
-import { addSystemRoles } from './user/{userId}/system-roles/create';
 
 const defaultLog = getLogger('paths/access-request');
 
@@ -133,15 +132,17 @@ export function updateAccessRequest(): RequestHandler {
     try {
       await connection.open();
 
+      const userService = new UserService(connection);
+
       // Get the system user (adding or activating them if they already existed).
-      const systemUserObject = await ensureSystemUser(userIdentifier, identitySource, connection);
+      const systemUserObject = await userService.ensureSystemUser(userIdentifier, identitySource);
 
       // Filter out any system roles that have already been added to the user
       const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));
 
       if (rolesIdsToAdd?.length) {
         // Add any missing roles (if any)
-        await addSystemRoles(systemUserObject.id, rolesIdsToAdd, connection);
+        await userService.addUserSystemRoles(systemUserObject.id, rolesIdsToAdd);
       }
 
       // Update the access request record status
