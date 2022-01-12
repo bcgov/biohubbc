@@ -7,7 +7,7 @@ import * as db from '../../../database/db';
 import { HTTPError } from '../../../errors/custom-error';
 import project_participation_queries from '../../../queries/project-participation';
 import user_queries from '../../../queries/users';
-import * as authorization from '../../../request-handlers/security/authorization';
+import { UserService } from '../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import * as delete_endpoint from './delete';
 
@@ -127,7 +127,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(authorization, 'getSystemUserById').resolves(null);
+    sinon.stub(UserService.prototype, 'getUserById').resolves(null);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -152,7 +152,7 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(authorization, 'getSystemUserById').resolves({
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
       record_end_date: '2010-10-10',
@@ -184,10 +184,10 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(authorization, 'getSystemUserById').resolves({
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
-      record_end_date: null,
+      record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });
@@ -219,10 +219,10 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(authorization, 'getSystemUserById').resolves({
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
-      record_end_date: null,
+      record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });
@@ -240,43 +240,6 @@ describe('removeSystemUser', () => {
     }
   });
 
-  it('should throw a 400 error when there is not SQL statement returned for `deleteAllSystemRolesSQL`', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = { userId: '1' };
-    mockReq.body = { roles: [1, 2] };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
-
-    sinon.stub(authorization, 'getSystemUserById').resolves({
-      id: 1,
-      user_identifier: 'testname',
-      record_end_date: null,
-      role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
-    });
-
-    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
-
-    sinon.stub(user_queries, 'deleteAllSystemRolesSQL').returns(null);
-
-    try {
-      const requestHandler = delete_endpoint.removeSystemUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal(
-        'Failed to build SQL delete statement for deleting system roles'
-      );
-    }
-  });
-
   it('should catch and re-throw an error if the database fails to delete all system roles', async () => {
     const dbConnectionObj = getMockDBConnection();
 
@@ -289,10 +252,10 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(authorization, 'getSystemUserById').resolves({
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
-      record_end_date: null,
+      record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });
@@ -300,7 +263,7 @@ describe('removeSystemUser', () => {
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
 
     const expectedError = new Error('A database error');
-    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').rejects(expectedError);
+    sinon.stub(UserService.prototype, 'deleteUserSystemRoles').rejects(expectedError);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -309,44 +272,6 @@ describe('removeSystemUser', () => {
       expect.fail();
     } catch (actualError) {
       expect(actualError).to.equal(expectedError);
-    }
-  });
-
-  it('should throw a 400 error when there is no SQL for `deActivateSystemUserSQL`', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = { userId: '1' };
-    mockReq.body = { roles: [1, 2] };
-
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
-
-    sinon.stub(authorization, 'getSystemUserById').resolves({
-      id: 1,
-      user_identifier: 'testname',
-      record_end_date: null,
-      role_ids: [1, 2],
-      role_names: ['role 1', 'role 2']
-    });
-
-    sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
-    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').resolves();
-
-    sinon.stub(user_queries, 'deActivateSystemUserSQL').returns(null);
-
-    try {
-      const requestHandler = delete_endpoint.removeSystemUser();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal(
-        'Failed to build SQL delete statement to deactivate system user'
-      );
     }
   });
 
@@ -362,19 +287,19 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(authorization, 'getSystemUserById').resolves({
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
-      record_end_date: null,
+      record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
-    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').resolves();
+    sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
 
     const expectedError = new Error('A database error');
-    sinon.stub(delete_endpoint, 'deActivateSystemUser').rejects(expectedError);
+    sinon.stub(UserService.prototype, 'deactivateSystemUser').rejects(expectedError);
 
     try {
       const requestHandler = delete_endpoint.removeSystemUser();
@@ -398,17 +323,17 @@ describe('removeSystemUser', () => {
 
     sinon.stub(delete_endpoint, 'checkIfUserIsOnlyProjectLeadOnAnyProject').resolves();
 
-    sinon.stub(authorization, 'getSystemUserById').resolves({
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
       id: 1,
       user_identifier: 'testname',
-      record_end_date: null,
+      record_end_date: '',
       role_ids: [1, 2],
       role_names: ['role 1', 'role 2']
     });
 
     sinon.stub(delete_endpoint, 'deleteAllProjectRoles').resolves();
-    sinon.stub(delete_endpoint, 'deleteAllSystemRoles').resolves();
-    sinon.stub(delete_endpoint, 'deActivateSystemUser').resolves();
+    sinon.stub(UserService.prototype, 'deleteUserSystemRoles').resolves();
+    sinon.stub(UserService.prototype, 'deactivateSystemUser').resolves();
 
     const requestHandler = delete_endpoint.removeSystemUser();
 

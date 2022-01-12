@@ -1,4 +1,5 @@
 import winston from 'winston';
+import { ApiError, HTTPError } from '../errors/custom-error';
 
 /**
  * Logger input.
@@ -44,6 +45,41 @@ export const prettyPrint = (item: any): string => {
 };
 
 /**
+ * Pretty stringify an item of unknown type.
+ *
+ * @param {*} item
+ * @return {*}  {string}
+ */
+export const prettyPrintUnknown = (item: any): string => {
+  if (!item) {
+    return '';
+  }
+
+  if (item instanceof HTTPError) {
+    return `${item.status} ${item.stack}` + ((item.errors?.length && `\n${prettyPrintUnknown(item.errors)}`) || '');
+  }
+
+  if (item instanceof ApiError) {
+    return `${item.stack}` + ((item.errors?.length && `\n${prettyPrintUnknown(item.errors)}`) || '');
+  }
+
+  if (item instanceof Error) {
+    return `${item.stack}`;
+  }
+
+  if (isObjectWithkeys(item)) {
+    return prettyPrint(item);
+  }
+
+  if (isObject(item)) {
+    // is an object, but has no real properties, so print nothing
+    return '';
+  }
+
+  return item;
+};
+
+/**
  * Returns a printf function.
  *
  * @param {string} logLabel
@@ -53,13 +89,17 @@ export const getPrintfFunction = (logLabel: string): ((args: ILoggerMessage) => 
   return ({ timestamp, level, label, message, error, ...other }: ILoggerMessage) => {
     const optionalLabel = (label && ` ${label} -`) || '';
 
-    const logMessage = (message && ((isObject(message) && `${prettyPrint(message)}`) || message)) || '';
+    const logMessage = (message && prettyPrintUnknown(message)) || '';
 
-    const optionalError = (error && ((isObjectWithkeys(error) && `\n${prettyPrint(error)}`) || `\n${error}`)) || '';
+    const optionalError = (error && prettyPrintUnknown(error)) || '';
 
-    const optionalOther = (other && isObjectWithkeys(other) && `\n${JSON.stringify(other, undefined, 2)}`) || '';
+    const optionalOther = (other && prettyPrintUnknown(other)) || '';
 
-    return `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage} ${optionalError} ${optionalOther}`;
+    return (
+      `[${timestamp}] (${level}) (${logLabel}):${optionalLabel} ${logMessage}` +
+      (optionalError && `\n${optionalError}`) +
+      (optionalOther && `\n${optionalOther}`)
+    );
   };
 };
 

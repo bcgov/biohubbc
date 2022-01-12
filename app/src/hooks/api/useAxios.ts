@@ -3,22 +3,19 @@ import axios, { AxiosError, AxiosInstance, AxiosResponse } from 'axios';
 import { useMemo } from 'react';
 import { ensureProtocol } from 'utils/Utils';
 
-export class APIError {
-  name: string;
+export class APIError extends Error {
   status: number;
-  message: string;
   errors?: (string | object)[];
   requestURL?: string;
-  responseURL?: string;
 
   constructor(error: AxiosError) {
-    this.name = error?.response?.data?.name || error.name;
-    this.status = error?.response?.data?.status || error?.response?.status || Number(error?.code);
-    this.message = error?.response?.data?.message || error.message;
-    this.errors = error?.response?.data?.errors || [];
+    super(error.response?.data?.message || error.message);
+
+    this.name = error.response?.data?.name || error.name;
+    this.status = error.response?.data?.status || error.response?.status;
+    this.errors = error.response?.data?.errors || [];
 
     this.requestURL = `${error?.config?.baseURL}${error?.config?.url}`;
-    this.responseURL = error?.request?.responseURL;
   }
 }
 

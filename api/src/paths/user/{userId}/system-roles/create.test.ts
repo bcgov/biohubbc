@@ -2,11 +2,9 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import SQL from 'sql-template-strings';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/custom-error';
-import system_role_queries from '../../../../queries/users';
-import * as authorization from '../../../../request-handlers/security/authorization';
+import { UserService } from '../../../../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../__mocks__/db';
 import * as system_roles from './create';
 
@@ -91,7 +89,7 @@ describe('getAddSystemRolesHandler', () => {
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon.stub(authorization, 'getSystemUserById').resolves(null);
+    sinon.stub(UserService.prototype, 'getUserById').resolves(null);
 
     try {
       const requestHandler = system_roles.getAddSystemRolesHandler();
@@ -104,40 +102,11 @@ describe('getAddSystemRolesHandler', () => {
     }
   });
 
-  it('should throw a 400 when fails to build SQL insert statement ', async () => {
+  it('re-throws the error thrown by UserService.addUserSystemRoles', async () => {
     const dbConnectionObj = getMockDBConnection();
-
-    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-    mockReq.params = {
-      userId: '1'
-    };
-    mockReq.body = {
-      roles: [1]
-    };
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 11', 'role 22'] });
-
-    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(null);
-
-    try {
-      const requestHandler = system_roles.getAddSystemRolesHandler();
-
-      await requestHandler(mockReq, mockRes, mockNext);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
-    }
-  });
-
-  it('should throw a 400 when fails to add system roles ', async () => {
-    const dbConnectionObj = getMockDBConnection();
-
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
     mockReq.params = {
@@ -147,20 +116,15 @@ describe('getAddSystemRolesHandler', () => {
       roles: [1]
     };
 
-    const mockQuery = sinon.stub();
-
-    mockQuery.onCall(0).resolves({ rowCount: 0 });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      query: mockQuery
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
+      id: 1,
+      user_identifier: 'test name',
+      record_end_date: '',
+      role_ids: [11, 22],
+      role_names: ['role 11', 'role 22']
     });
 
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [11, 22], role_names: ['role 11', 'role 22'] });
-
-    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(SQL`some query`);
+    sinon.stub(UserService.prototype, 'addUserSystemRoles').rejects(new Error('add user error'));
 
     try {
       const requestHandler = system_roles.getAddSystemRolesHandler();
@@ -168,8 +132,7 @@ describe('getAddSystemRolesHandler', () => {
       await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to add system roles');
+      expect((actualError as HTTPError).message).to.equal('add user error');
     }
   });
 
@@ -196,9 +159,13 @@ describe('getAddSystemRolesHandler', () => {
       query: mockQuery
     });
 
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [1, 2], role_names: ['role 1', 'role 2'] });
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
+      id: 1,
+      user_identifier: 'test name',
+      record_end_date: '',
+      role_ids: [1, 2],
+      role_names: ['role 1', 'role 2']
+    });
 
     const requestHandler = system_roles.getAddSystemRolesHandler();
 
@@ -230,11 +197,15 @@ describe('getAddSystemRolesHandler', () => {
       query: mockQuery
     });
 
-    sinon
-      .stub(authorization, 'getSystemUserById')
-      .resolves({ id: 1, user_identifier: 'test name', role_ids: [], role_names: ['role 11', 'role 22'] });
+    sinon.stub(UserService.prototype, 'getUserById').resolves({
+      id: 1,
+      user_identifier: 'test name',
+      record_end_date: '',
+      role_ids: [],
+      role_names: ['role 11', 'role 22']
+    });
 
-    sinon.stub(system_role_queries, 'postSystemRolesSQL').returns(SQL`some query`);
+    sinon.stub(UserService.prototype, 'addUserSystemRoles').resolves();
 
     const requestHandler = system_roles.getAddSystemRolesHandler();
 

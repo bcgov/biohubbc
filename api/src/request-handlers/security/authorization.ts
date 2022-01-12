@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP403, HTTP500 } from '../../errors/custom-error';
 import { ProjectUserObject, UserObject } from '../../models/user';
 import { queries } from '../../queries/queries';
+import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('request-handlers/security/authorization');
@@ -210,7 +211,7 @@ export const authorizeBySystemRole = async (
     return false;
   }
 
-  if (systemUserObject.user_record_end_date) {
+  if (systemUserObject.record_end_date) {
     //system user has an expired record
     return false;
   }
@@ -322,23 +323,26 @@ export const getSystemUserObject = async (connection: IDBConnection): Promise<Us
     throw new HTTP500('system user was null');
   }
 
-  return new UserObject(systemUserWithRoles);
+  return systemUserWithRoles;
 };
 
 /**
  * Finds a single user based on their keycloak token information.
  *
  * @param {IDBConnection} connection
+ * @return {*}  {(Promise<UserObject | null>)}
  * @return {*}
  */
-export const getSystemUserWithRoles = async (connection: IDBConnection) => {
+export const getSystemUserWithRoles = async (connection: IDBConnection): Promise<UserObject | null> => {
   const systemUserId = connection.systemUserId();
 
   if (!systemUserId) {
     return null;
   }
 
-  return getSystemUserById(systemUserId, connection);
+  const userService = new UserService(connection);
+
+  return userService.getUserById(systemUserId);
 };
 
 export const getProjectUserObject = async (
@@ -383,16 +387,4 @@ export const getProjectUserWithRoles = async function (projectId: number, connec
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   return response.rows[0] || null;
-};
-
-export const getSystemUserById = async (userId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = queries.users.getUserByIdSQL(userId);
-
-  if (!sqlStatement) {
-    return null;
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  return (response.rows && response.rows[0]) || null;
 };

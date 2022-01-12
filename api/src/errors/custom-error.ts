@@ -1,6 +1,9 @@
+import { DatabaseError } from 'pg';
+
 export enum ApiErrorType {
   BUILD_SQL = 'Error constructing SQL query',
   EXECUTE_SQL = 'Error executing SQL query',
+  GENERAL = 'Error',
   UNKNOWN = 'Unknown Error'
 }
 
@@ -11,13 +14,29 @@ export class ApiError extends Error {
     super(message);
 
     this.name = name;
-    this.message = message;
     this.errors = errors || [];
     this.stack = stack;
 
-    if (!stack) {
+    if (stack) {
+      this.stack = stack;
+    }
+
+    if (!this.stack) {
       Error.captureStackTrace(this);
     }
+  }
+}
+
+/**
+ * Api encountered an error.
+ *
+ * @export
+ * @class ApiGeneralError
+ * @extends {ApiError}
+ */
+export class ApiGeneralError extends ApiError {
+  constructor(message: string, errors?: (string | object)[]) {
+    super(ApiErrorType.GENERAL, message, errors);
   }
 }
 
@@ -60,7 +79,7 @@ export class ApiBuildSQLError extends ApiError {
  */
 export class ApiExecuteSQLError extends ApiError {
   constructor(message: string, errors?: (string | object)[]) {
-    super(ApiErrorType.UNKNOWN, message, errors);
+    super(ApiErrorType.EXECUTE_SQL, message, errors);
   }
 }
 
@@ -81,11 +100,13 @@ export class HTTPError extends Error {
 
     this.name = name;
     this.status = status;
-    this.message = message;
     this.errors = errors || [];
-    this.stack = stack;
 
-    if (!stack) {
+    if (stack) {
+      this.stack = stack;
+    }
+
+    if (!this.stack) {
       Error.captureStackTrace(this);
     }
   }
@@ -160,6 +181,7 @@ export class HTTP500 extends HTTPError {
  * Ensures that the incoming error is converted into an `HTTPError` if it is not one already.
  * If `error` is a `HTTPError`, then change nothing and return it.
  * If `error` is a `ApiError`, wrap it into an `HTTP500` error and return it.
+ * If `error` is a `DatabaseError`, wrap it into an `HTTP500` error and return it.
  * If `error` is a `Error`, wrap it into an `HTTP500` error and return it.
  * If `error` is none of the above, create a new generic `HTTP500` error and return it.
  *
@@ -175,8 +197,18 @@ export const ensureHTTPError = (error: HTTPError | ApiError | Error | any): HTTP
     return new HTTPError(HTTPErrorType.INTERNAL_SERVER_ERROR, 500, error.message, error.errors, error.stack);
   }
 
+  if (error instanceof DatabaseError) {
+    return new HTTPError(
+      HTTPErrorType.INTERNAL_SERVER_ERROR,
+      500,
+      'Unexpected Database Error',
+      [{ ...error, message: error.message }],
+      error.stack
+    );
+  }
+
   if (error instanceof Error) {
-    return new HTTP500(error.message || error.name, [error.stack || '']);
+    return new HTTP500('Unexpected Error', [error.name, error.message]);
   }
 
   return new HTTP500('Unexpected Error');

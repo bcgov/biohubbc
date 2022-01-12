@@ -1,92 +1,91 @@
-import { expect } from 'chai';
-//import request = require('supertest');
-import { _extractProjects } from './projects';
+import chai, { expect } from 'chai';
+import { describe } from 'mocha';
+import sinon from 'sinon';
+import sinonChai from 'sinon-chai';
+import SQL from 'sql-template-strings';
+import { SYSTEM_ROLE } from '../constants/roles';
+import { COMPLETION_STATUS } from '../constants/status';
+import * as db from '../database/db';
+import { HTTPError } from '../errors/custom-error';
+import { queries } from '../queries/queries';
+import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
+import * as projects from './projects';
 
-// const API_HOST = process.env.REACT_APP_API_HOST;
-// const API_PORT = process.env.REACT_APP_API_PORT;
+chai.use(sinonChai);
 
-// const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'https://api-dev-biohubbc.apps.silver.devops.gov.bc.ca';
-// const KEYCLOAK_URL =
-//   process.env.KEYCLOAK_URL || 'https://dev.oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs';
-
-describe('Unit Testing: GET /projects - Test database query result parsing', () => {
-  it('should return empty array if query result was empty', function () {
-    const rows: any[] = [];
-    const projects: any[] = _extractProjects(rows);
-
-    expect(projects).to.be.an('array');
-    expect(projects).to.have.length(0);
+describe('getProjectList', () => {
+  afterEach(() => {
+    sinon.restore();
   });
 
-  it('should return an array of one element if query result contains one row', function () {
-    const rows: any[] = [];
+  it('throws a 500 error if the get project list SQL fails to build', async () => {
+    const mockDBConnection = getMockDBConnection();
 
-    rows.push({
-      id: 1,
-      name: 'Project BioHub',
-      start_date: '2021/01/01',
-      end_date: '2022/12/31',
-      location_description: 'Here'
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq['system_user'] = { role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] };
+
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    sinon.stub(queries.project, 'getProjectListSQL').returns(null);
+
+    const requestHandler = projects.getProjectList();
+
+    try {
+      await requestHandler(mockReq, mockRes, mockNext);
+      expect.fail();
+    } catch (error) {
+      expect((error as HTTPError).message).to.equal('Failed to build SQL select statement');
+      expect((error as HTTPError).status).to.equal(500);
+    }
+  });
+
+  it('returns an array of project objects', async () => {
+    const mockQuery = sinon.stub();
+    mockQuery.resolves({
+      rows: [
+        { id: 1, publish_timestamp: '2021-11-10' },
+        { id: 2, end_date: '2021-11-10' }
+      ]
     });
 
-    const projects: any[] = _extractProjects(rows);
+    const mockDBConnection = getMockDBConnection({ query: mockQuery });
 
-    expect(projects).to.be.an('array');
-    expect(projects).to.have.length(1);
-    expect(projects[0]).to.have.property('name', 'Project BioHub');
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq['system_user'] = { role_names: [SYSTEM_ROLE.SYSTEM_ADMIN] };
+
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    sinon.stub(queries.project, 'getProjectListSQL').returns(SQL`valid sql`);
+
+    const requestHandler = projects.getProjectList();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(mockRes.jsonValue).to.eql([
+      {
+        id: 1,
+        name: undefined,
+        start_date: undefined,
+        end_date: undefined,
+        coordinator_agency: undefined,
+        publish_status: 'Published',
+        completion_status: COMPLETION_STATUS.ACTIVE,
+        project_type: undefined,
+        permits_list: undefined
+      },
+      {
+        id: 2,
+        name: undefined,
+        start_date: undefined,
+        end_date: '2021-11-10',
+        coordinator_agency: undefined,
+        publish_status: 'Unpublished',
+        completion_status: COMPLETION_STATUS.COMPLETED,
+        project_type: undefined,
+        permits_list: undefined
+      }
+    ]);
   });
 });
-
-// TODO: Come back to do integration test.
-
-// describe('Integration Testing: GET /projects', () => {
-//   it('should require authorization', function (done) {
-//     request(API_URL)
-//       .get('/api/projects')
-//       .expect(401)
-//       .end(function (err: any) {
-//         if (err) return done(err);
-//         done();
-//       });
-//   });
-//   it('should make a connection to the API', function (done) {
-//     request(API_URL)
-//       .get('/api/api-docs')
-//       .expect(200)
-//       .end(function (err: any) {
-//         if (err) return done(err);
-//         done();
-//       });
-//   });
-//   var auth: any = {};
-//   before(loginUser(auth));
-//   it('should respond with JSON array', function (done: any) {
-//     request(API_URL)
-//       .get('/api/projects')
-//       .set('Authorization', 'bearer ' + auth.token)
-//       .expect(401)
-//       .expect('Content-Type', /json/)
-//       .end(function(err: any, res: any) {
-//         if (err) return done(err);
-//         res.body.should.be.instanceof(Array);
-//         done();
-//       });
-//   });
-// });
-// function loginUser(auth: any) {
-//   return function(done: any) {
-//       request(KEYCLOAK_URL)
-//           .post('/protocol/openid-connect/certs')
-//           .send({
-//               email: 'test@test.com',
-//               password: 'test'
-//           })
-//           .expect(200)
-//           .end(onResponse);
-
-//       function onResponse(err: any, res: any) {
-//           auth.token = res.body.token;
-//           return done();
-//       }
-//   };
-// };

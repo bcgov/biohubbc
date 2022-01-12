@@ -174,10 +174,7 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
       now()
     )
     RETURNING
-      system_user_id as id,
-      user_identity_source_id,
-      user_identifier,
-      record_effective_date;
+      *;
   `;
 
   defaultLog.debug({
@@ -197,8 +194,8 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
  * @param {number[]} roleIds
  * @return {*}  {(SQLStatement | null)}
  */
-export const deActivateSystemUserSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deActivateSystemUserSQL', message: 'params' });
+export const deactivateSystemUserSQL = (userId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'deactivateSystemUserSQL', message: 'params' });
 
   if (!userId) {
     return null;
@@ -210,8 +207,10 @@ export const deActivateSystemUserSQL = (userId: number): SQLStatement | null => 
     SET
       record_end_date = now()
     WHERE
-      system_user_id = ${userId};
-    `;
+      system_user_id = ${userId}
+    RETURNING
+      *;
+  `;
 
   defaultLog.debug({
     label: 'deleteSystemUserSQL',
@@ -226,17 +225,17 @@ export const deActivateSystemUserSQL = (userId: number): SQLStatement | null => 
 /**
  * SQL query to activate a system user. Does nothing is the system user is already active.
  *
- * @param {number} systemUserId
+ * @param {number} userId
  * @return {*}  {(SQLStatement | null)}
  */
-export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null => {
+export const activateSystemUserSQL = (userId: number): SQLStatement | null => {
   defaultLog.debug({
     label: 'activateSystemUserSQL',
     message: 'activateSystemUserSQL',
-    systemUserId
+    userId
   });
 
-  if (!systemUserId) {
+  if (!userId) {
     return null;
   }
 
@@ -246,9 +245,7 @@ export const activateSystemUserSQL = (systemUserId: number): SQLStatement | null
     SET
       record_end_date = NULL
     WHERE
-      system_user_id = ${systemUserId}
-    AND
-      record_end_date IS NOT NULL
+      system_user_id = ${userId}
     RETURNING
       *;
   `;
@@ -281,8 +278,10 @@ export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => 
     DELETE FROM
       system_user_role
     WHERE
-      system_user_id = ${userId};
-    `;
+      system_user_id = ${userId}
+    RETURNING
+      *;
+  `;
 
   defaultLog.debug({
     label: 'deleteAllSystemRolesSQL',
@@ -312,8 +311,10 @@ export const deleteAllProjectRolesSQL = (userId: number): SQLStatement | null =>
     DELETE FROM
       project_participation
     WHERE
-      system_user_id = ${userId};
-    `;
+      system_user_id = ${userId}
+    RETURNING
+      *;
+  `;
 
   defaultLog.debug({
     label: 'deleteAllProjectRolesSQL',
