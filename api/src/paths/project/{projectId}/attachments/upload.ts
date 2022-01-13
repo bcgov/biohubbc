@@ -63,8 +63,16 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'string',
-            description: 'The S3 unique key for this file.'
+            type: 'object',
+            required: ['attachmentId', 'revision_count'],
+            properties: {
+              attachmentId: {
+                type: 'number'
+              },
+              revision_count: {
+                type: 'number'
+              }
+            }
           }
         }
       }

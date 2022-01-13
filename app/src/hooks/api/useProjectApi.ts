@@ -211,10 +211,10 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {File} file
-   * @param {string} attachmentType
+   * @param {IReportMetaForm} attachmentMeta
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<string[]>}
+   * @return {*}  {Promise<IUploadAttachmentResponse>}
    */
   const uploadProjectReports = async (
     projectId: number,

@@ -9,12 +9,12 @@ import { IProjectPermitForm } from 'features/projects/components/ProjectPermitFo
 import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
-  id: number;
+  projectId: number;
   fileName: string;
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: any;
+  securityToken: string;
   revisionCount: number;
 }
 
