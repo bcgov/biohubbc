@@ -55,7 +55,13 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          type: 'object'
+          type: 'object',
+          required: ['attachmentType'],
+          properties: {
+            attachmentType: {
+              type: 'string'
+            }
+          }
         }
       }
     }

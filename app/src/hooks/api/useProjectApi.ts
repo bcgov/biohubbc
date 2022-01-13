@@ -74,7 +74,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     attachmentId: number,
     attachmentType: string,
-    securityToken: any
+    securityToken: string
   ): Promise<number> => {
     const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/delete`, {
       attachmentType,
@@ -308,7 +308,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   const makeAttachmentUnsecure = async (
     projectId: number,
     attachmentId: number,
-    securityToken: any,
+    securityToken: string,
     attachmentType: string
   ): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`, {
