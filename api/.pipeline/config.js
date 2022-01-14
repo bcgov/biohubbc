@@ -5,7 +5,9 @@ let options = require('pipeline-cli').Util.parseArguments();
 const config = require('../../.config/config.json');
 
 const defaultHost = 'biohubbc-af2668-api.apps.silver.devops.gov.bc.ca';
+const defaultHostAPP = 'biohubbc-af2668-dev.apps.silver.devops.gov.bc.ca';
 
+const appName = (config.module && config.module['app']) || 'biohubbc-app';
 const name = (config.module && config.module['api']) || 'biohubbc-api';
 const dbName = (config.module && config.module['db']) || 'biohubbc-db';
 
@@ -21,6 +23,7 @@ const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${ver
 
 const staticBranches = config.staticBranches || [];
 const staticUrlsAPI = config.staticUrlsAPI || {};
+const staticUrls = config.staticUrls || {};
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -75,6 +78,9 @@ const phases = {
     host:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
       `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    appHost:
+    (isStaticDeployment && (staticUrls.dev || defaultHostAPP)) ||
+      `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     env: 'dev',
     tz: config.timezone.api,
     certificateURL: config.certificateURL.dev,

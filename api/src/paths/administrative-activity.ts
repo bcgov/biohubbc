@@ -11,8 +11,14 @@ import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
+import { GCNotifyService } from '../services/gcnotify-service';
+import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
+
+const ADMIN_EMAIL = process.env.GCNOTIFY_ADMIN_EMAIL || '';
+const APP_HOST = process.env.APP_HOST;
+const NODE_ENV = process.env.NODE_ENV;
 
 export const POST: Operation = [createAdministrativeActivity()];
 
@@ -160,6 +166,8 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to submit administrative activity');
       }
 
+      sendAccessRequestEmail();
+
       return res
         .status(200)
         .json({ id: administrativeActivityResult.id, date: administrativeActivityResult.create_date });
@@ -173,6 +181,17 @@ export function createAdministrativeActivity(): RequestHandler {
   };
 }
 
+function sendAccessRequestEmail() {
+  const gcnotifyService = new GCNotifyService();
+  const url = `${APP_HOST}/admin/users?authLogin=true`;
+  const hrefUrl = `[click here.](${url})`;
+  gcnotifyService.sendEmailGCNotification(ADMIN_EMAIL, {
+    ...ACCESS_REQUEST_ADMIN_EMAIL,
+    subject: `${NODE_ENV}: ${ACCESS_REQUEST_ADMIN_EMAIL.subject}`,
+    body1: `${ACCESS_REQUEST_ADMIN_EMAIL.body1} ${hrefUrl}`,
+    footer: `${APP_HOST}`
+  });
+}
 /**
  * Get all projects.
  *

@@ -17,6 +17,9 @@ parameters:
   - name: HOST
     description: Host name of the application
     required: true
+  - name: APP_HOST
+    description: APP host for application frontend
+    value: ''
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
@@ -59,6 +62,22 @@ parameters:
     value: '1'
   - name: LOG_LEVEL
     value: 'info'
+  - name: GCNOTIFY_API_SECRET
+    description: Secret for gcnotify api key
+    value: 'gcnotify-api-key'
+  - name: GCNOTIFY_ADMIN_EMAIL
+    description: admin email for gcnotify api
+    value: biohub@gov.bc.ca
+  - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
+    description: gcnotify email template id
+    value: 7779a104-b863-40ac-902f-1aa607d2071a
+  - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
+    description: gcnotify sms template id
+    value: af2f1e40-bd72-4612-9c5a-567ee5b26ca5
+  - name: GCNOTIFY_EMAIL_URL
+    value: https://api.notification.canada.ca/v2/notifications/email
+  - name: GCNOTIFY_SMS_URL
+    value: https://api.notification.canada.ca/v2/notifications/sms
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -116,6 +135,8 @@ objects:
                   value: ${HOST}
                 - name: API_PORT
                   value: ${API_PORT_DEFAULT}
+                - name: APP_HOST
+                  value: ${APP_HOST}
                 - name: ENABLE_FILE_VIRUS_SCAN
                   value: ${ENABLE_FILE_VIRUS_SCAN}
                 - name: DB_HOST
@@ -169,6 +190,21 @@ objects:
                       name: ${OBJECT_STORE_SECRETS}
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: GCNOTIFY_SECRET_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: key
+                      name: ${GCNOTIFY_API_SECRET}
+                - name: GCNOTIFY_ADMIN_EMAIL
+                  value: ${GCNOTIFY_ADMIN_EMAIL}
+                - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
+                  value: ${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
+                - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
+                  value: ${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
+                - name: GCNOTIFY_EMAIL_URL
+                  value: ${GCNOTIFY_EMAIL_URL}
+                - name: GCNOTIFY_SMS_URL
+                  value: ${GCNOTIFY_SMS_URL}
               image: ' '
               imagePullPolicy: Always
               name: api
