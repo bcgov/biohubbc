@@ -258,7 +258,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   const sqlStatement = SQL`
     SELECT
-      fn.name as fn_name
+      fn.first_nations_id as id
     FROM
       project_first_nation pfn
     LEFT OUTER JOIN
@@ -268,7 +268,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
     WHERE
       pfn.project_id = ${projectId}
     GROUP BY
-      fn.name;
+      fn.first_nations_id;
   `;
 
   defaultLog.debug({

@@ -230,11 +230,11 @@ export const insertFundingSource = async (
 };
 
 export const insertIndigenousNation = async (
-  indigenousNationId: number,
+  indigenousNationsId: number,
   project_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = queries.project.postProjectIndigenousNationSQL(indigenousNationId, project_id);
+  const sqlStatement = queries.project.postProjectIndigenousNationSQL(indigenousNationsId, project_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');

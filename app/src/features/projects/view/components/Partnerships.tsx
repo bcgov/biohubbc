@@ -42,7 +42,10 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
   const biohubApi = useBiohubApi();
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [partnershipsForUpdate, setPartnershipsForUpdate] = useState(ProjectPartnershipsFormInitialValues);
+
+  const [partnershipsFormData, setPartnershipsFormData] = useState<IProjectPartnershipsForm>(
+    ProjectPartnershipsFormInitialValues
+  );
 
   const dialogContext = useContext(DialogContext);
 
@@ -80,13 +83,20 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
       return;
     }
 
-    setPartnershipsForUpdate(partnershipsResponseData);
+    setPartnershipsFormData({
+      indigenous_partnerships: partnershipsResponseData.indigenous_partnerships,
+      stakeholder_partnerships: partnershipsResponseData.stakeholder_partnerships
+    });
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IProjectPartnershipsForm) => {
-    const projectData = { partnerships: values };
+    const projectData = {
+      partnerships: {
+        ...values
+      }
+    };
 
     try {
       await biohubApi.project.updateProject(id, projectData);
@@ -111,7 +121,7 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
         open={openEditDialog}
         component={{
           element: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
-          initialValues: partnershipsForUpdate,
+          initialValues: partnershipsFormData,
           validationSchema: ProjectPartnershipsFormYupSchema
         }}
         onCancel={() => setOpenEditDialog(false)}

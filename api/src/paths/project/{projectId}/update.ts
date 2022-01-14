@@ -22,11 +22,8 @@ import {
   PutProjectData
 } from '../../../models/project-update';
 import { GetFundingData } from '../../../models/project-view-update';
-import {
-  projectIdResponseObject,
-  projectUpdateGetResponseObject,
-  projectUpdatePutRequestObject
-} from '../../../openapi/schemas/project';
+
+import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
@@ -38,8 +35,9 @@ import {
   insertProjectActivity,
   insertStakeholderPartnership
 } from '../../project';
+import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 
-const defaultLog = getLogger('paths/project/{projectId}');
+const defaultLog = getLogger('paths/project/{projectId}/update');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
@@ -104,8 +102,231 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            // TODO this is currently empty, and needs updating
-            ...(projectUpdateGetResponseObject as object)
+            title: 'Project get response object, for update purposes',
+            type: 'object',
+            required: ['project', 'permit', 'coordinator', 'objectives', 'location', 'iucn', 'funding', 'partnerships'],
+            properties: {
+              project: {
+                description: 'Basic project metadata',
+                type: 'object',
+                required: [
+                  'project_name',
+                  'project_type',
+                  'project_activities',
+                  'start_date',
+                  'end_date',
+                  'publish_date',
+                  'revision_count'
+                ],
+                properties: {
+                  project_name: {
+                    type: 'string'
+                  },
+                  project_type: {
+                    type: 'number'
+                  },
+                  project_activities: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the project start date'
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the project end date'
+                  },
+                  publish_date: {
+                    description: 'Status of the project being published/unpublished',
+                    format: 'date',
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              },
+              permit: {
+                type: 'object',
+                required: ['permits'],
+                properties: {
+                  permits: {
+                    type: 'array',
+                    items: {
+                      title: 'Project permit',
+                      type: 'object',
+                      properties: {
+                        permit_number: {
+                          type: 'string'
+                        },
+                        permit_type: {
+                          type: 'string'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              coordinator: {
+                title: 'Project coordinator',
+                type: 'object',
+                required: [
+                  'first_name',
+                  'last_name',
+                  'email_address',
+                  'coordinator_agency',
+                  'share_contact_details',
+                  'revision_count'
+                ],
+                properties: {
+                  first_name: {
+                    type: 'string'
+                  },
+                  last_name: {
+                    type: 'string'
+                  },
+                  email_address: {
+                    type: 'string'
+                  },
+                  coordinator_agency: {
+                    type: 'string'
+                  },
+                  share_contact_details: {
+                    type: 'string',
+                    enum: ['true', 'false']
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              },
+              objectives: {
+                description: 'The project objectives and caveats',
+                type: 'object',
+                required: ['objectives', 'caveats'],
+                properties: {
+                  objectives: {
+                    type: 'string'
+                  },
+                  caveats: {
+                    type: 'string'
+                  }
+                }
+              },
+              location: {
+                description: 'The project location object',
+                type: 'object',
+                required: ['location_description', 'geometry'],
+                properties: {
+                  location_description: {
+                    type: 'string'
+                  },
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(geoJsonFeature as object)
+                    }
+                  }
+                }
+              },
+              iucn: {
+                description: 'The International Union for Conservation of Nature number',
+                type: 'object',
+                required: ['classificationDetails'],
+                properties: {
+                  classificationDetails: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        classification: {
+                          type: 'string'
+                        },
+                        subClassification1: {
+                          type: 'string'
+                        },
+                        subClassification2: {
+                          type: 'string'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              funding: {
+                description: 'The project funding details',
+                type: 'object',
+                required: ['fundingSources'],
+                properties: {
+                  fundingSources: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'number'
+                        },
+                        agency_id: {
+                          type: 'number'
+                        },
+                        investment_action_category: {
+                          type: 'number'
+                        },
+                        investment_action_category_name: {
+                          type: 'string'
+                        },
+                        agency_name: {
+                          type: 'string'
+                        },
+                        funding_amount: {
+                          type: 'number'
+                        },
+                        start_date: {
+                          type: 'string',
+                          format: 'date',
+                          description: 'ISO 8601 date string for the funding start date'
+                        },
+                        end_date: {
+                          type: 'string',
+                          format: 'date',
+                          description: 'ISO 8601 date string for the funding end_date'
+                        },
+                        agency_project_id: {
+                          type: 'string'
+                        },
+                        revision_count: {
+                          type: 'number'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              partnerships: {
+                description: 'The project partners',
+                type: 'object',
+                required: ['indigenous_partnerships', 'stakeholder_partnerships'],
+                properties: {
+                  indigenous_partnerships: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  stakeholder_partnerships: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -600,6 +821,8 @@ export const updateProjectPartnershipsData = async (
   connection: IDBConnection
 ): Promise<void> => {
   const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
+
+  console.log('putPartnershipData', putPartnershipsData);
 
   const sqlDeleteIndigenousPartnershipsStatement = queries.project.deleteIndigenousPartnershipsSQL(projectId);
   const sqlDeleteStakeholderPartnershipsStatement = queries.project.deleteStakeholderPartnershipsSQL(projectId);
