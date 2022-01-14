@@ -2,12 +2,7 @@ import ResourcesLayout from 'features/resources/ResourcesLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
-import PrivateRoute from 'utils/PrivateRoute';
 import ResourcesPage from './ResourcesPage';
-
-interface IResourcesRouterProps {
-  classes: any;
-}
 
 /**
  * Router for all `/admin/resources/*` pages.
@@ -15,18 +10,17 @@ interface IResourcesRouterProps {
  * @param {*} props
  * @return {*}
  */
-const ResourcesRouter: React.FC<IResourcesRouterProps> = (props) => {
+const ResourcesRouter: React.FC = () => {
   return (
     <Switch>
-      <PrivateRoute
-        exact
-        layout={ResourcesLayout}
-        path="/admin/resources"
-        component={ResourcesPage}
-        componentProps={props}
-      />
+      <AppRoute exact layout={ResourcesLayout} path="/admin/resources">
+        <ResourcesPage />
+      </AppRoute>
+
       {/*  Catch any unknown routes, and re-direct to the not found page */}
-      <AppRoute title="*" path="/admin/resources/*" component={() => <Redirect to="/page-not-found" />} />
+      <AppRoute path="/admin/resources/*">
+        <Redirect to="/page-not-found" />
+      </AppRoute>
     </Switch>
   );
 };
