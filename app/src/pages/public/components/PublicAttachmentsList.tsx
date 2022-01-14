@@ -72,8 +72,6 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
     try {
       const response = await biohubApi.public.project.getPublicProjectReportMetadata(props.projectId, attachment.id);
 
-      console.log(response);
-
       if (!response) {
         return;
       }
@@ -127,50 +125,47 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
           </TableHead>
           <TableBody>
             {props.attachmentsList.length > 0 &&
-              props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => {
-                console.log(row);
-                return (
-                  <TableRow key={`${row.fileName}-${index}`}>
-                    <TableCell scope="row">
-                      <Link
-                        underline="always"
-                        component="button"
-                        variant="body2"
+              props.attachmentsList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
+                <TableRow key={`${row.fileName}-${index}`}>
+                  <TableCell scope="row">
+                    <Link
+                      underline="always"
+                      component="button"
+                      variant="body2"
+                      onClick={() => {
+                        if (row.securityToken) {
+                          showRequestAccessDialog();
+                        } else {
+                          openAttachment(row);
+                        }
+                      }}>
+                      {row.fileName}
+                    </Link>
+                  </TableCell>
+                  <TableCell>{row.fileType}</TableCell>
+                  <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
+                  <TableCell>{getFormattedFileSize(row.size)}</TableCell>
+                  <TableCell>
+                    <Box display="flex" alignItems="center">
+                      <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                      <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
+                    </Box>
+                  </TableCell>
+                  <TableCell>
+                    {!row.securityToken && row.fileType === AttachmentType.REPORT && (
+                      <IconButton
+                        color="primary"
+                        aria-label="view report"
                         onClick={() => {
-                          if (row.securityToken) {
-                            showRequestAccessDialog();
-                          } else {
-                            openAttachment(row);
-                          }
-                        }}>
-                        {row.fileName}
-                      </Link>
-                    </TableCell>
-                    <TableCell>{row.fileType}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, row.lastModified)}</TableCell>
-                    <TableCell>{getFormattedFileSize(row.size)}</TableCell>
-                    <TableCell>
-                      <Box display="flex" alignItems="center">
-                        <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                        <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
-                      </Box>
-                    </TableCell>
-                    <TableCell>
-                      {!row.securityToken && row.fileType === AttachmentType.REPORT && (
-                        <IconButton
-                          color="primary"
-                          aria-label="view report"
-                          onClick={() => {
-                            handleReportMetaDialog(row);
-                          }}
-                          data-testid="attachment-view-meta">
-                          <Icon path={mdiInformationOutline} size={1} />
-                        </IconButton>
-                      )}
-                    </TableCell>
-                  </TableRow>
-                );
-              })}
+                          handleReportMetaDialog(row);
+                        }}
+                        data-testid="attachment-view-meta">
+                        <Icon path={mdiInformationOutline} size={1} />
+                      </IconButton>
+                    )}
+                  </TableCell>
+                </TableRow>
+              ))}
             {!props.attachmentsList.length && (
               <TableRow>
                 <TableCell colSpan={4} align="center">

@@ -822,8 +822,6 @@ export const updateProjectPartnershipsData = async (
 ): Promise<void> => {
   const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
 
-  console.log('putPartnershipData', putPartnershipsData);
-
   const sqlDeleteIndigenousPartnershipsStatement = queries.project.deleteIndigenousPartnershipsSQL(projectId);
   const sqlDeleteStakeholderPartnershipsStatement = queries.project.deleteStakeholderPartnershipsSQL(projectId);
 
