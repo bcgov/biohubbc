@@ -18,6 +18,8 @@ export type ISystemRoleRouteGuardProps = RouteProps & {
 /**
  * Route guard that requires the user to have at least 1 of the specified system roles.
  *
+ * Note: Does not check if they are already authenticated.
+ *
  * @param {*} { children, validRoles, ...rest }
  * @return {*}
  */
@@ -78,25 +80,21 @@ export const AuthenticatedRouteGuard: React.FC<RouteProps> = ({ children, ...res
  * @return {*}
  */
 export const UnAuthenticatedRouteGuard: React.FC<RouteProps> = ({ children, ...rest }) => {
-  const { keycloakWrapper } = useContext(AuthStateContext);
-
-  if (keycloakWrapper?.keycloak?.authenticated) {
-    return <Redirect to="/admin/" />;
-  }
-
   return (
-    <Route
-      {...rest}
-      render={(props) => {
-        return (
-          <>
-            {React.Children.map(children, (child: any) => {
-              return React.cloneElement(child, props);
-            })}
-          </>
-        );
-      }}
-    />
+    <CheckIfNotAuthenticatedUser>
+      <Route
+        {...rest}
+        render={(props) => {
+          return (
+            <>
+              {React.Children.map(children, (child: any) => {
+                return React.cloneElement(child, props);
+              })}
+            </>
+          );
+        }}
+      />
+    </CheckIfNotAuthenticatedUser>
   );
 };
 
@@ -182,6 +180,24 @@ const CheckIfAuthenticatedUser: React.FC = ({ children }) => {
         return <Redirect to="/forbidden" />;
       }
     }
+  }
+
+  return <>{children}</>;
+};
+
+/**
+ * Checks if the user is not a registered user.
+ *
+ * Redirects the user as appropriate, or renders the `children`.
+ *
+ * @param {*} { children }
+ * @return {*}
+ */
+const CheckIfNotAuthenticatedUser: React.FC = ({ children }) => {
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
+  if (keycloakWrapper?.keycloak?.authenticated) {
+    return <Redirect to="/admin/" />;
   }
 
   return <>{children}</>;
