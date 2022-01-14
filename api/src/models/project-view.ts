@@ -208,7 +208,7 @@ export class GetPartnershipsData {
     });
 
     this.indigenous_partnerships =
-      (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.id)) || [];
+      (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.first_nations_name)) || [];
     this.stakeholder_partnerships =
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.partnership_name)) || [];
   }
