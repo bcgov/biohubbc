@@ -129,9 +129,15 @@ export const addFundingSourceApiDocObject = (basicDescription: string, successDe
       200: {
         description: successDescription,
         content: {
-          'text/plain': {
+          'application/json': {
             schema: {
-              type: 'number'
+              type: 'object',
+              required: ['id'],
+              properties: {
+                id: {
+                  type: 'number'
+                }
+              }
             }
           }
         }
