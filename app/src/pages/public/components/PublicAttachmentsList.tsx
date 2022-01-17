@@ -25,6 +25,7 @@ import { IGetProjectAttachment, IGetReportMetaData } from 'interfaces/useProject
 import React, { useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
+import { AttachmentType } from '../../../constants/attachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -151,7 +152,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                     </Box>
                   </TableCell>
                   <TableCell>
-                    {!row.securityToken && (
+                    {!row.securityToken && row.fileType === AttachmentType.REPORT && (
                       <IconButton
                         color="primary"
                         aria-label="view report"
