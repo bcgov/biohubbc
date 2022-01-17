@@ -98,7 +98,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
-            description: 'upsertsResult object',
+            description: 'Result object',
             required: ['attachmentId', 'revision_count'],
             properties: {
               attachmentId: {

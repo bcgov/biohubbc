@@ -64,7 +64,7 @@ describe('Delete a project participant.', () => {
     }
   });
 
-  it('should throw a 400 error when no projectParticipationId is provided', async () => {
+  it('should throw a 400 error when no roleId is provided', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
@@ -182,7 +182,7 @@ describe('Delete a project participant.', () => {
     }
   });
 
-  it('should throw a 400 error when user is only project lead', async () => {
+  it('should not throw an error', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = sampleReq.params;
     mockReq.body = sampleReq.body;

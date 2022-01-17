@@ -157,7 +157,7 @@ describe('Delete a project participant.', () => {
     }
   });
 
-  it('should throw a 400 error when user is only project lead', async () => {
+  it('should not throw an error', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
     mockReq.params = sampleReq.params;
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
