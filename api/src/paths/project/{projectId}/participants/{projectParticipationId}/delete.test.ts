@@ -13,26 +13,16 @@ import * as delete_project_participant from './delete';
 chai.use(sinonChai);
 
 describe('Delete a project participant.', () => {
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {},
-    body: {},
-    params: {
-      projectId: 1,
-      projectParticipationId: 2
-    }
-  } as any;
-
   afterEach(() => {
     sinon.restore();
   });
 
   it('should throw a 400 error when no projectId is provided', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    mockReq.params = { ...sampleReq.params, projectId: null };
+    mockReq.params = { projectId: '', projectParticipationId: '2' };
 
     try {
       const requestHandler = delete_project_participant.deleteProjectParticipant();
@@ -47,9 +37,10 @@ describe('Delete a project participant.', () => {
 
   it('should throw a 400 error when no projectParticipationId is provided', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+    const dbConnectionObj = getMockDBConnection();
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-    mockReq.params = { ...sampleReq.params, projectParticipationId: null };
+    mockReq.params = { projectId: '1', projectParticipationId: '' };
 
     try {
       const requestHandler = delete_project_participant.deleteProjectParticipant();
@@ -64,7 +55,9 @@ describe('Delete a project participant.', () => {
 
   it('should throw a 400 error when deleteProjectParticipationSQL query fails', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-    mockReq.params = sampleReq.params;
+    const dbConnectionObj = getMockDBConnection();
+
+    mockReq.params = { projectId: '1', projectParticipationId: '2' };
 
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(null);
     sinon.stub(getProjectParticipants, 'getProjectParticipants').resolves([{ id: 1 }]);
@@ -90,7 +83,10 @@ describe('Delete a project participant.', () => {
 
   it('should throw a 400 error when connection query fails', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-    mockReq.params = sampleReq.params;
+    const dbConnectionObj = getMockDBConnection();
+
+    mockReq.params = { projectId: '1', projectParticipationId: '2' };
+
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
     sinon.stub(getProjectParticipants, 'getProjectParticipants').resolves([{ id: 1 }]);
     sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead').returns(true);
@@ -119,7 +115,10 @@ describe('Delete a project participant.', () => {
 
   it('should throw a 400 error when user is only project lead', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-    mockReq.params = sampleReq.params;
+    const dbConnectionObj = getMockDBConnection();
+
+    mockReq.params = { projectId: '1', projectParticipationId: '2' };
+
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
     const getProjectParticipant = sinon.stub(getProjectParticipants, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead');
@@ -159,7 +158,10 @@ describe('Delete a project participant.', () => {
 
   it('should not throw an error', async () => {
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-    mockReq.params = sampleReq.params;
+    const dbConnectionObj = getMockDBConnection();
+
+    mockReq.params = { projectId: '1', projectParticipationId: '2' };
+
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
     const getProjectParticipant = sinon.stub(getProjectParticipants, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead');
