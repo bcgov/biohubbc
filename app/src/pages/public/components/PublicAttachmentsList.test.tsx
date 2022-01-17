@@ -11,7 +11,7 @@ const mockUseBiohubApi = {
       getAttachmentSignedURL: jest.fn(),
       getPublicProjectReportMetadata: jest.fn(() =>
         Promise.resolve({
-          attachment_id: 1,
+          attachment_id: 20,
           title: 'Title of my report',
           year_published: '2000',
           description: 'my abstract',
@@ -47,7 +47,7 @@ describe('PublicAttachmentsList', () => {
     {
       id: 1,
       fileName: 'filename.test',
-      fileType: 'Other',
+      fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 3028,
       securityToken: true,
@@ -59,13 +59,13 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.REPORT,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000,
-      securityToken: true,
+      securityToken: false,
       revisionCount: 1
     },
     {
       id: 30,
       fileName: 'filename30.test',
-      fileType: 'Other',
+      fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000000,
       securityToken: false,
@@ -213,25 +213,20 @@ describe('PublicAttachmentsList', () => {
 
     const { getByText, getByTestId, baseElement } = renderContainer();
 
-    expect(getByText('filename.test')).toBeInTheDocument();
+    expect(getByText('filename20.test')).toBeInTheDocument();
 
     fireEvent.click(getByTestId('attachment-view-meta'));
 
     await waitFor(() => {
       expect(mockBiohubApi().public.project.getPublicProjectReportMetadata).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().public.project.getPublicProjectReportMetadata()).resolves.toEqual({
-        attachment_id: 1,
-        title: 'Title of my report',
-        year_published: '2000',
+        attachment_id: 20,
+        authors: [{ first_name: 'John', last_name: 'Smith' }],
         description: 'my abstract',
         last_modified: '2020-10-10',
         revision_count: 1,
-        authors: [
-          {
-            first_name: 'John',
-            last_name: 'Smith'
-          }
-        ]
+        title: 'Title of my report',
+        year_published: '2000'
       });
     });
 

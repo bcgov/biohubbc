@@ -246,6 +246,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
 
 /**
  * SQL query to get project indigenous partnerships.
+ *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
@@ -258,7 +259,8 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   const sqlStatement = SQL`
     SELECT
-      fn.name as fn_name
+      fn.first_nations_id as id,
+      fn.name as first_nations_name
     FROM
       project_first_nation pfn
     LEFT OUTER JOIN
@@ -268,6 +270,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
     WHERE
       pfn.project_id = ${projectId}
     GROUP BY
+      fn.first_nations_id,
       fn.name;
   `;
 

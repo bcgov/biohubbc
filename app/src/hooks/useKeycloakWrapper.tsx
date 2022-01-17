@@ -46,6 +46,12 @@ export interface IKeycloakWrapper {
    */
   systemRoles: string[];
   /**
+   * Returns `true` if the keycloak user is a registered system user, `false` otherwise.
+   *
+   * @memberof IKeycloakWrapper
+   */
+  isSystemUser: () => boolean;
+  /**
    * Returns `true` if the user's `systemRoles` contain at least 1 of the specified `validSystemRoles`, `false` otherwise.
    *
    * @memberof IKeycloakWrapper
@@ -215,6 +221,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     getKeycloakUser();
   }, [keycloak, keycloakUser, isKeycloakUserLoading]);
 
+  const isSystemUser = (): boolean => {
+    return !!bioHubUser;
+  };
+
   const getSystemRoles = (): string[] => {
     return bioHubUser?.role_names || [];
   };
@@ -266,6 +276,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     keycloak: keycloak,
     hasLoadedAllUserInfo,
     systemRoles: getSystemRoles(),
+    isSystemUser,
     hasSystemRole,
     hasAccessRequest,
     getUserIdentifier,

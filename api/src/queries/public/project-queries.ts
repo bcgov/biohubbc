@@ -308,7 +308,7 @@ export const getIndigenousPartnershipsByPublicProjectSQL = (projectId: number): 
 
   const sqlStatement = SQL`
     SELECT
-      fn.name as fn_name
+      fn.name as first_nations_name
     FROM
       project_first_nation as pfn
     LEFT OUTER JOIN
@@ -352,7 +352,7 @@ export const getStakeholderPartnershipsByPublicProjectSQL = (projectId: number):
 
   const sqlStatement = SQL`
     SELECT
-      sp.name as sp_name
+      sp.name as partnership_name
     FROM
       stakeholder_partnership as sp
     LEFT OUTER JOIN

@@ -47,7 +47,7 @@ describe('GetPartnershipsData', () => {
   describe('indigenous_partnerships values provided', () => {
     let data: GetPartnershipsData;
 
-    const indigenous_partnerships = [{ fn_name: 'partner 1' }, { fn_name: 'partner 2' }];
+    const indigenous_partnerships = [{ first_nations_name: 'nation 1' }, { first_nations_name: 'nation 2' }];
     const stakeholder_partnerships: string[] = [];
 
     before(() => {
@@ -55,7 +55,7 @@ describe('GetPartnershipsData', () => {
     });
 
     it('sets indigenous_partnerships', function () {
-      expect(data.indigenous_partnerships).to.eql(['partner 1', 'partner 2']);
+      expect(data.indigenous_partnerships).to.eql(['nation 1', 'nation 2']);
     });
 
     it('sets stakeholder_partnerships', function () {
@@ -66,8 +66,8 @@ describe('GetPartnershipsData', () => {
   describe('stakeholder_partnerships values provided', () => {
     let data: GetPartnershipsData;
 
-    const indigenous_partnerships: string[] = [];
-    const stakeholder_partnerships = [{ sp_name: 'partner 1' }, { sp_name: 'partner 2' }];
+    const indigenous_partnerships: number[] = [];
+    const stakeholder_partnerships = [{ partnership_name: 'partner 1' }, { partnership_name: 'partner 2' }];
 
     before(() => {
       data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
@@ -85,15 +85,15 @@ describe('GetPartnershipsData', () => {
   describe('All values provided', () => {
     let data: GetPartnershipsData;
 
-    const indigenous_partnerships = [{ fn_name: 'partner 1' }, { fn_name: 'partner 2' }];
-    const stakeholder_partnerships = [{ sp_name: 'partner 3' }, { sp_name: 'partner 4' }];
+    const indigenous_partnerships = [{ first_nations_name: 'nation 1' }, { first_nations_name: 'nation 2' }];
+    const stakeholder_partnerships = [{ partnership_name: 'partner 3' }, { partnership_name: 'partner 4' }];
 
     before(() => {
       data = new GetPartnershipsData(indigenous_partnerships, stakeholder_partnerships);
     });
 
     it('sets indigenous_partnerships', function () {
-      expect(data.indigenous_partnerships).to.eql(['partner 1', 'partner 2']);
+      expect(data.indigenous_partnerships).to.eql(['nation 1', 'nation 2']);
     });
 
     it('sets stakeholder_partnerships', function () {

@@ -178,7 +178,7 @@ export const postProjectStakeholderPartnershipSQL = (
     `;
 
   defaultLog.debug({
-    label: 'postPermitNumberWithSamplingSQL',
+    label: 'postProjectStakeholderPartnershipSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
@@ -215,7 +215,7 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
         ${indigenousNationId}
       )
       RETURNING
-        project_first_nation_id as id;
+        first_nations_id as id;
     `;
 
   defaultLog.debug({
