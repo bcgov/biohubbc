@@ -1,19 +1,18 @@
 import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
-import Typography from '@material-ui/core/Typography';
-import React, { useState, useContext, useCallback } from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { APIError } from 'hooks/api/useAxios';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { DialogContext } from 'contexts/dialogContext';
-import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
-import MapContainer, { IClusteredPointGeometries } from 'components/map/MapContainer';
-import centroid from '@turf/centroid';
 import Grid from '@material-ui/core/Grid';
-import { useEffect } from 'react';
+import Typography from '@material-ui/core/Typography';
+import centroid from '@turf/centroid';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import MapContainer, { IClusteredPointGeometries } from 'components/map/MapContainer';
 import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
 import { AuthStateContext } from 'contexts/authStateContext';
+import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { isAuthenticated } from 'utils/authUtils';
+import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
 /**
  * Page to search for and display a list of records spatially.
