@@ -3,12 +3,11 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
-import { addProjectParticipant } from '../../../../../paths-helpers/project-participation';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
-import { deleteProjectParticipationRecord } from './delete';
 import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
-import { getProjectParticipants } from '../get';
+import { deleteProjectParticipationRecord } from './delete';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/update');
 
@@ -111,29 +110,30 @@ export function updateProjectParticipantRole(): RequestHandler {
     try {
       await connection.open();
 
-      //Check project lead roles before updating user
-      const projectParticipantsResponse1 = await getProjectParticipants(Number(req.params.projectId), connection);
+      const projectService = new ProjectService(connection);
+
+      // Check project lead roles before updating user
+      const projectParticipantsResponse1 = await projectService.getProjectParticipants(Number(req.params.projectId));
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
       // Delete the user's old participation record, returning the old record
       const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
 
       if (!result || !result.system_user_id) {
-        // The delete result is missing necesary data, fail the request
+        // The delete result is missing necessary data, fail the request
         throw new HTTP500('Failed to update project participant role');
       }
 
-      await addProjectParticipant(
+      await projectService.addProjectParticipant(
         Number(req.params.projectId),
         Number(result.system_user_id), // get the user's system id from the old participation record
-        Number(req.body.roleId),
-        connection
+        Number(req.body.roleId)
       );
 
-      //if Project Lead roles are invalide skip check to prevent removal of only Project Lead of project
-      //(Project is already missing Project Lead and is in a bad state)
+      // If Project Lead roles are invalid skip check to prevent removal of only Project Lead of project
+      // (Project is already missing Project Lead and is in a bad state)
       if (projectHasLeadResponse1) {
-        const projectParticipantsResponse2 = await getProjectParticipants(Number(req.params.projectId), connection);
+        const projectParticipantsResponse2 = await projectService.getProjectParticipants(Number(req.params.projectId));
         const projectHasLeadResponse2 = doAllProjectsHaveAProjectLead(projectParticipantsResponse2);
 
         if (!projectHasLeadResponse2) {
