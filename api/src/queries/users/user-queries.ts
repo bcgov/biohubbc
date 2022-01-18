@@ -18,7 +18,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
 
   const sqlStatement = SQL`
     SELECT
-      su.system_user_id as id,
+      su.system_user_id,
       su.user_identifier,
       su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
@@ -66,7 +66,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      su.system_user_id as id,
+      su.system_user_id,
       su.user_identifier,
       su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,
@@ -111,7 +111,7 @@ export const getUserListSQL = (): SQLStatement | null => {
 
   const sqlStatement = SQL`
     SELECT
-      su.system_user_id as id,
+      su.system_user_id,
       su.user_identifier,
       su.record_end_date,
       array_remove(array_agg(sr.system_role_id), NULL) AS role_ids,

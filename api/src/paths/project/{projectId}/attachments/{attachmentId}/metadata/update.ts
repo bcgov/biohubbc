@@ -120,7 +120,7 @@ PUT.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'

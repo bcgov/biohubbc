@@ -53,7 +53,66 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Response of the report metadata'
+      description: 'Response of the report metadata',
+      content: {
+        'application/json': {
+          schema: {
+            title: 'metadata get response object',
+            type: 'object',
+            required: [
+              'attachment_id',
+              'title',
+              'last_modified',
+              'description',
+              'year_published',
+              'revision_count',
+              'authors'
+            ],
+            properties: {
+              attachment_id: {
+                description: 'Report metadata attachment id',
+                type: 'number'
+              },
+              title: {
+                description: 'Report metadata attachment title ',
+                type: 'string'
+              },
+              last_modified: {
+                description: 'Report metadata last modified',
+                type: 'string'
+              },
+              description: {
+                description: 'Report metadata description',
+                type: 'string'
+              },
+              year_published: {
+                description: 'Report metadata year published',
+                type: 'number'
+              },
+              revision_count: {
+                description: 'Report metadata revision count',
+                type: 'number'
+              },
+              authors: {
+                description: 'Report metadata author object',
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['first_name', 'last_name'],
+                  properties: {
+                    first_name: {
+                      type: 'string'
+                    },
+                    last_name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'

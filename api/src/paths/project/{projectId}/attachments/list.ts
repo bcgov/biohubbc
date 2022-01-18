@@ -52,14 +52,33 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              required: ['projectId', 'fileName', 'fileType', 'lastModified', 'size', 'securityToken', 'revisionCount'],
               properties: {
+                projectId: {
+                  type: 'number'
+                },
                 fileName: {
                   description: 'The file name of the attachment',
+                  type: 'string'
+                },
+                fileType: {
+                  description: 'The file type of the attachment',
                   type: 'string'
                 },
                 lastModified: {
                   description: 'The date the object was last modified',
                   type: 'string'
+                },
+                size: {
+                  description: 'The size of the attachment',
+                  type: 'number'
+                },
+                securityToken: {
+                  description: 'The security token of the attachment',
+                  type: 'string'
+                },
+                revisionCount: {
+                  type: 'number'
                 }
               }
             }

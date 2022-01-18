@@ -55,7 +55,13 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          type: 'object'
+          type: 'object',
+          required: ['attachmentType'],
+          properties: {
+            attachmentType: {
+              type: 'string'
+            }
+          }
         }
       }
     }
@@ -72,8 +78,17 @@ PUT.apiDoc = {
         }
       }
     },
+    400: {
+      $ref: '#/components/responses/400'
+    },
     401: {
       $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
     },
     default: {
       $ref: '#/components/responses/default'
