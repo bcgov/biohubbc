@@ -12,7 +12,7 @@ export class UserObject {
   constructor(obj?: any) {
     defaultLog.debug({ label: 'UserObject', message: 'params', obj });
 
-    this.id = obj?.id || null;
+    this.id = obj?.system_user_id || null;
     this.user_identifier = obj?.user_identifier || null;
     this.record_end_date = obj?.record_end_date || null;
     this.role_ids = (obj?.role_ids?.length && obj.role_ids) || [];
