@@ -115,10 +115,6 @@ describe('Delete a project participant.', () => {
     sinon.stub(getProjectParticipants, 'getProjectParticipants').resolves([{ id: 1 }]);
     sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead').returns(true);
 
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves(null);
-
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
