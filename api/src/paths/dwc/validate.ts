@@ -96,7 +96,7 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
         $ref: '#/components/responses/401'
       },
       403: {
-        $ref: '#/components/responses/401'
+        $ref: '#/components/responses/403'
       },
       500: {
         $ref: '#/components/responses/500'

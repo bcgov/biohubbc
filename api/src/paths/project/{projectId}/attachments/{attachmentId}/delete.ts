@@ -69,6 +69,26 @@ POST.apiDoc = {
         }
       }
     }
+  },
+  responses: {
+    200: {
+      description: 'Current attachment type for project attachment deleted'
+    },
+    400: {
+      $ref: '#/components/responses/400'
+    },
+    401: {
+      $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
+    },
+    default: {
+      $ref: '#/components/responses/default'
+    }
   }
 };
 
