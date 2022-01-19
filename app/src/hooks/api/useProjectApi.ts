@@ -74,7 +74,7 @@ const useProjectApi = (axios: AxiosInstance) => {
     projectId: number,
     attachmentId: number,
     attachmentType: string,
-    securityToken: any
+    securityToken: string
   ): Promise<number> => {
     const { data } = await axios.post(`/api/project/${projectId}/attachments/${attachmentId}/delete`, {
       attachmentType,
@@ -211,10 +211,10 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {File} file
-   * @param {string} attachmentType
+   * @param {IReportMetaForm} attachmentMeta
    * @param {CancelTokenSource} [cancelTokenSource]
    * @param {(progressEvent: ProgressEvent) => void} [onProgress]
-   * @return {*}  {Promise<string[]>}
+   * @return {*}  {Promise<IUploadAttachmentResponse>}
    */
   const uploadProjectReports = async (
     projectId: number,
@@ -308,7 +308,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   const makeAttachmentUnsecure = async (
     projectId: number,
     attachmentId: number,
-    securityToken: any,
+    securityToken: string,
     attachmentType: string
   ): Promise<any> => {
     const { data } = await axios.put(`/api/project/${projectId}/attachments/${attachmentId}/makeUnsecure`, {
@@ -324,9 +324,9 @@ const useProjectApi = (axios: AxiosInstance) => {
    *
    * @param {number} projectId
    * @param {number} pfsId
-   * @returns {*} {Promise<any>}
+   * @return {*}  {Promise<number>}
    */
-  const deleteFundingSource = async (projectId: number, pfsId: number): Promise<any> => {
+  const deleteFundingSource = async (projectId: number, pfsId: number): Promise<number> => {
     const { data } = await axios.delete(`/api/project/${projectId}/funding-sources/${pfsId}/delete`);
 
     return data;
@@ -336,9 +336,10 @@ const useProjectApi = (axios: AxiosInstance) => {
    * Add new funding source based on projectId
    *
    * @param {number} projectId
-   * @returns {*} {Promise<any>}
+   * @param {*} fundingSource
+   * @return {*}  {Promise<ICreateProjectResponse>}
    */
-  const addFundingSource = async (projectId: number, fundingSource: any): Promise<any> => {
+  const addFundingSource = async (projectId: number, fundingSource: any): Promise<ICreateProjectResponse> => {
     const { data } = await axios.post(`/api/project/${projectId}/funding-sources/add`, fundingSource);
 
     return data;
