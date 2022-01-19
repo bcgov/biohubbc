@@ -268,24 +268,28 @@ export function add_survey() {
   cy.get("#h2-button-toolbar-CreateSurvey").click();
 
   cy.get("h1").contains("Create Survey").should("be.visible");
-  cy.get('button[title="Edit General Information"]').click();
 
-  cy.get("input#start_date").then(($input) => {
-    const sdate = $input.val().toString();
+  cy.get("#start_date-helper-text").then(($help) => {
+    var sdate = right($help.text().trim(), 12); // this returns the start date
+    const months = "JanFebMarAprMayJunJulAugSepOctNovDec";
+    var smonth = months.indexOf(left(sdate, 3)) / 3 + 1;
+    sdate =
+      right(sdate, 4) +
+      "-" +
+      smonth.toString() +
+      "-" +
+      sdate.slice(4, 6).trim();
     cy.log("sdate", sdate);
-
-    cy.get("input#end_date").then(($input) => {
-      const edate = $input.val().toString();
+    cy.get("#end_date-helper-text").then(($help) => {
+      var edate = right($help.text().trim(), 12); // this returns the end date
+      smonth = months.indexOf(left(edate, 3)) / 3 + 1;
+      edate =
+        right(edate, 4) +
+        "-" +
+        smonth.toString() +
+        "-" +
+        edate.slice(4, 6).trim();
       cy.log("edate", edate);
-
-      cy.get("button").contains("Cancel").click();
-      cy.get("a").contains("Surveys").click();
-
-      cy.get("h2").contains("Surveys").should("be.visible");
-
-      cy.get("button").contains("Create Survey").click();
-      cy.get("h1").contains("Create Survey").should("be.visible");
-
       cy.get("#survey_name").clear().type(faker.lorem.words());
 
       cy.log("sdate", sdate);
@@ -341,4 +345,12 @@ export function previous_page_project() {
 
 export function cancel_project() {
   cy.get('button[data-testid="stepper_cancel"]').click();
+}
+
+export function right(str, chr) {
+  return str.slice(str.length - chr, str.length);
+}
+
+export function left(str, chr) {
+  return str.slice(0, chr - str.length);
 }
