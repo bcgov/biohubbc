@@ -70,13 +70,13 @@ export class ProjectService extends DBService {
     const sqlStatement = queries.projectParticipation.getAllProjectParticipantsSQL(projectId);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
+      throw new HTTP400('Failed to build SQL select statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!response || !response.rows) {
-      throw new HTTP400('Failed to get project participants');
+      throw new HTTP400('Failed to get project team members');
     }
 
     return (response && response.rows) || [];

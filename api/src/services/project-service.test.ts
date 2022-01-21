@@ -144,6 +144,80 @@ describe('ProjectService', () => {
     });
   });
 
+  describe('getProjectParticipants', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should throw a 400 error when no sql statement produced', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      sinon.stub(queries.projectParticipation, 'getAllProjectParticipantsSQL').returns(null);
+
+      const projectId = 1;
+
+      const projectService = new ProjectService(mockDBConnection);
+
+      try {
+        await projectService.getProjectParticipants(projectId);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL select statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+      }
+    });
+
+    it('should throw a 400 response when response has no rowCount', async () => {
+      const mockQueryResponse = (null as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+      sinon.stub(queries.projectParticipation, 'getAllProjectParticipantsSQL').returns(SQL`valid sql`);
+
+      const projectId = 1;
+
+      const projectService = new ProjectService(mockDBConnection);
+
+      try {
+        await projectService.getProjectParticipants(projectId);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal('Failed to get project team members');
+        expect((actualError as HTTPError).status).to.equal(400);
+      }
+    });
+
+    it('returns empty array if there are no rows', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+      sinon.stub(queries.projectParticipation, 'getAllProjectParticipantsSQL').returns(SQL`valid sql`);
+
+      const projectId = 1;
+
+      const projectService = new ProjectService(mockDBConnection);
+
+      const result = await projectService.getProjectParticipants(projectId);
+
+      expect(result).to.eql([]);
+    });
+
+    it('returns rows on success', async () => {
+      const mockRowObj = [{ id: 123 }];
+      const mockQueryResponse = ({ rows: mockRowObj } as unknown) as QueryResult<any>;
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+      sinon.stub(queries.projectParticipation, 'getAllProjectParticipantsSQL').returns(SQL`valid sql`);
+
+      const projectId = 1;
+
+      const projectService = new ProjectService(mockDBConnection);
+
+      const result = await projectService.getProjectParticipants(projectId);
+
+      expect(result).to.equal(mockRowObj);
+    });
+  });
+
   describe('addProjectParticipant', () => {
     afterEach(() => {
       sinon.restore();
