@@ -1,7 +1,7 @@
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { useFormikContext } from 'formik';
+import { get } from 'lodash-es';
 import React from 'react';
-
 export interface ICustomTextField {
   label: string;
   name: string;
@@ -9,7 +9,8 @@ export interface ICustomTextField {
 }
 
 const CustomTextField: React.FC<ICustomTextField> = (props) => {
-  const { touched, errors, values, handleChange } = useFormikContext<object>();
+  const { touched, errors, values, handleChange } = useFormikContext<any>();
+
   const { name, label, other } = props;
 
   return (
@@ -19,10 +20,10 @@ const CustomTextField: React.FC<ICustomTextField> = (props) => {
       id={name}
       onChange={handleChange}
       variant="outlined"
-      value={values[name]}
+      value={get(values, name)}
       fullWidth={true}
-      error={touched[name] && Boolean(errors[name])}
-      helperText={touched[name] && errors[name]}
+      error={get(touched, name) && Boolean(get(errors, name))}
+      helperText={get(touched, name) && get(errors, name)}
       {...other}
     />
   );
