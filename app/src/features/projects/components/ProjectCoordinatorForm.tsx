@@ -38,7 +38,7 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
     .max(500, 'Cannot exceed 500 characters')
     .email('Must be a valid email address')
     .required('Required'),
-  coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
+  coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required').nullable(),
   share_contact_details: yup.string().required('Required')
 });
 
