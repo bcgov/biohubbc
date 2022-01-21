@@ -279,7 +279,7 @@ describe('UserService', () => {
         .stub(UserService.prototype, 'getUserByIdentifier')
         .resolves(existingSystemUser);
 
-      const addedSystemUser = new UserObject({ id: 2, record_end_date: null });
+      const addedSystemUser = new UserObject({ system_user_id: 2, record_end_date: null });
       const addSystemUserStub = sinon.stub(UserService.prototype, 'addSystemUser').resolves(addedSystemUser);
 
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
@@ -303,7 +303,7 @@ describe('UserService', () => {
       const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
 
       const existingInactiveSystemUser = new UserObject({
-        id: 2,
+        system_user_id: 2,
         user_identifier: 'idir',
         record_end_date: null,
         role_ids: [1],
@@ -336,7 +336,7 @@ describe('UserService', () => {
       const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
 
       const existingSystemUser = new UserObject({
-        id: 2,
+        system_user_id: 2,
         user_identifier: 'idir',
         record_end_date: '2021-11-22',
         role_ids: [1],
@@ -375,7 +375,7 @@ describe('UserService', () => {
       const mockDBConnection = getMockDBConnection({ systemUserId: () => 1 });
 
       const existingSystemUser = new UserObject({
-        id: 2,
+        system_user_id: 2,
         user_identifier: 'idir',
         record_end_date: '2021-11-22',
         role_ids: [1],
@@ -390,7 +390,7 @@ describe('UserService', () => {
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
 
       const activatedSystemUser = new UserObject({
-        id: 2,
+        system_user_id: 2,
         user_identifier: 'idir',
         record_end_date: null,
         role_ids: [1],

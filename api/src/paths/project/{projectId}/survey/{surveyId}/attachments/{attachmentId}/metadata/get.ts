@@ -61,8 +61,60 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Response of the report metadata'
+      description: 'Response of the report metadata',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            required: [
+              'attachment_id',
+              'title',
+              'last_modified',
+              'description',
+              'year_published',
+              'revision_count',
+              'authors'
+            ],
+            properties: {
+              attachment_id: {
+                type: 'number'
+              },
+              title: {
+                type: 'string'
+              },
+              last_modified: {
+                type: 'string'
+              },
+              description: {
+                type: 'string'
+              },
+              year_published: {
+                type: 'number'
+              },
+              revision_count: {
+                type: 'number'
+              },
+              authors: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['first_name', 'last_name'],
+                  properties: {
+                    first_name: {
+                      type: 'string'
+                    },
+                    last_name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     },
+
     400: {
       $ref: '#/components/responses/400'
     },
