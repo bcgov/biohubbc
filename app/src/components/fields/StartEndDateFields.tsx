@@ -1,7 +1,7 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { DATE_LIMIT } from 'constants/dateTimeFormats';
-import { get } from 'lodash-es';
+import get from 'lodash-es/get';
 import React from 'react';
 
 interface IStartEndDateFieldsProps {

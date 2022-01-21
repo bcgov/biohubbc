@@ -8,7 +8,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import { get } from 'lodash-es';
+import get from 'lodash-es/get';
 
 const LISTBOX_PADDING = 8; // px
 

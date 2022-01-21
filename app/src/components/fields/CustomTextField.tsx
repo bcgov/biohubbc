@@ -1,6 +1,6 @@
 import TextField, { TextFieldProps } from '@material-ui/core/TextField';
 import { useFormikContext } from 'formik';
-import { get } from 'lodash-es';
+import get from 'lodash-es/get';
 import React from 'react';
 export interface ICustomTextField {
   label: string;

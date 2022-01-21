@@ -4,7 +4,7 @@ import CheckBox from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
-import { get } from 'lodash-es';
+import get from 'lodash-es/get';
 import React from 'react';
 
 export interface IMultiAutocompleteFieldOption {
