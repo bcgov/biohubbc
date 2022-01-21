@@ -90,7 +90,13 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
           </FormControl>
         </Grid>
         <Grid item xs={12} md={6}>
-          <StartEndDateFields formikProps={formikProps} startRequired={false} endRequired={false} />
+          <StartEndDateFields
+            formikProps={formikProps}
+            startName="start_date"
+            endName="end_date"
+            startRequired={false}
+            endRequired={false}
+          />
         </Grid>
         <Grid item xs={12} md={3}>
           <AutocompleteFreeSoloField

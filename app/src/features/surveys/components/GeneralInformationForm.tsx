@@ -125,6 +125,8 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <StartEndDateFields
           formikProps={formikProps}
+          startName="start_date"
+          endName="end_date"
           startRequired={true}
           endRequired={false}
           startDateHelperText={`Start date must be on or after project start date ${getFormattedDate(
