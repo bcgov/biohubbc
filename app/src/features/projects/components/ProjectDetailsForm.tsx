@@ -94,7 +94,13 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             required={false}
           />
         </Grid>
-        <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={false} />
+        <StartEndDateFields
+          formikProps={formikProps}
+          startName="start_date"
+          endName="end_date"
+          startRequired={true}
+          endRequired={false}
+        />
       </Grid>
     </form>
   );

@@ -4,6 +4,7 @@ import CheckBox from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
+import get from 'lodash-es/get';
 import React from 'react';
 
 export interface IMultiAutocompleteFieldOption {
@@ -45,7 +46,7 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
     <Autocomplete
       multiple
       autoHighlight={true}
-      value={getExistingValue(values[props.id])}
+      value={getExistingValue(get(values, props.id))}
       id={props.id}
       options={props.options}
       getOptionLabel={(option) => option.label}
@@ -81,8 +82,8 @@ const MultiAutocompleteField: React.FC<IMultiAutocompleteField> = (props) => {
           label={props.label}
           variant="outlined"
           fullWidth
-          error={touched[props.id] && Boolean(errors[props.id])}
-          helperText={errors[props.id]}
+          error={get(touched, props.id) && Boolean(get(errors, props.id))}
+          helperText={get(touched, props.id) && get(errors, props.id)}
           placeholder={'Begin typing to filter results...'}
           InputLabelProps={{
             shrink: true

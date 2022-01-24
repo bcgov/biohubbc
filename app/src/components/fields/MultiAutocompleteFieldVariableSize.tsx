@@ -8,6 +8,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
+import get from 'lodash-es/get';
 
 const LISTBOX_PADDING = 8; // px
 
@@ -133,7 +134,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
     <Autocomplete
       multiple
       autoHighlight={true}
-      value={getExistingValue(values[props.id])}
+      value={getExistingValue(get(values, props.id))}
       ListboxComponent={ListboxComponent as React.ComponentType<React.HTMLAttributes<HTMLElement>>}
       id={props.id}
       data-testid={props.id}
@@ -172,8 +173,8 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
           label={props.label}
           variant="outlined"
           fullWidth
-          error={touched[props.id] && Boolean(errors[props.id])}
-          helperText={touched[props.id] && errors[props.id]}
+          error={get(touched, props.id) && Boolean(get(errors, props.id))}
+          helperText={get(touched, props.id) && get(errors, props.id)}
         />
       )}
     />

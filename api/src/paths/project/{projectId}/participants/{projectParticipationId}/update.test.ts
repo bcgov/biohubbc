@@ -6,9 +6,9 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/custom-error';
 import * as queries from '../../../../../queries/queries';
+import { ProjectService } from '../../../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import * as doAllProjectsHaveAProjectLead from '../../../../user/{userId}/delete';
-import * as getProjectParticipants from '../get';
 import * as update_project_participant from './update';
 chai.use(sinonChai);
 
@@ -83,7 +83,7 @@ describe('Delete a project participant.', () => {
     mockReq.body = { roleId: '1' };
 
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(null);
-    sinon.stub(getProjectParticipants, 'getProjectParticipants').resolves([{ id: 1 }]);
+    sinon.stub(ProjectService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
     sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead').returns(true);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -112,7 +112,7 @@ describe('Delete a project participant.', () => {
     mockReq.body = { roleId: '1' };
 
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
-    sinon.stub(getProjectParticipants, 'getProjectParticipants').resolves([{ id: 1 }]);
+    sinon.stub(ProjectService.prototype, 'getProjectParticipants').resolves([{ id: 1 }]);
     sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead').returns(true);
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -141,7 +141,7 @@ describe('Delete a project participant.', () => {
     mockReq.body = { roleId: '1' };
 
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
-    const getProjectParticipant = sinon.stub(getProjectParticipants, 'getProjectParticipants');
+    const getProjectParticipant = sinon.stub(ProjectService.prototype, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead');
 
     getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
@@ -185,7 +185,7 @@ describe('Delete a project participant.', () => {
     mockReq.body = { roleId: '1' };
 
     sinon.stub(queries.queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
-    const getProjectParticipant = sinon.stub(getProjectParticipants, 'getProjectParticipants');
+    const getProjectParticipant = sinon.stub(ProjectService.prototype, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead');
 
     getProjectParticipant.onCall(0).resolves([{ id: 1 }]);

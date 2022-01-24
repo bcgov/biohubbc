@@ -1,5 +1,6 @@
 import TextField from '@material-ui/core/TextField';
 import { useFormikContext } from 'formik';
+import get from 'lodash-es/get';
 import React from 'react';
 import NumberFormat from 'react-number-format';
 
@@ -50,10 +51,10 @@ const DollarAmountField: React.FC<IDollarAmountFieldProps> = (props) => {
       name={name}
       label={label}
       variant="outlined"
-      value={values[name]}
+      value={get(values, name)}
       onChange={handleChange}
-      error={touched[id] && Boolean(errors[id])}
-      helperText={errors[id]}
+      error={get(touched, name) && Boolean(get(errors, name))}
+      helperText={get(touched, name) && get(errors, name)}
       InputLabelProps={{
         shrink: true
       }}

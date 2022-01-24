@@ -7,7 +7,7 @@ describe('DollarAmountField', () => {
   it('matches the snapshot without error', () => {
     const { asFragment } = render(
       <Formik initialValues={{}} onSubmit={async () => {}}>
-        {() => <DollarAmountField id="id" label="label" required={true} name="name" />}
+        {() => <DollarAmountField id="amount" label="amount" name="amount" required={true} />}
       </Formik>
     );
 
@@ -18,14 +18,12 @@ describe('DollarAmountField', () => {
     const { asFragment } = render(
       <Formik
         initialValues={{
-          id: 'id',
-          label: 'label',
-          name: 'name'
+          amount: ''
         }}
         onSubmit={async () => {}}
-        initialErrors={{ id: 'error is here' }}
-        initialTouched={{ id: true }}>
-        {() => <DollarAmountField id="id" label="label" required={true} name="name" />}
+        initialErrors={{ amount: 'error is here' }}
+        initialTouched={{ amount: true }}>
+        {() => <DollarAmountField id="amount" label="amount" name="amount" required={true} />}
       </Formik>
     );
 

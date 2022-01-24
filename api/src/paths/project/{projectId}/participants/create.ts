@@ -3,8 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
-import { ensureProjectParticipant } from '../../../../paths-helpers/project-participation';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../../services/project-service';
 import { UserService } from '../../../../services/user-service';
 import { getLogger } from '../../../../utils/logger';
 
@@ -147,6 +147,8 @@ export const ensureSystemUserAndProjectParticipantUser = async (
   // Add a system user, unless they already have one
   const systemUserObject = await userService.ensureSystemUser(participant.userIdentifier, participant.identitySource);
 
+  const projectService = new ProjectService(connection);
+
   // Add project role, unless they already have one
-  await ensureProjectParticipant(projectId, systemUserObject.id, participant.roleId, connection);
+  await projectService.ensureProjectParticipant(projectId, systemUserObject.id, participant.roleId);
 };
