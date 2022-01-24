@@ -8,10 +8,10 @@ exports[`DollarAmountField matches the snapshot with error 1`] = `
     <label
       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
       data-shrink="true"
-      for="id"
-      id="id-label"
+      for="amount"
+      id="amount-label"
     >
-      label
+      amount
       <span
         aria-hidden="true"
         class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
@@ -23,13 +23,13 @@ exports[`DollarAmountField matches the snapshot with error 1`] = `
       class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
     >
       <input
-        aria-describedby="id-helper-text"
+        aria-describedby="amount-helper-text"
         aria-invalid="true"
         class="MuiInputBase-input MuiOutlinedInput-input"
-        data-testid="name"
-        id="id"
+        data-testid="amount"
+        id="amount"
         inputmode="numeric"
-        name="name"
+        name="amount"
         required=""
         type="text"
         value=""
@@ -42,14 +42,14 @@ exports[`DollarAmountField matches the snapshot with error 1`] = `
           class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
         >
           <span>
-            label *
+            amount *
           </span>
         </legend>
       </fieldset>
     </div>
     <p
       class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
-      id="id-helper-text"
+      id="amount-helper-text"
     >
       error is here
     </p>
@@ -65,10 +65,10 @@ exports[`DollarAmountField matches the snapshot without error 1`] = `
     <label
       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
       data-shrink="true"
-      for="id"
-      id="id-label"
+      for="amount"
+      id="amount-label"
     >
-      label
+      amount
       <span
         aria-hidden="true"
         class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -82,10 +82,10 @@ exports[`DollarAmountField matches the snapshot without error 1`] = `
       <input
         aria-invalid="false"
         class="MuiInputBase-input MuiOutlinedInput-input"
-        data-testid="name"
-        id="id"
+        data-testid="amount"
+        id="amount"
         inputmode="numeric"
-        name="name"
+        name="amount"
         required=""
         type="text"
         value=""
@@ -98,7 +98,7 @@ exports[`DollarAmountField matches the snapshot without error 1`] = `
           class="PrivateNotchedOutline-legendLabelled-3 PrivateNotchedOutline-legendNotched-4"
         >
           <span>
-            label *
+            amount *
           </span>
         </legend>
       </fieldset>

@@ -168,7 +168,13 @@ const ProjectFundingItemForm: React.FC<IProjectFundingItemFormProps> = (props) =
           <Grid item xs={12}>
             <DollarAmountField required={true} id="funding_amount" name="funding_amount" label="Funding Amount" />
           </Grid>
-          <StartEndDateFields formikProps={formikProps} startRequired={true} endRequired={true} />
+          <StartEndDateFields
+            formikProps={formikProps}
+            startName="start_date"
+            endName="end_date"
+            startRequired={true}
+            endRequired={true}
+          />
         </Grid>
       </Box>
       <Box mt={4}>

@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../database/db';
+import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
-import { queries } from '../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../../services/project-service';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/participants/get');
@@ -120,7 +120,9 @@ export function getParticipants(): RequestHandler {
 
       await connection.open();
 
-      const result = await getProjectParticipants(projectId, connection);
+      const projectService = new ProjectService(connection);
+
+      const result = await projectService.getProjectParticipants(projectId);
 
       await connection.commit();
 
@@ -133,26 +135,3 @@ export function getParticipants(): RequestHandler {
     }
   };
 }
-
-/**
- * Execute SQL to fetch all project participants.
- *
- * @param {number} projectId the project id
- * @param {IDBConnection} connection an open db connection
- * @return {*}  {Promise<object[]>}
- */
-export const getProjectParticipants = async (projectId: number, connection: IDBConnection): Promise<object[]> => {
-  const sqlStatement = queries.projectParticipation.getAllProjectParticipantsSQL(projectId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rows) {
-    throw new HTTP400('Failed to get project participants');
-  }
-
-  return (response && response.rows) || [];
-};

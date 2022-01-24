@@ -539,8 +539,8 @@ const CreateProjectPage: React.FC = () => {
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: 'Error Creating Project',
-        dialogError: error?.message,
-        dialogErrorDetails: error?.errors
+        dialogError: (error as APIError)?.message,
+        dialogErrorDetails: (error as APIError)?.errors
       });
     }
   };

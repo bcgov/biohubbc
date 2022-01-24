@@ -5,9 +5,9 @@ import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
 import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
-import { getProjectParticipants } from '../get';
 
 const defaultLog = getLogger('/api/project/{projectId}/participants/{projectParticipationId}/delete');
 
@@ -91,8 +91,10 @@ export function deleteProjectParticipant(): RequestHandler {
     try {
       await connection.open();
 
-      //Check project lead roles before deleting user
-      const projectParticipantsResponse1 = await getProjectParticipants(Number(req.params.projectId), connection);
+      const projectService = new ProjectService(connection);
+
+      // Check project lead roles before deleting user
+      const projectParticipantsResponse1 = await projectService.getProjectParticipants(Number(req.params.projectId));
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
       const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
@@ -102,10 +104,10 @@ export function deleteProjectParticipant(): RequestHandler {
         throw new HTTP500('Failed to delete project participant');
       }
 
-      //if Project Lead roles are invalide skip check to prevent removal of only Project Lead of project
-      //(Project is already missing Project Lead and is in a bad state)
+      // If Project Lead roles are invalide skip check to prevent removal of only Project Lead of project
+      // (Project is already missing Project Lead and is in a bad state)
       if (projectHasLeadResponse1) {
-        const projectParticipantsResponse2 = await getProjectParticipants(Number(req.params.projectId), connection);
+        const projectParticipantsResponse2 = await projectService.getProjectParticipants(Number(req.params.projectId));
         const projectHasLeadResponse2 = doAllProjectsHaveAProjectLead(projectParticipantsResponse2);
 
         if (!projectHasLeadResponse2) {
