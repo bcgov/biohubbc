@@ -1,26 +1,26 @@
-//@ts-ignore
-import { kml, gpx } from '@tmcw/togeojson';
-import shp from 'shpjs';
-import { Feature } from 'geojson';
+import { gpx, kml } from '@tmcw/togeojson';
 import bbox from '@turf/bbox';
+import { FormikContextType } from 'formik';
+import { Feature } from 'geojson';
+import get from 'lodash-es/get';
+import shp from 'shpjs';
 import { v4 as uuidv4 } from 'uuid';
 
 /**
- * Convert a zipped shapefile to geojson
- * @param file The file to upload
- * @param values current form values
- * @param setFieldValue change form values
- * @param setUploadError change state of upload error
+ * Function to handle zipped shapefile spatial boundary uploads
+ *
+ * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
+ * @param {File} file The file to upload
+ * @param {string} name The name of the formik field that the parsed geometry will be saved to
+ * @param {FormikContextType<T>} formikProps The formik props
+ * @return {*}
  */
-export const handleShapefileUpload = (
-  file: File,
-  values: any,
-  setFieldValue: (key: string, value: any) => void,
-  setUploadError: (uploadError: string) => void
-) => {
+export const handleShapefileUpload = <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
+  const { values, setFieldValue, setFieldError } = formikProps;
+
   // Back out if not a zipped file
   if (!file?.type.match(/zip/) || !file?.name.includes('.zip')) {
-    setUploadError('You must upload a valid shapefile (.zip format). Please try again.');
+    setFieldError(name, 'You must upload a valid shapefile (.zip format). Please try again.');
     return;
   }
 
@@ -40,31 +40,38 @@ export const handleShapefileUpload = (
 
     // Run the conversion
     const geojson = await shp(zip);
-    const features = (geojson as any).features;
-    setFieldValue('geometry', [...features, ...values.geometry]);
+
+    let features: Feature[] = [];
+    if (Array.isArray(geojson)) {
+      geojson.forEach((item) => {
+        features = features.concat(item.features);
+      });
+    } else {
+      features = geojson.features;
+    }
+
+    setFieldValue(name, [...features, ...get(values, name)]);
   };
 };
 
 /**
  * Function to handle GPX file spatial boundary uploads
  *
- * @param file The file to upload
- * @param setUploadError change state of upload error
- * @param values current form values
- * @param setFieldValue change form values
+ * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
+ * @param {File} file The file to upload
+ * @param {string} name The name of the formik field that the parsed geometry will be saved to
+ * @param {FormikContextType<T>} formikProps The formik props
+ * @return {*}
  */
-export const handleGPXUpload = async (
-  file: File,
-  setUploadError: (uploadError: string) => void,
-  values: any,
-  setFieldValue: (key: string, value: any) => void
-) => {
+export const handleGPXUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
+  const { values, setFieldValue, setFieldError } = formikProps;
+
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (!file?.type.includes('gpx') && !fileAsString?.includes('</gpx>')) {
-    setUploadError('You must upload a GPX file, please try again.');
+    setFieldError(name, 'You must upload a GPX file, please try again.');
     return;
   }
 
@@ -79,33 +86,30 @@ export const handleGPXUpload = async (
       }
     });
 
-    setFieldValue('geometry', [...sanitizedGeoJSON, ...values.geometry]);
+    setFieldValue(name, [...sanitizedGeoJSON, ...get(values, name)]);
   } catch (error) {
-    setUploadError('Error uploading your GPX file, please check the file and try again.');
-    return;
+    setFieldError(name, 'Error uploading your GPX file, please check the file and try again.');
   }
 };
 
 /**
  * Function to handle KML file spatial boundary uploads
  *
- * @param file The file to upload
- * @param setUploadError change state of upload error
- * @param values current form values
- * @param setFieldValue change form values
+ * @template T Type of the formikProps (should be auto-determined if the incoming formikProps are properly typed)
+ * @param {File} file The file to upload
+ * @param {string} name The name of the formik field that the parsed geometry will be saved to
+ * @param {FormikContextType<T>} formikProps The formik props
+ * @return {*}
  */
-export const handleKMLUpload = async (
-  file: File,
-  setUploadError: (uploadError: string) => void,
-  values: any,
-  setFieldValue: (key: string, value: any) => void
-) => {
+export const handleKMLUpload = async <T>(file: File, name: string, formikProps: FormikContextType<T>) => {
+  const { values, setFieldValue, setFieldError } = formikProps;
+
   const fileAsString = await file?.text().then((xmlString: string) => {
     return xmlString;
   });
 
   if (file?.type !== 'application/vnd.google-earth.kml+xml' && !fileAsString?.includes('</kml>')) {
-    setUploadError('You must upload a KML file, please try again.');
+    setFieldError(name, 'You must upload a KML file, please try again.');
     return;
   }
 
@@ -119,9 +123,8 @@ export const handleKMLUpload = async (
     }
   });
 
-  setFieldValue('geometry', [...sanitizedGeoJSON, ...values.geometry]);
+  setFieldValue(name, [...sanitizedGeoJSON, ...get(values, name)]);
 };
-
 /**
  * @param geometries geometry values on map
  */
