@@ -1,4 +1,4 @@
-import Knex from 'knex';
+import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_ADMIN = process.env.DB_ADMIN;

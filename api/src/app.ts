@@ -2,6 +2,7 @@ import express, { NextFunction, Request, Response } from 'express';
 import { initialize } from 'express-openapi';
 import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
+import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError } from './errors/custom-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
@@ -36,7 +37,7 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 });
 
 // Initialize express-openapi framework
-initialize({
+const openAPIFramework = initialize({
   apiDoc: rootAPIDoc as OpenAPIV3.Document, // base open api spec
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
@@ -44,6 +45,7 @@ initialize({
   routesGlob: '**/*.{ts,js}', // updated default to allow .ts
   routesIndexFileRegExp: /(?:index)?\.[tj]s$/, // updated default to allow .ts
   promiseMode: true, // allow endpoint handlers to return promises
+  docsPath: '/raw-api-docs', // path to view raw openapi spec
   consumesMiddleware: {
     'application/json': express.json({ limit: MAX_REQ_BODY_SIZE }),
     'multipart/form-data': function (req, res, next) {
@@ -90,6 +92,9 @@ initialize({
       .json({ name: httpError.name, status: httpError.status, message: httpError.message, errors: httpError.errors });
   }
 });
+
+// Path to view beautified openapi spec
+app.use('/api-docs', swaggerUIExperss.serve, swaggerUIExperss.setup(openAPIFramework.apiDoc));
 
 // Start api
 try {
