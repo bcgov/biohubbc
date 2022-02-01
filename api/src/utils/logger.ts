@@ -167,3 +167,18 @@ export const getLogger = function (logLabel: string) {
     ]
   });
 };
+
+export const WinstonLogLevels = ['silent', 'error', 'warn', 'info', 'debug', 'silly'] as const;
+
+export type WinstonLogLevel = typeof WinstonLogLevels[number];
+
+/**
+ * Set the winston logger log level.
+ *
+ * @param {WinstonLogLevel} logLevel
+ */
+export const setLogLevel = (logLevel: WinstonLogLevel) => {
+  winston.loggers.loggers.forEach((logger) => {
+    logger.transports[0].level = logLevel;
+  });
+};

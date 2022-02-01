@@ -1,9 +1,9 @@
-import winston from 'winston';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { HTTP400 } from '../errors/custom-error';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
+import { setLogLevel, WinstonLogLevel, WinstonLogLevels } from '../utils/logger';
 
 export const GET: Operation = [
   authorizeRequestHandler(() => {
@@ -34,7 +34,7 @@ GET.apiDoc = {
       schema: {
         description: 'Log levels, from least logging to most logging',
         type: 'string',
-        enum: ['silent', 'error', 'warn', 'info', 'debug', 'silly']
+        enum: [...WinstonLogLevels]
       },
       required: true
     }
@@ -69,10 +69,7 @@ export function updateLoggerLevel(): RequestHandler {
       throw new HTTP400('Missing required query param `level`');
     }
 
-    // Update log level for all registered loggers
-    winston.loggers.loggers.forEach((logger) => {
-      logger.transports[0].level = req.query?.level as string;
-    });
+    setLogLevel(req.query.level as WinstonLogLevel);
 
     res.status(200).send();
   };
