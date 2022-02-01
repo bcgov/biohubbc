@@ -1,4 +1,6 @@
-//@ts-nocheck
+// @ts-nocheck
+import { configure } from '@testing-library/react';
+
 /*
   jest-dom adds custom jest matchers for asserting on DOM nodes
   It allows you to do things like:
@@ -29,3 +31,19 @@ global.document.createElementNS = function (namespaceURI, qualifiedName) {
 
   return createElementNSOrig.apply(this, arguments);
 };
+
+/*
+  Configure testing-library to modify the console output when a test fails.
+
+  Current config below removes the giant HTML prints from the console when a test fails.
+
+  See: https://testing-library.com/docs/dom-testing-library/api-configuration/
+*/
+configure({
+  getElementError: (message: string | null) => {
+    const error = new Error(message || undefined);
+    error.name = 'TestingLibraryElementError';
+    error.stack = undefined;
+    return error;
+  }
+});
