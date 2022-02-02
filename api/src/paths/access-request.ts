@@ -4,13 +4,14 @@ import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/custom-error';
 import { GCNotifyService } from '../services/gcnotify-service';
+import { KeycloakService } from '../services/keycloak-service';
 import { ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL } from '../constants/notifications';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
 import { queries } from '../queries/queries';
-import { ApiBuildSQLError } from '../errors/custom-error';
+import { ApiBuildSQLError, ApiGeneralError } from '../errors/custom-error';
 
 const defaultLog = getLogger('paths/access-request');
 
@@ -157,7 +158,7 @@ export function updateAccessRequest(): RequestHandler {
 
       await connection.commit();
 
-      checkIfAccessRequestIsApproval(administrativeActivityStatusTypeId, req['keycloak_token']);
+      sendApprovalEmail(administrativeActivityStatusTypeId, req['keycloak_token'], userIdentifier, identitySource);
 
       return res.status(200).send();
     } catch (error) {
@@ -169,31 +170,57 @@ export function updateAccessRequest(): RequestHandler {
   };
 }
 
-async function checkIfAccessRequestIsApproval(adminActivityTypeId: number, keycloak_token: object) {
+async function sendApprovalEmail(
+  adminActivityTypeId: number,
+  keycloak_token: object,
+  userIdentifier: string,
+  identitySource: string
+) {
+  if (await checkIfAccessRequestIsApproval(adminActivityTypeId, keycloak_token)) {
+    const userEmail = await getUserKeycloakEmail(userIdentifier, identitySource);
+    sendAccessRequestApprovalEmail(userEmail);
+  }
+}
+
+async function checkIfAccessRequestIsApproval(adminActivityTypeId: number, keycloak_token: object): Promise<boolean> {
   const connection = getDBConnection(keycloak_token);
 
-  const admintActivityStatusTypeSQLStatment = queries.administrativeActivity.getAdministrativeActivitiesTypeNameSQL(
+  const adminActivityStatusTypeSQLStatment = queries.administrativeActivity.getAdministrativeActivitiesTypeNameSQL(
     adminActivityTypeId
   );
 
-  if (!admintActivityStatusTypeSQLStatment) {
+  if (!adminActivityStatusTypeSQLStatment) {
     throw new ApiBuildSQLError('Failed to build SQL select statement');
   }
 
   await connection.open();
 
   const response = await connection.query(
-    admintActivityStatusTypeSQLStatment.text,
-    admintActivityStatusTypeSQLStatment.values
+    adminActivityStatusTypeSQLStatment.text,
+    adminActivityStatusTypeSQLStatment.values
   );
 
   if (response.rows[0].name === 'Actioned') {
-    sendAccessRequestApprovalEmail();
+    return true;
+  }
+  return false;
+}
+
+async function getUserKeycloakEmail(userIdentifier: string, identitySource: string): Promise<string> {
+  const keycloakService = new KeycloakService();
+
+  try {
+    const userDetails = await keycloakService.getUserByUsername(`${userIdentifier}@${identitySource}`);
+
+    return userDetails.email;
+  } catch (error) {
+    throw new ApiGeneralError('Failed to send gcNotification approval email', [(error as Error).message]);
   }
 }
 
-function sendAccessRequestApprovalEmail() {
+async function sendAccessRequestApprovalEmail(userEmail: string) {
   const gcnotifyService = new GCNotifyService();
+
   const url = `${APP_HOST}/`;
   const hrefUrl = `[click here.](${url})`;
 
@@ -201,6 +228,6 @@ function sendAccessRequestApprovalEmail() {
     ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
     subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
     body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
-    footer: `${APP_HOST}`
+    footer: `${APP_HOST}   Email -> ${userEmail}`
   });
 }
