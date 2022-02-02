@@ -7,7 +7,7 @@ import { KeycloakService } from './keycloak-service';
 
 chai.use(sinonChai);
 
-describe.only('KeycloakService', () => {
+describe('KeycloakService', () => {
   afterEach(() => {
     sinon.restore();
   });
