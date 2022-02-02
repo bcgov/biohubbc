@@ -6,6 +6,7 @@ import { defaultPoolConfig, initDBPool } from './database/db';
 import { ensureHTTPError } from './errors/custom-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest } from './request-handlers/security/authentication';
+import { KeycloakService } from './services/keycloak-service';
 import { getLogger } from './utils/logger';
 
 const defaultLog = getLogger('app');
@@ -94,6 +95,12 @@ initialize({
 // Start api
 try {
   initDBPool(defaultPoolConfig);
+
+  const x = new KeycloakService();
+
+  x.getUser('nphura@idir').then((data) => {
+    console.log(data);
+  });
 
   app.listen(PORT, () => {
     defaultLog.info({ label: 'start api', message: `started api on ${HOST}:${PORT}/api` });
