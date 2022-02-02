@@ -3,12 +3,19 @@ import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/custom-error';
+import { GCNotifyService } from '../services/gcnotify-service';
+import { ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL } from '../constants/notifications';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
+import { queries } from '../queries/queries';
+import { ApiBuildSQLError } from '../errors/custom-error';
 
 const defaultLog = getLogger('paths/access-request');
+
+const APP_HOST = process.env.APP_HOST;
+const NODE_ENV = process.env.NODE_ENV;
 
 export const PUT: Operation = [
   authorizeRequestHandler(() => {
@@ -150,6 +157,8 @@ export function updateAccessRequest(): RequestHandler {
 
       await connection.commit();
 
+      checkIfAccessRequestIsApproval(administrativeActivityStatusTypeId, req['keycloak_token']);
+
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'updateAccessRequest', message: 'error', error });
@@ -158,4 +167,40 @@ export function updateAccessRequest(): RequestHandler {
       connection.release();
     }
   };
+}
+
+async function checkIfAccessRequestIsApproval(adminActivityTypeId: number, keycloak_token: object) {
+  const connection = getDBConnection(keycloak_token);
+
+  const admintActivityStatusTypeSQLStatment = queries.administrativeActivity.getAdministrativeActivitiesTypeNameSQL(
+    adminActivityTypeId
+  );
+
+  if (!admintActivityStatusTypeSQLStatment) {
+    throw new ApiBuildSQLError('Failed to build SQL select statement');
+  }
+
+  await connection.open();
+
+  const response = await connection.query(
+    admintActivityStatusTypeSQLStatment.text,
+    admintActivityStatusTypeSQLStatment.values
+  );
+
+  if (response.rows[0].name === 'Actioned') {
+    sendAccessRequestApprovalEmail();
+  }
+}
+
+function sendAccessRequestApprovalEmail() {
+  const gcnotifyService = new GCNotifyService();
+  const url = `${APP_HOST}/`;
+  const hrefUrl = `[click here.](${url})`;
+
+  gcnotifyService.sendEmailGCNotification('Kjartan.Einarsson@gov.bc.ca', {
+    ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
+    subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
+    body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
+    footer: `${APP_HOST}`
+  });
 }
