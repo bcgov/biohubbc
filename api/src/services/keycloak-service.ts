@@ -43,7 +43,7 @@ export type KeycloakUser = {
   firstName: string;
   lastName: string;
   email: string;
-  active: boolean;
+  enabled: boolean;
   attributes: IDIRAttributes | BCEIDAttributes;
 };
 
@@ -126,7 +126,7 @@ export class KeycloakService {
         firstName: data[0].firstName,
         lastName: data[0].lastName,
         email: data[0].email,
-        active: data[0].enabled,
+        enabled: data[0].enabled,
         username: data[0].username,
         attributes: data[0].attributes
       };
