@@ -87,7 +87,7 @@ export const getAdministrativeActivitiesSQL = (
  * @param {number} [administrativeActivityTypeId]
  * @returns {SQLStatement} sql query object
  */
-export const getAdministrativeActivitiesTypeNameSQL = (administrativeActivityTypeId?: number): SQLStatement | null => {
+export const getAdministrativeActivityById = (administrativeActivityTypeId: number): SQLStatement => {
   defaultLog.debug({
     label: 'getAdministrativeActivitiesTypeNameSQL',
     message: 'params',
