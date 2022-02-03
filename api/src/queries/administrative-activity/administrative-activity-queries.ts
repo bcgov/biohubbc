@@ -101,9 +101,7 @@ export const getAdministrativeActivityById = (administrativeActivityTypeId: numb
       administrative_activity_status_type
     WHERE
       administrative_activity_status_type_id = ${administrativeActivityTypeId}
-  `;
-
-  sqlStatement.append(`;`);
+      ;`;
 
   defaultLog.debug({
     label: 'getAdministrativeActivitiesSQL',

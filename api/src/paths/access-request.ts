@@ -1,7 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { getDBConnection } from '../database/db';
+import { getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400 } from '../errors/custom-error';
 import { GCNotifyService } from '../services/gcnotify-service';
 import { KeycloakService } from '../services/keycloak-service';
@@ -156,9 +156,10 @@ export function updateAccessRequest(): RequestHandler {
       // Update the access request record status
       await updateAdministrativeActivity(administrativeActivityId, administrativeActivityStatusTypeId, connection);
 
-      await connection.commit();
+      //if the access request is an approval send Approval email
+      sendApprovalEmail(administrativeActivityStatusTypeId, connection, userIdentifier, identitySource);
 
-      sendApprovalEmail(administrativeActivityStatusTypeId, req['keycloak_token'], userIdentifier, identitySource);
+      await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
@@ -170,22 +171,23 @@ export function updateAccessRequest(): RequestHandler {
   };
 }
 
-async function sendApprovalEmail(
+export async function sendApprovalEmail(
   adminActivityTypeId: number,
-  keycloak_token: object,
+  connection: IDBConnection,
   userIdentifier: string,
   identitySource: string
 ) {
-  if (await checkIfAccessRequestIsApproval(adminActivityTypeId, keycloak_token)) {
+  if (await checkIfAccessRequestIsApproval(adminActivityTypeId, connection)) {
     const userEmail = await getUserKeycloakEmail(userIdentifier, identitySource);
     sendAccessRequestApprovalEmail(userEmail);
   }
 }
 
-async function checkIfAccessRequestIsApproval(adminActivityTypeId: number, keycloak_token: object): Promise<boolean> {
-  const connection = getDBConnection(keycloak_token);
-
-  const adminActivityStatusTypeSQLStatment = queries.administrativeActivity.getAdministrativeActivitiesTypeNameSQL(
+export async function checkIfAccessRequestIsApproval(
+  adminActivityTypeId: number,
+  connection: IDBConnection
+): Promise<boolean> {
+  const adminActivityStatusTypeSQLStatment = queries.administrativeActivity.getAdministrativeActivityById(
     adminActivityTypeId
   );
 
@@ -193,41 +195,36 @@ async function checkIfAccessRequestIsApproval(adminActivityTypeId: number, keycl
     throw new ApiBuildSQLError('Failed to build SQL select statement');
   }
 
-  await connection.open();
-
   const response = await connection.query(
     adminActivityStatusTypeSQLStatment.text,
     adminActivityStatusTypeSQLStatment.values
   );
 
-  if (response.rows[0].name === 'Actioned') {
+  if (response.rows?.[0]?.name === 'Actioned') {
     return true;
   }
   return false;
 }
 
-async function getUserKeycloakEmail(userIdentifier: string, identitySource: string): Promise<string> {
+export async function getUserKeycloakEmail(userIdentifier: string, identitySource: string): Promise<string> {
   const keycloakService = new KeycloakService();
-
-  try {
-    const userDetails = await keycloakService.getUserByUsername(`${userIdentifier}@${identitySource}`);
-
-    return userDetails.email;
-  } catch (error) {
-    throw new ApiGeneralError('Failed to send gcNotification approval email', [(error as Error).message]);
-  }
+  const userDetails = await keycloakService.getUserByUsername(`${userIdentifier}@${identitySource}`);
+  return userDetails.email;
 }
 
-async function sendAccessRequestApprovalEmail(userEmail: string) {
+export async function sendAccessRequestApprovalEmail(userEmail: string) {
   const gcnotifyService = new GCNotifyService();
 
   const url = `${APP_HOST}/`;
   const hrefUrl = `[click here.](${url})`;
-
-  gcnotifyService.sendEmailGCNotification(userEmail, {
-    ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
-    subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
-    body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
-    footer: `${APP_HOST}`
-  });
+  try {
+    gcnotifyService.sendEmailGCNotification(userEmail, {
+      ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
+      subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
+      body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
+      footer: `${APP_HOST}`
+    });
+  } catch (error) {
+    throw new ApiGeneralError('Failed to send gcNotification approval email', [(error as Error).message]);
+  }
 }

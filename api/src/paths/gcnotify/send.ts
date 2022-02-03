@@ -42,6 +42,17 @@ POST.apiDoc = {
           properties: {
             recipient: {
               type: 'object',
+              oneOf: [
+                {
+                  required: ['emailAddress']
+                },
+                {
+                  required: ['phoneNumber']
+                },
+                {
+                  required: ['userId']
+                }
+              ],
               properties: {
                 emailAddress: {
                   type: 'string'
