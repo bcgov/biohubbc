@@ -39,6 +39,18 @@ parameters:
     description: Authentication certificate urls
     required: true
     value: 'https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs'
+  - name: KEYCLOAK_HOST
+    description: keycloak host url
+    value: https://dev.oidc.gov.bc.ca
+  - name: KEYCLOAK_REALM
+    description: keycloak realm definition
+    value: 35r1iman
+  - name: KEYCLOAK_ADMIN_USERNAME
+    description: keycloak host admin username
+    value: biohubbc-svc
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    description: keycloak host url
+    value: 'keycloak-admin-password'
   - name: CPU_REQ
     value: '100m'
   - name: CPU_LIMIT
@@ -160,6 +172,17 @@ objects:
                   value: '5432'
                 - name: KEYCLOAK_URL
                   value: ${CERTIFICATE_URL}
+                - name: KEYCLOAK_HOST
+                  value: ${KEYCLOAK_HOST}
+                - name: KEYCLOAK_REALM
+                  value: ${KEYCLOAK_REALM}
+                - name: KEYCLOAK_ADMIN_USERNAME
+                  value: ${KEYCLOAK_ADMIN_USERNAME}
+                - name: KEYCLOAK_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: keycloak_admin_password
+                      name: ${KEYCLOAK_ADMIN_PASSWORD}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
                 - name: NODE_ENV

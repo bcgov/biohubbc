@@ -224,10 +224,10 @@ async function sendAccessRequestApprovalEmail(userEmail: string) {
   const url = `${APP_HOST}/`;
   const hrefUrl = `[click here.](${url})`;
 
-  gcnotifyService.sendEmailGCNotification('Kjartan.Einarsson@gov.bc.ca', {
+  gcnotifyService.sendEmailGCNotification(userEmail, {
     ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
     subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
     body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
-    footer: `${APP_HOST}   Email -> ${userEmail}`
+    footer: `${APP_HOST}`
   });
 }
