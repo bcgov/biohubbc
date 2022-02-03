@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/custom-error';
+import { HTTP400, ApiBuildSQLError, ApiGeneralError } from '../errors/custom-error';
 import { GCNotifyService } from '../services/gcnotify-service';
 import { KeycloakService } from '../services/keycloak-service';
 import { ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL } from '../constants/notifications';
@@ -11,7 +11,6 @@ import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
 import { queries } from '../queries/queries';
-import { ApiBuildSQLError, ApiGeneralError } from '../errors/custom-error';
 
 const defaultLog = getLogger('paths/access-request');
 
