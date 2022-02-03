@@ -218,7 +218,7 @@ export async function sendAccessRequestApprovalEmail(userEmail: string) {
   const url = `${APP_HOST}/`;
   const hrefUrl = `[click here.](${url})`;
   try {
-    gcnotifyService.sendEmailGCNotification(userEmail, {
+    await gcnotifyService.sendEmailGCNotification(userEmail, {
       ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
       subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
       body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
