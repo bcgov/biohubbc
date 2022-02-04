@@ -42,6 +42,17 @@ POST.apiDoc = {
           properties: {
             recipient: {
               type: 'object',
+              oneOf: [
+                {
+                  required: ['emailAddress']
+                },
+                {
+                  required: ['phoneNumber']
+                },
+                {
+                  required: ['userId']
+                }
+              ],
               properties: {
                 emailAddress: {
                   type: 'string'
@@ -56,8 +67,11 @@ POST.apiDoc = {
             },
             message: {
               type: 'object',
-              required: ['header', 'body1', 'body2', 'footer'],
+              required: ['subject', 'header', 'body1', 'body2', 'footer'],
               properties: {
+                subject: {
+                  type: 'string'
+                },
                 header: {
                   type: 'string'
                 },

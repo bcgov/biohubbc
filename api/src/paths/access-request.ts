@@ -1,14 +1,21 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/custom-error';
+import { getDBConnection, IDBConnection } from '../database/db';
+import { HTTP400, ApiBuildSQLError, ApiGeneralError } from '../errors/custom-error';
+import { GCNotifyService } from '../services/gcnotify-service';
+import { KeycloakService } from '../services/keycloak-service';
+import { ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL } from '../constants/notifications';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
+import { queries } from '../queries/queries';
 
 const defaultLog = getLogger('paths/access-request');
+
+const APP_HOST = process.env.APP_HOST;
+const NODE_ENV = process.env.NODE_ENV;
 
 export const PUT: Operation = [
   authorizeRequestHandler(() => {
@@ -148,6 +155,9 @@ export function updateAccessRequest(): RequestHandler {
       // Update the access request record status
       await updateAdministrativeActivity(administrativeActivityId, administrativeActivityStatusTypeId, connection);
 
+      //if the access request is an approval send Approval email
+      sendApprovalEmail(administrativeActivityStatusTypeId, connection, userIdentifier, identitySource);
+
       await connection.commit();
 
       return res.status(200).send();
@@ -158,4 +168,62 @@ export function updateAccessRequest(): RequestHandler {
       connection.release();
     }
   };
+}
+
+export async function sendApprovalEmail(
+  adminActivityTypeId: number,
+  connection: IDBConnection,
+  userIdentifier: string,
+  identitySource: string
+) {
+  if (await checkIfAccessRequestIsApproval(adminActivityTypeId, connection)) {
+    const userEmail = await getUserKeycloakEmail(userIdentifier, identitySource);
+    sendAccessRequestApprovalEmail(userEmail);
+  }
+}
+
+export async function checkIfAccessRequestIsApproval(
+  adminActivityTypeId: number,
+  connection: IDBConnection
+): Promise<boolean> {
+  const adminActivityStatusTypeSQLStatment = queries.administrativeActivity.getAdministrativeActivityById(
+    adminActivityTypeId
+  );
+
+  if (!adminActivityStatusTypeSQLStatment) {
+    throw new ApiBuildSQLError('Failed to build SQL select statement');
+  }
+
+  const response = await connection.query(
+    adminActivityStatusTypeSQLStatment.text,
+    adminActivityStatusTypeSQLStatment.values
+  );
+
+  if (response.rows?.[0]?.name === 'Actioned') {
+    return true;
+  }
+  return false;
+}
+
+export async function getUserKeycloakEmail(userIdentifier: string, identitySource: string): Promise<string> {
+  const keycloakService = new KeycloakService();
+  const userDetails = await keycloakService.getUserByUsername(`${userIdentifier}@${identitySource}`);
+  return userDetails.email;
+}
+
+export async function sendAccessRequestApprovalEmail(userEmail: string) {
+  const gcnotifyService = new GCNotifyService();
+
+  const url = `${APP_HOST}/`;
+  const hrefUrl = `[click here.](${url})`;
+  try {
+    await gcnotifyService.sendEmailGCNotification(userEmail, {
+      ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
+      subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
+      body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
+      footer: `${APP_HOST}`
+    });
+  } catch (error) {
+    throw new ApiGeneralError('Failed to send gcNotification approval email', [(error as Error).message]);
+  }
 }

@@ -24,6 +24,7 @@ export interface IGetAccessRequestsListResponse {
 }
 
 export interface IgcNotifyGenericMessage {
+  subject: string;
   header: string;
   body1: string;
   body2: string;

@@ -9,6 +9,12 @@ import * as administrative_activity from '../paths/administrative-activity';
 import { UserService } from '../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
 import * as access_request from './access-request';
+import { queries } from '../queries/queries';
+import SQL from 'sql-template-strings';
+import { QueryResult } from 'pg';
+import { KeycloakService, KeycloakUser } from '../services/keycloak-service';
+import { IgcNotifyPostReturn } from '../models/gcnotify';
+import { GCNotifyService } from '../services/gcnotify-service';
 
 chai.use(sinonChai);
 
@@ -163,5 +169,86 @@ describe('updateAccessRequest', () => {
     expect(ensureSystemUserStub).to.have.been.calledOnce;
     expect(addSystemRolesStub).to.have.been.calledWith(systemUserId, expectedRoleIdsToAdd);
     expect(updateAdministrativeActivityStub).to.have.been.calledWith(requestId, requestStatusTypeId);
+  });
+
+  it('checks If Access request if approval is false', async () => {
+    const mockResponseRow = { name: 'Rejected' };
+    const mockQueryResponse = ({ rows: [mockResponseRow] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+    const mockgetAdminActTypeSQLResponse = SQL`Test SQL Statement`;
+    const queriesStub = sinon
+      .stub(queries.administrativeActivity, 'getAdministrativeActivityById')
+      .resolves(mockgetAdminActTypeSQLResponse);
+
+    const functionResponse = await access_request.checkIfAccessRequestIsApproval(1, mockDBConnection);
+
+    expect(functionResponse).to.equal(false);
+    expect(queriesStub).to.be.calledOnce;
+  });
+
+  it('checks If Access request if approval is true', async () => {
+    const mockResponseRow = { name: 'Actioned' };
+    const mockQueryResponse = ({ rows: [mockResponseRow] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+    const mockgetAdminActTypeSQLResponse = SQL`Test SQL Statement`;
+    const queriesStub = sinon
+      .stub(queries.administrativeActivity, 'getAdministrativeActivityById')
+      .resolves(mockgetAdminActTypeSQLResponse);
+
+    const functionResponse = await access_request.checkIfAccessRequestIsApproval(2, mockDBConnection);
+
+    expect(functionResponse).to.equal(true);
+    expect(queriesStub).to.be.calledOnce;
+  });
+
+  it('attempts to send approval email', async () => {
+    const mockResponseRow = { name: 'Actioned' };
+    const mockQueryResponse = ({ rows: [mockResponseRow] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+    const mockgetAdminActTypeSQLResponse = SQL`Test SQL Statement`;
+    const queriesStub = sinon
+      .stub(queries.administrativeActivity, 'getAdministrativeActivityById')
+      .resolves(mockgetAdminActTypeSQLResponse);
+
+    const keycloakUserReturnObject = {
+      id: '0',
+      username: '1',
+      firstName: '2',
+      lastName: '3',
+      enabled: false,
+      email: '123@PinpointEmail.com',
+      attributes: {
+        idir_user_guid: [''],
+        idir_userid: [''],
+        idir_guid: [''],
+        displayName: ['']
+      }
+    } as KeycloakUser;
+
+    const GCNotifyPostReturnObject = {
+      content: {},
+      id: 'string',
+      reference: 'string',
+      scheduled_for: 'string',
+      template: {},
+      uri: 'string'
+    } as IgcNotifyPostReturn;
+
+    const getUserByUsernameStub = sinon
+      .stub(KeycloakService.prototype, 'getUserByUsername')
+      .resolves(keycloakUserReturnObject);
+
+    const sendEmailGCNotificationStub = sinon
+      .stub(GCNotifyService.prototype, 'sendEmailGCNotification')
+      .resolves(GCNotifyPostReturnObject);
+
+    await access_request.sendApprovalEmail(2, mockDBConnection, 'name', 'idir');
+
+    expect(queriesStub).to.be.calledOnce;
+    expect(getUserByUsernameStub).to.be.calledOnce;
+    expect(sendEmailGCNotificationStub).to.be.calledOnce;
   });
 });

@@ -82,6 +82,38 @@ export const getAdministrativeActivitiesSQL = (
 };
 
 /**
+ * SQL query to get a list of administrative activities, optionally filtered by the administrative activity type name.
+ *
+ * @param {number} [administrativeActivityTypeId]
+ * @returns {SQLStatement} sql query object
+ */
+export const getAdministrativeActivityById = (administrativeActivityTypeId: number): SQLStatement => {
+  defaultLog.debug({
+    label: 'getAdministrativeActivitiesTypeNameSQL',
+    message: 'params',
+    administrativeActivityTypeId
+  });
+
+  const sqlStatement = SQL`
+    SELECT
+      *
+    FROM
+      administrative_activity_status_type
+    WHERE
+      administrative_activity_status_type_id = ${administrativeActivityTypeId}
+      ;`;
+
+  defaultLog.debug({
+    label: 'getAdministrativeActivitiesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
  * SQL query to insert a row in the administrative_activity table.
  *
  * @param {number} systemUserId the ID of the user in context
