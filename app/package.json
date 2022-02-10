@@ -52,7 +52,7 @@
     "leaflet.locatecontrol": "~0.72.0",
     "lodash-es": "~4.17.21",
     "moment": "~2.29.1",
-    "node-sass": "~4.14.1",
+    "node-sass": "~7.0.0",
     "qs": "~6.9.4",
     "react": "~16.14.0",
     "react-dom": "~16.14.0",
