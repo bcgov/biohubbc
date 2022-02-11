@@ -23,8 +23,6 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import OtherLink from '@material-ui/core/Link';
-import { isAuthenticated } from 'utils/authUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   govHeader: {
