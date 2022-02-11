@@ -73,7 +73,6 @@ while (n < 1) {
     attach_file();
 
     add_survey();
-
   });
   n++;
 }

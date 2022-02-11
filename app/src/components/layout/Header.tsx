@@ -23,6 +23,8 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
+import OtherLink from '@material-ui/core/Link';
+import { isAuthenticated } from 'utils/authUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   govHeader: {
@@ -199,6 +201,17 @@ const Header: React.FC = () => {
         & {config?.REACT_APP_NODE_ENV}
       </sup>
     );
+  };
+
+  const [open, setOpen] = React.useState(false);
+  const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
+
+  const showSupportDialog = () => {
+    setOpen(true);
+  };
+
+  const hideSupportDialog = () => {
+    setOpen(false);
   };
 
   return (
