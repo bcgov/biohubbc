@@ -51,6 +51,16 @@ parameters:
   - name: KEYCLOAK_ADMIN_PASSWORD
     description: keycloak host url
     value: 'keycloak-admin-password'
+  - name: CPU_REQ
+    value: '100m'
+  - name: CPU_LIMIT
+    value: '750m'
+  - name: MEMORY_REQ
+    value: '512Mi'
+  - name: MEMORY_LIMIT
+    value: '2Gi'
+  - name: REPLICAS
+    value: '1'
   - name: API_PORT_DEFAULT
     value: '6100'
   - name: API_PORT_DEFAULT_NAME
@@ -59,6 +69,9 @@ parameters:
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
     value: 'biohubbc-object-store'
+  - name: REPLICA_MAX
+    required: true
+    value: '1'
   - name: LOG_LEVEL
     value: 'info'
   - name: GCNOTIFY_API_SECRET
@@ -77,19 +90,6 @@ parameters:
     value: https://api.notification.canada.ca/v2/notifications/email
   - name: GCNOTIFY_SMS_URL
     value: https://api.notification.canada.ca/v2/notifications/sms
-  - name: CPU_REQUEST
-    value: '10m'
-  - name: CPU_LIMIT
-    value: '200m'
-  - name: MEMORY_REQUEST
-    value: '512Mi'
-  - name: MEMORY_LIMIT
-    value: '1Gi'
-  - name: REPLICAS
-    value: '1'
-  - name: REPLICA_MAX
-    required: true
-    value: '1'
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -130,8 +130,8 @@ objects:
             cpu: ${CPU_LIMIT}
             memory: ${MEMORY_LIMIT}
           requests:
-            cpu: ${CPU_REQUEST}
-            memory: ${MEMORY_REQUEST}
+            cpu: ${CPU_REQ}
+            memory: ${MEMORY_REQ}
         type: Rolling
       template:
         metadata:
@@ -239,8 +239,8 @@ objects:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
                 requests:
-                  cpu: ${CPU_REQUEST}
-                  memory: ${MEMORY_REQUEST}
+                  cpu: ${CPU_REQ}
+                  memory: ${MEMORY_REQ}
               readinessProbe:
                 failureThreshold: 10
                 httpGet:

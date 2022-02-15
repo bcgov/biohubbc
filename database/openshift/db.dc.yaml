@@ -73,16 +73,14 @@ parameters:
     displayName: Flag to enable postgis PostgreSQL extension.
     name: POSTGIS_EXTENSION
     value: 'Y'
-  - name: CPU_REQUEST
-    value: '10m'
   - name: CPU_LIMIT
-    value: '200m'
-  - name: MEMORY_REQUEST
-    value: '512Mi'
+    value: '1000m'
   - name: MEMORY_LIMIT
     value: '2Gi'
-  - name: REPLICAS
-    value: '1'
+  - name: CPU_REQUEST
+    value: '100m'
+  - name: MEMORY_REQUEST
+    value: '512Mi'
 objects:
   - apiVersion: v1
     kind: Secret
@@ -146,7 +144,7 @@ objects:
         template.alpha.openshift.io/wait-for-ready: 'true'
       name: '${DATABASE_SERVICE_NAME}'
     spec:
-      replicas: '${{REPLICAS}}'
+      replicas: 1
       selector:
         name: '${DATABASE_SERVICE_NAME}'
       strategy:
