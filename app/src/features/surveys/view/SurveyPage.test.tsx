@@ -43,7 +43,7 @@ const defaultAuthState = {
     getUserIdentifier: () => 'testuser',
     hasAccessRequest: false,
     hasSystemRole: () => true,
-    getIdentitySource: () => 'idir',
+    getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.IDIR,
     username: 'testusername',
     displayName: 'testdisplayname',
     email: 'test@email.com',

@@ -98,7 +98,7 @@ const AddProjectParticipantsForm: React.FC<AddProjectParticipantsFormProps> = (p
                               onChange={handleChange}
                               displayEmpty
                               inputProps={{ 'aria-label': 'Login Method' }}>
-                              <MenuItem key={'IDIR'} value={'IDIR'}>
+                              <MenuItem key={SYSTEM_IDENTITY_SOURCE.IDIR} value={SYSTEM_IDENTITY_SOURCE.IDIR}>
                                 IDIR
                               </MenuItem>
                               <MenuItem key={SYSTEM_IDENTITY_SOURCE.BCEID} value={SYSTEM_IDENTITY_SOURCE.BCEID}>

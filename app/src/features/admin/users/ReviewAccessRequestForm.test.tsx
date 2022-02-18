@@ -44,7 +44,7 @@ describe('ReviewAccessRequestForm', () => {
         name: 'test data name',
         username: 'test data username',
         email: 'test data email',
-        identitySource: 'idir',
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         role: 2,
         company: 'test data company',
         regional_offices: [1],

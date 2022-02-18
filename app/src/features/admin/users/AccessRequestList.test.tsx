@@ -59,7 +59,7 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
             comments: 'test comment'
@@ -95,7 +95,7 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
             comments: 'test comment'
@@ -131,7 +131,7 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
             comments: 'test comment'
@@ -194,7 +194,7 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
             comments: 'test comment'
@@ -219,7 +219,13 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [2]);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
+        'testusername',
+        SYSTEM_IDENTITY_SOURCE.IDIR,
+        1,
+        2,
+        [2]
+      );
     });
   });
 
@@ -241,7 +247,7 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 1,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
             comments: 'test comment'
@@ -266,7 +272,12 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 3);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
+        'testusername',
+        SYSTEM_IDENTITY_SOURCE.IDIR,
+        1,
+        3
+      );
     });
   });
 });
