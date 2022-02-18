@@ -113,6 +113,12 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+export enum SYSTEM_IDENTITY_SOURCE {
+  DATABASE = 'DATABASE',
+  IDIR = 'IDIR',
+  BCEID = 'BCEID-BASIC-AND-BUSINESS'
+}
+
 const Header: React.FC = () => {
   const classes = useStyles();
   const config = useContext(ConfigContext);
@@ -126,7 +132,7 @@ const Header: React.FC = () => {
     const userIdentifier = keycloakWrapper?.getUserIdentifier()?.toUpperCase();
 
     const loggedInUserDisplayName =
-      identitySource === 'BCEID-BASIC-AND-BUSINESS' ? `BCEID / ${userIdentifier}` : `IDIR / ${userIdentifier}`;
+      identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ${userIdentifier}` : `IDIR / ${userIdentifier}`;
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
