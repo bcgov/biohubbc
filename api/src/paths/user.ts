@@ -45,7 +45,7 @@ DELETE.apiDoc = {
             },
             identitySource: {
               type: 'string',
-              enum: ['idir', 'bceid']
+              enum: ['idir', 'bceid-basic-and-business']
             }
           }
         }

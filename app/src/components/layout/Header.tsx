@@ -121,7 +121,12 @@ const Header: React.FC = () => {
 
   // Authenticated view
   const LoggedInUser = () => {
-    const loggedInUserDisplayName = `${keycloakWrapper?.getIdentitySource()} / ${keycloakWrapper?.getUserIdentifier()}`.toUpperCase();
+    const identitySource = keycloakWrapper?.getIdentitySource()?.toUpperCase();
+
+    const userIdentifier = keycloakWrapper?.getUserIdentifier()?.toUpperCase();
+
+    const loggedInUserDisplayName =
+      identitySource === 'BCEID-BASIC-AND-BUSINESS' ? `BCEID / ${userIdentifier}` : `IDIR / ${userIdentifier}`;
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">

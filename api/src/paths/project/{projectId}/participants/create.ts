@@ -62,7 +62,7 @@ POST.apiDoc = {
                   },
                   identitySource: {
                     type: 'string',
-                    enum: ['IDIR', 'BCEID']
+                    enum: ['IDIR', 'BCEID-BASIC-AND-BUSINESS']
                   },
                   roleId: {
                     description: 'The id of the project role to assign to the participant.',

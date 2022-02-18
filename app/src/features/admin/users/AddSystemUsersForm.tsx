@@ -97,7 +97,7 @@ const AddSystemUsersForm: React.FC<AddSystemUsersFormProps> = (props) => {
                             <MenuItem key={'IDIR'} value={'IDIR'}>
                               IDIR
                             </MenuItem>
-                            <MenuItem key={'BCEID'} value={'BCEID'}>
+                            <MenuItem key={'BCEID-BASIC-AND-BUSINESS'} value={'BCEID-BASIC-AND-BUSINESS'}>
                               BCEID
                             </MenuItem>
                           </Select>
