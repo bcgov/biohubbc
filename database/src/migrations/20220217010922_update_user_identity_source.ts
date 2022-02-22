@@ -1,4 +1,5 @@
 import * as Knex from 'knex';
+import { SYSTEM_IDENTITY_SOURCE } from 'seeds/01_db_system_users';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
@@ -7,7 +8,7 @@ export async function up(knex: Knex): Promise<void> {
     SET SCHEMA '${DB_SCHEMA}';
     SET SEARCH_PATH = ${DB_SCHEMA},public;
 
-    UPDATE user_identity_source SET name = 'BCEID-BASIC-AND-BUSINESS' WHERE name = 'BCEID';
+    UPDATE user_identity_source SET name = ${SYSTEM_IDENTITY_SOURCE.BCEID} WHERE name = 'BCEID';
 
     SET SEARCH_PATH = biohub_dapi_v1,public;
     SET ROLE biohub_api;

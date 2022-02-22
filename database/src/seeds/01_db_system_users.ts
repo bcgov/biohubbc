@@ -3,27 +3,33 @@ import Knex from 'knex';
 const DB_SCHEMA = process.env.DB_SCHEMA;
 const DB_ADMIN = process.env.DB_ADMIN;
 
+export enum SYSTEM_IDENTITY_SOURCE {
+  DATABASE = 'DATABASE',
+  IDIR = 'IDIR',
+  BCEID = 'BCEID-BASIC-AND-BUSINESS'
+}
+
 const systemUsers = [
-  { identifier: 'aagahche', type: 'IDIR', roleId: 1 },
-  { identifier: 'cgarrett', type: 'IDIR', roleId: 1 },
-  { identifier: 'istest1', type: 'IDIR', roleId: 1 },
-  { identifier: 'jrpopkin', type: 'IDIR', roleId: 1 },
-  { identifier: 'jxdunsdo', type: 'IDIR', roleId: 1 },
-  { identifier: 'mbaerg', type: 'IDIR', roleId: 1 },
-  { identifier: 'nphura', type: 'IDIR', roleId: 1 },
-  { identifier: 'postman', type: 'IDIR', roleId: 2 },
-  { identifier: 'robmunro', type: 'IDIR', roleId: 1 },
-  { identifier: 'rstens', type: 'IDIR', roleId: 1 },
-  { identifier: 'tadekens', type: 'IDIR', roleId: 1 },
-  { identifier: 'test1', type: 'BCEID-BASIC-AND-BUSINESS', roleId: 1 },
-  { identifier: 'test2', type: 'BCEID-BASIC-AND-BUSINESS', roleId: 1 },
-  { identifier: 'test3', type: 'IDIR', roleId: 1 },
-  { identifier: 'test4', type: 'IDIR', roleId: 2 },
-  { identifier: 'test5', type: 'IDIR', roleId: 2 },
-  { identifier: 'test6', type: 'IDIR', roleId: 6 },
-  { identifier: 'test7', type: 'IDIR', roleId: 6 },
-  { identifier: 'cypress', type: 'IDIR', roleId: 1 },
-  { identifier: 'keinarss', type: 'IDIR', roleId: 1 }
+  { identifier: 'aagahche', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'cgarrett', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'istest1', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'jrpopkin', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'jxdunsdo', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'mbaerg', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'nphura', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'postman', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 2 },
+  { identifier: 'robmunro', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'rstens', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'tadekens', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'test1', type: SYSTEM_IDENTITY_SOURCE.BCEID, roleId: 1 },
+  { identifier: 'test2', type: SYSTEM_IDENTITY_SOURCE.BCEID, roleId: 1 },
+  { identifier: 'test3', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'test4', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 2 },
+  { identifier: 'test5', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 2 },
+  { identifier: 'test6', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 6 },
+  { identifier: 'test7', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 6 },
+  { identifier: 'cypress', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 },
+  { identifier: 'keinarss', type: SYSTEM_IDENTITY_SOURCE.IDIR, roleId: 1 }
 ];
 
 /**
