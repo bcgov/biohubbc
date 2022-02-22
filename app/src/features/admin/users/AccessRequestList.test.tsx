@@ -1,10 +1,11 @@
-import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { SYSTEM_IDENTITY_SOURCE } from 'components/layout/Header';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { codes } from 'test-helpers/code-helpers';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -62,7 +63,8 @@ describe('AccessRequestList', () => {
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -98,7 +100,8 @@ describe('AccessRequestList', () => {
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -134,7 +137,8 @@ describe('AccessRequestList', () => {
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -197,7 +201,8 @@ describe('AccessRequestList', () => {
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -250,7 +255,8 @@ describe('AccessRequestList', () => {
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
