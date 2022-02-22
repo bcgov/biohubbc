@@ -41,18 +41,6 @@ parameters:
   - name: APP_PORT_DEFAULT_NAME
     description: Default port resource name
     value: '7100-tcp'
-  - name: CPU_REQUEST
-    description: CPU REQUEST for deployment config
-    value: '100m'
-  - name: CPU_LIMIT
-    description: CPU LIMIT for dc
-    value: '500m'
-  - name: MEMORY_REQUEST
-    description: MEMORY REQUEST for dc
-    value: '512Mi'
-  - name: MEMORY_LIMIT
-    description: MEMORY LIMIT for dc
-    value: '2Gi'
   - name: SSO_URL
     description: Key clock login url
     value: 'https://oidc.gov.bc.ca/auth'
@@ -62,6 +50,14 @@ parameters:
   - name: SSO_REALM
     description: Realm identifier or name
     value: 35r1iman
+  - name: CPU_REQUEST
+    value: '10m'
+  - name: CPU_LIMIT
+    value: '200m'
+  - name: MEMORY_REQUEST
+    value: '50Mi'
+  - name: MEMORY_LIMIT
+    value: '200Mi'
   - name: REPLICAS
     value: '1'
   - name: REPLICA_MAX
