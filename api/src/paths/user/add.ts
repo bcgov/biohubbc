@@ -6,6 +6,7 @@ import { HTTP400 } from '../../errors/custom-error';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 
 const defaultLog = getLogger('paths/user/add');
 
@@ -45,7 +46,7 @@ POST.apiDoc = {
             },
             identitySource: {
               type: 'string',
-              enum: ['idir', 'bceid']
+              enum: [SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID]
             },
             roleId: {
               type: 'number',

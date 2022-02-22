@@ -1,20 +1,21 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import SQL from 'sql-template-strings';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import * as db from '../database/db';
 import { HTTPError } from '../errors/custom-error';
+import { IgcNotifyPostReturn } from '../models/gcnotify';
 import { UserObject } from '../models/user';
 import * as administrative_activity from '../paths/administrative-activity';
+import { queries } from '../queries/queries';
+import { GCNotifyService } from '../services/gcnotify-service';
+import { KeycloakService, KeycloakUser } from '../services/keycloak-service';
 import { UserService } from '../services/user-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
 import * as access_request from './access-request';
-import { queries } from '../queries/queries';
-import SQL from 'sql-template-strings';
-import { QueryResult } from 'pg';
-import { KeycloakService, KeycloakUser } from '../services/keycloak-service';
-import { IgcNotifyPostReturn } from '../models/gcnotify';
-import { GCNotifyService } from '../services/gcnotify-service';
 
 chai.use(sinonChai);
 
@@ -245,7 +246,7 @@ describe('updateAccessRequest', () => {
       .stub(GCNotifyService.prototype, 'sendEmailGCNotification')
       .resolves(GCNotifyPostReturnObject);
 
-    await access_request.sendApprovalEmail(2, mockDBConnection, 'name', 'idir');
+    await access_request.sendApprovalEmail(2, mockDBConnection, 'name', SYSTEM_IDENTITY_SOURCE.IDIR);
 
     expect(queriesStub).to.be.calledOnce;
     expect(getUserByUsernameStub).to.be.calledOnce;

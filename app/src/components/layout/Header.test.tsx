@@ -4,7 +4,7 @@ import { AuthStateContext } from 'contexts/authStateContext';
 import { createMemoryHistory } from 'history';
 import React from 'react';
 import { Router } from 'react-router-dom';
-import Header from './Header';
+import Header, { SYSTEM_IDENTITY_SOURCE } from './Header';
 
 const history = createMemoryHistory();
 
@@ -73,7 +73,7 @@ describe('Header', () => {
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
         hasSystemRole: mockHasSystemRole,
-        getIdentitySource: () => 'bceid',
+        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID,
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',
@@ -109,7 +109,7 @@ describe('Header', () => {
         getUserIdentifier: () => 'testuser',
         hasAccessRequest: false,
         hasSystemRole: jest.fn(),
-        getIdentitySource: () => 'bceid',
+        getIdentitySource: () => SYSTEM_IDENTITY_SOURCE.BCEID,
         username: 'testusername',
         displayName: 'testdisplayname',
         email: 'test@email.com',

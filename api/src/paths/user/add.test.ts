@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SYSTEM_IDENTITY_SOURCE } from '../../constants/database';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
 import { UserObject } from '../../models/user';
@@ -45,7 +46,7 @@ describe('user', () => {
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       mockReq.body = {
-        identitySource: 'IDIR',
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         roleId: 1
       };
 
@@ -92,7 +93,7 @@ describe('user', () => {
 
       mockReq.body = {
         userIdentifier: 'username',
-        identitySource: 'IDIR'
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR
       };
 
       try {
@@ -115,7 +116,7 @@ describe('user', () => {
 
       mockReq.body = {
         userIdentifier: 'username',
-        identitySource: 'IDIR',
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         roleId: 1
       };
 
