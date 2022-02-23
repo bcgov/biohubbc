@@ -17,13 +17,13 @@ const PublicProjectsRouter: React.FC = () => {
         <PublicProjectsListPage />
       </AppRoute>
 
-      <Redirect exact from="/projects/:id?" to="/projects/:id?/details" />
+      <Redirect exact from="/projects/:id" to="/projects/:id/details" />
 
-      <AppRoute exact path="/projects/:id?/details">
+      <AppRoute exact path="/projects/:id/details">
         <PublicProjectPage />
       </AppRoute>
 
-      <AppRoute exact path="/projects/:id?/attachments">
+      <AppRoute exact path="/projects/:id/attachments">
         <PublicProjectPage />
       </AppRoute>
 

@@ -29,55 +29,55 @@ const ProjectsRouter: React.FC = () => {
         </ProjectsLayout>
       </AppRoute>
 
-      <Redirect exact from="/admin/projects/:id?" to="/admin/projects/:id?/details" />
+      <Redirect exact from="/admin/projects/:id" to="/admin/projects/:id/details" />
 
-      <AppRoute exact path="/admin/projects/:id?/details" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/details" layout={ProjectsLayout}>
         <ProjectsLayout>
           <ProjectPage />
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/users" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/users" layout={ProjectsLayout}>
         <ProjectsLayout>
           <ProjectParticipantsPage />
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/surveys" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/surveys" layout={ProjectsLayout}>
         <ProjectsLayout>
           <ProjectPage />
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/surveys/:survey_id?/details" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/details" layout={ProjectsLayout}>
         <ProjectsLayout>
           <SurveyPage />
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/surveys/:survey_id?/attachments" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/attachments" layout={ProjectsLayout}>
         <ProjectsLayout>
           <SurveyPage />
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/surveys/:survey_id?/observations" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/observations" layout={ProjectsLayout}>
         <ProjectsLayout>
           <SurveyPage />
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/surveys/:survey_id?/results" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/surveys/:survey_id/results" layout={ProjectsLayout}>
         <ProjectsLayout>
           <SurveyPage />
         </ProjectsLayout>
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/survey/create" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/survey/create" layout={ProjectsLayout}>
         <CreateSurveyPage />
       </AppRoute>
 
-      <AppRoute exact path="/admin/projects/:id?/attachments" layout={ProjectsLayout}>
+      <AppRoute exact path="/admin/projects/:id/attachments" layout={ProjectsLayout}>
         <ProjectPage />
       </AppRoute>
 
