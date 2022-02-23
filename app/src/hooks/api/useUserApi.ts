@@ -36,7 +36,7 @@ const useUserApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetUserResponse[]>}
    */
   const getUsersList = async (): Promise<IGetUserResponse[]> => {
-    const { data } = await axios.get('/api/users');
+    const { data } = await axios.get('/api/user/list');
 
     return data;
   };

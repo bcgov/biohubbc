@@ -1,10 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
-import { getDBConnection } from '../database/db';
-import { authorizeRequestHandler } from '../request-handlers/security/authorization';
-import { UserService } from '../services/user-service';
-import { getLogger } from '../utils/logger';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { UserService } from '../../services/user-service';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/user');
 

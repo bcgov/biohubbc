@@ -46,7 +46,7 @@ describe('useUserApi', () => {
   });
 
   it('getUsersList works as expected', async () => {
-    mock.onGet('/api/users').reply(200, [
+    mock.onGet('/api/user/list').reply(200, [
       {
         id: 1,
         user_identifier: 'myidirboss',
