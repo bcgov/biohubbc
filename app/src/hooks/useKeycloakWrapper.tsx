@@ -4,6 +4,15 @@ import { KeycloakInstance } from 'keycloak-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 
+export enum SYSTEM_IDENTITY_SOURCE {
+  BCEID = 'BCEID',
+  BCEID_BASIC_AND_BUSINESS = 'BCEID-BASIC-AND-BUSINESS',
+  IDIR = 'IDIR'
+}
+
+const raw_bceid_identity_sources = ['BCEID-BASIC-AND-BUSINESS', 'BCEID'];
+const raw_idir_identity_sources = ['IDIR'];
+
 /**
  * IUserInfo interface, represents the userinfo provided by keycloak.
  */
@@ -136,10 +145,18 @@ function useKeycloakWrapper(): IKeycloakWrapper {
    * @return {*} {(string | null)}
    */
   const getIdentitySource = useCallback((): string | null => {
-    const identitySource = keycloakUser?.['preferred_username']?.split('@')?.[1];
+    const identitySource = keycloakUser?.['preferred_username']?.split('@')?.[1].toUpperCase();
 
     if (!identitySource) {
       return null;
+    }
+
+    if (raw_bceid_identity_sources.includes(identitySource)) {
+      return SYSTEM_IDENTITY_SOURCE.BCEID;
+    }
+
+    if (raw_idir_identity_sources.includes(identitySource)) {
+      return SYSTEM_IDENTITY_SOURCE.IDIR;
     }
 
     return identitySource;

@@ -7,7 +7,7 @@ export async function up(knex: Knex): Promise<void> {
     SET SCHEMA '${DB_SCHEMA}';
     SET SEARCH_PATH = ${DB_SCHEMA},public;
 
-    UPDATE user_identity_source SET name = 'BCEID-BASIC-AND-BUSINESS' WHERE name = 'BCEID';
+    UPDATE user_identity_source SET name = 'BCEID' WHERE name = 'BCEID-BASIC-AND-BUSINESS';
 
     SET SEARCH_PATH = biohub_dapi_v1,public;
     SET ROLE biohub_api;

@@ -113,11 +113,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-export enum SYSTEM_IDENTITY_SOURCE {
-  DATABASE = 'DATABASE',
-  IDIR = 'IDIR',
-  BCEID = 'BCEID-BASIC-AND-BUSINESS'
-}
+const bceid_identity_sources = ['BCEID-BASIC-AND-BUSINESS', 'BCEID'];
 
 const Header: React.FC = () => {
   const classes = useStyles();
@@ -127,12 +123,19 @@ const Header: React.FC = () => {
 
   // Authenticated view
   const LoggedInUser = () => {
-    const identitySource = keycloakWrapper?.getIdentitySource()?.toUpperCase();
+    const identitySource = keycloakWrapper?.getIdentitySource() || '';
 
-    const userIdentifier = keycloakWrapper?.getUserIdentifier()?.toUpperCase();
+    const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
 
-    const loggedInUserDisplayName =
-      identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ${userIdentifier}` : `IDIR / ${userIdentifier}`;
+    let displayPrefix;
+
+    if (bceid_identity_sources.includes(identitySource)) {
+      displayPrefix = `BCEID / `;
+    } else {
+      displayPrefix = `IDIR / `;
+    }
+
+    const loggedInUserDisplayName = displayPrefix + userIdentifier;
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">

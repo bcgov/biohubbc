@@ -1,16 +1,17 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL } from '../constants/notifications';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400, ApiBuildSQLError, ApiGeneralError } from '../errors/custom-error';
+import { ApiBuildSQLError, ApiGeneralError, HTTP400 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { GCNotifyService } from '../services/gcnotify-service';
 import { KeycloakService } from '../services/keycloak-service';
-import { ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL } from '../constants/notifications';
-import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
 import { updateAdministrativeActivity } from './administrative-activity';
-import { queries } from '../queries/queries';
 
 const defaultLog = getLogger('paths/access-request');
 
@@ -52,7 +53,7 @@ PUT.apiDoc = {
             },
             identitySource: {
               type: 'string',
-              description: 'The identity source for the user.'
+              enum: [SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID]
             },
             requestId: {
               type: 'number',
