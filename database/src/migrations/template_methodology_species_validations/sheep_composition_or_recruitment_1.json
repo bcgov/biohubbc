@@ -1,4 +1,4 @@
-{
+  {
   "name": "",
   "description": "",
   "files": [
@@ -7,7 +7,7 @@
       "description": "",
       "columns": [
         {
-          "name": "Area (km2)",
+          "name": "Population Unit/Block Area (km2)",
           "description": "",
           "validations": [
             {
@@ -42,9 +42,10 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
+              "Population Unit",
               "Block ID/SU ID",
-              "Area (km2)",
+              "Population Unit/Block Area (km2)",
               "Sampled (Y/N)",
               "Sampling Unit Comments"
             ]
@@ -57,7 +58,7 @@
       "description": "",
       "columns": [
         {
-          "name": "Area (km2)",
+          "name": "Population Unit/Block Area (km2)",
           "description": "",
           "validations": [
             {
@@ -172,9 +173,10 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
+              "Population Unit",
               "Block ID/SU ID",
-              "Area (km2)",
+              "Population Unit/Block Area (km2)",
               "Date",
               "Start Time 1 (24hrs)",
               "End Time 1 (24hrs)",
@@ -563,7 +565,8 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
+              "Population Unit",
               "Block ID/SU ID",
               "Date",
               "GPS Unit Name",
@@ -596,6 +599,9 @@
           }
         }
       ]
+    },
+    {
+
     },
     {
       "name": "NonTargeted Observations",
@@ -849,6 +855,7 @@
           "file_required_columns_validator": {
             "required_columns": [
               "Study Area",
+              "Population Unit",
               "Block ID/SU ID",
               "GPS Unit Name",
               "Waypoint",
