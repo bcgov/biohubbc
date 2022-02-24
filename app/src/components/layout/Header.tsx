@@ -115,7 +115,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 function getDisplayName(userName: string, identitySource: string) {
-  return identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ` + userName : `IDIR / ` + userName;
+  return identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ${userName}` : `IDIR / ${userName}`;
 }
 
 const Header: React.FC = () => {
