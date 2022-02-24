@@ -6,7 +6,6 @@ import { useBiohubApi } from './useBioHubApi';
 
 export enum SYSTEM_IDENTITY_SOURCE {
   BCEID = 'BCEID',
-  BCEID_BASIC_AND_BUSINESS = 'BCEID-BASIC-AND-BUSINESS',
   IDIR = 'IDIR'
 }
 

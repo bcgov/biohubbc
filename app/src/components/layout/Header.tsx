@@ -21,6 +21,7 @@ import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Gua
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
@@ -113,7 +114,9 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-const bceid_identity_sources = ['BCEID-BASIC-AND-BUSINESS', 'BCEID'];
+function getDisplayName(userName: string, identitySource: string) {
+  return identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ` + userName : `IDIR / ` + userName;
+}
 
 const Header: React.FC = () => {
   const classes = useStyles();
@@ -127,15 +130,7 @@ const Header: React.FC = () => {
 
     const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
 
-    let displayPrefix;
-
-    if (bceid_identity_sources.includes(identitySource)) {
-      displayPrefix = `BCEID / `;
-    } else {
-      displayPrefix = `IDIR / `;
-    }
-
-    const loggedInUserDisplayName = displayPrefix + userIdentifier;
+    const loggedInUserDisplayName = getDisplayName(userIdentifier, identitySource);
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
