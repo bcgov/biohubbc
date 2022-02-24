@@ -90,6 +90,7 @@ export function addSystemRoleUser(): RequestHandler {
 
     const userIdentifier = req.body?.userIdentifier || null;
     const identitySource = req.body?.identitySource || null;
+
     const roleId = req.body?.roleId || null;
 
     if (!userIdentifier) {

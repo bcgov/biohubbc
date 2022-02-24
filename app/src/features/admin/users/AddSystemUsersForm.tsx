@@ -10,7 +10,7 @@ import Select from '@material-ui/core/Select';
 import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import CustomTextField from 'components/fields/CustomTextField';
-import { SYSTEM_IDENTITY_SOURCE } from 'components/layout/Header';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';

@@ -7,7 +7,7 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { SYSTEM_IDENTITY_SOURCE } from 'components/layout/Header';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { AccessRequestI18N } from 'constants/i18n';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
@@ -145,8 +145,7 @@ export const AccessRequestPage: React.FC = () => {
   let initialValues: any;
   let validationSchema: any;
   let requestForm: any;
-
-  if (keycloakWrapper?.getIdentitySource()?.toUpperCase() === SYSTEM_IDENTITY_SOURCE.BCEID) {
+  if (keycloakWrapper?.getIdentitySource() === SYSTEM_IDENTITY_SOURCE.BCEID) {
     initialValues = BCeIDRequestFormInitialValues;
     validationSchema = BCeIDRequestFormYupSchema;
     requestForm = <BCeIDRequestForm />;

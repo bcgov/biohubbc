@@ -6,7 +6,7 @@ const DB_ADMIN = process.env.DB_ADMIN;
 export enum SYSTEM_IDENTITY_SOURCE {
   DATABASE = 'DATABASE',
   IDIR = 'IDIR',
-  BCEID = 'BCEID-BASIC-AND-BUSINESS'
+  BCEID = 'BCEID'
 }
 
 const systemUsers = [
