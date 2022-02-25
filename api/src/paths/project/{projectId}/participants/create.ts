@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
@@ -62,7 +63,7 @@ POST.apiDoc = {
                   },
                   identitySource: {
                     type: 'string',
-                    enum: ['IDIR', 'BCEID']
+                    enum: [SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID]
                   },
                   roleId: {
                     description: 'The id of the project role to assign to the participant.',

@@ -516,6 +516,28 @@ jobs:
           oc project af2668-tools
           oc get all,pvc,secret,pods,ReplicationController,DeploymentConfig,HorizontalPodAutoscaler,imagestreamtag -o name | grep biohubbc | grep $BUILD_ID | awk '{print "oc delete " $1}' | bash
 
+  cycleschemaspy:
+    name: Cycle SchemaSpy to refresh after database update in dev
+    runs-on: ubuntu-latest
+    if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false && github.base_ref == 'dev' }}
+    env:
+      BUILD_ID: ${{ github.event.number }}
+    needs:
+      - checkEnv
+      - deployDatabaseSetup
+    steps:
+      # Log in to OpenShift.
+      # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
+      # PR's must originate from a branch off the original repo or else all openshift `oc` commands will fail.
+      - name: Log in to OpenShift
+        run: oc login --token=${{ secrets.TOOLS_SA_TOKEN }} --server=https://api.silver.devops.gov.bc.ca:6443
+
+      - name: Scale down
+        run: |
+          oc project af2668-dev
+          oc scale --replicas=0 dc schemaspy
+          oc scale --replicas=1 dc schemaspy
+
   cypress-run:
     runs-on: ubuntu-latest
     if: ${{ github.event.pull_request.merged == true && github.event.pull_request.draft == false && github.base_ref != 'prod' }}
@@ -523,12 +545,12 @@ jobs:
       CYPRESS_RECORD_KEY: ${{ secrets.RECORDING_KEY }}
       CYPRESS_username: ${{ secrets.CYPRESS_USER_NAME }}
       CYPRESS_password: ${{ secrets.CYPRESS_PASSWORD }}
-      CYPRESS_BASE_URL: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
-      CYPRESS_host: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
+      CYPRESS_BASE_URL: "https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca"
+      CYPRESS_host: "https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca"
       CYPRESS_ENVIRONMENT: ${{ github.base_ref }}
-      CYPRESS_authRealm: '35r1iman'
-      CYPRESS_authClientId: 'biohubbc'
-      CYPRESS_authUrl: 'https://${{ github.base_ref }}.oidc.gov.bc.ca'
+      CYPRESS_authRealm: "35r1iman"
+      CYPRESS_authClientId: "biohubbc"
+      CYPRESS_authUrl: "https://${{ github.base_ref }}.oidc.gov.bc.ca"
     needs:
       - deployDatabase
       - deployDatabaseSetup
@@ -542,7 +564,7 @@ jobs:
       - name: Wait for API response
         uses: nev7n/wait_for_response@v1.0.1
         with:
-          url: 'https://api-${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/version'
+          url: "https://api-${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca/version"
           responseCode: 200
           timeout: 240000
           interval: 500
@@ -550,7 +572,7 @@ jobs:
       - name: Wait for APP response
         uses: nev7n/wait_for_response@v1.0.1
         with:
-          url: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
+          url: "https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca"
           responseCode: 200
           timeout: 240000
           interval: 500
@@ -562,7 +584,7 @@ jobs:
         id: smoke
         continue-on-error: false
         with:
-          wait-on: 'https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca'
+          wait-on: "https://${{ github.base_ref }}-biohubbc.apps.silver.devops.gov.bc.ca"
           wait-on-timeout: 240
           record: true
           working-directory: testing/e2e

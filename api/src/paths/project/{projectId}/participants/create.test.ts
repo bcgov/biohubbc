@@ -2,6 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
+import { SYSTEM_IDENTITY_SOURCE } from '../../../../constants/database';
 import * as db from '../../../../database/db';
 import { HTTPError } from '../../../../errors/custom-error';
 import { UserService } from '../../../../services/user-service';
@@ -16,7 +17,7 @@ describe('createProjectParticipants', () => {
   const sampleReq = {
     keycloak_token: {},
     body: {
-      participants: [['jsmith', 'IDIR', 1]]
+      participants: [['jsmith', SYSTEM_IDENTITY_SOURCE.IDIR, 1]]
     },
     params: {
       projectId: 1

@@ -1,10 +1,11 @@
-import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { codes } from 'test-helpers/code-helpers';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -59,10 +60,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -95,10 +97,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -131,10 +134,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -194,10 +198,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -219,7 +224,13 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [2]);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
+        'testusername',
+        SYSTEM_IDENTITY_SOURCE.IDIR,
+        1,
+        2,
+        [2]
+      );
     });
   });
 
@@ -241,10 +252,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 1,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -266,7 +278,12 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 3);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
+        'testusername',
+        SYSTEM_IDENTITY_SOURCE.IDIR,
+        1,
+        3
+      );
     });
   });
 });

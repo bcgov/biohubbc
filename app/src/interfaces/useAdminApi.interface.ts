@@ -19,7 +19,6 @@ export interface IGetAccessRequestsListResponse {
   description: string;
   notes: string;
   create_date: string;
-
   data: IAccessRequestDataObject;
 }
 

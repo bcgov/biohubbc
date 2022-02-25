@@ -1,4 +1,5 @@
 import { render, waitFor } from '@testing-library/react';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import ReviewAccessRequestForm, {
   ReviewAccessRequestFormYupSchema
 } from 'features/admin/users/ReviewAccessRequestForm';
@@ -44,7 +45,7 @@ describe('ReviewAccessRequestForm', () => {
         name: 'test data name',
         username: 'test data username',
         email: 'test data email',
-        identitySource: 'idir',
+        identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
         role: 2,
         company: 'test data company',
         regional_offices: [1],

@@ -4,6 +4,7 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { ApiError } from '../errors/custom-error';
 import { UserObject } from '../models/user';
 import { queries } from '../queries/queries';
@@ -128,7 +129,7 @@ describe('UserService', () => {
       sinon.stub(queries.users, 'addSystemUserSQL').returns(null);
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       try {
         await userService.addSystemUser(userIdentifier, identitySource);
@@ -147,7 +148,7 @@ describe('UserService', () => {
       sinon.stub(queries.users, 'addSystemUserSQL').returns(SQL`valid sql`);
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       try {
         await userService.addSystemUser(userIdentifier, identitySource);
@@ -168,7 +169,7 @@ describe('UserService', () => {
       const addSystemUserSQLStub = sinon.stub(queries.users, 'addSystemUserSQL').returns(SQL`valid sql`);
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       const result = await userService.addSystemUser(userIdentifier, identitySource);
 
@@ -255,7 +256,7 @@ describe('UserService', () => {
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       const userService = new UserService(mockDBConnection);
 
@@ -285,7 +286,7 @@ describe('UserService', () => {
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       const userService = new UserService(mockDBConnection);
 
@@ -304,7 +305,7 @@ describe('UserService', () => {
 
       const existingInactiveSystemUser = new UserObject({
         system_user_id: 2,
-        user_identifier: 'idir',
+        user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
         record_end_date: null,
         role_ids: [1],
         role_names: ['Editor']
@@ -318,7 +319,7 @@ describe('UserService', () => {
       const activateSystemUserStub = sinon.stub(UserService.prototype, 'activateSystemUser');
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       const userService = new UserService(mockDBConnection);
 
@@ -337,7 +338,7 @@ describe('UserService', () => {
 
       const existingSystemUser = new UserObject({
         system_user_id: 2,
-        user_identifier: 'idir',
+        user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
         record_end_date: '2021-11-22',
         role_ids: [1],
         role_names: ['Editor']
@@ -354,7 +355,7 @@ describe('UserService', () => {
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(activatedSystemUser);
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       const userService = new UserService(mockDBConnection);
 
@@ -376,7 +377,7 @@ describe('UserService', () => {
 
       const existingSystemUser = new UserObject({
         system_user_id: 2,
-        user_identifier: 'idir',
+        user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
         record_end_date: '2021-11-22',
         role_ids: [1],
         role_names: ['Editor']
@@ -391,7 +392,7 @@ describe('UserService', () => {
 
       const activatedSystemUser = new UserObject({
         system_user_id: 2,
-        user_identifier: 'idir',
+        user_identifier: SYSTEM_IDENTITY_SOURCE.IDIR,
         record_end_date: null,
         role_ids: [1],
         role_names: ['Editor']
@@ -399,7 +400,7 @@ describe('UserService', () => {
       const getUserByIdStub = sinon.stub(UserService.prototype, 'getUserById').resolves(activatedSystemUser);
 
       const userIdentifier = 'username';
-      const identitySource = 'idir';
+      const identitySource = SYSTEM_IDENTITY_SOURCE.IDIR;
 
       const userService = new UserService(mockDBConnection);
 
