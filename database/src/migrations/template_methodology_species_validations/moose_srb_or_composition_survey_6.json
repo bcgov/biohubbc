@@ -58,6 +58,7 @@
             }
           ]
         },
+
         {
           "name": "Sampled (Y/N)",
           "description": "",
@@ -82,7 +83,71 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
+              "Block ID/SU ID",
+              "Stratum Area (km2)",
+              "Stratum",
+              "Sampled (Y/N)",
+              "Block Summary Comments"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Block Summary Temp",
+      "description": "",
+      "columns": [
+        {
+          "name": "Stratum Area (km2)",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Stratum",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Sampled (Y/N)",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "Study Area",
               "Block ID/SU ID",
               "Stratum Area (km2)",
               "Stratum",
@@ -201,7 +266,7 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
               "Block ID/SU ID",
               "Block Area (km2)",
               "Date",
@@ -216,7 +281,6 @@
               "Aircraft Company",
               "Aircraft Registration",
               "Aircraft Type",
-              "Aircraft Call Sign",
               "Pilot",
               "Navigator",
               "Rear Left Observer",
@@ -273,7 +337,6 @@
             }
           ]
         },
-
         {
           "name": "Yearling Bulls",
           "description": "",
@@ -474,7 +537,7 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
               "Block ID/SU ID",
               "Stratum",
               "GPS Unit Name",
@@ -923,6 +986,7 @@
         "required_files": [
           "Strata Metadata",
           "Block Summary",
+          "Block Summary Temp",
           "Effort & Site Conditions",
           "Observations",
           "NonTargeted Observations",
