@@ -161,7 +161,8 @@
                 "description": "",
                 "allowed_code_values": [
                   { "name": "Y", "description": "Yes" },
-                  { "name": "N", "description": "No" }
+                  { "name": "N", "description": "No" },
+                  { "name": "Didn''t Listen", "description": "Didn''t Listen" }
                 ]
               }
             }
@@ -179,7 +180,11 @@
               "Waypoint",
               "Observed",
               "With Young",
-              "Collar Heard"
+              "Collar Heard",
+              "Collar Frequency",
+              "GPS Unit Name",
+              "Best Heard Frequency",
+              "Marked Animals Comments"
             ]
           }
         }

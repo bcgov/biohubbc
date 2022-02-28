@@ -6,29 +6,32 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 
 const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
 
-const moose_srb_or_composition_validation = fs.readFileSync(
-  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'moose_srb_or_composition_survey_6.json')
+const goat_composition_or_recruitment_validation = fs.readFileSync(
+  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_2.json')
 );
 
 enum COMMON_SURVEY_METHODOLOGY {
-  STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block'
-}
-
-enum SPECIES_NAME {
-  MOOSE = 'Moose'
+  COMPOSITION = 'Composition',
+  RECRUITMENT = 'Recruitment'
 }
 
 enum TEMPLATE_NAME {
-  MOOSE_SRB_OR_COMPOSITION_SURVEY = 'Moose SRB or Composition Survey'
+  GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY = 'Goat Composition or Recruitment Survey'
 }
 
 const validationSchemas = [
   // Common Survey Methodology: Stratified Random Block or Composition
   {
-    v_schema: moose_srb_or_composition_validation.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
-    species: SPECIES_NAME.MOOSE,
-    template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY
+    v_schema: goat_composition_or_recruitment_validation.toString(),
+    cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
+    species: 'M-ORAM',
+    template: TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY
+  },
+  {
+    v_schema: goat_composition_or_recruitment_validation.toString(),
+    cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT,
+    species: 'M-ORAM',
+    template: TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY
   }
 ];
 
@@ -94,7 +97,7 @@ const updateValidation = (validationSchema: string, csm: string, species: string
     WHERE
       csm.name = '${csm}'
     AND
-      wu.english_name = '${species}'
+      wu.code = '${species}'
     AND
       wu.end_date isnull
     AND

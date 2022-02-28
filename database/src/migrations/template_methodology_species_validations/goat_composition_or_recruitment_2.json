@@ -43,9 +43,9 @@
           "file_required_columns_validator": {
             "required_columns": [
               "Study Area",
-              "Population Unit",
               "Block ID/SU ID",
               "Population Unit/Block Area (km2)",
+              "Population Unit",
               "Sampled (Y/N)",
               "Sampling Unit Comments"
             ]
@@ -57,18 +57,6 @@
       "name": "Effort & Site Conditions",
       "description": "",
       "columns": [
-        {
-          "name": "Population Unit/Block Area (km2)",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
         {
           "name": "Aircraft Type",
           "description": "",
@@ -174,8 +162,8 @@
           "file_required_columns_validator": {
             "required_columns": [
               "Study Area",
-              "Population Unit",
               "Block ID/SU ID",
+              "Population Unit",
               "Population Unit/Block Area (km2)",
               "Date",
               "Start Time 1 (24hrs)",
@@ -219,6 +207,24 @@
       "description": "",
       "columns": [
         {
+          "name": "Species",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Mountain Goat" },
+                  { "name": "Oreamnos americanus" },
+                  { "name": "M-ORAM" },
+                  { "name": "ORAM" }
+                ]
+              }
+            }
+          ]
+        },
+        {
           "name": "Waypoint",
           "description": "",
           "validations": [
@@ -231,32 +237,7 @@
           ]
         },
         {
-          "name": "Species",
-          "description": "",
-          "validations": [
-            {
-              "column_code_validator": {
-                "name": "",
-                "description": "",
-                "allowed_code_values": [
-                  { "name": "Bighorn Sheep" },
-                  { "name": "Ovis canadensis" },
-                  { "name": "M-OVCA" },
-                  { "name": "Dall''s Sheep" },
-                  { "name": "M-OVDA-DA" },
-                  { "name": "Stone''s Sheep" },
-                  { "name": "M-OVDA-ST" },
-                  { "name": "Thinhorn Sheep" },
-                  { "name": "Ovis dalli" },
-                  { "name": "M-OVDA" }
-                ]
-              }
-            }
-          ]
-        },
-
-        {
-          "name": "Ram - Class I",
+          "name": "Adult Unclassified",
           "description": "",
           "validations": [
             {
@@ -268,91 +249,7 @@
           ]
         },
         {
-          "name": "Ram - Class II",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Ram - Class III",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Ram - Class IV",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Ram - Unclassified",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Ewes",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Yearling",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Lam (Young of Year)",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "Ewe-Like Sheep",
+          "name": "Kid",
           "description": "",
           "validations": [
             {
@@ -365,6 +262,30 @@
         },
         {
           "name": "Unclassified",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Nanny",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Billy",
           "description": "",
           "validations": [
             {
@@ -504,7 +425,7 @@
           ]
         },
         {
-          "name": "Habitat - Slope",
+          "name": "Wind Blown",
           "description": "",
           "validations": [
             {
@@ -512,47 +433,42 @@
                 "name": "",
                 "description": "",
                 "allowed_code_values": [
-                  { "name": "Flat (0%)", "description": "Flat (0%)" },
-                  { "name": "Minimum (5-20%)", "description": "Minimum (5-20%)" },
-                  { "name": "Moderate (20-50%", "description": "Moderate (20-50%" },
-                  { "name": "Steep (>50%)", "description": "Steep (>50%)" }
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" }
                 ]
               }
             }
           ]
         },
         {
-          "name": "% Veg Cover",
+          "name": "Terrain Obstruction",
           "description": "",
           "validations": [
             {
-              "column_numeric_validator": {
+              "column_code_validator": {
                 "name": "",
-                "description": ""
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" }
+                ]
               }
             }
           ]
         },
         {
-          "name": "% Snow Cover",
+          "name": "Count Confidence",
           "description": "",
           "validations": [
             {
-              "column_numeric_validator": {
+              "column_code_validator": {
                 "name": "",
-                "description": ""
-              }
-            }
-          ]
-        },
-        {
-          "name": "% Canopy Cover",
-          "description": "",
-          "validations": [
-            {
-              "column_numeric_validator": {
-                "name": "",
-                "description": ""
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Low", "description": "Low" },
+                  { "name": "Moderate", "description": "Moderate" },
+                  { "name": "High", "description": "High" }
+                ]
               }
             }
           ]
@@ -566,33 +482,26 @@
           "file_required_columns_validator": {
             "required_columns": [
               "Study Area",
-              "Population Unit",
               "Block ID/SU ID",
-              "Date",
+              "Population Unit",
               "GPS Unit Name",
               "Waypoint",
               "Distance (m) and Bearing to Waypoint",
               "Species",
-              "Ram - Class I",
-              "Ram - Class II",
-              "Ram - Class III",
-              "Ram - Class IV",
-              "Ram - Unclassified",
-              "Ewes",
-              "Yearling",
-              "Lamb (Young of Year)",
-              "Ewe-Like Sheep",
+              "Adult - Unclassified",
+              "kid",
               "Unclassified",
+              "Nanny",
+              "Billy",
               "Total Count",
               "Sign Type",
               "Age of Sign",
               "Activity",
               "Elevation (m) of Observation",
               "Habitat",
-              "Habitat - Slope",
-              "% Veg Cover",
-              "% Snow Cover",
-              "% Canopy Cover",
+              "Wind Blown",
+              "Terrain Obstruction",
+              "Count Confidence",
               "Observation Comments",
               "Photos"
             ]
@@ -600,7 +509,6 @@
         }
       ]
     },
-    {},
     {
       "name": "NonTargeted Observations",
       "description": "",
@@ -853,10 +761,10 @@
           "file_required_columns_validator": {
             "required_columns": [
               "Study Area",
-              "Population Unit",
               "Block ID/SU ID",
               "GPS Unit Name",
               "Waypoint",
+              "GPS Unit Name",
               "Date",
               "Species",
               "Adult Males",
@@ -1004,6 +912,102 @@
           }
         }
       ]
+    },
+    {
+      "name": "Marked Animals",
+      "description": "",
+      "columns": [
+        {
+          "name": "WLH ID",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+
+        {
+          "name": "Observed",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "With Young",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Collar Heard",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" },
+                  { "name": "Didn''t Listen", "description": "Didn''t Listen" }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "WLH ID",
+              "Waypoint",
+              "Observed",
+              "With Young",
+              "Collar Heard",
+              "Collar Frequency",
+              "GPS Unit Name",
+              "Best Heard Frequency",
+              "Marked Animals Comments"
+            ]
+          }
+        }
+      ]
     }
   ],
   "validations": [
@@ -1014,7 +1018,8 @@
           "Effort & Site Conditions",
           "Observations",
           "NonTargeted Observations",
-          "UTM_LatLong"
+          "UTM_LatLong",
+          "Marked Animals"
         ]
       }
     },
