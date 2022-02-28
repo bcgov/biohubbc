@@ -77,7 +77,7 @@
                   { "name": "Cessna 182", "description": "" },
                   { "name": "Cessna 185", "description": "" },
                   { "name": "Cessna 206", "description": "" },
-                  { "name": "SuperCub", "description": "" },
+                  { "name": "Super Cub", "description": "" },
                   { "name": "Beaver", "description": "" },
                   { "name": "Single Otter", "description": "" },
                   { "name": "Twin Otter", "description": "" },
@@ -395,7 +395,7 @@
                   { "name": "Broken Cliffs in Timber" },
                   { "name": "Burn" },
                   { "name": "Caves" },
-                  { "name": "Clearout" },
+                  { "name": "Clearcut" },
                   { "name": "Cliff" },
                   { "name": "Cliff in Forest" },
                   { "name": "Coniferous" },
@@ -418,7 +418,7 @@
                   { "name": "Terraces" },
                   { "name": "Timber" },
                   { "name": "Wetland/meadow" },
-                  { "name": "Willow/SHrub" }
+                  { "name": "Willow/Shrub" }
                 ]
               }
             }
