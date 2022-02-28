@@ -95,11 +95,11 @@
       ]
     },
     {
-      "name": "Block Summary Temp",
+      "name": "Marked Animals",
       "description": "",
       "columns": [
         {
-          "name": "Stratum Area (km2)",
+          "name": "WLH ID",
           "description": "",
           "validations": [
             {
@@ -111,7 +111,7 @@
           ]
         },
         {
-          "name": "Stratum",
+          "name": "Waypoint",
           "description": "",
           "validations": [
             {
@@ -124,7 +124,35 @@
         },
 
         {
-          "name": "Sampled (Y/N)",
+          "name": "Observed",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "With Young",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Collar Heard",
           "description": "",
           "validations": [
             {
@@ -147,12 +175,11 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Study Area",
-              "Block ID/SU ID",
-              "Stratum Area (km2)",
-              "Stratum",
-              "Sampled (Y/N)",
-              "Block Summary Comments"
+              "WLH ID",
+              "Waypoint",
+              "Observed",
+              "With Young",
+              "Collar Heard"
             ]
           }
         }
@@ -986,7 +1013,7 @@
         "required_files": [
           "Strata Metadata",
           "Block Summary",
-          "Block Summary Temp",
+          "Marked Animals",
           "Effort & Site Conditions",
           "Observations",
           "NonTargeted Observations",
