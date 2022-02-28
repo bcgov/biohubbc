@@ -7,7 +7,7 @@
       "description": "",
       "columns": [
         {
-          "name": "Area (km2)",
+          "name": "Population Unit/Block Area (km2)",
           "description": "",
           "validations": [
             {
@@ -42,9 +42,10 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
+              "Population Unit",
               "Block ID/SU ID",
-              "Area (km2)",
+              "Population Unit/Block Area (km2)",
               "Sampled (Y/N)",
               "Sampling Unit Comments"
             ]
@@ -57,7 +58,7 @@
       "description": "",
       "columns": [
         {
-          "name": "Area (km2)",
+          "name": "Population Unit/Block Area (km2)",
           "description": "",
           "validations": [
             {
@@ -172,9 +173,10 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
+              "Population Unit",
               "Block ID/SU ID",
-              "Area (km2)",
+              "Population Unit/Block Area (km2)",
               "Date",
               "Start Time 1 (24hrs)",
               "End Time 1 (24hrs)",
@@ -207,6 +209,101 @@
               "Weather Description",
               "Location Description",
               "Effort & Site Comments"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Marked Animals",
+      "description": "",
+      "columns": [
+        {
+          "name": "WLH ID",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Waypoint",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Observed",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          "name": "With Young",
+          "description": "",
+          "validations": [
+            {
+              "column_numeric_validator": {
+                "name": "",
+                "description": ""
+              }
+            }
+          ]
+        },
+        {
+          "name": "Collar Heard",
+          "description": "",
+          "validations": [
+            {
+              "column_code_validator": {
+                "name": "",
+                "description": "",
+                "allowed_code_values": [
+                  { "name": "Y", "description": "Yes" },
+                  { "name": "N", "description": "No" },
+                  { "name": "Didn''t Listen", "description": "Didn''t Listen" }
+                ]
+              }
+            }
+          ]
+        }
+      ],
+      "validations": [
+        {
+          "file_duplicate_columns_validator": {}
+        },
+        {
+          "file_required_columns_validator": {
+            "required_columns": [
+              "WLH ID",
+              "Collar Frequency",
+              "GPS Unit Name",
+              "Waypoint",
+              "Observed",
+              "With Young",
+              "Collar Heard",
+              "Best Heard Frequency",
+              "Marked Animals Comments"
             ]
           }
         }
@@ -563,7 +660,8 @@
         {
           "file_required_columns_validator": {
             "required_columns": [
-              "Survey Area",
+              "Study Area",
+              "Population Unit",
               "Block ID/SU ID",
               "Date",
               "GPS Unit Name",
@@ -1007,6 +1105,7 @@
         "required_files": [
           "Sampling Unit Summary",
           "Effort & Site Conditions",
+          "Marked Animals",
           "Observations",
           "NonTargeted Observations",
           "UTM_LatLong"
