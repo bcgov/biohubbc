@@ -591,8 +591,8 @@
                   { "name": "Talus/Slope" },
                   { "name": "Terraces" },
                   { "name": "Timber" },
-                  { "name": "Wetland/meadow" },
-                  { "name": "Willow/SHrub" }
+                  { "name": "Wetland/Meadow" },
+                  { "name": "Willow/Shrub" }
                 ]
               }
             }
@@ -850,12 +850,12 @@
                   { "name": "Thermal, Habitat" },
                   { "name": "Territoriality" },
                   { "name": "Not Traveling" },
-                  { "name": "Traveling Flying" },
-                  { "name": "Traveling Unclassified" },
-                  { "name": "Traveling Walking" },
+                  { "name": "Traveling, Flying" },
+                  { "name": "Traveling, Unclassified" },
+                  { "name": "Traveling, Walking" },
                   { "name": "Traveling on a Path" },
-                  { "name": "Traveling Running" },
-                  { "name": "Traveling Swimming" },
+                  { "name": "Traveling, Running" },
+                  { "name": "Traveling, Swimming" },
                   { "name": "Traveling, Heli-Skiing" },
                   { "name": "Traveling, Skiing" },
                   { "name": "Traveling, Snowmobiling" },
