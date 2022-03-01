@@ -40,7 +40,7 @@ export function determineMapGeometries(
  * @returns {string} env region name
  */
 const getENVRegionByGMZ = (gmzId: string): string => {
-  let env: string = '';
+  let env = '';
 
   if (gmzId.includes('1')) {
     env = '1- Vancouver Island';
@@ -75,7 +75,7 @@ const getENVRegionByGMZ = (gmzId: string): string => {
  */
 export function getLayerTypesToSkipByProjectedGeometry(projectedGeo: any) {
   const geoId = projectedGeo.id as string;
-  let layerTypesToSkip: string[] = [];
+  const layerTypesToSkip: string[] = [];
 
   if (geoId && geoId.includes('ADM_NR_REGIONS_SPG')) {
     layerTypesToSkip.push('pub:WHSE_ADMIN_BOUNDARIES.ADM_NR_REGIONS_SPG');
@@ -176,7 +176,7 @@ export function getInferredLayersInfoByWFSFeature(feature: Feature, currentLayer
 
   if (featureId.includes('EADM_WLAP_REGION_BND_AREA_SVW')) {
     const nrmRegions = currentLayersInfo.nrmInfo;
-    for (let nrm of nrmRegions) {
+    for (const nrm of nrmRegions) {
       const env = getKeyByValue(envToNrmRegionsMapping, nrm);
 
       if (env) {
@@ -189,7 +189,7 @@ export function getInferredLayersInfoByWFSFeature(feature: Feature, currentLayer
     const gmzId = feature.properties?.GAME_MANAGEMENT_ZONE_ID;
     const envRegions = currentLayersInfo.envInfo;
 
-    for (let env of envRegions) {
+    for (const env of envRegions) {
       if (
         (env[0] === '7' && gmzId.includes('7O')) ||
         (env[0] === '9' && gmzId.includes('7P')) ||

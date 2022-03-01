@@ -26,7 +26,7 @@ const UsersDetailPage: React.FC = (props) => {
     }
 
     const getUser = async () => {
-      var id = urlParams['id'];
+      const id = urlParams['id'];
       const user = await biohubApi.user.getUserById(Number(id));
       setSelectedUser(user);
     };

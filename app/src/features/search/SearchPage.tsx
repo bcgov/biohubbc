@@ -55,7 +55,7 @@ const SearchPage: React.FC = () => {
         return;
       }
 
-      let clusteredPointGeometries: IClusteredPointGeometries[] = [];
+      const clusteredPointGeometries: IClusteredPointGeometries[] = [];
 
       response.forEach((result: any) => {
         const feature = generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0];

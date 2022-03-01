@@ -107,9 +107,9 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     for (const key in eventHandlers) {
       map.on(eventHandlers[key], (evt: any) => {
-        let handlers = Object.keys(eventHandlers).filter((handler) => eventHandlers[handler] === evt.type);
+        const handlers = Object.keys(eventHandlers).filter((handler) => eventHandlers[handler] === evt.type);
         if (handlers.length === 1) {
-          let handler = handlers[0];
+          const handler = handlers[0];
           props[handler] && props[handler](evt);
         }
       });

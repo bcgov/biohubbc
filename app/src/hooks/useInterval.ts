@@ -8,7 +8,7 @@ import { useRef, useEffect } from 'react';
  * Note: If both `callback` and `period` are valid, the `callback` function will run for the first time after `period`
  * milliseconds (it will not run at time=0).
  *
- * @param {(Function | null | undefined)} callback the function to run at each interval. Set to a falsy value to stop
+ * @param {((() => any) | null | undefined)} callback the function to run at each interval. Set to a falsy value to stop
  * the interval.
  * @param {(number | null | undefined)} period interval period in milliseconds. How often the `callback` should run.
  * Set to a falsy value to stop the interval.
@@ -16,7 +16,7 @@ import { useRef, useEffect } from 'react';
  * automatically stops.
  */
 export const useInterval = (
-  callback: Function | null | undefined,
+  callback: (() => any) | null | undefined,
   period: number | null | undefined,
   timeout?: number
 ): void => {

@@ -79,7 +79,7 @@ export const handleGPXUpload = async <T>(file: File, name: string, formikProps: 
     const domGpx = new DOMParser().parseFromString(fileAsString, 'application/xml');
     const geoJson = gpx(domGpx);
 
-    let sanitizedGeoJSON: Feature[] = [];
+    const sanitizedGeoJSON: Feature[] = [];
     geoJson.features.forEach((feature: Feature) => {
       if (feature.geometry) {
         sanitizedGeoJSON.push(feature);
@@ -116,7 +116,7 @@ export const handleKMLUpload = async <T>(file: File, name: string, formikProps: 
   const domKml = new DOMParser().parseFromString(fileAsString, 'application/xml');
   const geojson = kml(domKml);
 
-  let sanitizedGeoJSON: Feature[] = [];
+  const sanitizedGeoJSON: Feature[] = [];
   geojson.features.forEach((feature: Feature) => {
     if (feature.geometry) {
       sanitizedGeoJSON.push(feature);
@@ -162,8 +162,8 @@ export const calculateUpdatedMapBounds = (geometries: Feature[]): any[][] | unde
   We also set the bounds based on those geometries so the extent is set
 */
 export const generateValidGeometryCollection = (geometry: any, id?: string) => {
-  let geometryCollection: Feature[] = [];
-  let bounds: any[] = [];
+  const geometryCollection: Feature[] = [];
+  const bounds: any[] = [];
 
   if (!geometry || !geometry.length) {
     return { geometryCollection, bounds };

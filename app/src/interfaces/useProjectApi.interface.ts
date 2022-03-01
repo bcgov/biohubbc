@@ -208,7 +208,7 @@ export interface IGetProjectForUpdateResponsePartnerships {
  * @interface IUpdateProjectRequest
  * @extends {IGetProjectForUpdateResponse}
  */
-export interface IUpdateProjectRequest extends IGetProjectForUpdateResponse {}
+export type IUpdateProjectRequest = IGetProjectForUpdateResponse;
 
 /**
  * An interface for a single instance of project metadata, for view-only use cases.

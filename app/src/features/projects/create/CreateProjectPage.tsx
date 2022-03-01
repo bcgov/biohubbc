@@ -364,7 +364,7 @@ const CreateProjectPage: React.FC = () => {
     const isValid = await isStepFormValid();
 
     setStepForms((currentStepForms) => {
-      let updatedStepForms = [...currentStepForms];
+      const updatedStepForms = [...currentStepForms];
       updatedStepForms[activeStep].stepInitialValues = formikRef.current?.values;
       updatedStepForms[activeStep].isValid = isValid;
       updatedStepForms[activeStep].isTouched = true;
@@ -412,7 +412,7 @@ const CreateProjectPage: React.FC = () => {
 
     // Update the step form isValid/isTouched
     setStepForms((currentStepForms) => {
-      let updatedStepForms = [...currentStepForms];
+      const updatedStepForms = [...currentStepForms];
       updatedStepForms[activeStep].isValid = false;
       updatedStepForms[activeStep].isTouched = true;
       return updatedStepForms;

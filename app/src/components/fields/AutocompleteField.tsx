@@ -16,7 +16,7 @@ export interface IAutocompleteField<T extends string | number> {
   options: IAutocompleteFieldOption<T>[];
   required?: boolean;
   filterLimit?: number;
-  onChange?: (event: ChangeEvent<{}>, option: IAutocompleteFieldOption<T> | null) => void;
+  onChange?: (event: ChangeEvent<Record<string, unknown>>, option: IAutocompleteFieldOption<T> | null) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
