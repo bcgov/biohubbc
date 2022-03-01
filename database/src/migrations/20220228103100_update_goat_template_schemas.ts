@@ -4,10 +4,16 @@ import path from 'path';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
+const TRANSFORMATION_SCHEMAS_FOLDER = 'template_methodology_species_transformations';
+
 const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
 
 const goat_composition_or_recruitment_validation = fs.readFileSync(
   path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_2.json')
+);
+
+const goat_composition_or_recruitment_transformation = fs.readFileSync(
+  path.join(__dirname, TRANSFORMATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_2.json')
 );
 
 enum COMMON_SURVEY_METHODOLOGY {
@@ -19,16 +25,18 @@ enum TEMPLATE_NAME {
   GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY = 'Goat Composition or Recruitment Survey'
 }
 
-const validationSchemas = [
+const transformationAndValidationSchemas = [
   // Common Survey Methodology: Stratified Random Block or Composition
   {
     v_schema: goat_composition_or_recruitment_validation.toString(),
+    t_schema: goat_composition_or_recruitment_transformation.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
     species: 'M-ORAM',
     template: TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY
   },
   {
     v_schema: goat_composition_or_recruitment_validation.toString(),
+    t_schema: goat_composition_or_recruitment_transformation.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT,
     species: 'M-ORAM',
     template: TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY
@@ -47,9 +55,15 @@ export async function up(knex: Knex): Promise<void> {
     SET schema '${DB_SCHEMA}';
     set search_path = ${DB_SCHEMA},public;
   `);
-  for (const v_t_schema of validationSchemas) {
+  for (const v_t_schema of transformationAndValidationSchemas) {
     await knex.raw(`
-      ${updateValidation(v_t_schema.v_schema, v_t_schema.cms, v_t_schema.species, v_t_schema.template)}
+      ${updateValidationAndTransformation(
+        v_t_schema.v_schema,
+        v_t_schema.t_schema,
+        v_t_schema.cms,
+        v_t_schema.species,
+        v_t_schema.template
+      )}
     `);
   }
 }
@@ -71,11 +85,18 @@ export async function down(knex: Knex): Promise<void> {
  * @param {string} species species `english name` from the wldtaxonomic_units table needed for the query
  * @param {string} template name of the template
  */
-const updateValidation = (validationSchema: string, csm: string, species: string, template: string) => `
+const updateValidationAndTransformation = (
+  validationSchema: string,
+  transformationSchema: string,
+  csm: string,
+  species: string,
+  template: string
+) => `
   UPDATE
     biohub.template_methodology_species tms
   SET
-    validation = '${validationSchema}'
+    validation = '${validationSchema}',
+    transform = '${transformationSchema}'
   WHERE
     tms.template_methodology_species_id =
     (SELECT
