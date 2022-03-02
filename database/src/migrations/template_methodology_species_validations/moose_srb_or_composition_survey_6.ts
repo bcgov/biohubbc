@@ -332,61 +332,7 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Activity',
           description: '',
-          validations: [
-            {
-              column_code_validator: {
-                name: '',
-                description: '',
-                allowed_code_values: [
-                  { name: 'Alert' },
-                  { name: 'Avoiding Pests' },
-                  { name: 'Basking' },
-                  { name: 'Bedding' },
-                  { name: 'Building' },
-                  { name: 'Caching' },
-                  { name: 'Casting' },
-                  { name: 'Courting' },
-                  { name: 'Denning' },
-                  { name: 'Disturbed' },
-                  { name: 'Drinking' },
-                  { name: 'Excreting' },
-                  { name: 'Feeding' },
-                  { name: 'Fleeing' },
-                  { name: 'Feeding Salmonid' },
-                  { name: 'Grooming' },
-                  { name: 'Hibernating' },
-                  { name: 'Hunting' },
-                  { name: 'Ingesting Minerals' },
-                  { name: 'Incubating' },
-                  { name: 'Living' },
-                  { name: 'Migrating Daily' },
-                  { name: 'Migrating Seasonally' },
-                  { name: 'Reproducing birthing' },
-                  { name: 'Reproducing eggs' },
-                  { name: 'Rearing' },
-                  { name: 'Standing' },
-                  { name: 'Security, Habitat' },
-                  { name: 'Security and/or Thermal' },
-                  { name: 'Thermal, Habitat' },
-                  { name: 'Territoriality' },
-                  { name: 'Not Traveling' },
-                  { name: 'Traveling Flying' },
-                  { name: 'Traveling Unclassified' },
-                  { name: 'Traveling Walking' },
-                  { name: 'Traveling on a Path' },
-                  { name: 'Traveling Running' },
-                  { name: 'Traveling Swimming' },
-                  { name: 'Traveling, Heli-Skiing' },
-                  { name: 'Traveling, Skiing' },
-                  { name: 'Traveling, Snowmobiling' },
-                  { name: 'Traveling, Snowshoeing' },
-                  { name: 'Traveling, Snow Cat' },
-                  { name: 'Urinating' },
-                  { name: 'Described in comments' }
-                ]
-              }
-            }
-          ]
+          validations: basicCodeValidator(MooseItems.activityNonTarget)
         },
         {
           name: 'Feature Type',

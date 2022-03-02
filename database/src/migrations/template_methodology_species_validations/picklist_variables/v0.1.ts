@@ -30,7 +30,6 @@ const YNDcodes = [
 ];
 
 const SheepSpecies = [
-  { name: 'Kjartan EInarsson' },
   { name: 'Bighorn Sheep' },
   { name: 'Ovis canadensis' },
   { name: 'M-OVCA' },
