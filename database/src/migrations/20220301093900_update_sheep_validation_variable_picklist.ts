@@ -1,14 +1,9 @@
-import * as fs from 'fs';
 import Knex from 'knex';
-import path from 'path';
+import { sheepCompositionOrRecruitmentJSON } from './template_methodology_species_validations/sheep_composition_or_recruitment_3';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
-const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
-
-const sheep_composition_or_recruitment_validation = fs.readFileSync(
-  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'sheep_composition_or_recruitment_2.json')
-);
+const sheep_composition_or_recruitment_validation = sheepCompositionOrRecruitmentJSON;
 
 enum COMMON_SURVEY_METHODOLOGY {
   STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block',
@@ -23,13 +18,13 @@ enum TEMPLATE_NAME {
 const validationAndTransformationSchemas = [
   // Common Survey Methodology: Stratified Random Block or Composition
   {
-    v_schema: sheep_composition_or_recruitment_validation.toString(),
+    v_schema: JSON.stringify(sheep_composition_or_recruitment_validation),
     cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
     species: 'M-OVCA',
     template: TEMPLATE_NAME.SHEEP_COMPOSITION_OR_RECRUITMENT_SURVEY
   },
   {
-    v_schema: sheep_composition_or_recruitment_validation.toString(),
+    v_schema: JSON.stringify(sheep_composition_or_recruitment_validation),
     cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT,
     species: 'M-OVCA',
     template: TEMPLATE_NAME.SHEEP_COMPOSITION_OR_RECRUITMENT_SURVEY
