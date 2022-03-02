@@ -264,7 +264,7 @@ export const basicNumericValidator = [
   }
 ];
 
-export function basicCodeVaildator(codeValues: object) {
+export function basicCodeValidator(codeValues: object) {
   return [
     {
       column_code_validator: {

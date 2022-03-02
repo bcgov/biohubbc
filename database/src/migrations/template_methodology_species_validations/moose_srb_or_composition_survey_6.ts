@@ -1,22 +1,48 @@
-import { SheepItems, basicNumericValidator, basicCodeValidator } from './picklist_variables/v0.1';
-
-export const sheepCompositionOrRecruitmentJSON = {
+import { MooseItems, basicNumericValidator, basicCodeValidator } from './picklist_variables/v0.1';
+export const mooseSRBOrCompositionJSON = {
   name: '',
   description: '',
   files: [
     {
-      name: 'Sampling Unit Summary',
+      name: 'Strata Metadata',
       description: '',
       columns: [
         {
-          name: 'Population Unit/Block Area (km2)',
+          name: 'Stratum',
+          description: '',
+          validations: basicNumericValidator
+        }
+      ],
+      validations: [
+        {
+          file_duplicate_columns_validator: {}
+        },
+        {
+          file_required_columns_validator: {
+            required_columns: ['Stratum', 'Stratum Definition']
+          }
+        }
+      ]
+    },
+    {
+      name: 'Block Summary',
+      description: '',
+      columns: [
+        {
+          name: 'Stratum Area (km2)',
           description: '',
           validations: basicNumericValidator
         },
         {
+          name: 'Stratum',
+          description: '',
+          validations: basicNumericValidator
+        },
+
+        {
           name: 'Sampled (Y/N)',
           description: '',
-          validations: basicCodeValidator(SheepItems.basicYN)
+          validations: basicCodeValidator(MooseItems.basicYN)
         }
       ],
       validations: [
@@ -27,11 +53,63 @@ export const sheepCompositionOrRecruitmentJSON = {
           file_required_columns_validator: {
             required_columns: [
               'Study Area',
-              'Population Unit',
               'Block ID/SU ID',
-              'Population Unit/Block Area (km2)',
+              'Stratum Area (km2)',
+              'Stratum',
               'Sampled (Y/N)',
-              'Sampling Unit Comments'
+              'Block Summary Comments'
+            ]
+          }
+        }
+      ]
+    },
+    {
+      name: 'Marked Animals',
+      description: '',
+      columns: [
+        {
+          name: 'WLH ID',
+          description: '',
+          validations: basicNumericValidator
+        },
+        {
+          name: 'Waypoint',
+          description: '',
+          validations: basicNumericValidator
+        },
+
+        {
+          name: 'Observed',
+          description: '',
+          validations: basicNumericValidator
+        },
+        {
+          name: 'With Young',
+          description: '',
+          validations: basicNumericValidator
+        },
+        {
+          name: 'Collar Heard',
+          description: '',
+          validations: basicCodeValidator(MooseItems.basicYNDidnt)
+        }
+      ],
+      validations: [
+        {
+          file_duplicate_columns_validator: {}
+        },
+        {
+          file_required_columns_validator: {
+            required_columns: [
+              'WLH ID',
+              'Waypoint',
+              'Observed',
+              'With Young',
+              'Collar Heard',
+              'Collar Frequency',
+              'GPS Unit Name',
+              'Best Heard Frequency',
+              'Marked Animals Comments'
             ]
           }
         }
@@ -42,19 +120,14 @@ export const sheepCompositionOrRecruitmentJSON = {
       description: '',
       columns: [
         {
-          name: 'Population Unit/Block Area (km2)',
-          description: '',
-          validations: basicNumericValidator
-        },
-        {
           name: 'Aircraft Type',
           description: '',
-          validations: basicCodeValidator(SheepItems.aircraftType)
+          validations: basicCodeValidator(MooseItems.aircraftType)
         },
         {
           name: 'Light',
           description: '',
-          validations: basicCodeValidator(SheepItems.basicLight)
+          validations: basicCodeValidator(MooseItems.basicLight)
         },
         {
           name: 'Total Time (hours)',
@@ -86,25 +159,20 @@ export const sheepCompositionOrRecruitmentJSON = {
           file_required_columns_validator: {
             required_columns: [
               'Study Area',
-              'Population Unit',
               'Block ID/SU ID',
-              'Population Unit/Block Area (km2)',
+              'Block Area (km2)',
               'Date',
               'Start Time 1 (24hrs)',
               'End Time 1 (24hrs)',
               'Start Time 2 (24hrs)',
               'End Time 2 (24hrs)',
-              'Start Time 3 (24hrs)',
-              'End Time 3 (24hrs)',
-              'Start Time 4 (24hrs)',
-              'End Time 4 (24hrs)',
               'Total Block Time',
               'Total Time (hours)',
               'Total Time (mins)',
               'Time (mins)/block area (km2)',
               'Aircraft Company',
-              'Aircraft Type',
               'Aircraft Registration',
+              'Aircraft Type',
               'Pilot',
               'Navigator',
               'Rear Left Observer',
@@ -119,59 +187,8 @@ export const sheepCompositionOrRecruitmentJSON = {
               'Snow Depth',
               'Days Since Snowfall',
               'Weather Description',
-              'Location Description',
+              'Habitat Description',
               'Effort & Site Comments'
-            ]
-          }
-        }
-      ]
-    },
-    {
-      name: 'Marked Animals',
-      description: '',
-      columns: [
-        {
-          name: 'WLH ID',
-          description: '',
-          validations: basicNumericValidator
-        },
-        {
-          name: 'Waypoint',
-          description: '',
-          validations: basicNumericValidator
-        },
-        {
-          name: 'Observed',
-          description: '',
-          validations: basicCodeValidator(SheepItems.basicYN)
-        },
-        {
-          name: 'With Young',
-          description: '',
-          validations: basicNumericValidator
-        },
-        {
-          name: 'Collar Heard',
-          description: '',
-          validations: basicCodeValidator(SheepItems.basicYNDidnt)
-        }
-      ],
-      validations: [
-        {
-          file_duplicate_columns_validator: {}
-        },
-        {
-          file_required_columns_validator: {
-            required_columns: [
-              'WLH ID',
-              'Collar Frequency',
-              'GPS Unit Name',
-              'Waypoint',
-              'Observed',
-              'With Young',
-              'Collar Heard',
-              'Best Heard Frequency',
-              'Marked Animals Comments'
             ]
           }
         }
@@ -189,51 +206,55 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Species',
           description: '',
-          validations: basicCodeValidator(SheepItems.species)
+          validations: basicCodeValidator(MooseItems.species)
         },
-
         {
-          name: 'Ram - Class I',
+          name: 'Yearling Bulls',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Ram - Class II',
+          name: 'Adult Bulls - Unclassified',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Ram - Class III',
+          name: 'Sub-Prime Bulls',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Ram - Class IV',
+          name: 'Prime Bulls',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Ram - Unclassified',
+          name: 'Senior Bulls',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Ewes',
+          name: 'Bulls - Unclassified',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Yearling',
+          name: 'Lone Cows',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Lam (Young of Year)',
+          name: 'Cow W/1 calf',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Ewe-Like Sheep',
+          name: 'Cow W/2 calves',
+          description: '',
+          validations: basicNumericValidator
+        },
+        {
+          name: 'Lone Calf',
           description: '',
           validations: basicNumericValidator
         },
@@ -248,34 +269,14 @@ export const sheepCompositionOrRecruitmentJSON = {
           validations: basicNumericValidator
         },
         {
-          name: 'Sign Type',
-          description: '',
-          validations: basicCodeValidator(SheepItems.speciesSignType)
-        },
-        {
-          name: 'Age of Sign',
-          description: '',
-          validations: basicCodeValidator(SheepItems.basicSignAge)
-        },
-        {
-          name: 'Activity',
-          description: '',
-          validations: basicCodeValidator(SheepItems.activityObservation)
-        },
-        {
-          name: 'Elevation (m) of Observation',
+          name: 'No. Spike/Fork',
           description: '',
           validations: basicNumericValidator
         },
         {
-          name: 'Habitat',
+          name: '3 brow/10 points',
           description: '',
-          validations: basicCodeValidator(SheepItems.habitat)
-        },
-        {
-          name: 'Habitat - Slope',
-          description: '',
-          validations: basicCodeValidator(SheepItems.habitatSlope)
+          validations: basicNumericValidator
         },
         {
           name: '% Veg Cover',
@@ -284,11 +285,6 @@ export const sheepCompositionOrRecruitmentJSON = {
         },
         {
           name: '% Snow Cover',
-          description: '',
-          validations: basicNumericValidator
-        },
-        {
-          name: '% Canopy Cover',
           description: '',
           validations: basicNumericValidator
         }
@@ -301,33 +297,27 @@ export const sheepCompositionOrRecruitmentJSON = {
           file_required_columns_validator: {
             required_columns: [
               'Study Area',
-              'Population Unit',
               'Block ID/SU ID',
-              'Date',
+              'Stratum',
               'GPS Unit Name',
               'Waypoint',
-              'Distance (m) and Bearing to Waypoint',
               'Species',
-              'Ram - Class I',
-              'Ram - Class II',
-              'Ram - Class III',
-              'Ram - Class IV',
-              'Ram - Unclassified',
-              'Ewes',
-              'Yearling',
-              'Lamb (Young of Year)',
-              'Ewe-Like Sheep',
+              'Yearling Bulls',
+              'Adult Bulls - Unclassified',
+              'Sub-Prime Bulls',
+              'Prime Bulls',
+              'Senior Bulls',
+              'Bulls - Unclassified',
+              'Lone Cows',
+              'Cow W/1 calf',
+              'Cow W/2 calves',
+              'Lone calf',
               'Unclassified',
               'Total Count',
-              'Sign Type',
-              'Age of Sign',
-              'Activity',
-              'Elevation (m) of Observation',
-              'Habitat',
-              'Habitat - Slope',
+              'No. Spike/Fork',
+              '3 brow/10 points',
               '% Veg Cover',
               '% Snow Cover',
-              '% Canopy Cover',
               'Observation Comments',
               'Photos'
             ]
@@ -340,11 +330,84 @@ export const sheepCompositionOrRecruitmentJSON = {
       description: '',
       columns: [
         {
+          name: 'Activity',
+          description: '',
+          validations: [
+            {
+              column_code_validator: {
+                name: '',
+                description: '',
+                allowed_code_values: [
+                  { name: 'Alert' },
+                  { name: 'Avoiding Pests' },
+                  { name: 'Basking' },
+                  { name: 'Bedding' },
+                  { name: 'Building' },
+                  { name: 'Caching' },
+                  { name: 'Casting' },
+                  { name: 'Courting' },
+                  { name: 'Denning' },
+                  { name: 'Disturbed' },
+                  { name: 'Drinking' },
+                  { name: 'Excreting' },
+                  { name: 'Feeding' },
+                  { name: 'Fleeing' },
+                  { name: 'Feeding Salmonid' },
+                  { name: 'Grooming' },
+                  { name: 'Hibernating' },
+                  { name: 'Hunting' },
+                  { name: 'Ingesting Minerals' },
+                  { name: 'Incubating' },
+                  { name: 'Living' },
+                  { name: 'Migrating Daily' },
+                  { name: 'Migrating Seasonally' },
+                  { name: 'Reproducing birthing' },
+                  { name: 'Reproducing eggs' },
+                  { name: 'Rearing' },
+                  { name: 'Standing' },
+                  { name: 'Security, Habitat' },
+                  { name: 'Security and/or Thermal' },
+                  { name: 'Thermal, Habitat' },
+                  { name: 'Territoriality' },
+                  { name: 'Not Traveling' },
+                  { name: 'Traveling Flying' },
+                  { name: 'Traveling Unclassified' },
+                  { name: 'Traveling Walking' },
+                  { name: 'Traveling on a Path' },
+                  { name: 'Traveling Running' },
+                  { name: 'Traveling Swimming' },
+                  { name: 'Traveling, Heli-Skiing' },
+                  { name: 'Traveling, Skiing' },
+                  { name: 'Traveling, Snowmobiling' },
+                  { name: 'Traveling, Snowshoeing' },
+                  { name: 'Traveling, Snow Cat' },
+                  { name: 'Urinating' },
+                  { name: 'Described in comments' }
+                ]
+              }
+            }
+          ]
+        },
+        {
+          name: 'Feature Type',
+          description: '',
+          validations: basicCodeValidator(MooseItems.featureType)
+        },
+        {
+          name: 'Sign Type',
+          description: '',
+          validations: basicCodeValidator(MooseItems.basicSignType)
+        },
+        {
           name: 'Waypoint',
           description: '',
           validations: basicNumericValidator
         },
-
+        {
+          name: 'Total Count',
+          description: '',
+          validations: basicNumericValidator
+        },
         {
           name: 'Adult Males',
           description: '',
@@ -379,27 +442,6 @@ export const sheepCompositionOrRecruitmentJSON = {
           name: 'Unknown Age/Sex',
           description: '',
           validations: basicNumericValidator
-        },
-
-        {
-          name: 'Total Count',
-          description: '',
-          validations: basicNumericValidator
-        },
-        {
-          name: 'Activity',
-          description: '',
-          validations: basicCodeValidator(SheepItems.activityNonTarget)
-        },
-        {
-          name: 'Feature Type',
-          description: '',
-          validations: basicCodeValidator(SheepItems.featureType)
-        },
-        {
-          name: 'Sign Type',
-          description: '',
-          validations: basicCodeValidator(SheepItems.basicSignType)
         }
       ],
       validations: [
@@ -413,8 +455,10 @@ export const sheepCompositionOrRecruitmentJSON = {
               'Block ID/SU ID',
               'GPS Unit Name',
               'Waypoint',
+              'GPS Unit Name',
               'Date',
               'Species',
+              'Total Count',
               'Adult Males',
               'Adult Females',
               'Adults - Unclassified Sex',
@@ -422,12 +466,10 @@ export const sheepCompositionOrRecruitmentJSON = {
               'Juvenile Females',
               'Juveniles - Unclassified Sex',
               'Unknown Age/Sex',
-              'Total Count',
               'Activity',
               'Feature Type',
               'Sign Type',
-              'NonTargeted Observation Comments',
-              'Photos'
+              'NonTargeted Observation Comments'
             ]
           }
         }
@@ -437,11 +479,6 @@ export const sheepCompositionOrRecruitmentJSON = {
       name: 'UTM_LatLong',
       description: '',
       columns: [
-        {
-          name: 'Waypoint',
-          description: '',
-          validations: basicNumericValidator
-        },
         {
           name: 'UTM Zone',
           description: '',
@@ -455,7 +492,16 @@ export const sheepCompositionOrRecruitmentJSON = {
             }
           ]
         },
-
+        {
+          name: 'GPS Datum',
+          description: '',
+          validations: basicCodeValidator(MooseItems.gPSDatum)
+        },
+        {
+          name: 'Waypoint',
+          description: '',
+          validations: basicNumericValidator
+        },
         {
           name: 'Easting',
           description: '',
@@ -467,9 +513,14 @@ export const sheepCompositionOrRecruitmentJSON = {
           validations: basicNumericValidator
         },
         {
-          name: 'GPS Datum',
+          name: 'Lat',
           description: '',
-          validations: basicCodeValidator(SheepItems.gPSDatum)
+          validations: basicNumericValidator
+        },
+        {
+          name: 'Long',
+          description: '',
+          validations: basicNumericValidator
         },
         {
           name: 'Waypoint Elevation (m)',
@@ -477,12 +528,7 @@ export const sheepCompositionOrRecruitmentJSON = {
           validations: basicNumericValidator
         },
         {
-          name: 'Lat',
-          description: '',
-          validations: basicNumericValidator
-        },
-        {
-          name: 'Long',
+          name: 'Elevation(-65m)',
           description: '',
           validations: basicNumericValidator
         }
@@ -501,6 +547,7 @@ export const sheepCompositionOrRecruitmentJSON = {
               'Northing',
               'GPS Datum',
               'Waypoint Elevation (m)',
+              'Elevation(-65m)',
               'Time',
               'Lat/Long Units',
               'Lat',
@@ -516,9 +563,10 @@ export const sheepCompositionOrRecruitmentJSON = {
     {
       submission_required_files_validator: {
         required_files: [
-          'Sampling Unit Summary',
-          'Effort & Site Conditions',
+          'Strata Metadata',
+          'Block Summary',
           'Marked Animals',
+          'Effort & Site Conditions',
           'Observations',
           'NonTargeted Observations',
           'UTM_LatLong'
