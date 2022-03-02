@@ -1,16 +1,13 @@
 import * as fs from 'fs';
 import Knex from 'knex';
 import path from 'path';
+import { goatCompositionOrRecruitmentJSON } from './template_methodology_species_validations/goat_composition_or_recruitment_2';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
+const goat_composition_or_recruitment_validation = goatCompositionOrRecruitmentJSON;
+
 const TRANSFORMATION_SCHEMAS_FOLDER = 'template_methodology_species_transformations';
-
-const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
-
-const goat_composition_or_recruitment_validation = fs.readFileSync(
-  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_2.json')
-);
 
 const goat_composition_or_recruitment_transformation = fs.readFileSync(
   path.join(__dirname, TRANSFORMATION_SCHEMAS_FOLDER, 'goat_composition_or_recruitment_2.json')
@@ -28,14 +25,14 @@ enum TEMPLATE_NAME {
 const transformationAndValidationSchemas = [
   // Common Survey Methodology: Stratified Random Block or Composition
   {
-    v_schema: goat_composition_or_recruitment_validation.toString(),
+    v_schema: JSON.stringify(goat_composition_or_recruitment_validation),
     t_schema: goat_composition_or_recruitment_transformation.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
     species: 'M-ORAM',
     template: TEMPLATE_NAME.GOAT_COMPOSITION_OR_RECRUITMENT_SURVEY
   },
   {
-    v_schema: goat_composition_or_recruitment_validation.toString(),
+    v_schema: JSON.stringify(goat_composition_or_recruitment_validation),
     t_schema: goat_composition_or_recruitment_transformation.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.RECRUITMENT,
     species: 'M-ORAM',

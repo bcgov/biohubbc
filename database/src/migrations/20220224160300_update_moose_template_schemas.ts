@@ -28,7 +28,7 @@ enum TEMPLATE_NAME {
 const transformationAndValidationSchemas = [
   // Common Survey Methodology: Stratified Random Block or Composition
   {
-    v_schema: moose_srb_or_composition_validation.toString(),
+    v_schema: JSON.stringify(moose_srb_or_composition_validation),
     t_schema: moose_srb_or_composition_transformation.toString(),
     cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
     species: SPECIES_NAME.MOOSE,
