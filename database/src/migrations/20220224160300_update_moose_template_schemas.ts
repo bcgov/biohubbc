@@ -1,16 +1,13 @@
 import * as fs from 'fs';
 import Knex from 'knex';
 import path from 'path';
+import { mooseSRBOrCompositionJSON } from './template_methodology_species_validations/moose_srb_or_composition_survey_6';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
+const moose_srb_or_composition_validation = mooseSRBOrCompositionJSON;
+
 const TRANSFORMATION_SCHEMAS_FOLDER = 'template_methodology_species_transformations';
-
-const VALIDATION_SCHEMAS_FOLDER = 'template_methodology_species_validations';
-
-const moose_srb_or_composition_validation = fs.readFileSync(
-  path.join(__dirname, VALIDATION_SCHEMAS_FOLDER, 'moose_srb_or_composition_survey_6.json')
-);
 
 const moose_srb_or_composition_transformation = fs.readFileSync(
   path.join(__dirname, TRANSFORMATION_SCHEMAS_FOLDER, 'moose_srb_or_composition_survey_6.json')
