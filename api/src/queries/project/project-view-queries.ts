@@ -19,6 +19,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
   const sqlStatement = SQL`
     SELECT
       project.project_id as id,
+      project.project_type_id as pt_id,
       project_type.name as type,
       project.name,
       project.objectives,
@@ -209,9 +210,9 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
 
   const sqlStatement = SQL`
     SELECT
-      ical1c.name as classification,
-      ical2s.name as subClassification1,
-      ical3s.name as subClassification2
+      ical1c.iucn_conservation_action_level_1_classification_id as classification,
+      ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
+      ical3s.iucn_conservation_action_level_3_subclassification_id as subClassification2
     FROM
       project_iucn_action_classification as piac
     LEFT OUTER JOIN
@@ -229,9 +230,9 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
     WHERE
       piac.project_id = ${projectId}
     GROUP BY
-      ical2s.name,
-      ical1c.name,
-      ical3s.name;
+      ical1c.iucn_conservation_action_level_1_classification_id,
+      ical2s.iucn_conservation_action_level_2_subclassification_id,
+      ical3s.iucn_conservation_action_level_3_subclassification_id;
   `;
 
   defaultLog.debug({
@@ -276,6 +277,38 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 
   defaultLog.debug({
     label: 'getIndigenousPartnershipsByProjectSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to get project stakeholder partnerships.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'getStakeholderPartnershipsByProjectSQL', message: 'params', projectId });
+
+  if (!projectId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    SELECT
+      name as partnership_name
+    FROM
+      stakeholder_partnership
+    WHERE
+      project_id = ${projectId};
+  `;
+
+  defaultLog.debug({
+    label: 'getStakeholderPartnershipsByProjectSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

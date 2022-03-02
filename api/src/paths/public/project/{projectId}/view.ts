@@ -3,13 +3,13 @@ import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
 import {
+  GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
   GetPermitData
 } from '../../../../models/project-view';
-import { GetFundingData } from '../../../../models/project-view-update';
 import { GetPublicCoordinatorData, GetPublicProjectData } from '../../../../models/public/project';
 import { queries } from '../../../../queries/queries';
 import { getLogger } from '../../../../utils/logger';

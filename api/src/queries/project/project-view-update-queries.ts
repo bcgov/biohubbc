@@ -42,38 +42,6 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
 };
 
 /**
- * SQL query to get project stakeholder partnerships.
- *
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getStakeholderPartnershipsByProjectSQL', message: 'params', projectId });
-
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
-    SELECT
-      name as partnership_name
-    FROM
-      stakeholder_partnership
-    WHERE
-      project_id = ${projectId};
-  `;
-
-  defaultLog.debug({
-    label: 'getStakeholderPartnershipsByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to get project activities.
  *
  * @param {string} projectId
