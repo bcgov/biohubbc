@@ -13,7 +13,7 @@ yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
       return true;
     }
 
-    let seen = new Set();
+    const seen = new Set();
     const hasDuplicates = values.some((permit) => {
       return seen.size === seen.add(permit.permit_number).size;
     });
@@ -61,7 +61,7 @@ yup.addMethod(yup.array, 'isUniqueFocalAncillarySpecies', function (message: str
 yup.addMethod(
   yup.string,
   'isValidDateString',
-  function (dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat, message: string = 'Invalid date') {
+  function (dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat, message = 'Invalid date') {
     return this.test('is-valid-date', message, (value) => {
       if (!value) {
         // don't validate date string if it is null
@@ -76,7 +76,7 @@ yup.addMethod(
 yup.addMethod(
   yup.string,
   'isEndTimeAfterStartTime',
-  function (startTimeName: string, message: string = 'End time must be after start time') {
+  function (startTimeName: string, message = 'End time must be after start time') {
     return this.test('is-end-time-after-start-time', message, function (value) {
       if (!value) {
         // don't validate end_time if it is null
@@ -98,7 +98,7 @@ yup.addMethod(
   function (
     startDateName: string,
     dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
-    message: string = 'End date must be after start date'
+    message = 'End date must be after start date'
   ) {
     return this.test('is-end-date-after-start-date', message, function (value) {
       if (!value) {
@@ -161,7 +161,7 @@ yup.addMethod(yup.array, 'isUniqueAuthor', function (message: string) {
       return true;
     }
 
-    let seen = new Set();
+    const seen = new Set();
     const hasDuplicates = values.some((author) => {
       const authorName = `${author.first_name?.trim()} ${author.last_name?.trim()}`;
       return seen.size === seen.add(authorName).size;

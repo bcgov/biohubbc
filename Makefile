@@ -10,7 +10,7 @@
 export $(shell sed 's/=.*//' .env)
 
 .DEFAULT : help
-.PHONY : setup close clean build-backend run-backend build-web run-web database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav swagger-ui install test cypress lint lint-fix format format-fix help
+.PHONY : setup close clean build-backend run-backend build-web run-web database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav install test cypress lint lint-fix format format-fix help
 
 ## ------------------------------------------------------------------------------
 ## Alias Commands
@@ -34,7 +34,6 @@ db-rollback: | build-db-rollback run-db-rollback ## Performs all commands necess
 n8n-setup: | build-n8n-setup run-n8n-setup ## Performs all commands necessary to run the n8n setup
 n8n-export: | build-n8n-export run-n8n-export ## Performs all commands necessary to export the latest n8n credentials and workflows
 clamav: | build-clamav run-clamav ## Performs all commands necessary to run clamav
-swagger-ui: | build-swagger-ui run-swagger-ui ## Performs all commands necessary to run swagger-ui
 
 ## ------------------------------------------------------------------------------
 ## Setup/Cleanup Commands
@@ -225,22 +224,6 @@ run-clamav: ## Run clamav
 	@docker-compose -f docker-compose.yml up -d clamav
 
 ## ------------------------------------------------------------------------------
-## swagger ui commands
-## ------------------------------------------------------------------------------
-
-build-swagger-ui: ## Build the swagger ui image
-	@echo "==============================================="
-	@echo "Make: build-swagger-ui - building swagger ui image"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build swagger-ui
-
-run-swagger-ui: ## Run swagger ui
-	@echo "==============================================="
-	@echo "Make: run-swagger-ui - running swagger ui"
-	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d swagger-ui
-
-## ------------------------------------------------------------------------------
 ## Run `npm` commands for all projects
 ## ------------------------------------------------------------------------------
 
@@ -376,12 +359,6 @@ log-n8n-nginx: ## Runs `docker logs <container> -f` for the n8n nginx container
 	@echo "Running docker logs for the n8n-nginx container"
 	@echo "==============================================="
 	@docker logs $(DOCKER_PROJECT_NAME)-n8n-nginx-$(DOCKER_NAMESPACE)-container -f $(args)
-
-log-swagger-ui: ## Runs `docker logs <container> -f` for the swagger-ui container
-	@echo "==============================================="
-	@echo "Running docker logs for the swagger-ui container"
-	@echo "==============================================="
-	@docker logs $(DOCKER_PROJECT_NAME)-swagger-ui-$(DOCKER_NAMESPACE)-container -f $(args)
 
 ## ------------------------------------------------------------------------------
 ## Help

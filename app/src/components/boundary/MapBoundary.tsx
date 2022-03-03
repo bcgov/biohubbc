@@ -16,7 +16,9 @@ import InferredLocationDetails, { IInferredLayers } from 'components/boundary/In
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import MapContainer from 'components/map/MapContainer';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
+import get from 'lodash-es/get';
 import React, { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
@@ -42,24 +44,25 @@ const useStyles = makeStyles({
 });
 
 export interface IMapBoundaryProps {
+  name: string;
   title: string;
   mapId: string;
-  uploadError: string;
-  setUploadError: (error: string) => void;
-  values: any;
   bounds: any[];
-  errors?: any;
-  setFieldValue: (key: string, value: any) => void;
+  formikProps: FormikContextType<any>;
 }
 
 /**
  * Shared component for map boundary component
  *
+ * @param {*} props
  * @return {*}
  */
 const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   const classes = useStyles();
-  const { title, mapId, uploadError, setUploadError, values, bounds, setFieldValue, errors } = props;
+
+  const { name, title, mapId, bounds, formikProps } = props;
+
+  const { values, errors, setFieldValue } = formikProps;
 
   const [openUploadBoundary, setOpenUploadBoundary] = useState(false);
   const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
@@ -77,13 +80,13 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   }, [updatedBounds]);
 
   const boundaryUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress) => {
+    return (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        handleShapefileUpload(file, values, setFieldValue, setUploadError);
+        handleShapefileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        handleGPXUpload(file, setUploadError, values, setFieldValue);
+        handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        handleKMLUpload(file, setUploadError, values, setFieldValue);
+        handleKMLUpload(file, name, formikProps);
       }
 
       return Promise.resolve();
@@ -167,22 +170,24 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             </Button>
           )}
         </Box>
-        <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
+        <Box mt={2}>
+          {get(errors, name) && <Typography style={{ color: '#f44336' }}>{get(errors, name)}</Typography>}
+        </Box>
         <Box mt={5} height={500}>
           <MapContainer
             mapId={mapId}
             geometryState={{
               geometry: values.geometry,
-              setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo)
+              setGeometry: (newGeo: Feature[]) => setFieldValue(name, newGeo)
             }}
             bounds={(shouldUpdateBounds && updatedBounds) || bounds}
             selectedLayer={selectedLayer}
             setInferredLayersInfo={setInferredLayersInfo}
           />
         </Box>
-        {errors && errors.geometry && (
+        {get(errors, name) && (
           <Box pt={2}>
-            <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.geometry}</Typography>
+            <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name)}</Typography>
           </Box>
         )}
         {values.geometry && values.geometry.length > 0 && (

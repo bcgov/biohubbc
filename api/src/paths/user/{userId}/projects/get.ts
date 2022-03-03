@@ -1,12 +1,26 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
 import { queries } from '../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/user/{userId}/projects/get');
-export const GET: Operation = [getAllUserProjects()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  getAllUserProjects()
+];
 
 GET.apiDoc = {
   description: 'Gets a list of projects based on user Id.',

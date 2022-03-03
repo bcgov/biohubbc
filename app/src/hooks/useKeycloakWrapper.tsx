@@ -167,7 +167,9 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
       try {
         userDetails = await biohubApi.user.getUser();
-      } catch {}
+      } catch {
+        // do nothing
+      }
 
       setBioHubUser(() => {
         if (userDetails?.role_names?.length && !userDetails?.user_record_end_date) {
@@ -199,7 +201,9 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
       try {
         accessRequests = await biohubApi.admin.hasPendingAdministrativeActivities();
-      } catch {}
+      } catch {
+        // do nothing
+      }
 
       setHasAccessRequest(() => {
         setHasLoadedAllUserInfo(true);

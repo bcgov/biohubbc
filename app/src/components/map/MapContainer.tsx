@@ -251,8 +251,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geometryState?.geometry, nonEditableGeometries]);
 
-  let shownDrawControls: any = {};
-  let showEditControls: any = {};
+  const shownDrawControls: any = {};
+  const showEditControls: any = {};
 
   if (hideDrawControls) {
     shownDrawControls.rectangle = false;

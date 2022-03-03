@@ -138,7 +138,7 @@ export interface IGetSurveyForViewResponse {
  * @interface IUpdateSurveyRequest
  * @extends {IGetSurveyForUpdateResponse}
  */
-export interface IUpdateSurveyRequest extends IGetSurveyForUpdateResponse {}
+export type IUpdateSurveyRequest = IGetSurveyForUpdateResponse;
 
 /**
  * Get surveys list response object.

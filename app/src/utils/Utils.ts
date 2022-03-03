@@ -26,7 +26,7 @@ export const getFormattedDateRangeString = (
   dateFormat: DATE_FORMAT,
   startDate: string,
   endDate?: string,
-  dateSeparator: string = '-'
+  dateSeparator = '-'
 ): string => {
   const startDateFormatted = getFormattedDate(dateFormat, startDate);
 
@@ -86,7 +86,7 @@ export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string 
  * @return {string} formatted amount string (rounded to the nearest integer), or an empty string if unable to parse the amount
  */
 export const getFormattedAmount = (amount: number): string => {
-  var formatter = new Intl.NumberFormat('en-US', {
+  const formatter = new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: 'USD',
     minimumFractionDigits: 0,

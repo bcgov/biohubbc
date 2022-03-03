@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import path from 'path';
 import { goatCompositionOrRecruitmentJSON } from './template_methodology_species_validations/goat_composition_or_recruitment_2';
 

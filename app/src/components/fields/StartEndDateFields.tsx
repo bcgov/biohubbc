@@ -1,7 +1,8 @@
 import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
-import { DATE_LIMIT } from 'constants/dateTimeFormats';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import get from 'lodash-es/get';
+import moment from 'moment';
 import React from 'react';
 
 interface IStartEndDateFieldsProps {
@@ -29,6 +30,21 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
     endDateHelperText
   } = props;
 
+  const rawStartDateValue = get(values, startName);
+  const rawEndDateValue = get(values, endName);
+
+  const formattedStartDateValue =
+    (rawStartDateValue &&
+      moment(rawStartDateValue).isValid() &&
+      moment(rawStartDateValue).format(DATE_FORMAT.ShortDateFormat)) ||
+    '';
+
+  const formattedEndDateValue =
+    (rawEndDateValue &&
+      moment(rawEndDateValue).isValid() &&
+      moment(rawEndDateValue).format(DATE_FORMAT.ShortDateFormat)) ||
+    '';
+
   return (
     <Grid container item spacing={3}>
       <Grid item xs={12} md={6}>
@@ -39,7 +55,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           label="Start Date"
           variant="outlined"
           required={startRequired}
-          value={get(values, startName)}
+          value={formattedStartDateValue}
           type="date"
           InputProps={{
             // Chrome min/max dates
@@ -67,7 +83,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
           label="End Date"
           variant="outlined"
           required={endRequired}
-          value={get(values, endName)}
+          value={formattedEndDateValue}
           type="date"
           InputProps={{
             // Chrome min/max dates

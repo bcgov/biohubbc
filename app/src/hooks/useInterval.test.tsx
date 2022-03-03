@@ -3,7 +3,7 @@ import React from 'react';
 import { useInterval } from './useInterval';
 
 interface ITestComponentProps {
-  callback: Function | null | undefined;
+  callback: (() => any) | null | undefined;
   period: number | null | undefined;
   timeout: number;
 }

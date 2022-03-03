@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import path from 'path';
 
 const DB_USER_API_PASS = process.env.DB_USER_API_PASS;

@@ -21,6 +21,10 @@ GET.apiDoc = {
               environment: {
                 description: 'API Environment',
                 type: 'string'
+              },
+              timezone: {
+                description: 'API Timezone',
+                type: 'string'
               }
             }
           }

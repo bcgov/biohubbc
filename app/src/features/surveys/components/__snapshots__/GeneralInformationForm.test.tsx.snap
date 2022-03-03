@@ -995,7 +995,7 @@ exports[`General Information Form renders correctly the filled component correct
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
               data-shrink="true"
               for="start_date"
               id="start_date-label"
@@ -1022,7 +1022,7 @@ exports[`General Information Form renders correctly the filled component correct
                 name="start_date"
                 required=""
                 type="date"
-                value="2000-04-09 11:53:53"
+                value="2000-04-09"
               />
               <fieldset
                 aria-hidden="true"
@@ -1038,7 +1038,7 @@ exports[`General Information Form renders correctly the filled component correct
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
               id="start_date-helper-text"
             >
               Start date must be on or after project start date Oct 10, 1998
@@ -1052,7 +1052,7 @@ exports[`General Information Form renders correctly the filled component correct
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
               data-shrink="true"
               for="end_date"
               id="end_date-label"
@@ -1072,7 +1072,7 @@ exports[`General Information Form renders correctly the filled component correct
                 min="1900-01-01"
                 name="end_date"
                 type="date"
-                value="2020-05-10 11:53:53"
+                value="2020-05-10"
               />
               <fieldset
                 aria-hidden="true"
@@ -1088,7 +1088,7 @@ exports[`General Information Form renders correctly the filled component correct
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained"
+              class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled"
               id="end_date-helper-text"
             >
               End date must be on or before project end date Feb 26, 2021
@@ -1893,7 +1893,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error Mui-required Mui-required"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
               data-shrink="true"
               for="start_date"
               id="start_date-label"
@@ -1920,7 +1920,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                 name="start_date"
                 required=""
                 type="date"
-                value="2000-04-09 11:53:53"
+                value="2000-04-09"
               />
               <fieldset
                 aria-hidden="true"
@@ -1936,7 +1936,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error Mui-required"
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
               id="start_date-helper-text"
             >
               error on start date field
@@ -1950,7 +1950,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
           >
             <label
-              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error"
+              class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled"
               data-shrink="true"
               for="end_date"
               id="end_date-label"
@@ -1970,7 +1970,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
                 min="1900-01-01"
                 name="end_date"
                 type="date"
-                value="2020-05-10 11:53:53"
+                value="2020-05-10"
               />
               <fieldset
                 aria-hidden="true"
@@ -1986,7 +1986,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
             <p
-              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error"
+              class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled"
               id="end_date-helper-text"
             >
               error on end date field

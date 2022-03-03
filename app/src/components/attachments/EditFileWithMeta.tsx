@@ -3,9 +3,7 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import EditReportMetaForm, { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
 
-export interface IEditFileWithMetaProps {}
-
-export const EditFileWithMeta: React.FC<IEditFileWithMetaProps> = (props) => {
+export const EditFileWithMeta: React.FC = () => {
   const { handleSubmit } = useFormikContext<IEditReportMetaForm>();
 
   return (
