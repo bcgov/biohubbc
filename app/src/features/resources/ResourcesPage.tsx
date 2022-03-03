@@ -22,12 +22,12 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.4',
+      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.5',
       url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.4.xlsx',
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '110 KB'
+      fileSize: '115 KB'
     },
     {
       id: '2',
@@ -39,21 +39,21 @@ const ResourcesPage: React.FC = () => {
     },
     {
       id: '3',
-      name: 'Goat Aerial Population Composition Recruitment Survey 1.3',
+      name: 'Goat Aerial Population Composition Recruitment Survey 1.4',
       url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.3.xlsx',
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '161 KB'
+      fileSize: '165 KB'
     },
     {
       id: '4',
-      name: 'Sheep Aerial Population Composition Recruitment Survey 1.1',
+      name: 'Sheep Aerial Population Composition Recruitment Survey 1.2',
       url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.1.xlsx',
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '103 KB'
+      fileSize: '109 KB'
     },
     {
       id: '5',
