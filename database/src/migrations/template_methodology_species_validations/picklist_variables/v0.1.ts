@@ -254,16 +254,50 @@ const SignAge = [
 
 const GPSDatum = [{ name: 'NAD83' }, { name: 'NAD27' }, { name: 'WGS84' }];
 
-export const basicNumericValidator = [
-  {
-    column_numeric_validator: {
-      name: '',
-      description: ''
-    }
-  }
-];
+interface objectNameDescription {
+  name: string;
+  description: string;
+}
 
-export function basicCodeValidator(codeValues: object) {
+interface objectName {
+  name: string;
+}
+
+interface basicItems {
+  basicYN: objectNameDescription[];
+  basicYNDidnt: objectNameDescription[];
+  basicLight: objectNameDescription[];
+  basicSignAge: objectNameDescription[];
+  basicSignType: objectName[];
+  aircraftType: objectNameDescription[];
+  activityObservation: objectName[];
+  habitat: objectName[];
+  habitatSlope: objectNameDescription[];
+  activityNonTarget: objectName[];
+  featureType: objectName[];
+  gPSDatum: objectName[];
+  species: objectName[];
+  speciesSignType: objectName[];
+}
+
+export interface speciesItems {
+  SheepItems?: basicItems;
+  GoatItems?: basicItems;
+  MooseItems?: basicItems;
+}
+
+export function basicNumericValidator() {
+  return [
+    {
+      column_numeric_validator: {
+        name: '',
+        description: ''
+      }
+    }
+  ];
+}
+
+export function basicCodeValidator(codeValues: objectNameDescription[] | objectName[]) {
   return [
     {
       column_code_validator: {

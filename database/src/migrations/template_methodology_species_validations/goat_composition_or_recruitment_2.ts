@@ -10,7 +10,7 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'Population Unit/Block Area (km2)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Sampled (Y/N)',
@@ -53,23 +53,23 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'Total Time (hours)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Total Time (mins)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Time (mins)/block area (km2)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Days Since Snowfall',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -132,37 +132,37 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adult Unclassified',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Kid',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Unclassified',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Nanny',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Billy',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Total Count',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Sign Type',
@@ -182,7 +182,7 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'Elevation (m) of Observation',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Habitat',
@@ -272,43 +272,43 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'Adult Males',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adult Females',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adults - Unclassified Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juvenile Males',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juvenile Females',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juveniles - Unclassified Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Unknown Age/Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Total Count',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Activity',
@@ -365,7 +365,7 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'UTM Zone',
@@ -384,32 +384,32 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'Easting',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Northing',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'GPS Datum',
           description: '',
-          validations: GoatItems.gPSDatum
+          validations: basicCodeValidator(GoatItems.gPSDatum)
         },
         {
           name: 'Waypoint Elevation (m)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Lat',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Long',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -443,28 +443,28 @@ export const goatCompositionOrRecruitmentJSON = {
         {
           name: 'WLH ID',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Observed',
           description: '',
-          validations: GoatItems.basicYN
+          validations: basicCodeValidator(GoatItems.basicYN)
         },
         {
           name: 'With Young',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Collar Heard',
           description: '',
-          validations: GoatItems.basicYNDidnt
+          validations: basicCodeValidator(GoatItems.basicYNDidnt)
         }
       ],
       validations: [

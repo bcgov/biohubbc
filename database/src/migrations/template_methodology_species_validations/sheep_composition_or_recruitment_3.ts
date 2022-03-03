@@ -11,7 +11,7 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Population Unit/Block Area (km2)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Sampled (Y/N)',
@@ -44,7 +44,7 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Population Unit/Block Area (km2)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Aircraft Type',
@@ -59,23 +59,23 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Total Time (hours)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Total Time (mins)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Time (mins)/block area (km2)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Days Since Snowfall',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -133,12 +133,12 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'WLH ID',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Observed',
@@ -148,7 +148,7 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'With Young',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Collar Heard',
@@ -184,7 +184,7 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Species',
@@ -195,57 +195,57 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Ram - Class I',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Ram - Class II',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Ram - Class III',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Ram - Class IV',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Ram - Unclassified',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Ewes',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Yearling',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Lam (Young of Year)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Ewe-Like Sheep',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Unclassified',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Total Count',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Sign Type',
@@ -265,7 +265,7 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Elevation (m) of Observation',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Habitat',
@@ -280,17 +280,17 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: '% Veg Cover',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: '% Snow Cover',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: '% Canopy Cover',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -342,49 +342,49 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Adult Males',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adult Females',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adults - Unclassified Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juvenile Males',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juvenile Females',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juveniles - Unclassified Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Unknown Age/Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Total Count',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Activity',
@@ -440,7 +440,7 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'UTM Zone',
@@ -459,12 +459,12 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Easting',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Northing',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'GPS Datum',
@@ -474,17 +474,17 @@ export const sheepCompositionOrRecruitmentJSON = {
         {
           name: 'Waypoint Elevation (m)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Lat',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Long',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [

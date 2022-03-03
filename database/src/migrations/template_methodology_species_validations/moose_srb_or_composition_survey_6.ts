@@ -10,7 +10,7 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Stratum',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -31,12 +31,12 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Stratum Area (km2)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Stratum',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
@@ -70,23 +70,23 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'WLH ID',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Observed',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'With Young',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Collar Heard',
@@ -132,23 +132,23 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Total Time (hours)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Total Time (mins)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Time (mins)/block area (km2)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
 
         {
           name: 'Days Since Snowfall',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -201,7 +201,7 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Species',
@@ -211,82 +211,82 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Yearling Bulls',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adult Bulls - Unclassified',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Sub-Prime Bulls',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Prime Bulls',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Senior Bulls',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Bulls - Unclassified',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Lone Cows',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Cow W/1 calf',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Cow W/2 calves',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Lone Calf',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Unclassified',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Total Count',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'No. Spike/Fork',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: '3 brow/10 points',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: '% Veg Cover',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: '% Snow Cover',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -347,47 +347,47 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Total Count',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adult Males',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adult Females',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Adults - Unclassified Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juvenile Males',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juvenile Females',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Juveniles - Unclassified Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Unknown Age/Sex',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
@@ -446,37 +446,37 @@ export const mooseSRBOrCompositionJSON = {
         {
           name: 'Waypoint',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Easting',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Northing',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Lat',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Long',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Waypoint Elevation (m)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         },
         {
           name: 'Elevation(-65m)',
           description: '',
-          validations: basicNumericValidator
+          validations: basicNumericValidator()
         }
       ],
       validations: [
