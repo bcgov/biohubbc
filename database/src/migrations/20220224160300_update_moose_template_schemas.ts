@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import path from 'path';
 import { mooseSRBOrCompositionJSON } from './template_methodology_species_validations/moose_srb_or_composition_survey_6';
 
