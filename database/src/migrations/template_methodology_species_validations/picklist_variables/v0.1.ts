@@ -256,34 +256,7 @@ const GPSDatum = [{ name: 'NAD83' }, { name: 'NAD27' }, { name: 'WGS84' }];
 
 interface objectNameDescription {
   name: string;
-  description: string;
-}
-
-interface objectName {
-  name: string;
-}
-
-interface basicItems {
-  basicYN: objectNameDescription[];
-  basicYNDidnt: objectNameDescription[];
-  basicLight: objectNameDescription[];
-  basicSignAge: objectNameDescription[];
-  basicSignType: objectName[];
-  aircraftType: objectNameDescription[];
-  activityObservation: objectName[];
-  habitat: objectName[];
-  habitatSlope: objectNameDescription[];
-  activityNonTarget: objectName[];
-  featureType: objectName[];
-  gPSDatum: objectName[];
-  species: objectName[];
-  speciesSignType: objectName[];
-}
-
-export interface speciesItems {
-  SheepItems?: basicItems;
-  GoatItems?: basicItems;
-  MooseItems?: basicItems;
+  description?: string;
 }
 
 export function basicNumericValidator() {
@@ -297,7 +270,7 @@ export function basicNumericValidator() {
   ];
 }
 
-export function basicCodeValidator(codeValues: objectNameDescription[] | objectName[]) {
+export function basicCodeValidator(codeValues: objectNameDescription[]) {
   return [
     {
       column_code_validator: {
