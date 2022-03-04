@@ -52,21 +52,23 @@ const PublicIUCNClassification: React.FC<IPublicIUCNClassificationProps> = (prop
               props.codes.iucn_conservation_action_level_1_classification[classificationDetail.classification - 1].name;
 
             const iucn2_name =
-              props.codes.iucn_conservation_action_level_2_subclassification[classificationDetail.subClassification1 - 1]
-                .name;
+              props.codes.iucn_conservation_action_level_2_subclassification[
+                classificationDetail.subClassification1 - 1
+              ].name;
 
             const iucn3_name =
-              props.codes.iucn_conservation_action_level_3_subclassification[classificationDetail.subClassification2 - 1]
-                .name;
+              props.codes.iucn_conservation_action_level_3_subclassification[
+                classificationDetail.subClassification2 - 1
+              ].name;
             return (
               <Box component="li" key={index} className={classes.iucnListItem}>
                 <Divider />
                 <Box>
                   <Typography component="span" variant="body1">
-                    {iucn1_name} 
-                    <span>{' > '}</span> 
+                    {iucn1_name}
+                    <span>{' > '}</span>
                     {iucn2_name}
-                    <span>{' > '}</span> 
+                    <span>{' > '}</span>
                     {iucn3_name}
                   </Typography>
                 </Box>

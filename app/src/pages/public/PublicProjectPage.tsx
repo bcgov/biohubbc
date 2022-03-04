@@ -107,7 +107,7 @@ const PublicProjectPage = () => {
   };
 
   if (!projectWithDetails || !codes.isReady || !codes.codes) {
-    return <CircularProgress className="pageProgress" size={40} />;
+    return <CircularProgress className="pageProgress" data-testid="loading_spinner" size={40} />;
   }
 
   return (

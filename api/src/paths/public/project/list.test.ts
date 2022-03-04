@@ -3,10 +3,10 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as db from '../../database/db';
-import { HTTPError } from '../../errors/custom-error';
-import { ProjectService } from '../../services/project-service';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
+import * as db from '../../../database/db';
+import { HTTPError } from '../../../errors/custom-error';
+import { ProjectService } from '../../../services/project-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import { GET, getPublicProjectsList } from './list';
 
 chai.use(sinonChai);

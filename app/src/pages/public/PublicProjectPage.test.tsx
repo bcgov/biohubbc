@@ -7,6 +7,8 @@ import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import PublicProjectPage from './PublicProjectPage';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { codes } from 'test-helpers/code-helpers';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
@@ -16,6 +18,9 @@ const mockUseBiohubApi = {
     project: {
       getProjectForView: jest.fn<Promise<IGetProjectForViewResponse>, [number]>()
     }
+  },
+  codes: {
+    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   }
 };
 
@@ -27,14 +32,20 @@ describe('PublicProjectPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().public.project.getProjectForView.mockClear();
+    mockBiohubApi().codes.getAllCodeSets.mockClear();
   });
 
   afterEach(() => {
     cleanup();
   });
 
-  it('renders a spinner if no project is loaded', () => {
-    const { asFragment } = render(
+  it('renders spinner when no codes is loaded', async () => {
+    mockBiohubApi().public.project.getProjectForView.mockResolvedValue({
+      ...getProjectForViewResponse,
+      project: { ...getProjectForViewResponse.project, end_date: '2100-02-26' }
+    });
+
+    const { getByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
           <PublicProjectPage />
@@ -42,11 +53,14 @@ describe('PublicProjectPage', () => {
       </DialogContextProvider>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByTestId('loading_spinner')).toBeVisible();
+    });
   });
 
   it('renders public project page when project is loaded (project is active)', async () => {
     mockBiohubApi().public.project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -69,6 +83,7 @@ describe('PublicProjectPage', () => {
       ...getProjectForViewResponse,
       project: { ...getProjectForViewResponse.project, completion_status: 'Completed' }
     });
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
     const { asFragment, findByText } = render(
       <DialogContextProvider>
@@ -94,6 +109,7 @@ describe('PublicProjectPage', () => {
         end_date: (null as unknown) as string
       }
     });
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
     const { asFragment, findByText } = render(
       <Router history={history}>

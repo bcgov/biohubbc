@@ -119,7 +119,10 @@ const useProjectApi = (axios: AxiosInstance) => {
     const { data } = await axios.get(`/api/project/list`, {
       params: filterFieldData,
       paramsSerializer: (params: any) => {
-        return qs.stringify(params, { arrayFormat: 'repeat', filter: (_prefix: any, value: any) => value || undefined });
+        return qs.stringify(params, {
+          arrayFormat: 'repeat',
+          filter: (_prefix: any, value: any) => value || undefined
+        });
       }
     });
 
@@ -484,7 +487,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/public/list`);
+    const { data } = await axios.get(`/api/public/project/list`);
 
     return data;
   };

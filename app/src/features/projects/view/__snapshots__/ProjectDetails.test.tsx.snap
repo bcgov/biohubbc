@@ -95,9 +95,7 @@ exports[`ProjectDetails renders correctly 1`] = `
               </dt>
               <dd
                 class="MuiTypography-root MuiTypography-body1"
-              >
-                1
-              </dd>
+              />
             </div>
             <div
               class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
@@ -382,15 +380,15 @@ exports[`ProjectDetails renders correctly 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            classification 
+            IUCN class 1 
             <span>
               &gt;
             </span>
-             sub classification 1 
+             IUCN subclass 1 - 1 
             <span>
               &gt;
             </span>
-             sub classification 2
+             IUCN subclass 2 - 1
           </p>
         </li>
         <li
@@ -399,15 +397,15 @@ exports[`ProjectDetails renders correctly 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2"
           >
-            classification again 
+            undefined 
             <span>
               &gt;
             </span>
-             sub classification 1 again 
+             IUCN subclass 1 - 2 
             <span>
               &gt;
             </span>
-             sub classification 2 again
+             IUCN subclass 2 - 2
           </p>
         </li>
       </ul>
@@ -779,13 +777,11 @@ exports[`ProjectDetails renders correctly 1`] = `
             <dd
               class="MuiTypography-root MuiTypography-body1"
             >
-              partner 1
+              First nations code
             </dd>
             <dd
               class="MuiTypography-root MuiTypography-body1"
-            >
-              partner 2
-            </dd>
+            />
           </div>
           <div
             class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"

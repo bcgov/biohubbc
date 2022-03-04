@@ -155,11 +155,23 @@ const IUCNClassification: React.FC<IIUCNClassificationProps> = (props) => {
             return (
               <ListItem key={index} className={classes.iucnListItem} divider disableGutters>
                 <Typography variant="body2">
-                  {`${codes?.iucn_conservation_action_level_1_classification?.find((item: any) => item.id === classificationDetail.classification)?.name} `}
-                  <span>{'>'}</span> 
-                  {` ${codes?.iucn_conservation_action_level_2_subclassification?.find((item: any) => item.id === classificationDetail.subClassification1)?.name} `}
-                  <span>{'>'}</span> 
-                  {` ${codes?.iucn_conservation_action_level_3_subclassification?.find((item: any) => item.id === classificationDetail.subClassification2)?.name}`}
+                  {`${
+                    codes?.iucn_conservation_action_level_1_classification?.find(
+                      (item: any) => item.id === classificationDetail.classification
+                    )?.name
+                  } `}
+                  <span>{'>'}</span>
+                  {` ${
+                    codes?.iucn_conservation_action_level_2_subclassification?.find(
+                      (item: any) => item.id === classificationDetail.subClassification1
+                    )?.name
+                  } `}
+                  <span>{'>'}</span>
+                  {` ${
+                    codes?.iucn_conservation_action_level_3_subclassification?.find(
+                      (item: any) => item.id === classificationDetail.subClassification2
+                    )?.name
+                  }`}
                 </Typography>
               </ListItem>
             );

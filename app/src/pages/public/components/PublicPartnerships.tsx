@@ -41,7 +41,7 @@ const PublicPartnerships: React.FC<IPublicPartnershipsProps> = (props) => {
             <Typography component="dt" variant="subtitle2" color="textSecondary">
               Indigenous Partnerships
             </Typography>
-            {indigenous_partnerships?.map((indigenousPartnership: string, index: number) => {
+            {indigenous_partnerships?.map((indigenousPartnership: number, index: number) => {
               const codeValue = codes.first_nations.find((code: any) => code.id === indigenousPartnership);
               return (
                 <Typography component="dd" variant="body1" key={index}>

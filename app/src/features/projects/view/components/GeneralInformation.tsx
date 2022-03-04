@@ -161,7 +161,7 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
                 Project Type
               </Typography>
               <Typography component="dd" variant="body1">
-                { codes?.project_type?.find((item: any) => item.id === project.project_type)?.name }
+                {codes?.project_type?.find((item: any) => item.id === project.project_type)?.name}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>

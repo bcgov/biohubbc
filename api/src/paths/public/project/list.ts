@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { getAPIUserDBConnection } from '../../database/db';
-import { projectIdResponseObject } from '../../openapi/schemas/project';
-import { ProjectService } from '../../services/project-service';
-import { getLogger } from '../../utils/logger';
+import { getAPIUserDBConnection } from '../../../database/db';
+import { projectIdResponseObject } from '../../../openapi/schemas/project';
+import { ProjectService } from '../../../services/project-service';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/public/projects');
 
