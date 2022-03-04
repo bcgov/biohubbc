@@ -21,7 +21,7 @@ export const GET: Operation = [
       ]
     };
   }),
-  getProjectForView()
+  viewProject()
 ];
 
 GET.apiDoc = {
@@ -310,7 +310,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-export function getProjectForView(): RequestHandler {
+export function viewProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 

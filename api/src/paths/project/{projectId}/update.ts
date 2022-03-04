@@ -326,7 +326,7 @@ GET.apiDoc = {
  *
  * @returns {RequestHandler}
  */
-function getProjectForUpdate(): RequestHandler {
+export function getProjectForUpdate(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -437,7 +437,7 @@ export interface IUpdateProject {
  *
  * @returns {RequestHandler}
  */
-function updateProject(): RequestHandler {
+export function updateProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 

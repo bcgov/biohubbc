@@ -7,35 +7,35 @@ import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
 import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
-import { GET, getPublicProjectsList } from './list';
+import { createProject, POST } from './create';
 
 chai.use(sinonChai);
 
-describe('list', () => {
+describe('create', () => {
   describe('openapi schema', () => {
     const ajv = new Ajv();
 
     it('is valid openapi v3 schema', () => {
-      expect(ajv.validateSchema((GET.apiDoc as unknown) as object)).to.be.true;
+      expect(ajv.validateSchema((POST.apiDoc as unknown) as object)).to.be.true;
     });
   });
 
-  describe('getPublicProjectsList', () => {
+  describe('createProject', () => {
     afterEach(() => {
       sinon.restore();
     });
 
-    it('returns an empty array if no project ids are found', async () => {
+    it('creates a new project', async () => {
       const dbConnectionObj = getMockDBConnection();
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'getPublicProjectsList').resolves([]);
+      sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       try {
-        const requestHandler = getPublicProjectsList();
+        const requestHandler = createProject();
 
         await requestHandler(mockReq, mockRes, mockNext);
       } catch (actualError) {
@@ -43,31 +43,7 @@ describe('list', () => {
       }
 
       expect(mockRes.statusValue).to.equal(200);
-      expect(mockRes.jsonValue).to.eql([]);
-    });
-
-    it('returns an array of projects', async () => {
-      const dbConnectionObj = getMockDBConnection();
-
-      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-      const mockProject1 = ({ project: { project_id: 1 } } as unknown) as any;
-      const mockProject2 = ({ project: { project_id: 2 } } as unknown) as any;
-
-      sinon.stub(ProjectService.prototype, 'getPublicProjectsList').resolves([mockProject1, mockProject2]);
-
-      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
-
-      try {
-        const requestHandler = getPublicProjectsList();
-
-        await requestHandler(mockReq, mockRes, mockNext);
-      } catch (actualError) {
-        expect.fail();
-      }
-
-      expect(mockRes.jsonValue).to.eql([mockProject1, mockProject2]);
-      expect(mockRes.statusValue).to.equal(200);
+      expect(mockRes.jsonValue).to.eql({ id: 1 });
     });
 
     it('catches error, calls rollback, and re-throws error', async () => {
@@ -75,16 +51,17 @@ describe('list', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(ProjectService.prototype, 'getPublicProjectsList').rejects(new Error('a test error'));
+      sinon.stub(ProjectService.prototype, 'createProject').rejects(new Error('a test error'));
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
       try {
-        const requestHandler = getPublicProjectsList();
+        const requestHandler = createProject();
 
         await requestHandler(mockReq, mockRes, mockNext);
         expect.fail();
       } catch (actualError) {
+        expect(dbConnectionObj.rollback).to.have.been.called;
         expect(dbConnectionObj.release).to.have.been.called;
 
         expect((actualError as HTTPError).message).to.equal('a test error');
