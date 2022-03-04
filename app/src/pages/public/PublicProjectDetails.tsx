@@ -13,10 +13,12 @@ import PublicLocationBoundary from './components/PublicLocationBoundary';
 import PublicIUCNClassification from './components/PublicIUCNClassification';
 import PublicPartnerships from './components/PublicPartnerships';
 import PublicFundingSource from './components/PublicFundingSource';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface IPublicProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
   refresh: () => void;
+  codes: IGetAllCodeSetsResponse;
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -38,7 +40,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const PublicProjectDetails: React.FC<IPublicProjectDetailsProps> = (props) => {
-  const { projectForViewData, refresh } = props;
+  const { projectForViewData, codes, refresh } = props;
 
   const classes = useStyles();
 
@@ -80,13 +82,13 @@ const PublicProjectDetails: React.FC<IPublicProjectDetailsProps> = (props) => {
 
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <PublicIUCNClassification projectForViewData={projectForViewData} refresh={refresh} />
+          <PublicIUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
 
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <PublicPartnerships projectForViewData={projectForViewData} refresh={refresh} />
+          <PublicPartnerships projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
 

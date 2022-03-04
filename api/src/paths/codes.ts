@@ -12,11 +12,6 @@ export const GET: Operation = [getAllCodes()];
 GET.apiDoc = {
   description: 'Get all Codes.',
   tags: ['code'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
   responses: {
     200: {
       description: 'Code response object.',

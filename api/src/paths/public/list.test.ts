@@ -2,7 +2,7 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as projects from './projects';
+import * as projects from './list';
 import * as db from '../../database/db';
 import public_queries from '../../queries/public';
 import SQL from 'sql-template-strings';

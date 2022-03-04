@@ -1,7 +1,7 @@
 import moment from 'moment';
-import { PROJECT_ROLE } from '../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
-import { HTTP400, HTTP409 } from '../errors/custom-error';
+import { HTTP400, HTTP409, HTTP500 } from '../errors/custom-error';
 import {
   IPostExistingPermit,
   IPostIUCN,
@@ -31,8 +31,12 @@ import {
   GetFundingData,
   IGetProject
 } from '../models/project-view';
+import { GetPublicCoordinatorData, GetPublicProjectData } from '../models/public/project';
+import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
+import { userHasValidRole } from '../request-handlers/security/authorization';
+import { deleteFileFromS3 } from '../utils/file-utils';
 import { DBService } from './service';
 
 export class ProjectService extends DBService {
@@ -138,6 +142,85 @@ export class ProjectService extends DBService {
     if (!response || !response.rowCount) {
       throw new HTTP400('Failed to insert project team member');
     }
+  }
+
+  async getPublicProjectsList(): Promise<any> {
+    const getProjectListSQLStatement = queries.public.getPublicProjectListSQL();
+
+    if (!getProjectListSQLStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(getProjectListSQLStatement.text, getProjectListSQLStatement.values);
+
+    if (!response || !response.rows || !response.rows.length) {
+      return [];
+    }
+
+    return response.rows.map((row) => ({
+      id: row.id,
+      name: row.name,
+      start_date: row.start_date,
+      end_date: row.end_date,
+      coordinator_agency: row.coordinator_agency_name,
+      completion_status:
+        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
+        COMPLETION_STATUS.ACTIVE,
+      project_type: row.project_type,
+      permits_list: row.permits_list
+    }));
+  }
+
+  async getPublicProjectById(projectId: number): Promise<any> {
+    const getProjectSQLStatement = queries.public.getPublicProjectSQL(projectId);
+    const getProjectActivitiesSQLStatement = queries.public.getActivitiesByPublicProjectSQL(projectId);
+
+    if (!getProjectSQLStatement || !getProjectActivitiesSQLStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const [
+      projectData,
+      activityData,
+      permitData,
+      locationData,
+      partnershipsData,
+      IUCNClassificationData,
+      fundingData
+    ] = await Promise.all([
+      await this.connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
+      await this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
+      await this.getPermitData(projectId),
+      await this.getLocationData(projectId),
+      await this.getPartnershipsData(projectId),
+      await this.getIUCNClassificationData(projectId),
+      await this.getFundingData(projectId)
+    ]);
+
+    const getProjectData =
+      (projectData &&
+        projectData.rows &&
+        activityData &&
+        activityData.rows &&
+        new GetPublicProjectData(projectData.rows[0], activityData.rows)) ||
+      null;
+
+    const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
+
+    const getCoordinatorData =
+      (projectData && projectData.rows && new GetPublicCoordinatorData(projectData.rows[0])) || null;
+
+    return {
+      id: projectId,
+      project: getProjectData,
+      objectives: getObjectivesData,
+      coordinator: getCoordinatorData,
+      permit: permitData,
+      location: locationData,
+      partnerships: partnershipsData,
+      iucn: IUCNClassificationData,
+      funding: fundingData
+    };
   }
 
   async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
@@ -520,7 +603,7 @@ export class ProjectService extends DBService {
     promises.push(
       Promise.all(
         postProjectData.project.project_activities.map((activityId: number) =>
-          this.insertProjectActivity(activityId, projectId)
+          this.insertActivity(activityId, projectId)
         )
       )
     );
@@ -528,7 +611,7 @@ export class ProjectService extends DBService {
     await Promise.all(promises);
 
     // The user that creates a project is automatically assigned a project lead role, for this project
-    await this.insertProjectParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
+    await this.insertParticipantRole(projectId, PROJECT_ROLE.PROJECT_LEAD);
 
     return projectId;
   }
@@ -668,7 +751,7 @@ export class ProjectService extends DBService {
     return result.id;
   }
 
-  async insertProjectActivity(activityId: number, projectId: number): Promise<number> {
+  async insertActivity(activityId: number, projectId: number): Promise<number> {
     const sqlStatement = queries.project.postProjectActivitySQL(activityId, projectId);
 
     if (!sqlStatement) {
@@ -686,7 +769,7 @@ export class ProjectService extends DBService {
     return result.id;
   }
 
-  async insertProjectParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
+  async insertParticipantRole(projectId: number, projectParticipantRole: string): Promise<void> {
     const systemUserId = this.connection.systemUserId();
 
     if (!systemUserId) {
@@ -714,7 +797,7 @@ export class ProjectService extends DBService {
     const promises: Promise<any>[] = [];
 
     if (entities?.partnerships) {
-      promises.push(this.updateProjectPartnershipsData(projectId, entities));
+      promises.push(this.updatePartnershipsData(projectId, entities));
     }
 
     if (entities?.project || entities?.location || entities?.objectives || entities?.coordinator) {
@@ -722,21 +805,21 @@ export class ProjectService extends DBService {
     }
 
     if (entities?.permit && entities?.coordinator) {
-      promises.push(this.updateProjectPermitData(projectId, entities));
+      promises.push(this.updatePermitData(projectId, entities));
     }
 
     if (entities?.iucn) {
-      promises.push(this.updateProjectIUCNData(projectId, entities));
+      promises.push(this.updateIUCNData(projectId, entities));
     }
 
     if (entities?.funding) {
-      promises.push(this.updateProjectFundingData(projectId, entities));
+      promises.push(this.updateFundingData(projectId, entities));
     }
 
     await Promise.all(promises);
   }
 
-  async updateProjectPermitData(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updatePermitData(projectId: number, entities: IUpdateProject): Promise<void> {
     if (!entities.permit) {
       throw new HTTP400('Missing request body entity `permit`');
     }
@@ -769,7 +852,7 @@ export class ProjectService extends DBService {
     await Promise.all([insertPermitPromises, updateExistingPermitPromises]);
   }
 
-  async updateProjectIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {
     const putIUCNData = (entities?.iucn && new PutIUCNData(entities.iucn)) || null;
 
     const sqlDeleteStatement = queries.project.deleteIUCNSQL(projectId);
@@ -792,7 +875,7 @@ export class ProjectService extends DBService {
     await Promise.all(insertIUCNPromises);
   }
 
-  async updateProjectPartnershipsData(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updatePartnershipsData(projectId: number, entities: IUpdateProject): Promise<void> {
     const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
 
     const sqlDeleteIndigenousPartnershipsStatement = queries.project.deleteIndigenousPartnershipsSQL(projectId);
@@ -878,11 +961,11 @@ export class ProjectService extends DBService {
     }
 
     if (putProjectData?.project_activities.length) {
-      await this.updateProjectActivityData(projectId, putProjectData);
+      await this.updateActivityData(projectId, putProjectData);
     }
   }
 
-  async updateProjectActivityData(projectId: number, projectData: PutProjectData) {
+  async updateActivityData(projectId: number, projectData: PutProjectData) {
     const sqlDeleteActivities = queries.project.deleteActivitiesSQL(projectId);
 
     if (!sqlDeleteActivities) {
@@ -896,13 +979,12 @@ export class ProjectService extends DBService {
     }
 
     const insertActivityPromises =
-      projectData?.project_activities?.map((activityId: number) => this.insertProjectActivity(activityId, projectId)) ||
-      [];
+      projectData?.project_activities?.map((activityId: number) => this.insertActivity(activityId, projectId)) || [];
 
     await Promise.all([...insertActivityPromises]);
   }
 
-  async updateProjectFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
+  async updateFundingData(projectId: number, entities: IUpdateProject): Promise<void> {
     const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
 
     const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
@@ -946,5 +1028,116 @@ export class ProjectService extends DBService {
     if (!insertResult) {
       throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
     }
+  }
+
+  async updatePublishStatus(projectId: number, publish: boolean): Promise<number> {
+    const sqlStatement = queries.project.updateProjectPublishStatusSQL(projectId, publish);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows && response.rows[0]) || null;
+
+    if (!response || !result) {
+      throw new HTTP500('Failed to update project publish status');
+    }
+
+    return result.id;
+  }
+
+  async deleteProject(projectId: number, userRoles: string | string[]): Promise<boolean | null> {
+    /**
+     * PART 1
+     * Check that user is a system administrator - can delete a project (published or not)
+     * Check that user is a project administrator - can delete a project (unpublished only)
+     *
+     */
+    const getProjectSQLStatement = queries.project.getProjectSQL(projectId);
+
+    if (!getProjectSQLStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const projectData = await this.connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values);
+
+    const projectResult = (projectData && projectData.rows && projectData.rows[0]) || null;
+
+    if (!projectResult || !projectResult.id) {
+      throw new HTTP400('Failed to get the project');
+    }
+
+    if (projectResult.publish_date && userHasValidRole([SYSTEM_ROLE.PROJECT_CREATOR], userRoles)) {
+      throw new HTTP400('Cannot delete a published project if you are not a system administrator.');
+    }
+
+    /**
+     * PART 2
+     * Get the attachment S3 keys for all attachments associated to this project and surveys under this project
+     * Used to delete them from S3 separately later
+     */
+    const getProjectAttachmentSQLStatement = queries.project.getProjectAttachmentsSQL(projectId);
+    const getSurveyIdsSQLStatement = queries.survey.getSurveyIdsSQL(projectId);
+
+    if (!getProjectAttachmentSQLStatement || !getSurveyIdsSQLStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const getProjectAttachmentsResult = await this.connection.query(
+      getProjectAttachmentSQLStatement.text,
+      getProjectAttachmentSQLStatement.values
+    );
+
+    if (!getProjectAttachmentsResult || !getProjectAttachmentsResult.rows) {
+      throw new HTTP400('Failed to get project attachments');
+    }
+
+    const getSurveyIdsResult = await this.connection.query(
+      getSurveyIdsSQLStatement.text,
+      getSurveyIdsSQLStatement.values
+    );
+
+    if (!getSurveyIdsResult || !getSurveyIdsResult.rows) {
+      throw new HTTP400('Failed to get survey ids associated to project');
+    }
+
+    const surveyAttachmentS3Keys: string[] = Array.prototype.concat.apply(
+      [],
+      await Promise.all(
+        getSurveyIdsResult.rows.map((survey: any) => getSurveyAttachmentS3Keys(survey.id, this.connection))
+      )
+    );
+
+    const projectAttachmentS3Keys: string[] = getProjectAttachmentsResult.rows.map((attachment: any) => {
+      return attachment.key;
+    });
+
+    /**
+     * PART 3
+     * Delete the project and all associated records/resources from our DB
+     */
+    const deleteProjectSQLStatement = queries.project.deleteProjectSQL(projectId);
+
+    if (!deleteProjectSQLStatement) {
+      throw new HTTP400('Failed to build SQL delete statement');
+    }
+
+    await this.connection.query(deleteProjectSQLStatement.text, deleteProjectSQLStatement.values);
+
+    /**
+     * PART 4
+     * Delete the project and survey attachments from S3
+     */
+    const deleteResult = [
+      ...(await Promise.all(projectAttachmentS3Keys.map((projectS3Key: string) => deleteFileFromS3(projectS3Key)))),
+      ...(await Promise.all(surveyAttachmentS3Keys.map((surveyS3Key: string) => deleteFileFromS3(surveyS3Key))))
+    ];
+
+    if (deleteResult.some((deleteResult) => !deleteResult)) {
+      return null;
+    }
+
+    return true;
   }
 }

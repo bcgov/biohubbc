@@ -484,7 +484,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/public/projects`);
+    const { data } = await axios.get(`/api/public/list`);
 
     return data;
   };

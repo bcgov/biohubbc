@@ -2,10 +2,10 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400, HTTP500 } from '../../../errors/custom-error';
+import { HTTP400 } from '../../../errors/custom-error';
 import { projectIdResponseObject } from '../../../openapi/schemas/project';
-import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/publish');
@@ -117,24 +117,14 @@ export function publishProject(): RequestHandler {
 
       const publish: boolean = req.body.publish;
 
-      const sqlStatement = queries.project.updateProjectPublishStatusSQL(projectId, publish);
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL statement');
-      }
-
       await connection.open();
 
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      const projectService = new ProjectService(connection);
 
-      const result = (response && response.rows && response.rows[0]) || null;
-
-      if (!response || !result) {
-        throw new HTTP500('Failed to update project publish status');
-      }
+      const result = await projectService.updatePublishStatus(projectId, publish);
 
       await connection.commit();
-      return res.status(200).json({ id: result.id });
+      return res.status(200).json({ id: result });
     } catch (error) {
       defaultLog.error({ label: 'publishProject', message: 'error', error });
       await connection.rollback();

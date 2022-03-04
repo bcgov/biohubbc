@@ -1,11 +1,13 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 
 export interface IPublicPartnershipsProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
@@ -18,7 +20,8 @@ const PublicPartnerships: React.FC<IPublicPartnershipsProps> = (props) => {
   const {
     projectForViewData: {
       partnerships: { indigenous_partnerships, stakeholder_partnerships }
-    }
+    },
+    codes
   } = props;
 
   const hasIndigenousPartnerships = indigenous_partnerships && indigenous_partnerships.length > 0;
@@ -39,9 +42,10 @@ const PublicPartnerships: React.FC<IPublicPartnershipsProps> = (props) => {
               Indigenous Partnerships
             </Typography>
             {indigenous_partnerships?.map((indigenousPartnership: string, index: number) => {
+              const codeValue = codes.first_nations.find((code: any) => code.id === indigenousPartnership);
               return (
                 <Typography component="dd" variant="body1" key={index}>
-                  {indigenousPartnership}
+                  {codeValue?.name}
                 </Typography>
               );
             })}

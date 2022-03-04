@@ -12,7 +12,7 @@ import { HTTPError } from '../../../errors/custom-error';
 
 chai.use(sinonChai);
 
-describe('updateProjectPermitData', () => {
+describe('updatePermitData', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -48,7 +48,7 @@ describe('updateProjectPermitData', () => {
     });
 
     try {
-      await update.updateProjectPermitData(projectId, { ...entities, permit: null }, dbConnectionObj);
+      await update.updatePermitData(projectId, { ...entities, permit: null }, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -68,7 +68,7 @@ describe('updateProjectPermitData', () => {
     sinon.stub(project_queries, 'deletePermitSQL').returns(null);
 
     try {
-      await update.updateProjectPermitData(projectId, entities, dbConnectionObj);
+      await update.updatePermitData(projectId, entities, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
@@ -93,7 +93,7 @@ describe('updateProjectPermitData', () => {
     sinon.stub(project_queries, 'deletePermitSQL').returns(SQL`something`);
 
     try {
-      await update.updateProjectPermitData(projectId, entities, dbConnectionObj);
+      await update.updatePermitData(projectId, entities, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
