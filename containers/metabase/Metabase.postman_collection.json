@@ -1,0 +1,369 @@
+{
+	"info": {
+		"_postman_id": "8c8479d3-41d2-42af-921c-aa23687d048d",
+		"name": "Metabase",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Current User Info",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "X-Metabase-Session",
+						"value": "{{session}}",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{HOST}}/api/user/current",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"user",
+						"current"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Authenticate",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"pm.collectionVariables.set(\"session\", jsonData.id);\r",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\"username\": \"{{USER}}\", \"password\": \"{{PASSWORD}}\"}"
+				},
+				"url": {
+					"raw": "{{HOST}}/api/session",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"session"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Session",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Metabase-Session",
+						"value": "{{session}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/api/session/properties",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"session",
+						"properties"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Tables",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Metabase-Session",
+						"value": "{{session}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "https://metabase-af2668-tools.apps.silver.devops.gov.bc.ca/api/table/",
+					"protocol": "https",
+					"host": [
+						"metabase-af2668-tools",
+						"apps",
+						"silver",
+						"devops",
+						"gov",
+						"bc",
+						"ca"
+					],
+					"path": [
+						"api",
+						"table",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "All Users",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Metabase-Session",
+						"value": "{{session}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/api/user/",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"user",
+						""
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Session",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					},
+					{
+						"key": "X-Metabase-Session",
+						"value": "{{session}}",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{HOST}}/api/session/?metabase-session-id={{session}}",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"session",
+						""
+					],
+					"query": [
+						{
+							"key": "metabase-session-id",
+							"value": "{{session}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Data",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "X-Metabase-Session",
+						"value": "{{session}}",
+						"type": "text"
+					},
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "text"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{HOST}}/api/card/19/query/json?parameters=%5B%7B%22type%22%3A%22number%22%2C%20%22target%22%3A%5B%22variable%22%2C%5B%22template-tag%22%2C%22id%22%5D%5D%2C%22value%22%3A%228%22%7D%5D",
+					"host": [
+						"{{HOST}}"
+					],
+					"path": [
+						"api",
+						"card",
+						"19",
+						"query",
+						"json"
+					],
+					"query": [
+						{
+							"key": "parameters",
+							"value": "%5B%7B%22type%22%3A%22number%22%2C%20%22target%22%3A%5B%22variable%22%2C%5B%22template-tag%22%2C%22id%22%5D%5D%2C%22value%22%3A%228%22%7D%5D"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					"const echoPostRequest = {",
+					"    url: pm.collectionVariables.get(\"HOST\") + \"/api/session\",",
+					"    method: \"POST\",",
+					"    header: \"Content-Type: application/json\",",
+					"    body: {",
+					"            mode: 'raw',",
+					"            raw: JSON.stringify({",
+					"                \"username\": pm.collectionVariables.get(\"USER\"),",
+					"                \"password\": pm.collectionVariables.get(\"PASSWORD\")",
+					"            }),",
+					"            options: {",
+					"                raw: {",
+					"                    language: 'json'",
+					"                }",
+					"            }",
+					"    }    ",
+					"};",
+					"",
+					"pm.sendRequest(",
+					"  pm.collectionVariables.get(\"HOST\") +",
+					"    \"/api/user/current?token=\" +",
+					"    pm.collectionVariables.get(\"session\"),",
+					"  function (err, response) {",
+					"    if (err) {",
+					"      console.log(\"error: \", err);",
+					"    } else {",
+					"      if ((response.status == \"Unauthorized\")) {",
+					"        console.log(\"Token Expired/Not available\");",
+					"        pm.sendRequest(echoPostRequest, function (err, res) {",
+					"          if (err) {",
+					"            console.log(\"Failed to set token\");",
+					"            console.log(\"error: \", err);",
+					"          } else {",
+					"            var responseJson = res.json();",
+					"            pm.collectionVariables.set(\"session\", responseJson.id);",
+					"            console.log(\"Token set\");",
+					"          }",
+					"        });",
+					"      } else {",
+					"        console.log(\"Valid Token\");",
+					"      }",
+					"    }",
+					"  }",
+					");",
+					"",
+					"",
+					"",
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "session",
+			"value": "0",
+			"type": "string"
+		},
+		{
+			"key": "USER",
+			"value": "<user>",
+			"type": "string"
+		},
+		{
+			"key": "PASSWORD",
+			"value": "<pw>",
+			"type": "string"
+		},
+		{
+			"key": "HOST",
+			"value": "<host>",
+			"type": "string"
+		}
+	]
+}
