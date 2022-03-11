@@ -8,8 +8,8 @@ const defaultLog = getLogger('models/project-view');
 export interface IGetProject {
   id: number;
   coordinator: GetCoordinatorData | null;
-  permit: any;
-  project: any;
+  permit: GetPermitData | null;
+  project: GetProjectData | null;
   objectives: GetObjectivesData | null;
   location: GetLocationData | null;
   iucn: GetIUCNClassificationData | null;
