@@ -14,9 +14,18 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 1, name: 'Proprietor code 1', is_first_nation: false },
     { id: 2, name: 'First Nations Land', is_first_nation: true }
   ],
-  iucn_conservation_action_level_1_classification: [{ id: 1, name: 'IUCN class' }],
-  iucn_conservation_action_level_2_subclassification: [{ id: 1, iucn1_id: 1, name: 'IUCN subclass 1' }],
-  iucn_conservation_action_level_3_subclassification: [{ id: 1, iucn2_id: 1, name: 'IUCN subclass 2' }],
+  iucn_conservation_action_level_1_classification: [
+    { id: 1, name: 'IUCN class 1' },
+    { id: 12, name: 'IUCN class 2' }
+  ],
+  iucn_conservation_action_level_2_subclassification: [
+    { id: 1, iucn1_id: 1, name: 'IUCN subclass 1 - 1' },
+    { id: 2, iucn1_id: 2, name: 'IUCN subclass 1 - 2' }
+  ],
+  iucn_conservation_action_level_3_subclassification: [
+    { id: 1, iucn2_id: 1, name: 'IUCN subclass 2 - 1' },
+    { id: 2, iucn2_id: 2, name: 'IUCN subclass 2 - 2' }
+  ],
   system_roles: [
     { id: 1, name: 'Role 1' },
     { id: 2, name: 'Role 2' }

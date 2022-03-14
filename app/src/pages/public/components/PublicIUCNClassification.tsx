@@ -5,9 +5,11 @@ import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface IPublicIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
@@ -46,13 +48,28 @@ const PublicIUCNClassification: React.FC<IPublicIUCNClassificationProps> = (prop
       {hasIucnClassifications && (
         <Box component="ul" className="listNoBullets">
           {iucn.classificationDetails.map((classificationDetail: any, index: number) => {
+            const iucn1_name =
+              props.codes.iucn_conservation_action_level_1_classification[classificationDetail.classification - 1].name;
+
+            const iucn2_name =
+              props.codes.iucn_conservation_action_level_2_subclassification[
+                classificationDetail.subClassification1 - 1
+              ].name;
+
+            const iucn3_name =
+              props.codes.iucn_conservation_action_level_3_subclassification[
+                classificationDetail.subClassification2 - 1
+              ].name;
             return (
               <Box component="li" key={index} className={classes.iucnListItem}>
                 <Divider />
                 <Box>
                   <Typography component="span" variant="body1">
-                    {classificationDetail.classification} <span>{'>'}</span> {classificationDetail.subClassification1}{' '}
-                    <span>{'>'}</span> {classificationDetail.subClassification2}
+                    {iucn1_name}
+                    <span>{' > '}</span>
+                    {iucn2_name}
+                    <span>{' > '}</span>
+                    {iucn3_name}
                   </Typography>
                 </Box>
               </Box>

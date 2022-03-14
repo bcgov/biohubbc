@@ -23,6 +23,7 @@ import Chip from '@material-ui/core/Chip';
 import clsx from 'clsx';
 import PublicProjectDetails from './PublicProjectDetails';
 import PublicProjectAttachments from './components/PublicProjectAttachments';
+import useCodes from 'hooks/useCodes';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -67,6 +68,7 @@ const PublicProjectPage = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
   const location = useLocation();
+  const codes = useCodes();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -104,8 +106,8 @@ const PublicProjectPage = () => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
-  if (!projectWithDetails) {
-    return <CircularProgress className="pageProgress" size={40} />;
+  if (!projectWithDetails || !codes.isReady || !codes.codes) {
+    return <CircularProgress className="pageProgress" data-testid="loading_spinner" size={40} />;
   }
 
   return (
@@ -170,7 +172,7 @@ const PublicProjectPage = () => {
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
-              <PublicProjectDetails projectForViewData={projectWithDetails} refresh={getProject} />
+              <PublicProjectDetails projectForViewData={projectWithDetails} codes={codes.codes} refresh={getProject} />
             )}
             {location.pathname.includes('/attachments') && (
               <PublicProjectAttachments projectForViewData={projectWithDetails} />

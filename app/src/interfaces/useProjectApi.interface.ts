@@ -266,9 +266,9 @@ export interface IGetProjectForViewResponseCoordinator {
 }
 
 interface IGetProjectForViewResponseIUCNArrayItem {
-  classification: string;
-  subClassification1: string;
-  subClassification2: string;
+  classification: number;
+  subClassification1: number;
+  subClassification2: number;
 }
 
 export interface IGetProjectForViewResponseIUCN {
@@ -293,7 +293,7 @@ export interface IGetProjectForViewResponseFundingData {
 }
 
 export interface IGetProjectForViewResponsePartnerships {
-  indigenous_partnerships: string[];
+  indigenous_partnerships: number[];
   stakeholder_partnerships: string[];
 }
 

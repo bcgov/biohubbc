@@ -1,5 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
 import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import PublicProjectDetails from './PublicProjectDetails';
 
@@ -18,7 +19,9 @@ describe('PublicProjectDetails', () => {
 
   jest.spyOn(console, 'debug').mockImplementation(() => {});
 
-  const component = <PublicProjectDetails projectForViewData={getProjectForViewResponse} refresh={jest.fn()} />;
+  const component = (
+    <PublicProjectDetails projectForViewData={getProjectForViewResponse} codes={codes} refresh={jest.fn()} />
+  );
 
   it('renders correctly', async () => {
     const { asFragment } = render(component);

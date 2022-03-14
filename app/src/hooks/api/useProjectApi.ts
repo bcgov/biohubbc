@@ -99,7 +99,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   ): Promise<string> => {
     const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
       params: { attachmentType: attachmentType },
-      paramsSerializer: (params) => {
+      paramsSerializer: (params: any) => {
         return qs.stringify(params);
       }
     });
@@ -116,7 +116,15 @@ const useProjectApi = (axios: AxiosInstance) => {
   const getProjectsList = async (
     filterFieldData?: IProjectAdvancedFilterRequest
   ): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.post(`/api/projects`, filterFieldData || {});
+    const { data } = await axios.get(`/api/project/list`, {
+      params: filterFieldData,
+      paramsSerializer: (params: any) => {
+        return qs.stringify(params, {
+          arrayFormat: 'repeat',
+          filter: (_prefix: any, value: any) => value || undefined
+        });
+      }
+    });
 
     return data;
   };
@@ -145,7 +153,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   ): Promise<IGetProjectForUpdateResponse> => {
     const { data } = await axios.get(`api/project/${projectId}/update`, {
       params: { entity: entities },
-      paramsSerializer: (params) => {
+      paramsSerializer: (params: any) => {
         return qs.stringify(params);
       }
     });
@@ -173,7 +181,7 @@ const useProjectApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<ICreateProjectResponse>}
    */
   const createProject = async (project: ICreateProjectRequest): Promise<ICreateProjectResponse> => {
-    const { data } = await axios.post('/api/project', project);
+    const { data } = await axios.post('/api/project/create', project);
 
     return data;
   };
@@ -368,7 +376,7 @@ const useProjectApi = (axios: AxiosInstance) => {
   const getProjectReportMetadata = async (projectId: number, attachmentId: number): Promise<IGetReportMetaData> => {
     const { data } = await axios.get(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
       params: {},
-      paramsSerializer: (params) => {
+      paramsSerializer: (params: any) => {
         return qs.stringify(params);
       }
     });
@@ -479,7 +487,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
   const getProjectsList = async (): Promise<IGetProjectsListResponse[]> => {
-    const { data } = await axios.get(`/api/public/projects`);
+    const { data } = await axios.get(`/api/public/project/list`);
 
     return data;
   };
@@ -523,7 +531,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   ): Promise<string> => {
     const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
       params: { attachmentType: attachmentType },
-      paramsSerializer: (params) => {
+      paramsSerializer: (params: any) => {
         return qs.stringify(params);
       }
     });
@@ -545,7 +553,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   ): Promise<IGetReportMetaData> => {
     const { data } = await axios.get(`/api/public/project/${projectId}/attachments/${attachmentId}/metadata/get`, {
       params: {},
-      paramsSerializer: (params) => {
+      paramsSerializer: (params: any) => {
         return qs.stringify(params);
       }
     });

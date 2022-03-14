@@ -143,10 +143,10 @@ const Partnerships: React.FC<IPartnershipsProps> = (props) => {
             <Typography component="dt" variant="subtitle2" color="textSecondary">
               Indigenous Partnerships
             </Typography>
-            {indigenous_partnerships?.map((indigenousPartnership: string, index: number) => {
+            {indigenous_partnerships?.map((indigenousPartnership: number, index: number) => {
               return (
                 <Typography component="dd" variant="body1" key={index}>
-                  {indigenousPartnership}
+                  {codes?.first_nations?.find((item: any) => item.id === indigenousPartnership)?.name}
                 </Typography>
               );
             })}

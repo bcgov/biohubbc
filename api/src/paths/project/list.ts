@@ -1,18 +1,15 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import moment from 'moment';
-import { SYSTEM_ROLE } from '../constants/roles';
-import { COMPLETION_STATUS } from '../constants/status';
-import { getDBConnection } from '../database/db';
-import { HTTP500 } from '../errors/custom-error';
-import { projectIdResponseObject } from '../openapi/schemas/project';
-import { queries } from '../queries/queries';
-import { authorizeRequestHandler, userHasValidRole } from '../request-handlers/security/authorization';
-import { getLogger } from '../utils/logger';
+import { SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
+import { projectIdResponseObject } from '../../openapi/schemas/project';
+import { authorizeRequestHandler, userHasValidRole } from '../../request-handlers/security/authorization';
+import { ProjectService } from '../../services/project-service';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/projects');
 
-export const POST: Operation = [
+export const GET: Operation = [
   authorizeRequestHandler(() => {
     return {
       and: [
@@ -25,7 +22,7 @@ export const POST: Operation = [
   getProjectList()
 ];
 
-POST.apiDoc = {
+GET.apiDoc = {
   description: 'Gets a list of projects based on search parameters if passed in.',
   tags: ['projects'],
   security: [
@@ -135,30 +132,20 @@ export function getProjectList(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const filterFields = req.body || null;
-
     try {
       await connection.open();
 
-      const systemUserId = connection.systemUserId();
       const isUserAdmin = userHasValidRole([SYSTEM_ROLE.SYSTEM_ADMIN], req['system_user']['role_names']);
+      const systemUserId = connection.systemUserId();
+      const filterFields = req.query || {};
 
-      const getProjectListSQLStatement = queries.project.getProjectListSQL(isUserAdmin, systemUserId, filterFields);
+      const projectService = new ProjectService(connection);
 
-      if (!getProjectListSQLStatement) {
-        throw new HTTP500('Failed to build SQL select statement');
-      }
-
-      const getProjectListResponse = await connection.query(
-        getProjectListSQLStatement.text,
-        getProjectListSQLStatement.values
-      );
+      const projects = await projectService.getProjectList(isUserAdmin, systemUserId, filterFields);
 
       await connection.commit();
 
-      const result: any[] = _extractProjects(getProjectListResponse.rows);
-
-      return res.status(200).json(result);
+      return res.status(200).json(projects);
     } catch (error) {
       defaultLog.error({ label: 'getProjectList', message: 'error', error });
       throw error;
@@ -166,39 +153,4 @@ export function getProjectList(): RequestHandler {
       connection.release();
     }
   };
-}
-
-/**
- * Extract an array of project data from DB query.
- *
- * @export
- * @param {any[]} rows DB query result rows
- * @return {any[]} An array of project data
- */
-export function _extractProjects(rows: any[]): any[] {
-  if (!rows || !rows.length) {
-    return [];
-  }
-
-  const projects: any[] = [];
-
-  rows.forEach((row) => {
-    const project: any = {
-      id: row.id,
-      name: row.name,
-      start_date: row.start_date,
-      end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency_name,
-      publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
-      completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type,
-      permits_list: row.permits_list
-    };
-
-    projects.push(project);
-  });
-
-  return projects;
 }

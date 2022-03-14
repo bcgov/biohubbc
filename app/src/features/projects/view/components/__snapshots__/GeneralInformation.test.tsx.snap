@@ -84,9 +84,7 @@ exports[`ProjectDetails renders correctly with activity data 1`] = `
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
-          >
-            1
-          </dd>
+          />
         </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
@@ -206,9 +204,7 @@ exports[`ProjectDetails renders correctly with no activity data 1`] = `
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
-          >
-            1
-          </dd>
+          />
         </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
@@ -328,9 +324,7 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
           </dt>
           <dd
             class="MuiTypography-root MuiTypography-body1"
-          >
-            1
-          </dd>
+          />
         </div>
         <div
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"

@@ -128,7 +128,7 @@ describe('useProjectApi', () => {
       }
     ];
 
-    mock.onPost(`/api/projects`).reply(200, response);
+    mock.onGet(`/api/project/list`).reply(200, response);
 
     const result = await useProjectApi(axios).getProjectsList();
 
@@ -154,7 +154,7 @@ describe('useProjectApi', () => {
       }
     ];
 
-    mock.onGet(`/api/public/projects`).reply(200, response);
+    mock.onGet(`/api/public/project/list`).reply(200, response);
 
     const result = await usePublicProjectApi(axios).getProjectsList();
 
@@ -276,7 +276,7 @@ describe('useProjectApi', () => {
       partnerships: (null as unknown) as IProjectPartnershipsForm
     };
 
-    mock.onPost('/api/project').reply(200, {
+    mock.onPost('/api/project/create').reply(200, {
       id: 1
     });
 
