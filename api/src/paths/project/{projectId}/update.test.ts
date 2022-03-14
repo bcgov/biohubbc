@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as update from './update';
 import * as db from '../../../database/db';
-import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import { HTTPError } from '../../../errors/custom-error';
+import { GetPermitData } from '../../../models/project-view';
 import { ProjectService } from '../../../services/project-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
+import * as update from './update';
 
 chai.use(sinonChai);
 
@@ -46,12 +47,7 @@ describe('update', () => {
       const sampleResponse = {
         id: 1,
         coordinator: null,
-        permit: [
-          {
-            permit_number: '2334243',
-            permit_type: 'string'
-          }
-        ],
+        permit: new GetPermitData(),
         project: null,
         objectives: null,
         location: null,
