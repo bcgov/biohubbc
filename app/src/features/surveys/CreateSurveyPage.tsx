@@ -37,6 +37,7 @@ import yup from 'utils/YupSchema';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import moment from 'moment';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import PurposeAndMethologyForm from './components/PurposeAndMethologyForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -384,6 +385,21 @@ const CreateSurveyPage = () => {
                       }
                       projectStartDate={projectWithDetails.project.start_date}
                       projectEndDate={projectWithDetails.project.end_date}
+                    />
+                  }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Purpose And Methodology"
+                  summary=""
+                  component={
+                    <PurposeAndMethologyForm
+                      intended_outcomes={
+                        codes?.common_survey_methodologies?.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
                     />
                   }></HorizontalSplitFormComponent>
 
