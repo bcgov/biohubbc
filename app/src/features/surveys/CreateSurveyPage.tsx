@@ -93,6 +93,24 @@ const CreateSurveyPage = () => {
   const [surveyFundingSources, setSurveyFundingSources] = useState<SurveyFundingSources[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
+  const intended_outcomes = [
+    { id: 1, name: 'intended outcome 1' },
+    { id: 2, name: 'intended outcome 2' },
+    { id: 3, name: 'intended outcome 3' }
+  ];
+
+  const ecological_seasons = [
+    { id: 1, name: 'ecological season 1' },
+    { id: 2, name: 'ecological season 2' },
+    { id: 3, name: 'ecological season 3' }
+  ];
+
+  const vantage_codes = [
+    { id: 1, name: 'vantage code 1' },
+    { id: 2, name: 'vantage code 2' },
+    { id: 3, name: 'vantage code 3' }
+  ];
+
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
@@ -396,7 +414,22 @@ const CreateSurveyPage = () => {
                   component={
                     <PurposeAndMethologyForm
                       intended_outcomes={
+                        intended_outcomes.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                      common_survey_methodologies={
                         codes?.common_survey_methodologies?.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                      ecological_seasons={
+                        ecological_seasons.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                      vantage_codes={
+                        vantage_codes.map((item) => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
