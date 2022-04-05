@@ -117,8 +117,6 @@ const CreateSurveyPage = () => {
     { id: 3, name: 'method 3' }
   ];
 
-
-
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
@@ -385,11 +383,6 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      // common_survey_methodologies={
-                      //   codes?.common_survey_methodologies?.map((item) => {
-                      //     return { value: item.id, label: item.name };
-                      //   }) || []
-                      // }
                       permit_numbers={
                         surveyPermits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };

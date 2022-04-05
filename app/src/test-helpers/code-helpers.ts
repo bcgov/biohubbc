@@ -40,7 +40,7 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  common_survey_methodologies: [
+  field_method: [
     { id: 1, name: 'Recruitment' },
     { id: 2, name: 'SRB' }
   ]

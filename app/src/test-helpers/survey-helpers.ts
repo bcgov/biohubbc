@@ -47,12 +47,12 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     completion_status: 'Active',
     publish_date: (null as unknown) as string
   },
-  survey_purpose_and_methodology:{
+  survey_purpose_and_methodology: {
     id: 1,
     intended_outcome: 1,
     field_method: 1,
     ecological_season: 1,
-    vantage_codes:[1,2]
+    vantage_codes: [1, 2]
   },
   survey_proprietor: {
     id: 23,

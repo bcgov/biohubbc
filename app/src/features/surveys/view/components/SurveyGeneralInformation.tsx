@@ -174,11 +174,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   return { value: item.id, label: item.name };
                 }) || []
               }
-              // common_survey_methodologies={
-              //   codes?.common_survey_methodologies?.map((item) => {
-              //     return { value: item.id, label: item.name };
-              //   }) || []
-              // }
               permit_numbers={
                 surveyPermits?.map((item) => {
                   return { value: item.number, label: `${item.number} - ${item.type}` };
