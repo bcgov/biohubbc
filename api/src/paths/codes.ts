@@ -270,7 +270,49 @@ GET.apiDoc = {
                   }
                 }
               },
-              common_survey_methodologies: {
+              field_methods: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              ecological_seasons: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              intended_outcomes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              vantage_codes: {
                 type: 'array',
                 items: {
                   type: 'object',

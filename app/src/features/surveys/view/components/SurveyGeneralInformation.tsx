@@ -175,7 +175,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 }) || []
               }
               common_survey_methodologies={
-                codes?.common_survey_methodologies?.map((item) => {
+                codes?.field_method?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }

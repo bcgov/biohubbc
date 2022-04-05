@@ -6,7 +6,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getManagementActionTypeSQL = (): SQLStatement =>
-  SQL`SELECT management_action_type_id as id, name from management_action_type;`;
+  SQL`SELECT management_action_type_id as id, name from management_action_type where record_end_date is null;`;
 
 /**
  * SQL query to fetch first nation codes.
@@ -14,7 +14,7 @@ export const getManagementActionTypeSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getFirstNationsSQL = (): SQLStatement =>
-  SQL`SELECT first_nations_id as id, name from first_nations ORDER BY name ASC;`;
+  SQL`SELECT first_nations_id as id, name from first_nations where record_end_date is null ORDER BY name ASC;`;
 
 /**
  * SQL query to fetch funding source codes.
@@ -22,7 +22,7 @@ export const getFirstNationsSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getFundingSourceSQL = (): SQLStatement =>
-  SQL`SELECT funding_source_id as id, name from funding_source ORDER BY name ASC;`;
+  SQL`SELECT funding_source_id as id, name from funding_source where record_end_date is null ORDER BY name ASC;`;
 
 /**
  * SQL query to fetch proprietor type codes.
@@ -30,29 +30,55 @@ export const getFundingSourceSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getProprietorTypeSQL = (): SQLStatement =>
-  SQL`SELECT proprietor_type_id as id, name, is_first_nation from proprietor_type;`;
+  SQL`SELECT proprietor_type_id as id, name, is_first_nation from proprietor_type where record_end_date is null;`;
 
 /**
  * SQL query to fetch activity codes.
  *
  * @returns {SQLStatement} sql query object
  */
-export const getActivitySQL = (): SQLStatement => SQL`SELECT activity_id as id, name from activity;`;
+export const getActivitySQL = (): SQLStatement =>
+  SQL`SELECT activity_id as id, name from activity where record_end_date is null;`;
 
 /**
- * SQL query to fetch common survey methodology codes.
+ * SQL query to fetch field method codes.
  *
  * @returns {SQLStatement} sql query object
  */
-export const getCommonSurveyMethodologiesSQL = (): SQLStatement =>
-  SQL`SELECT common_survey_methodology_id as id, name from common_survey_methodology;`;
+export const getFieldMethodsSQL = (): SQLStatement =>
+  SQL`SELECT field_method_id as id, name from field_method where record_end_date is null;`;
+
+/**
+ * SQL query to fetch ecological season codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getEcologicalSeasonsSQL = (): SQLStatement =>
+  SQL`SELECT ecological_season_id as id, name from ecological_season where record_end_date is null;`;
+
+/**
+ * SQL query to fetch vantage codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getVantageCodesSQL = (): SQLStatement =>
+  SQL`SELECT vantage_id as id, name from vantage where record_end_date is null;`;
+
+/**
+ * SQL query to intended outcomes codes.
+ *
+ * @returns {SQLStatement} sql query object
+ */
+export const getIntendedOutcomesSQL = (): SQLStatement =>
+  SQL`SELECT intended_outcome_id as id, name from intended_outcome where record_end_date is null;`;
 
 /**
  * SQL query to fetch project type codes.
  *
  * @returns {SQLStatement} sql query object
  */
-export const getProjectTypeSQL = (): SQLStatement => SQL`SELECT project_type_id as id, name from project_type;`;
+export const getProjectTypeSQL = (): SQLStatement =>
+  SQL`SELECT project_type_id as id, name from project_type where record_end_date is null;`;
 
 /**
  * SQL query to fetch investment action category codes.
@@ -60,7 +86,7 @@ export const getProjectTypeSQL = (): SQLStatement => SQL`SELECT project_type_id 
  * @returns {SQLStatement} sql query object
  */
 export const getInvestmentActionCategorySQL = (): SQLStatement =>
-  SQL`SELECT investment_action_category_id as id, funding_source_id as fs_id, name from investment_action_category ORDER BY name ASC;`;
+  SQL`SELECT investment_action_category_id as id, funding_source_id as fs_id, name from investment_action_category where record_end_date is null ORDER BY name ASC;`;
 
 /**
  * SQL query to fetch IUCN conservation action level 1 classification codes.
@@ -68,7 +94,7 @@ export const getInvestmentActionCategorySQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel1ClassificationSQL = (): SQLStatement =>
-  SQL`SELECT iucn_conservation_action_level_1_classification_id as id, name from iucn_conservation_action_level_1_classification;`;
+  SQL`SELECT iucn_conservation_action_level_1_classification_id as id, name from iucn_conservation_action_level_1_classification where record_end_date is null;`;
 
 /**
  * SQL query to fetch IUCN conservation action level 2 sub-classification codes.
@@ -76,7 +102,7 @@ export const getIUCNConservationActionLevel1ClassificationSQL = (): SQLStatement
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatement =>
-  SQL`SELECT iucn_conservation_action_level_2_subclassification_id as id, iucn_conservation_action_level_1_classification_id as iucn1_id, name from iucn_conservation_action_level_2_subclassification;`;
+  SQL`SELECT iucn_conservation_action_level_2_subclassification_id as id, iucn_conservation_action_level_1_classification_id as iucn1_id, name from iucn_conservation_action_level_2_subclassification where record_end_date is null;`;
 
 /**
  * SQL query to fetch IUCN conservation action level 3 sub-classification codes.
@@ -84,21 +110,23 @@ export const getIUCNConservationActionLevel2SubclassificationSQL = (): SQLStatem
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNConservationActionLevel3SubclassificationSQL = (): SQLStatement =>
-  SQL`SELECT iucn_conservation_action_level_3_subclassification_id as id, iucn_conservation_action_level_2_subclassification_id as iucn2_id, name from iucn_conservation_action_level_3_subclassification;`;
+  SQL`SELECT iucn_conservation_action_level_3_subclassification_id as id, iucn_conservation_action_level_2_subclassification_id as iucn2_id, name from iucn_conservation_action_level_3_subclassification where record_end_date is null;`;
 
 /**
  * SQL query to fetch system role codes.
  *
  * @returns {SQLStatement} sql query object
  */
-export const getSystemRolesSQL = (): SQLStatement => SQL`SELECT system_role_id as id, name from system_role;`;
+export const getSystemRolesSQL = (): SQLStatement =>
+  SQL`SELECT system_role_id as id, name from system_role where record_end_date is null;`;
 
 /**
  * SQL query to fetch project role codes.
  *
  * @returns {SQLStatement} sql query object
  */
-export const getProjectRolesSQL = (): SQLStatement => SQL`SELECT project_role_id as id, name from project_role;`;
+export const getProjectRolesSQL = (): SQLStatement =>
+  SQL`SELECT project_role_id as id, name from project_role where record_end_date is null;`;
 
 /**
  * SQL query to fetch administrative activity status type codes.
@@ -106,7 +134,7 @@ export const getProjectRolesSQL = (): SQLStatement => SQL`SELECT project_role_id
  * @returns {SQLStatement} sql query object
  */
 export const getAdministrativeActivityStatusTypeSQL = (): SQLStatement =>
-  SQL`SELECT administrative_activity_status_type_id as id, name FROM administrative_activity_status_type;`;
+  SQL`SELECT administrative_activity_status_type_id as id, name FROM administrative_activity_status_type where record_end_date is null;`;
 
 /**
  * SQL query to fetch taxon codes.
@@ -122,7 +150,7 @@ export const getTaxonsSQL = (): SQLStatement =>
       wldtaxonomic_units
     WHERE
       tty_name = 'SPECIES'
-    and 
+    and
       end_date is null
     ORDER BY
       name;`;

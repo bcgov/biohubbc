@@ -38,5 +38,5 @@ export interface IGetAllCodeSetsResponse {
   project_roles: CodeSet;
   regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
-  common_survey_methodologies: CodeSet;
+  field_method: CodeSet;
 }
