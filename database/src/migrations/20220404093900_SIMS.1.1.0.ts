@@ -285,15 +285,13 @@ insert into vantage(record_effective_date, name) values (now(), 'Boat');
 
 set search_path = biohub_dapi_v1;
 
-alter view common_survey_methodology
-rename to field_method
-;
-
 create or replace view ecological_season as select * from biohub.ecological_season;
 create or replace view vantage as select * from biohub.vantage;
 create or replace view intended_outcome as select * from biohub.intended_outcome;
 drop view survey;
 create view survey as select * from biohub.survey;
+drop view common_survey_methodology;
+create view field_method as select * from biohub.field_method;
 `);
 }
 
