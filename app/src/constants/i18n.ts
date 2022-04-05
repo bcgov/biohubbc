@@ -91,6 +91,14 @@ export const EditSurveyProprietorI18N = {
     'An error has occurred while attempting to edit your survey proprietor information, please try again. If the error persists, please contact your system administrator.'
 };
 
+
+export const EditSurveyPurposeAndMethodologyI18N = {
+  editTitle: 'Edit Survey Purpose And Methodology',
+  editErrorTitle: 'Error Editing Survey Purpose And Methodology',
+  editErrorText:
+    'An error has occurred while attempting to edit your survey purpose and methodology information, please try again. If the error persists, please contact your system administrator.'
+};
+
 export const EditLocationBoundaryI18N = {
   editTitle: 'Edit Project Location',
   editErrorTitle: 'Error Editing Project Location',

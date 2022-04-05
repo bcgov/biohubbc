@@ -37,7 +37,7 @@ import yup from 'utils/YupSchema';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import moment from 'moment';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
-import PurposeAndMethologyForm from './components/PurposeAndMethologyForm';
+import PurposeAndMethologyForm from './components/PurposeAndMethodologyForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -110,6 +110,14 @@ const CreateSurveyPage = () => {
     { id: 2, name: 'vantage code 2' },
     { id: 3, name: 'vantage code 3' }
   ];
+
+  const field_methods = [
+    { id: 1, name: 'method 1' },
+    { id: 2, name: 'method 2' },
+    { id: 3, name: 'method 3' }
+  ];
+
+
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -377,11 +385,11 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      common_survey_methodologies={
-                        codes?.common_survey_methodologies?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
+                      // common_survey_methodologies={
+                      //   codes?.common_survey_methodologies?.map((item) => {
+                      //     return { value: item.id, label: item.name };
+                      //   }) || []
+                      // }
                       permit_numbers={
                         surveyPermits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };
@@ -418,8 +426,8 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      common_survey_methodologies={
-                        codes?.common_survey_methodologies?.map((item) => {
+                      field_methods={
+                        field_methods.map((item) => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }

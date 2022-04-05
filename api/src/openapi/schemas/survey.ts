@@ -10,7 +10,7 @@ export const surveyCreatePostRequestObject = {
     'end_date',
     'focal_species',
     'ancillary_species',
-    'survey_purpose',
+    'intended_outcome',
     'biologist_first_name',
     'biologist_last_name',
     'survey_area_name',
@@ -42,7 +42,7 @@ export const surveyCreatePostRequestObject = {
       },
       description: 'Selected ancillary species ids'
     },
-    survey_purpose: {
+    intended_outcome: {
       type: 'string'
     },
     biologist_first_name: {

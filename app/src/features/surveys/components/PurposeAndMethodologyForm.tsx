@@ -16,43 +16,35 @@ import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
-export interface IPurposeAndMethologyForm {
-  intended_outcomes_id: number;
+export interface IPurposeAndMethodologyForm {
+  intended_outcome: number;
   additional_details: string;
-  common_survey_methodology_id: number;
-  ecological_season_id: number;
-  vantage_code_id: number;
+  field_method: number;
+  ecological_season: number;
+  vantage_codes: number[];
 }
 
-export const PurposeAndMethodologyInitialValues: IPurposeAndMethologyForm = {
-  intended_outcomes_id: ('' as unknown) as number,
+export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
+  intended_outcome: ('' as unknown) as number,
   additional_details: '',
-  common_survey_methodology_id: ('' as unknown) as number,
-  ecological_season_id: ('' as unknown) as number,
-  vantage_code_id: ('' as unknown) as number
+  field_method: ('' as unknown) as number,
+  ecological_season: ('' as unknown) as number,
+  vantage_codes: []
 };
 
-export const GeneralInformationYupSchema = (customYupRules?: any) => {
+export const PurposeAndMethodologyYupSchema = (customYupRules?: any) => {
   return yup.object().shape({
+    field_method: yup.number().required('You must provide a field method'),
     additional_details: yup.string(),
-    intended_outcome: yup
-      .string()
-      .max(3000, 'Cannot exceed 3000 characters')
-      .required('You must provide a purpose for the survey'),
-    ecological_season: yup
-      .string()
-      .max(3000, 'Cannot exceed 3000 characters')
-      .required('You must provide a purpose for the survey'),
-    vantage_code: yup
-      .string()
-      .max(3000, 'Cannot exceed 3000 characters')
-      .required('You must provide a purpose for the survey')
+    intended_outcome: yup.number().required('You must provide intended outcomes for the survey'),
+    ecological_season: yup.number().required('You must provide an ecological season for the survey'),
+    vantage_code: yup.array().min(1, 'You must specify a vantage code').required('Required')
   });
 };
 
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: IAutocompleteFieldOption<number>[];
-  common_survey_methodologies: IAutocompleteFieldOption<number>[];
+  field_methods: IAutocompleteFieldOption<number>[];
   ecological_seasons: IAutocompleteFieldOption<number>[];
   vantage_codes: IAutocompleteFieldOption<number>[];
 }
@@ -63,7 +55,7 @@ export interface IPurposeAndMethodologyFormProps {
  * @return {*}
  */
 const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
-  const formikProps = useFormikContext<IPurposeAndMethologyForm>();
+  const formikProps = useFormikContext<IPurposeAndMethodologyForm>();
 
   return (
     <form>
@@ -79,10 +71,10 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               name="intended_outcomes_id"
               labelId="intended_outcomes_id-label"
               label="Intended Outcomes"
-              value={formikProps.values.intended_outcomes_id}
+              value={formikProps.values.intended_outcome}
               labelWidth={300}
               onChange={formikProps.handleChange}
-              error={formikProps.touched.intended_outcomes_id && Boolean(formikProps.errors.intended_outcomes_id)}
+              error={formikProps.touched.intended_outcome && Boolean(formikProps.errors.intended_outcome)}
               displayEmpty
               inputProps={{ 'aria-label': 'Intended Outcomes' }}>
               {props.intended_outcomes.map((item) => (
@@ -92,7 +84,7 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               ))}
             </Select>
             <FormHelperText>
-              {formikProps.touched.intended_outcomes_id && formikProps.errors.intended_outcomes_id}
+              {formikProps.touched.intended_outcome && formikProps.errors.intended_outcome}
             </FormHelperText>
           </FormControl>
         </Grid>
@@ -115,24 +107,19 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               name="field_methods_id"
               labelId="field_methods_id-label"
               label="Field Method"
-              value={formikProps.values.common_survey_methodology_id}
+              value={formikProps.values.field_method}
               labelWidth={300}
               onChange={formikProps.handleChange}
-              error={
-                formikProps.touched.common_survey_methodology_id &&
-                Boolean(formikProps.errors.common_survey_methodology_id)
-              }
+              error={formikProps.touched.field_method && Boolean(formikProps.errors.field_method)}
               displayEmpty
               inputProps={{ 'aria-label': 'Field Method' }}>
-              {props.common_survey_methodologies.map((item) => (
+              {props.field_methods.map((item) => (
                 <MenuItem key={item.value} value={item.value}>
                   {item.label}
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>
-              {formikProps.touched.common_survey_methodology_id && formikProps.errors.common_survey_methodology_id}
-            </FormHelperText>
+            <FormHelperText>{formikProps.touched.field_method && formikProps.errors.field_method}</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
@@ -143,10 +130,10 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               name="ecological_seasons_id"
               labelId="ecological_seasons_id-label"
               label="Ecological Season"
-              value={formikProps.values.ecological_season_id}
+              value={formikProps.values.ecological_season}
               labelWidth={300}
               onChange={formikProps.handleChange}
-              error={formikProps.touched.ecological_season_id && Boolean(formikProps.errors.ecological_season_id)}
+              error={formikProps.touched.ecological_season && Boolean(formikProps.errors.ecological_season)}
               displayEmpty
               inputProps={{ 'aria-label': 'Ecological Season' }}>
               {props.ecological_seasons.map((item) => (
@@ -156,7 +143,7 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               ))}
             </Select>
             <FormHelperText>
-              {formikProps.touched.ecological_season_id && formikProps.errors.ecological_season_id}
+              {formikProps.touched.ecological_season && formikProps.errors.ecological_season}
             </FormHelperText>
           </FormControl>
         </Grid>

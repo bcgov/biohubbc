@@ -27,8 +27,6 @@ export interface IGeneralInformationForm {
   end_date: string;
   focal_species: number[];
   ancillary_species: number[];
-  survey_purpose: string;
-  common_survey_methodology_id: number;
   biologist_first_name: string;
   biologist_last_name: string;
   permit_number: string;
@@ -42,8 +40,6 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
   end_date: '',
   focal_species: [],
   ancillary_species: [],
-  survey_purpose: '',
-  common_survey_methodology_id: ('' as unknown) as number,
   biologist_first_name: '',
   biologist_last_name: '',
   permit_number: '',
@@ -68,7 +64,6 @@ export interface IGeneralInformationFormProps {
   species: IMultiAutocompleteFieldOption[];
   permit_numbers: IAutocompleteFieldOption<string>[];
   funding_sources: IMultiAutocompleteFieldOption[];
-  common_survey_methodologies: IAutocompleteFieldOption<number>[];
   projectStartDate: string;
   projectEndDate: string;
 }
@@ -111,13 +106,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             }}
           />
         </Grid>
-        {/* <Grid item xs={12}>
-          <CustomTextField
-            name="survey_purpose"
-            label="Purpose of Survey"
-            other={{ multiline: true, required: true, rows: 2 }}
-          />
-        </Grid> */}
         <StartEndDateFields
           formikProps={formikProps}
           startName="start_date"

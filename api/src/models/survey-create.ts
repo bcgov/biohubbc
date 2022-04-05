@@ -22,7 +22,7 @@ export class PostSurveyObject {
   end_date: string;
   survey_area_name: string;
   survey_data_proprietary: boolean;
-  survey_purpose: string;
+  intended_outcome: string;
   geometry: Feature[];
   permit_number: string;
   permit_type: string;
@@ -56,7 +56,7 @@ export class PostSurveyObject {
     this.funding_sources = (obj?.funding_sources?.length && obj.funding_sources) || [];
     this.survey_data_proprietary = obj?.survey_data_proprietary === 'true' || false;
     this.survey_name = obj?.survey_name || null;
-    this.survey_purpose = obj?.survey_purpose || null;
+    this.intended_outcome = obj?.intended_outcome || null;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.survey_proprietor =
       (obj && obj.survey_data_proprietary === 'true' && new PostSurveyProprietorData(obj)) || undefined;

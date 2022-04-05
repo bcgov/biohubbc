@@ -40,7 +40,7 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
     ) VALUES (
       ${projectId},
       ${survey.survey_name},
-      ${survey.survey_purpose},
+      ${survey.intended_outcome},
       ${survey.start_date},
       ${survey.end_date},
       ${survey.biologist_first_name},
