@@ -49,8 +49,8 @@ COMMENT ON COLUMN ecological_season.revision_count IS 'Revision count used for c
 COMMENT ON TABLE ecological_season IS 'Broad classification for the ecological season of a survey.'
 ;
 
--- 
--- TABLE: intended_outcome 
+--
+-- TABLE: intended_outcome
 --
 
 CREATE TABLE intended_outcome(
@@ -91,8 +91,8 @@ COMMENT ON COLUMN intended_outcome.revision_count IS 'Revision count used for co
 COMMENT ON TABLE intended_outcome IS 'Broad classification of intended outcomes of the survey work.'
 ;
 
--- 
--- TABLE: vantage 
+--
+-- TABLE: vantage
 --
 
 CREATE TABLE vantage(
@@ -155,17 +155,17 @@ COMMENT ON COLUMN survey.intended_outcome_id IS 'System generated surrogate prim
 COMMENT ON COLUMN survey.vantage_id IS 'System generated surrogate primary key identifier.'
 ;
 
-ALTER TABLE survey ADD CONSTRAINT "Refecological_season212" 
+ALTER TABLE survey ADD CONSTRAINT "Refecological_season212"
     FOREIGN KEY (ecological_season_id)
     REFERENCES ecological_season(ecological_season_id)
 ;
 
-ALTER TABLE survey ADD CONSTRAINT "Refvantage214" 
+ALTER TABLE survey ADD CONSTRAINT "Refvantage214"
     FOREIGN KEY (vantage_id)
     REFERENCES vantage(vantage_id)
 ;
 
-ALTER TABLE survey ADD CONSTRAINT "Refintended_outcome211" 
+ALTER TABLE survey ADD CONSTRAINT "Refintended_outcome211"
     FOREIGN KEY (intended_outcome_id)
     REFERENCES intended_outcome(intended_outcome_id)
 ;
@@ -198,11 +198,11 @@ ALTER TABLE survey ADD CONSTRAINT "Refvantage190" FOREIGN KEY (vantage_id) REFER
 ALTER TABLE survey ADD CONSTRAINT "Refecological_season190" FOREIGN KEY (ecological_season_id) REFERENCES ecological_season(ecological_season_id);
 ALTER TABLE survey ADD CONSTRAINT "Refintended_outcome190" FOREIGN KEY (intended_outcome_id) REFERENCES intended_outcome(intended_outcome_id);
 
-alter table survey 
+alter table survey
 rename column objectives to additional_details
 ;
 
-alter table survey 
+alter table survey
 alter column additional_details drop not null
 ;
 

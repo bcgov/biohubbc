@@ -24,30 +24,38 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
     return null;
   }
 
+  //TODO:  Vantage codes have a 1:many relationship.  Need the model to reflect
+
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey (
       project_id,
       name,
-      objectives,
+      additional_details,
+      ecological_season_id,
+      intended_outcome_id,
+      vantage_id,
       start_date,
       end_date,
       lead_first_name,
       lead_last_name,
       location_name,
       geojson,
-      common_survey_methodology_id,
+      field_method_id,
       geography
     ) VALUES (
       ${projectId},
       ${survey.survey_name},
-      ${survey.intended_outcome},
+      ${survey.additional_details},
+      ${survey.ecological_season_id},
+      ${survey.intended_outcome_id},
+      ${survey.vantage_id},
       ${survey.start_date},
       ${survey.end_date},
       ${survey.biologist_first_name},
       ${survey.biologist_last_name},
       ${survey.survey_area_name},
       ${JSON.stringify(survey.geometry)},
-      ${survey.common_survey_methodology_id}
+      ${survey.field_method_id}
   `;
 
   if (survey.geometry && survey.geometry.length) {
@@ -305,3 +313,37 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to insert a ancillary species row into the study_species table.
+ *
+ * @param {number} speciesId
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+//  export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
+//   defaultLog.debug({ label: 'postVantageCodesSQL', message: 'params', vantageCodeId, surveyId });
+
+//   if (!vantageCodeId || !surveyId) {
+//     return null;
+//   }
+
+//   const sqlStatement: SQLStatement = SQL`
+//     INSERT INTO some_table (
+//       vantage_code_id,
+//       survey_id
+//     ) VALUES (
+//       ${vantageCodeId},
+//       ${surveyId}
+//     ) RETURNING some_table_id as id;
+//   `;
+
+//   defaultLog.debug({
+//     label: 'postVantageCodesSQL',
+//     message: 'sql',
+//     'sqlStatement.text': sqlStatement.text,
+//     'sqlStatement.values': sqlStatement.values
+//   });
+
+//   return sqlStatement;
+// };

@@ -24,6 +24,8 @@ export interface ISurveyDetailsProps {
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const { surveyForViewData, codes, refresh, projectForViewData } = props;
 
+  console.log('survey for view data in the SurveyDetails', surveyForViewData);
+
   return (
     <>
       <Box component={Paper} p={3}>
@@ -36,15 +38,16 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
             refresh={refresh}
           />
         </Box>
-
-        <Box component="section" mt={1}>
-          <SurveyPurposeAndMethodology
-            projectForViewData={projectForViewData}
-            surveyForViewData={surveyForViewData}
-            codes={codes}
-            refresh={refresh}
-          />
-        </Box>
+        {
+          <Box component="section" mt={1}>
+            <SurveyPurposeAndMethodology
+              projectForViewData={projectForViewData}
+              surveyForViewData={surveyForViewData}
+              codes={codes}
+              refresh={refresh}
+            />
+          </Box>
+        }
         <Box component="section" mt={1}>
           <SurveyProprietaryData
             projectForViewData={projectForViewData}

@@ -4,7 +4,7 @@ import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
 import { GetViewSurveyDetailsData } from '../../../../../models/survey-view';
-import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
+import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
@@ -100,8 +100,15 @@ export function getSurveyForView(): RequestHandler {
     try {
       await connection.open();
 
-      const [surveyBasicData, surveyFundingSourcesData, SurveySpeciesData, surveyProprietorData] = await Promise.all([
+      const [
+        surveyBasicData,
+        surveyPurposeAndMethodology,
+        surveyFundingSourcesData,
+        SurveySpeciesData,
+        surveyProprietorData
+      ] = await Promise.all([
         getSurveyBasicDataForView(surveyId, connection),
+        getSurveyPurposeAndMethodologyDataForView(surveyId, connection),
         getSurveyFundingSourcesDataForView(surveyId, connection),
         getSurveySpeciesDataForView(surveyId, connection),
         getSurveyProprietorDataForView(surveyId, connection)
@@ -115,11 +122,15 @@ export function getSurveyForView(): RequestHandler {
         ...SurveySpeciesData
       });
 
+      const getSurveyPurposeAndMethodology =
+        (surveyPurposeAndMethodology && new GetSurveyPurposeAndMethodologyData(surveyPurposeAndMethodology)) || null;
+
       const getSurveyProprietorData =
         (surveyProprietorData && new GetSurveyProprietorData(surveyProprietorData)) || null;
 
       const result = {
         survey_details: getSurveyData,
+        survey_purpose_and_methodology: getSurveyPurposeAndMethodology,
         survey_proprietor: getSurveyProprietorData
       };
 
@@ -144,6 +155,25 @@ export const getSurveyBasicDataForView = async (surveyId: number, connection: ID
 
   if (!response || !response?.rows?.[0]) {
     throw new HTTP400('Failed to get survey basic data');
+  }
+
+  return (response && response.rows?.[0]) || null;
+};
+
+export const getSurveyPurposeAndMethodologyDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<object> => {
+  const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to get survey purpose and methodology data');
   }
 
   return (response && response.rows?.[0]) || null;

@@ -38,5 +38,8 @@ export interface IGetAllCodeSetsResponse {
   project_roles: CodeSet;
   regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
-  field_method: CodeSet;
+  field_methods: CodeSet;
+  intended_outcomes: CodeSet;
+  ecological_seasons: CodeSet;
+  vantage_codes: CodeSet;
 }

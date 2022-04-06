@@ -24,11 +24,11 @@ export interface ICreateSurveyRequest {
   survey_area_name: string;
   survey_data_proprietary: string;
   survey_name: string;
-  intended_outcome: number;
+  intended_outcome_id: number;
   additional_details: string;
-  field_method: number;
-  ecological_season: number;
-  vantage_codes: number[];
+  field_method_id: number;
+  ecological_season_id: number;
+  vantage_id: number;
   geometry: Feature[];
   permit_number: string;
 }
@@ -106,11 +106,11 @@ export interface IGetSurveyForUpdateResponseDetails {
 
 export interface IGetSurveyForUpdateResponsePurposeAndMethodology {
   id?: number;
-  intended_outcome: number;
+  intended_outcome_id: number;
   additional_details: string;
-  field_method: number;
-  ecological_season: number;
-  vantage_codes: number[];
+  field_method_id: number;
+  ecological_season_id: number;
+  vantage_id: number;
   revision_count?: number;
 }
 

@@ -17,7 +17,6 @@ export class GetViewSurveyDetailsData {
   survey_purpose: string;
   focal_species: (string | number)[];
   ancillary_species: (string | number)[];
-  common_survey_methodology: string;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -53,7 +52,6 @@ export class GetViewSurveyDetailsData {
     this.start_date = surveyDetailsData?.start_date || '';
     this.end_date = surveyDetailsData?.end_date || '';
     this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
-    this.common_survey_methodology = surveyDetailsData?.common_survey_methodology || '';
     this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
     this.survey_area_name = surveyDetailsData?.location_name || '';
     this.geometry = (surveyDetailsData?.geometry?.length && surveyDetailsData.geometry) || [];
@@ -70,6 +68,13 @@ export class GetViewSurveyDetailsData {
     this.publish_date = surveyDetailsData?.publish_date || '';
   }
 }
+
+/**
+ * Pre-processes GET /project/{projectId}/survey/{surveyId} survey details data for view
+ *
+ * @export
+ * @class GetViewSurveyDetailsData
+ */
 
 /**
  * Pre-processes GET surveys list data

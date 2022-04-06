@@ -10,7 +10,11 @@ export const surveyCreatePostRequestObject = {
     'end_date',
     'focal_species',
     'ancillary_species',
-    'intended_outcome',
+    'intended_outcome_id',
+    'additional_details',
+    'field_method_id',
+    'vantage_id',
+    'ecological_season_id',
     'biologist_first_name',
     'biologist_last_name',
     'survey_area_name',
@@ -42,8 +46,21 @@ export const surveyCreatePostRequestObject = {
       },
       description: 'Selected ancillary species ids'
     },
-    intended_outcome: {
+
+    intended_outcome_id: {
+      type: 'number'
+    },
+    additional_details: {
       type: 'string'
+    },
+    field_method_id: {
+      type: 'number'
+    },
+    vantage_id: {
+      type: 'number'
+    },
+    ecological_season_id: {
+      type: 'number'
     },
     biologist_first_name: {
       type: 'string'

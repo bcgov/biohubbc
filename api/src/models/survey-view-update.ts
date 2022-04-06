@@ -39,3 +39,27 @@ export class GetSurveyProprietorData {
     this.revision_count = data?.revision_count ?? null;
   }
 }
+
+export class GetSurveyPurposeAndMethodologyData {
+  id: number;
+  intended_outcome_id: number;
+  additional_details: string;
+  ecological_season_id: number;
+  vantage_id: number;
+  revision_count: number;
+
+  constructor(data?: any) {
+    defaultLog.debug({
+      label: 'GetSurveyPurposeAndMethodologyData',
+      message: 'params',
+      surveyProprietorData: data
+    });
+
+    this.id = data?.id ?? null;
+    this.intended_outcome_id = data?.intended_outcome_id ?? null;
+    this.additional_details = data?.additional_details ?? null;
+    this.ecological_season_id = data?.ecological_season_id ?? null;
+    this.vantage_id = data?.vantage_id ?? null;
+    this.revision_count = data?.revision_count ?? null;
+  }
+}

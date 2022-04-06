@@ -169,6 +169,15 @@ export function createSurvey(): RequestHandler {
         sanitizedPostSurveyData.survey_proprietor &&
           promises.push(insertSurveyProprietor(sanitizedPostSurveyData.survey_proprietor, surveyId, connection));
 
+        // Handle vantage codes associated to this survey
+        // promises.push(
+        //   Promise.all(
+        //     sanitizedPostSurveyData.vantage_codes.map((vantageCode: number) =>
+        //       insertAncillarySpecies(vantageCode, surveyId, connection)
+        //     )
+        //   )
+        // );
+
         await Promise.all(promises);
 
         await connection.commit();
@@ -228,6 +237,27 @@ export const insertAncillarySpecies = async (
 
   return result.id;
 };
+
+// export const insertVantageCodes = async (
+//   vantage_code_id: number,
+//   survey_id: number,
+//   connection: IDBConnection
+// ): Promise<number> => {
+//   const sqlStatement = queries.survey.postVantageCodesSQL(vantage_code_id, survey_id);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL insert statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+//   const result = (response && response.rows && response.rows[0]) || null;
+
+//   if (!result || !result.id) {
+//     throw new HTTP400('Failed to insert ancillary species data');
+//   }
+
+//   return result.id;
+// };
 
 export const insertSurveyProprietor = async (
   survey_proprietor: PostSurveyProprietorData,

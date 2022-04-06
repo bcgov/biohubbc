@@ -34,7 +34,7 @@ export interface ISurveyPurposeAndMethodologyDataProps {
 }
 
 /**
- * Proprietary data content for a survey.
+ * Purpose and Methodology data content for a survey.
  *
  * @return {*}
  */
@@ -47,10 +47,12 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
     refresh
   } = props;
 
+  console.log('data for the purpose and methodology section', survey_purpose_and_methodology);
+
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [
-    surveyDataForUpdate,
-    setSurveyDataForUpdate
+    surveyPurposeAndMethodologyForUpdate,
+    setSurveyPurposeAndMethodologyForUpdate
   ] = useState<IGetSurveyForUpdateResponsePurposeAndMethodology | null>(null);
 
   const [purposeAndMethodologyFormData, setPurposeAndMethodologyFormData] = useState<IPurposeAndMethodologyForm>(
@@ -99,7 +101,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
 
   const handleDialogEditOpen = async () => {
     if (!survey_purpose_and_methodology) {
-      setSurveyDataForUpdate(null);
+      setSurveyPurposeAndMethodologyForUpdate(null);
       setPurposeAndMethodologyFormData(PurposeAndMethodologyInitialValues);
       setOpenEditDialog(true);
       return;
@@ -111,6 +113,8 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_purpose_and_methodology
       ]);
+
+      console.log('response: ', response);
 
       if (!response) {
         showErrorDialog({ open: true });
@@ -124,22 +128,21 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       return;
     }
 
-    setSurveyDataForUpdate(surveyPurposeAndMethodologyResponseData);
+    setSurveyPurposeAndMethodologyForUpdate(surveyPurposeAndMethodologyResponseData);
 
     setPurposeAndMethodologyFormData({
-      intended_outcome:
-        surveyPurposeAndMethodologyResponseData?.intended_outcome ||
-        PurposeAndMethodologyInitialValues.intended_outcome,
+      intended_outcome_id:
+        surveyPurposeAndMethodologyResponseData?.intended_outcome_id ||
+        PurposeAndMethodologyInitialValues.intended_outcome_id,
       additional_details:
         surveyPurposeAndMethodologyResponseData?.additional_details ||
         PurposeAndMethodologyInitialValues.additional_details,
-      field_method:
-        surveyPurposeAndMethodologyResponseData?.field_method || PurposeAndMethodologyInitialValues.field_method,
-      ecological_season:
-        surveyPurposeAndMethodologyResponseData?.ecological_season ||
-        PurposeAndMethodologyInitialValues.ecological_season,
-      vantage_codes:
-        surveyPurposeAndMethodologyResponseData?.vantage_codes || PurposeAndMethodologyInitialValues.vantage_codes
+      field_method_id:
+        surveyPurposeAndMethodologyResponseData?.field_method_id || PurposeAndMethodologyInitialValues.field_method_id,
+      ecological_season_id:
+        surveyPurposeAndMethodologyResponseData?.ecological_season_id ||
+        PurposeAndMethodologyInitialValues.ecological_season_id,
+      vantage_id: surveyPurposeAndMethodologyResponseData?.vantage_id || PurposeAndMethodologyInitialValues.vantage_id
     });
 
     setOpenEditDialog(true);
@@ -149,8 +152,8 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
     const surveyData = {
       survey_purpose_and_methodology: {
         ...values,
-        id: surveyDataForUpdate?.id,
-        revision_count: surveyDataForUpdate?.revision_count
+        id: surveyPurposeAndMethodologyForUpdate?.id,
+        revision_count: surveyPurposeAndMethodologyForUpdate?.revision_count
       }
     };
 
@@ -206,9 +209,9 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       <ErrorDialog {...errorDialogProps} />
       <Box>
         <H3ButtonToolbar
-          label="Proprietary Data"
+          label="Purpose And Methodology Data"
           buttonLabel="Edit"
-          buttonTitle="Edit Survey Proprietor"
+          buttonTitle="Edit Survey Purpose And Methodology"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
           toolbarProps={{ disableGutters: true }}
@@ -228,7 +231,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Proprietor Name
+                  Intended Outcome
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {survey_purpose_and_methodology.intended_outcome}
@@ -236,7 +239,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Data Category
+                  Additional Details
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {'put the additional comments in here'}
@@ -244,7 +247,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  DISA Required
+                  Field Method
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {survey_purpose_and_methodology.field_method}
@@ -252,7 +255,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
               </Grid>
               <Grid item>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Category Rationale
+                  Ecological Season
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {survey_purpose_and_methodology.ecological_season}
@@ -261,7 +264,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
 
               <Grid item>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
-                  Category Rationale
+                  Vantage Code
                 </Typography>
                 <Typography component="dd" variant="body1">
                   {survey_purpose_and_methodology.vantage_codes}

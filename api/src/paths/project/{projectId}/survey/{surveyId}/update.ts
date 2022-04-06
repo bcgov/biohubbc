@@ -9,7 +9,7 @@ import {
   PutSurveyDetailsData,
   PutSurveyProprietorData
 } from '../../../../../models/survey-update';
-import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
+import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import {
   surveyIdResponseObject,
   surveyUpdateGetResponseObject,
@@ -22,6 +22,7 @@ import { insertAncillarySpecies, insertFocalSpecies, insertSurveyFundingSource, 
 
 export interface IUpdateSurvey {
   survey_details: object | null;
+  survey_purpose_and_methodology: object | null;
   survey_proprietor: object | null;
 }
 
@@ -59,6 +60,7 @@ export const PUT: Operation = [
 
 export enum GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
+  survey_purpose_and_methodology = 'survey_purpose_and_methodology',
   survey_proprietor = 'survey_proprietor'
 }
 
@@ -197,6 +199,7 @@ PUT.apiDoc = {
 
 export interface IGetSurveyForUpdate {
   survey_details: GetUpdateSurveyDetailsData | null;
+  survey_purpose_and_methodology: GetSurveyPurposeAndMethodologyData | null;
   survey_proprietor: GetSurveyProprietorData | null;
 }
 
@@ -222,6 +225,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       const results: IGetSurveyForUpdate = {
         survey_details: null,
+        survey_purpose_and_methodology: null,
         survey_proprietor: null
       };
 
@@ -231,6 +235,14 @@ export function getSurveyForUpdate(): RequestHandler {
         promises.push(
           getSurveyDetailsData(surveyId, connection).then((value) => {
             results.survey_details = value;
+          })
+        );
+      }
+
+      if (entities.includes(GET_SURVEY_ENTITIES.survey_purpose_and_methodology)) {
+        promises.push(
+          getSurveyPurposeAndMethodologyData(surveyId, connection).then((value) => {
+            results.survey_purpose_and_methodology = value;
           })
         );
       }
@@ -276,6 +288,23 @@ export const getSurveyDetailsData = async (
   }
 
   return result;
+};
+
+export const getSurveyPurposeAndMethodologyData = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<GetSurveyPurposeAndMethodologyData | null> => {
+  const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build survey proprietor SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (
+    (response && response.rows && response.rows[0] && new GetSurveyPurposeAndMethodologyData(response.rows[0])) || null
+  );
 };
 
 export const getSurveyProprietorData = async (
