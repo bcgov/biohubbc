@@ -33,7 +33,6 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
       additional_details,
       ecological_season_id,
       intended_outcome_id,
-      vantage_id,
       start_date,
       end_date,
       lead_first_name,
@@ -48,7 +47,6 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
       ${survey.additional_details},
       ${survey.ecological_season_id},
       ${survey.intended_outcome_id},
-      ${survey.vantage_id},
       ${survey.start_date},
       ${survey.end_date},
       ${survey.biologist_first_name},
@@ -321,29 +319,29 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-//  export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
-//   defaultLog.debug({ label: 'postVantageCodesSQL', message: 'params', vantageCodeId, surveyId });
+ export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
+  defaultLog.debug({ label: 'postVantageCodesSQL', message: 'params', vantageCodeId, surveyId });
 
-//   if (!vantageCodeId || !surveyId) {
-//     return null;
-//   }
+  if (!vantageCodeId || !surveyId) {
+    return null;
+  }
 
-//   const sqlStatement: SQLStatement = SQL`
-//     INSERT INTO some_table (
-//       vantage_code_id,
-//       survey_id
-//     ) VALUES (
-//       ${vantageCodeId},
-//       ${surveyId}
-//     ) RETURNING some_table_id as id;
-//   `;
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO survey_vantage (
+      vantage_id,
+      survey_id
+    ) VALUES (
+      ${vantageCodeId},
+      ${surveyId}
+    ) RETURNING survey_vantage_id as id;
+  `;
 
-//   defaultLog.debug({
-//     label: 'postVantageCodesSQL',
-//     message: 'sql',
-//     'sqlStatement.text': sqlStatement.text,
-//     'sqlStatement.values': sqlStatement.values
-//   });
+  defaultLog.debug({
+    label: 'postVantageCodesSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
 
-//   return sqlStatement;
-// };
+  return sqlStatement;
+};

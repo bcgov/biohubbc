@@ -131,8 +131,7 @@ begin
     , lead_last_name
     , geography
     , ecological_season_id
-    , intended_outcome_id
-    , vantage_id)
+    , intended_outcome_id)
   values (_project_id
     , 'survey name'
     , 'survey objectives'
@@ -143,8 +142,8 @@ begin
     , 'lead last'
     , _geography
     , (select ecological_season_id from ecological_season where name = 'Growing')
-    , (select intended_outcome_id from intended_outcome where name = 'Survival')
-    , (select vantage_id from vantage where name = 'Aerial')) returning survey_id into _survey_id;
+    , (select intended_outcome_id from intended_outcome where name = 'Survival')    
+    ) returning survey_id into _survey_id;
 
   insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
     values (_survey_id, (select first_nations_id from first_nations where name = 'Squamish Nation'), (select proprietor_type_id from proprietor_type where name = 'First Nations Land'), 'proprietor rationale', true);  
@@ -154,6 +153,7 @@ begin
   insert into survey_report_author (survey_report_attachment_id, first_name, last_name) values (_survey_report_attachment_id, 'bob', 'dole');
   insert into study_species (survey_id, wldtaxonomic_units_id, is_focal) values (_survey_id, (select wldtaxonomic_units_id from wldtaxonomic_units where CODE = 'AMARALB'), true);
   insert into survey_funding_source (survey_id, project_funding_source_id) values (_survey_id, _project_funding_source_id);
+  insert into survey_vantage(survey_id, vantage_id) values (_survey_id, (select vantage_id from vantage where name = 'Aerial'));
 
   select count(1) into _count from survey;
   assert _count = 1, 'FAIL survey';
@@ -169,6 +169,8 @@ begin
   assert _count = 1, 'FAIL study_species';  
   select count(1) into _count from survey_funding_source;
   assert _count = 1, 'FAIL survey_funding_source';  
+  select count(1) into _count from survey_vantage;
+  assert _count = 1, 'FAIL survey_vantage';  
 
   -- occurrence
   -- occurrence submission 1
