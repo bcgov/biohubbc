@@ -407,7 +407,6 @@ export async function up(knex: Knex): Promise<void> {
   insert into ecological_season(record_effective_date, name, description) values (now(), 'Breeding', 'The term "breeding season" typically applies to species, such as birds and some insects and some rodents, in which courtship and/or copulation is followed (within hours, days, or weeks) by hatching or birthing of young. In contrast, large mammals do not have a "breeding season" because they tend to have long gestation periods in which the birthing period is far removed from courtship and copulation.');
   insert into ecological_season(record_effective_date, name, description) values (now(), 'Post Birthing/Calving', 'The period after a species within a Study Area has finished giving birth to young, and the young are still closely associated with their parent(s) . For large mammals this period may start weeks after birthing, and extend for several weeks.');
   
-  insert into vantage(record_effective_date, name) values (now(), 'Vantage Code');
   insert into vantage(record_effective_date, name) values (now(), 'Aerial');
   insert into vantage(record_effective_date, name) values (now(), 'Walking');
   insert into vantage(record_effective_date, name) values (now(), 'Vehicle');
@@ -426,7 +425,7 @@ export async function up(knex: Knex): Promise<void> {
   create view field_method as select * from biohub.field_method;
   drop view template_methodology_species;
   create view template_methodology_species as select * from biohub.template_methodology_species;  
-      `);
+        `);
 }
 
 export async function down(knex: Knex): Promise<void> {
