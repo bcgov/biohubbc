@@ -49,10 +49,11 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
   },
   survey_purpose_and_methodology: {
     id: 1,
-    intended_outcome: 1,
-    field_method: 1,
-    ecological_season: 1,
-    vantage_codes: [1, 2]
+    intended_outcome_id: 1,
+    additional_details: 'details',
+    field_method_id: 1,
+    ecological_season_id: 1,
+    vantage_id: 1
   },
   survey_proprietor: {
     id: 23,

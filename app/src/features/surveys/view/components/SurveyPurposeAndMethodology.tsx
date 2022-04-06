@@ -44,6 +44,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
   const {
     projectForViewData,
     surveyForViewData: { survey_details, survey_purpose_and_methodology },
+    codes,
     refresh
   } = props;
 
@@ -127,6 +128,8 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
+
+    console.log('is the issue here? ', surveyPurposeAndMethodologyResponseData);
 
     setSurveyPurposeAndMethodologyForUpdate(surveyPurposeAndMethodologyResponseData);
 
@@ -234,7 +237,10 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Intended Outcome
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.intended_outcome}
+                  {survey_purpose_and_methodology.intended_outcome_id &&
+                    codes?.intended_outcomes?.find(
+                      (item: any) => item.id === survey_purpose_and_methodology.intended_outcome_id
+                    )?.name}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -242,32 +248,41 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Additional Details
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {'put the additional comments in here'}
+                  {survey_purpose_and_methodology.additional_details}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Field Method
                 </Typography>
+
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.field_method}
+                  {survey_purpose_and_methodology.field_method_id &&
+                    codes?.field_methods?.find(
+                      (item: any) => item.id === survey_purpose_and_methodology.field_method_id
+                    )?.name}
                 </Typography>
+                <Typography component="dd" variant="body1"></Typography>
               </Grid>
-              <Grid item>
+              <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Ecological Season
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.ecological_season}
+                  {survey_purpose_and_methodology.ecological_season_id &&
+                    codes?.ecological_seasons?.find(
+                      (item: any) => item.id === survey_purpose_and_methodology.ecological_season_id
+                    )?.name}
                 </Typography>
               </Grid>
-
-              <Grid item>
+              <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Vantage Code
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.vantage_codes}
+                  {survey_purpose_and_methodology.vantage_id &&
+                    codes?.vantage_codes?.find((item: any) => item.id === survey_purpose_and_methodology.vantage_id)
+                      ?.name}
                 </Typography>
               </Grid>
             </Grid>

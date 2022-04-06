@@ -72,10 +72,11 @@ export interface IGetSurveyForViewResponseDetails {
 
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
   id: number;
-  intended_outcome: number;
-  field_method: number;
-  ecological_season: number;
-  vantage_codes: number[];
+  intended_outcome_id: number;
+  additional_details: string;
+  field_method_id: number;
+  ecological_season_id: number;
+  vantage_id: number;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
