@@ -319,7 +319,7 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
- export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
+export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
   defaultLog.debug({ label: 'postVantageCodesSQL', message: 'params', vantageCodeId, surveyId });
 
   if (!vantageCodeId || !surveyId) {

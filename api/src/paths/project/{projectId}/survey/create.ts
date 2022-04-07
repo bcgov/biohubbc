@@ -172,7 +172,7 @@ export function createSurvey(): RequestHandler {
         //Handle vantage codes associated to this survey
         promises.push(
           Promise.all(
-            sanitizedPostSurveyData.vantage_codes.map((vantageCode: number) =>
+            sanitizedPostSurveyData.vantage_code_ids.map((vantageCode: number) =>
               insertVantageCodes(vantageCode, surveyId, connection)
             )
           )

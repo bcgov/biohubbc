@@ -11,7 +11,7 @@ import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 //import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 //import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
-//import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -21,7 +21,7 @@ export interface IPurposeAndMethodologyForm {
   additional_details: string;
   field_method_id: number;
   ecological_season_id: number;
-  vantage_id: number;
+  vantage_code_ids: number[];
 }
 
 export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
@@ -29,7 +29,7 @@ export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
   additional_details: '',
   field_method_id: ('' as unknown) as number,
   ecological_season_id: ('' as unknown) as number,
-  vantage_id: ('' as unknown) as number
+  vantage_code_ids: []
 };
 
 export const PurposeAndMethodologyYupSchema = yup.object().shape({
@@ -37,7 +37,7 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   additional_details: yup.string(),
   intended_outcome_id: yup.number().required('You must provide intended outcomes for the survey'),
   ecological_season_id: yup.number().required('You must provide an ecological season for the survey'),
-  vantage_id: yup.number().required('You must provide a vantage code for the survey')
+  vantage_code_ids: yup.array().min(1, 'You must specify a focal species').required('Required')
 });
 
 export interface IPurposeAndMethodologyFormProps {
@@ -93,7 +93,6 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
             other={{ multiline: true, required: true, rows: 2 }}
           />
         </Grid>
-
         <Grid item xs={12}>
           <Box component="fieldset" mt={4}>
             <Typography component="legend">Survey Methodology</Typography>
@@ -120,7 +119,6 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
             <FormHelperText>{formikProps.touched.field_method_id && formikProps.errors.field_method_id}</FormHelperText>
           </FormControl>
         </Grid>
-
         <Grid item xs={12}>
           <Box component="fieldset" mt={4}>
             <Typography component="legend">Survey Methodology</Typography>
@@ -149,41 +147,14 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
             </FormHelperText>
           </FormControl>
         </Grid>
-
-        <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-            <InputLabel id="vantage_id-label">Vantage Code</InputLabel>
-            <Select
-              id="vantage_id"
-              name="vantage_id"
-              labelId="vantage_id-label"
-              label="Vantage Code"
-              value={formikProps.values.vantage_id}
-              labelWidth={300}
-              onChange={formikProps.handleChange}
-              error={formikProps.touched.vantage_id && Boolean(formikProps.errors.vantage_id)}
-              displayEmpty
-              inputProps={{ 'aria-label': 'Vantage Code' }}>
-              {props.vantage_codes.map((item) => (
-                <MenuItem key={item.value} value={item.value}>
-                  {item.label}
-                </MenuItem>
-              ))}
-            </Select>
-            <FormHelperText>{formikProps.touched.vantage_id && formikProps.errors.vantage_id}</FormHelperText>
-          </FormControl>
-        </Grid>
-
-        {/*
-TODO://bring this back once we can do a multi-select - and have the database table to support it
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
-            id="vantage_codes"
+            id="vantage_code_ids"
             label="Vantage Code"
-            options={formikProps.vantage_id}
+            options={props.vantage_codes}
             required={true}
           />
-        </Grid> */}
+        </Grid>
       </Grid>
     </form>
   );

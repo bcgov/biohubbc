@@ -183,15 +183,56 @@ export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQ
     s.additional_details,
     s.ecological_season_id,
     s.intended_outcome_id,
-    s.vantage_id
+    s.revision_count,
+    sv.vantage_id
   FROM
     survey s
+  LEFT OUTER JOIN
+    survey_vantage sv
+  ON
+    sv.survey_id = s.survey_id
+  WHERE
+    s.survey_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyPurposeAndMethodologyForUpdateSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to retrieve a survey_proprietor row.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyVantageCodesSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+  SELECT
+    vantage_id
+  FROM
+    survey_vantage
   WHERE
     survey_id = ${surveyId};
   `;
 
   defaultLog.debug({
-    label: 'getSurveyPurposeAndMethodologyForUpdateSQL',
+    label: 'getSurveyVantageCodesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

@@ -123,7 +123,7 @@ export function getSurveyForView(): RequestHandler {
       });
 
       const getSurveyPurposeAndMethodology =
-        (surveyPurposeAndMethodology && new GetSurveyPurposeAndMethodologyData(surveyPurposeAndMethodology)) || null;
+        (surveyPurposeAndMethodology && new GetSurveyPurposeAndMethodologyData(surveyPurposeAndMethodology))[0] || null;
 
       const getSurveyProprietorData =
         (surveyProprietorData && new GetSurveyProprietorData(surveyProprietorData)) || null;
@@ -176,7 +176,7 @@ export const getSurveyPurposeAndMethodologyDataForView = async (
     throw new HTTP400('Failed to get survey purpose and methodology data');
   }
 
-  return (response && response.rows?.[0]) || null;
+  return (response && response.rows) || [];
 };
 
 export const getSurveyFundingSourcesDataForView = async (

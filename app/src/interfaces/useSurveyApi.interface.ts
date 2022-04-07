@@ -76,7 +76,7 @@ export interface IGetSurveyForViewResponsePurposeAndMethodology {
   additional_details: string;
   field_method_id: number;
   ecological_season_id: number;
-  vantage_id: number;
+  vantage_code_ids: number[];
 }
 
 export interface IGetSurveyForViewResponseProprietor {
@@ -111,7 +111,7 @@ export interface IGetSurveyForUpdateResponsePurposeAndMethodology {
   additional_details: string;
   field_method_id: number;
   ecological_season_id: number;
-  vantage_id: number;
+  vantage_code_ids: number[];
   revision_count?: number;
 }
 

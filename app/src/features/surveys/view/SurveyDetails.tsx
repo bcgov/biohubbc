@@ -24,8 +24,6 @@ export interface ISurveyDetailsProps {
 const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   const { surveyForViewData, codes, refresh, projectForViewData } = props;
 
-  console.log('survey for view data in the SurveyDetails', surveyForViewData);
-
   return (
     <>
       <Box component={Paper} p={3}>

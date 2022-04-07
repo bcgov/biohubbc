@@ -19,8 +19,7 @@ export class PostSurveyObject {
   ancillary_species: number[];
   field_method_id: number;
   ecological_season_id: number;
-  // vantage_codes: number[];
-  vantage_id: number;
+  vantage_code_ids: number[];
   start_date: string;
   end_date: string;
   survey_area_name: string;
@@ -63,7 +62,7 @@ export class PostSurveyObject {
     this.intended_outcome_id = obj?.intended_outcome_id || null;
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.additional_details = obj?.additional_details || null;
-    this.vantage_id = obj?.vantage_id || null;
+    this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.survey_proprietor =
       (obj && obj.survey_data_proprietary === 'true' && new PostSurveyProprietorData(obj)) || undefined;

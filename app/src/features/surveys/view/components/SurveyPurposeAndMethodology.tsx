@@ -48,8 +48,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
     refresh
   } = props;
 
-  console.log('data for the purpose and methodology section', survey_purpose_and_methodology);
-
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [
     surveyPurposeAndMethodologyForUpdate,
@@ -59,30 +57,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
   const [purposeAndMethodologyFormData, setPurposeAndMethodologyFormData] = useState<IPurposeAndMethodologyForm>(
     PurposeAndMethodologyInitialValues
   );
-
-  const intended_outcomes = [
-    { id: 1, name: 'intended outcome 1' },
-    { id: 2, name: 'intended outcome 2' },
-    { id: 3, name: 'intended outcome 3' }
-  ];
-
-  const ecological_seasons = [
-    { id: 1, name: 'ecological season 1' },
-    { id: 2, name: 'ecological season 2' },
-    { id: 3, name: 'ecological season 3' }
-  ];
-
-  const vantage_codes = [
-    { id: 1, name: 'vantage code 1' },
-    { id: 2, name: 'vantage code 2' },
-    { id: 3, name: 'vantage code 3' }
-  ];
-
-  const field_methods = [
-    { id: 1, name: 'method 1' },
-    { id: 2, name: 'method 2' },
-    { id: 3, name: 'method 3' }
-  ];
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyPurposeAndMethodologyI18N.editErrorTitle,
@@ -115,8 +89,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
         UPDATE_GET_SURVEY_ENTITIES.survey_purpose_and_methodology
       ]);
 
-      console.log('response: ', response);
-
       if (!response) {
         showErrorDialog({ open: true });
         return;
@@ -128,8 +100,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
-
-    console.log('is the issue here? ', surveyPurposeAndMethodologyResponseData);
 
     setSurveyPurposeAndMethodologyForUpdate(surveyPurposeAndMethodologyResponseData);
 
@@ -145,7 +115,8 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       ecological_season_id:
         surveyPurposeAndMethodologyResponseData?.ecological_season_id ||
         PurposeAndMethodologyInitialValues.ecological_season_id,
-      vantage_id: surveyPurposeAndMethodologyResponseData?.vantage_id || PurposeAndMethodologyInitialValues.vantage_id
+      vantage_code_ids:
+        surveyPurposeAndMethodologyResponseData?.vantage_code_ids || PurposeAndMethodologyInitialValues.vantage_code_ids
     });
 
     setOpenEditDialog(true);
@@ -182,22 +153,22 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
           element: (
             <PurposeAndMethodologyForm
               intended_outcomes={
-                intended_outcomes.map((item) => {
+                codes?.intended_outcomes?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
               field_methods={
-                field_methods.map((item) => {
+                codes?.field_methods?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
               ecological_seasons={
-                ecological_seasons.map((item) => {
+                codes?.ecological_seasons?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
               vantage_codes={
-                vantage_codes.map((item) => {
+                codes?.vantage_codes?.map((item) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
@@ -279,11 +250,13 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Vantage Code
                 </Typography>
-                <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.vantage_id &&
-                    codes?.vantage_codes?.find((item: any) => item.id === survey_purpose_and_methodology.vantage_id)
-                      ?.name}
-                </Typography>
+                {survey_purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
+                  return (
+                    <Typography component="dd" variant="body1" key={index}>
+                      {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
+                    </Typography>
+                  );
+                })}
               </Grid>
             </Grid>
           )}
