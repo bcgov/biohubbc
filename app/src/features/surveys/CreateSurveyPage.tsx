@@ -415,6 +415,7 @@ const CreateSurveyPage = () => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
+                      additional_details={''}
                     />
                   }></HorizontalSplitFormComponent>
 

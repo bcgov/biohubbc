@@ -42,6 +42,7 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
 
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: IAutocompleteFieldOption<number>[];
+  additional_details: string;
   field_methods: IAutocompleteFieldOption<number>[];
   ecological_seasons: IAutocompleteFieldOption<number>[];
   vantage_codes: IAutocompleteFieldOption<number>[];

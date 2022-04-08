@@ -1,5 +1,9 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
+import {
+  PutSurveyDetailsData,
+  PutSurveyProprietorData,
+  PutSurveyPurposeAndMethodologyData
+} from '../../models/survey-update';
 import { getLogger } from '../../utils/logger';
 import { queries } from '../queries';
 
@@ -133,14 +137,12 @@ export const putSurveyDetailsSQL = (
     UPDATE survey
     SET
       name = ${data.name},
-      objectives = ${data.objectives},
       start_date = ${data.start_date},
       end_date = ${data.end_date},
       lead_first_name = ${data.lead_first_name},
       lead_last_name = ${data.lead_last_name},
       location_name = ${data.location_name},
       geojson = ${JSON.stringify(data.geometry)},
-      common_survey_methodology_id = ${data.common_survey_methodology_id},
       geography =
   `;
 
@@ -255,6 +257,55 @@ export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean)
 
   defaultLog.debug({
     label: 'updateSurveyPublishStatusSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to update a survey row.
+ *
+ * @param {number} projectId
+ * @param {number} surveyId
+ * @param {PutSurveyPurposeAndMethodologyData} data
+ * @returns {SQLStatement} sql query object
+ */
+export const putSurveyPurposeAndMethodologySQL = (
+  surveyId: number,
+  data: PutSurveyPurposeAndMethodologyData | null,
+  revision_count: number
+): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'putSurveyPurposeAndMethodologySQL',
+    message: 'params',
+    surveyId,
+    data,
+    revision_count
+  });
+
+  if (!surveyId || !data) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+    UPDATE
+      survey
+    SET
+      field_method_id = ${data.field_method_id},
+     additional_details = ${data.additional_details},
+      ecological_season_id = ${data.ecological_season_id},
+      intended_outcome_id = ${data.intended_outcome_id}
+    WHERE
+      survey_id = ${surveyId}
+    AND
+      revision_count = ${revision_count};
+  `;
+
+  defaultLog.debug({
+    label: 'putSurveyPurposeAndMethodologySQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values

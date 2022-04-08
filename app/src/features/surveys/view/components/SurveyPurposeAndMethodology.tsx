@@ -1,18 +1,16 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-
-import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
-
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyPurposeAndMethodologyI18N } from 'constants/i18n';
 import PurposeAndMethodologyForm, {
-  PurposeAndMethodologyInitialValues,
   IPurposeAndMethodologyForm,
+  PurposeAndMethodologyInitialValues,
   PurposeAndMethodologyYupSchema
 } from 'features/surveys/components/PurposeAndMethodologyForm';
 import { APIError } from 'hooks/api/useAxios';
@@ -53,7 +51,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
     surveyPurposeAndMethodologyForUpdate,
     setSurveyPurposeAndMethodologyForUpdate
   ] = useState<IGetSurveyForUpdateResponsePurposeAndMethodology | null>(null);
-
   const [purposeAndMethodologyFormData, setPurposeAndMethodologyFormData] = useState<IPurposeAndMethodologyForm>(
     PurposeAndMethodologyInitialValues
   );
@@ -172,6 +169,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   return { value: item.id, label: item.name };
                 }) || []
               }
+              additional_details={survey_purpose_and_methodology.additional_details}
             />
           ),
           initialValues: purposeAndMethodologyFormData,

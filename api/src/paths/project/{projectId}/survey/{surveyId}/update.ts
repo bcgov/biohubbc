@@ -7,6 +7,7 @@ import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 import {
   GetUpdateSurveyDetailsData,
   PutSurveyDetailsData,
+  PutSurveyPurposeAndMethodologyData,
   PutSurveyProprietorData
 } from '../../../../../models/survey-update';
 import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
@@ -302,9 +303,7 @@ export const getSurveyPurposeAndMethodologyData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  return (
-    (response && response.rows && response.rows[0] && new GetSurveyPurposeAndMethodologyData(response.rows[0])) || null
-  );
+  return (response && response.rows && new GetSurveyPurposeAndMethodologyData(response.rows)[0]) || null;
 };
 
 export const getSurveyProprietorData = async (
@@ -355,6 +354,10 @@ export function updateSurvey(): RequestHandler {
 
       if (entities.survey_details) {
         promises.push(updateSurveyDetailsData(projectId, surveyId, entities, connection));
+      }
+
+      if (entities.survey_purpose_and_methodology) {
+        promises.push(updateSurveyPurposeAndMethodologyData(surveyId, entities, connection));
       }
 
       if (entities.survey_proprietor) {
@@ -542,5 +545,38 @@ export const unassociatePermitFromSurvey = async (survey_id: number, connection:
 
   if (!response) {
     throw new HTTP400('Failed to update survey permit number data');
+  }
+};
+
+export const updateSurveyPurposeAndMethodologyData = async (
+  surveyId: number,
+  entities: IUpdateSurvey,
+  connection: IDBConnection
+): Promise<void> => {
+  const putPurposeAndMethodologyData =
+    (entities?.survey_purpose_and_methodology &&
+      new PutSurveyPurposeAndMethodologyData(entities.survey_purpose_and_methodology)) ||
+    null;
+
+  const revision_count = putPurposeAndMethodologyData?.revision_count ?? null;
+
+  if (!revision_count && revision_count !== 0) {
+    throw new HTTP400('Failed to parse request body');
+  }
+
+  const updateSurveySQLStatement = queries.survey.putSurveyPurposeAndMethodologySQL(
+    surveyId,
+    putPurposeAndMethodologyData,
+    revision_count
+  );
+
+  if (!updateSurveySQLStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
+
+  if (!result || !result.rowCount) {
+    throw new HTTP409('Failed to update stale survey data');
   }
 };

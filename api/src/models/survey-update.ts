@@ -152,3 +152,31 @@ export class PutSurveyProprietorData {
     this.revision_count = obj?.revision_count ?? null;
   }
 }
+
+/**
+ * Pre-processes PUT /project/{projectId}/survey/{surveyId} survey purpose and methodology data for update
+ *
+ * @export
+ * @class PutSurveyPurposeAndMethodologyData
+ */
+export class PutSurveyPurposeAndMethodologyData {
+  id: number;
+  intended_outcome_id: number;
+  field_method_id: number;
+  additional_details: string;
+  ecological_season_id: number;
+  vantage_code_ids: number[];
+  revision_count: number;
+
+  constructor(obj?: any) {
+    defaultLog.debug({ label: 'PutSurveyPurposeAndMethodologyData', message: 'params', obj });
+
+    this.id = obj?.id ?? null;
+    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.field_method_id = obj?.field_method_id || null;
+    this.additional_details = obj?.additional_details || null;
+    this.ecological_season_id = obj?.ecological_season_id || null;
+    this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
+    this.revision_count = obj?.revision_count ?? null;
+  }
+}
