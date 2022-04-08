@@ -67,15 +67,6 @@ exports[`SurveyDetails renders correctly 1`] = `
         <hr
           class="MuiDivider-root"
         />
-        <div
-          class="MuiBox-root MuiBox-root-5"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            survey purpose
-          </p>
-        </div>
         <dl>
           <div
             class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
@@ -92,20 +83,6 @@ exports[`SurveyDetails renders correctly 1`] = `
                 class="MuiTypography-root MuiTypography-body1"
               >
                 survey name
-              </dd>
-            </div>
-            <div
-              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-            >
-              <dt
-                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-              >
-                Survey Methodology
-              </dt>
-              <dd
-                class="MuiTypography-root MuiTypography-body1"
-              >
-                method
               </dd>
             </div>
             <div
@@ -168,7 +145,7 @@ exports[`SurveyDetails renders correctly 1`] = `
         </dl>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-6"
+        class="MuiBox-root MuiBox-root-5"
       >
         <div
           class="MuiToolbar-root MuiToolbar-regular"
@@ -180,7 +157,7 @@ exports[`SurveyDetails renders correctly 1`] = `
             Permits
           </h3>
           <div
-            class="MuiBox-root MuiBox-root-7"
+            class="MuiBox-root MuiBox-root-6"
           >
             <button
               aria-label="Edit"
@@ -266,7 +243,7 @@ exports[`SurveyDetails renders correctly 1`] = `
         </div>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-8"
+        class="MuiBox-root MuiBox-root-7"
       >
         <div
           class="MuiToolbar-root MuiToolbar-regular"
@@ -278,7 +255,7 @@ exports[`SurveyDetails renders correctly 1`] = `
             Funding Sources
           </h3>
           <div
-            class="MuiBox-root MuiBox-root-9"
+            class="MuiBox-root MuiBox-root-8"
           >
             <button
               aria-label="Edit"
@@ -376,10 +353,153 @@ exports[`SurveyDetails renders correctly 1`] = `
       </div>
     </section>
     <section
-      class="MuiBox-root MuiBox-root-10"
+      class="MuiBox-root MuiBox-root-9"
     >
       <div
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-10"
+      >
+        <div
+          class="MuiToolbar-root MuiToolbar-regular"
+          style="justify-content: space-between;"
+        >
+          <h3
+            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          >
+            Purpose And Methodology Data
+          </h3>
+          <div
+            class="MuiBox-root MuiBox-root-11"
+          >
+            <button
+              aria-label="Edit Survey Purpose And Methodology"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+              data-testid="h3-button-toolbar-Edit"
+              id="h3-button-toolbar-Edit"
+              tabindex="0"
+              title="Edit Survey Purpose And Methodology"
+              type="button"
+            >
+              <span
+                class="MuiButton-label"
+              >
+                <span
+                  class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                >
+                  <svg
+                    role="presentation"
+                    style="width: 1.3125rem; height: 1.3125rem;"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                      style="fill: currentColor;"
+                    />
+                  </svg>
+                </span>
+                <strong>
+                  Edit
+                </strong>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
+        </div>
+        <hr
+          class="MuiDivider-root"
+        />
+        <dl>
+          <div
+            class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+          >
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Intended Outcome
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Intended Outcome 1
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Additional Details
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                details
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Field Method
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Recruitment
+              </dd>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              />
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Ecological Season
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Season 1
+              </dd>
+            </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Vantage Code
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Vantage Code 1
+              </dd>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Vantage Code 2
+              </dd>
+            </div>
+          </div>
+        </dl>
+      </div>
+    </section>
+    <section
+      class="MuiBox-root MuiBox-root-12"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-13"
       >
         <div
           class="MuiToolbar-root MuiToolbar-regular"
@@ -391,7 +511,7 @@ exports[`SurveyDetails renders correctly 1`] = `
             Proprietary Data
           </h3>
           <div
-            class="MuiBox-root MuiBox-root-12"
+            class="MuiBox-root MuiBox-root-14"
           >
             <button
               aria-label="Edit Survey Proprietor"
