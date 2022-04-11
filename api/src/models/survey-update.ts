@@ -14,7 +14,6 @@ const defaultLog = getLogger('models/survey-update');
 export class GetUpdateSurveyDetailsData {
   id: number;
   survey_name: string;
-  survey_purpose: string;
   focal_species: (string | number)[];
   ancillary_species: (string | number)[];
   common_survey_methodology_id: number;
@@ -45,7 +44,6 @@ export class GetUpdateSurveyDetailsData {
 
     this.id = surveyDetailsData?.id ?? null;
     this.survey_name = surveyDetailsData?.name || '';
-    this.survey_purpose = surveyDetailsData?.objectives || '';
     this.focal_species = surveyDetailsData?.focal_species || [];
     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
     this.start_date = surveyDetailsData?.start_date || '';
@@ -77,7 +75,6 @@ export class GetUpdateSurveyDetailsData {
  */
 export class PutSurveyDetailsData {
   name: string;
-  objectives: string;
   focal_species: number[];
   ancillary_species: number[];
   common_survey_methodology_id: number;
@@ -105,7 +102,6 @@ export class PutSurveyDetailsData {
     });
 
     this.name = obj?.survey_details?.survey_name || null;
-    this.objectives = obj?.survey_details?.survey_purpose || null;
     this.focal_species = (obj?.survey_details?.focal_species?.length && obj.survey_details?.focal_species) || [];
     this.ancillary_species =
       (obj?.survey_details?.ancillary_species?.length && obj.survey_details?.ancillary_species) || [];

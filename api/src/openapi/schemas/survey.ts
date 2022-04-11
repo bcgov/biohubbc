@@ -134,7 +134,6 @@ export const surveyUpdatePutRequestObject = {
   type: 'object',
   properties: {
     survey_name: { type: 'string' },
-    survey_purpose: { type: 'string' },
     focal_species: {
       type: 'array',
       items: {

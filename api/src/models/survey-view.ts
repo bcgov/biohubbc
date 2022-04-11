@@ -14,7 +14,6 @@ const defaultLog = getLogger('models/survey-view');
 export class GetViewSurveyDetailsData {
   id: number;
   survey_name: string;
-  survey_purpose: string;
   focal_species: (string | number)[];
   ancillary_species: (string | number)[];
   start_date: string;
@@ -46,7 +45,6 @@ export class GetViewSurveyDetailsData {
     this.id = surveyDetailsData?.id ?? null;
     this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
     this.survey_name = surveyDetailsData?.name || '';
-    this.survey_purpose = surveyDetailsData?.objectives || '';
     this.focal_species = surveyDetailsData?.focal_species || [];
     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
     this.start_date = surveyDetailsData?.start_date || '';
