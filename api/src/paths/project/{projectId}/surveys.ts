@@ -6,7 +6,6 @@ import { COMPLETION_STATUS } from '../../../constants/status';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/custom-error';
 import { GetSurveyListData } from '../../../models/survey-view';
-import { surveyIdResponseObject } from '../../../openapi/schemas/survey';
 import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
@@ -54,7 +53,14 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              ...(surveyIdResponseObject as object)
+              title: 'Survey Response Object',
+              type: 'object',
+              required: ['id'],
+              properties: {
+                id: {
+                  type: 'number'
+                }
+              }
             }
           }
         }

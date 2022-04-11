@@ -11,11 +11,6 @@ import {
   PutSurveyPurposeAndMethodologyData
 } from '../../../../../models/survey-update';
 import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
-import {
-  surveyIdResponseObject,
-  surveyUpdateGetResponseObject,
-  surveyUpdatePutRequestObject
-} from '../../../../../openapi/schemas/survey';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
@@ -115,7 +110,9 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyUpdateGetResponseObject as object)
+            title: 'Survey get response object, for view purposes',
+            type: 'object',
+            properties: {}
           }
         }
       }
@@ -169,7 +166,31 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(surveyUpdatePutRequestObject as object)
+          title: 'Survey Put Object',
+          type: 'object',
+          properties: {
+            survey_name: { type: 'string' },
+            focal_species: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
+              description: 'Selected focal species ids'
+            },
+            ancillary_species: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
+              description: 'Selected ancillary species ids'
+            },
+            start_date: { type: 'string' },
+            end_date: { type: 'string' },
+            biologist_first_name: { type: 'string' },
+            biologist_last_name: { type: 'string' },
+            survey_area_name: { type: 'string' },
+            revision_count: { type: 'number' }
+          }
         }
       }
     }
@@ -180,7 +201,14 @@ PUT.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyIdResponseObject as object)
+            title: 'Survey Response Object',
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'number'
+              }
+            }
           }
         }
       }

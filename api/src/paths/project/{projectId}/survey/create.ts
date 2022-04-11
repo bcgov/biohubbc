@@ -4,7 +4,6 @@ import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../../../models/survey-create';
-import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
 import { queries } from '../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
@@ -39,7 +38,96 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(surveyCreatePostRequestObject as object)
+          title: 'SurveyProject post request object',
+          type: 'object',
+          required: [
+            'survey_name',
+            'start_date',
+            'end_date',
+            'focal_species',
+            'ancillary_species',
+            'intended_outcome_id',
+            'additional_details',
+            'field_method_id',
+            'vantage_code_ids',
+            'ecological_season_id',
+            'biologist_first_name',
+            'biologist_last_name',
+            'survey_area_name',
+            'survey_data_proprietary'
+          ],
+          properties: {
+            survey_name: {
+              type: 'string'
+            },
+            start_date: {
+              type: 'string',
+              description: 'ISO 8601 date string'
+            },
+            end_date: {
+              type: 'string',
+              description: 'ISO 8601 date string'
+            },
+            focal_species: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
+              description: 'Selected focal species ids'
+            },
+            ancillary_species: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
+              description: 'Selected ancillary species ids'
+            },
+            intended_outcome_id: {
+              type: 'number'
+            },
+            additional_details: {
+              type: 'string'
+            },
+            field_method_id: {
+              type: 'number'
+            },
+            vantage_code_ids: {
+              type: 'array',
+              items: {
+                type: 'number'
+              }
+            },
+            ecological_season_id: {
+              type: 'number'
+            },
+            biologist_first_name: {
+              type: 'string'
+            },
+            biologist_last_name: {
+              type: 'string'
+            },
+            survey_area_name: {
+              type: 'string'
+            },
+            survey_data_proprietary: {
+              type: 'string'
+            },
+            proprietary_data_category: {
+              type: 'number'
+            },
+            proprietor_name: {
+              type: 'string'
+            },
+            category_rationale: {
+              type: 'string'
+            },
+            first_nations_id: {
+              type: 'number'
+            },
+            data_sharing_agreement_required: {
+              type: 'string'
+            }
+          }
         }
       }
     }
@@ -50,7 +138,14 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyIdResponseObject as object)
+            title: 'Survey Response Object',
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'number'
+              }
+            }
           }
         }
       }

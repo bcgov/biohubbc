@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
-import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
@@ -69,7 +68,14 @@ PUT.apiDoc = {
         'application/json': {
           schema: {
             // TODO is there any return value? or is it just an HTTP status with no content?
-            ...(surveyIdResponseObject as object)
+            title: 'Survey Response Object',
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'number'
+              }
+            }
           }
         }
       }
