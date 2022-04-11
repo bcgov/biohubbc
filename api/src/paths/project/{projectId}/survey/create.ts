@@ -126,6 +126,24 @@ POST.apiDoc = {
             },
             data_sharing_agreement_required: {
               type: 'string'
+            },
+            foippa_requirements_accepted: {
+              type: 'boolean'
+            },
+            sedis_procedures_accepted: {
+              type: 'boolean'
+            },
+            funding_sources: {
+              type: 'array',
+              items: {
+                type: 'number'
+              }
+            },
+            permit_number: {
+              type: 'string'
+            },
+            permit_type: {
+              type: 'string'
             }
           }
         }

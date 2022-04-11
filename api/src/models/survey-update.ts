@@ -16,7 +16,6 @@ export class GetUpdateSurveyDetailsData {
   survey_name: string;
   focal_species: (string | number)[];
   ancillary_species: (string | number)[];
-  common_survey_methodology_id: number;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -48,7 +47,6 @@ export class GetUpdateSurveyDetailsData {
     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
     this.start_date = surveyDetailsData?.start_date || '';
     this.end_date = surveyDetailsData?.end_date || '';
-    this.common_survey_methodology_id = surveyDetailsData?.common_survey_methodology_id ?? null;
     this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
     this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
     this.survey_area_name = surveyDetailsData?.location_name || '';
@@ -77,7 +75,6 @@ export class PutSurveyDetailsData {
   name: string;
   focal_species: number[];
   ancillary_species: number[];
-  common_survey_methodology_id: number;
   start_date: string;
   end_date: string;
   lead_first_name: string;
@@ -107,7 +104,6 @@ export class PutSurveyDetailsData {
       (obj?.survey_details?.ancillary_species?.length && obj.survey_details?.ancillary_species) || [];
     this.start_date = obj?.survey_details?.start_date || null;
     this.end_date = obj?.survey_details?.end_date || null;
-    this.common_survey_methodology_id = obj?.survey_details?.common_survey_methodology_id || null;
     this.lead_first_name = obj?.survey_details?.biologist_first_name || null;
     this.lead_last_name = obj?.survey_details?.biologist_last_name || null;
     this.location_name = obj?.survey_details?.survey_area_name || null;

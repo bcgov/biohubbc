@@ -59,7 +59,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            title: 'Project get response object, for view purposes',
+            title: 'Survey get response object, for view purposes',
             type: 'object',
             required: ['survey_details', 'survey_purpose_and_methodology', 'survey_proprietor'],
             properties: {

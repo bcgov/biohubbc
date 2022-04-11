@@ -540,9 +540,7 @@ export const getTemplateMethodologySpeciesRecordSQL = (
     FROM
       template_methodology_species tms
     WHERE
-      tms.common_survey_methodology_id = ${methodologyId}
-    AND
-      tms.wldtaxonomic_units_id = ${speciesId}
+      tms.field_method_id = ${methodologyId}
     AND
       tms.template_id = ${templateId}
     ;
