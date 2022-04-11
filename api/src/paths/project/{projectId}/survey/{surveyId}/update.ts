@@ -2,13 +2,13 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP409 } from '../../../../../errors/custom-error';
+import { HTTP400, HTTP409, HTTP500 } from '../../../../../errors/custom-error';
 import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 import {
   GetUpdateSurveyDetailsData,
   PutSurveyDetailsData,
-  PutSurveyPurposeAndMethodologyData,
-  PutSurveyProprietorData
+  PutSurveyProprietorData,
+  PutSurveyPurposeAndMethodologyData
 } from '../../../../../models/survey-update';
 import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import {
@@ -19,8 +19,13 @@ import {
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
-import { insertAncillarySpecies, insertFocalSpecies, insertSurveyFundingSource, insertSurveyPermit } from '../create';
-
+import {
+  insertAncillarySpecies,
+  insertFocalSpecies,
+  insertSurveyFundingSource,
+  insertSurveyPermit,
+  insertVantageCodes
+} from '../create';
 export interface IUpdateSurvey {
   survey_details: object | null;
   survey_purpose_and_methodology: object | null;
@@ -575,8 +580,40 @@ export const updateSurveyPurposeAndMethodologyData = async (
   }
 
   const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
-
   if (!result || !result.rowCount) {
     throw new HTTP409('Failed to update stale survey data');
+  }
+
+  const promises: Promise<any>[] = [];
+
+  promises.push(deleteSurveyVantageCodes(surveyId, connection));
+  //Handle vantage codes associated to this survey
+
+  if (putPurposeAndMethodologyData?.vantage_code_ids) {
+    promises.push(
+      Promise.all(
+        putPurposeAndMethodologyData.vantage_code_ids.map((vantageCode: number) =>
+          insertVantageCodes(vantageCode, surveyId, connection)
+        )
+      )
+    );
+  }
+
+  await Promise.all(promises);
+
+  await connection.commit();
+};
+
+export const deleteSurveyVantageCodes = async (survey_id: number, connection: IDBConnection): Promise<void> => {
+  const sqlStatement = queries.survey.deleteSurveyVantageCodesSQL(survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build delete survey vantage codes SQL statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP500('Failed to delete survey vantage codes');
   }
 };
