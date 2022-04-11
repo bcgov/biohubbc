@@ -9,6 +9,13 @@ import { Knex } from 'knex';
  */
 export async function up(knex: Knex): Promise<void> {
   await knex.raw(`
+  set search_path = biohub_dapi_v1;
+
+  drop view survey;
+  drop view common_survey_methodology;
+  drop view template_methodology_species;
+
+
   set search_path = biohub, public;
 
   CREATE TABLE ecological_season(
@@ -306,6 +313,22 @@ export async function up(knex: Knex): Promise<void> {
   create trigger audit_survey_vantage before
   insert or delete or update on biohub.survey_vantage for each row execute function biohub.tr_audit_trigger();
 
+  alter table template_methodology_species rename Constraint "PK192" to template_methodology_species_pk;
+
+  alter table template_methodology_species rename column common_survey_methodology_id to field_method_id;
+
+  alter table template_methodology_species add column intended_outcome_id integer;
+
+  COMMENT ON COLUMN template_methodology_species.intended_outcome_id IS 'System generated surrogate primary key identifier.';
+
+  ALTER TABLE template_methodology_species ADD CONSTRAINT "Refintended_outcome217"
+      FOREIGN KEY (intended_outcome_id)
+      REFERENCES intended_outcome(intended_outcome_id);
+
+  CREATE INDEX "Ref223217" ON template_methodology_species(intended_outcome_id);
+
+  ALTER TABLE template_methodology_species drop column wldtaxonomic_units_id;
+
   -- api_delete_survey.sql
   drop procedure if exists api_delete_survey;
 
@@ -418,14 +441,10 @@ export async function up(knex: Knex): Promise<void> {
   create view intended_outcome as select * from biohub.intended_outcome;
   create view vantage as select * from biohub.vantage;
   create view survey_vantage as select * from biohub.survey_vantage;
-
-  drop view survey;
   create view survey as select * from biohub.survey;
-  drop view common_survey_methodology;
   create view field_method as select * from biohub.field_method;
-  drop view template_methodology_species;
   create view template_methodology_species as select * from biohub.template_methodology_species;
-        `);
+          `);
 }
 
 export async function down(knex: Knex): Promise<void> {

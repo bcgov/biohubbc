@@ -121,9 +121,6 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <Box component="fieldset" mt={4}>
-            <Typography component="legend">Survey Methodology</Typography>
-          </Box>
           <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
             <InputLabel id="field_method_id-label">Ecological Season</InputLabel>
             <Select
