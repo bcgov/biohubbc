@@ -988,18 +988,12 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                   >
                     <label
-                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
                       data-shrink="false"
                       for="additional_details"
                       id="additional_details-label"
                     >
                       Additional Details
-                      <span
-                        aria-hidden="true"
-                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                      >
-                         *
-                      </span>
                     </label>
                     <div
                       class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
@@ -1009,7 +1003,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
                         id="additional_details"
                         name="additional_details"
-                        required=""
                         rows="2"
                       />
                       <fieldset
@@ -1020,7 +1013,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           class="PrivateNotchedOutline-legendLabelled-23"
                         >
                           <span>
-                            Additional Details *
+                            Additional Details
                           </span>
                         </legend>
                       </fieldset>
