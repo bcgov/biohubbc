@@ -151,17 +151,17 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
             <PurposeAndMethodologyForm
               intended_outcomes={
                 codes?.intended_outcomes?.map((item) => {
-                  return { value: item.id, label: item.name, description: item.description };
+                  return { value: item.id, label: item.name, subText: item.description };
                 }) || []
               }
               field_methods={
                 codes?.field_methods?.map((item) => {
-                  return { value: item.id, label: item.name, description: item.description };
+                  return { value: item.id, label: item.name, subText: item.description };
                 }) || []
               }
               ecological_seasons={
                 codes?.ecological_seasons?.map((item) => {
-                  return { value: item.id, label: item.name, description: item.description };
+                  return { value: item.id, label: item.name, subText: item.description };
                 }) || []
               }
               vantage_codes={

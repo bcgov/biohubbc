@@ -1,20 +1,16 @@
-import { Box, createMuiTheme, ListItemText, Typography, Divider } from '@material-ui/core';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
+import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
-import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
+import Typography from '@material-ui/core/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
-import { useFormikContext } from 'formik';
+import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
 import React from 'react';
 import yup from 'utils/YupSchema';
 import { ThemeProvider } from '@material-ui/styles';
 import appTheme from 'themes/appTheme';
+import { createMuiTheme } from '@material-ui/core';
 
 export interface IPurposeAndMethodologyForm {
   intended_outcome_id: number;
@@ -40,22 +36,10 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   vantage_code_ids: yup.array().min(1, 'You must specify a focal species').required('Required')
 });
 
-export interface IIntendedOutcomesOption extends IAutocompleteFieldOption<number> {
-  description: string;
-}
-
-export interface IFieldMethodsOption extends IAutocompleteFieldOption<number> {
-  description: string;
-}
-
-export interface IEcologicalSeasonsOption extends IAutocompleteFieldOption<number> {
-  description: string;
-}
-
 export interface IPurposeAndMethodologyFormProps {
-  intended_outcomes: IIntendedOutcomesOption[];
-  field_methods: IFieldMethodsOption[];
-  ecological_seasons: IEcologicalSeasonsOption[];
+  intended_outcomes: ISelectWithSubtextFieldOption[];
+  field_methods: ISelectWithSubtextFieldOption[];
+  ecological_seasons: ISelectWithSubtextFieldOption[];
   vantage_codes: IMultiAutocompleteFieldOption[];
 }
 
@@ -70,8 +54,9 @@ const selectWithSubheadersTheme = createMuiTheme({
     },
     MuiMenuItem: {
       root: {
-        whiteSpace: 'break-spaces'
-      }
+        whiteSpace: 'break-spaces',
+        borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
+      },
     },
     MuiListItemText: {
       primary: {
@@ -87,8 +72,6 @@ const selectWithSubheadersTheme = createMuiTheme({
  * @return {*}
  */
 const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
-  const formikProps = useFormikContext<IPurposeAndMethodologyForm>();
-
   return (
     <ThemeProvider theme={selectWithSubheadersTheme}>
       <form>
@@ -97,34 +80,13 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             <Box component="fieldset" mt={4}>
               <Typography component="legend">Purpose of Survey</Typography>
             </Box>
-            <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-              <InputLabel id="intended_outcome_id-label">Intended Outcomes</InputLabel>
-              <Select
-                id="intended_outcome_id"
-                name="intended_outcome_id"
-                labelId="intended_outcome_id-label"
-                label="Intended Outcomes"
-                value={formikProps.values.intended_outcome_id}
-                labelWidth={300}
-                onChange={formikProps.handleChange}
-                error={formikProps.touched.intended_outcome_id && Boolean(formikProps.errors.intended_outcome_id)}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Intended Outcomes' }}
-                renderValue={(value) => {
-                  const code = props.intended_outcomes.find((item) => item.value === value);
-                  return <>{code?.label}</>;
-                }}>
-                {props.intended_outcomes.map((item) => <>
-                  <MenuItem dense key={item.value} value={item.value}>
-                    <ListItemText primary={item.label} secondary={item.description} />
-                  </MenuItem>
-                  <Divider />
-                </>)}
-              </Select>
-              <FormHelperText>
-                {formikProps.touched.intended_outcome_id && formikProps.errors.intended_outcome_id}
-              </FormHelperText>
-            </FormControl>
+            <SelectWithSubtextField
+              id="intended_outcome_id"
+              name="intended_outcome_id"
+              label="Intended Outcomes"
+              options={props.intended_outcomes}
+              required={true}
+            />
           </Grid>
           <Grid item xs={12}>
             <CustomTextField name="additional_details" label="Additional Details" other={{ multiline: true, rows: 2 }} />
@@ -133,62 +95,22 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             <Box component="fieldset" mt={4}>
               <Typography component="legend">Survey Methodology</Typography>
             </Box>
-            <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-              <InputLabel id="field_method_id-label">Field Method</InputLabel>
-              <Select
-                id="field_method_id"
-                name="field_method_id"
-                labelId="field_method_id-label"
-                label="Field Method"
-                value={formikProps.values.field_method_id}
-                labelWidth={300}
-                onChange={formikProps.handleChange}
-                error={formikProps.touched.field_method_id && Boolean(formikProps.errors.field_method_id)}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Field Method' }}
-                renderValue={(value) => {
-                  const code = props.field_methods.find((item) => item.value === value);
-                  return <>{code?.label}</>;
-                }}>
-                {props.field_methods.map((item) => <>
-                  <MenuItem key={item.value} value={item.value}>
-                    <ListItemText primary={item.label} secondary={item.description} />
-                  </MenuItem>
-                  <Divider />
-                </>)}
-              </Select>
-              <FormHelperText>{formikProps.touched.field_method_id && formikProps.errors.field_method_id}</FormHelperText>
-            </FormControl>
+            <SelectWithSubtextField
+              id="field_method_id"
+              name="field_method_id"
+              label="Field Method"
+              options={props.field_methods}
+              required={true}
+            />
           </Grid>
           <Grid item xs={12}>
-            <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-              <InputLabel id="ecological_season_id-label">Ecological Season</InputLabel>
-              <Select
-                id="ecological_season_id"
-                name="ecological_season_id"
-                labelId="ecological_season_id-label"
-                label="Ecological Season"
-                value={formikProps.values.ecological_season_id}
-                labelWidth={300}
-                onChange={formikProps.handleChange}
-                error={formikProps.touched.ecological_season_id && Boolean(formikProps.errors.ecological_season_id)}
-                displayEmpty
-                inputProps={{ 'aria-label': 'Ecological Season' }}
-                renderValue={(value) => {
-                  const code = props.ecological_seasons.find((item) => item.value === value);
-                  return <>{code?.label}</>;
-                }}>
-                {props.ecological_seasons.map((item) => <>
-                  <MenuItem key={item.value} value={item.value}>
-                    <ListItemText primary={item.label} secondary={item.description} />
-                  </MenuItem>
-                  <Divider />
-                </>)}
-              </Select>
-              <FormHelperText>
-                {formikProps.touched.ecological_season_id && formikProps.errors.ecological_season_id}
-              </FormHelperText>
-            </FormControl>
+            <SelectWithSubtextField
+              id="ecological_season_id"
+              name="ecological_season_id"
+              label="Ecological Season"
+              options={props.ecological_seasons}
+              required={true}
+            />
           </Grid>
           <Grid item xs={12}>
             <MultiAutocompleteFieldVariableSize
