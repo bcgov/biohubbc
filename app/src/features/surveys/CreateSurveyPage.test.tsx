@@ -61,7 +61,11 @@ describe('CreateSurveyPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      species: [{ id: 1, name: 'species 1' }]
+      species: [{ id: 1, name: 'species 1' }],
+      ecological_seasons: [
+        { id: 1, name: 'season 1' },
+        { id: 2, name: 'season 2' }
+      ]
     } as any);
 
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
@@ -90,7 +94,11 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        species: [{ id: 1, name: 'species 1' }]
+        species: [{ id: 1, name: 'species 1' }],
+        ecological_seasons: [
+          { id: 1, name: 'season 1' },
+          { id: 2, name: 'season 2' }
+        ]
       } as any);
 
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
@@ -141,7 +149,11 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        species: [{ id: 1, name: 'species 1' }]
+        species: [{ id: 1, name: 'species 1' }],
+        ecological_seasons: [
+          { id: 1, name: 'season 1' },
+          { id: 2, name: 'season 2' }
+        ]
       } as any);
 
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
