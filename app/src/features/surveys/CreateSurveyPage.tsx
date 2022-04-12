@@ -396,12 +396,12 @@ const CreateSurveyPage = () => {
                   component={
                     <PurposeAndMethodologyForm
                       intended_outcomes={
-                        codes?.intended_outcomes?.map((item) => {
+                        codes?.intended_outcomes.map((item) => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
                       field_methods={
-                        codes?.field_methods?.map((item) => {
+                        codes?.field_methods.map((item) => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
@@ -411,11 +411,10 @@ const CreateSurveyPage = () => {
                         }) || []
                       }
                       vantage_codes={
-                        codes?.vantage_codes?.map((item) => {
+                        codes?.vantage_codes.map((item) => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      additional_details={''}
                     />
                   }></HorizontalSplitFormComponent>
 

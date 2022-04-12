@@ -42,7 +42,6 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
 
 export interface IPurposeAndMethodologyFormProps {
   intended_outcomes: IAutocompleteFieldOption<number>[];
-  additional_details: string;
   field_methods: IAutocompleteFieldOption<number>[];
   ecological_seasons: IAutocompleteFieldOption<number>[];
   vantage_codes: IAutocompleteFieldOption<number>[];
@@ -88,11 +87,7 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <CustomTextField
-            name="additional_details"
-            label="Additional Details"
-            other={{ multiline: true, required: true, rows: 2 }}
-          />
+          <CustomTextField name="additional_details" label="Additional Details" other={{ multiline: true, rows: 2 }} />
         </Grid>
         <Grid item xs={12}>
           <Box component="fieldset" mt={4}>
