@@ -163,7 +163,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   return { value: item.id, label: item.name };
                 }) || []
               }
-              additional_details={survey_purpose_and_methodology.additional_details}
             />
           ),
           initialValues: purposeAndMethodologyFormData,

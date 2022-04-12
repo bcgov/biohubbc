@@ -55,7 +55,7 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Project with matching projectId.',
+      description: 'Survey with matching surveyId and projectId.',
       content: {
         'application/json': {
           schema: {

@@ -43,10 +43,16 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
 });
 
 export interface IPurposeAndMethodologyFormProps {
+<<<<<<< HEAD
   intended_outcomes: CodeSet<{id: number, name: string, description: string}>;
   additional_details: string;
   field_methods: CodeSet<{id: number, name: string, description: string}>;
   ecological_seasons: CodeSet<{id: number, name: string, description: string}>;
+=======
+  intended_outcomes: IAutocompleteFieldOption<number>[];
+  field_methods: IAutocompleteFieldOption<number>[];
+  ecological_seasons: IAutocompleteFieldOption<number>[];
+>>>>>>> c4389b36a640fbfffe554a05577ddabad70a6b09
   vantage_codes: IAutocompleteFieldOption<number>[];
 }
 
@@ -94,11 +100,7 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
           </FormControl>
         </Grid>
         <Grid item xs={12}>
-          <CustomTextField
-            name="additional_details"
-            label="Additional Details"
-            other={{ multiline: true, required: true, rows: 2 }}
-          />
+          <CustomTextField name="additional_details" label="Additional Details" other={{ multiline: true, rows: 2 }} />
         </Grid>
         <Grid item xs={12}>
           <Box component="fieldset" mt={4}>

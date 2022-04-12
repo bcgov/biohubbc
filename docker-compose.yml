@@ -17,8 +17,8 @@ services:
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $DB_ADMIN -p 5432 -d $DB_DATABASE"]
       interval: 5s
-      timeout: 10s
-      retries: 20
+      timeout: 5s
+      retries: 30
     environment:
       - NODE_ENV=${NODE_ENV}
       - POSTGRES_USER=${DB_ADMIN}

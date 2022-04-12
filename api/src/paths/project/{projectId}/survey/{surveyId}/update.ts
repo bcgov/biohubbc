@@ -646,6 +646,10 @@ export const getSurveyPurposeAndMethodologyData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
+  console.log('response is from purpose and methodology: ', response);
+
+  console.log('after the model change: ', new GetSurveyPurposeAndMethodologyData(response.rows)[0]);
+
   return (response && response.rows && new GetSurveyPurposeAndMethodologyData(response.rows)[0]) || null;
 };
 

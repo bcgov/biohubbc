@@ -405,11 +405,10 @@ const CreateSurveyPage = () => {
                         codes?.ecological_seasons || []
                       }
                       vantage_codes={
-                        codes?.vantage_codes?.map((item) => {
+                        codes?.vantage_codes.map((item) => {
                           return { value: item.id, label: item.name };
                         }) || []
                       }
-                      additional_details={''}
                     />
                   }></HorizontalSplitFormComponent>
 
