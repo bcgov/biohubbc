@@ -1,5 +1,6 @@
-import { Box, Typography } from '@material-ui/core';
+import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
   IMultiAutocompleteFieldOption
