@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import {
   getActivitySQL,
   getAdministrativeActivityStatusTypeSQL,
-  getCommonSurveyMethodologiesSQL,
   getFirstNationsSQL,
   getFundingSourceSQL,
   getInvestmentActionCategorySQL,
@@ -27,13 +26,6 @@ describe('getManagementActionTypeSQL', () => {
 describe('getFirstNationsSQL', () => {
   it('returns valid sql statement', () => {
     const response = getFirstNationsSQL();
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getCommonSurveyMethodologiesSQL', () => {
-  it('returns valid sql statement', () => {
-    const response = getCommonSurveyMethodologiesSQL();
     expect(response).to.not.be.null;
   });
 });

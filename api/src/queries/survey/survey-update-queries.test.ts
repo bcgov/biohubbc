@@ -12,10 +12,8 @@ import {
 describe('putSurveyDetailsSQL', () => {
   const surveyData: PutSurveyDetailsData = {
     name: 'test',
-    objectives: 'objectives',
     focal_species: [1, 2],
     ancillary_species: [3, 4],
-    common_survey_methodology_id: 1,
     start_date: '2020/04/04',
     end_date: '2020/05/05',
     lead_first_name: 'first',

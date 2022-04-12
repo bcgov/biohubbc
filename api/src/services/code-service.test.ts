@@ -43,7 +43,10 @@ describe('CodeService', () => {
         'project_roles',
         'regional_offices',
         'administrative_activity_status_type',
-        'common_survey_methodologies'
+        'ecological_seasons',
+        'field_methods',
+        'intended_outcomes',
+        'vantage_codes'
       );
     });
   });

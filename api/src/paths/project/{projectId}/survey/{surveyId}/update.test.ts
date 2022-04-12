@@ -775,6 +775,7 @@ describe('updateSurveyProprietorData', () => {
       focal_species: [1],
       ancillary_species: [2]
     },
+    survey_purpose_and_methodology: {},
     survey_proprietor: {
       id: 0,
       survey_data_proprietary: 'true'
@@ -873,6 +874,7 @@ describe('updateSurveyDetailsData', () => {
       focal_species: [1],
       ancillary_species: [2]
     },
+    survey_purpose_and_methodology: null,
     survey_proprietor: null
   };
 

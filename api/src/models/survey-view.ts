@@ -68,13 +68,6 @@ export class GetViewSurveyDetailsData {
 }
 
 /**
- * Pre-processes GET /project/{projectId}/survey/{surveyId} survey details data for view
- *
- * @export
- * @class GetViewSurveyDetailsData
- */
-
-/**
  * Pre-processes GET surveys list data
  *
  * @export
