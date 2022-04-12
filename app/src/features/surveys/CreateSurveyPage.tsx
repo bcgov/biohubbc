@@ -391,7 +391,7 @@ const CreateSurveyPage = () => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Purpose And Methodology"
+                  title="Purpose and Methodology"
                   summary=""
                   component={
                     <PurposeAndMethodologyForm
