@@ -138,12 +138,10 @@ export function getTransformationSchema(): RequestHandler {
 
       const xlsxCsv = req['xlsx'];
       const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
-      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+      const field_method_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
       const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
-        Number(species_id),
-        Number(csm_id),
+        Number(field_method_id),
         Number(template_id),
         connection
       );
