@@ -38,8 +38,8 @@ export interface IGetAllCodeSetsResponse {
   project_roles: CodeSet;
   regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
-  field_methods: CodeSet;
-  intended_outcomes: CodeSet;
-  ecological_seasons: CodeSet;
+  field_methods: CodeSet<{ id: number, name: string, description: string}>;
+  intended_outcomes: CodeSet<{ id: number, name: string, description: string}>;
+  ecological_seasons: CodeSet<{ id: number, name: string, description: string}>;
   vantage_codes: CodeSet;
 }
