@@ -396,19 +396,13 @@ const CreateSurveyPage = () => {
                   component={
                     <PurposeAndMethodologyForm
                       intended_outcomes={
-                        codes?.intended_outcomes.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
+                        codes?.intended_outcomes || []
                       }
                       field_methods={
-                        codes?.field_methods.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
+                        codes?.field_methods || []
                       }
                       ecological_seasons={
-                        codes?.ecological_seasons.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
+                        codes?.ecological_seasons || []
                       }
                       vantage_codes={
                         codes?.vantage_codes.map((item) => {

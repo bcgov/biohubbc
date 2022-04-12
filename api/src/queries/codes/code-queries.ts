@@ -46,7 +46,7 @@ export const getActivitySQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getFieldMethodsSQL = (): SQLStatement =>
-  SQL`SELECT field_method_id as id, name from field_method where record_end_date is null;`;
+  SQL`SELECT field_method_id as id, name, description from field_method where record_end_date is null;`;
 
 /**
  * SQL query to fetch ecological season codes.
@@ -54,7 +54,7 @@ export const getFieldMethodsSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getEcologicalSeasonsSQL = (): SQLStatement =>
-  SQL`SELECT ecological_season_id as id, name from ecological_season where record_end_date is null;`;
+  SQL`SELECT ecological_season_id as id, name, description from ecological_season where record_end_date is null;`;
 
 /**
  * SQL query to fetch vantage codes.
@@ -70,7 +70,7 @@ export const getVantageCodesSQL = (): SQLStatement =>
  * @returns {SQLStatement} sql query object
  */
 export const getIntendedOutcomesSQL = (): SQLStatement =>
-  SQL`SELECT intended_outcome_id as id, name from intended_outcome where record_end_date is null;`;
+  SQL`SELECT intended_outcome_id as id, name, description from intended_outcome where record_end_date is null;`;
 
 /**
  * SQL query to fetch project type codes.
