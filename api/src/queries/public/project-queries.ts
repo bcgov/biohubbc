@@ -109,7 +109,7 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       p.name,
       p.start_date,
       p.end_date,
-      p.coordinator_agency_name,
+      p.coordinator_agency_name as coordinator_agency,
       pt.name as project_type,
       string_agg(DISTINCT pp.number, ', ') as permits_list
     from
@@ -120,9 +120,6 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       on p.project_id = pp.project_id
     where
       p.publish_timestamp is not null
-  `;
-
-  sqlStatement.append(SQL`
     group by
       p.project_id,
       p.name,
@@ -130,7 +127,7 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       p.end_date,
       p.coordinator_agency_name,
       pt.name;
-  `);
+  `;
 
   defaultLog.debug({
     label: 'getPublicProjectListSQL',
