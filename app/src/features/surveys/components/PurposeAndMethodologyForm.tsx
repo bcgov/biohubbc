@@ -1,20 +1,16 @@
-//import Box from '@material-ui/core/Box';
-import { Box, Typography, ListItemText } from '@material-ui/core';
+import { Box, ListItemText, Typography } from '@material-ui/core';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
-//import ListItem from '@material-ui/core/ListItem'
 import Select from '@material-ui/core/Select';
-//import Typography from '@material-ui/core/Typography';
 import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
-//import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
-//import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
-import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
+import MultiAutocompleteFieldVariableSize, {
+  IMultiAutocompleteFieldOption
+} from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { useFormikContext } from 'formik';
-import { CodeSet } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -42,18 +38,23 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   vantage_code_ids: yup.array().min(1, 'You must specify a focal species').required('Required')
 });
 
+export interface IIntendedOutcomesOption extends IAutocompleteFieldOption<number> {
+  description: string;
+}
+
+export interface IFieldMethodsOption extends IAutocompleteFieldOption<number> {
+  description: string;
+}
+
+export interface IEcologicalSeasonsOption extends IAutocompleteFieldOption<number> {
+  description: string;
+}
+
 export interface IPurposeAndMethodologyFormProps {
-<<<<<<< HEAD
-  intended_outcomes: CodeSet<{id: number, name: string, description: string}>;
-  additional_details: string;
-  field_methods: CodeSet<{id: number, name: string, description: string}>;
-  ecological_seasons: CodeSet<{id: number, name: string, description: string}>;
-=======
-  intended_outcomes: IAutocompleteFieldOption<number>[];
-  field_methods: IAutocompleteFieldOption<number>[];
-  ecological_seasons: IAutocompleteFieldOption<number>[];
->>>>>>> c4389b36a640fbfffe554a05577ddabad70a6b09
-  vantage_codes: IAutocompleteFieldOption<number>[];
+  intended_outcomes: IIntendedOutcomesOption[];
+  field_methods: IFieldMethodsOption[];
+  ecological_seasons: IEcologicalSeasonsOption[];
+  vantage_codes: IMultiAutocompleteFieldOption[];
 }
 
 /**
@@ -61,7 +62,7 @@ export interface IPurposeAndMethodologyFormProps {
  *
  * @return {*}
  */
-const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
+const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
   const formikProps = useFormikContext<IPurposeAndMethodologyForm>();
 
   return (
@@ -84,13 +85,13 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               error={formikProps.touched.intended_outcome_id && Boolean(formikProps.errors.intended_outcome_id)}
               displayEmpty
               inputProps={{ 'aria-label': 'Intended Outcomes' }}
-              renderValue={(value) => value.name}>
+              renderValue={(value) => {
+                const code = props.intended_outcomes.find((item) => item.value === value);
+                return <>{code?.label}</>;
+              }}>
               {props.intended_outcomes.map((item) => (
-                <MenuItem dense key={item.id} value={item.id}>
-                  <ListItemText
-                    primary={item.name}
-                    secondary={item.description}
-                  />
+                <MenuItem dense key={item.value} value={item.value}>
+                  <ListItemText primary={item.label} secondary={item.description} />
                 </MenuItem>
               ))}
             </Select>
@@ -118,10 +119,14 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               onChange={formikProps.handleChange}
               error={formikProps.touched.field_method_id && Boolean(formikProps.errors.field_method_id)}
               displayEmpty
-              inputProps={{ 'aria-label': 'Field Method' }}>
+              inputProps={{ 'aria-label': 'Field Method' }}
+              renderValue={(value) => {
+                const code = props.field_methods.find((item) => item.value === value);
+                return <>{code?.label}</>;
+              }}>
               {props.field_methods.map((item) => (
-                <MenuItem key={item.id} value={item.id}>
-                  <ListItemText primary={item.name} secondary={item.description} />
+                <MenuItem key={item.value} value={item.value}>
+                  <ListItemText primary={item.label} secondary={item.description} />
                 </MenuItem>
               ))}
             </Select>
@@ -130,7 +135,7 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
         </Grid>
         <Grid item xs={12}>
           <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
-            <InputLabel id="field_method_id-label">Ecological Season</InputLabel>
+            <InputLabel id="ecological_season_id-label">Ecological Season</InputLabel>
             <Select
               id="ecological_season_id"
               name="ecological_season_id"
@@ -141,10 +146,14 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
               onChange={formikProps.handleChange}
               error={formikProps.touched.ecological_season_id && Boolean(formikProps.errors.ecological_season_id)}
               displayEmpty
-              inputProps={{ 'aria-label': 'Ecological Season' }}>
+              inputProps={{ 'aria-label': 'Ecological Season' }}
+              renderValue={(value) => {
+                const code = props.ecological_seasons.find((item) => item.value === value);
+                return <>{code?.label}</>;
+              }}>
               {props.ecological_seasons.map((item) => (
-                <MenuItem key={item.id} value={item.id}>
-                  <ListItemText primary={item.name} secondary={item.description} />
+                <MenuItem key={item.value} value={item.value}>
+                  <ListItemText primary={item.label} secondary={item.description} />
                 </MenuItem>
               ))}
             </Select>
@@ -166,4 +175,4 @@ const PurposeAndMethologyForm: React.FC<IPurposeAndMethodologyFormProps> = (prop
   );
 };
 
-export default PurposeAndMethologyForm;
+export default PurposeAndMethodologyForm;
