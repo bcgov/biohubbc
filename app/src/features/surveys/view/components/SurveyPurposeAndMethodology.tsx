@@ -180,9 +180,9 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       <ErrorDialog {...errorDialogProps} />
       <Box>
         <H3ButtonToolbar
-          label="Purpose And Methodology Data"
+          label="Purpose and Methodology Data"
           buttonLabel="Edit"
-          buttonTitle="Edit Survey Purpose And Methodology"
+          buttonTitle="Edit Survey Purpose and Methodology"
           buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
           buttonOnClick={() => handleDialogEditOpen()}
           toolbarProps={{ disableGutters: true }}

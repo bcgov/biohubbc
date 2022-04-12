@@ -29,7 +29,7 @@ export const PurposeAndMethodologyYupSchema = yup.object().shape({
   additional_details: yup.string(),
   intended_outcome_id: yup.number().required('You must provide intended outcomes for the survey'),
   ecological_season_id: yup.number().required('You must provide an ecological season for the survey'),
-  vantage_code_ids: yup.array().min(1, 'You must specify a focal species').required('Required')
+  vantage_code_ids: yup.array().min(1, 'You must one or more vantage codes').required('Required')
 });
 
 export interface IPurposeAndMethodologyFormProps {

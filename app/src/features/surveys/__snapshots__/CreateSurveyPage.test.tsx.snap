@@ -883,7 +883,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             <h2
               class="MuiTypography-root MuiTypography-h2"
             >
-              Purpose And Methodology
+              Purpose and Methodology
             </h2>
             <div
               class="MuiBox-root MuiBox-root-35"

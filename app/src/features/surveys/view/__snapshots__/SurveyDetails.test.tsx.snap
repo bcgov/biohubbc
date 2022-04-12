@@ -365,18 +365,18 @@ exports[`SurveyDetails renders correctly 1`] = `
           <h3
             class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
           >
-            Purpose And Methodology Data
+            Purpose and Methodology Data
           </h3>
           <div
             class="MuiBox-root MuiBox-root-11"
           >
             <button
-              aria-label="Edit Survey Purpose And Methodology"
+              aria-label="Edit Survey Purpose and Methodology"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
               data-testid="h3-button-toolbar-Edit"
               id="h3-button-toolbar-Edit"
               tabindex="0"
-              title="Edit Survey Purpose And Methodology"
+              title="Edit Survey Purpose and Methodology"
               type="button"
             >
               <span
