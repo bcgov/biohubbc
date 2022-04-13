@@ -4,7 +4,7 @@
 
 | Technology | Version | Website                              | Description          |
 | ---------- | ------- | ------------------------------------ | -------------------- |
-| node       | 10.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
+| node       | 14.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
 | npm        | 6.x.x   | https://www.npmjs.com/               | Node Package Manager |
 | PostgreSQL | 12.5    | https://www.postgresql.org/download/ | PSQL database        |
 | PostGIS    | 3       | https://postgis.net/                 | GIS (spatial) tools  |
