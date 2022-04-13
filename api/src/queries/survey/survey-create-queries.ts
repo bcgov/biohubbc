@@ -24,8 +24,6 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
     return null;
   }
 
-  //TODO:  Vantage codes have a 1:many relationship.  Need the model to reflect
-
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey (
       project_id,
