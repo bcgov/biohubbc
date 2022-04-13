@@ -31,7 +31,8 @@ const selectWithSubtextTheme = createMuiTheme({
     ...(appTheme?.overrides || {}),
     MuiMenu: {
       paper: {
-        maxWidth: 500,
+        minWidth: '72ch !important',
+        maxWidth: '72ch !important',
         maxHeight: 500
       }
     },
@@ -43,14 +44,16 @@ const selectWithSubtextTheme = createMuiTheme({
     },
     MuiListItemText: {
       primary: {
+        fontSize: '14px',
         fontWeight: 700
+      },
+      secondary: {
+        marginTop: appTheme.spacing(0.5)
       }
     },
-    MuiTypography: {
-      body1: {
-        '& + p': {
-          marginTop: 0
-        }
+    MuiInputLabel: {
+      root: {
+        paddingRight: '20px'
       }
     }
   }
@@ -61,23 +64,35 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
 
   return (
     <ThemeProvider theme={selectWithSubtextTheme}>
-      <FormControl fullWidth variant="outlined" required={props.required} style={{ width: '100%' }}>
-        <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
+      <FormControl fullWidth variant="outlined" required={props.required}>
+        <InputLabel id={`${props.name}-label`}>
+          {props.label}
+        </InputLabel>
         <Select
-          id={props.id}
           name={props.name}
           labelId={`${props.name}-label`}
           label={props.label}
           value={get(values, props.name)}
-          labelWidth={300}
           onChange={handleChange}
           error={get(touched, props.name) && Boolean(get(errors, props.name))}
           displayEmpty
-          inputProps={{ 'aria-label': props.label }}
+          inputProps={{ 'id': props.id, 'aria-label': props.label }}
           renderValue={(value) => {
             // convert the selected `value` back into its matching `label`
             const code = props.options.find((item) => item.value === value);
             return <>{code?.label}</>;
+          }}
+          MenuProps={{
+            getContentAnchorEl: null,
+            className: 'menuTest',
+            anchorOrigin: {
+              vertical: "bottom",
+              horizontal: "left"
+            },
+            transformOrigin: {
+              vertical: "top",
+              horizontal: "left"
+            }
           }}>
           {props.options.map((item) => (
             <MenuItem key={item.value} value={item.value}>
