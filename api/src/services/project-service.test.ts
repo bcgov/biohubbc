@@ -438,7 +438,7 @@ describe('ProjectService', () => {
     });
   });
 
-  describe.only('getPublicProjectById', () => {
+  describe('getPublicProjectById', () => {
     afterEach(() => {
       sinon.restore();
     });

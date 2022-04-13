@@ -913,7 +913,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiFormControl-fullWidth"
-                      style="width: 100%;"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -934,15 +933,16 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <div
                           aria-haspopup="listbox"
                           aria-label="Intended Outcomes"
-                          aria-labelledby="intended_outcome_id-label intended_outcome_id"
+                          aria-labelledby="intended_outcome_id-label mui-component-select-intended_outcome_id"
                           class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                          id="intended_outcome_id"
+                          id="mui-component-select-intended_outcome_id"
                           role="button"
                           tabindex="0"
                         />
                         <input
                           aria-hidden="true"
                           class="MuiSelect-nativeInput"
+                          id="intended_outcome_id"
                           name="intended_outcome_id"
                           required=""
                           tabindex="-1"
@@ -1033,7 +1033,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiFormControl-fullWidth"
-                      style="width: 100%;"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -1054,15 +1053,16 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <div
                           aria-haspopup="listbox"
                           aria-label="Field Method"
-                          aria-labelledby="field_method_id-label field_method_id"
+                          aria-labelledby="field_method_id-label mui-component-select-field_method_id"
                           class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                          id="field_method_id"
+                          id="mui-component-select-field_method_id"
                           role="button"
                           tabindex="0"
                         />
                         <input
                           aria-hidden="true"
                           class="MuiSelect-nativeInput"
+                          id="field_method_id"
                           name="field_method_id"
                           required=""
                           tabindex="-1"
@@ -1101,7 +1101,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiFormControl-fullWidth"
-                      style="width: 100%;"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -1122,15 +1121,16 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <div
                           aria-haspopup="listbox"
                           aria-label="Ecological Season"
-                          aria-labelledby="ecological_season_id-label ecological_season_id"
+                          aria-labelledby="ecological_season_id-label mui-component-select-ecological_season_id"
                           class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                          id="ecological_season_id"
+                          id="mui-component-select-ecological_season_id"
                           role="button"
                           tabindex="0"
                         />
                         <input
                           aria-hidden="true"
                           class="MuiSelect-nativeInput"
+                          id="ecological_season_id"
                           name="ecological_season_id"
                           required=""
                           tabindex="-1"
