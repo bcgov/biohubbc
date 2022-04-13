@@ -65,9 +65,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
   return (
     <ThemeProvider theme={selectWithSubtextTheme}>
       <FormControl fullWidth variant="outlined" required={props.required}>
-        <InputLabel id={`${props.name}-label`}>
-          {props.label}
-        </InputLabel>
+        <InputLabel id={`${props.name}-label`}>{props.label}</InputLabel>
         <Select
           name={props.name}
           labelId={`${props.name}-label`}
@@ -76,7 +74,7 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
           onChange={handleChange}
           error={get(touched, props.name) && Boolean(get(errors, props.name))}
           displayEmpty
-          inputProps={{ 'id': props.id, 'aria-label': props.label }}
+          inputProps={{ id: props.id, 'aria-label': props.label }}
           renderValue={(value) => {
             // convert the selected `value` back into its matching `label`
             const code = props.options.find((item) => item.value === value);
@@ -86,12 +84,12 @@ const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
             getContentAnchorEl: null,
             className: 'menuTest',
             anchorOrigin: {
-              vertical: "bottom",
-              horizontal: "left"
+              vertical: 'bottom',
+              horizontal: 'left'
             },
             transformOrigin: {
-              vertical: "top",
-              horizontal: "left"
+              vertical: 'top',
+              horizontal: 'left'
             }
           }}>
           {props.options.map((item) => (
