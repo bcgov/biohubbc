@@ -394,7 +394,7 @@ describe('ProjectService', () => {
       expect(result).to.eql([]);
     });
 
-    it.only('returns rows on success', async () => {
+    it('returns rows on success', async () => {
       const mockRowObj = [
         {
           id: 123,
