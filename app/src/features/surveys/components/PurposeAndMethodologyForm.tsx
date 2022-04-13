@@ -50,7 +50,6 @@ export interface IPurposeAndMethodologyFormProps {
  */
 const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
   return (
-
     <form>
       <Box component="fieldset">
         <Typography component="legend">Purpose of Survey</Typography>

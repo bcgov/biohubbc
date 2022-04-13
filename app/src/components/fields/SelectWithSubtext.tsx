@@ -28,7 +28,7 @@ export interface ISelectWithSubtextField {
 const selectWithSubtextTheme = createMuiTheme({
   ...appTheme,
   overrides: {
-    ...appTheme?.overrides || {},
+    ...(appTheme?.overrides || {}),
     MuiMenu: {
       paper: {
         maxWidth: 500,
@@ -39,7 +39,7 @@ const selectWithSubtextTheme = createMuiTheme({
       root: {
         whiteSpace: 'break-spaces',
         borderBottom: '1px solid rgba(0, 0, 0, 0.12)'
-      },
+      }
     },
     MuiListItemText: {
       primary: {
@@ -54,7 +54,7 @@ const selectWithSubtextTheme = createMuiTheme({
       }
     }
   }
-})
+});
 
 const SelectWithSubtextField: React.FC<ISelectWithSubtextField> = (props) => {
   const { values, touched, errors, handleChange } = useFormikContext<ISelectWithSubtextFieldOption>();
