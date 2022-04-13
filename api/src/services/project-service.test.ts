@@ -437,4 +437,27 @@ describe('ProjectService', () => {
       expect(result[1].publish_status).to.equal('Unpublished');
     });
   });
+
+  describe.only('getPublicProjectById', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('should throw a 400 error when no sql statement produced', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      sinon.stub(queries.public, 'getPublicProjectSQL').returns(null);
+      sinon.stub(queries.public, 'getActivitiesByPublicProjectSQL').returns(null);
+
+      const projectService = new ProjectService(mockDBConnection);
+
+      try {
+        await projectService.getPublicProjectById(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+      }
+    });
+  });
 });
