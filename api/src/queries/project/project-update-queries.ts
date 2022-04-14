@@ -6,10 +6,8 @@ import {
   PutObjectivesData,
   PutProjectData
 } from '../../models/project-update';
-import { getLogger } from '../../utils/logger';
-import { queries } from '../queries';
 
-const defaultLog = getLogger('queries/project/project-update-queries');
+import { queries } from '../queries';
 
 /**
  * SQL query to get IUCN action classifications.
@@ -18,8 +16,6 @@ const defaultLog = getLogger('queries/project/project-update-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getIUCNActionClassificationByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -51,13 +47,6 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
       ical3s.iucn_conservation_action_level_3_subclassification_id;
   `;
 
-  defaultLog.debug({
-    label: 'getIUCNActionClassificationByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -67,8 +56,6 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
  * @returns {SQLStatement} sql query object
  */
 export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getIndigenousPartnershipsByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -84,13 +71,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
       project_first_nation_id;
   `;
 
-  defaultLog.debug({
-    label: 'getIndigenousPartnershipsByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -100,8 +80,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
  * @returns {SQLStatement} sql query object
  */
 export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPermitsByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -116,13 +94,6 @@ export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null =
       project_id = ${projectId};
   `;
 
-  defaultLog.debug({
-    label: 'getPermitsByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -133,8 +104,6 @@ export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null =
  * @return {*}  {(SQLStatement | null)}
  */
 export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getCoordinatorByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -152,13 +121,6 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
       project_id = ${projectId};
   `;
 
-  defaultLog.debug({
-    label: 'getCoordinatorByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -169,8 +131,6 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
  * @return {*}  {(SQLStatement | null)}
  */
 export const getProjectByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -187,13 +147,6 @@ export const getProjectByProjectSQL = (projectId: number): SQLStatement | null =
     WHERE
       project_id = ${projectId};
   `;
-
-  defaultLog.debug({
-    label: 'getProjectByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -212,17 +165,6 @@ export const putProjectSQL = (
   coordinator: PutCoordinatorData | null,
   revision_count: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putProjectSQL',
-    message: 'params',
-    projectId,
-    project,
-    location,
-    objectives,
-    coordinator,
-    revision_count
-  });
-
   if (!projectId) {
     return null;
   }
@@ -297,13 +239,6 @@ export const putProjectSQL = (
       revision_count = ${revision_count};
   `);
 
-  defaultLog.debug({
-    label: 'putProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -314,8 +249,6 @@ export const putProjectSQL = (
  * @return {*}  {(SQLStatement | null)}
  */
 export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getObjectivesByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -331,13 +264,6 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
       project_id = ${projectId};
   `;
 
-  defaultLog.debug({
-    label: 'getObjectivesByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -351,8 +277,6 @@ export const putProjectFundingSourceSQL = (
   fundingSource: PutFundingSource | null,
   projectId: number
 ): SQLStatement | null => {
-  defaultLog.debug({ label: 'putProjectFundingSourceSQL', message: 'params', fundingSource, projectId });
-
   if (!fundingSource || !projectId) {
     return null;
   }
@@ -377,13 +301,6 @@ export const putProjectFundingSourceSQL = (
         project_funding_source_id as id;
     `;
 
-  defaultLog.debug({
-    label: 'putProjectFundingSourceSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -395,8 +312,6 @@ export const putProjectFundingSourceSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const updateProjectPublishStatusSQL = (projectId: number, publish: boolean): SQLStatement | null => {
-  defaultLog.debug({ label: 'updateProjectPublishStatusSQL', message: 'params', projectId, publish });
-
   if (!projectId) {
     return null;
   }
@@ -413,13 +328,6 @@ export const updateProjectPublishStatusSQL = (projectId: number, publish: boolea
     `);
   }
   sqlStatement.append(SQL` RETURNING project_id as id;`);
-
-  defaultLog.debug({
-    label: 'updateProjectPublishStatusSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
