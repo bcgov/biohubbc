@@ -17,12 +17,15 @@ export class PostSurveyObject {
   sedis_procedures_accepted: boolean;
   focal_species: number[];
   ancillary_species: number[];
-  common_survey_methodology_id: number;
+  field_method_id: number;
+  ecological_season_id: number;
+  vantage_code_ids: number[];
   start_date: string;
   end_date: string;
   survey_area_name: string;
   survey_data_proprietary: boolean;
-  survey_purpose: string;
+  intended_outcome_id: number;
+  additional_details: string;
   geometry: Feature[];
   permit_number: string;
   permit_type: string;
@@ -48,7 +51,7 @@ export class PostSurveyObject {
     this.sedis_procedures_accepted = obj?.sedis_procedures_accepted === 'true' || false;
     this.focal_species = (obj?.focal_species?.length && obj.focal_species) || [];
     this.ancillary_species = (obj?.ancillary_species?.length && obj.ancillary_species) || [];
-    this.common_survey_methodology_id = obj?.common_survey_methodology_id || null;
+    this.field_method_id = obj?.field_method_id || null;
     this.start_date = obj?.start_date || null;
     this.survey_area_name = obj?.survey_area_name || null;
     this.permit_number = obj?.permit_number || null;
@@ -56,7 +59,10 @@ export class PostSurveyObject {
     this.funding_sources = (obj?.funding_sources?.length && obj.funding_sources) || [];
     this.survey_data_proprietary = obj?.survey_data_proprietary === 'true' || false;
     this.survey_name = obj?.survey_name || null;
-    this.survey_purpose = obj?.survey_purpose || null;
+    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.ecological_season_id = obj?.ecological_season_id || null;
+    this.additional_details = obj?.additional_details || null;
+    this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.survey_proprietor =
       (obj && obj.survey_data_proprietary === 'true' && new PostSurveyProprietorData(obj)) || undefined;

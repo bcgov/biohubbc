@@ -5,10 +5,8 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     id: 1,
     occurrence_submission_id: null,
     survey_name: 'survey name',
-    survey_purpose: 'survey purpose',
     focal_species: ['focal species 1'],
     ancillary_species: ['ancillary species 1'],
-    common_survey_methodology: 'method',
     start_date: '1998-10-10',
     end_date: '2021-02-26',
     biologist_first_name: 'first',
@@ -48,6 +46,14 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     ],
     completion_status: 'Active',
     publish_date: (null as unknown) as string
+  },
+  survey_purpose_and_methodology: {
+    id: 1,
+    intended_outcome_id: 1,
+    additional_details: 'details',
+    field_method_id: 1,
+    ecological_season_id: 1,
+    vantage_code_ids: [1, 2]
   },
   survey_proprietor: {
     id: 23,

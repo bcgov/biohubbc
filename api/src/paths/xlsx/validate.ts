@@ -108,12 +108,10 @@ export function getValidationSchema(): RequestHandler {
 
       const xlsxCsv = req['xlsx'];
       const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
-      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+      const field_method_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
       const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
-        Number(species_id),
-        Number(csm_id),
+        Number(field_method_id),
         Number(template_id),
         connection
       );
@@ -188,17 +186,17 @@ export function validateXLSX(): RequestHandler {
 /**
  * Get a template_methodology_species record from the template_methodologies_species table
  *
- * @param {number} surveyId
+ * @param {number} fieldMethodId
+ * @param {number} templateId
  * @param {IDBConnection} connection
  * @return {*}  {Promise<void>}
  */
 export const getTemplateMethodologySpeciesRecord = async (
-  speciesId: number,
-  surveyMethodology: number,
+  fieldMethodId: number,
   templateId: number,
   connection: IDBConnection
 ): Promise<any> => {
-  const sqlStatement = queries.survey.getTemplateMethodologySpeciesRecordSQL(speciesId, surveyMethodology, templateId);
+  const sqlStatement = queries.survey.getTemplateMethodologySpeciesRecordSQL(fieldMethodId, templateId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get template methodology species record sql statement');

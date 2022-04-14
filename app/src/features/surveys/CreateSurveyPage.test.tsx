@@ -8,6 +8,7 @@ import CreateSurveyPage from './CreateSurveyPage';
 import { MemoryRouter, Router } from 'react-router';
 import { createMemoryHistory } from 'history';
 import { DialogContextProvider } from 'contexts/dialogContext';
+import { codes } from 'test-helpers/code-helpers';
 
 const history = createMemoryHistory();
 
@@ -60,9 +61,7 @@ describe('CreateSurveyPage', () => {
   it('renders correctly when codes and project data are loaded', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      species: [{ id: 1, name: 'species 1' }]
-    } as any);
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
       { number: '123', type: 'Scientific' },
@@ -89,9 +88,7 @@ describe('CreateSurveyPage', () => {
     it('calls history.push() if the user clicks `Yes`', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        species: [{ id: 1, name: 'species 1' }]
-      } as any);
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
         { number: '123', type: 'Scientific' },
@@ -140,9 +137,7 @@ describe('CreateSurveyPage', () => {
     it('does nothing if the user clicks `No` or away from the dialog', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        species: [{ id: 1, name: 'species 1' }]
-      } as any);
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
         { number: '123', type: 'Scientific' },

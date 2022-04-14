@@ -54,52 +54,6 @@ exports[`General Information Form renders correctly the empty component correctl
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="false"
-            for="survey_purpose"
-            id="survey_purpose-label"
-          >
-            Purpose of Survey
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-          >
-            <textarea
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="survey_purpose"
-              name="survey_purpose"
-              required=""
-              rows="2"
-            />
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
-              >
-                <span>
-                  Purpose of Survey *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
       >
         <div
@@ -213,6 +167,11 @@ exports[`General Information Form renders correctly the empty component correctl
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
+        <legend
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Species
+        </legend>
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
@@ -423,78 +382,6 @@ exports[`General Information Form renders correctly the empty component correctl
               </fieldset>
             </div>
           </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiFormControl-fullWidth"
-          style="width: 100%;"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-            data-shrink="false"
-            id="common_survey_methodology_id-label"
-          >
-            Survey Methodology
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-          >
-            <div
-              aria-haspopup="listbox"
-              aria-label="Survey Methodology"
-              aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
-              class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-              id="common_survey_methodology_id"
-              role="button"
-              tabindex="0"
-            >
-              <span>
-                ​
-              </span>
-            </div>
-            <input
-              aria-hidden="true"
-              class="MuiSelect-nativeInput"
-              name="common_survey_methodology_id"
-              required=""
-              tabindex="-1"
-              value=""
-            />
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-              focusable="false"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M7 10l5 5 5-5z"
-              />
-            </svg>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
-              >
-                <span>
-                  Survey Methodology
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-          <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
-          />
         </div>
       </div>
     </div>
@@ -938,54 +825,6 @@ exports[`General Information Form renders correctly the filled component correct
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            for="survey_purpose"
-            id="survey_purpose-label"
-          >
-            Purpose of Survey
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-          >
-            <textarea
-              aria-invalid="false"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="survey_purpose"
-              name="survey_purpose"
-              required=""
-              rows="2"
-            >
-              purpose
-            </textarea>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-              >
-                <span>
-                  Purpose of Survey *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-        </div>
-      </div>
-      <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
       >
         <div
@@ -1099,6 +938,11 @@ exports[`General Information Form renders correctly the filled component correct
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
+        <legend
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Species
+        </legend>
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
@@ -1309,76 +1153,6 @@ exports[`General Information Form renders correctly the filled component correct
               </fieldset>
             </div>
           </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiFormControl-fullWidth"
-          style="width: 100%;"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            id="common_survey_methodology_id-label"
-          >
-            Survey Methodology
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-          >
-            <div
-              aria-haspopup="listbox"
-              aria-label="Survey Methodology"
-              aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
-              class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-              id="common_survey_methodology_id"
-              role="button"
-              tabindex="0"
-            >
-              Recruitment
-            </div>
-            <input
-              aria-hidden="true"
-              class="MuiSelect-nativeInput"
-              name="common_survey_methodology_id"
-              required=""
-              tabindex="-1"
-              value="1"
-            />
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-              focusable="false"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M7 10l5 5 5-5z"
-              />
-            </svg>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-              >
-                <span>
-                  Survey Methodology
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-          <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-          />
         </div>
       </div>
     </div>
@@ -1829,61 +1603,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            for="survey_purpose"
-            id="survey_purpose-label"
-          >
-            Purpose of Survey
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk Mui-error Mui-error"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-multiline MuiOutlinedInput-multiline"
-          >
-            <textarea
-              aria-describedby="survey_purpose-helper-text"
-              aria-invalid="true"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-              id="survey_purpose"
-              name="survey_purpose"
-              required=""
-              rows="2"
-            >
-              purpose
-            </textarea>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
-              >
-                <span>
-                  Purpose of Survey *
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-          <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
-            id="survey_purpose-helper-text"
-          >
-            error on survey purpose field
-          </p>
-        </div>
-      </div>
-      <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
       >
         <div
@@ -1997,6 +1716,11 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
+        <legend
+          class="MuiTypography-root MuiTypography-body1"
+        >
+          Species
+        </legend>
         <div
           aria-expanded="false"
           class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
@@ -2207,76 +1931,6 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </fieldset>
             </div>
           </div>
-        </div>
-      </div>
-      <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-      >
-        <div
-          class="MuiFormControl-root MuiFormControl-fullWidth"
-          style="width: 100%;"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-            data-shrink="true"
-            id="common_survey_methodology_id-label"
-          >
-            Survey Methodology
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-            >
-               *
-            </span>
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
-          >
-            <div
-              aria-haspopup="listbox"
-              aria-label="Survey Methodology"
-              aria-labelledby="common_survey_methodology_id-label common_survey_methodology_id"
-              class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-              id="common_survey_methodology_id"
-              role="button"
-              tabindex="0"
-            >
-              Recruitment
-            </div>
-            <input
-              aria-hidden="true"
-              class="MuiSelect-nativeInput"
-              name="common_survey_methodology_id"
-              required=""
-              tabindex="-1"
-              value="1"
-            />
-            <svg
-              aria-hidden="true"
-              class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-              focusable="false"
-              viewBox="0 0 24 24"
-            >
-              <path
-                d="M7 10l5 5 5-5z"
-              />
-            </svg>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
-              >
-                <span>
-                  Survey Methodology
-                </span>
-              </legend>
-            </fieldset>
-          </div>
-          <p
-            class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-          />
         </div>
       </div>
     </div>

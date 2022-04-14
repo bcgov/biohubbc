@@ -513,25 +513,22 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
 /**
  * SQL query to get a template methodology species id.
  *
- * @param {number} surveyId
- * @param {string} source
- * @param {string} inputKey
+ * @param {number} fieldMethodId
+ * @param {number} templateId
  * @return {*}  {(SQLStatement | null)}
  */
 export const getTemplateMethodologySpeciesRecordSQL = (
-  speciesId: number,
-  methodologyId: number,
+  fieldMethodId: number,
   templateId: number
 ): SQLStatement | null => {
   defaultLog.debug({
     label: 'getTemplateMethodologySpeciesRecordSQL',
     message: 'params',
-    speciesId,
-    methodologyId,
+    fieldMethodId,
     templateId
   });
 
-  if (!speciesId || !methodologyId || !templateId) {
+  if (!fieldMethodId || !templateId) {
     return null;
   }
 
@@ -540,9 +537,7 @@ export const getTemplateMethodologySpeciesRecordSQL = (
     FROM
       template_methodology_species tms
     WHERE
-      tms.common_survey_methodology_id = ${methodologyId}
-    AND
-      tms.wldtaxonomic_units_id = ${speciesId}
+      tms.field_method_id = ${fieldMethodId}
     AND
       tms.template_id = ${templateId}
     ;

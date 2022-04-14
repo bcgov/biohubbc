@@ -3,7 +3,7 @@
 exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-8"
+    class="MuiBox-root MuiBox-root-7"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -15,7 +15,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
         General Information
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-9"
+        class="MuiBox-root MuiBox-root-8"
       >
         <button
           aria-label="Edit General Information"
@@ -56,15 +56,6 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
     <hr
       class="MuiDivider-root"
     />
-    <div
-      class="MuiBox-root MuiBox-root-10"
-    >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        survey purpose
-      </p>
-    </div>
     <dl>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
@@ -81,20 +72,6 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
             class="MuiTypography-root MuiTypography-body1"
           >
             survey name
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Survey Methodology
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            method
           </dd>
         </div>
         <div
@@ -157,7 +134,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
     </dl>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-11"
+    class="MuiBox-root MuiBox-root-9"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -169,7 +146,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
         Permits
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-12"
+        class="MuiBox-root MuiBox-root-10"
       >
         <button
           aria-label="Edit"
@@ -255,7 +232,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-13"
+    class="MuiBox-root MuiBox-root-11"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -267,7 +244,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
         Funding Sources
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-14"
+        class="MuiBox-root MuiBox-root-12"
       >
         <button
           aria-label="Edit"
@@ -422,15 +399,6 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
     <hr
       class="MuiDivider-root"
     />
-    <div
-      class="MuiBox-root MuiBox-root-3"
-    >
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        survey purpose
-      </p>
-    </div>
     <dl>
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
@@ -447,20 +415,6 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
             class="MuiTypography-root MuiTypography-body1"
           >
             survey name
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Survey Methodology
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            method
           </dd>
         </div>
         <div
@@ -526,7 +480,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
     </dl>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-4"
+    class="MuiBox-root MuiBox-root-3"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -538,7 +492,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
         Permits
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-5"
+        class="MuiBox-root MuiBox-root-4"
       >
         <button
           aria-label="Edit"
@@ -624,7 +578,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
     </div>
   </div>
   <div
-    class="MuiBox-root MuiBox-root-6"
+    class="MuiBox-root MuiBox-root-5"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -636,7 +590,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
         Funding Sources
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-7"
+        class="MuiBox-root MuiBox-root-6"
       >
         <button
           aria-label="Edit"

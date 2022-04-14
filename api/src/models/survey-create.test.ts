@@ -14,20 +14,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_name).to.equal(null);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(null);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
-    });
-
-    it('sets common survey methodology id', () => {
-      expect(data.common_survey_methodology_id).to.equal(null);
     });
 
     it('sets start_date', () => {
@@ -116,20 +108,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_name).to.equal(surveyObj.survey_name);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(surveyObj.survey_purpose);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyObj.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
-    });
-
-    it('sets common_survey_methodology_id', () => {
-      expect(data.common_survey_methodology_id).to.eql(surveyObj.common_survey_methodology_id);
     });
 
     it('sets start_date', () => {
@@ -205,20 +189,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_name).to.equal(surveyObj.survey_name);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(surveyObj.survey_purpose);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyObj.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
-    });
-
-    it('sets common_survey_methodology_id', () => {
-      expect(data.common_survey_methodology_id).to.eql(surveyObj.common_survey_methodology_id);
     });
 
     it('sets start_date', () => {

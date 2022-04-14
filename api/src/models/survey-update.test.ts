@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { GetUpdateSurveyDetailsData, PutSurveyDetailsData } from './survey-update';
+import { GetUpdateSurveyDetailsData, PutSurveyDetailsData, PutSurveyPurposeAndMethodologyData } from './survey-update';
 
 describe('GetUpdateSurveyDetailsData', () => {
   describe('No values provided', () => {
@@ -14,20 +14,12 @@ describe('GetUpdateSurveyDetailsData', () => {
       expect(data.survey_name).to.equal('');
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal('');
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
-    });
-
-    it('sets common survey methodology id', () => {
-      expect(data.common_survey_methodology_id).to.equal(null);
     });
 
     it('sets start_date', () => {
@@ -107,20 +99,12 @@ describe('GetUpdateSurveyDetailsData', () => {
       expect(data.survey_name).to.equal(surveyData.name);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(surveyData.objectives);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyData.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyData.ancillary_species);
-    });
-
-    it('sets common survey methodology id', () => {
-      expect(data.common_survey_methodology_id).to.equal(surveyData.common_survey_methodology_id);
     });
 
     it('sets start_date', () => {
@@ -204,20 +188,12 @@ describe('GetUpdateSurveyDetailsData', () => {
       expect(data.survey_name).to.equal(surveyData.name);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(surveyData.objectives);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyData.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyData.ancillary_species);
-    });
-
-    it('sets common survey methodology id', () => {
-      expect(data.common_survey_methodology_id).to.equal(surveyData.common_survey_methodology_id);
     });
 
     it('sets start_date', () => {
@@ -274,20 +250,12 @@ describe('PutSurveyData', () => {
       expect(data.name).to.equal(null);
     });
 
-    it('sets objectives', () => {
-      expect(data.objectives).to.equal(null);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
-    });
-
-    it('sets common_survey_methodology_id', () => {
-      expect(data.common_survey_methodology_id).to.equal(null);
     });
 
     it('sets geometry', () => {
@@ -363,20 +331,12 @@ describe('PutSurveyData', () => {
       expect(data.name).to.equal(surveyData.survey_details.survey_name);
     });
 
-    it('sets objectives', () => {
-      expect(data.objectives).to.equal(surveyData.survey_details.survey_purpose);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyData.survey_details.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyData.survey_details.ancillary_species);
-    });
-
-    it('sets common_survey_methodology_id', () => {
-      expect(data.common_survey_methodology_id).to.equal(surveyData.survey_details.common_survey_methodology_id);
     });
 
     it('sets start_date', () => {
@@ -405,6 +365,90 @@ describe('PutSurveyData', () => {
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(surveyData.survey_details.revision_count);
+    });
+  });
+});
+
+describe('PutSurveyPurposeAndMethodologyData', () => {
+  describe('No values provided', () => {
+    let data: PutSurveyPurposeAndMethodologyData;
+
+    before(() => {
+      data = new PutSurveyPurposeAndMethodologyData(null);
+    });
+
+    it('sets id', () => {
+      expect(data.id).to.equal(null);
+    });
+
+    it('sets intended_outcomes_id', () => {
+      expect(data.intended_outcome_id).to.eql(null);
+    });
+
+    it('sets field_method_id', () => {
+      expect(data.field_method_id).to.eql(null);
+    });
+
+    it('sets additional_details', () => {
+      expect(data.additional_details).to.equal(null);
+    });
+
+    it('sets ecological_season_id', () => {
+      expect(data.ecological_season_id).to.equal(null);
+    });
+
+    // it('sets vantage_code_ids', () => {
+    //   expect(data.vantage_code_ids).to.equal([]);
+    // });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PutSurveyPurposeAndMethodologyData;
+
+    const purposeAndMethodologyData = {
+      id: 1,
+      field_method_id: 1,
+      additional_details: 'additional details',
+      vantage_code_ids: [1, 2],
+      ecological_season_id: 1,
+      intended_outcome_id: 1,
+      revision_count: 1
+    };
+
+    before(() => {
+      data = new PutSurveyPurposeAndMethodologyData(purposeAndMethodologyData);
+    });
+
+    it('sets id', () => {
+      expect(data.id).to.equal(purposeAndMethodologyData.id);
+    });
+
+    it('sets intended_outcomes_id', () => {
+      expect(data.intended_outcome_id).to.eql(purposeAndMethodologyData.intended_outcome_id);
+    });
+
+    it('sets additional_details', () => {
+      expect(data.additional_details).to.eql(purposeAndMethodologyData.additional_details);
+    });
+
+    it('sets field_method_id', () => {
+      expect(data.field_method_id).to.equal(purposeAndMethodologyData.field_method_id);
+    });
+
+    it('sets ecological_season_id', () => {
+      expect(data.ecological_season_id).to.equal(purposeAndMethodologyData.ecological_season_id);
+    });
+
+    it('sets vantage_code_ids', () => {
+      expect(data.vantage_code_ids).to.equal(purposeAndMethodologyData.vantage_code_ids);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(purposeAndMethodologyData.revision_count);
     });
   });
 });

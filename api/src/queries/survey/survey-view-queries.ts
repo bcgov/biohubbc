@@ -145,7 +145,10 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
     SELECT
       s.survey_id as id,
       s.name,
-      s.objectives,
+      s.additional_details,
+      s.field_method_id,
+      s.ecological_season_id,
+      s.intended_outcome_id,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -156,7 +159,6 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.publish_timestamp as publish_date,
       per.number,
       per.type,
-      csm.name as common_survey_methodology,
       max(os.occurrence_submission_id) as occurrence_submission_id,
       max(sss.survey_summary_submission_id) as survey_summary_submission_id
     FROM
@@ -166,9 +168,9 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
     ON
       per.survey_id = s.survey_id
     LEFT OUTER JOIN
-      common_survey_methodology as csm
+      field_method as fm
     ON
-      csm.common_survey_methodology_id = s.common_survey_methodology_id
+      fm.field_method_id = s.field_method_id
     LEFT OUTER JOIN
       occurrence_submission as os
     ON
@@ -182,7 +184,10 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
     GROUP BY
       s.survey_id,
       s.name,
-      s.objectives,
+      s.field_method_id,
+      s.additional_details,
+      s.intended_outcome_id,
+      s.ecological_season_id,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -192,8 +197,7 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.revision_count,
       s.publish_timestamp,
       per.number,
-      per.type,
-      csm.name;
+      per.type;
   `;
 
   defaultLog.debug({
@@ -212,7 +216,6 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
     message: 'params',
     surveyId
   });
-
   if (!surveyId) {
     return null;
   }

@@ -40,8 +40,20 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  common_survey_methodologies: [
-    { id: 1, name: 'Recruitment' },
-    { id: 2, name: 'SRB' }
+  field_methods: [
+    { id: 1, name: 'Recruitment', description: 'Description' },
+    { id: 2, name: 'SRB', description: 'Description' }
+  ],
+  ecological_seasons: [
+    { id: 1, name: 'Season 1', description: 'Description' },
+    { id: 2, name: 'Season 2', description: 'Description' }
+  ],
+  vantage_codes: [
+    { id: 1, name: 'Vantage Code 1' },
+    { id: 2, name: 'Vantage Code 2' }
+  ],
+  intended_outcomes: [
+    { id: 1, name: 'Intended Outcome 1', description: 'Description 1' },
+    { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
   ]
 };

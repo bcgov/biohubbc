@@ -1,0 +1,107 @@
+import Box from '@material-ui/core/Box';
+import Grid from '@material-ui/core/Grid';
+import Typography from '@material-ui/core/Typography';
+import CustomTextField from 'components/fields/CustomTextField';
+import MultiAutocompleteFieldVariableSize, {
+  IMultiAutocompleteFieldOption
+} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import SelectWithSubtextField, { ISelectWithSubtextFieldOption } from 'components/fields/SelectWithSubtext';
+import React from 'react';
+import yup from 'utils/YupSchema';
+
+export interface IPurposeAndMethodologyForm {
+  intended_outcome_id: number;
+  additional_details: string;
+  field_method_id: number;
+  ecological_season_id: number;
+  vantage_code_ids: number[];
+}
+
+export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
+  intended_outcome_id: ('' as unknown) as number,
+  additional_details: '',
+  field_method_id: ('' as unknown) as number,
+  ecological_season_id: ('' as unknown) as number,
+  vantage_code_ids: []
+};
+
+export const PurposeAndMethodologyYupSchema = yup.object().shape({
+  field_method_id: yup.number().required('You must provide a field method'),
+  additional_details: yup.string(),
+  intended_outcome_id: yup.number().required('You must provide intended outcomes for the survey'),
+  ecological_season_id: yup.number().required('You must provide an ecological season for the survey'),
+  vantage_code_ids: yup.array().min(1, 'You must one or more vantage codes').required('Required')
+});
+
+export interface IPurposeAndMethodologyFormProps {
+  intended_outcomes: ISelectWithSubtextFieldOption[];
+  field_methods: ISelectWithSubtextFieldOption[];
+  ecological_seasons: ISelectWithSubtextFieldOption[];
+  vantage_codes: IMultiAutocompleteFieldOption[];
+}
+
+/**
+ * Create survey - general information fields
+ *
+ * @return {*}
+ */
+const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
+  return (
+    <form>
+      <Box component="fieldset">
+        <Typography component="legend">Purpose of Survey</Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <SelectWithSubtextField
+              id="intended_outcome_id"
+              name="intended_outcome_id"
+              label="Intended Outcomes"
+              options={props.intended_outcomes}
+              required={true}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <CustomTextField
+              name="additional_details"
+              label="Additional Details"
+              other={{ multiline: true, rows: 2 }}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+      <Box component="fieldset" mt={4}>
+        <Typography component="legend">Survey Methodology</Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <SelectWithSubtextField
+              id="field_method_id"
+              name="field_method_id"
+              label="Field Method"
+              options={props.field_methods}
+              required={true}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <SelectWithSubtextField
+              id="ecological_season_id"
+              name="ecological_season_id"
+              label="Ecological Season"
+              options={props.ecological_seasons}
+              required={true}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <MultiAutocompleteFieldVariableSize
+              id="vantage_code_ids"
+              label="Vantage Code"
+              options={props.vantage_codes}
+              required={true}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+    </form>
+  );
+};
+
+export default PurposeAndMethodologyForm;

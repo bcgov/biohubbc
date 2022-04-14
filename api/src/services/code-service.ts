@@ -39,7 +39,10 @@ export interface IAllCodeSets {
   project_roles: CodeSet;
   regional_offices: CodeSet;
   administrative_activity_status_type: CodeSet;
-  common_survey_methodologies: CodeSet;
+  field_methods: CodeSet<{ id: number; name: string; description: string }>;
+  ecological_seasons: CodeSet<{ id: number; name: string; description: string }>;
+  intended_outcomes: CodeSet<{ id: number; name: string; description: string }>;
+  vantage_codes: CodeSet;
 }
 
 export class CodeService extends DBService {
@@ -67,7 +70,10 @@ export class CodeService extends DBService {
       project_roles,
       administrative_activity_status_type,
       species,
-      common_survey_methodologies
+      field_methods,
+      ecological_seasons,
+      intended_outcomes,
+      vantage_codes
     ] = await Promise.all([
       await this.connection.query(queries.codes.getManagementActionTypeSQL().text),
       await this.connection.query(queries.codes.getFirstNationsSQL().text),
@@ -83,7 +89,12 @@ export class CodeService extends DBService {
       await this.connection.query(queries.codes.getProjectRolesSQL().text),
       await this.connection.query(queries.codes.getAdministrativeActivityStatusTypeSQL().text),
       await this.connection.query(queries.codes.getTaxonsSQL().text),
-      await this.connection.query(queries.codes.getCommonSurveyMethodologiesSQL().text)
+      await this.connection.query(queries.codes.getFieldMethodsSQL().text),
+      await this.connection.query(queries.codes.getEcologicalSeasonsSQL().text),
+
+      await this.connection.query(queries.codes.getIntendedOutcomesSQL().text),
+
+      await this.connection.query(queries.codes.getVantageCodesSQL().text)
     ]);
 
     return {
@@ -109,7 +120,11 @@ export class CodeService extends DBService {
       administrative_activity_status_type:
         (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
       species: (species && species.rows) || [],
-      common_survey_methodologies: (common_survey_methodologies && common_survey_methodologies.rows) || [],
+      field_methods: (field_methods && field_methods.rows) || [],
+      ecological_seasons: (ecological_seasons && ecological_seasons.rows) || [],
+      intended_outcomes: (intended_outcomes && intended_outcomes.rows) || [],
+      vantage_codes: (vantage_codes && vantage_codes.rows) || [],
+
       // TODO Temporarily hard coded list of code values below
       coordinator_agency,
       region,

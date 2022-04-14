@@ -2,26 +2,29 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP409 } from '../../../../../errors/custom-error';
+import { HTTP400, HTTP409, HTTP500 } from '../../../../../errors/custom-error';
 import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 import {
   GetUpdateSurveyDetailsData,
   PutSurveyDetailsData,
-  PutSurveyProprietorData
+  PutSurveyProprietorData,
+  PutSurveyPurposeAndMethodologyData
 } from '../../../../../models/survey-update';
-import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
-import {
-  surveyIdResponseObject,
-  surveyUpdateGetResponseObject,
-  surveyUpdatePutRequestObject
-} from '../../../../../openapi/schemas/survey';
+import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
+import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
-import { insertAncillarySpecies, insertFocalSpecies, insertSurveyFundingSource, insertSurveyPermit } from '../create';
-
+import {
+  insertAncillarySpecies,
+  insertFocalSpecies,
+  insertSurveyFundingSource,
+  insertSurveyPermit,
+  insertVantageCodes
+} from '../create';
 export interface IUpdateSurvey {
   survey_details: object | null;
+  survey_purpose_and_methodology: object | null;
   survey_proprietor: object | null;
 }
 
@@ -59,6 +62,7 @@ export const PUT: Operation = [
 
 export enum GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
+  survey_purpose_and_methodology = 'survey_purpose_and_methodology',
   survey_proprietor = 'survey_proprietor'
 }
 
@@ -107,7 +111,185 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyUpdateGetResponseObject as object)
+            title: 'Survey get response object, for update purposes',
+            type: 'object',
+            required: ['survey_details', 'survey_purpose_and_methodology', 'survey_proprietor'],
+            properties: {
+              survey_details: {
+                description: 'Survey Details',
+                type: 'object',
+                required: [
+                  'id',
+                  'focal_species',
+                  'ancillary_species',
+                  'biologist_first_name',
+                  'biologist_last_name',
+                  'completion_status',
+                  'start_date',
+                  'end_date',
+                  'funding_sources',
+                  'geometry',
+                  'permit_number',
+                  'permit_type',
+                  'publish_date',
+                  'revision_count',
+                  'survey_area_name',
+                  'survey_name'
+                ],
+                properties: {
+                  id: {
+                    description: 'Survey id',
+                    type: 'number'
+                  },
+                  ancillary_species: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  focal_species: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  biologist_first_name: {
+                    type: 'string'
+                  },
+                  biologist_last_name: {
+                    type: 'string'
+                  },
+                  completion_status: {
+                    type: 'string'
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      title: 'survey funding agency',
+                      type: 'object',
+                      required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
+                      properties: {
+                        pfs_id: {
+                          type: 'number'
+                        },
+                        agency_name: {
+                          type: 'string'
+                        },
+                        funding_amount: {
+                          type: 'number'
+                        },
+                        funding_start_date: {
+                          type: 'string',
+                          description: 'ISO 8601 date string'
+                        },
+                        funding_end_date: {
+                          type: 'string',
+                          description: 'ISO 8601 date string'
+                        }
+                      }
+                    }
+                  },
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(geoJsonFeature as object)
+                    }
+                  },
+                  permit_number: {
+                    type: 'string'
+                  },
+                  permit_type: {
+                    type: 'string'
+                  },
+                  publish_date: {
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  },
+                  survey_area_name: {
+                    type: 'string'
+                  },
+                  survey_name: {
+                    type: 'string'
+                  }
+                }
+              },
+              survey_purpose_and_methodology: {
+                description: 'Survey Details',
+                type: 'object',
+                properties: {
+                  id: {
+                    type: 'number'
+                  },
+                  field_method_id: {
+                    type: 'number'
+                  },
+                  additional_details: {
+                    type: 'string'
+                  },
+                  intended_outcome_id: {
+                    type: 'number'
+                  },
+                  ecological_season_id: {
+                    type: 'number'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  },
+                  vantage_code_ids: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  }
+                }
+              },
+              survey_proprietor: {
+                description: 'Survey Details',
+                type: 'object',
+                //Note: do not make any of these fields required as the object can be null
+                properties: {
+                  survey_data_proprietary: {
+                    type: 'string'
+                  },
+                  id: {
+                    type: 'number'
+                  },
+                  category_rationale: {
+                    type: 'string'
+                  },
+                  data_sharing_agreement_required: {
+                    type: 'string'
+                  },
+                  first_nations_id: {
+                    type: 'number'
+                  },
+                  first_nations_name: {
+                    type: 'string'
+                  },
+                  proprietary_data_category: {
+                    type: 'number'
+                  },
+                  proprietary_data_category_name: {
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -161,7 +343,164 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(surveyUpdatePutRequestObject as object)
+          title: 'Survey Put Object',
+          type: 'object',
+          properties: {
+            survey_details: {
+              description: 'Survey Details',
+              type: 'object',
+              required: [
+                'id',
+                'focal_species',
+                'ancillary_species',
+                'biologist_first_name',
+                'biologist_last_name',
+                'completion_status',
+                'start_date',
+                'end_date',
+                'funding_sources',
+                'geometry',
+                'permit_number',
+                'permit_type',
+                'publish_date',
+                'revision_count',
+                'survey_area_name',
+                'survey_name'
+              ],
+              properties: {
+                id: {
+                  description: 'Survey id',
+                  type: 'number'
+                },
+                ancillary_species: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
+                },
+                focal_species: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
+                },
+                biologist_first_name: {
+                  type: 'string'
+                },
+                biologist_last_name: {
+                  type: 'string'
+                },
+                completion_status: {
+                  type: 'string'
+                },
+                start_date: {
+                  type: 'string',
+                  format: 'date',
+                  description: 'ISO 8601 date string for the funding end_date'
+                },
+                end_date: {
+                  type: 'string',
+                  format: 'date',
+                  description: 'ISO 8601 date string for the funding end_date'
+                },
+                funding_sources: {
+                  type: 'array',
+                  items: {
+                    title: 'survey funding agency',
+                    type: 'number'
+                  }
+                },
+                geometry: {
+                  type: 'array',
+                  items: {
+                    ...(geoJsonFeature as object)
+                  }
+                },
+                permit_number: {
+                  type: 'string'
+                },
+                permit_type: {
+                  type: 'string'
+                },
+                publish_date: {
+                  type: 'string'
+                },
+                revision_count: {
+                  type: 'number'
+                },
+                survey_area_name: {
+                  type: 'string'
+                },
+                survey_name: {
+                  type: 'string'
+                }
+              }
+            },
+            survey_purpose_and_methodology: {
+              description: 'Survey Details',
+              type: 'object',
+              properties: {
+                id: {
+                  type: 'number'
+                },
+                field_method_id: {
+                  type: 'number'
+                },
+                additional_details: {
+                  type: 'string'
+                },
+                intended_outcome_id: {
+                  type: 'number'
+                },
+                ecological_season_id: {
+                  type: 'number'
+                },
+                revision_count: {
+                  type: 'number'
+                },
+                vantage_code_ids: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
+                }
+              }
+            },
+            survey_proprietor: {
+              description: 'Survey Details',
+              type: 'object',
+              //Note: do not make any of these fields required as the object can be null
+              properties: {
+                survey_data_proprietary: {
+                  type: 'string'
+                },
+                id: {
+                  type: 'number'
+                },
+                category_rationale: {
+                  type: 'string'
+                },
+                data_sharing_agreement_required: {
+                  type: 'string'
+                },
+                first_nations_id: {
+                  type: 'number'
+                },
+                first_nations_name: {
+                  type: 'string'
+                },
+                proprietary_data_category: {
+                  type: 'number'
+                },
+                proprietary_data_category_name: {
+                  type: 'string'
+                },
+                revision_count: {
+                  type: 'number'
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -172,7 +511,14 @@ PUT.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyIdResponseObject as object)
+            title: 'Survey Response Object',
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'number'
+              }
+            }
           }
         }
       }
@@ -197,6 +543,7 @@ PUT.apiDoc = {
 
 export interface IGetSurveyForUpdate {
   survey_details: GetUpdateSurveyDetailsData | null;
+  survey_purpose_and_methodology: GetSurveyPurposeAndMethodologyData | null;
   survey_proprietor: GetSurveyProprietorData | null;
 }
 
@@ -222,6 +569,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       const results: IGetSurveyForUpdate = {
         survey_details: null,
+        survey_purpose_and_methodology: null,
         survey_proprietor: null
       };
 
@@ -231,6 +579,14 @@ export function getSurveyForUpdate(): RequestHandler {
         promises.push(
           getSurveyDetailsData(surveyId, connection).then((value) => {
             results.survey_details = value;
+          })
+        );
+      }
+
+      if (entities.includes(GET_SURVEY_ENTITIES.survey_purpose_and_methodology)) {
+        promises.push(
+          getSurveyPurposeAndMethodologyData(surveyId, connection).then((value) => {
+            results.survey_purpose_and_methodology = value;
           })
         );
       }
@@ -276,6 +632,21 @@ export const getSurveyDetailsData = async (
   }
 
   return result;
+};
+
+export const getSurveyPurposeAndMethodologyData = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<GetSurveyPurposeAndMethodologyData | null> => {
+  const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build survey proprietor SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (response && response.rows && new GetSurveyPurposeAndMethodologyData(response.rows)[0]) || null;
 };
 
 export const getSurveyProprietorData = async (
@@ -326,6 +697,10 @@ export function updateSurvey(): RequestHandler {
 
       if (entities.survey_details) {
         promises.push(updateSurveyDetailsData(projectId, surveyId, entities, connection));
+      }
+
+      if (entities.survey_purpose_and_methodology) {
+        promises.push(updateSurveyPurposeAndMethodologyData(surveyId, entities, connection));
       }
 
       if (entities.survey_proprietor) {
@@ -513,5 +888,70 @@ export const unassociatePermitFromSurvey = async (survey_id: number, connection:
 
   if (!response) {
     throw new HTTP400('Failed to update survey permit number data');
+  }
+};
+
+export const updateSurveyPurposeAndMethodologyData = async (
+  surveyId: number,
+  entities: IUpdateSurvey,
+  connection: IDBConnection
+): Promise<void> => {
+  const putPurposeAndMethodologyData =
+    (entities?.survey_purpose_and_methodology &&
+      new PutSurveyPurposeAndMethodologyData(entities.survey_purpose_and_methodology)) ||
+    null;
+
+  const revision_count = putPurposeAndMethodologyData?.revision_count ?? null;
+
+  if (!revision_count && revision_count !== 0) {
+    throw new HTTP400('Failed to parse request body');
+  }
+
+  const updateSurveySQLStatement = queries.survey.putSurveyPurposeAndMethodologySQL(
+    surveyId,
+    putPurposeAndMethodologyData,
+    revision_count
+  );
+
+  if (!updateSurveySQLStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
+  if (!result || !result.rowCount) {
+    throw new HTTP409('Failed to update stale survey data');
+  }
+
+  const promises: Promise<any>[] = [];
+
+  promises.push(deleteSurveyVantageCodes(surveyId, connection));
+  //Handle vantage codes associated to this survey
+
+  if (putPurposeAndMethodologyData?.vantage_code_ids) {
+    promises.push(
+      Promise.all(
+        putPurposeAndMethodologyData.vantage_code_ids.map((vantageCode: number) =>
+          insertVantageCodes(vantageCode, surveyId, connection)
+        )
+      )
+    );
+  }
+
+  await Promise.all(promises);
+
+  await connection.commit();
+};
+
+export const deleteSurveyVantageCodes = async (survey_id: number, connection: IDBConnection): Promise<void> => {
+  const sqlStatement = queries.survey.deleteSurveyVantageCodesSQL(survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build delete survey vantage codes SQL statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP500('Failed to delete survey vantage codes');
   }
 };

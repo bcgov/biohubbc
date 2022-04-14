@@ -211,3 +211,38 @@ export const deleteSurveySQL = (surveyId: number): SQLStatement | null => {
 
   return sqlStatement;
 };
+
+/**
+ * SQL query to delete survey proprietor rows.
+ *
+ * @param {number} surveyId
+ * @param {number} surveyProprietorId
+ * @returns {SQLStatement} sql query object
+ */
+export const deleteSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'deleteSurveyVantageCodeSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId && surveyId !== 0) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    DELETE
+      from survey_vantage
+    WHERE
+      survey_id = ${surveyId}
+  `;
+
+  defaultLog.debug({
+    label: 'deleteSurveyVantageCodeSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};

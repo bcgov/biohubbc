@@ -21,14 +21,14 @@ import {
   PutProjectData
 } from '../models/project-update';
 import {
-  GetIUCNClassificationData,
-  GetPermitData,
-  GetProjectData,
   GetCoordinatorData,
+  GetFundingData,
+  GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetFundingData,
+  GetPermitData,
+  GetProjectData,
   IGetProject
 } from '../models/project-view';
 import { GetPublicCoordinatorData, GetPublicProjectData } from '../models/public/project';
@@ -162,7 +162,7 @@ export class ProjectService extends DBService {
       name: row.name,
       start_date: row.start_date,
       end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency_name,
+      coordinator_agency: row.coordinator_agency,
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,

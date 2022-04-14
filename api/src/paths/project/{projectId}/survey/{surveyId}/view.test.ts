@@ -31,6 +31,9 @@ describe('getSurveyForView', () => {
     survey_details: {
       id: null
     },
+    survey_purpose_and_methodology: {
+      id: null
+    },
     survey_proprietor: {
       id: null
     }
@@ -58,6 +61,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
@@ -91,6 +95,10 @@ describe('getSurveyForView', () => {
       .onCall(3)
       .resolves({
         rows: [{}]
+      })
+      .onCall(4)
+      .resolves({
+        rows: [{}]
       });
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -102,6 +110,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
@@ -128,6 +137,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(null);
     sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
@@ -154,6 +164,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(null);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
@@ -182,11 +193,11 @@ describe('getSurveyForView', () => {
       })
       .onCall(2)
       .resolves({
-        rows: [] // empty response
+        rows: [{}]
       })
       .onCall(3)
       .resolves({
-        rows: [{}]
+        rows: [] // empty response
       });
 
     sinon.stub(db, 'getDBConnection').returns({
@@ -198,6 +209,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
@@ -224,6 +236,7 @@ describe('getSurveyForView', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
@@ -242,7 +255,6 @@ describe('getSurveyForView', () => {
     const survey_basic_data = {
       id: 2,
       name: 'name',
-      objectives: 'objective',
       start_date: '2020/04/04',
       end_date: '2020/05/05',
       lead_first_name: 'first',
@@ -254,8 +266,16 @@ describe('getSurveyForView', () => {
       publish_timestamp: null,
       number: '123',
       type: 'scientific',
-      common_survey_methodology: 'method',
       occurrence_submission_id: 3
+    };
+    const survey_purpose_and_methodology = {
+      id: 17,
+      field_method_id: 1,
+      additional_details: 'details',
+      ecological_season_id: 1,
+      intended_outcome_id: 8,
+      revision_count: 0,
+      vantage_id: 2
     };
 
     const survey_funding_source_data = {
@@ -293,13 +313,17 @@ describe('getSurveyForView', () => {
       })
       .onCall(1)
       .resolves({
-        rows: [survey_funding_source_data]
+        rows: [survey_purpose_and_methodology]
       })
       .onCall(2)
       .resolves({
-        rows: [survey_species_data]
+        rows: [survey_funding_source_data]
       })
       .onCall(3)
+      .resolves({
+        rows: [survey_species_data]
+      })
+      .onCall(4)
       .resolves({
         rows: [survey_proprietor_data]
       });
@@ -315,6 +339,7 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     const result = view.getSurveyForView();
@@ -326,10 +351,8 @@ describe('getSurveyForView', () => {
       id: survey_basic_data.id,
       occurrence_submission_id: survey_basic_data.occurrence_submission_id,
       survey_name: survey_basic_data.name,
-      survey_purpose: survey_basic_data.objectives,
       focal_species: survey_species_data.focal_species,
       ancillary_species: survey_species_data.ancillary_species,
-      common_survey_methodology: survey_basic_data.common_survey_methodology,
       start_date: survey_basic_data.start_date,
       end_date: survey_basic_data.end_date,
       biologist_first_name: survey_basic_data.lead_first_name,
@@ -362,6 +385,16 @@ describe('getSurveyForView', () => {
       survey_data_proprietary: survey_proprietor_data.survey_data_proprietary,
       data_sharing_agreement_required: 'true',
       revision_count: survey_proprietor_data.revision_count
+    });
+
+    expect(actualResult.survey_purpose_and_methodology).to.eql({
+      id: survey_purpose_and_methodology.id,
+      additional_details: survey_purpose_and_methodology.additional_details,
+      ecological_season_id: survey_purpose_and_methodology.ecological_season_id,
+      field_method_id: survey_purpose_and_methodology.field_method_id,
+      intended_outcome_id: survey_purpose_and_methodology.intended_outcome_id,
+      revision_count: survey_purpose_and_methodology.revision_count,
+      vantage_code_ids: [survey_purpose_and_methodology.vantage_id]
     });
   });
 });

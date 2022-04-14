@@ -14,10 +14,8 @@ const defaultLog = getLogger('models/survey-view');
 export class GetViewSurveyDetailsData {
   id: number;
   survey_name: string;
-  survey_purpose: string;
   focal_species: (string | number)[];
   ancillary_species: (string | number)[];
-  common_survey_methodology: string;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -47,13 +45,11 @@ export class GetViewSurveyDetailsData {
     this.id = surveyDetailsData?.id ?? null;
     this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
     this.survey_name = surveyDetailsData?.name || '';
-    this.survey_purpose = surveyDetailsData?.objectives || '';
     this.focal_species = surveyDetailsData?.focal_species || [];
     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
     this.start_date = surveyDetailsData?.start_date || '';
     this.end_date = surveyDetailsData?.end_date || '';
     this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
-    this.common_survey_methodology = surveyDetailsData?.common_survey_methodology || '';
     this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
     this.survey_area_name = surveyDetailsData?.location_name || '';
     this.geometry = (surveyDetailsData?.geometry?.length && surveyDetailsData.geometry) || [];

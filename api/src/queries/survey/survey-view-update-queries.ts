@@ -24,7 +24,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
     SELECT
       s.survey_id as id,
       s.name,
-      s.objectives,
+      s.additional_details,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -32,7 +32,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson as geometry,
       s.revision_count,
-      s.common_survey_methodology_id,
+      s.field_method_id,
       s.publish_timestamp as publish_date,
       per.number,
       per.type,
@@ -83,7 +83,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
     group by
       s.survey_id,
       s.name,
-      s.objectives,
+      s.additional_details,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -91,7 +91,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson,
       s.revision_count,
-      s.common_survey_methodology_id,
+      s.field_method_id,
       s.publish_timestamp,
       per.number,
       per.type;
@@ -151,6 +151,88 @@ export const getSurveyProprietorForUpdateSQL = (surveyId: number): SQLStatement 
 
   defaultLog.debug({
     label: 'getSurveyProprietorForUpdateSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to retrieve a survey_proprietor row.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyPurposeAndMethodologyForUpdateSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+  SELECT
+    s.survey_id as id,
+    s.field_method_id,
+    s.additional_details,
+    s.ecological_season_id,
+    s.intended_outcome_id,
+    s.revision_count,
+    sv.vantage_id
+  FROM
+    survey s
+  LEFT OUTER JOIN
+    survey_vantage sv
+  ON
+    sv.survey_id = s.survey_id
+  WHERE
+    s.survey_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyPurposeAndMethodologyForUpdateSQL',
+    message: 'sql',
+    'sqlStatement.text': sqlStatement.text,
+    'sqlStatement.values': sqlStatement.values
+  });
+
+  return sqlStatement;
+};
+
+/**
+ * SQL query to retrieve a survey_proprietor row.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null => {
+  defaultLog.debug({
+    label: 'getSurveyVantageCodesSQL',
+    message: 'params',
+    surveyId
+  });
+
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+  SELECT
+    vantage_id
+  FROM
+    survey_vantage
+  WHERE
+    survey_id = ${surveyId};
+  `;
+
+  defaultLog.debug({
+    label: 'getSurveyVantageCodesSQL',
     message: 'sql',
     'sqlStatement.text': sqlStatement.text,
     'sqlStatement.values': sqlStatement.values
