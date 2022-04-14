@@ -1,7 +1,5 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
 
-const defaultLog = getLogger('queries/permit/permit-create-queries');
 
 /**
  * SQL query to get all projects from user Id.
@@ -10,11 +8,7 @@ const defaultLog = getLogger('queries/permit/permit-create-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getParticipantsFromAllSystemUsersProjectsSQL',
-    message: 'params',
-    systemUserId
-  });
+
 
   if (!systemUserId) {
     return null;
@@ -52,12 +46,7 @@ export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: numbe
       );
   `;
 
-  defaultLog.debug({
-    label: 'getParticipantsFromAllSystemUsersProjectsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
+
 
   return sqlStatement;
 };

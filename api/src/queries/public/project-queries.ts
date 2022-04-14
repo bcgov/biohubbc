@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/public/project-queries');
 
 /**
  * SQL query to get a single public (published) project.
@@ -10,8 +7,6 @@ const defaultLog = getLogger('queries/public/project-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPublicProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -38,13 +33,6 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
     and project.publish_timestamp is not null;
   `;
 
-  defaultLog.debug({
-    label: 'getPublicProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -56,8 +44,6 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
  */
 
 export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getActivitiesByPublicProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -79,13 +65,6 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
     and p.publish_timestamp is not null;
   `;
 
-  defaultLog.debug({
-    label: 'getActivitiesByPublicProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -95,8 +74,6 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
  * @returns {SQLStatement} sql query object
  */
 export const getPublicProjectListSQL = (): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPublicProjectListSQL', message: 'params' });
-
   const sqlStatement = SQL`
     SELECT
       p.project_id as id,
@@ -123,13 +100,6 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       pt.name;
   `;
 
-  defaultLog.debug({
-    label: 'getPublicProjectListSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -140,8 +110,6 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPublicProjectAttachmentsSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -167,13 +135,6 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
       p.publish_timestamp is not null;
   `;
 
-  defaultLog.debug({
-    label: 'getPublicProjectAttachmentsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -184,8 +145,6 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
  * @returns {SQLStatement} sql query object
  */
 export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPublicProjectReportAttachmentsSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
@@ -210,13 +169,6 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
       p.publish_timestamp is not null;
   `;
 
-  defaultLog.debug({
-    label: 'getPublicProjectReportAttachmentsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -228,8 +180,6 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
  * @returns {SQLStatement} sql query object
  */
 export const getPublicProjectAttachmentS3KeySQL = (projectId: number, attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPublicProjectAttachmentS3KeySQL', message: 'params', attachmentId });
-
   if (!projectId || !attachmentId) {
     return null;
   }
@@ -246,13 +196,6 @@ export const getPublicProjectAttachmentS3KeySQL = (projectId: number, attachment
       project_attachment_id = ${attachmentId};
   `;
 
-  defaultLog.debug({
-    label: 'getPublicProjectAttachmentS3KeySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -267,8 +210,6 @@ export const getPublicProjectReportAttachmentS3KeySQL = (
   projectId: number,
   attachmentId: number
 ): SQLStatement | null => {
-  defaultLog.debug({ label: 'getPublicProjectReportAttachmentS3KeySQL', message: 'params', attachmentId });
-
   if (!projectId || !attachmentId) {
     return null;
   }
@@ -285,13 +226,6 @@ export const getPublicProjectReportAttachmentS3KeySQL = (
       project_report_attachment_id = ${attachmentId};
   `;
 
-  defaultLog.debug({
-    label: 'getPublicProjectReportAttachmentS3KeySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -304,13 +238,6 @@ export const getPublicProjectReportAttachmentS3KeySQL = (
  * @return {*}  {(SQLStatement | null)}
  */
 export const getPublicProjectReportAttachmentSQL = (projectId: number, attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getProjectReportAttachmentSQL',
-    message: 'params',
-    projectId,
-    attachmentId
-  });
-
   if (!projectId || !attachmentId) {
     return null;
   }
@@ -337,13 +264,6 @@ export const getPublicProjectReportAttachmentSQL = (projectId: number, attachmen
       project_id = ${projectId}
   `;
 
-  defaultLog.debug({
-    label: 'updateProjectReportAttachmentSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -356,12 +276,6 @@ export const getPublicProjectReportAttachmentSQL = (projectId: number, attachmen
  * @return {*}  {(SQLStatement | null)}
  */
 export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getProjectReportAuthorsSQL',
-    message: 'params',
-    projectReportAttachmentId
-  });
-
   if (!projectReportAttachmentId) {
     return null;
   }
@@ -374,13 +288,6 @@ export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): S
     where
       project_report_attachment_id = ${projectReportAttachmentId}
   `;
-
-  defaultLog.debug({
-    label: 'getProjectReportAuthorsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
