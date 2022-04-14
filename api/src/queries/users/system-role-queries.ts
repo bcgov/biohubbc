@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/user/system-role-queries');
 
 /**
  * SQL query to add one or more system roles to a user.
@@ -11,8 +8,6 @@ const defaultLog = getLogger('queries/user/system-role-queries');
  * @return {*}  {(SQLStatement | null)}
  */
 export const postSystemRolesSQL = (userId: number, roleIds: number[]): SQLStatement | null => {
-  defaultLog.debug({ label: 'postSystemRolesSQL', message: 'params', userId, roleIds });
-
   if (!userId || !roleIds?.length) {
     return null;
   }
@@ -35,13 +30,6 @@ export const postSystemRolesSQL = (userId: number, roleIds: number[]): SQLStatem
   });
 
   sqlStatement.append(';');
-
-  defaultLog.debug({
-    label: 'postSystemRolesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
