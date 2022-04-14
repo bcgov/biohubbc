@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
+
 import {
   AppendSQLColumn,
   appendSQLColumns,
@@ -8,8 +8,6 @@ import {
   AppendSQLValue,
   appendSQLValues
 } from '../../utils/sql-utils';
-
-const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 
 /**
  * SQL query to insert a survey occurrence submission row.
@@ -28,12 +26,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
   outputFileName?: string;
   outputKey?: string;
 }): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveyOccurrenceSubmissionSQL',
-    message: 'params',
-    data
-  });
-
   if (!data || !data.surveyId || !data.source) {
     return null;
   }
@@ -87,13 +79,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
       occurrence_submission_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'insertSurveyOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -115,12 +100,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
   outputFileName?: string;
   outputKey?: string;
 }): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'updateSurveyOccurrenceSubmissionSQL',
-    message: 'params',
-    data
-  });
-
   if (!data.submissionId || (!data.inputFileName && !data.inputKey && !data.outputFileName && !data.outputKey)) {
     return null;
   }
@@ -158,13 +137,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
     RETURNING occurrence_submission_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'updateSurveyOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -175,12 +147,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
  * @returns {SQLStatement} sql query object
  */
 export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getLatestSurveyOccurrenceSubmissionSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -227,13 +193,6 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
     ;
   `;
 
-  defaultLog.debug({
-    label: 'getLatestSurveyOccurrenceSubmission',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -244,12 +203,6 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
  * @return {*}  {(SQLStatement | null)}
  */
 export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveyOccurrencesSQL',
-    message: 'params',
-    occurrenceSubmissionId
-  });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
@@ -261,13 +214,6 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
       occurrence_submission_id = ${occurrenceSubmissionId};
   `;
 
-  defaultLog.debug({
-    label: 'deleteSurveyOccurrencesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -278,8 +224,6 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyOccurrenceSubmissionSQL', message: 'params', occurrenceSubmissionId });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
@@ -293,13 +237,6 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
       occurrence_submission_id = ${occurrenceSubmissionId};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -310,12 +247,6 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
  * @returns {SQLStatement} sql query object
  */
 export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteOccurrenceSubmissionSQL',
-    message: 'params',
-    occurrenceSubmissionId
-  });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
@@ -325,13 +256,6 @@ export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): S
     SET delete_timestamp = now()
     WHERE occurrence_submission_id = ${occurrenceSubmissionId};
   `;
-
-  defaultLog.debug({
-    label: 'deleteOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -347,13 +271,6 @@ export const insertOccurrenceSubmissionStatusSQL = (
   occurrenceSubmissionId: number,
   submissionStatusType: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveySubmissionStatusSQL',
-    message: 'params',
-    occurrenceSubmissionId,
-    submissionStatusType
-  });
-
   if (!occurrenceSubmissionId || !submissionStatusType) {
     return null;
   }
@@ -379,13 +296,6 @@ export const insertOccurrenceSubmissionStatusSQL = (
       submission_status_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'insertSurveySubmissionStatusSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -403,15 +313,6 @@ export const insertOccurrenceSubmissionMessageSQL = (
   submissionMessage: string,
   errorCode: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertOccurrenceSubmissionMessageSQL',
-    message: 'params',
-    submissionStatusId,
-    submissionMessageType,
-    submissionMessage,
-    errorCode
-  });
-
   if (!submissionStatusId || !submissionMessageType || !submissionMessage || !errorCode) {
     return null;
   }
@@ -439,13 +340,6 @@ export const insertOccurrenceSubmissionMessageSQL = (
       submission_message_id;
   `;
 
-  defaultLog.debug({
-    label: 'insertSurveySubmissionMessageSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -456,12 +350,6 @@ export const insertOccurrenceSubmissionMessageSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getOccurrenceSubmissionMessagesSQL',
-    message: 'params',
-    occurrenceSubmissionId
-  });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
@@ -500,13 +388,6 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
     ORDER BY sm.submission_message_id;
   `;
 
-  defaultLog.debug({
-    label: 'getOccurrenceSubmissionMessagesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -521,13 +402,6 @@ export const getTemplateMethodologySpeciesRecordSQL = (
   fieldMethodId: number,
   templateId: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesRecordSQL',
-    message: 'params',
-    fieldMethodId,
-    templateId
-  });
-
   if (!fieldMethodId || !templateId) {
     return null;
   }
@@ -542,13 +416,6 @@ export const getTemplateMethodologySpeciesRecordSQL = (
       tms.template_id = ${templateId}
     ;
     `;
-
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesRecordSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

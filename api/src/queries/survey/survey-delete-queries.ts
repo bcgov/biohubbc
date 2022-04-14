@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/survey/survey-delete-queries');
 
 /**
  * SQL query to delete survey funding sources rows based on survey id.
@@ -10,12 +7,6 @@ const defaultLog = getLogger('queries/survey/survey-delete-queries');
  * @returns {SQLStatement} sql query object
  */
 export const deleteSurveyFundingSourcesBySurveyIdSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveyFundingSourcesBySurveyIdSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -26,13 +17,6 @@ export const deleteSurveyFundingSourcesBySurveyIdSQL = (surveyId: number): SQLSt
     WHERE
       survey_id = ${surveyId};
   `;
-
-  defaultLog.debug({
-    label: 'deleteSurveyFundingSourcesBySurveyIdSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -46,12 +30,6 @@ export const deleteSurveyFundingSourcesBySurveyIdSQL = (surveyId: number): SQLSt
 export const deleteSurveyFundingSourceByProjectFundingSourceIdSQL = (
   projectFundingSourceId: number | undefined
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL',
-    message: 'params',
-    projectFundingSourceId
-  });
-
   if (!projectFundingSourceId) {
     return null;
   }
@@ -63,13 +41,6 @@ export const deleteSurveyFundingSourceByProjectFundingSourceIdSQL = (
       project_funding_source_id = ${projectFundingSourceId};
   `;
 
-  defaultLog.debug({
-    label: 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -80,12 +51,6 @@ export const deleteSurveyFundingSourceByProjectFundingSourceIdSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const deleteFocalSpeciesSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteFocalSpeciesSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -99,13 +64,6 @@ export const deleteFocalSpeciesSQL = (surveyId: number): SQLStatement | null => 
       is_focal;
   `;
 
-  defaultLog.debug({
-    label: 'deleteFocalSpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -116,12 +74,6 @@ export const deleteFocalSpeciesSQL = (surveyId: number): SQLStatement | null => 
  * @returns {SQLStatement} sql query object
  */
 export const deleteAncillarySpeciesSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteAncillarySpeciesSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -135,13 +87,6 @@ export const deleteAncillarySpeciesSQL = (surveyId: number): SQLStatement | null
       is_focal is FALSE;
   `;
 
-  defaultLog.debug({
-    label: 'deleteAncillarySpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -153,13 +98,6 @@ export const deleteAncillarySpeciesSQL = (surveyId: number): SQLStatement | null
  * @returns {SQLStatement} sql query object
  */
 export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveyProprietorSQL',
-    message: 'params',
-    surveyId,
-    surveyProprietorId
-  });
-
   if ((!surveyId && surveyId !== 0) || (!surveyProprietorId && surveyProprietorId !== 0)) {
     return null;
   }
@@ -173,13 +111,6 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
       survey_id = ${surveyId}
   `;
 
-  defaultLog.debug({
-    label: 'deleteSurveyProprietorSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -190,24 +121,11 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
  * @returns {SQLStatement} sql query object
  */
 export const deleteSurveySQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveySQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`call api_delete_survey(${surveyId})`;
-
-  defaultLog.debug({
-    label: 'deleteSurveySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -220,12 +138,6 @@ export const deleteSurveySQL = (surveyId: number): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const deleteSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveyVantageCodeSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId && surveyId !== 0) {
     return null;
   }
@@ -236,13 +148,6 @@ export const deleteSurveyVantageCodesSQL = (surveyId: number): SQLStatement | nu
     WHERE
       survey_id = ${surveyId}
   `;
-
-  defaultLog.debug({
-    label: 'deleteSurveyVantageCodeSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
