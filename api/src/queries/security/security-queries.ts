@@ -30,20 +30,11 @@ export const secureAttachmentRecordSQL = (
   tableName: string,
   projectId: number
 ): SQLStatement | null => {
-  defaultLog.debug({ label: 'secureAttachmentRecordSQL', message: 'params', attachmentId, tableName, projectId });
-
   if (!attachmentId || !tableName || !projectId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`select api_secure_attachment_record(${attachmentId}, ${tableName}, ${projectId})`;
-
-  defaultLog.debug({
-    label: 'secureAttachmentRecordSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

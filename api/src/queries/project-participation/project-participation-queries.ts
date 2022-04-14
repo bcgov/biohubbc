@@ -53,12 +53,6 @@ export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: numbe
  * @returns {SQLStatement} sql query object
  */
 export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getAllUserProjectsSQL',
-    message: 'params',
-    userId
-  });
-
   if (!userId) {
     return null;
   }
@@ -80,13 +74,6 @@ export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
       pp.system_user_id = ${userId};
   `;
 
-  defaultLog.debug({
-    label: 'getAllUserProjectsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -102,13 +89,6 @@ export const getProjectParticipationBySystemUserSQL = (
   projectId: number,
   systemUserId: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getProjectParticipationBySystemUserSQL',
-    message: 'params',
-    projectId,
-    systemUserId
-  });
-
   if (!projectId || !systemUserId) {
     return null;
   }
@@ -142,13 +122,6 @@ export const getProjectParticipationBySystemUserSQL = (
     su.record_end_date ;
   `;
 
-  defaultLog.debug({
-    label: 'getProjectParticipationBySystemUserSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -159,12 +132,6 @@ export const getProjectParticipationBySystemUserSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getAllProjectParticipantsSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getAllProjectParticipantsSQL',
-    message: 'params',
-    projectId
-  });
-
   if (!projectId) {
     return null;
   }
@@ -192,13 +159,6 @@ export const getAllProjectParticipantsSQL = (projectId: number): SQLStatement | 
       pp.project_id = ${projectId};
   `;
 
-  defaultLog.debug({
-    label: 'getAllProjectParticipantsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -215,14 +175,6 @@ export const addProjectRoleByRoleNameSQL = (
   systemUserId: number,
   projectParticipantRole: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectRoleSQL',
-    message: 'params',
-    projectId,
-    systemUserId,
-    projectParticipantRole
-  });
-
   if (!projectId || !systemUserId || !projectParticipantRole) {
     return null;
   }
@@ -247,13 +199,6 @@ export const addProjectRoleByRoleNameSQL = (
       *;
   `;
 
-  defaultLog.debug({
-    label: 'postProjectRoleSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -270,14 +215,6 @@ export const addProjectRoleByRoleIdSQL = (
   systemUserId: number,
   projectParticipantRoleId: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'addProjectRoleByRoleIdSQL',
-    message: 'params',
-    projectId,
-    systemUserId,
-    projectParticipantRoleId
-  });
-
   if (!projectId || !systemUserId || !projectParticipantRoleId) {
     return null;
   }
@@ -296,13 +233,6 @@ export const addProjectRoleByRoleIdSQL = (
       *;
   `;
 
-  defaultLog.debug({
-    label: 'addProjectRoleByRoleIdSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -313,12 +243,6 @@ export const addProjectRoleByRoleIdSQL = (
  * @return {*}  {(SQLStatement | null)}
  */
 export const deleteProjectParticipationSQL = (projectParticipationId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteProjectParticipantSQL',
-    message: 'params',
-    projectParticipationId
-  });
-
   if (!projectParticipationId) {
     return null;
   }
@@ -331,13 +255,6 @@ export const deleteProjectParticipationSQL = (projectParticipationId: number): S
     RETURNING
       *;
   `;
-
-  defaultLog.debug({
-    label: 'deleteProjectParticipantSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
