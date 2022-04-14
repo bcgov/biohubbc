@@ -1,18 +1,9 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PostOccurrence } from '../../models/occurrence-create';
-import { getLogger } from '../../utils/logger';
+
 import { parseLatLongString, parseUTMString } from '../../utils/spatial-utils';
 
-const defaultLog = getLogger('queries/occurrence/occurrence-create-queries');
-
 export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: PostOccurrence): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postOccurrenceSQL',
-    message: 'params',
-    occurrenceSubmissionId,
-    occurrence
-  });
-
   if (!occurrenceSubmissionId || !occurrence) {
     return null;
   }
@@ -76,13 +67,6 @@ export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: Po
   }
 
   sqlStatement.append(');');
-
-  defaultLog.debug({
-    label: 'postOccurrenceSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

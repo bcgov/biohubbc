@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/permit/permit-update-queries');
 
 /**
  * SQL query to associate existing non-sampling permits to a project
@@ -11,13 +8,6 @@ const defaultLog = getLogger('queries/permit/permit-update-queries');
  * @returns {SQLStatement} sql query object
  */
 export const associatePermitToProjectSQL = (permitId: number, projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'associatePermitToProjectSQL',
-    message: 'params',
-    permitId,
-    projectId
-  });
-
   if (!permitId || !projectId) {
     return null;
   }
@@ -33,13 +23,6 @@ export const associatePermitToProjectSQL = (permitId: number, projectId: number)
     WHERE
       permit_id = ${permitId};
   `;
-
-  defaultLog.debug({
-    label: 'associatePermitToProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

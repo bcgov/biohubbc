@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/permit/permit-view-queries');
 
 /**
  * SQL query to get all non-sampling permits
@@ -10,12 +7,6 @@ const defaultLog = getLogger('queries/permit/permit-view-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getNonSamplingPermitsSQL',
-    message: 'params',
-    systemUserId
-  });
-
   if (!systemUserId) {
     return null;
   }
@@ -33,13 +24,6 @@ export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatem
       project_id IS NULL;
   `;
 
-  defaultLog.debug({
-    label: 'getNonSamplingPermitsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -50,12 +34,6 @@ export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatem
  * @returns {SQLStatement} sql query object
  */
 export const getAllPermitsSQL = (systemUserId: number | null): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getAllPermitsSQL',
-    message: 'params',
-    systemUserId
-  });
-
   if (!systemUserId) {
     return null;
   }
@@ -79,13 +57,6 @@ export const getAllPermitsSQL = (systemUserId: number | null): SQLStatement | nu
     WHERE
       system_user_id = ${systemUserId};
   `;
-
-  defaultLog.debug({
-    label: 'getAllPermitsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
