@@ -1,6 +1,5 @@
 import SQL, { SQLStatement } from 'sql-template-strings';
 
-
 /**
  * SQL query to get all projects from user Id.
  *
@@ -8,8 +7,6 @@ import SQL, { SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: number): SQLStatement | null => {
-
-
   if (!systemUserId) {
     return null;
   }
@@ -45,8 +42,6 @@ export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: numbe
           pp.system_user_id = ${systemUserId}
       );
   `;
-
-
 
   return sqlStatement;
 };

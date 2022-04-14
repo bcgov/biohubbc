@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/search/search-queries');
 
 /**
  * SQL query to get project geometries
@@ -11,8 +8,6 @@ const defaultLog = getLogger('queries/search/search-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getSpatialSearchResultsSQL = (isUserAdmin: boolean, systemUserId: number | null): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSpatialSearchResultsSQL', message: 'params', isUserAdmin, systemUserId });
-
   if (!systemUserId) {
     return null;
   }
@@ -33,13 +28,6 @@ export const getSpatialSearchResultsSQL = (isUserAdmin: boolean, systemUserId: n
   } else {
     sqlStatement.append(SQL`;`);
   }
-
-  defaultLog.debug({
-    label: 'getSpatialSearchResultsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

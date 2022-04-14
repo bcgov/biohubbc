@@ -1,12 +1,10 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
+
 import {
   PostReportAttachmentMetadata,
   PutReportAttachmentMetadata,
   IReportAttachmentAuthor
 } from '../../models/project-survey-attachments';
-
-const defaultLog = getLogger('queries/survey/survey-attachments-queries');
 
 /**
  * SQL query to get attachments for a single survey.
@@ -15,8 +13,6 @@ const defaultLog = getLogger('queries/survey/survey-attachments-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyAttachmentsSQL', message: 'params', surveyId });
-
   if (!surveyId) {
     return null;
   }
@@ -37,13 +33,6 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
       survey_id = ${surveyId};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyAttachmentsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -54,8 +43,6 @@ export const getSurveyAttachmentsSQL = (surveyId: number): SQLStatement | null =
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyReportAttachmentsSQL', message: 'params', surveyId });
-
   if (!surveyId) {
     return null;
   }
@@ -75,13 +62,6 @@ export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | 
       survey_id = ${surveyId};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyReportAttachmentsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -92,13 +72,6 @@ export const getSurveyReportAttachmentsSQL = (surveyId: number): SQLStatement | 
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyReportAttachmentSQL = (surveyId: number, attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyReportAttachmentSQL',
-    message: 'params',
-    surveyId,
-    attachmentId
-  });
-
   if (!surveyId || !attachmentId) {
     return null;
   }
@@ -123,13 +96,6 @@ export const getSurveyReportAttachmentSQL = (surveyId: number, attachmentId: num
     survey_id = ${surveyId}
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyReportAttachmentsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -140,8 +106,6 @@ export const getSurveyReportAttachmentSQL = (surveyId: number, attachmentId: num
  * @returns {SQLStatement} sql query object
  */
 export const deleteSurveyAttachmentSQL = (attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteSurveyAttachmentSQL', message: 'params', attachmentId });
-
   if (!attachmentId) {
     return null;
   }
@@ -155,13 +119,6 @@ export const deleteSurveyAttachmentSQL = (attachmentId: number): SQLStatement | 
       key;
   `;
 
-  defaultLog.debug({
-    label: 'deleteSurveyAttachmentSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -172,8 +129,6 @@ export const deleteSurveyAttachmentSQL = (attachmentId: number): SQLStatement | 
  * @returns {SQLStatement} sql query object
  */
 export const deleteSurveyReportAttachmentSQL = (attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteSurveyReportAttachmentSQL', message: 'params', attachmentId });
-
   if (!attachmentId) {
     return null;
   }
@@ -187,13 +142,6 @@ export const deleteSurveyReportAttachmentSQL = (attachmentId: number): SQLStatem
       key;
   `;
 
-  defaultLog.debug({
-    label: 'deleteSurveyReportAttachmentSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -205,8 +153,6 @@ export const deleteSurveyReportAttachmentSQL = (attachmentId: number): SQLStatem
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyAttachmentS3KeySQL', message: 'params', surveyId });
-
   if (!surveyId || !attachmentId) {
     return null;
   }
@@ -222,13 +168,6 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
       survey_attachment_id = ${attachmentId};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyAttachmentS3KeySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -240,8 +179,6 @@ export const getSurveyAttachmentS3KeySQL = (surveyId: number, attachmentId: numb
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyReportAttachmentS3KeySQL = (surveyId: number, attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyReportAttachmentS3KeySQL', message: 'params', surveyId });
-
   if (!surveyId || !attachmentId) {
     return null;
   }
@@ -256,13 +193,6 @@ export const getSurveyReportAttachmentS3KeySQL = (surveyId: number, attachmentId
     AND
       survey_report_attachment_id = ${attachmentId};
   `;
-
-  defaultLog.debug({
-    label: 'getSurveyReportAttachmentS3KeySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -284,16 +214,6 @@ export const postSurveyAttachmentSQL = (
   surveyId: number,
   key: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postSurveyAttachmentSQL',
-    message: 'params',
-    fileName,
-    fileSize,
-    fileType,
-    surveyId,
-    key
-  });
-
   if (!fileName || !fileSize || !fileType || !surveyId || !key) {
     return null;
   }
@@ -317,13 +237,6 @@ export const postSurveyAttachmentSQL = (
       revision_count;
   `;
 
-  defaultLog.debug({
-    label: 'postSurveyAttachmentSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -344,15 +257,6 @@ export const postSurveyReportAttachmentSQL = (
   key: string,
   attachmentMeta: PostReportAttachmentMetadata
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postSurveyReportAttachmentSQL',
-    message: 'params',
-    fileName,
-    fileSize,
-    surveyId,
-    key
-  });
-
   if (!fileName || !fileSize || !surveyId || !key) {
     return null;
   }
@@ -380,13 +284,6 @@ export const postSurveyReportAttachmentSQL = (
       revision_count;
   `;
 
-  defaultLog.debug({
-    label: 'postSurveyReportAttachmentSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -398,8 +295,6 @@ export const postSurveyReportAttachmentSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyAttachmentByFileNameSQL', message: 'params', surveyId });
-
   if (!surveyId || !fileName) {
     return null;
   }
@@ -419,13 +314,6 @@ export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: str
       file_name = ${fileName};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyAttachmentByFileNameSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -437,8 +325,6 @@ export const getSurveyAttachmentByFileNameSQL = (surveyId: number, fileName: str
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyReportAttachmentByFileNameSQL = (surveyId: number, fileName: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyReportAttachmentByFileNameSQL', message: 'params', surveyId });
-
   if (!surveyId || !fileName) {
     return null;
   }
@@ -458,13 +344,6 @@ export const getSurveyReportAttachmentByFileNameSQL = (surveyId: number, fileNam
       file_name = ${fileName};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyReportAttachmentByFileNameSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -477,8 +356,6 @@ export const getSurveyReportAttachmentByFileNameSQL = (surveyId: number, fileNam
  * @returns {SQLStatement} sql query object
  */
 export const putSurveyAttachmentSQL = (surveyId: number, fileName: string, fileType: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'putSurveyAttachmentSQL', message: 'params', surveyId, fileName, fileType });
-
   if (!surveyId || !fileName || !fileType) {
     return null;
   }
@@ -499,13 +376,6 @@ export const putSurveyAttachmentSQL = (surveyId: number, fileName: string, fileT
 
   `;
 
-  defaultLog.debug({
-    label: 'putSurveyAttachmentSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -521,8 +391,6 @@ export const putSurveyReportAttachmentSQL = (
   fileName: string,
   attachmentMeta: PutReportAttachmentMetadata
 ): SQLStatement | null => {
-  defaultLog.debug({ label: 'putSurveyReportAttachmentSQL', message: 'params', surveyId, fileName });
-
   if (!surveyId || !fileName) {
     return null;
   }
@@ -543,13 +411,6 @@ export const putSurveyReportAttachmentSQL = (
       survey_report_attachment_id as id,
       revision_count;
   `;
-
-  defaultLog.debug({
-    label: 'putSurveyReportAttachmentSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -573,14 +434,6 @@ export const updateSurveyReportAttachmentMetadataSQL = (
   attachmentId: number,
   metadata: PutReportAttachmentMetadata
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'updateSurveyReportAttachmentMetadataSQL',
-    message: 'params',
-    surveyId,
-    attachmentId,
-    metadata
-  });
-
   if (!surveyId || !attachmentId || !metadata) {
     return null;
   }
@@ -600,13 +453,6 @@ export const updateSurveyReportAttachmentMetadataSQL = (
       revision_count = ${metadata.revision_count};
   `;
 
-  defaultLog.debug({
-    label: 'updateSurveyReportAttachmentMetadataSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -621,13 +467,6 @@ export const insertSurveyReportAttachmentAuthorSQL = (
   attachmentId: number,
   author: IReportAttachmentAuthor
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'createSurveyReportAttachmentAuthorSQL',
-    message: 'params',
-    attachmentId,
-    author
-  });
-
   if (!attachmentId || !author) {
     return null;
   }
@@ -643,12 +482,6 @@ export const insertSurveyReportAttachmentAuthorSQL = (
       ${author.last_name}
     );
   `;
-  defaultLog.debug({
-    label: 'createSurveyReportAttachmentAuthorSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -660,12 +493,6 @@ export const insertSurveyReportAttachmentAuthorSQL = (
  * @return {*}  {(SQLStatement | null)}
  */
 export const deleteSurveyReportAttachmentAuthorsSQL = (attachmentId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveyReportAttachmentAuthorsSQL',
-    message: 'params',
-    attachmentId
-  });
-
   if (!attachmentId) {
     return null;
   }
@@ -676,13 +503,6 @@ export const deleteSurveyReportAttachmentAuthorsSQL = (attachmentId: number): SQ
     WHERE
       survey_report_attachment_id = ${attachmentId};
   `;
-
-  defaultLog.debug({
-    label: 'deleteSurveyReportAttachmentAuthorsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -696,12 +516,6 @@ export const deleteSurveyReportAttachmentAuthorsSQL = (attachmentId: number): SQ
  * @return {*}  {(SQLStatement | null)}
  */
 export const getSurveyReportAuthorsSQL = (surveyReportAttachmentId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyReportAuthorsSQL',
-    message: 'params',
-    surveyReportAttachmentId
-  });
-
   if (!surveyReportAttachmentId) {
     return null;
   }
@@ -714,13 +528,6 @@ export const getSurveyReportAuthorsSQL = (surveyReportAttachmentId: number): SQL
     where
       survey_report_attachment_id = ${surveyReportAttachmentId}
   `;
-
-  defaultLog.debug({
-    label: 'getSurveyReportAuthorsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
