@@ -4,10 +4,8 @@ import {
   PutSurveyProprietorData,
   PutSurveyPurposeAndMethodologyData
 } from '../../models/survey-update';
-import { getLogger } from '../../utils/logger';
-import { queries } from '../queries';
 
-const defaultLog = getLogger('queries/survey/survey-update-queries');
+import { queries } from '../queries';
 
 /**
  * SQL query to update a permit row based on an old survey association.
@@ -17,12 +15,6 @@ const defaultLog = getLogger('queries/survey/survey-update-queries');
  * @returns {SQLStatement} sql query object
  */
 export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'unassociatePermitFromSurveySQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -35,13 +27,6 @@ export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement |
       survey_id = ${surveyId};
   `;
 
-  defaultLog.debug({
-    label: 'unassociatePermitFromSurveySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -53,13 +38,6 @@ export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement |
  * @returns {SQLStatement} sql query object
  */
 export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: string): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putNewSurveyPermitNumberSQL',
-    message: 'params',
-    surveyId,
-    permitNumber
-  });
-
   if (!surveyId || !permitNumber) {
     return null;
   }
@@ -73,13 +51,6 @@ export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: stri
     AND
       survey_id IS NULL;
   `;
-
-  defaultLog.debug({
-    label: 'putNewSurveyPermitNumberSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -98,15 +69,6 @@ export const putSurveyDetailsSQL = (
   data: PutSurveyDetailsData | null,
   revision_count: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putSurveyDetailsSQL',
-    message: 'params',
-    projectId,
-    surveyId,
-    data,
-    revision_count
-  });
-
   if (!projectId || !surveyId || !data) {
     return null;
   }
@@ -157,13 +119,6 @@ export const putSurveyDetailsSQL = (
       revision_count = ${revision_count};
   `);
 
-  defaultLog.debug({
-    label: 'putSurveyDetailsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -176,13 +131,6 @@ export const putSurveyDetailsSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyProprietorData | null): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putSurveyProprietorSQL',
-    message: 'params',
-    surveyId,
-    data
-  });
-
   if (!surveyId || !data) {
     return null;
   }
@@ -202,13 +150,6 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
       survey_id = ${surveyId}
   `;
 
-  defaultLog.debug({
-    label: 'putSurveyProprietorSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -220,8 +161,6 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
  * @returns {SQLStatement} sql query object
  */
 export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean): SQLStatement | null => {
-  defaultLog.debug({ label: 'updateSurveyPublishStatusSQL', message: 'params', surveyId, publish });
-
   if (!surveyId) {
     return null;
   }
@@ -255,13 +194,6 @@ export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean)
       survey_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'updateSurveyPublishStatusSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -278,14 +210,6 @@ export const putSurveyPurposeAndMethodologySQL = (
   data: PutSurveyPurposeAndMethodologyData | null,
   revision_count: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putSurveyPurposeAndMethodologySQL',
-    message: 'params',
-    surveyId,
-    data,
-    revision_count
-  });
-
   if (!surveyId || !data) {
     return null;
   }
@@ -303,13 +227,6 @@ export const putSurveyPurposeAndMethodologySQL = (
     AND
       revision_count = ${revision_count};
   `;
-
-  defaultLog.debug({
-    label: 'putSurveyPurposeAndMethodologySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

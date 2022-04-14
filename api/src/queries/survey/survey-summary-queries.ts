@@ -1,8 +1,5 @@
 import { PostSummaryDetails } from '../../models/summaryresults-create';
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/survey/survey-summary-queries');
 
 /**
  * SQL query to insert a survey summary submission row.
@@ -17,12 +14,6 @@ export const insertSurveySummarySubmissionSQL = (
   source: string,
   file_name: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveySummarySubmissionSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId || !source || !file_name) {
     return null;
   }
@@ -42,13 +33,6 @@ export const insertSurveySummarySubmissionSQL = (
     RETURNING survey_summary_submission_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'insertSurveySummaryResultsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -59,12 +43,6 @@ export const insertSurveySummarySubmissionSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getLatestSurveySummaryResultsSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -101,13 +79,6 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
   LIMIT 1;
   `;
 
-  defaultLog.debug({
-    label: 'getLatestSurveySummaryResultsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -118,12 +89,6 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
  * @returns {SQLStatement} sql query object
  */
 export const deleteSummarySubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSummarySubmissionSQL',
-    message: 'params',
-    summarySubmissionId
-  });
-
   if (!summarySubmissionId) {
     return null;
   }
@@ -133,13 +98,6 @@ export const deleteSummarySubmissionSQL = (summarySubmissionId: number): SQLStat
     SET delete_timestamp = now()
     WHERE survey_summary_submission_id = ${summarySubmissionId};
   `;
-
-  defaultLog.debug({
-    label: 'deleteSummarySubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -155,13 +113,6 @@ export const updateSurveySummarySubmissionWithKeySQL = (
   summarySubmissionId: number,
   key: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'updateSurveySummarySubmissionWithKeySQL',
-    message: 'params',
-    summarySubmissionId,
-    key
-  });
-
   if (!summarySubmissionId || !key) {
     return null;
   }
@@ -175,13 +126,6 @@ export const updateSurveySummarySubmissionWithKeySQL = (
     RETURNING survey_summary_submission_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'updateSurveySummarySubmissionWithKeySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -192,8 +136,6 @@ export const updateSurveySummarySubmissionWithKeySQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveySummarySubmissionSQL', message: 'params', summarySubmissionId });
-
   if (!summarySubmissionId) {
     return null;
   }
@@ -206,13 +148,6 @@ export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLS
     WHERE
       survey_summary_submission_id = ${summarySubmissionId};
   `;
-
-  defaultLog.debug({
-    label: 'getSurveySummarySubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -228,12 +163,6 @@ export const insertSurveySummaryDetailsSQL = (
   summarySubmissionId: number,
   summaryDetails: PostSummaryDetails
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveySummarySubmissionSQL',
-    message: 'params',
-    summarySubmissionId
-  });
-
   if (!summarySubmissionId || !summaryDetails) {
     return null;
   }
@@ -277,13 +206,6 @@ export const insertSurveySummaryDetailsSQL = (
     RETURNING survey_summary_detail_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'insertSurveySummaryResultsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -302,15 +224,6 @@ export const insertSurveySummarySubmissionMessageSQL = (
   summarySubmissionMessage: string,
   errorCode: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveySummarySubmissionMessageSQL',
-    message: 'params',
-    summarySubmissionId,
-    summarySubmissionMessageType,
-    summarySubmissionMessage,
-    errorCode
-  });
-
   if (!summarySubmissionId || !summarySubmissionMessageType || !summarySubmissionMessage || !errorCode) {
     return null;
   }
@@ -338,13 +251,6 @@ export const insertSurveySummarySubmissionMessageSQL = (
       submission_message_id;
   `;
 
-  defaultLog.debug({
-    label: 'insertSurveySummarySubmissionMessageSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -355,12 +261,6 @@ export const insertSurveySummarySubmissionMessageSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getSummarySubmissionMessagesSQL = (summarySubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSummarySubmissionMessagesSQL',
-    message: 'params',
-    summarySubmissionId
-  });
-
   if (!summarySubmissionId) {
     return null;
   }
@@ -390,13 +290,6 @@ export const getSummarySubmissionMessagesSQL = (summarySubmissionId: number): SQ
   ORDER BY
     sssm.submission_message_id;
   `;
-
-  defaultLog.debug({
-    label: 'getOccurrenceSubmissionMessagesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
