@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/dwc/dwc-queries');
 
 /**
  * SQL query to get submission occurrence record given package ID for a particular survey.
@@ -10,9 +7,6 @@ const defaultLog = getLogger('queries/dwc/dwc-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyOccurrenceSubmissionSQL = (dataPackageId: number): SQLStatement => {
-  const debugLabel = 'getSurveyOccurrenceSubmissionSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', dataPackageId });
-
   const sqlStatement: SQLStatement = SQL`
     SELECT
       os.*
@@ -24,13 +18,6 @@ export const getSurveyOccurrenceSubmissionSQL = (dataPackageId: number): SQLStat
       and os.occurrence_submission_id = osdp.occurrence_submission_id;
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -41,9 +28,6 @@ export const getSurveyOccurrenceSubmissionSQL = (dataPackageId: number): SQLStat
  * @returns {SQLStatement} sql query object
  */
 export const getDataPackageSQL = (dataPackageId: number): SQLStatement => {
-  const debugLabel = 'getDataPackageSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', dataPackageId });
-
   const sqlStatement: SQLStatement = SQL`
     SELECT
       *
@@ -52,13 +36,6 @@ export const getDataPackageSQL = (dataPackageId: number): SQLStatement => {
     where
       data_package_id  = ${dataPackageId};
   `;
-
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -70,9 +47,6 @@ export const getDataPackageSQL = (dataPackageId: number): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getPublishedSurveyStatusSQL = (occurrenceSubmissionId: number): SQLStatement => {
-  const debugLabel = 'getPublishedSurveyStatusSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', occurrenceSubmissionId });
-
   const sqlStatement: SQLStatement = SQL`
     SELECT
       *
@@ -82,13 +56,6 @@ export const getPublishedSurveyStatusSQL = (occurrenceSubmissionId: number): SQL
       survey_status = api_get_character_system_constant('OCCURRENCE_SUBMISSION_STATE_PUBLISHED')
       and occurrence_submission_id  = ${occurrenceSubmissionId};
   `;
-
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -100,9 +67,6 @@ export const getPublishedSurveyStatusSQL = (occurrenceSubmissionId: number): SQL
  * @returns {SQLStatement} sql query object
  */
 export const getSurveySQL = (surveyId: number): SQLStatement => {
-  const debugLabel = 'getSurveySQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', surveyId });
-
   const sqlStatement: SQLStatement = SQL`
     SELECT
       survey_id,
@@ -128,13 +92,6 @@ export const getSurveySQL = (surveyId: number): SQLStatement => {
     where survey_id  = ${surveyId};
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -145,9 +102,6 @@ export const getSurveySQL = (surveyId: number): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getProjectSQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
     SELECT
       project_id,
@@ -176,13 +130,6 @@ export const getProjectSQL = (projectId: number): SQLStatement => {
     where project_id  = ${projectId};
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -193,9 +140,6 @@ export const getProjectSQL = (projectId: number): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyFundingSourceSQL = (surveyId: number): SQLStatement => {
-  const debugLabel = 'getSurveyFundingSourceSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', surveyId });
-
   const sqlStatement: SQLStatement = SQL`
   select
     a.*,
@@ -217,13 +161,6 @@ export const getSurveyFundingSourceSQL = (surveyId: number): SQLStatement => {
     and c.funding_source_id = b.funding_source_id;
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -234,9 +171,6 @@ export const getSurveyFundingSourceSQL = (surveyId: number): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getProjectFundingSourceSQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectFundingSourceSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
   select
     a.*,
@@ -251,13 +185,6 @@ export const getProjectFundingSourceSQL = (projectId: number): SQLStatement => {
     and b.investment_action_category_id = a.investment_action_category_id
     and c.funding_source_id = b.funding_source_id;
   `;
-
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -275,9 +202,6 @@ export const getGeometryBoundingBoxSQL = (
   primaryKeyName: string,
   targetTable: string
 ): SQLStatement => {
-  const debugLabel = 'getGeometryBoundingBoxSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', primaryKey, primaryKeyName, targetTable });
-
   // TODO: this only provides us with the bounding box of the first polygon
   const sqlStatement: SQLStatement = SQL`
   with envelope as (
@@ -299,13 +223,6 @@ export const getGeometryBoundingBoxSQL = (
     envelope;
   `);
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -322,9 +239,6 @@ export const getGeometryPolygonsSQL = (
   primaryKeyName: string,
   targetTable: string
 ): SQLStatement => {
-  const debugLabel = 'getGeometryPolygonsSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', primaryKey, primaryKeyName, targetTable });
-
   const sqlStatement: SQLStatement = SQL`
     with polygons as (
       select
@@ -357,13 +271,6 @@ export const getGeometryPolygonsSQL = (
       polygon;
   `);
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -375,9 +282,6 @@ export const getGeometryPolygonsSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getTaxonomicCoverageSQL = (surveyId: number, isFocal: boolean): SQLStatement => {
-  const debugLabel = 'getTaxonomicCoverageSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', surveyId, isFocal });
-
   let focalPredicate = 'and b.is_focal';
   if (!isFocal) {
     focalPredicate = 'and not b.is_focal';
@@ -393,13 +297,6 @@ export const getTaxonomicCoverageSQL = (surveyId: number, isFocal: boolean): SQL
     and b.survey_id = ${surveyId}
     `.append(focalPredicate);
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -410,9 +307,6 @@ export const getTaxonomicCoverageSQL = (surveyId: number, isFocal: boolean): SQL
  * @returns {SQLStatement} sql query object
  */
 export const getProjectIucnConservationSQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectIucnConservationSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
     select
       a.name level_1_name,
@@ -430,13 +324,6 @@ export const getProjectIucnConservationSQL = (projectId: number): SQLStatement =
       and a.iucn_conservation_action_level_1_classification_id  = b.iucn_conservation_action_level_1_classification_id;
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -447,9 +334,6 @@ export const getProjectIucnConservationSQL = (projectId: number): SQLStatement =
  * @returns {SQLStatement} sql query object
  */
 export const getProjectStakeholderPartnershipSQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectStakeholderPartnershipSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
     select
       a.name
@@ -458,13 +342,6 @@ export const getProjectStakeholderPartnershipSQL = (projectId: number): SQLState
     where
       a.project_id = ${projectId};
   `;
-
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -476,9 +353,6 @@ export const getProjectStakeholderPartnershipSQL = (projectId: number): SQLState
  * @returns {SQLStatement} sql query object
  */
 export const getProjectActivitySQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectActivitySQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
     select
       a.name
@@ -490,13 +364,6 @@ export const getProjectActivitySQL = (projectId: number): SQLStatement => {
       and a.activity_id = b.activity_id;
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -507,9 +374,6 @@ export const getProjectActivitySQL = (projectId: number): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getProjectClimateInitiativeSQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectClimateInitiativeSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
     select
       a.name
@@ -521,13 +385,6 @@ export const getProjectClimateInitiativeSQL = (projectId: number): SQLStatement 
       and a.climate_change_initiative_id = b.climate_change_initiative_id;
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -538,9 +395,6 @@ export const getProjectClimateInitiativeSQL = (projectId: number): SQLStatement 
  * @returns {SQLStatement} sql query object
  */
 export const getProjectFirstNationsSQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectFirstNationsSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
     select
       a.name
@@ -552,13 +406,6 @@ export const getProjectFirstNationsSQL = (projectId: number): SQLStatement => {
       and a.first_nations_id = b.first_nations_id;
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -569,9 +416,6 @@ export const getProjectFirstNationsSQL = (projectId: number): SQLStatement => {
  * @returns {SQLStatement} sql query object
  */
 export const getProjectManagementActionsSQL = (projectId: number): SQLStatement => {
-  const debugLabel = 'getProjectManagementActionsSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', projectId });
-
   const sqlStatement: SQLStatement = SQL`
     select
       a.*
@@ -583,13 +427,6 @@ export const getProjectManagementActionsSQL = (projectId: number): SQLStatement 
       and b.project_id =  ${projectId};
   `;
 
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -600,9 +437,6 @@ export const getProjectManagementActionsSQL = (projectId: number): SQLStatement 
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyProprietorSQL = (surveyId: number): SQLStatement => {
-  const debugLabel = 'getSurveyProprietorSQL';
-  defaultLog.debug({ label: debugLabel, message: 'params', surveyId });
-
   const sqlStatement: SQLStatement = SQL`
     select
       a.name proprietor_type_name,
@@ -617,13 +451,6 @@ export const getSurveyProprietorSQL = (surveyId: number): SQLStatement => {
       and b.first_nations_id = c.first_nations_id
       and a.proprietor_type_id = c.proprietor_type_id;
   `;
-
-  defaultLog.debug({
-    label: debugLabel,
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
