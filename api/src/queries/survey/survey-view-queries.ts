@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
  * SQL query to get all permits applicable for a survey
@@ -13,12 +10,6 @@ const defaultLog = getLogger('queries/survey/survey-view-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getAllAssignablePermitsForASurveySQL',
-    message: 'params',
-    projectId
-  });
-
   if (!projectId) {
     return null;
   }
@@ -35,13 +26,6 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
       survey_id IS NULL;
   `;
 
-  defaultLog.debug({
-    label: 'getAllAssignablePermitsForASurveySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -52,12 +36,6 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyIdsSQL',
-    message: 'params',
-    projectId
-  });
-
   if (!projectId) {
     return null;
   }
@@ -71,13 +49,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
       project_id = ${projectId};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyIdsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -88,12 +59,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyListSQL',
-    message: 'params',
-    projectId
-  });
-
   if (!projectId) {
     return null;
   }
@@ -120,23 +85,10 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
       s.project_id = ${projectId};
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyListSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
 export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyBasicDataForViewSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -200,22 +152,10 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       per.type;
   `;
 
-  defaultLog.debug({
-    label: 'getBasicSurveyDataForViewSQ',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
 export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyFundingSourcesDataForViewSQL',
-    message: 'params',
-    surveyId
-  });
   if (!surveyId) {
     return null;
   }
@@ -257,23 +197,10 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
       pfs.funding_start_date;
   `;
 
-  defaultLog.debug({
-    label: 'getSurveyFundingSourcesDataForViewSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
 export const getSurveySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveySpeciesDataForViewSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
@@ -311,13 +238,6 @@ export const getSurveySpeciesDataForViewSQL = (surveyId: number): SQLStatement |
     WHERE
       s.survey_id = ${surveyId};
   `;
-
-  defaultLog.debug({
-    label: 'getSurveySpeciesDataForViewSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
