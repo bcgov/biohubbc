@@ -7,8 +7,6 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }

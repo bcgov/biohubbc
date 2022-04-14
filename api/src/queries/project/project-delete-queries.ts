@@ -7,8 +7,6 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement | null => {
-
-
   if (!projectId) {
     return null;
   }
@@ -30,7 +28,6 @@ export const deleteIndigenousPartnershipsSQL = (projectId: number): SQLStatement
  * @returns {SQLStatement} sql query object
  */
 export const deletePermitSQL = (projectId: number): SQLStatement | null => {
-
   if (!projectId) {
     return null;
   }
@@ -42,7 +39,6 @@ export const deletePermitSQL = (projectId: number): SQLStatement | null => {
       project_id = ${projectId};
   `;
 
-
   return sqlStatement;
 };
 
@@ -53,8 +49,6 @@ export const deletePermitSQL = (projectId: number): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const deleteStakeholderPartnershipsSQL = (projectId: number): SQLStatement | null => {
-
-
   if (!projectId) {
     return null;
   }
@@ -66,7 +60,6 @@ export const deleteStakeholderPartnershipsSQL = (projectId: number): SQLStatemen
       project_id = ${projectId};
   `;
 
-
   return sqlStatement;
 };
 
@@ -77,8 +70,6 @@ export const deleteStakeholderPartnershipsSQL = (projectId: number): SQLStatemen
  * @returns {SQLStatement} sql query object
  */
 export const deleteIUCNSQL = (projectId: number): SQLStatement | null => {
-
-
   if (!projectId) {
     return null;
   }
@@ -90,8 +81,6 @@ export const deleteIUCNSQL = (projectId: number): SQLStatement | null => {
       project_id = ${projectId};
   `;
 
-
-
   return sqlStatement;
 };
 
@@ -102,8 +91,6 @@ export const deleteIUCNSQL = (projectId: number): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const deleteActivitiesSQL = (projectId: number): SQLStatement | null => {
-
-
   if (!projectId) {
     return null;
   }
@@ -114,7 +101,6 @@ export const deleteActivitiesSQL = (projectId: number): SQLStatement | null => {
     WHERE
       project_id = ${projectId};
   `;
-
 
   return sqlStatement;
 };
@@ -130,8 +116,6 @@ export const deleteProjectFundingSourceSQL = (
   projectId: number | undefined,
   pfsId: number | undefined
 ): SQLStatement | null => {
-
-
   if (!projectId || !pfsId) {
     return null;
   }
@@ -145,8 +129,6 @@ export const deleteProjectFundingSourceSQL = (
       project_funding_source_id = ${pfsId};
   `;
 
-
-
   return sqlStatement;
 };
 
@@ -157,14 +139,11 @@ export const deleteProjectFundingSourceSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const deleteProjectSQL = (projectId: number): SQLStatement | null => {
-
-
   if (!projectId) {
     return null;
   }
 
   const sqlStatement: SQLStatement = SQL`call api_delete_project(${projectId})`;
-
 
   return sqlStatement;
 };

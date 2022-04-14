@@ -469,10 +469,10 @@ describe('ProjectService', () => {
       }
     });
 
-    it('should throw a 400 error when no sql statement produced for getActivitiesByPublicProjectSQL', async () => {
+    it('should throw a 400 error when no sql statement produced', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      sinon.stub(queries.public, 'getPublicProjectSQL').returns(SQL`valid sql`);
+      sinon.stub(queries.public, 'getPublicProjectSQL').returns(null);
       sinon.stub(queries.public, 'getActivitiesByPublicProjectSQL').returns(null);
 
       const projectService = new ProjectService(mockDBConnection);
