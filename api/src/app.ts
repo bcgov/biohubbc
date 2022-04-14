@@ -4,7 +4,7 @@ import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError } from './errors/custom-error';
+import { ensureHTTPError, HTTPErrorType } from './errors/custom-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
@@ -141,14 +141,13 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
         body
       );
 
-      let validationMessage;
+      let validationMessage = '';
+      let errorList = [];
 
       if (validationResult?.errors) {
-        const errorList = Array.from(validationResult.errors)
-          .map((item: any) => item.message)
-          .join(',');
+        validationMessage = `Invalid response for status code ${res.statusCode}`;
 
-        validationMessage = `Invalid response for status code ${res.statusCode}: ${errorList}`;
+        errorList = Array.from(validationResult.errors);
 
         // Set to avoid a loop, and to provide the original status code
         res.set('x-express-openapi-validation-error-for', res.statusCode.toString());
@@ -157,7 +156,12 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
       if (!isStrictValidation || !validationResult?.errors) {
         return json.apply(res, args);
       } else {
-        return res.status(500).json({ error: validationMessage });
+        return res.status(500).json({
+          name: HTTPErrorType.INTERNAL_SERVER_ERROR,
+          status: 500,
+          message: validationMessage,
+          errors: errorList
+        });
       }
     };
   }
