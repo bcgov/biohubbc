@@ -31,7 +31,6 @@ import {
   GetProjectData,
   IGetProject
 } from '../models/project-view';
-import { GetPublicCoordinatorData, GetPublicProjectData } from '../models/public/project';
 import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
@@ -171,55 +170,37 @@ export class ProjectService extends DBService {
     }));
   }
 
-  async getPublicProjectById(projectId: number): Promise<any> {
-    const getProjectSQLStatement = queries.public.getPublicProjectSQL(projectId);
-    const getProjectActivitiesSQLStatement = queries.public.getActivitiesByPublicProjectSQL(projectId);
-
-    if (!getProjectSQLStatement || !getProjectActivitiesSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
+  async getPublicProjectById(projectId: number): Promise<IGetProject> {
     const [
       projectData,
-      activityData,
+      objectiveData,
+      coordinatorData,
       permitData,
       locationData,
-      partnershipsData,
-      IUCNClassificationData,
-      fundingData
+      iucnData,
+      fundingData,
+      partnershipsData
     ] = await Promise.all([
-      await this.connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
-      await this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
-      await this.getPermitData(projectId),
-      await this.getLocationData(projectId),
-      await this.getPartnershipsData(projectId),
-      await this.getIUCNClassificationData(projectId),
-      await this.getFundingData(projectId)
+      this.getPublicProjectData(projectId),
+      this.getObjectivesData(projectId),
+      this.getCoordinatorData(projectId),
+      this.getPermitData(projectId),
+      this.getLocationData(projectId),
+      this.getIUCNClassificationData(projectId),
+      this.getFundingData(projectId),
+      this.getPartnershipsData(projectId)
     ]);
-
-    const getProjectData =
-      (projectData &&
-        projectData.rows &&
-        activityData &&
-        activityData.rows &&
-        new GetPublicProjectData(projectData.rows[0], activityData.rows)) ||
-      null;
-
-    const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
-
-    const getCoordinatorData =
-      (projectData && projectData.rows && new GetPublicCoordinatorData(projectData.rows[0])) || null;
 
     return {
       id: projectId,
-      project: getProjectData,
-      objectives: getObjectivesData,
-      coordinator: getCoordinatorData,
+      project: projectData,
+      objectives: objectiveData,
+      coordinator: coordinatorData,
       permit: permitData,
       location: locationData,
-      partnerships: partnershipsData,
-      iucn: IUCNClassificationData,
-      funding: fundingData
+      iucn: iucnData,
+      funding: fundingData,
+      partnerships: partnershipsData
     };
   }
 
@@ -1139,5 +1120,28 @@ export class ProjectService extends DBService {
     }
 
     return true;
+  }
+
+  async getPublicProjectData(projectId: number): Promise<GetProjectData> {
+    const getProjectSqlStatement = queries.public.getPublicProjectSQL(projectId);
+    const getProjectActivitiesSQLStatement = queries.public.getActivitiesByPublicProjectSQL(projectId);
+
+    if (!getProjectSqlStatement || !getProjectActivitiesSQLStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const [project, activity] = await Promise.all([
+      this.connection.query(getProjectSqlStatement.text, getProjectSqlStatement.values),
+      this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
+    ]);
+
+    const projectResult = (project && project.rows && project.rows[0]) || null;
+    const activityResult = (activity && activity.rows) || null;
+
+    if (!projectResult || !activityResult) {
+      throw new HTTP400('Failed to get project data');
+    }
+
+    return new GetProjectData(projectResult, activityResult);
   }
 }

@@ -21,17 +21,11 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
       project.project_id as id,
       project_type.name as type,
       project.name,
-      project.objectives,
       project.location_description,
       project.start_date,
       project.end_date,
       project.caveats,
       project.comments,
-      project.coordinator_first_name,
-      project.coordinator_last_name,
-      project.coordinator_email_address,
-      project.coordinator_agency_name,
-      project.coordinator_public,
       project.geojson as geometry,
       project.publish_timestamp as publish_date
     from

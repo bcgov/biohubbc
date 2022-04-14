@@ -5,6 +5,16 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { HTTPError } from '../errors/custom-error';
+import {
+  GetCoordinatorData,
+  GetFundingData,
+  GetIUCNClassificationData,
+  GetLocationData,
+  GetObjectivesData,
+  GetPartnershipsData,
+  GetPermitData,
+  GetProjectData
+} from '../models/project-view';
 import { queries } from '../queries/queries';
 import { getMockDBConnection } from '../__mocks__/db';
 import { ProjectService } from './project-service';
@@ -443,10 +453,26 @@ describe('ProjectService', () => {
       sinon.restore();
     });
 
-    it('should throw a 400 error when no sql statement produced', async () => {
+    it('should throw a 400 error when no sql statement produced for getPublicProjectSQL', async () => {
       const mockDBConnection = getMockDBConnection();
 
       sinon.stub(queries.public, 'getPublicProjectSQL').returns(null);
+
+      const projectService = new ProjectService(mockDBConnection);
+
+      try {
+        await projectService.getPublicProjectById(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+      }
+    });
+
+    it('should throw a 400 error when no sql statement produced for getActivitiesByPublicProjectSQL', async () => {
+      const mockDBConnection = getMockDBConnection();
+
+      sinon.stub(queries.public, 'getPublicProjectSQL').returns(SQL`valid sql`);
       sinon.stub(queries.public, 'getActivitiesByPublicProjectSQL').returns(null);
 
       const projectService = new ProjectService(mockDBConnection);
@@ -459,5 +485,25 @@ describe('ProjectService', () => {
         expect((actualError as HTTPError).status).to.equal(400);
       }
     });
+  });
+
+  it('returns rows on success', async () => {
+    const mockQueryResponse = ({ rows: [{ id: 1 }] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+    sinon.stub(ProjectService.prototype, 'getPublicProjectData').resolves(new GetProjectData());
+    sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData());
+    sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData());
+    sinon.stub(ProjectService.prototype, 'getPermitData').resolves(new GetPermitData());
+    sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData());
+    sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData());
+    sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData());
+    sinon.stub(ProjectService.prototype, 'getFundingData').resolves(new GetFundingData());
+
+    const projectService = new ProjectService(mockDBConnection);
+
+    const result = await projectService.getPublicProjectById(1);
+
+    expect(result.id).to.equal(1);
   });
 });
