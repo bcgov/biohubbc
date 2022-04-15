@@ -21,7 +21,7 @@ export class GetAttachmentsData {
             id: item.id,
             fileName: item.file_name,
             fileType: item.file_type || 'Report',
-            lastModified: item.update_date || item.create_date,
+            lastModified: (item.update_date || item.create_date).toString(),
             size: item.file_size,
             securityToken: item.security_token
           };
