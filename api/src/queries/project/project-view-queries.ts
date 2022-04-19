@@ -183,7 +183,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       ical1c.iucn_conservation_action_level_1_classification_id as classification,
       ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
@@ -209,8 +209,6 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
       ical2s.iucn_conservation_action_level_2_subclassification_id,
       ical3s.iucn_conservation_action_level_3_subclassification_id;
   `;
-
-  return sqlStatement;
 };
 
 /**

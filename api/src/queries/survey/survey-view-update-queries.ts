@@ -11,7 +11,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       s.survey_id as id,
       s.name,
@@ -87,8 +87,6 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       per.number,
       per.type;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -102,7 +100,7 @@ export const getSurveyProprietorForUpdateSQL = (surveyId: number): SQLStatement 
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       sp.survey_proprietor_id as id,
       prt.name as proprietor_type_name,
@@ -126,8 +124,6 @@ export const getSurveyProprietorForUpdateSQL = (surveyId: number): SQLStatement 
     where
       survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -141,7 +137,7 @@ export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQ
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
   SELECT
     s.survey_id as id,
     s.field_method_id,
@@ -159,8 +155,6 @@ export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQ
   WHERE
     s.survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -174,14 +168,12 @@ export const getSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null 
     return null;
   }
 
-  const sqlStatement = SQL`
-  SELECT
-    vantage_id
-  FROM
-    survey_vantage
-  WHERE
-    survey_id = ${surveyId};
-  `;
-
-  return sqlStatement;
+  return SQL`
+    SELECT
+      vantage_id
+    FROM
+      survey_vantage
+    WHERE
+      survey_id = ${surveyId};
+    `;
 };

@@ -19,15 +19,13 @@ export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement |
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE permit
     SET
       survey_id = ${null}
     WHERE
       survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -42,7 +40,7 @@ export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: stri
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE permit
     SET
       survey_id = ${surveyId}
@@ -51,8 +49,6 @@ export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: stri
     AND
       survey_id IS NULL;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -135,8 +131,9 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
     return null;
   }
 
-  const sqlStatement = SQL`
-    UPDATE survey_proprietor
+  return SQL`
+    UPDATE
+      survey_proprietor
     SET
       proprietor_type_id = ${data.prt_id},
       first_nations_id = ${data.fn_id},
@@ -149,8 +146,6 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
     AND
       survey_id = ${surveyId}
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -214,7 +209,7 @@ export const putSurveyPurposeAndMethodologySQL = (
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE
       survey
     SET
@@ -227,6 +222,4 @@ export const putSurveyPurposeAndMethodologySQL = (
     AND
       revision_count = ${revision_count};
   `;
-
-  return sqlStatement;
 };

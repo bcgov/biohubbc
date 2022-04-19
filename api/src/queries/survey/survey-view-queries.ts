@@ -14,7 +14,7 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       number,
       type
@@ -25,8 +25,6 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
     AND
       survey_id IS NULL;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -40,7 +38,7 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       survey_id as id
     FROM
@@ -48,8 +46,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
     WHERE
       project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -63,7 +59,7 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       s.survey_id as id,
       s.name,
@@ -84,8 +80,6 @@ export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
     WHERE
       s.project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | null => {
@@ -93,7 +87,7 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       s.survey_id as id,
       s.name,
@@ -151,8 +145,6 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       per.number,
       per.type;
   `;
-
-  return sqlStatement;
 };
 
 export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStatement | null => {
@@ -160,7 +152,7 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       sfs.project_funding_source_id as pfs_id,
       pfs.funding_amount::numeric::int,
@@ -196,8 +188,6 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
     order by
       pfs.funding_start_date;
   `;
-
-  return sqlStatement;
 };
 
 export const getSurveySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
@@ -205,7 +195,7 @@ export const getSurveySpeciesDataForViewSQL = (surveyId: number): SQLStatement |
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       array_remove(
         array_agg(
@@ -238,6 +228,4 @@ export const getSurveySpeciesDataForViewSQL = (surveyId: number): SQLStatement |
     WHERE
       s.survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };

@@ -11,7 +11,7 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       su.system_user_id,
       su.user_identifier,
@@ -35,8 +35,6 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
       su.record_end_date,
       su.user_identifier;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -50,7 +48,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       su.system_user_id,
       su.user_identifier,
@@ -76,8 +74,6 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
       su.record_end_date,
       su.user_identifier;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -86,7 +82,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const getUserListSQL = (): SQLStatement | null => {
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       su.system_user_id,
       su.user_identifier,
@@ -110,8 +106,6 @@ export const getUserListSQL = (): SQLStatement | null => {
       su.record_end_date,
       su.user_identifier;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -126,7 +120,7 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     INSERT INTO system_user (
       user_identity_source_id,
       user_identifier,
@@ -139,8 +133,6 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
     RETURNING
       *;
   `;
-
-  return sqlStatement;
 };
 
 /**
