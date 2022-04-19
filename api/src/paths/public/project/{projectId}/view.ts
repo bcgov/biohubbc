@@ -300,7 +300,7 @@ export function getPublicProjectForView(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       const result = await projectService.getPublicProjectById(Number(req.params.projectId));
-
+      console.log('result is: ', result);
       await connection.commit();
 
       return res.status(200).json(result);

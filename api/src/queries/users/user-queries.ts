@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/user/user-queries');
 
 /**
  * SQL query to get a single user and their system roles, based on their user_identifier.
@@ -10,13 +7,11 @@ const defaultLog = getLogger('queries/user/user-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement | null => {
-  defaultLog.debug({ label: 'getUserByUserIdentifierSQL', message: 'params', userIdentifier });
-
   if (!userIdentifier) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       su.system_user_id,
       su.user_identifier,
@@ -40,15 +35,6 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
       su.record_end_date,
       su.user_identifier;
   `;
-
-  defaultLog.debug({
-    label: 'getUserByUserIdentifierSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -58,13 +44,11 @@ export const getUserByUserIdentifierSQL = (userIdentifier: string): SQLStatement
  * @returns {SQLStatement} sql query object
  */
 export const getUserByIdSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getUserByIdSQL', message: 'params', userId });
-
   if (!userId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       su.system_user_id,
       su.user_identifier,
@@ -90,15 +74,6 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
       su.record_end_date,
       su.user_identifier;
   `;
-
-  defaultLog.debug({
-    label: 'getUserByIdSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -107,9 +82,7 @@ export const getUserByIdSQL = (userId: number): SQLStatement | null => {
  * @returns {SQLStatement} sql query object
  */
 export const getUserListSQL = (): SQLStatement | null => {
-  defaultLog.debug({ label: 'getUserListSQL', message: 'getUserListSQL' });
-
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       su.system_user_id,
       su.user_identifier,
@@ -133,15 +106,6 @@ export const getUserListSQL = (): SQLStatement | null => {
       su.record_end_date,
       su.user_identifier;
   `;
-
-  defaultLog.debug({
-    label: 'getUserListSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -152,18 +116,11 @@ export const getUserListSQL = (): SQLStatement | null => {
  * @return {*}  {(SQLStatement | null)}
  */
 export const addSystemUserSQL = (userIdentifier: string, identitySource: string): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'addSystemUserSQL',
-    message: 'addSystemUserSQL',
-    userIdentifier,
-    identitySource
-  });
-
   if (!userIdentifier || !identitySource) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     INSERT INTO system_user (
       user_identity_source_id,
       user_identifier,
@@ -176,15 +133,6 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
     RETURNING
       *;
   `;
-
-  defaultLog.debug({
-    label: 'addSystemUserSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -195,13 +143,11 @@ export const addSystemUserSQL = (userIdentifier: string, identitySource: string)
  * @return {*}  {(SQLStatement | null)}
  */
 export const deactivateSystemUserSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deactivateSystemUserSQL', message: 'params' });
-
   if (!userId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE
       system_user
     SET
@@ -211,15 +157,6 @@ export const deactivateSystemUserSQL = (userId: number): SQLStatement | null => 
     RETURNING
       *;
   `;
-
-  defaultLog.debug({
-    label: 'deleteSystemUserSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -229,17 +166,11 @@ export const deactivateSystemUserSQL = (userId: number): SQLStatement | null => 
  * @return {*}  {(SQLStatement | null)}
  */
 export const activateSystemUserSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'activateSystemUserSQL',
-    message: 'activateSystemUserSQL',
-    userId
-  });
-
   if (!userId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE
       system_user
     SET
@@ -249,15 +180,6 @@ export const activateSystemUserSQL = (userId: number): SQLStatement | null => {
     RETURNING
       *;
   `;
-
-  defaultLog.debug({
-    label: 'activateSystemUserSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -268,13 +190,11 @@ export const activateSystemUserSQL = (userId: number): SQLStatement | null => {
  * @return {*}  {(SQLStatement | null)}
  */
 export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteAllSystemRolesSQL', message: 'params' });
-
   if (!userId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     DELETE FROM
       system_user_role
     WHERE
@@ -282,15 +202,6 @@ export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => 
     RETURNING
       *;
   `;
-
-  defaultLog.debug({
-    label: 'deleteAllSystemRolesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -301,13 +212,11 @@ export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => 
  * @return {*}  {(SQLStatement | null)}
  */
 export const deleteAllProjectRolesSQL = (userId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'deleteAllProjectRolesSQL', message: 'params' });
-
   if (!userId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     DELETE FROM
       project_participation
     WHERE
@@ -315,13 +224,4 @@ export const deleteAllProjectRolesSQL = (userId: number): SQLStatement | null =>
     RETURNING
       *;
   `;
-
-  defaultLog.debug({
-    label: 'deleteAllProjectRolesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };

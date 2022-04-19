@@ -1,9 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
-import { getLogger } from '../../utils/logger';
-import { queries } from '../queries';
 
-const defaultLog = getLogger('queries/survey/survey-create-queries');
+import { queries } from '../queries';
 
 /**
  * SQL query to insert a survey row.
@@ -13,13 +11,6 @@ const defaultLog = getLogger('queries/survey/survey-create-queries');
  * @returns {SQLStatement} sql query object
  */
 export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postSurveySQL',
-    message: 'params',
-    projectId,
-    survey
-  });
-
   if (!projectId || !survey) {
     return null;
   }
@@ -80,13 +71,6 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
       survey_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'postSurveySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -101,13 +85,6 @@ export const postSurveyProprietorSQL = (
   surveyId: number,
   survey_proprietor: PostSurveyProprietorData
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postSurveyProprietorSQL',
-    message: 'params',
-    surveyId,
-    survey_proprietor
-  });
-
   if (!surveyId || !survey_proprietor) {
     return null;
   }
@@ -132,13 +109,6 @@ export const postSurveyProprietorSQL = (
     survey_proprietor_id as id;
 `;
 
-  defaultLog.debug({
-    label: 'postSurveyProprietorSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -150,13 +120,6 @@ export const postSurveyProprietorSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveyFundingSourceSQL',
-    message: 'params',
-    surveyId,
-    fundingSourceId
-  });
-
   if (!surveyId || !fundingSourceId) {
     return null;
   }
@@ -170,13 +133,6 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
       ${fundingSourceId}
     );
   `;
-
-  defaultLog.debug({
-    label: 'insertSurveyFundingSourceSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -198,16 +154,6 @@ export const postNewSurveyPermitSQL = (
   permitNumber: string,
   permitType: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postNewSurveyPermitSQL',
-    message: 'params',
-    systemUserId,
-    projectId,
-    surveyId,
-    permitNumber,
-    permitType
-  });
-
   if (!systemUserId || !projectId || !surveyId || !permitNumber || !permitType) {
     return null;
   }
@@ -228,13 +174,6 @@ export const postNewSurveyPermitSQL = (
     );
   `;
 
-  defaultLog.debug({
-    label: 'postNewSurveyPermitSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -246,8 +185,6 @@ export const postNewSurveyPermitSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', speciesId, surveyId });
-
   if (!speciesId || !surveyId) {
     return null;
   }
@@ -264,13 +201,6 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
     ) RETURNING study_species_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'postFocalSpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -282,8 +212,6 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
  * @returns {SQLStatement} sql query object
  */
 export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postAncillarySpeciesSQL', message: 'params', speciesId, surveyId });
-
   if (!speciesId || !surveyId) {
     return null;
   }
@@ -300,13 +228,6 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
     ) RETURNING study_species_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'postAncillarySpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -318,8 +239,6 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
  * @returns {SQLStatement} sql query object
  */
 export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postVantageCodesSQL', message: 'params', vantageCodeId, surveyId });
-
   if (!vantageCodeId || !surveyId) {
     return null;
   }
@@ -333,13 +252,6 @@ export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQ
       ${surveyId}
     ) RETURNING survey_vantage_id as id;
   `;
-
-  defaultLog.debug({
-    label: 'postVantageCodesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
