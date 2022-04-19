@@ -91,28 +91,22 @@ export const getAdministrativeActivityById = (administrativeActivityTypeId: numb
  * @return {*}  {(SQLStatement | null)}
  */
 export const postAdministrativeActivitySQL = (systemUserId: number, data: unknown): SQLStatement | null => {
-  if (!systemUserId || !data) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    INSERT INTO administrative_activity (
-      reported_system_user_id,
-      administrative_activity_type_id,
-      administrative_activity_status_type_id,
-      data
-    ) VALUES (
-      ${systemUserId},
-      1,
-      1,
-      ${data}
-    )
-    RETURNING
-      administrative_activity_id as id,
-      create_date::timestamptz
-  `;
-
-  return sqlStatement;
+  return SQL`
+  INSERT INTO administrative_activity (
+    reported_system_user_id,
+    administrative_activity_type_id,
+    administrative_activity_status_type_id,
+    data
+  ) VALUES (
+    ${systemUserId},
+    1,
+    1,
+    ${data}
+  )
+  RETURNING
+    administrative_activity_id as id,
+    create_date::timestamptz
+`;
 };
 
 /**
@@ -122,11 +116,7 @@ export const postAdministrativeActivitySQL = (systemUserId: number, data: unknow
  * @return {*}  {(SQLStatement | null)}
  */
 export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string): SQLStatement | null => {
-  if (!userIdentifier) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT *
     FROM
       administrative_activity aa
@@ -134,12 +124,10 @@ export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string):
       administrative_activity_status_type aast
     ON
       aa.administrative_activity_status_type_id = aast.administrative_activity_status_type_id
-      WHERE
-      (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
-    AND aast.name = 'Pending';
-  `;
-
-  return sqlStatement;
+    WHERE
+    (aa.data -> 'username')::text =  '"' || ${userIdentifier} || '"'
+  AND aast.name = 'Pending';
+`;
 };
 
 /**
@@ -153,11 +141,7 @@ export const putAdministrativeActivitySQL = (
   administrativeActivityId: number,
   administrativeActivityStatusTypeId: number
 ): SQLStatement | null => {
-  if (!administrativeActivityId || !administrativeActivityStatusTypeId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE
       administrative_activity
     SET
@@ -166,7 +150,5 @@ export const putAdministrativeActivitySQL = (
       administrative_activity_id = ${administrativeActivityId}
     RETURNING
       administrative_activity_id as id;
-  `;
-
-  return sqlStatement;
+`;
 };
