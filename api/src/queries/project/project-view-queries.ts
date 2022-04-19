@@ -11,7 +11,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       project.project_id as id,
       project.project_type_id as pt_id,
@@ -43,8 +43,6 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
     where
       project.project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -226,7 +224,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       fn.first_nations_id as id,
       fn.name as first_nations_name
@@ -242,8 +240,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
       fn.first_nations_id,
       fn.name;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -257,7 +253,7 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       name as partnership_name
     FROM
@@ -265,8 +261,6 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
     WHERE
       project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -280,7 +274,7 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       number,
       type
@@ -289,8 +283,6 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
     WHERE
       project_id = ${projectId}
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -304,7 +296,7 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       p.location_description,
       p.geojson as geometry,
@@ -318,8 +310,6 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
       p.geojson,
       p.revision_count;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -334,15 +324,13 @@ export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | nul
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       activity_id
     from
       project_activity
     where project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -356,7 +344,7 @@ export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | 
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       pfs.project_funding_source_id as id,
       fs.funding_source_id as agency_id,
@@ -392,6 +380,4 @@ export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | 
       fs.name,
       pfs.revision_count
   `;
-
-  return sqlStatement;
 };

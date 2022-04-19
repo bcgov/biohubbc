@@ -18,7 +18,7 @@ export const insertSurveySummarySubmissionSQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     INSERT INTO survey_summary_submission (
       survey_id,
       source,
@@ -32,8 +32,6 @@ export const insertSurveySummarySubmissionSQL = (
     )
     RETURNING survey_summary_submission_id as id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -47,39 +45,37 @@ export const getLatestSurveySummarySubmissionSQL = (surveyId: number): SQLStatem
     return null;
   }
 
-  const sqlStatement = SQL`
-  SELECT
-    sss.survey_summary_submission_id as id,
-    sss.key,
-    sss.file_name,
-    sss.delete_timestamp,
-    sssm.submission_message_type_id,
-    sssm.message,
-    ssmt.name as submission_message_type_name,
-    ssmt.summary_submission_message_class_id,
-    ssmc.name as submission_message_class_name
-  FROM
-    survey_summary_submission as sss
-  LEFT OUTER JOIN
-    survey_summary_submission_message as sssm
-  ON
-    sss.survey_summary_submission_id = sssm.survey_summary_submission_id
-  LEFT OUTER JOIN
-    summary_submission_message_type as ssmt
-  ON
-    sssm.submission_message_type_id = ssmt.submission_message_type_id
-  LEFT OUTER JOIN
-    summary_submission_message_class as ssmc
-  ON
-    ssmt.summary_submission_message_class_id = ssmc.summary_submission_message_class_id
-  WHERE
-    sss.survey_id = ${surveyId}
-  ORDER BY
-    sss.event_timestamp DESC
-  LIMIT 1;
-  `;
-
-  return sqlStatement;
+  return SQL`
+    SELECT
+      sss.survey_summary_submission_id as id,
+      sss.key,
+      sss.file_name,
+      sss.delete_timestamp,
+      sssm.submission_message_type_id,
+      sssm.message,
+      ssmt.name as submission_message_type_name,
+      ssmt.summary_submission_message_class_id,
+      ssmc.name as submission_message_class_name
+    FROM
+      survey_summary_submission as sss
+    LEFT OUTER JOIN
+      survey_summary_submission_message as sssm
+    ON
+      sss.survey_summary_submission_id = sssm.survey_summary_submission_id
+    LEFT OUTER JOIN
+      summary_submission_message_type as ssmt
+    ON
+      sssm.submission_message_type_id = ssmt.submission_message_type_id
+    LEFT OUTER JOIN
+      summary_submission_message_class as ssmc
+    ON
+      ssmt.summary_submission_message_class_id = ssmc.summary_submission_message_class_id
+    WHERE
+      sss.survey_id = ${surveyId}
+    ORDER BY
+      sss.event_timestamp DESC
+    LIMIT 1;
+    `;
 };
 
 /**
@@ -93,13 +89,11 @@ export const deleteSummarySubmissionSQL = (summarySubmissionId: number): SQLStat
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     UPDATE survey_summary_submission
     SET delete_timestamp = now()
     WHERE survey_summary_submission_id = ${summarySubmissionId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -117,7 +111,7 @@ export const updateSurveySummarySubmissionWithKeySQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     UPDATE survey_summary_submission
     SET
       key=  ${key}
@@ -125,8 +119,6 @@ export const updateSurveySummarySubmissionWithKeySQL = (
       survey_summary_submission_id = ${summarySubmissionId}
     RETURNING survey_summary_submission_id as id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -140,7 +132,7 @@ export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLS
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       *
     FROM
@@ -148,8 +140,6 @@ export const getSurveySummarySubmissionSQL = (summarySubmissionId: number): SQLS
     WHERE
       survey_summary_submission_id = ${summarySubmissionId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -167,7 +157,7 @@ export const insertSurveySummaryDetailsSQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     INSERT INTO survey_summary_detail (
       survey_summary_submission_id,
       study_area_id,
@@ -205,8 +195,6 @@ export const insertSurveySummaryDetailsSQL = (
     )
     RETURNING survey_summary_detail_id as id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -228,7 +216,7 @@ export const insertSurveySummarySubmissionMessageSQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     INSERT INTO survey_summary_submission_message (
       survey_summary_submission_id,
       submission_message_type_id,
@@ -250,8 +238,6 @@ export const insertSurveySummarySubmissionMessageSQL = (
     RETURNING
       submission_message_id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -265,31 +251,29 @@ export const getSummarySubmissionMessagesSQL = (summarySubmissionId: number): SQ
     return null;
   }
 
-  const sqlStatement = SQL`
-  SELECT
-    sssm.submission_message_id as id,
-    sssm.message,
-    ssmt.name as type,
-    ssmc.name as class
-  FROM
-    survey_summary_submission as sss
-  LEFT OUTER JOIN
-    survey_summary_submission_message as sssm
-  ON
-    sssm.survey_summary_submission_id = sss.survey_summary_submission_id
-  LEFT OUTER JOIN
-    summary_submission_message_type as ssmt
-  ON
-    ssmt.submission_message_type_id = sssm.submission_message_type_id
-  LEFT OUTER JOIN
-    summary_submission_message_class as ssmc
-  ON
-    ssmc.summary_submission_message_class_id = ssmt.summary_submission_message_class_id
-  WHERE
-    sss.survey_summary_submission_id = ${summarySubmissionId}
-  ORDER BY
-    sssm.submission_message_id;
-  `;
-
-  return sqlStatement;
+  return SQL`
+    SELECT
+      sssm.submission_message_id as id,
+      sssm.message,
+      ssmt.name as type,
+      ssmc.name as class
+    FROM
+      survey_summary_submission as sss
+    LEFT OUTER JOIN
+      survey_summary_submission_message as sssm
+    ON
+      sssm.survey_summary_submission_id = sss.survey_summary_submission_id
+    LEFT OUTER JOIN
+      summary_submission_message_type as ssmt
+    ON
+      ssmt.submission_message_type_id = sssm.submission_message_type_id
+    LEFT OUTER JOIN
+      summary_submission_message_class as ssmc
+    ON
+      ssmc.summary_submission_message_class_id = ssmt.summary_submission_message_class_id
+    WHERE
+      sss.survey_summary_submission_id = ${summarySubmissionId}
+    ORDER BY
+      sssm.submission_message_id;
+    `;
 };

@@ -6,7 +6,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getPublicSpatialSearchResultsSQL = (): SQLStatement | null => {
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       p.project_id as id,
       p.name,
@@ -16,6 +16,4 @@ export const getPublicSpatialSearchResultsSQL = (): SQLStatement | null => {
     where
       p.publish_timestamp is not null;
   `;
-
-  return sqlStatement;
 };

@@ -151,7 +151,7 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       os.occurrence_submission_id as id,
       os.survey_id,
@@ -192,8 +192,6 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
     LIMIT 1
     ;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -207,14 +205,12 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     DELETE FROM
       occurrence
     WHERE
       occurrence_submission_id = ${occurrenceSubmissionId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -228,7 +224,7 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       *
     FROM
@@ -236,8 +232,6 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
     WHERE
       occurrence_submission_id = ${occurrenceSubmissionId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -251,13 +245,11 @@ export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): S
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     UPDATE occurrence_submission
     SET delete_timestamp = now()
     WHERE occurrence_submission_id = ${occurrenceSubmissionId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -275,7 +267,7 @@ export const insertOccurrenceSubmissionStatusSQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     INSERT INTO submission_status (
       occurrence_submission_id,
       submission_status_type_id,
@@ -295,8 +287,6 @@ export const insertOccurrenceSubmissionStatusSQL = (
     RETURNING
       submission_status_id as id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -317,7 +307,7 @@ export const insertOccurrenceSubmissionMessageSQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     INSERT INTO submission_message (
       submission_status_id,
       submission_message_type_id,
@@ -339,8 +329,6 @@ export const insertOccurrenceSubmissionMessageSQL = (
     RETURNING
       submission_message_id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -354,7 +342,7 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       sm.submission_message_id as id,
       smt.name as type,
@@ -387,8 +375,6 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       os.occurrence_submission_id = ${occurrenceSubmissionId}
     ORDER BY sm.submission_message_id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -406,7 +392,7 @@ export const getTemplateMethodologySpeciesRecordSQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT *
     FROM
       template_methodology_species tms
@@ -416,6 +402,4 @@ export const getTemplateMethodologySpeciesRecordSQL = (
       tms.template_id = ${templateId}
     ;
     `;
-
-  return sqlStatement;
 };

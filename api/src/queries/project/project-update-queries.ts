@@ -20,7 +20,7 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       ical1c.iucn_conservation_action_level_1_classification_id as classification,
       ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
@@ -46,8 +46,6 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
       ical2s.iucn_conservation_action_level_2_subclassification_id,
       ical3s.iucn_conservation_action_level_3_subclassification_id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -60,7 +58,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       project_first_nation_id as id
     FROM
@@ -70,8 +68,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
     GROUP BY
       project_first_nation_id;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -84,7 +80,7 @@ export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null =
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       number,
       type
@@ -93,8 +89,6 @@ export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null =
     WHERE
       project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -107,7 +101,8 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
   if (!projectId) {
     return null;
   }
-  const sqlStatement = SQL`
+
+  return SQL`
     SELECT
       coordinator_first_name,
       coordinator_last_name,
@@ -120,8 +115,6 @@ export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | nu
     WHERE
       project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -135,7 +128,7 @@ export const getProjectByProjectSQL = (projectId: number): SQLStatement | null =
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       name,
       project_type_id as pt_id,
@@ -147,8 +140,6 @@ export const getProjectByProjectSQL = (projectId: number): SQLStatement | null =
     WHERE
       project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -253,7 +244,7 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       objectives,
       caveats,
@@ -263,8 +254,6 @@ export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | nul
     WHERE
       project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -281,7 +270,7 @@ export const putProjectFundingSourceSQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
       INSERT INTO project_funding_source (
         project_id,
         investment_action_category_id,
@@ -300,8 +289,6 @@ export const putProjectFundingSourceSQL = (
       RETURNING
         project_funding_source_id as id;
     `;
-
-  return sqlStatement;
 };
 
 /**

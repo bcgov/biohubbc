@@ -11,7 +11,7 @@ export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: numbe
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       pp.project_participation_id,
       pp.project_id,
@@ -42,8 +42,6 @@ export const getParticipantsFromAllSystemUsersProjectsSQL = (systemUserId: numbe
           pp.system_user_id = ${systemUserId}
       );
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -57,7 +55,7 @@ export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       p.project_id,
       p.name,
@@ -73,8 +71,6 @@ export const getAllUserProjectsSQL = (userId: number): SQLStatement | null => {
     WHERE
       pp.system_user_id = ${userId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -136,7 +132,7 @@ export const getAllProjectParticipantsSQL = (projectId: number): SQLStatement | 
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       pp.project_participation_id,
       pp.project_id,
@@ -158,8 +154,6 @@ export const getAllProjectParticipantsSQL = (projectId: number): SQLStatement | 
     WHERE
       pp.project_id = ${projectId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -179,7 +173,7 @@ export const addProjectRoleByRoleNameSQL = (
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     INSERT INTO project_participation (
       project_id,
       system_user_id,
@@ -198,8 +192,6 @@ export const addProjectRoleByRoleNameSQL = (
     RETURNING
       *;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -219,7 +211,7 @@ export const addProjectRoleByRoleIdSQL = (
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     INSERT INTO project_participation (
       project_id,
       system_user_id,
@@ -232,8 +224,6 @@ export const addProjectRoleByRoleIdSQL = (
     RETURNING
       *;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -247,14 +237,12 @@ export const deleteProjectParticipationSQL = (projectParticipationId: number): S
     return null;
   }
 
-  const sqlStatement = SQL`
-    DELETE FROM
-      project_participation
-    WHERE
-      project_participation_id = ${projectParticipationId}
-    RETURNING
-      *;
-  `;
-
-  return sqlStatement;
+  return SQL`
+  DELETE FROM
+    project_participation
+  WHERE
+    project_participation_id = ${projectParticipationId}
+  RETURNING
+    *;
+`;
 };

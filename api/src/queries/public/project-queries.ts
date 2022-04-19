@@ -11,7 +11,7 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       project.project_id as id,
       project_type.name as type,
@@ -32,8 +32,6 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
       project.project_id = ${projectId}
     and project.publish_timestamp is not null;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -48,7 +46,7 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       a.name
     from
@@ -64,8 +62,6 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
     where pa.project_id = ${projectId}
     and p.publish_timestamp is not null;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -74,7 +70,7 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
  * @returns {SQLStatement} sql query object
  */
 export const getPublicProjectListSQL = (): SQLStatement | null => {
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       p.project_id as id,
       p.name,
@@ -99,8 +95,6 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       p.coordinator_agency_name,
       pt.name;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -114,7 +108,7 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       pa.project_attachment_id as id,
       pa.file_name,
@@ -134,8 +128,6 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
     and
       p.publish_timestamp is not null;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -149,7 +141,7 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       pa.project_report_attachment_id as id,
       pa.file_name,
@@ -168,8 +160,6 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
     and
       p.publish_timestamp is not null;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -184,7 +174,7 @@ export const getPublicProjectAttachmentS3KeySQL = (projectId: number, attachment
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       CASE WHEN api_security_check(security_token,create_user) THEN key ELSE null
       END as key
@@ -195,8 +185,6 @@ export const getPublicProjectAttachmentS3KeySQL = (projectId: number, attachment
     AND
       project_attachment_id = ${attachmentId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -214,7 +202,7 @@ export const getPublicProjectReportAttachmentS3KeySQL = (
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       CASE WHEN api_security_check(security_token,create_user) THEN key ELSE null
       END as key
@@ -225,8 +213,6 @@ export const getPublicProjectReportAttachmentS3KeySQL = (
     AND
       project_report_attachment_id = ${attachmentId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -242,7 +228,7 @@ export const getPublicProjectReportAttachmentSQL = (projectId: number, attachmen
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       project_report_attachment_id as attachment_id,
       file_name,
@@ -263,8 +249,6 @@ export const getPublicProjectReportAttachmentSQL = (projectId: number, attachmen
     and
       project_id = ${projectId}
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -280,7 +264,7 @@ export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): S
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       project_report_author.*
     FROM
@@ -288,6 +272,4 @@ export const getProjectReportAuthorsSQL = (projectReportAttachmentId: number): S
     where
       project_report_attachment_id = ${projectReportAttachmentId}
   `;
-
-  return sqlStatement;
 };
