@@ -147,7 +147,7 @@ export const deactivateSystemUserSQL = (userId: number): SQLStatement | null => 
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE
       system_user
     SET
@@ -157,8 +157,6 @@ export const deactivateSystemUserSQL = (userId: number): SQLStatement | null => 
     RETURNING
       *;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -172,7 +170,7 @@ export const activateSystemUserSQL = (userId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE
       system_user
     SET
@@ -182,8 +180,6 @@ export const activateSystemUserSQL = (userId: number): SQLStatement | null => {
     RETURNING
       *;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -198,7 +194,7 @@ export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => 
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     DELETE FROM
       system_user_role
     WHERE
@@ -206,8 +202,6 @@ export const deleteAllSystemRolesSQL = (userId: number): SQLStatement | null => 
     RETURNING
       *;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -222,7 +216,7 @@ export const deleteAllProjectRolesSQL = (userId: number): SQLStatement | null =>
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     DELETE FROM
       project_participation
     WHERE
@@ -230,6 +224,4 @@ export const deleteAllProjectRolesSQL = (userId: number): SQLStatement | null =>
     RETURNING
       *;
   `;
-
-  return sqlStatement;
 };
