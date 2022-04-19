@@ -7,11 +7,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatement | null => {
-  if (!systemUserId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       permit_id,
       number,
@@ -23,8 +19,6 @@ export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatem
     AND
       project_id IS NULL;
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -34,11 +28,7 @@ export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatem
  * @returns {SQLStatement} sql query object
  */
 export const getAllPermitsSQL = (systemUserId: number | null): SQLStatement | null => {
-  if (!systemUserId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       per.permit_id as id,
       per.number,
@@ -57,6 +47,4 @@ export const getAllPermitsSQL = (systemUserId: number | null): SQLStatement | nu
     WHERE
       system_user_id = ${systemUserId};
   `;
-
-  return sqlStatement;
 };

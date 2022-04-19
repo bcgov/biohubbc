@@ -8,11 +8,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const associatePermitToProjectSQL = (permitId: number, projectId: number): SQLStatement | null => {
-  if (!permitId || !projectId) {
-    return null;
-  }
-
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE permit
     SET
       project_id = ${projectId},
@@ -23,6 +19,4 @@ export const associatePermitToProjectSQL = (permitId: number, projectId: number)
     WHERE
       permit_id = ${permitId};
   `;
-
-  return sqlStatement;
 };

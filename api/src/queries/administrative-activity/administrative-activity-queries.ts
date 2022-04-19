@@ -71,16 +71,14 @@ export const getAdministrativeActivitiesSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getAdministrativeActivityById = (administrativeActivityTypeId: number): SQLStatement => {
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       *
     FROM
       administrative_activity_status_type
     WHERE
       administrative_activity_status_type_id = ${administrativeActivityTypeId}
-      ;`;
-
-  return sqlStatement;
+    ;`;
 };
 
 /**
