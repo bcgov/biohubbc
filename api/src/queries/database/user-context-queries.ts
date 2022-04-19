@@ -5,5 +5,9 @@ export const setSystemUserContextSQL = (
   userIdentifier: string,
   systemUserType: SYSTEM_IDENTITY_SOURCE
 ): SQLStatement | null => {
+  if (!userIdentifier) {
+    return null;
+  }
+
   return SQL`select api_set_context(${userIdentifier}, ${systemUserType});`;
 };

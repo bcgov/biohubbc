@@ -7,6 +7,10 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @returns {SQLStatement} sql query object
  */
 export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatement | null => {
+  if (!systemUserId) {
+    return null;
+  }
+
   return SQL`
     SELECT
       permit_id,
@@ -28,6 +32,10 @@ export const getNonSamplingPermitsSQL = (systemUserId: number | null): SQLStatem
  * @returns {SQLStatement} sql query object
  */
 export const getAllPermitsSQL = (systemUserId: number | null): SQLStatement | null => {
+  if (!systemUserId) {
+    return null;
+  }
+
   return SQL`
     SELECT
       per.permit_id as id,

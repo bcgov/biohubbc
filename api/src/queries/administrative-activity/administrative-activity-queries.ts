@@ -10,6 +10,9 @@ export const getAdministrativeActivitiesSQL = (
   administrativeActivityTypeName?: string,
   administrativeActivityStatusTypes?: string[]
 ): SQLStatement | null => {
+  if (!administrativeActivityTypeName || !administrativeActivityStatusTypes) {
+    return null;
+  }
   const sqlStatement = SQL`
     SELECT
       aa.administrative_activity_id as id,
@@ -70,7 +73,11 @@ export const getAdministrativeActivitiesSQL = (
  * @param {number} [administrativeActivityTypeId]
  * @returns {SQLStatement} sql query object
  */
-export const getAdministrativeActivityById = (administrativeActivityTypeId: number): SQLStatement => {
+export const getAdministrativeActivityById = (administrativeActivityTypeId: number): SQLStatement | null => {
+  if (!administrativeActivityTypeId) {
+    return null;
+  }
+
   return SQL`
     SELECT
       *
@@ -89,6 +96,10 @@ export const getAdministrativeActivityById = (administrativeActivityTypeId: numb
  * @return {*}  {(SQLStatement | null)}
  */
 export const postAdministrativeActivitySQL = (systemUserId: number, data: unknown): SQLStatement | null => {
+  if (!systemUserId) {
+    return null;
+  }
+
   return SQL`
   INSERT INTO administrative_activity (
     reported_system_user_id,
@@ -114,6 +125,10 @@ export const postAdministrativeActivitySQL = (systemUserId: number, data: unknow
  * @return {*}  {(SQLStatement | null)}
  */
 export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string): SQLStatement | null => {
+  if (!userIdentifier) {
+    return null;
+  }
+
   return SQL`
     SELECT *
     FROM
@@ -139,6 +154,10 @@ export const putAdministrativeActivitySQL = (
   administrativeActivityId: number,
   administrativeActivityStatusTypeId: number
 ): SQLStatement | null => {
+  if (!administrativeActivityId || !administrativeActivityStatusTypeId) {
+    return null;
+  }
+
   return SQL`
     UPDATE
       administrative_activity
@@ -148,5 +167,5 @@ export const putAdministrativeActivitySQL = (
       administrative_activity_id = ${administrativeActivityId}
     RETURNING
       administrative_activity_id as id;
-`;
+  `;
 };
