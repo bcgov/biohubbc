@@ -228,6 +228,13 @@ GET.apiDoc = {
               survey_purpose_and_methodology: {
                 description: 'Survey Details',
                 type: 'object',
+                required: [
+                  'field_method_id',
+                  'intended_outcome_id',
+                  'ecological_season_id',
+                  'vantage_code_ids',
+                  'surveyed_all_areas'
+                ],
                 properties: {
                   id: {
                     type: 'number'
@@ -244,14 +251,18 @@ GET.apiDoc = {
                   ecological_season_id: {
                     type: 'number'
                   },
-                  revision_count: {
-                    type: 'number'
-                  },
                   vantage_code_ids: {
                     type: 'array',
                     items: {
                       type: 'number'
                     }
+                  },
+                  surveyed_all_areas: {
+                    type: 'string',
+                    enum: ['true', 'false']
+                  },
+                  revision_count: {
+                    type: 'number'
                   }
                 }
               },
@@ -439,6 +450,13 @@ PUT.apiDoc = {
             survey_purpose_and_methodology: {
               description: 'Survey Details',
               type: 'object',
+              required: [
+                'field_method_id',
+                'intended_outcome_id',
+                'ecological_season_id',
+                'vantage_code_ids',
+                'surveyed_all_areas'
+              ],
               properties: {
                 id: {
                   type: 'number'
@@ -455,14 +473,18 @@ PUT.apiDoc = {
                 ecological_season_id: {
                   type: 'number'
                 },
-                revision_count: {
-                  type: 'number'
-                },
                 vantage_code_ids: {
                   type: 'array',
                   items: {
                     type: 'number'
                   }
+                },
+                surveyed_all_areas: {
+                  type: 'string',
+                  enum: ['true', 'false']
+                },
+                revision_count: {
+                  type: 'number'
                 }
               }
             },

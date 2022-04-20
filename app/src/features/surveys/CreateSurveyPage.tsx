@@ -272,6 +272,7 @@ const CreateSurveyPage = () => {
     }
 
     try {
+      console.log(formikRef.current?.values);
       const response = await createSurvey(formikRef.current?.values);
 
       if (!response) {

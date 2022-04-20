@@ -297,7 +297,8 @@ export const putSurveyPurposeAndMethodologySQL = (
       field_method_id = ${data.field_method_id},
      additional_details = ${data.additional_details},
       ecological_season_id = ${data.ecological_season_id},
-      intended_outcome_id = ${data.intended_outcome_id}
+      intended_outcome_id = ${data.intended_outcome_id},
+      surveyed_all_areas = ${data.surveyed_all_areas}
     WHERE
       survey_id = ${surveyId}
     AND

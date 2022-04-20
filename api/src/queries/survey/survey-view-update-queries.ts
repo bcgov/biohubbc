@@ -33,6 +33,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.geojson as geometry,
       s.revision_count,
       s.field_method_id,
+      s.surveyed_all_areas,
       s.publish_timestamp as publish_date,
       per.number,
       per.type,
@@ -92,6 +93,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.geojson,
       s.revision_count,
       s.field_method_id,
+      s.surveyed_all_areas,
       s.publish_timestamp,
       per.number,
       per.type;
@@ -183,8 +185,9 @@ export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQ
     s.additional_details,
     s.ecological_season_id,
     s.intended_outcome_id,
-    s.revision_count,
-    sv.vantage_id
+    s.surveyed_all_areas,
+    sv.vantage_id,
+    s.revision_count
   FROM
     survey s
   LEFT OUTER JOIN
