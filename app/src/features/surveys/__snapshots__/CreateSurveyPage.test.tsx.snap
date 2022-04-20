@@ -1281,11 +1281,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     <fieldset
                       class="MuiFormControl-root"
                     >
-                      <legend
-                        class="MuiTypography-root MuiTypography-body1"
-                      >
-                        Population of Interest
-                      </legend>
                       <p
                         class="MuiTypography-root MuiTypography-body1"
                       >

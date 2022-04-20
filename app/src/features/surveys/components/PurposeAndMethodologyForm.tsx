@@ -115,7 +115,6 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
               required={true}
               component="fieldset"
               error={touched.surveyed_all_areas && Boolean(errors.surveyed_all_areas)}>
-              <Typography component="legend">Population of Interest</Typography>
               <Typography>Did you survey all areas that include your population of interest?</Typography>
               <Box mt={2}>
                 <RadioGroup
