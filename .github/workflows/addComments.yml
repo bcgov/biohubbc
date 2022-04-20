@@ -15,7 +15,7 @@ jobs:
         with:
           issue-number: ${{ github.event.number }}
           body: |
-            Openshift URLs For This PR Deployment:
+            Openshift URLs for the PR Deployment:
             - App Route: https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/
             - Api Route: https://biohubbc-api-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/
             - Pods: https://console.apps.silver.devops.gov.bc.ca/k8s/ns/af2668-dev/pods?name=biohubbc${{ github.event.number }}
