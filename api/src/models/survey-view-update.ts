@@ -17,6 +17,7 @@ export class GetSurveyProprietorData {
   category_rationale: string;
   proprietor_name: string;
   data_sharing_agreement_required: string;
+  survey_data_proprietary: string;
   revision_count: number;
 
   constructor(data?: any) {
@@ -34,6 +35,7 @@ export class GetSurveyProprietorData {
     this.category_rationale = data?.category_rationale || '';
     this.proprietor_name = data?.proprietor_name || '';
     this.data_sharing_agreement_required = data?.disa_required ? 'true' : 'false';
+    this.survey_data_proprietary = (data?.id && 'true') || 'false'; // The existence of a survey proprietor record indicates the survey data is proprietary
     this.revision_count = data?.revision_count ?? null;
   }
 }
