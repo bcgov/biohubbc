@@ -34,11 +34,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            species={
-              codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             common_survey_methodologies={
               codes?.common_survey_methodologies?.map((item) => {
                 return { value: item.id, label: item.name };
@@ -76,11 +71,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            species={
-              codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             common_survey_methodologies={
               codes?.common_survey_methodologies?.map((item) => {
                 return { value: item.id, label: item.name };
@@ -136,11 +126,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            species={
-              codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             common_survey_methodologies={
               codes?.common_survey_methodologies?.map((item) => {
                 return { value: item.id, label: item.name };

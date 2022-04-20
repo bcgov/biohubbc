@@ -1,4 +1,5 @@
 import moment from 'moment';
+import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { HTTP400, HTTP409, HTTP500 } from '../errors/custom-error';
@@ -29,6 +30,7 @@ import {
   GetPartnershipsData,
   GetPermitData,
   GetProjectData,
+  GetSpeciesData,
   IGetProject
 } from '../models/project-view';
 import { GetPublicCoordinatorData, GetPublicProjectData } from '../models/public/project';
@@ -38,6 +40,7 @@ import { queries } from '../queries/queries';
 import { userHasValidRole } from '../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { DBService } from './service';
+import { TaxonomyService } from './taxonomy-service';
 
 export class ProjectService extends DBService {
   /**
@@ -1139,5 +1142,30 @@ export class ProjectService extends DBService {
     }
 
     return true;
+  }
+
+  async getSpeciesData(projectId: number): Promise<GetSpeciesData> {
+    const sqlStatement = SQL`
+      SELECT
+        wldtaxonomic_units_id
+      FROM
+        project_species
+      WHERE
+        project_id = ${projectId};
+      `;
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new HTTP400('Failed to get species data');
+    }
+
+    const taxonomyService = new TaxonomyService();
+
+    const species = await taxonomyService.getSpeciesFromIds(result);
+
+    return new GetSpeciesData(species);
   }
 }

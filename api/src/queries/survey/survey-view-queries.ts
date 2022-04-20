@@ -267,57 +267,40 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
   return sqlStatement;
 };
 
-export const getSurveySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveySpeciesDataForViewSQL',
-    message: 'params',
-    surveyId
-  });
-
+export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }
 
   const sqlStatement = SQL`
-    SELECT
-      array_remove(
-        array_agg(
-          DISTINCT CASE
-            WHEN ss.is_focal = TRUE
-              THEN CONCAT_WS(' - ', wtu.english_name, CONCAT_WS(' ', wtu.unit_name1, wtu.unit_name2, wtu.unit_name3))
-            END
-        ),
-        NULL
-      ) as focal_species,
-      array_remove(
-        array_agg(
-          DISTINCT CASE
-            WHEN ss.is_focal = FALSE
-              THEN CONCAT_WS(' - ', wtu.english_name, CONCAT_WS(' ', wtu.unit_name1, wtu.unit_name2, wtu.unit_name3))
-            END
-        ),
-        NULL
-      ) as ancillary_species
-    FROM
-      wldtaxonomic_units as wtu
-    LEFT OUTER JOIN
-      study_species as ss
-    ON
-      ss.wldtaxonomic_units_id = wtu.wldtaxonomic_units_id
-    LEFT OUTER JOIN
-      survey as s
-    ON
-      s.survey_id = ss.survey_id
-    WHERE
-      s.survey_id = ${surveyId};
-  `;
+      SELECT
+        wldtaxonomic_units_id
+      FROM
+        study_species
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        is_focal = TRUE;
+      `;
 
-  defaultLog.debug({
-    label: 'getSurveySpeciesDataForViewSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
+  return sqlStatement;
+};
+
+export const getSurveyAncillarySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
+    return null;
+  }
+
+  const sqlStatement = SQL`
+      SELECT
+        wldtaxonomic_units_id
+      FROM
+        study_species
+      WHERE
+        survey_id = ${surveyId}
+      AND
+        is_focal = FALSE;
+      `;
 
   return sqlStatement;
 };
