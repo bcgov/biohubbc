@@ -5,7 +5,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-// import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import MultiAutocompleteFieldVariableSize, {
@@ -51,22 +50,12 @@ export interface IPurposeAndMethodologyFormProps {
   vantage_codes: IMultiAutocompleteFieldOption[];
 }
 
-// const useStyles = makeStyles(() => ({
-//   legend: {
-//     marginTop: '1rem',
-//     float: 'left',
-//     marginBottom: '0.75rem',
-//     letterSpacing: '-0.01rem'
-//   }
-// }));
-
 /**
- * Create survey - general information fields
+ * Create survey - purpose and methodology fields
  *
  * @return {*}
  */
 const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (props) => {
-  // const classes = useStyles();
   const { values, touched, errors, handleChange } = useFormikContext<IPurposeAndMethodologyForm>();
 
   return (
@@ -149,36 +138,6 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
               </Box>
             </FormControl>
           </Grid>
-          {/* <Grid item xs={12}>
-            <FormControl
-              required={true}
-              component="fieldset"
-              error={touched.surveyed_all_areas && Boolean(errors.surveyed_all_areas)}>
-              <Box component="legend" className={classes.legend}>
-                Did you survey all areas?
-              </Box>
-              <Typography color="textSecondary">Some subtext?</Typography>
-              <Box mt={2} pl={1}>
-                <RadioGroup
-                  name="surveyed_all_areas"
-                  aria-label="Share Contact Details"
-                  value={values.surveyed_all_areas}
-                  onChange={handleChange}>
-                  <FormControlLabel
-                    value="false"
-                    control={<Radio required={true} color="primary" size="small" />}
-                    label="No"
-                  />
-                  <FormControlLabel
-                    value="true"
-                    control={<Radio required={true} color="primary" size="small" />}
-                    label="Yes"
-                  />
-                  <FormHelperText>{errors.surveyed_all_areas}</FormHelperText>
-                </RadioGroup>
-              </Box>
-            </FormControl>
-          </Grid> */}
         </Grid>
       </Box>
     </form>
