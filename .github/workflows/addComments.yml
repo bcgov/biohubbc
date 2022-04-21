@@ -1,0 +1,23 @@
+# Add automated comments to the PR
+name: Add Comments
+
+on:
+  pull_request:
+    types: [opened]
+    branches:
+      - dev
+
+jobs:
+  addOpenshiftURLComment:
+    name: Add Openshift URL Comment
+    runs-on: ubuntu-latest
+    steps:
+      - name: Add Comment
+        uses: peter-evans/create-or-update-comment@v2
+        with:
+          issue-number: ${{ github.event.number }}
+          body: |
+            Openshift URLs for the PR Deployment:
+            - App Route: https://biohubbc-app-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/
+            - Api Route: https://biohubbc-api-${{ github.event.number }}-af2668-dev.apps.silver.devops.gov.bc.ca/
+            - Pods: https://console.apps.silver.devops.gov.bc.ca/k8s/ns/af2668-dev/pods?name=${{ github.event.number }}

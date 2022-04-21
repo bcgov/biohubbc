@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
-import { Formik } from 'formik';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
 } from 'features/surveys/components/GeneralInformationForm';
+import { Formik } from 'formik';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -36,11 +36,6 @@ describe('General Information Form', () => {
           <GeneralInformationForm
             species={
               codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            common_survey_methodologies={
-              codes?.common_survey_methodologies?.map((item) => {
                 return { value: item.id, label: item.name };
               }) || []
             }
@@ -78,11 +73,6 @@ describe('General Information Form', () => {
           <GeneralInformationForm
             species={
               codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            common_survey_methodologies={
-              codes?.common_survey_methodologies?.map((item) => {
                 return { value: item.id, label: item.name };
               }) || []
             }
@@ -138,11 +128,6 @@ describe('General Information Form', () => {
           <GeneralInformationForm
             species={
               codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
-            common_survey_methodologies={
-              codes?.common_survey_methodologies?.map((item) => {
                 return { value: item.id, label: item.name };
               }) || []
             }

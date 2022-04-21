@@ -54,7 +54,9 @@ POST.apiDoc = {
             'biologist_first_name',
             'biologist_last_name',
             'survey_area_name',
-            'survey_data_proprietary'
+            'survey_data_proprietary',
+            'foippa_requirements_accepted',
+            'sedis_procedures_accepted'
           ],
           properties: {
             survey_name: {
@@ -100,6 +102,10 @@ POST.apiDoc = {
             ecological_season_id: {
               type: 'number'
             },
+            surveyed_all_areas: {
+              type: 'string',
+              enum: ['true', 'false']
+            },
             biologist_first_name: {
               type: 'string'
             },
@@ -128,10 +134,16 @@ POST.apiDoc = {
               type: 'string'
             },
             foippa_requirements_accepted: {
-              type: 'boolean'
+              type: 'boolean',
+              enum: [true],
+              description:
+                'Data meets or exceeds the Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements'
             },
             sedis_procedures_accepted: {
-              type: 'boolean'
+              type: 'boolean',
+              enum: [true],
+              description:
+                'Data is in accordance with the Species and Ecosystems Data and Information Security (SEDIS) Procedures'
             },
             funding_sources: {
               type: 'array',

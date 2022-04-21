@@ -1,4 +1,5 @@
 import { Feature } from 'geojson';
+import { StringBoolean } from 'types/misc';
 
 /**
  * Create survey post object.
@@ -29,6 +30,7 @@ export interface ICreateSurveyRequest {
   field_method_id: number;
   ecological_season_id: number;
   vantage_id: number;
+  surveyed_all_areas: StringBoolean;
   geometry: Feature[];
   permit_number: string;
 }
@@ -77,6 +79,7 @@ export interface IGetSurveyForViewResponsePurposeAndMethodology {
   field_method_id: number;
   ecological_season_id: number;
   vantage_code_ids: number[];
+  surveyed_all_areas: StringBoolean;
 }
 
 export interface IGetSurveyForViewResponseProprietor {
@@ -112,6 +115,7 @@ export interface IGetSurveyForUpdateResponsePurposeAndMethodology {
   field_method_id: number;
   ecological_season_id: number;
   vantage_code_ids: number[];
+  surveyed_all_areas: StringBoolean;
   revision_count?: number;
 }
 

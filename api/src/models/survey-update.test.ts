@@ -397,9 +397,13 @@ describe('PutSurveyPurposeAndMethodologyData', () => {
       expect(data.ecological_season_id).to.equal(null);
     });
 
-    // it('sets vantage_code_ids', () => {
-    //   expect(data.vantage_code_ids).to.equal([]);
-    // });
+    it('sets vantage_code_ids', () => {
+      expect(data.vantage_code_ids).to.eql([]);
+    });
+
+    it('sets surveyed_all_areas', () => {
+      expect(data.surveyed_all_areas).to.equal(false);
+    });
 
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
@@ -416,6 +420,7 @@ describe('PutSurveyPurposeAndMethodologyData', () => {
       vantage_code_ids: [1, 2],
       ecological_season_id: 1,
       intended_outcome_id: 1,
+      surveyed_all_areas: 'true',
       revision_count: 1
     };
 
@@ -445,6 +450,10 @@ describe('PutSurveyPurposeAndMethodologyData', () => {
 
     it('sets vantage_code_ids', () => {
       expect(data.vantage_code_ids).to.equal(purposeAndMethodologyData.vantage_code_ids);
+    });
+
+    it('sets surveyed_all_areas', () => {
+      expect(data.surveyed_all_areas).to.equal(true);
     });
 
     it('sets revision_count', () => {
