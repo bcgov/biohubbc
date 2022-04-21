@@ -135,22 +135,3 @@ export const getProjectRolesSQL = (): SQLStatement =>
  */
 export const getAdministrativeActivityStatusTypeSQL = (): SQLStatement =>
   SQL`SELECT administrative_activity_status_type_id as id, name FROM administrative_activity_status_type where record_end_date is null;`;
-
-/**
- * SQL query to fetch taxon codes.
- *
- * @returns {SQLStatement} sql query object
- */
-export const getTaxonsSQL = (): SQLStatement =>
-  SQL`
-    SELECT
-      wldtaxonomic_units_id as id,
-      CONCAT_WS(' - ', english_name, CONCAT_WS(' ', unit_name1, unit_name2, unit_name3)) as name
-    FROM
-      wldtaxonomic_units
-    WHERE
-      tty_name = 'SPECIES'
-    and
-      end_date is null
-    ORDER BY
-      name;`;

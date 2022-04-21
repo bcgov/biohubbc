@@ -42,7 +42,6 @@ export const ProjectAdvancedFiltersInitialValues: IProjectAdvancedFilters = {
 };
 
 export interface IProjectAdvancedFiltersProps {
-  species: IMultiAutocompleteFieldOption[];
   funding_sources: IMultiAutocompleteFieldOption[];
   coordinator_agency: string[];
 }

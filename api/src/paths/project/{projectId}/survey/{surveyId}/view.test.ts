@@ -63,7 +63,8 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(null);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -112,7 +113,8 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -139,7 +141,8 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(null);
-    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -166,7 +169,8 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(null);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -211,7 +215,8 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -219,7 +224,7 @@ describe('getSurveyForView', () => {
       await requestHandler(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect((actualError as HTTPError).message).to.equal('Failed to get survey species data');
+      expect((actualError as HTTPError).message).to.equal('Failed to get species data');
       expect((actualError as HTTPError).status).to.equal(400);
     }
   });
@@ -238,7 +243,8 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
 
     try {
@@ -286,9 +292,13 @@ describe('getSurveyForView', () => {
       agency_name: 'agency'
     };
 
-    const survey_species_data = {
-      focal_species: ['species'],
-      ancillary_species: ['ancillary']
+    const survey_focal_species_data = {
+      focal_species: [],
+      focal_species_names: []
+    };
+    const survey_ancillary_species_data = {
+      ancillary_species: [],
+      ancillary_species_names: []
     };
 
     const survey_proprietor_data = {
@@ -321,9 +331,13 @@ describe('getSurveyForView', () => {
       })
       .onCall(3)
       .resolves({
-        rows: [survey_species_data]
+        rows: [survey_focal_species_data]
       })
       .onCall(4)
+      .resolves({
+        rows: [survey_ancillary_species_data]
+      })
+      .onCall(5)
       .resolves({
         rows: [survey_proprietor_data]
       });
@@ -338,7 +352,8 @@ describe('getSurveyForView', () => {
 
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveySpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
+    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
@@ -351,8 +366,10 @@ describe('getSurveyForView', () => {
       id: survey_basic_data.id,
       occurrence_submission_id: survey_basic_data.occurrence_submission_id,
       survey_name: survey_basic_data.name,
-      focal_species: survey_species_data.focal_species,
-      ancillary_species: survey_species_data.ancillary_species,
+      focal_species: survey_focal_species_data.focal_species,
+      focal_species_names: survey_focal_species_data.focal_species_names,
+      ancillary_species: survey_ancillary_species_data.ancillary_species,
+      ancillary_species_names: survey_ancillary_species_data.ancillary_species_names,
       start_date: survey_basic_data.start_date,
       end_date: survey_basic_data.end_date,
       biologist_first_name: survey_basic_data.lead_first_name,

@@ -44,6 +44,8 @@ export class GetViewSurveyDetailsData {
       }
     });
 
+    console.log('surveyDetailsData entering the constructor', surveyDetailsData);
+
     this.id = surveyDetailsData?.id ?? null;
     this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
     this.survey_name = surveyDetailsData?.name || '';

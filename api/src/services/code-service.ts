@@ -30,7 +30,6 @@ export interface IAllCodeSets {
   project_type: CodeSet;
   coordinator_agency: CodeSet;
   region: CodeSet;
-  species: CodeSet;
   proprietor_type: CodeSet<{ id: number; name: string; is_first_nation: boolean }>;
   iucn_conservation_action_level_1_classification: CodeSet;
   iucn_conservation_action_level_2_subclassification: CodeSet<{ id: number; iucn1_id: number; name: string }>;
@@ -69,7 +68,6 @@ export class CodeService extends DBService {
       system_roles,
       project_roles,
       administrative_activity_status_type,
-      species,
       field_methods,
       ecological_seasons,
       intended_outcomes,
@@ -88,7 +86,6 @@ export class CodeService extends DBService {
       await this.connection.query(queries.codes.getSystemRolesSQL().text),
       await this.connection.query(queries.codes.getProjectRolesSQL().text),
       await this.connection.query(queries.codes.getAdministrativeActivityStatusTypeSQL().text),
-      await this.connection.query(queries.codes.getTaxonsSQL().text),
       await this.connection.query(queries.codes.getFieldMethodsSQL().text),
       await this.connection.query(queries.codes.getEcologicalSeasonsSQL().text),
 
@@ -119,7 +116,6 @@ export class CodeService extends DBService {
       project_roles: (project_roles && project_roles.rows) || [],
       administrative_activity_status_type:
         (administrative_activity_status_type && administrative_activity_status_type.rows) || [],
-      species: (species && species.rows) || [],
       field_methods: (field_methods && field_methods.rows) || [],
       ecological_seasons: (ecological_seasons && ecological_seasons.rows) || [],
       intended_outcomes: (intended_outcomes && intended_outcomes.rows) || [],
