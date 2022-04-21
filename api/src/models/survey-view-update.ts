@@ -16,8 +16,8 @@ export class GetSurveyProprietorData {
   first_nations_id: number;
   category_rationale: string;
   proprietor_name: string;
-  survey_data_proprietary: string;
   data_sharing_agreement_required: string;
+  survey_data_proprietary: string;
   revision_count: number;
 
   constructor(data?: any) {
@@ -34,8 +34,8 @@ export class GetSurveyProprietorData {
     this.first_nations_id = data?.first_nations_id ?? null;
     this.category_rationale = data?.category_rationale || '';
     this.proprietor_name = data?.proprietor_name || '';
-    this.survey_data_proprietary = data?.survey_data_proprietary || 'true';
     this.data_sharing_agreement_required = data?.disa_required ? 'true' : 'false';
+    this.survey_data_proprietary = (data?.id && 'true') || 'false'; // The existence of a survey proprietor record indicates the survey data is proprietary
     this.revision_count = data?.revision_count ?? null;
   }
 }
@@ -59,7 +59,8 @@ export class GetSurveyPurposeAndMethodologyData {
           field_method_id: item.field_method_id,
           ecological_season_id: item.ecological_season_id,
           revision_count: item.revision_count,
-          vantage_code_ids: [item.vantage_id]
+          vantage_code_ids: [item.vantage_id],
+          surveyed_all_areas: (item.surveyed_all_areas && 'true') || 'false'
         };
       } else {
         obj[item.id].vantage_code_ids.push(item.vantage_id);
