@@ -11,6 +11,7 @@ import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CreateSurveyI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
@@ -24,7 +25,6 @@ import { ICreateSurveyRequest, SurveyFundingSources, SurveyPermits } from 'inter
 import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
-import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
@@ -118,10 +118,10 @@ const CreateSurveyPage = () => {
   };
 
   // Initial values for the survey form sections
-  const [surveyInitialValues] = useState({
+  const [surveyInitialValues] = useState<ICreateSurveyRequest>({
     ...GeneralInformationInitialValues,
-    ...StudyAreaInitialValues,
     ...PurposeAndMethodologyInitialValues,
+    ...StudyAreaInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues
   });
@@ -230,51 +230,18 @@ const CreateSurveyPage = () => {
   };
 
   /**
-   * Creates a new project survey record
+   * Handle creation of surveys.
    *
-   * @param {ICreateSurveyRequest} surveyPostObject
    * @return {*}
    */
-  const createSurvey = async (surveyPostObject: ICreateSurveyRequest) => {
-    const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), surveyPostObject);
-
-    if (!response?.id) {
-      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a survey ID.' });
-      return;
-    }
-
-    return response;
-  };
-
-  /**
-   * Handle creation of surveys.
-   */
-  const handleSubmit = async () => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    await formikRef.current?.submitForm();
-
-    const isValid = await validateFormFieldsAndReportCompletion(
-      formikRef.current?.values,
-      formikRef.current?.validateForm
-    );
-
-    if (!isValid) {
-      showCreateErrorDialog({
-        dialogTitle: 'Create Survey Form Incomplete',
-        dialogText:
-          'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
-      });
-
-      return;
-    }
-
+  const handleSubmit = async (values: ICreateSurveyRequest) => {
     try {
-      const response = await createSurvey(formikRef.current?.values);
+      const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), values);
 
-      if (!response) {
+      if (!response?.id) {
+        showCreateErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a survey ID.'
+        });
         return;
       }
 
@@ -352,8 +319,10 @@ const CreateSurveyPage = () => {
               validationSchema={surveyYupSchemas}
               validateOnBlur={true}
               validateOnChange={false}
-              onSubmit={() => {}}>
+              onSubmit={handleSubmit}>
               <>
+                <ScrollToFormikError fieldOrder={Object.keys(surveyInitialValues)} />
+
                 <HorizontalSplitFormComponent
                   title="General Information"
                   summary=""
@@ -460,7 +429,7 @@ const CreateSurveyPage = () => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                onClick={handleSubmit}
+                onClick={() => formikRef.current?.submitForm()}
                 className={classes.actionButton}>
                 Save and Exit
               </Button>

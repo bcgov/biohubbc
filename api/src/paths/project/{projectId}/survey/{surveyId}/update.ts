@@ -163,14 +163,13 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   start_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the funding end_date'
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the survey start date'
                   },
                   end_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the funding end_date'
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the survey end date',
+                    nullable: true
                   },
                   funding_sources: {
                     type: 'array',
@@ -407,12 +406,13 @@ PUT.apiDoc = {
                 start_date: {
                   type: 'string',
                   format: 'date',
-                  description: 'ISO 8601 date string for the funding end_date'
+                  description: 'ISO 8601 date string for the survey start date'
                 },
                 end_date: {
                   type: 'string',
-                  format: 'date',
-                  description: 'ISO 8601 date string for the funding end_date'
+                  oneOf: [{ maxLength: 0 }, { format: 'date' }],
+                  nullable: true,
+                  description: 'ISO 8601 date string for the survey end date'
                 },
                 funding_sources: {
                   type: 'array',

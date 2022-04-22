@@ -1,3 +1,8 @@
+import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
+import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
+import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
+import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
+import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
 import { StringBoolean } from 'types/misc';
 
@@ -7,33 +12,12 @@ import { StringBoolean } from 'types/misc';
  * @export
  * @interface ICreateSurveyRequest
  */
-export interface ICreateSurveyRequest {
-  id: number;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  category_rationale: string;
-  data_sharing_agreement_required: string;
-  end_date: string;
-  first_nations_id: number;
-  foippa_requirements_accepted: boolean;
-  proprietary_data_category: string;
-  proprietor_name: string;
-  sedis_procedures_accepted: boolean;
-  focal_species: number[];
-  ancillary_species: number[];
-  start_date: string;
-  survey_area_name: string;
-  survey_data_proprietary: string;
-  survey_name: string;
-  intended_outcome_id: number;
-  additional_details: string;
-  field_method_id: number;
-  ecological_season_id: number;
-  vantage_id: number;
-  surveyed_all_areas: StringBoolean;
-  geometry: Feature[];
-  permit_number: string;
-}
+export interface ICreateSurveyRequest
+  extends IGeneralInformationForm,
+    IPurposeAndMethodologyForm,
+    IStudyAreaForm,
+    IProprietaryDataForm,
+    IAgreementsForm {}
 
 /**
  * Create survey response object.
