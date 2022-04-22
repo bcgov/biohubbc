@@ -87,45 +87,19 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyListSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyListSQL',
-    message: 'params',
-    projectId
-  });
-
-  if (!projectId) {
+export const getSurveySQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
     return null;
   }
 
   const sqlStatement = SQL`
     SELECT
-      s.survey_id as id,
-      s.name,
-      s.start_date,
-      s.end_date,
-      s.publish_timestamp,
-      CONCAT_WS(' - ', wtu.english_name, CONCAT_WS(' ', wtu.unit_name1, wtu.unit_name2, wtu.unit_name3)) as species
+      *
     FROM
-      wldtaxonomic_units as wtu
-    LEFT OUTER JOIN
-      study_species as ss
-    ON
-      ss.wldtaxonomic_units_id = wtu.wldtaxonomic_units_id
-    LEFT OUTER JOIN
-      survey as s
-    ON
-      s.survey_id = ss.survey_id
+      survey
     WHERE
-      s.project_id = ${projectId};
+      survey_id = ${surveyId};
   `;
-
-  defaultLog.debug({
-    label: 'getSurveyListSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

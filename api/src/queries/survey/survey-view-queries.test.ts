@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getSurveyListSQL } from '../../queries/survey/survey-view-queries';
+import { getSurveySQL } from '../../queries/survey/survey-view-queries';
 import {
   getAllAssignablePermitsForASurveySQL,
   getSurveyBasicDataForViewSQL,
@@ -40,13 +40,13 @@ describe('getSurveyIdsSQL', () => {
 
 describe('getSurveyListSQL', () => {
   it('returns a null response when null project id param provided', () => {
-    const response = getSurveyListSQL((null as unknown) as number);
+    const response = getSurveySQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns a non null response when valid params passed in', () => {
-    const response = getSurveyListSQL(1);
+    const response = getSurveySQL(1);
 
     expect(response).to.not.be.null;
   });
