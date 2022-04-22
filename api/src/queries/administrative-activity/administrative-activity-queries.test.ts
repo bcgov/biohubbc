@@ -3,33 +3,16 @@ import { describe } from 'mocha';
 import {
   countPendingAdministrativeActivitiesSQL,
   getAdministrativeActivitiesSQL,
+  getAdministrativeActivityById,
   postAdministrativeActivitySQL,
   putAdministrativeActivitySQL
 } from './administrative-activity-queries';
 
 describe('getAdministrativeActivitiesSQL', () => {
-  it('returns non null response when no administrativeActivityTypeName or administrativeActivityStatusTypes provided', () => {
+  it('returns null response when no administrativeActivityTypeName or administrativeActivityStatusTypes provided', () => {
     const response = getAdministrativeActivitiesSQL();
 
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when administrativeActivityStatusTypes is null and administrativeActivityStatusTypes is valid', () => {
-    const response = getAdministrativeActivitiesSQL((null as unknown) as string, ['status']);
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when administrativeActivityStatusTypes is empty string and administrativeActivityStatusTypes is valid', () => {
-    const response = getAdministrativeActivitiesSQL('', ['status']);
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns non null response when administrativeActivityStatusTypes is valid and administrativeActivityStatusTypes is null', () => {
-    const response = getAdministrativeActivitiesSQL('type', (null as unknown) as string[]);
-
-    expect(response).to.not.be.null;
+    expect(response).to.be.null;
   });
 
   it('returns non null response when administrativeActivityStatusTypes is valid and administrativeActivityStatusTypes is empty', () => {
@@ -62,6 +45,20 @@ describe('postAdministrativeActivitySQL', () => {
   });
 });
 
+describe('getAdministrativeActivityById', () => {
+  it('returns null response when no getAdministrativeActivityById provided', () => {
+    const response = getAdministrativeActivityById((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns non null response when valid parameters provided', () => {
+    const response = getAdministrativeActivityById(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
 describe('countPendingAdministrativeActivitiesSQL', () => {
   it('has a null userIdentifier', () => {
     const response = countPendingAdministrativeActivitiesSQL((null as unknown) as string);
@@ -81,7 +78,7 @@ describe('putAdministrativeActivitySQL', () => {
   });
 
   it('has a null administrativeActivityStatusTypeId', () => {
-    const response = putAdministrativeActivitySQL((null as unknown) as number, 1);
+    const response = putAdministrativeActivitySQL(1, (null as unknown) as number);
     expect(response).to.be.null;
   });
 

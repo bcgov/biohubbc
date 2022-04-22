@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/project/project-view-queries');
 
 /**
  * SQL query to get a single project.
@@ -10,13 +7,11 @@ const defaultLog = getLogger('queries/project/project-view-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       project.project_id as id,
       project.project_type_id as pt_id,
@@ -48,15 +43,6 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
     where
       project.project_id = ${projectId};
   `;
-
-  defaultLog.debug({
-    label: 'getProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -72,8 +58,6 @@ export const getProjectListSQL = (
   systemUserId: number | null,
   filterFields?: any
 ): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectListSQL', message: 'params', isUserAdmin, systemUserId, filterFields });
-
   if (!systemUserId) {
     return null;
   }
@@ -185,13 +169,6 @@ export const getProjectListSQL = (
       pt.name;
   `);
 
-  defaultLog.debug({
-    label: 'getProjectListSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -202,13 +179,11 @@ export const getProjectListSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getIUCNActionClassificationByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       ical1c.iucn_conservation_action_level_1_classification_id as classification,
       ical2s.iucn_conservation_action_level_2_subclassification_id as subClassification1,
@@ -234,15 +209,6 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
       ical2s.iucn_conservation_action_level_2_subclassification_id,
       ical3s.iucn_conservation_action_level_3_subclassification_id;
   `;
-
-  defaultLog.debug({
-    label: 'getIUCNActionClassificationByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -252,13 +218,11 @@ export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLS
  * @returns {SQLStatement} sql query object
  */
 export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getIndigenousPartnershipsByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       fn.first_nations_id as id,
       fn.name as first_nations_name
@@ -274,15 +238,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
       fn.first_nations_id,
       fn.name;
   `;
-
-  defaultLog.debug({
-    label: 'getIndigenousPartnershipsByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -292,13 +247,11 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
  * @returns {SQLStatement} sql query object
  */
 export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getStakeholderPartnershipsByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       name as partnership_name
     FROM
@@ -306,15 +259,6 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
     WHERE
       project_id = ${projectId};
   `;
-
-  defaultLog.debug({
-    label: 'getStakeholderPartnershipsByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -324,13 +268,11 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
  * @returns {SQLStatement} sql query object
  */
 export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getProjectPermitsSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       number,
       type
@@ -339,15 +281,6 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
     WHERE
       project_id = ${projectId}
   `;
-
-  defaultLog.debug({
-    label: 'getProjectPermitsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -357,13 +290,11 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
  * @returns {SQLStatement} sql query object
  */
 export const getLocationByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getLocationByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       p.location_description,
       p.geojson as geometry,
@@ -377,15 +308,6 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
       p.geojson,
       p.revision_count;
   `;
-
-  defaultLog.debug({
-    label: 'getLocationByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -396,28 +318,17 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
  */
 
 export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getActivitiesByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       activity_id
     from
       project_activity
     where project_id = ${projectId};
   `;
-
-  defaultLog.debug({
-    label: 'getActivitiesByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -427,13 +338,11 @@ export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | nul
  * @returns {SQLStatement} sql query object
  */
 export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getFundingSourceByProjectSQL', message: 'params', projectId });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       pfs.project_funding_source_id as id,
       fs.funding_source_id as agency_id,
@@ -469,13 +378,4 @@ export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | 
       fs.name,
       pfs.revision_count
   `;
-
-  defaultLog.debug({
-    label: 'getFundingSourceByProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
