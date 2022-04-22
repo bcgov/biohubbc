@@ -14,6 +14,7 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
   return SQL`
     SELECT
       project.project_id as id,
+      project.project_type_id as pt_id,
       project_type.name as type,
       project.name,
       project.location_description,
@@ -48,19 +49,17 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
 
   return SQL`
     SELECT
-      a.name
+      pa.activity_id
     from
       project_activity as pa
     LEFT OUTER JOIN
       project as p
     ON
       p.project_id = pa.project_id
-    LEFT OUTER JOIN
-      activity as a
-    ON
-      a.activity_id = pa.activity_id
-    where pa.project_id = ${projectId}
-    and p.publish_timestamp is not null;
+    WHERE
+      pa.project_id = ${projectId}
+    AND
+      p.publish_timestamp is not null;
   `;
 };
 
