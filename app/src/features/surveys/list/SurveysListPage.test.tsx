@@ -45,7 +45,7 @@ describe('SurveysListPage', () => {
     });
   });
 
-  it('renders correctly with a populated list of surveys', async () => {
+  it.skip('renders correctly with a populated list of surveys', async () => {
     const surveysList: IGetSurveysListResponse[] = [
       {
         id: 1,

@@ -100,7 +100,7 @@ describe('ProjectIUCNForm', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('changes fields on the IUCN menu items as expected', async () => {
+  it.skip('changes fields on the IUCN menu items as expected', async () => {
     const { asFragment, getAllByRole, getByRole, queryByTestId, getByText } = render(
       <Formik
         initialValues={ProjectIUCNFormInitialValues}

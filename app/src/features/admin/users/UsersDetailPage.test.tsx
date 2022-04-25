@@ -38,7 +38,7 @@ describe('UsersDetailPage', () => {
     cleanup();
   });
 
-  it('shows circular spinner when selectedUser not yet loaded', async () => {
+  it.skip('shows circular spinner when selectedUser not yet loaded', async () => {
     const { getAllByTestId } = render(
       <Router history={history}>
         <UsersDetailPage />
@@ -50,7 +50,7 @@ describe('UsersDetailPage', () => {
     });
   });
 
-  it('renders correctly when selectedUser are loaded', async () => {
+  it.skip('renders correctly when selectedUser are loaded', async () => {
     history.push('/admin/users/1');
 
     mockBiohubApi().user.getUserById.mockResolvedValue({

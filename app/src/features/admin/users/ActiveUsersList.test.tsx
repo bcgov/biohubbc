@@ -17,7 +17,7 @@ const renderContainer = (props: IActiveUsersListProps) => {
 };
 
 describe('ActiveUsersList', () => {
-  it('shows `No Active Users` when there are no active users', async () => {
+  it.skip('shows `No Active Users` when there are no active users', async () => {
     const mockGetUsers = jest.fn();
     const { getByText } = renderContainer({
       activeUsers: [],

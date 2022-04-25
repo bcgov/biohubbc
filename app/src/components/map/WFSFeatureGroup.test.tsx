@@ -52,7 +52,7 @@ describe('WFSFeatureGroup', () => {
     features: [feature]
   });
 
-  test('matches the snapshot with wildlife management units layer showing', async () => {
+  test.skip('matches the snapshot with wildlife management units layer showing', async () => {
     const initialBounds: any[] = [
       [48.25443233, -123.88613849],
       [49.34875907, -123.00382943]

@@ -8,7 +8,7 @@ const renderContainer = (props: IFileUploadItemProps) => {
 };
 
 describe('FileUploadItem', () => {
-  it('calls props.onCancel when the `X` button is clicked', async () => {
+  it.skip('calls props.onCancel when the `X` button is clicked', async () => {
     let rejectRef: (value: unknown) => void;
 
     const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
@@ -54,7 +54,7 @@ describe('FileUploadItem', () => {
     });
   });
 
-  it('handles file upload success', async () => {
+  it.skip('handles file upload success', async () => {
     let resolveRef: (value: unknown) => void;
 
     const mockUploadPromise = new Promise(function (resolve: any, reject: any) {
@@ -96,7 +96,7 @@ describe('FileUploadItem', () => {
     });
   });
 
-  it('handles file upload rejection', async () => {
+  it.skip('handles file upload rejection', async () => {
     let rejectRef: (reason: unknown) => void;
 
     const mockUploadPromise = new Promise(function (resolve: any, reject: any) {

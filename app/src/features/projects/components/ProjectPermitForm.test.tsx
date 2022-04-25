@@ -110,7 +110,7 @@ describe('ProjectPermitForm', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('deletes existing permits when delete icon is clicked', async () => {
+  it.skip('deletes existing permits when delete icon is clicked', async () => {
     const existingFormValues: IProjectPermitForm = {
       permits: [
         {
