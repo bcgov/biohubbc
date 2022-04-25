@@ -72,7 +72,7 @@ describe('PostReportAttachmentsMetaData', () => {
 
     const input = {
       title: 'Report 1',
-      year_published: '2000',
+      year_published: 2000,
       authors: [{ first_name: 'John', last_name: 'Smith' }],
       description: 'abstract of the report'
     };
@@ -84,7 +84,7 @@ describe('PostReportAttachmentsMetaData', () => {
     it('sets the report metadata', function () {
       expect(postReportAttachmentsData).to.eql({
         title: 'Report 1',
-        year_published: '2000',
+        year_published: 2000,
         authors: [{ first_name: 'John', last_name: 'Smith' }],
         description: 'abstract of the report'
       });
@@ -108,7 +108,7 @@ describe('PutReportAttachmentMetaData', () => {
   describe('All values provided', () => {
     const input = {
       title: 'Report 1',
-      year_published: '2000',
+      year_published: 2000,
       authors: [{ first_name: 'John', last_name: 'Smith' }],
       description: 'abstract of the report',
       revision_count: 1
