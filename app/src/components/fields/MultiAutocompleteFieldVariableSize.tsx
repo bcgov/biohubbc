@@ -169,6 +169,7 @@ const MultiAutocompleteFieldVariableSize: React.FC<IMultiAutocompleteField> = (p
       renderInput={(params) => (
         <TextField
           {...params}
+          name={props.id}
           required={props.required}
           label={props.label}
           variant="outlined"
