@@ -5,7 +5,6 @@ import GeneralInformationForm, {
 } from 'features/surveys/components/GeneralInformationForm';
 import { Formik } from 'formik';
 import React from 'react';
-import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 
 const handleSaveAndNext = jest.fn();
