@@ -220,8 +220,6 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
-    depends_on:
-      - api
 
   ## Run the database migrations and seeding
   db_setup:

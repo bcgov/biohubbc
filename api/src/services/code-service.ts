@@ -88,9 +88,7 @@ export class CodeService extends DBService {
       await this.connection.query(queries.codes.getAdministrativeActivityStatusTypeSQL().text),
       await this.connection.query(queries.codes.getFieldMethodsSQL().text),
       await this.connection.query(queries.codes.getEcologicalSeasonsSQL().text),
-
       await this.connection.query(queries.codes.getIntendedOutcomesSQL().text),
-
       await this.connection.query(queries.codes.getVantageCodesSQL().text)
     ]);
 

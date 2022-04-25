@@ -35,11 +35,11 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface IProprietaryDataForm {
+  survey_data_proprietary: string;
   proprietary_data_category: number;
   proprietor_name: string;
   first_nations_id: number;
   category_rationale: string;
-  survey_data_proprietary: string;
   data_sharing_agreement_required: string;
 }
 
