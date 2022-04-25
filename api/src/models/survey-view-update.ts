@@ -59,7 +59,7 @@ export class GetSurveyPurposeAndMethodologyData {
           field_method_id: item.field_method_id,
           ecological_season_id: item.ecological_season_id,
           revision_count: item.revision_count,
-          vantage_code_ids: [item.vantage_id],
+          vantage_code_ids: (item.vantage_id && [item.vantage_id]) || [],
           surveyed_all_areas: (item.surveyed_all_areas && 'true') || 'false'
         };
       } else {
