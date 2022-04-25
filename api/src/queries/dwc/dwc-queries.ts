@@ -382,6 +382,8 @@ export const getTaxonomicCoverageSQL = (surveyId: number, isFocal: boolean): SQL
   if (!isFocal) {
     focalPredicate = 'and not b.is_focal';
   }
+
+  // TODO replace call to wldtaxonomic_units with a call to the taxonomy service
   const sqlStatement: SQLStatement = SQL`
     select
       a.*
