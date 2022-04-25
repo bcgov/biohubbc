@@ -207,8 +207,9 @@ GET.apiDoc = {
                   'additional_details',
                   'intended_outcome_id',
                   'ecological_season_id',
-                  'revision_count',
-                  'vantage_code_ids'
+                  'vantage_code_ids',
+                  'surveyed_all_areas',
+                  'revision_count'
                 ],
                 properties: {
                   id: {
@@ -226,14 +227,18 @@ GET.apiDoc = {
                   ecological_season_id: {
                     type: 'number'
                   },
-                  revision_count: {
-                    type: 'number'
-                  },
                   vantage_code_ids: {
                     type: 'array',
                     items: {
                       type: 'number'
                     }
+                  },
+                  surveyed_all_areas: {
+                    type: 'string',
+                    enum: ['true', 'false']
+                  },
+                  revision_count: {
+                    type: 'number'
                   }
                 }
               },

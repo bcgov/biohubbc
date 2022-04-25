@@ -113,7 +113,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            focal species 1
+            abc
           </dd>
         </div>
         <div
@@ -127,7 +127,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            ancillary species 1
+            def
           </dd>
         </div>
       </div>

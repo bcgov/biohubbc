@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
-import { Formik } from 'formik';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
 } from 'features/surveys/components/GeneralInformationForm';
+import { Formik } from 'formik';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -34,11 +34,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            common_survey_methodologies={
-              codes?.common_survey_methodologies?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             permit_numbers={[
               { value: '123', label: '123 - Scientific' },
               { value: '456', label: '123 - Wildlife' }
@@ -71,11 +66,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            common_survey_methodologies={
-              codes?.common_survey_methodologies?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             permit_numbers={[
               { value: '123', label: '123 - Scientific' },
               { value: '456', label: '123 - Wildlife' }
@@ -126,11 +116,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            common_survey_methodologies={
-              codes?.common_survey_methodologies?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             permit_numbers={[
               { value: '123', label: '123 - Scientific' },
               { value: '456', label: '123 - Wildlife' }

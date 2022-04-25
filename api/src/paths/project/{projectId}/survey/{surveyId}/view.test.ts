@@ -280,8 +280,9 @@ describe('getSurveyForView', () => {
       additional_details: 'details',
       ecological_season_id: 1,
       intended_outcome_id: 8,
-      revision_count: 0,
-      vantage_id: 2
+      vantage_id: 2,
+      surveyed_all_areas: false,
+      revision_count: 0
     };
 
     const survey_funding_source_data = {
@@ -310,7 +311,7 @@ describe('getSurveyForView', () => {
       category_rationale: 'rationale',
       proprietor_name: 'name',
       disa_required: true,
-      survey_data_proprietary: true,
+      survey_data_proprietary: 'true',
       revision_count: 3
     };
 
@@ -410,8 +411,9 @@ describe('getSurveyForView', () => {
       ecological_season_id: survey_purpose_and_methodology.ecological_season_id,
       field_method_id: survey_purpose_and_methodology.field_method_id,
       intended_outcome_id: survey_purpose_and_methodology.intended_outcome_id,
-      revision_count: survey_purpose_and_methodology.revision_count,
-      vantage_code_ids: [survey_purpose_and_methodology.vantage_id]
+      vantage_code_ids: [survey_purpose_and_methodology.vantage_id],
+      surveyed_all_areas: 'false',
+      revision_count: survey_purpose_and_methodology.revision_count
     });
   });
 });

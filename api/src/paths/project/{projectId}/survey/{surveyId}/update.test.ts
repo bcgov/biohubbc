@@ -250,8 +250,9 @@ describe('getSurveyForUpdate', () => {
       additional_details: 'details',
       ecological_season_id: 1,
       intended_outcome_id: 8,
-      revision_count: 0,
-      vantage_id: 2
+      surveyed_all_areas: true,
+      vantage_id: 2,
+      revision_count: 0
     };
 
     const survey_proprietor = {
@@ -325,6 +326,7 @@ describe('getSurveyForUpdate', () => {
         additional_details: 'details',
         ecological_season_id: 1,
         vantage_code_ids: [2],
+        surveyed_all_areas: 'true',
         revision_count: 0
       },
       survey_proprietor: {

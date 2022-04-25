@@ -55,7 +55,8 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     additional_details: 'details',
     field_method_id: 1,
     ecological_season_id: 1,
-    vantage_code_ids: [1, 2]
+    vantage_code_ids: [1, 2],
+    surveyed_all_areas: 'true'
   },
   survey_proprietor: {
     id: 23,

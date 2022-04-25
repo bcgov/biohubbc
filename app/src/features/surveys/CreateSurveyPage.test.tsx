@@ -37,16 +37,6 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-const renderContainer = () => {
-  return render(
-    <DialogContextProvider>
-      <Router history={history}>
-        <CreateSurveyPage />
-      </Router>
-    </DialogContextProvider>
-  );
-};
-
 describe.skip('CreateSurveyPage', () => {
   beforeEach(() => {
     // clear mocks before each test
@@ -169,7 +159,8 @@ describe.skip('CreateSurveyPage', () => {
         expect(history.location.pathname).toEqual('/admin/projects/1/surveys');
       });
     });
-    it('does nothing if the user clicks `No` or away from the dialog', async () => {
+
+    it.skip('does nothing if the user clicks `No` or away from the dialog', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
       mockBiohubApi().taxonomy.getSpeciesById.mockResolvedValue([{ id: '1', label: 'species 1' }]);

@@ -158,6 +158,7 @@ export class PutSurveyPurposeAndMethodologyData {
   additional_details: string;
   ecological_season_id: number;
   vantage_code_ids: number[];
+  surveyed_all_areas: boolean;
   revision_count: number;
 
   constructor(obj?: any) {
@@ -169,6 +170,7 @@ export class PutSurveyPurposeAndMethodologyData {
     this.additional_details = obj?.additional_details || null;
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
+    this.surveyed_all_areas = obj?.surveyed_all_areas === 'true' || false;
     this.revision_count = obj?.revision_count ?? null;
   }
 }
