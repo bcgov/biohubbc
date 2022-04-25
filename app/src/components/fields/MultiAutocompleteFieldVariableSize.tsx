@@ -1,14 +1,14 @@
 import Checkbox from '@material-ui/core/Checkbox';
 import ListSubheader from '@material-ui/core/ListSubheader';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@material-ui/core/TextField';
 import CheckBox from '@material-ui/icons/CheckBox';
 import CheckBoxOutlineBlank from '@material-ui/icons/CheckBoxOutlineBlank';
 import Autocomplete from '@material-ui/lab/Autocomplete';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { useFormikContext } from 'formik';
+import get from 'lodash-es/get';
 import React from 'react';
 import { ListChildComponentProps, VariableSizeList } from 'react-window';
-import get from 'lodash-es/get';
 
 const LISTBOX_PADDING = 8; // px
 
