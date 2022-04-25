@@ -43,7 +43,7 @@ exports[`PublicGeneralInformation renders correctly 1`] = `
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            1
+            Project type
           </dd>
         </div>
         <div
@@ -71,7 +71,7 @@ exports[`PublicGeneralInformation renders correctly 1`] = `
           <dd
             class="MuiTypography-root MuiTypography-body1"
           >
-            1
+            Activity code
           </dd>
         </div>
       </div>
