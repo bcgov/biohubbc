@@ -14,8 +14,10 @@ const defaultLog = getLogger('models/survey-view');
 export class GetViewSurveyDetailsData {
   id: number;
   survey_name: string;
-  focal_species: (string | number)[];
-  ancillary_species: (string | number)[];
+  focal_species: number[];
+  focal_species_names: string[];
+  ancillary_species: number[];
+  ancillary_species_names: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -46,7 +48,9 @@ export class GetViewSurveyDetailsData {
     this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
     this.survey_name = surveyDetailsData?.name || '';
     this.focal_species = surveyDetailsData?.focal_species || [];
+    this.focal_species_names = surveyDetailsData?.focal_species_names || [];
     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
+    this.ancillary_species_names = surveyDetailsData?.ancillary_species_names || [];
     this.start_date = surveyDetailsData?.start_date || '';
     this.end_date = surveyDetailsData?.end_date || '';
     this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
@@ -131,5 +135,37 @@ export class GetSurveyFundingSources {
       });
 
     this.fundingSources = surveyFundingSourcesList;
+  }
+}
+
+export class GetFocalSpeciesData {
+  focal_species: number[];
+  focal_species_names: string[];
+
+  constructor(input?: any[]) {
+    this.focal_species = [];
+    this.focal_species_names = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        this.focal_species.push(Number(item.id));
+        this.focal_species_names.push(item.label);
+      });
+  }
+}
+
+export class GetAncillarySpeciesData {
+  ancillary_species: number[];
+  ancillary_species_names: string[];
+
+  constructor(input?: any[]) {
+    this.ancillary_species = [];
+    this.ancillary_species_names = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        this.ancillary_species.push(Number(item.id));
+        this.ancillary_species_names.push(item.label);
+      });
   }
 }

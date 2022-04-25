@@ -3,10 +3,13 @@ import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
+import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+import Icon from '@mdi/react';
 import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
@@ -14,54 +17,52 @@ import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompl
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
-import React, { useState } from 'react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { debounce } from 'lodash-es';
+import React, { useCallback, useState } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import IconButton from '@material-ui/core/IconButton';
 
 export interface IGeneralInformationForm {
   survey_name: string;
   start_date: string;
   end_date: string;
-  focal_species: number[];
-  ancillary_species: number[];
   biologist_first_name: string;
   biologist_last_name: string;
   permit_number: string;
   permit_type: string;
   funding_sources: number[];
+  focal_species: number[];
+  ancillary_species: number[];
 }
 
 export const GeneralInformationInitialValues: IGeneralInformationForm = {
   survey_name: '',
   start_date: '',
   end_date: '',
-  focal_species: [],
-  ancillary_species: [],
   biologist_first_name: '',
   biologist_last_name: '',
   permit_number: '',
   permit_type: '',
-  funding_sources: []
+  funding_sources: [],
+  focal_species: [],
+  ancillary_species: []
 };
 
 export const GeneralInformationYupSchema = (customYupRules?: any) => {
   return yup.object().shape({
     survey_name: yup.string().required('Required'),
-    focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
-    ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique'),
     biologist_first_name: yup.string().required('Required'),
     biologist_last_name: yup.string().required('Required'),
     start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
     end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateAfterStartDate('start_date'),
-    permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
+    permit_number: yup.string().max(100, 'Cannot exceed 100 characters'),
+    focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
+    ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
   });
 };
 
 export interface IGeneralInformationFormProps {
-  species: IMultiAutocompleteFieldOption[];
   permit_numbers: IAutocompleteFieldOption<string>[];
   funding_sources: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
@@ -76,6 +77,36 @@ export interface IGeneralInformationFormProps {
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
   const formikProps = useFormikContext<IGeneralInformationForm>();
   const [showAddPermitRow, setShowAddPermitRow] = useState<boolean>(false);
+
+  const biohubApi = useBiohubApi();
+
+  const convertOptions = (value: any): IMultiAutocompleteFieldOption[] =>
+    value.map((item: any) => {
+      return { value: parseInt(item.id), label: item.label };
+    });
+
+  const handleGetInitList = async (initialvalues: number[]) => {
+    const response = await biohubApi.taxonomy.getSpeciesFromIds(initialvalues);
+    return convertOptions(response.searchResponse);
+  };
+
+  const handleSearch = useCallback(
+    debounce(
+      async (
+        inputValue: string,
+        existingValues: (string | number)[],
+        callback: (searchedValues: IMultiAutocompleteFieldOption[]) => void
+      ) => {
+        const response = await biohubApi.taxonomy.searchSpecies(inputValue);
+        const newOptions = convertOptions(response.searchResponse).filter(
+          (item: any) => !existingValues.includes(item.value)
+        );
+        callback(newOptions);
+      },
+      500
+    ),
+    []
+  );
 
   const addNewPermitButton = () => {
     return (
@@ -130,16 +161,20 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           <MultiAutocompleteFieldVariableSize
             id="focal_species"
             label="Focal Species"
-            options={props.species}
             required={true}
+            type="api-search"
+            getInitList={handleGetInitList}
+            search={handleSearch}
           />
         </Grid>
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
             id="ancillary_species"
             label="Ancillary Species"
-            options={props.species}
             required={false}
+            type="api-search"
+            getInitList={handleGetInitList}
+            search={handleSearch}
           />
         </Grid>
       </Grid>

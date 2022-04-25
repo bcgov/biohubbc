@@ -34,11 +34,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            species={
-              codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             permit_numbers={[
               { value: '123', label: '123 - Scientific' },
               { value: '456', label: '123 - Wildlife' }
@@ -71,11 +66,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            species={
-              codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             permit_numbers={[
               { value: '123', label: '123 - Scientific' },
               { value: '456', label: '123 - Wildlife' }
@@ -126,11 +116,6 @@ describe('General Information Form', () => {
         }}>
         {() => (
           <GeneralInformationForm
-            species={
-              codes?.species?.map((item) => {
-                return { value: item.id, label: item.name };
-              }) || []
-            }
             permit_numbers={[
               { value: '123', label: '123 - Scientific' },
               { value: '456', label: '123 - Wildlife' }
