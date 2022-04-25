@@ -30,7 +30,7 @@ const renderContainer = (accessRequest: IGetAccessRequestsListResponse) => {
   );
 };
 
-describe.skip('ReviewAccessRequestForm', () => {
+describe('ReviewAccessRequestForm', () => {
   it('renders all fields from the request object', async () => {
     const { getByText } = renderContainer({
       id: 1,
