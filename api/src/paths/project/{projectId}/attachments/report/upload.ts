@@ -64,7 +64,7 @@ POST.apiDoc = {
                   type: 'string'
                 },
                 year_published: {
-                  type: 'string'
+                  type: 'number'
                 },
                 authors: {
                   type: 'array',

@@ -71,7 +71,8 @@ GET.apiDoc = {
                     },
                     securityToken: {
                       description: 'The security token of the attachment',
-                      type: 'string'
+                      type: 'string',
+                      nullable: true
                     },
                     size: {
                       type: 'number'

@@ -54,7 +54,7 @@ export class GetProjectData {
         moment(projectData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.publish_date = projectData?.publish_date || '';
+    this.publish_date = String(projectData?.publish_date || '');
     this.revision_count = projectData?.revision_count ?? null;
   }
 }
