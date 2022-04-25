@@ -77,7 +77,7 @@ describe('EditDialog', () => {
     expect(baseElement).toMatchSnapshot();
   });
 
-  it.skip('calls the onSave prop when `Save Changes` button is clicked', async () => {
+  it('calls the onSave prop when `Save Changes` button is clicked', async () => {
     const { findByText, getByLabelText } = renderContainer({ testFieldValue: 'initial value' });
 
     const textField = await getByLabelText('Test Field', { exact: false });

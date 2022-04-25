@@ -88,7 +88,7 @@ describe('StepperWizard', () => {
       cleanup();
     });
 
-    it.skip('renders correctly with 2 steps', async () => {
+    it('renders correctly with 2 steps', async () => {
       const { getAllByText, getByText } = renderContainer(
         0,
         [
