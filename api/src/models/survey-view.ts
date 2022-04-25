@@ -165,11 +165,11 @@ export class GetSurveyData {
     this.name = surveyData?.name || '';
     this.start_date = surveyData?.start_date || null;
     this.end_date = surveyData?.end_date || null;
-    (this.publish_status = surveyData?.publish_timestamp ? 'Published' : 'Unpublished'),
-      (this.completion_status =
-        (surveyData.end_date &&
-          moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
-          COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE);
+    this.publish_status = surveyData?.publish_timestamp ? 'Published' : 'Unpublished';
+    this.completion_status =
+      (surveyData.end_date &&
+        moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
+        COMPLETION_STATUS.COMPLETED) ||
+      COMPLETION_STATUS.ACTIVE;
   }
 }
