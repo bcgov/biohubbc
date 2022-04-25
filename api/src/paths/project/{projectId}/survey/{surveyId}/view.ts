@@ -354,7 +354,6 @@ export function getSurveyForView(): RequestHandler {
         survey_proprietor: getSurveyProprietorData
       };
 
-
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyForView', message: 'error', error });
