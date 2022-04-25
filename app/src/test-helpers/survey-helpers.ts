@@ -8,7 +8,7 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     focal_species: [1],
     focal_species_names: ['focal species 1'],
     ancillary_species: [2],
-    ancillary_species_names: ['ancillary species 1'],
+    ancillary_species_names: ['ancillary species 2'],
     start_date: '1998-10-10',
     end_date: '2021-02-26',
     biologist_first_name: 'first',

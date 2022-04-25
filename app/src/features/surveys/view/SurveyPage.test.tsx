@@ -1,15 +1,16 @@
-import { cleanup, render, waitFor } from '@testing-library/react';
-import { SYSTEM_IDENTITY_SOURCE } from 'components/layout/Header';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import SurveyPage from './SurveyPage';
 
@@ -25,8 +26,14 @@ const mockUseBiohubApi = {
     publishSurvey: jest.fn(),
     deleteSurvey: jest.fn()
   },
+  observation: {
+    getObservationSubmission: jest.fn()
+  },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
+  },
+  external: {
+    post: jest.fn().mockResolvedValue([])
   }
 };
 
@@ -54,14 +61,16 @@ const defaultAuthState = {
   }
 };
 
-describe.skip('SurveyPage', () => {
+describe('SurveyPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().survey.getSurveyForView.mockClear();
     mockBiohubApi().survey.publishSurvey.mockClear();
     mockBiohubApi().survey.deleteSurvey.mockClear();
+    mockBiohubApi().observation.getObservationSubmission.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
+    mockBiohubApi().external.post.mockClear();
   });
 
   afterEach(() => {
@@ -126,7 +135,7 @@ describe.skip('SurveyPage', () => {
 
     const { asFragment, findByText } = renderComponent(defaultAuthState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
 
     await waitFor(() => {
       expect(surveyHeaderText).toBeVisible();
@@ -149,7 +158,7 @@ describe.skip('SurveyPage', () => {
 
     const { asFragment, findByText } = renderComponent(defaultAuthState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
 
     await waitFor(() => {
       expect(surveyHeaderText).toBeVisible();
@@ -175,7 +184,7 @@ describe.skip('SurveyPage', () => {
 
     const { getByTestId, findByText, getByText } = renderComponent(authState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();
 
     fireEvent.click(getByTestId('delete-survey-button'));
@@ -219,7 +228,7 @@ describe.skip('SurveyPage', () => {
 
     const { getByTestId, findByText } = renderComponent(authState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();
 
     expect(getByTestId('delete-survey-button')).toBeEnabled();
@@ -242,14 +251,14 @@ describe.skip('SurveyPage', () => {
     const authState = {
       keycloakWrapper: {
         ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.PROJECT_CRETOR] as string[],
+        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
         hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
       }
     };
 
     const { getByTestId, findByText } = renderComponent(authState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();
 
     expect(getByTestId('delete-survey-button')).toBeDisabled();
@@ -272,7 +281,7 @@ describe.skip('SurveyPage', () => {
 
     const { queryByTestId, findByText } = renderComponent(authState);
 
-    const surveyHeaderText = await findByText('survey name', { selector: 'h1' });
+    const surveyHeaderText = await findByText('survey name', { selector: 'h1 span' });
     expect(surveyHeaderText).toBeVisible();
 
     expect(queryByTestId('delete-survey-button')).toBeNull();

@@ -1,5 +1,29 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
+exports[`SurveyPage renders a spinner if no codes is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
 exports[`SurveyPage renders a spinner if no project is loaded 1`] = `
 <DocumentFragment>
   <div
@@ -20,6 +44,2737 @@ exports[`SurveyPage renders a spinner if no project is loaded 1`] = `
         stroke-width="3.6"
       />
     </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SurveyPage renders a spinner if no survey is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+    role="progressbar"
+    style="width: 40px; height: 40px;"
+  >
+    <svg
+      class="MuiCircularProgress-svg"
+      viewBox="22 22 44 44"
+    >
+      <circle
+        class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+        cx="44"
+        cy="44"
+        fill="none"
+        r="20.2"
+        stroke-width="3.6"
+      />
+    </svg>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SurveyPage renders correctly with no end date 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation1"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-189"
+      >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-182 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Projects
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-182 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Test Project Name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2"
+              >
+                survey name
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-190"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-191"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-192"
+          >
+            <h1
+              class="MuiTypography-root makeStyles-spacingRight-186 MuiTypography-h1"
+            >
+              Survey - 
+              <span
+                class="makeStyles-surveyTitle-188"
+              >
+                survey name
+              </span>
+            </h1>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-193"
+          >
+            <div
+              class="MuiChip-root makeStyles-chip-183 makeStyles-chipActive-184 MuiChip-sizeSmall"
+            >
+              <span
+                class="MuiChip-label MuiChip-labelSmall"
+              >
+                Active
+              </span>
+            </div>
+              
+            <span
+              class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
+            >
+              <span>
+                Timeline:
+              </span>
+               Oct 10, 1998
+            </span>
+          </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-194"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-187 MuiButton-outlinedPrimary"
+            data-testid="publish-survey-button"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Publish Survey
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+          <button
+            class="MuiButtonBase-root MuiIconButton-root"
+            data-testid="delete-survey-button"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-195"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12 MuiGrid-grid-lg-8"
+        >
+          <div
+            class="MuiPaper-root MuiBox-root MuiBox-root-196 MuiPaper-elevation1 MuiPaper-rounded"
+          >
+            <h2
+              class="MuiTypography-root MuiTypography-h2"
+            >
+              Survey Details
+            </h2>
+            <section
+              class="MuiBox-root MuiBox-root-197"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-198"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    General Information
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-199"
+                  >
+                    <button
+                      aria-label="Edit General Information"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="edit-general-info"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit General Information"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <dl>
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Survey Name
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        survey name
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Survey Timeline
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        <span>
+                          Start Date:
+                        </span>
+                         Oct 10, 1998
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Survey Lead
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        first last
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Focal Species
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        focal species 1
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Anciliary Species
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        ancillary species 2
+                      </dd>
+                    </div>
+                  </div>
+                </dl>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-200"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Permits
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-201"
+                  >
+                    <button
+                      aria-label="Edit"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="MuiTableContainer-root"
+                >
+                  <table
+                    class="MuiTable-root"
+                  >
+                    <thead
+                      class="MuiTableHead-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root MuiTableRow-head"
+                      >
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Number
+                        </th>
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Type
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="MuiTableBody-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root"
+                      >
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          123
+                        </td>
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          Scientific
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-202"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Funding Sources
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-203"
+                  >
+                    <button
+                      aria-label="Edit"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="MuiTableContainer-root"
+                >
+                  <table
+                    class="MuiTable-root"
+                  >
+                    <thead
+                      class="MuiTableHead-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root MuiTableRow-head"
+                      >
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Agency
+                        </th>
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Amount
+                        </th>
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Dates
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="MuiTableBody-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root"
+                      >
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          Funding Agency Blah
+                        </td>
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          $100
+                        </td>
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          Apr 9, 2000 - May 10, 2000
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+            <section
+              class="MuiBox-root MuiBox-root-204"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-205"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Purpose and Methodology Data
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-206"
+                  >
+                    <button
+                      aria-label="Edit Survey Purpose and Methodology"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit Survey Purpose and Methodology"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <dl>
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Intended Outcome
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Additional Details
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        details
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Field Method
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Ecological Season
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Vantage Code
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Surveyed all areas?
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Yes - all areas were surveyed
+                      </dd>
+                    </div>
+                  </div>
+                </dl>
+              </div>
+            </section>
+            <section
+              class="MuiBox-root MuiBox-root-207"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-208"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Proprietary Data
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-209"
+                  >
+                    <button
+                      aria-label="Edit Survey Proprietor"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit Survey Proprietor"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <dl>
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Proprietor Name
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        prop name
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Data Category
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        proprietor type
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        DISA Required
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Yes
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Category Rationale
+                      </dt>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                        style="word-break: break-all;"
+                      >
+                        rationale
+                      </p>
+                    </div>
+                  </div>
+                </dl>
+              </div>
+            </section>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-210"
+          >
+            <div
+              class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+            >
+              <div
+                class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+                style="justify-content: space-between;"
+              >
+                <h2
+                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                >
+                  Observations
+                </h2>
+                <div
+                  class="MuiBox-root MuiBox-root-237"
+                >
+                  <button
+                    aria-label="Import"
+                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+                    data-testid="h2-button-toolbar-Import"
+                    id="h2-button-toolbar-Import"
+                    tabindex="0"
+                    title="Import"
+                    type="button"
+                  >
+                    <span
+                      class="MuiButton-label"
+                    >
+                      <span
+                        class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                      >
+                        <svg
+                          role="presentation"
+                          style="width: 1.5rem; height: 1.5rem;"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M14,12L10,8V11H2V13H10V16M20,18V6C20,4.89 19.1,4 18,4H6A2,2 0 0,0 4,6V9H6V6H18V18H6V15H4V18A2,2 0 0,0 6,20H18A2,2 0 0,0 20,18Z"
+                            style="fill: currentColor;"
+                          />
+                        </svg>
+                      </span>
+                      <strong>
+                        Import
+                      </strong>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-238"
+              >
+                <hr
+                  class="MuiDivider-root MuiBox-root MuiBox-root-239"
+                />
+                <div
+                  class="MuiBox-root MuiBox-root-240"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body2"
+                    data-testid="observations-nodata"
+                  >
+                    No Observation Data.  
+                    <a
+                      class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-211 MuiTypography-colorPrimary"
+                    >
+                      Click Here to Import
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-214"
+          >
+            <div
+              class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+              role="progressbar"
+              style="width: 40px; height: 40px;"
+            >
+              <svg
+                class="MuiCircularProgress-svg"
+                viewBox="22 22 44 44"
+              >
+                <circle
+                  class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+                  cx="44"
+                  cy="44"
+                  fill="none"
+                  r="20.2"
+                  stroke-width="3.6"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-219"
+          >
+            <div
+              class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+            >
+              <div
+                class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+                style="justify-content: space-between;"
+              >
+                <h2
+                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                >
+                  Documents
+                </h2>
+                <div
+                  class="MuiBox-root MuiBox-root-222"
+                >
+                  <button
+                    aria-controls="basic-menu"
+                    aria-haspopup="true"
+                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+                    data-testid="custom-menu-button-Upload"
+                    id="custom-menu-button-Upload"
+                    tabindex="0"
+                    title="Upload Document"
+                    type="button"
+                  >
+                    <span
+                      class="MuiButton-label"
+                    >
+                      <span
+                        class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                      >
+                        <svg
+                          role="presentation"
+                          style="width: 1.5rem; height: 1.5rem;"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z"
+                            style="fill: currentColor;"
+                          />
+                        </svg>
+                      </span>
+                      Upload
+                      <span
+                        class="MuiButton-endIcon MuiButton-iconSizeMedium"
+                      >
+                        <svg
+                          role="presentation"
+                          style="width: 1.5rem; height: 1.5rem;"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7,10L12,15L17,10H7Z"
+                            style="fill: currentColor;"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-223"
+              >
+                <div
+                  class="MuiBox-root MuiBox-root-228"
+                >
+                  <div
+                    class="MuiTableContainer-root"
+                  >
+                    <table
+                      aria-label="attachments-list-table"
+                      class="MuiTable-root makeStyles-attachmentsTable-224"
+                    >
+                      <thead
+                        class="MuiTableHead-root"
+                      >
+                        <tr
+                          class="MuiTableRow-root MuiTableRow-head"
+                        >
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            Name
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            Type
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            File Size
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            Last Modified
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                            width="150px"
+                          >
+                            Security
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                            width="50px"
+                          />
+                        </tr>
+                      </thead>
+                      <tbody
+                        class="MuiTableBody-root"
+                      >
+                        <tr
+                          class="MuiTableRow-root"
+                        >
+                          <td
+                            class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter"
+                            colspan="6"
+                          >
+                            No Attachments
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12 MuiGrid-grid-lg-4"
+        >
+          <div
+            class="MuiPaper-root MuiBox-root MuiBox-root-229 MuiPaper-elevation1 MuiPaper-rounded"
+          >
+            <div
+              class="MuiToolbar-root MuiToolbar-regular"
+              style="justify-content: space-between;"
+            >
+              <h2
+                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              >
+                Study Area
+              </h2>
+              <div
+                class="MuiBox-root MuiBox-root-230"
+              >
+                <button
+                  aria-label="Edit Study Area"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+                  data-testid="h2-button-toolbar-Edit"
+                  id="h2-button-toolbar-Edit"
+                  tabindex="0"
+                  title="Edit Study Area"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    <span
+                      class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.3125rem; height: 1.3125rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <strong>
+                      Edit
+                    </strong>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-231"
+            >
+              <div
+                class="leaflet-container leaflet-grab leaflet-touch-drag"
+                id="survey_study_area_map"
+                style="height: 100%; position: relative;"
+                tabindex="0"
+              >
+                <div
+                  class="leaflet-pane leaflet-map-pane"
+                  style="left: 0px; top: 0px;"
+                >
+                  <div
+                    class="leaflet-pane leaflet-tile-pane"
+                  >
+                    <div
+                      class="leaflet-layer "
+                      style="z-index: 1;"
+                    >
+                      <div
+                        class="leaflet-tile-container leaflet-zoom-animated"
+                        style="z-index: 18; left: 0px; top: 0px;"
+                      >
+                        <img
+                          alt=""
+                          class="leaflet-tile"
+                          role="presentation"
+                          src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
+                          style="width: 256px; height: 256px; left: -38px; top: -79px;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="leaflet-pane leaflet-shadow-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-overlay-pane"
+                  >
+                    <svg
+                      height="0"
+                      pointer-events="none"
+                      style="left: 0px; top: 0px;"
+                      viewBox="0 0 0 0"
+                      width="0"
+                    >
+                      <g>
+                        <path
+                          class="leaflet-interactive"
+                          d="M-1 2L0 -2z"
+                          fill="#3388ff"
+                          fill-opacity="0.2"
+                          fill-rule="evenodd"
+                          stroke="#3388ff"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-opacity="1"
+                          stroke-width="3"
+                        />
+                      </g>
+                    </svg>
+                  </div>
+                  <div
+                    class="leaflet-pane leaflet-marker-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-tooltip-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-popup-pane"
+                  />
+                </div>
+                <div
+                  class="leaflet-control-container"
+                >
+                  <div
+                    class="leaflet-top leaflet-left"
+                  >
+                    <div
+                      class="leaflet-control-zoom leaflet-bar leaflet-control"
+                    >
+                      <a
+                        aria-label="Zoom in"
+                        class="leaflet-control-zoom-in"
+                        href="#"
+                        role="button"
+                        title="Zoom in"
+                      >
+                        +
+                      </a>
+                      <a
+                        aria-label="Zoom out"
+                        class="leaflet-control-zoom-out leaflet-disabled"
+                        href="#"
+                        role="button"
+                        title="Zoom out"
+                      >
+                        −
+                      </a>
+                    </div>
+                    <div
+                      class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                    >
+                      <a
+                        class="leaflet-control-fullscreen-button leaflet-bar-part"
+                        href="#"
+                        title="View Fullscreen"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="leaflet-top leaflet-right"
+                  >
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                  </div>
+                  <div
+                    class="leaflet-bottom leaflet-left"
+                  />
+                  <div
+                    class="leaflet-bottom leaflet-right"
+                  >
+                    <div
+                      aria-haspopup="true"
+                      class="leaflet-control-layers leaflet-control"
+                    >
+                      <a
+                        class="leaflet-control-layers-toggle"
+                        href="#"
+                        title="Layers"
+                      />
+                      <section
+                        class="leaflet-control-layers-list"
+                      >
+                        <div
+                          class="leaflet-control-layers-base"
+                        >
+                          <label>
+                            <div>
+                              <input
+                                checked="checked"
+                                class="leaflet-control-layers-selector"
+                                name="leaflet-base-layers_124"
+                                type="radio"
+                              />
+                              <span>
+                                 BC Government
+                              </span>
+                            </div>
+                          </label>
+                          <label>
+                            <div>
+                              <input
+                                class="leaflet-control-layers-selector"
+                                name="leaflet-base-layers_124"
+                                type="radio"
+                              />
+                              <span>
+                                 Esri Imagery
+                              </span>
+                            </div>
+                          </label>
+                        </div>
+                        <div
+                          class="leaflet-control-layers-separator"
+                          style="display: none;"
+                        />
+                        <div
+                          class="leaflet-control-layers-overlays"
+                        />
+                      </section>
+                    </div>
+                    <div
+                      class="leaflet-control-attribution leaflet-control"
+                    >
+                      <a
+                        href="https://leafletjs.com"
+                        title="A JS library for interactive maps"
+                      >
+                        Leaflet
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-232"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+              >
+                Study Area Name
+              </p>
+              <p
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                study area
+              </p>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-233"
+            />
+            <div
+              class="MuiBox-root MuiBox-root-234"
+            />
+            <div
+              class="MuiBox-root MuiBox-root-235"
+            />
+            <div
+              class="MuiBox-root MuiBox-root-236"
+            >
+              <button
+                aria-label="Show Expanded Location"
+                class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                tabindex="0"
+                title="Expand Location"
+                type="button"
+              >
+                <span
+                  class="MuiButton-label"
+                >
+                  Show More
+                  <span
+                    class="MuiButton-endIcon MuiButton-iconSizeMedium"
+                  >
+                    <svg
+                      role="presentation"
+                      style="width: 1.3125rem; height: 1.3125rem;"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+                        style="fill: currentColor;"
+                      />
+                    </svg>
+                  </span>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;
+
+exports[`SurveyPage renders survey page when survey is loaded 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiPaper-root MuiPaper-elevation1"
+  >
+    <div
+      class="MuiContainer-root MuiContainer-maxWidthXl"
+    >
+      <div
+        class="MuiBox-root MuiBox-root-129"
+      >
+        <nav
+          class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        >
+          <ol
+            class="MuiBreadcrumbs-ol"
+          >
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-122 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Projects
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <a
+                aria-current="page"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-122 MuiTypography-colorPrimary"
+              >
+                <p
+                  class="MuiTypography-root MuiTypography-body2"
+                >
+                  Test Project Name
+                </p>
+              </a>
+            </li>
+            <li
+              aria-hidden="true"
+              class="MuiBreadcrumbs-separator"
+            >
+              /
+            </li>
+            <li
+              class="MuiBreadcrumbs-li"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2"
+              >
+                survey name
+              </p>
+            </li>
+          </ol>
+        </nav>
+      </div>
+      <div
+        class="MuiBox-root MuiBox-root-130"
+      >
+        <div
+          class="MuiBox-root MuiBox-root-131"
+        >
+          <div
+            class="MuiBox-root MuiBox-root-132"
+          >
+            <h1
+              class="MuiTypography-root makeStyles-spacingRight-126 MuiTypography-h1"
+            >
+              Survey - 
+              <span
+                class="makeStyles-surveyTitle-128"
+              >
+                survey name
+              </span>
+            </h1>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-133"
+          >
+            <div
+              class="MuiChip-root makeStyles-chip-123 makeStyles-chipActive-124 MuiChip-sizeSmall"
+            >
+              <span
+                class="MuiChip-label MuiChip-labelSmall"
+              >
+                Active
+              </span>
+            </div>
+              
+            <span
+              class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
+            >
+              <span>
+                Timeline:
+              </span>
+               Oct 10, 1998 - Feb 26, 2021
+            </span>
+          </div>
+        </div>
+        <div
+          class="MuiBox-root MuiBox-root-134"
+        >
+          <button
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-127 MuiButton-outlinedPrimary"
+            data-testid="publish-survey-button"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiButton-label"
+            >
+              Publish Survey
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+          <button
+            class="MuiButtonBase-root MuiIconButton-root"
+            data-testid="delete-survey-button"
+            tabindex="0"
+            type="button"
+          >
+            <span
+              class="MuiIconButton-label"
+            >
+              <svg
+                role="presentation"
+                style="width: 1.5rem; height: 1.5rem;"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                  style="fill: currentColor;"
+                />
+              </svg>
+            </span>
+            <span
+              class="MuiTouchRipple-root"
+            />
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthXl"
+  >
+    <div
+      class="MuiBox-root MuiBox-root-135"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      >
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12 MuiGrid-grid-lg-8"
+        >
+          <div
+            class="MuiPaper-root MuiBox-root MuiBox-root-136 MuiPaper-elevation1 MuiPaper-rounded"
+          >
+            <h2
+              class="MuiTypography-root MuiTypography-h2"
+            >
+              Survey Details
+            </h2>
+            <section
+              class="MuiBox-root MuiBox-root-137"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-138"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    General Information
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-139"
+                  >
+                    <button
+                      aria-label="Edit General Information"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="edit-general-info"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit General Information"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <dl>
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Survey Name
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        survey name
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Survey Timeline
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Oct 10, 1998 - Feb 26, 2021
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Survey Lead
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        first last
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Focal Species
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        focal species 1
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Anciliary Species
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        ancillary species 2
+                      </dd>
+                    </div>
+                  </div>
+                </dl>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-140"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Permits
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-141"
+                  >
+                    <button
+                      aria-label="Edit"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="MuiTableContainer-root"
+                >
+                  <table
+                    class="MuiTable-root"
+                  >
+                    <thead
+                      class="MuiTableHead-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root MuiTableRow-head"
+                      >
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Number
+                        </th>
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Type
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="MuiTableBody-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root"
+                      >
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          123
+                        </td>
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          Scientific
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-142"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Funding Sources
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-143"
+                  >
+                    <button
+                      aria-label="Edit"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <div
+                  class="MuiTableContainer-root"
+                >
+                  <table
+                    class="MuiTable-root"
+                  >
+                    <thead
+                      class="MuiTableHead-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root MuiTableRow-head"
+                      >
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Agency
+                        </th>
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Amount
+                        </th>
+                        <th
+                          class="MuiTableCell-root MuiTableCell-head"
+                          scope="col"
+                        >
+                          Dates
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody
+                      class="MuiTableBody-root"
+                    >
+                      <tr
+                        class="MuiTableRow-root"
+                      >
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          Funding Agency Blah
+                        </td>
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          $100
+                        </td>
+                        <td
+                          class="MuiTableCell-root MuiTableCell-body"
+                        >
+                          Apr 9, 2000 - May 10, 2000
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </section>
+            <section
+              class="MuiBox-root MuiBox-root-144"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-145"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Purpose and Methodology Data
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-146"
+                  >
+                    <button
+                      aria-label="Edit Survey Purpose and Methodology"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit Survey Purpose and Methodology"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <dl>
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Intended Outcome
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Additional Details
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        details
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Field Method
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Ecological Season
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Vantage Code
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      />
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Surveyed all areas?
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Yes - all areas were surveyed
+                      </dd>
+                    </div>
+                  </div>
+                </dl>
+              </div>
+            </section>
+            <section
+              class="MuiBox-root MuiBox-root-147"
+            >
+              <div
+                class="MuiBox-root MuiBox-root-148"
+              >
+                <div
+                  class="MuiToolbar-root MuiToolbar-regular"
+                  style="justify-content: space-between;"
+                >
+                  <h3
+                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                  >
+                    Proprietary Data
+                  </h3>
+                  <div
+                    class="MuiBox-root MuiBox-root-149"
+                  >
+                    <button
+                      aria-label="Edit Survey Proprietor"
+                      class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                      data-testid="h3-button-toolbar-Edit"
+                      id="h3-button-toolbar-Edit"
+                      tabindex="0"
+                      title="Edit Survey Proprietor"
+                      type="button"
+                    >
+                      <span
+                        class="MuiButton-label"
+                      >
+                        <span
+                          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                        >
+                          <svg
+                            role="presentation"
+                            style="width: 1.3125rem; height: 1.3125rem;"
+                            viewBox="0 0 24 24"
+                          >
+                            <path
+                              d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                              style="fill: currentColor;"
+                            />
+                          </svg>
+                        </span>
+                        <strong>
+                          Edit
+                        </strong>
+                      </span>
+                      <span
+                        class="MuiTouchRipple-root"
+                      />
+                    </button>
+                  </div>
+                </div>
+                <hr
+                  class="MuiDivider-root"
+                />
+                <dl>
+                  <div
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+                  >
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Proprietor Name
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        prop name
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Data Category
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        proprietor type
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        DISA Required
+                      </dt>
+                      <dd
+                        class="MuiTypography-root MuiTypography-body1"
+                      >
+                        Yes
+                      </dd>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item"
+                    >
+                      <dt
+                        class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+                      >
+                        Category Rationale
+                      </dt>
+                      <p
+                        class="MuiTypography-root MuiTypography-body1"
+                        style="word-break: break-all;"
+                      >
+                        rationale
+                      </p>
+                    </div>
+                  </div>
+                </dl>
+              </div>
+            </section>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-150"
+          >
+            <div
+              class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+            >
+              <div
+                class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+                style="justify-content: space-between;"
+              >
+                <h2
+                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                >
+                  Observations
+                </h2>
+                <div
+                  class="MuiBox-root MuiBox-root-177"
+                >
+                  <button
+                    aria-label="Import"
+                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+                    data-testid="h2-button-toolbar-Import"
+                    id="h2-button-toolbar-Import"
+                    tabindex="0"
+                    title="Import"
+                    type="button"
+                  >
+                    <span
+                      class="MuiButton-label"
+                    >
+                      <span
+                        class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                      >
+                        <svg
+                          role="presentation"
+                          style="width: 1.5rem; height: 1.5rem;"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M14,12L10,8V11H2V13H10V16M20,18V6C20,4.89 19.1,4 18,4H6A2,2 0 0,0 4,6V9H6V6H18V18H6V15H4V18A2,2 0 0,0 6,20H18A2,2 0 0,0 20,18Z"
+                            style="fill: currentColor;"
+                          />
+                        </svg>
+                      </span>
+                      <strong>
+                        Import
+                      </strong>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-178"
+              >
+                <hr
+                  class="MuiDivider-root MuiBox-root MuiBox-root-179"
+                />
+                <div
+                  class="MuiBox-root MuiBox-root-180"
+                >
+                  <p
+                    class="MuiTypography-root MuiTypography-body2"
+                    data-testid="observations-nodata"
+                  >
+                    No Observation Data.  
+                    <a
+                      class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-browseLink-151 MuiTypography-colorPrimary"
+                    >
+                      Click Here to Import
+                    </a>
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-154"
+          >
+            <div
+              class="MuiCircularProgress-root pageProgress MuiCircularProgress-colorPrimary MuiCircularProgress-indeterminate"
+              role="progressbar"
+              style="width: 40px; height: 40px;"
+            >
+              <svg
+                class="MuiCircularProgress-svg"
+                viewBox="22 22 44 44"
+              >
+                <circle
+                  class="MuiCircularProgress-circle MuiCircularProgress-circleIndeterminate"
+                  cx="44"
+                  cy="44"
+                  fill="none"
+                  r="20.2"
+                  stroke-width="3.6"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="MuiBox-root MuiBox-root-159"
+          >
+            <div
+              class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
+            >
+              <div
+                class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
+                style="justify-content: space-between;"
+              >
+                <h2
+                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                >
+                  Documents
+                </h2>
+                <div
+                  class="MuiBox-root MuiBox-root-162"
+                >
+                  <button
+                    aria-controls="basic-menu"
+                    aria-haspopup="true"
+                    class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+                    data-testid="custom-menu-button-Upload"
+                    id="custom-menu-button-Upload"
+                    tabindex="0"
+                    title="Upload Document"
+                    type="button"
+                  >
+                    <span
+                      class="MuiButton-label"
+                    >
+                      <span
+                        class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                      >
+                        <svg
+                          role="presentation"
+                          style="width: 1.5rem; height: 1.5rem;"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M2 12H4V17H20V12H22V17C22 18.11 21.11 19 20 19H4C2.9 19 2 18.11 2 17V12M12 2L6.46 7.46L7.88 8.88L11 5.75V15H13V5.75L16.13 8.88L17.55 7.45L12 2Z"
+                            style="fill: currentColor;"
+                          />
+                        </svg>
+                      </span>
+                      Upload
+                      <span
+                        class="MuiButton-endIcon MuiButton-iconSizeMedium"
+                      >
+                        <svg
+                          role="presentation"
+                          style="width: 1.5rem; height: 1.5rem;"
+                          viewBox="0 0 24 24"
+                        >
+                          <path
+                            d="M7,10L12,15L17,10H7Z"
+                            style="fill: currentColor;"
+                          />
+                        </svg>
+                      </span>
+                    </span>
+                    <span
+                      class="MuiTouchRipple-root"
+                    />
+                  </button>
+                </div>
+              </div>
+              <div
+                class="MuiBox-root MuiBox-root-163"
+              >
+                <div
+                  class="MuiBox-root MuiBox-root-168"
+                >
+                  <div
+                    class="MuiTableContainer-root"
+                  >
+                    <table
+                      aria-label="attachments-list-table"
+                      class="MuiTable-root makeStyles-attachmentsTable-164"
+                    >
+                      <thead
+                        class="MuiTableHead-root"
+                      >
+                        <tr
+                          class="MuiTableRow-root MuiTableRow-head"
+                        >
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            Name
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            Type
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            File Size
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                          >
+                            Last Modified
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                            width="150px"
+                          >
+                            Security
+                          </th>
+                          <th
+                            class="MuiTableCell-root MuiTableCell-head"
+                            scope="col"
+                            width="50px"
+                          />
+                        </tr>
+                      </thead>
+                      <tbody
+                        class="MuiTableBody-root"
+                      >
+                        <tr
+                          class="MuiTableRow-root"
+                        >
+                          <td
+                            class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter"
+                            colspan="6"
+                          >
+                            No Attachments
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-12 MuiGrid-grid-lg-4"
+        >
+          <div
+            class="MuiPaper-root MuiBox-root MuiBox-root-169 MuiPaper-elevation1 MuiPaper-rounded"
+          >
+            <div
+              class="MuiToolbar-root MuiToolbar-regular"
+              style="justify-content: space-between;"
+            >
+              <h2
+                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              >
+                Study Area
+              </h2>
+              <div
+                class="MuiBox-root MuiBox-root-170"
+              >
+                <button
+                  aria-label="Edit Study Area"
+                  class="MuiButtonBase-root MuiButton-root MuiButton-text MuiButton-textPrimary"
+                  data-testid="h2-button-toolbar-Edit"
+                  id="h2-button-toolbar-Edit"
+                  tabindex="0"
+                  title="Edit Study Area"
+                  type="button"
+                >
+                  <span
+                    class="MuiButton-label"
+                  >
+                    <span
+                      class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                    >
+                      <svg
+                        role="presentation"
+                        style="width: 1.3125rem; height: 1.3125rem;"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                          style="fill: currentColor;"
+                        />
+                      </svg>
+                    </span>
+                    <strong>
+                      Edit
+                    </strong>
+                  </span>
+                  <span
+                    class="MuiTouchRipple-root"
+                  />
+                </button>
+              </div>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-171"
+            >
+              <div
+                class="leaflet-container leaflet-grab leaflet-touch-drag"
+                id="survey_study_area_map"
+                style="height: 100%; position: relative;"
+                tabindex="0"
+              >
+                <div
+                  class="leaflet-pane leaflet-map-pane"
+                  style="left: 0px; top: 0px;"
+                >
+                  <div
+                    class="leaflet-pane leaflet-tile-pane"
+                  >
+                    <div
+                      class="leaflet-layer "
+                      style="z-index: 1;"
+                    >
+                      <div
+                        class="leaflet-tile-container leaflet-zoom-animated"
+                        style="z-index: 18; left: 0px; top: 0px;"
+                      >
+                        <img
+                          alt=""
+                          class="leaflet-tile"
+                          role="presentation"
+                          src="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/0/0/0"
+                          style="width: 256px; height: 256px; left: -38px; top: -79px;"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="leaflet-pane leaflet-shadow-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-overlay-pane"
+                  >
+                    <svg
+                      height="0"
+                      pointer-events="none"
+                      style="left: 0px; top: 0px;"
+                      viewBox="0 0 0 0"
+                      width="0"
+                    >
+                      <g>
+                        <path
+                          class="leaflet-interactive"
+                          d="M-1 2L0 -2z"
+                          fill="#3388ff"
+                          fill-opacity="0.2"
+                          fill-rule="evenodd"
+                          stroke="#3388ff"
+                          stroke-linecap="round"
+                          stroke-linejoin="round"
+                          stroke-opacity="1"
+                          stroke-width="3"
+                        />
+                      </g>
+                    </svg>
+                  </div>
+                  <div
+                    class="leaflet-pane leaflet-marker-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-tooltip-pane"
+                  />
+                  <div
+                    class="leaflet-pane leaflet-popup-pane"
+                  />
+                </div>
+                <div
+                  class="leaflet-control-container"
+                >
+                  <div
+                    class="leaflet-top leaflet-left"
+                  >
+                    <div
+                      class="leaflet-control-zoom leaflet-bar leaflet-control"
+                    >
+                      <a
+                        aria-label="Zoom in"
+                        class="leaflet-control-zoom-in"
+                        href="#"
+                        role="button"
+                        title="Zoom in"
+                      >
+                        +
+                      </a>
+                      <a
+                        aria-label="Zoom out"
+                        class="leaflet-control-zoom-out leaflet-disabled"
+                        href="#"
+                        role="button"
+                        title="Zoom out"
+                      >
+                        −
+                      </a>
+                    </div>
+                    <div
+                      class="leaflet-control-fullscreen leaflet-bar leaflet-control"
+                    >
+                      <a
+                        class="leaflet-control-fullscreen-button leaflet-bar-part"
+                        href="#"
+                        title="View Fullscreen"
+                      />
+                    </div>
+                  </div>
+                  <div
+                    class="leaflet-top leaflet-right"
+                  >
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
+                  </div>
+                  <div
+                    class="leaflet-bottom leaflet-left"
+                  />
+                  <div
+                    class="leaflet-bottom leaflet-right"
+                  >
+                    <div
+                      aria-haspopup="true"
+                      class="leaflet-control-layers leaflet-control"
+                    >
+                      <a
+                        class="leaflet-control-layers-toggle"
+                        href="#"
+                        title="Layers"
+                      />
+                      <section
+                        class="leaflet-control-layers-list"
+                      >
+                        <div
+                          class="leaflet-control-layers-base"
+                        >
+                          <label>
+                            <div>
+                              <input
+                                checked="checked"
+                                class="leaflet-control-layers-selector"
+                                name="leaflet-base-layers_96"
+                                type="radio"
+                              />
+                              <span>
+                                 BC Government
+                              </span>
+                            </div>
+                          </label>
+                          <label>
+                            <div>
+                              <input
+                                class="leaflet-control-layers-selector"
+                                name="leaflet-base-layers_96"
+                                type="radio"
+                              />
+                              <span>
+                                 Esri Imagery
+                              </span>
+                            </div>
+                          </label>
+                        </div>
+                        <div
+                          class="leaflet-control-layers-separator"
+                          style="display: none;"
+                        />
+                        <div
+                          class="leaflet-control-layers-overlays"
+                        />
+                      </section>
+                    </div>
+                    <div
+                      class="leaflet-control-attribution leaflet-control"
+                    >
+                      <a
+                        href="https://leafletjs.com"
+                        title="A JS library for interactive maps"
+                      >
+                        Leaflet
+                      </a>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-172"
+            >
+              <p
+                class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
+              >
+                Study Area Name
+              </p>
+              <p
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                study area
+              </p>
+            </div>
+            <div
+              class="MuiBox-root MuiBox-root-173"
+            />
+            <div
+              class="MuiBox-root MuiBox-root-174"
+            />
+            <div
+              class="MuiBox-root MuiBox-root-175"
+            />
+            <div
+              class="MuiBox-root MuiBox-root-176"
+            >
+              <button
+                aria-label="Show Expanded Location"
+                class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+                tabindex="0"
+                title="Expand Location"
+                type="button"
+              >
+                <span
+                  class="MuiButton-label"
+                >
+                  Show More
+                  <span
+                    class="MuiButton-endIcon MuiButton-iconSizeMedium"
+                  >
+                    <svg
+                      role="presentation"
+                      style="width: 1.3125rem; height: 1.3125rem;"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        d="M8.59,16.58L13.17,12L8.59,7.41L10,6L16,12L10,18L8.59,16.58Z"
+                        style="fill: currentColor;"
+                      />
+                    </svg>
+                  </span>
+                </span>
+                <span
+                  class="MuiTouchRipple-root"
+                />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </DocumentFragment>
 `;

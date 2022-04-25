@@ -75,7 +75,7 @@ describe('AttachmentsList', () => {
     expect(getByText('filename30.test')).toBeInTheDocument();
   });
 
-  it('viewing file contents in new tab works as expected for project attachments', async () => {
+  it.only('viewing file contents in new tab works as expected for project attachments', async () => {
     window.open = jest.fn();
 
     const signedUrl = 'www.signedurl.com';

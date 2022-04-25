@@ -1,10 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
-import SurveyGeneralInformation from './SurveyGeneralInformation';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import SurveyGeneralInformation from './SurveyGeneralInformation';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -13,6 +13,9 @@ const mockUseBiohubApi = {
     updateSurvey: jest.fn(),
     getSurveyPermits: jest.fn(),
     getSurveyFundingSources: jest.fn()
+  },
+  taxonomy: {
+    getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
   }
 };
 
@@ -40,6 +43,7 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.updateSurvey.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
     mockBiohubApi().survey.getSurveyFundingSources.mockClear();
+    mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
   });
 
   afterEach(() => {
@@ -54,8 +58,8 @@ describe('SurveyGeneralInformation', () => {
           survey_details: {
             ...getSurveyForViewResponse.survey_details,
             end_date: (null as unknown) as string,
-            focal_species: ['species 1'],
-            ancillary_species: ['ancillary species']
+            focal_species: [1],
+            ancillary_species: [2]
           }
         }}
         codes={codes}
@@ -73,7 +77,7 @@ describe('SurveyGeneralInformation', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it.skip('editing the survey details works in the dialog', async () => {
+  it('editing the survey details works in the dialog', async () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
       survey_details: {
         id: 1,
@@ -224,7 +228,7 @@ describe('SurveyGeneralInformation', () => {
     });
   });
 
-  it.skip('shows error dialog with API error message when updating survey data fails', async () => {
+  it('shows error dialog with API error message when updating survey data fails', async () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
       survey_details: {
         id: 1,
