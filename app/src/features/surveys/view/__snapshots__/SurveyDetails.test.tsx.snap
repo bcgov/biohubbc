@@ -491,6 +491,20 @@ exports[`SurveyDetails renders correctly 1`] = `
                 Vantage Code 2
               </dd>
             </div>
+            <div
+              class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            >
+              <dt
+                class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+              >
+                Surveyed all areas?
+              </dt>
+              <dd
+                class="MuiTypography-root MuiTypography-body1"
+              >
+                Yes - all areas were surveyed
+              </dd>
+            </div>
           </div>
         </dl>
       </div>

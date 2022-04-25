@@ -23,6 +23,7 @@ import {
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
+import { StringBoolean } from 'types/misc';
 
 export interface ISurveyPurposeAndMethodologyDataProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -113,7 +114,10 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
         surveyPurposeAndMethodologyResponseData?.ecological_season_id ||
         PurposeAndMethodologyInitialValues.ecological_season_id,
       vantage_code_ids:
-        surveyPurposeAndMethodologyResponseData?.vantage_code_ids || PurposeAndMethodologyInitialValues.vantage_code_ids
+        surveyPurposeAndMethodologyResponseData?.vantage_code_ids ||
+        PurposeAndMethodologyInitialValues.vantage_code_ids,
+      surveyed_all_areas:
+        surveyPurposeAndMethodologyResponseData?.surveyed_all_areas || (('' as unknown) as StringBoolean)
     });
 
     setOpenEditDialog(true);
@@ -254,6 +258,16 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                     </Typography>
                   );
                 })}
+              </Grid>
+              <Grid item xs={12} sm={6} md={4}>
+                <Typography component="dt" variant="subtitle2" color="textSecondary">
+                  Surveyed all areas?
+                </Typography>
+                <Typography component="dd" variant="body1">
+                  {(survey_purpose_and_methodology.surveyed_all_areas === 'true' && 'Yes - all areas were surveyed') ||
+                    (survey_purpose_and_methodology.surveyed_all_areas === 'false' &&
+                      'No - only some areas were surveyed')}
+                </Typography>
               </Grid>
             </Grid>
           )}
