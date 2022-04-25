@@ -1,4 +1,4 @@
-import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -72,7 +72,6 @@ describe('CreateSurveyPage', () => {
     );
 
     const { getByText } = renderContainer();
-    screen.debug();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();

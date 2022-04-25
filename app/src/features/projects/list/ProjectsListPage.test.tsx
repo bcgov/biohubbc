@@ -1,11 +1,11 @@
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { createMemoryHistory } from 'history';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import ProjectsListPage from './ProjectsListPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { createMemoryHistory } from 'history';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
-import { SYSTEM_ROLE } from 'constants/roles';
 
 const history = createMemoryHistory();
 
@@ -26,7 +26,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe.skip('ProjectsListPage', () => {
+describe('ProjectsListPage', () => {
   beforeEach(() => {
     mockBiohubApi().project.getProjectsList.mockClear();
     mockBiohubApi().draft.getDraftsList.mockClear();
@@ -72,7 +72,7 @@ describe.skip('ProjectsListPage', () => {
     });
   });
 
-  test.skip('renders with the open advanced filters button', async () => {
+  test('renders with the open advanced filters button', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
     });
@@ -89,7 +89,7 @@ describe.skip('ProjectsListPage', () => {
     });
   });
 
-  test.skip('renders with a proper list of projects when published and completed', async () => {
+  test('renders with a proper list of projects when published and completed', async () => {
     mockBiohubApi().project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -112,12 +112,12 @@ describe.skip('ProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(getByText('PUBLISHED')).toBeInTheDocument();
-      expect(getByText('COMPLETED')).toBeInTheDocument();
+      expect(getByText('Published')).toBeInTheDocument();
+      expect(getByText('Completed')).toBeInTheDocument();
     });
   });
 
-  test.skip('renders with a proper list of projects when unpublished and active', async () => {
+  test('renders with a proper list of projects when Unpublished and active', async () => {
     mockBiohubApi().project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -140,12 +140,12 @@ describe.skip('ProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(getByText('UNPUBLISHED')).toBeInTheDocument();
-      expect(getByText('ACTIVE')).toBeInTheDocument();
+      expect(getByText('Unpublished')).toBeInTheDocument();
+      expect(getByText('Active')).toBeInTheDocument();
     });
   });
 
-  test.skip('renders with a list of drafts', async () => {
+  test('renders with a list of drafts', async () => {
     mockBiohubApi().draft.getDraftsList.mockResolvedValue([
       {
         id: 1,
