@@ -180,7 +180,7 @@ describe('ProjectFundingItemForm', () => {
       </Formik>
     );
 
-    it.skip('works if an agency_id with a matching NA investment action category is chosen', async () => {
+    it('works if an agency_id with a matching NA investment action category is chosen', async () => {
       const { asFragment, getByText, getAllByRole, getByRole } = render(component);
 
       await waitFor(() => {
@@ -196,7 +196,7 @@ describe('ProjectFundingItemForm', () => {
       });
     });
 
-    it.skip('works if an agency_id with a non-matching investment action category is chosen', async () => {
+    it('works if an agency_id with a non-matching investment action category is chosen', async () => {
       const { asFragment, getByText, getAllByRole, getByRole } = render(component);
 
       await waitFor(() => {

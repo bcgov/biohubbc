@@ -83,7 +83,7 @@ describe('UsersDetailProjects', () => {
     });
   });
 
-  it.skip('renders list of a single project correctly when assignedProjects are loaded', async () => {
+  it('renders list of a single project correctly when assignedProjects are loaded', async () => {
     history.push('/admin/users/1');
 
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
@@ -397,7 +397,7 @@ describe('UsersDetailProjects', () => {
       });
     });
 
-    it.skip('renders dialog pop on role selection, Changes role on click of `Change Role` ', async () => {
+    it('renders dialog pop on role selection, Changes role on click of `Change Role` ', async () => {
       history.push('/admin/users/1');
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
