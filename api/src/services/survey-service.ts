@@ -19,8 +19,6 @@ export class SurveyService extends DBService {
       return [];
     }
 
-    console.log('response.rows with survey ids: ', response.rows);
-
     return response.rows;
   }
 

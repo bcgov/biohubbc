@@ -1,15 +1,15 @@
-import { cleanup, render, waitFor, screen } from '@testing-library/react';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import { Router } from 'react-router';
-import CreateSurveyPage from './CreateSurveyPage';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import CreateSurveyPage from './CreateSurveyPage';
 
 const history = createMemoryHistory();
 
@@ -37,7 +37,17 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe.skip('CreateSurveyPage', () => {
+const renderContainer = () => {
+  return render(
+    <DialogContextProvider>
+      <Router history={history}>
+        <CreateSurveyPage />
+      </Router>
+    </DialogContextProvider>
+  );
+};
+
+describe('CreateSurveyPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
@@ -99,10 +109,18 @@ describe.skip('CreateSurveyPage', () => {
       { number: '456', type: 'Wildlife' }
     ]);
 
-    mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue([
-      { id: '1', label: 'species 1' },
-      { id: '2', label: 'species 2' }
-    ]);
+    mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+      searchResponse: [
+        { id: '1', label: 'species 1' },
+        { id: '2', label: 'species 2' }
+      ]
+    });
+    mockBiohubApi().taxonomy.searchSpecies({
+      searchResponse: [
+        { id: '1', label: 'species 1' },
+        { id: '2', label: 'species 2' }
+      ]
+    });
 
     mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
       { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
@@ -137,6 +155,19 @@ describe.skip('CreateSurveyPage', () => {
           agencyName: 'agency'
         }
       ]);
+      mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+        searchResponse: [
+          { id: '1', label: 'species 1' },
+          { id: '2', label: 'species 2' }
+        ]
+      });
+      mockBiohubApi().taxonomy.searchSpecies({
+        searchResponse: [
+          { id: '1', label: 'species 1' },
+          { id: '2', label: 'species 2' }
+        ]
+      });
+
       history.push('/home');
       history.push('/admin/projects/1/survey/create');
       const { getByText, getAllByText, getByTestId } = render(
@@ -160,10 +191,9 @@ describe.skip('CreateSurveyPage', () => {
       });
     });
 
-    it.skip('does nothing if the user clicks `No` or away from the dialog', async () => {
+    it('does nothing if the user clicks `No` or away from the dialog', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-      mockBiohubApi().taxonomy.getSpeciesById.mockResolvedValue([{ id: '1', label: 'species 1' }]);
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
         { number: '123', type: 'Scientific' },
         { number: '456', type: 'Wildlife' }
@@ -177,6 +207,19 @@ describe.skip('CreateSurveyPage', () => {
           agencyName: 'agency'
         }
       ]);
+      mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
+        searchResponse: [
+          { id: '1', label: 'species 1' },
+          { id: '2', label: 'species 2' }
+        ]
+      });
+      mockBiohubApi().taxonomy.searchSpecies({
+        searchResponse: [
+          { id: '1', label: 'species 1' },
+          { id: '2', label: 'species 2' }
+        ]
+      });
+
       const { getAllByText, getByText, getAllByRole, getByTestId } = render(
         <DialogContextProvider>
           <MemoryRouter initialEntries={['?id=1']}>

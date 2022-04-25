@@ -102,11 +102,7 @@ export function getSurveyList(): RequestHandler {
 
       const surveyIds = surveyIdsResponse.map((item: { id: any }) => item.id);
 
-      console.log('survey ids from the new survey service: ', surveyIds);
-
       const surveys = await surveyService.getSurveysByIds(surveyIds);
-
-      console.log('survey species data: ', surveys);
 
       await connection.commit();
 

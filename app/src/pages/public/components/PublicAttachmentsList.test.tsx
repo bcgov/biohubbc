@@ -1,8 +1,8 @@
-import { fireEvent, render, cleanup, waitFor, getByText as rawGetByText } from '@testing-library/react';
-import React from 'react';
-import PublicAttachmentsList from './PublicAttachmentsList';
+import { cleanup, fireEvent, getByText as rawGetByText, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import React from 'react';
 import { AttachmentType } from '../../../constants/attachments';
+import PublicAttachmentsList from './PublicAttachmentsList';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -50,7 +50,7 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 3028,
-      securityToken: true,
+      securityToken: 'token123',
       revisionCount: 1
     },
     {
@@ -59,7 +59,7 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.REPORT,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000,
-      securityToken: false,
+      securityToken: '',
       revisionCount: 1
     },
     {
@@ -68,7 +68,7 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000000,
-      securityToken: false,
+      securityToken: '',
       revisionCount: 1
     }
   ];
@@ -81,7 +81,7 @@ describe('PublicAttachmentsList', () => {
     expect(getByText('No Attachments')).toBeInTheDocument();
   });
 
-  it.skip('viewing file contents in new tab works as expected for project attachments that are unsecure', async () => {
+  it('viewing file contents in new tab works as expected for project attachments that are unsecure', async () => {
     window.open = jest.fn();
 
     const signedUrl = 'www.signedurl.com';
@@ -101,7 +101,7 @@ describe('PublicAttachmentsList', () => {
     });
   });
 
-  it.skip('viewing file contents in new tab does not work for project attachments that are secure', async () => {
+  it('viewing file contents in new tab does not work for project attachments that are secure', async () => {
     window.open = jest.fn();
 
     const { getByText } = render(

@@ -333,13 +333,6 @@ export function getSurveyForView(): RequestHandler {
         getSurveyProprietorDataForView(surveyId, connection)
       ]);
 
-      console.log('surveyBasic Data :', surveyBasicData);
-      console.log('surveyPurposeAndMethodology :', surveyPurposeAndMethodology);
-      console.log('surveyFundingSourcesData Data :', surveyFundingSourcesData);
-      console.log('SurveyFocalSpeciesData Data :', SurveyFocalSpeciesData);
-      console.log('SurveyAncillarySpeciesData Data :', SurveyAncillarySpeciesData);
-      console.log('surveyProprietorData Data :', surveyProprietorData);
-
       await connection.commit();
 
       const getSurveyData = new GetViewSurveyDetailsData({
@@ -361,7 +354,6 @@ export function getSurveyForView(): RequestHandler {
         survey_proprietor: getSurveyProprietorData
       };
 
-      console.log('result is : ', result);
 
       return res.status(200).json(result);
     } catch (error) {
