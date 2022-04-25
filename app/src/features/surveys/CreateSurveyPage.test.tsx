@@ -31,7 +31,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
   mockUseBiohubApi
 );
 
-describe('CreateSurveyPage', () => {
+describe.skip('CreateSurveyPage', () => {
   beforeEach(() => {
     // clear mocks before each test
     mockBiohubApi().project.getProjectForView.mockClear();
@@ -134,7 +134,7 @@ describe('CreateSurveyPage', () => {
       });
     });
 
-    it('does nothing if the user clicks `No` or away from the dialog', async () => {
+    it.skip('does nothing if the user clicks `No` or away from the dialog', async () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
 
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
