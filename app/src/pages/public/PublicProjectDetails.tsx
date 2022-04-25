@@ -52,7 +52,7 @@ const PublicProjectDetails: React.FC<IPublicProjectDetailsProps> = (props) => {
 
       <Box component={Paper} p={4}>
         <Box component="section" className={classes.projectDetailsSection}>
-          <PublicGeneralInformation projectForViewData={projectForViewData} refresh={refresh} />
+          <PublicGeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
       </Box>
 

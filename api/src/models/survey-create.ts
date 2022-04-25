@@ -20,6 +20,7 @@ export class PostSurveyObject {
   field_method_id: number;
   ecological_season_id: number;
   vantage_code_ids: number[];
+  surveyed_all_areas: boolean;
   start_date: string;
   end_date: string;
   survey_area_name: string;
@@ -63,6 +64,7 @@ export class PostSurveyObject {
     this.ecological_season_id = obj?.ecological_season_id || null;
     this.additional_details = obj?.additional_details || null;
     this.vantage_code_ids = (obj?.vantage_code_ids?.length && obj.vantage_code_ids) || [];
+    this.surveyed_all_areas = obj?.surveyed_all_areas === 'true' || false;
     this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.survey_proprietor =
       (obj && obj.survey_data_proprietary === 'true' && new PostSurveyProprietorData(obj)) || undefined;

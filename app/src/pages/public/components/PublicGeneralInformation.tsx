@@ -2,12 +2,14 @@ import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 export interface IPublicProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
+  codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
 
@@ -18,8 +20,15 @@ export interface IPublicProjectDetailsProps {
  */
 const PublicGeneralInformation: React.FC<IPublicProjectDetailsProps> = (props) => {
   const {
-    projectForViewData: { project }
+    projectForViewData: { project },
+    codes
   } = props;
+
+  const projectActivities =
+    codes?.activity
+      ?.filter((item) => project.project_activities.includes(item.id))
+      ?.map((item) => item.name)
+      .join(', ') || '';
 
   return (
     <Box>
@@ -41,7 +50,7 @@ const PublicGeneralInformation: React.FC<IPublicProjectDetailsProps> = (props) =
               Project Type
             </Typography>
             <Typography component="dd" variant="body1">
-              {project.project_type}
+              {codes?.project_type?.find((item: any) => item.id === project.project_type)?.name}
             </Typography>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
@@ -66,7 +75,7 @@ const PublicGeneralInformation: React.FC<IPublicProjectDetailsProps> = (props) =
               Activities
             </Typography>
             <Typography component="dd" variant="body1">
-              {project.project_activities.length > 0 ? <>{project.project_activities.join(', ')}</> : 'No Activities'}
+              {projectActivities ? <>{projectActivities}</> : 'No Activities'}
             </Typography>
           </Grid>
         </Grid>

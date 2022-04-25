@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
  * SQL query to get all permits applicable for a survey
@@ -13,17 +10,11 @@ const defaultLog = getLogger('queries/survey/survey-view-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getAllAssignablePermitsForASurveySQL',
-    message: 'params',
-    projectId
-  });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       number,
       type
@@ -34,15 +25,6 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
     AND
       survey_id IS NULL;
   `;
-
-  defaultLog.debug({
-    label: 'getAllAssignablePermitsForASurveySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -52,17 +34,11 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyIdsSQL',
-    message: 'params',
-    projectId
-  });
-
   if (!projectId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       survey_id as id
     FROM
@@ -70,15 +46,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
     WHERE
       project_id = ${projectId};
   `;
-
-  defaultLog.debug({
-    label: 'getSurveyIdsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -92,7 +59,7 @@ export const getSurveySQL = (surveyId: number): SQLStatement | null => {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       *
     FROM
@@ -100,22 +67,14 @@ export const getSurveySQL = (surveyId: number): SQLStatement | null => {
     WHERE
       survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };
 
 export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyBasicDataForViewSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       s.survey_id as id,
       s.name,
@@ -123,6 +82,7 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.field_method_id,
       s.ecological_season_id,
       s.intended_outcome_id,
+      s.surveyed_all_areas,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -161,6 +121,7 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.field_method_id,
       s.additional_details,
       s.intended_outcome_id,
+      s.surveyed_all_areas,
       s.ecological_season_id,
       s.start_date,
       s.end_date,
@@ -173,28 +134,14 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       per.number,
       per.type;
   `;
-
-  defaultLog.debug({
-    label: 'getBasicSurveyDataForViewSQ',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyFundingSourcesDataForViewSQL',
-    message: 'params',
-    surveyId
-  });
   if (!surveyId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       sfs.project_funding_source_id as pfs_id,
       pfs.funding_amount::numeric::int,
@@ -230,15 +177,6 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
     order by
       pfs.funding_start_date;
   `;
-
-  defaultLog.debug({
-    label: 'getSurveyFundingSourcesDataForViewSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
@@ -246,18 +184,16 @@ export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatem
     return null;
   }
 
-  const sqlStatement = SQL`
-      SELECT
-        wldtaxonomic_units_id
-      FROM
-        study_species
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        is_focal = TRUE;
-      `;
-
-  return sqlStatement;
+  return SQL`
+    SELECT
+      wldtaxonomic_units_id
+    FROM
+      study_species
+    WHERE
+      survey_id = ${surveyId}
+    AND
+      is_focal = TRUE;
+  `;
 };
 
 export const getSurveyAncillarySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
@@ -265,16 +201,14 @@ export const getSurveyAncillarySpeciesDataForViewSQL = (surveyId: number): SQLSt
     return null;
   }
 
-  const sqlStatement = SQL`
-      SELECT
-        wldtaxonomic_units_id
-      FROM
-        study_species
-      WHERE
-        survey_id = ${surveyId}
-      AND
-        is_focal = FALSE;
-      `;
-
-  return sqlStatement;
+  return SQL`
+    SELECT
+      wldtaxonomic_units_id
+    FROM
+      study_species
+    WHERE
+      survey_id = ${surveyId}
+    AND
+      is_focal = FALSE;
+    `;
 };
