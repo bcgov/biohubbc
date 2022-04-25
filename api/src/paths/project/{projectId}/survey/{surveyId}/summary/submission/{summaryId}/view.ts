@@ -196,6 +196,7 @@ export function getSummarySubmissionCSVForView(): RequestHandler {
 
         data.push(dataItem);
       }
+      console.log("_DATA:", data)
 
       return res.status(200).json({ data });
     } catch (error) {

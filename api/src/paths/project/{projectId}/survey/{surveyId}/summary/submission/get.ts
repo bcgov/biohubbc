@@ -57,6 +57,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            nullable: true,
             properties: {
               id: {
                 type: 'number'
