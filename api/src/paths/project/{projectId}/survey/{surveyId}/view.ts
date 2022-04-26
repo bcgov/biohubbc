@@ -100,7 +100,7 @@ GET.apiDoc = {
                   ancillary_species: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   ancillary_species_names: {
@@ -112,7 +112,7 @@ GET.apiDoc = {
                   focal_species: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   focal_species_names: {
@@ -148,20 +148,25 @@ GET.apiDoc = {
                       required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
                       properties: {
                         pfs_id: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         agency_name: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         },
                         funding_amount: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         funding_start_date: {
                           type: 'string',
+                          nullable: true,
                           description: 'ISO 8601 date string'
                         },
                         funding_end_date: {
                           type: 'string',
+                          nullable: true,
                           description: 'ISO 8601 date string'
                         }
                       }
@@ -176,6 +181,7 @@ GET.apiDoc = {
                   occurrence_submission_id: {
                     description: 'A survey occurrence submission ID',
                     type: 'number',
+                    nullable: true,
                     example: 1
                   },
                   permit_number: {
@@ -185,7 +191,9 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   publish_date: {
-                    type: 'string'
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    nullable: true,
+                    description: 'Determines if the record has been published'
                   },
                   revision_count: {
                     type: 'number'
@@ -219,7 +227,8 @@ GET.apiDoc = {
                     type: 'number'
                   },
                   additional_details: {
-                    type: 'string'
+                    type: 'string',
+                    nullable: true
                   },
                   intended_outcome_id: {
                     type: 'number'
@@ -245,7 +254,7 @@ GET.apiDoc = {
               survey_proprietor: {
                 description: 'Survey Details',
                 type: 'object',
-                //Note: do not make any of these fields required as the object can be null
+                nullable: true,
                 properties: {
                   survey_data_proprietary: {
                     type: 'string'
@@ -260,10 +269,12 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   first_nations_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   first_nations_name: {
-                    type: 'string'
+                    type: 'string',
+                    nullable: true
                   },
                   proprietary_data_category: {
                     type: 'number'

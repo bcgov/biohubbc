@@ -64,7 +64,19 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Upload OK'
+      description: 'Upload OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              submissionId: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'

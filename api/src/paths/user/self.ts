@@ -37,6 +37,7 @@ GET.apiDoc = {
           schema: {
             title: 'User Response Object',
             type: 'object',
+            required: ['id', 'user_identifier', 'role_ids', 'role_names'],
             properties: {
               id: {
                 description: 'user id',
@@ -47,9 +48,9 @@ GET.apiDoc = {
                 type: 'string'
               },
               record_end_date: {
+                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                 description: 'Determines if the user record has expired',
-                type: 'string',
-                format: 'date'
+                nullable: true
               },
               role_ids: {
                 description: 'list of role ids for the user',

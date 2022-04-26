@@ -118,6 +118,7 @@ GET.apiDoc = {
               survey_details: {
                 description: 'Survey Details',
                 type: 'object',
+                nullable: true,
                 required: [
                   'id',
                   'focal_species',
@@ -144,13 +145,13 @@ GET.apiDoc = {
                   ancillary_species: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   focal_species: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   biologist_first_name: {
@@ -227,6 +228,7 @@ GET.apiDoc = {
               survey_purpose_and_methodology: {
                 description: 'Survey Details',
                 type: 'object',
+                nullable: true,
                 required: [
                   'field_method_id',
                   'intended_outcome_id',
@@ -242,7 +244,8 @@ GET.apiDoc = {
                     type: 'number'
                   },
                   additional_details: {
-                    type: 'string'
+                    type: 'string',
+                    nullable: true
                   },
                   intended_outcome_id: {
                     type: 'number'
@@ -268,7 +271,7 @@ GET.apiDoc = {
               survey_proprietor: {
                 description: 'Survey Details',
                 type: 'object',
-                //Note: do not make any of these fields required as the object can be null
+                nullable: true,
                 properties: {
                   survey_data_proprietary: {
                     type: 'string'
@@ -283,7 +286,8 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   first_nations_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   first_nations_name: {
                     type: 'string'

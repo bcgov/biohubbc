@@ -49,36 +49,35 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: ['projectId', 'fileName', 'fileType', 'lastModified', 'size', 'securityToken', 'revisionCount'],
-              properties: {
-                projectId: {
-                  type: 'number'
-                },
-                fileName: {
-                  description: 'The file name of the attachment',
-                  type: 'string'
-                },
-                fileType: {
-                  description: 'The file type of the attachment',
-                  type: 'string'
-                },
-                lastModified: {
-                  description: 'The date the object was last modified',
-                  type: 'string'
-                },
-                size: {
-                  description: 'The size of the attachment',
-                  type: 'number'
-                },
-                securityToken: {
-                  description: 'The security token of the attachment',
-                  type: 'string'
-                },
-                revisionCount: {
-                  type: 'number'
+            type: 'object',
+            properties: {
+              attachmentsList: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'fileName', 'fileType', 'lastModified', 'securityToken', 'size'],
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    fileName: {
+                      type: 'string'
+                    },
+                    fileType: {
+                      type: 'string'
+                    },
+                    lastModified: {
+                      type: 'string'
+                    },
+                    securityToken: {
+                      description: 'The security token of the attachment',
+                      type: 'string',
+                      nullable: true
+                    },
+                    size: {
+                      type: 'number'
+                    }
+                  }
                 }
               }
             }

@@ -58,7 +58,19 @@ GET.apiDoc = {
       },
       required: true
     }
-  ]
+  ],
+  responses: {
+    200: {
+      description: 'Obsesrvation submission signed URL response.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 };
 
 export function getSingleSubmissionURL(): RequestHandler {

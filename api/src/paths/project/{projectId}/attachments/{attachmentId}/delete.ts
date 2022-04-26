@@ -63,7 +63,8 @@ POST.apiDoc = {
               type: 'string'
             },
             securityToken: {
-              type: 'string'
+              type: 'string',
+              nullable: true
             }
           }
         }

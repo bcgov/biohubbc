@@ -92,10 +92,12 @@ GET.apiDoc = {
                   description: 'Administrative activity status type name'
                 },
                 description: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 },
                 notes: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 },
                 data: {
                   type: 'object',
@@ -105,7 +107,7 @@ GET.apiDoc = {
                   }
                 },
                 create_date: {
-                  type: 'string'
+                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }]
                 }
               }
             }
