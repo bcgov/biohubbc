@@ -57,6 +57,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            nullable: true,
             properties: {
               id: {
                 type: 'number'
@@ -67,6 +68,7 @@ GET.apiDoc = {
               },
               status: {
                 description: 'The validation status of the submission',
+                nullable: true,
                 type: 'string'
               },
               messages: {

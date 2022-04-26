@@ -61,8 +61,8 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             title: 'Occurrences spatial and metadata response object, for view purposes',
-            type: 'object',
-            properties: {}
+            type: 'array',
+            items: {}
           }
         }
       }
