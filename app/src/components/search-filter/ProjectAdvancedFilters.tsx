@@ -10,7 +10,6 @@ import MultiAutocompleteFieldVariableSize, {
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
-//import { IProjectAdvancedFilters } from './ProjectFilter';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
 import React, { useCallback } from 'react';
