@@ -227,7 +227,8 @@ GET.apiDoc = {
                     type: 'number'
                   },
                   additional_details: {
-                    type: 'string'
+                    type: 'string',
+                    nullable: true
                   },
                   intended_outcome_id: {
                     type: 'number'
@@ -253,7 +254,7 @@ GET.apiDoc = {
               survey_proprietor: {
                 description: 'Survey Details',
                 type: 'object',
-                //Note: do not make any of these fields required as the object can be null
+                nullable: true,
                 properties: {
                   survey_data_proprietary: {
                     type: 'string'

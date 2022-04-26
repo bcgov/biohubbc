@@ -74,7 +74,8 @@ GET.apiDoc = {
                     },
                     end_date: {
                       type: 'string',
-                      description: 'ISO 8601 date string'
+                      description: 'ISO 8601 date string',
+                      nullable: true
                     }
                   }
                 },
