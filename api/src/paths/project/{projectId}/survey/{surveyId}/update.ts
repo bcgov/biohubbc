@@ -118,6 +118,7 @@ GET.apiDoc = {
               survey_details: {
                 description: 'Survey Details',
                 type: 'object',
+                nullable: true,
                 required: [
                   'id',
                   'focal_species',
@@ -285,7 +286,8 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   first_nations_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   first_nations_name: {
                     type: 'string'
