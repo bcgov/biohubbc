@@ -2,9 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/custom-error';
-import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { PermitService } from '../../services/permit-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('/api/permits/list');
@@ -86,8 +85,6 @@ GET.apiDoc = {
 
 export function getAllPermits(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get permits list', message: 'params', req_params: req.params });
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -95,17 +92,11 @@ export function getAllPermits(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const getPermitsSQLStatement = queries.permit.getAllPermitsSQL(systemUserId);
+      const permitService = new PermitService(connection);
 
-      if (!getPermitsSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const permitsData = await connection.query(getPermitsSQLStatement.text, getPermitsSQLStatement.values);
+      const getPermitsData = await permitService.getAllPermits(systemUserId);
 
       await connection.commit();
-
-      const getPermitsData = (permitsData && permitsData.rows) || null;
 
       return res.status(200).json(getPermitsData);
     } catch (error) {

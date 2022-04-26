@@ -2,117 +2,63 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as list from './list';
-import * as db from '../../database/db';
-import permit_queries from '../../queries/permit';
-import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../../__mocks__/db';
 import { HTTPError } from '../../errors/custom-error';
+import { PermitService } from '../../services/permit-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
+import * as db from '../../database/db';
+import { getAllPermits } from './list';
 
 chai.use(sinonChai);
 
-describe('getAllPermits', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
+describe('permit-list', () => {
+  describe('getAllPermits', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
 
-  const dbConnectionObj = getMockDBConnection();
+    it('catches error, calls rollback, and re-throws error', async () => {
+      const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-  const sampleReq = {
-    keycloak_token: {}
-  } as any;
+      sinon.stub(PermitService.prototype, 'getAllPermits').rejects(new Error('a test error'));
 
-  let actualResult: any = null;
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
+      try {
+        const requestHandler = getAllPermits();
 
-  it('should throw a 400 error when no sql statement returned for permits', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect(dbConnectionObj.rollback).to.have.been.called;
+        expect(dbConnectionObj.release).to.have.been.called;
+        expect((actualError as HTTPError).message).to.equal('a test error');
       }
     });
 
-    sinon.stub(permit_queries, 'getAllPermitsSQL').returns(null);
+    it('gets non sample permits', async () => {
+      const dbConnectionObj = getMockDBConnection();
 
-    try {
-      const result = list.getAllPermits();
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
+      sinon
+        .stub(PermitService.prototype, 'getAllPermits')
+        .resolves([{ id: '1', number: '2', type: '3', coordinator_agency: '4', project_name: '5' }]);
 
-  it('should return all permits on success', async () => {
-    const allPermits = [
-      {
-        id: 1,
-        number: '123',
-        type: 'scientific',
-        coordinator_agency: 'agency',
-        project_name: 'project 1'
-      },
-      {
-        id: 2,
-        number: '12345',
-        type: 'wildlife',
-        coordinator_agency: 'agency 2',
-        project_name: null
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      try {
+        const requestHandler = getAllPermits();
+
+        await requestHandler(mockReq, mockRes, mockNext);
+      } catch (actualError) {
+        expect.fail();
       }
-    ];
 
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: allPermits });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
+      expect(mockRes.statusValue).to.equal(200);
+      expect(mockRes.jsonValue).to.eql([
+        { id: '1', number: '2', type: '3', coordinator_agency: '4', project_name: '5' }
+      ]);
     });
-
-    sinon.stub(permit_queries, 'getAllPermitsSQL').returns(SQL`some query`);
-
-    const result = list.getAllPermits();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.eql(allPermits);
-  });
-
-  it('should return null when permits response has no rows', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: null });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(permit_queries, 'getAllPermitsSQL').returns(SQL`some query`);
-
-    const result = list.getAllPermits();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.be.null;
   });
 });

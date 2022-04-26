@@ -2,9 +2,8 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/custom-error';
-import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { PermitService } from '../../services/permit-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('/api/permit/get-no-sampling');
@@ -83,8 +82,6 @@ GET.apiDoc = {
 
 export function getNonSamplingPermits(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get non-sampling permits list', message: 'params', req_params: req.params });
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -92,20 +89,11 @@ export function getNonSamplingPermits(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const getNonSamplingPermitsSQLStatement = queries.permit.getNonSamplingPermitsSQL(systemUserId);
+      const permitService = new PermitService(connection);
 
-      if (!getNonSamplingPermitsSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const nonSamplingPermitsData = await connection.query(
-        getNonSamplingPermitsSQLStatement.text,
-        getNonSamplingPermitsSQLStatement.values
-      );
+      const getNonSamplingPermitsData = await permitService.getNonSamplingPermits(systemUserId);
 
       await connection.commit();
-
-      const getNonSamplingPermitsData = (nonSamplingPermitsData && nonSamplingPermitsData.rows) || null;
 
       return res.status(200).json(getNonSamplingPermitsData);
     } catch (error) {
