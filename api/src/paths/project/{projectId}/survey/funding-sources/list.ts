@@ -123,7 +123,7 @@ export function getSurveyFundingSources(): RequestHandler {
         return res.status(200).json(null);
       }
 
-      return res.status(200).json(getSurveyFundingSourcesData.fundingSources);
+      return res.status(200).json(getSurveyFundingSourcesData.funding_sources);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyFundingSources', message: 'error', error });
       await connection.rollback();

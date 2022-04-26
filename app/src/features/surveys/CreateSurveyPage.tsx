@@ -189,7 +189,7 @@ const CreateSurveyPage = () => {
     const [projectWithDetailsResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
       biohubApi.project.getProjectForView(urlParams['id']),
       biohubApi.survey.getSurveyPermits(urlParams['id']),
-      biohubApi.survey.getSurveyFundingSources(urlParams['id'])
+      biohubApi.survey.getAvailableSurveyFundingSources(urlParams['id'])
     ]);
 
     if (!projectWithDetailsResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {

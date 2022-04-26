@@ -93,7 +93,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           UPDATE_GET_SURVEY_ENTITIES.survey_details
         ]),
         biohubApi.survey.getSurveyPermits(projectForViewData.id),
-        biohubApi.survey.getSurveyFundingSources(projectForViewData.id)
+        biohubApi.survey.getAvailableSurveyFundingSources(projectForViewData.id)
       ]);
 
       if (!surveyForUpdateResponse?.survey_details || !surveyPermitsResponse || !surveyFundingSourcesResponse) {

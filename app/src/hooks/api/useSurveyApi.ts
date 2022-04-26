@@ -296,7 +296,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @returns {*} {Promise<SurveyFundingSources[]>}
    */
-  const getSurveyFundingSources = async (projectId: number): Promise<SurveyFundingSources[]> => {
+  const getAvailableSurveyFundingSources = async (projectId: number): Promise<SurveyFundingSources[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/funding-sources/list`);
 
     return data;
@@ -549,7 +549,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getObservationSubmissionSignedURL,
     deleteSurvey,
     getSurveyPermits,
-    getSurveyFundingSources,
+    getAvailableSurveyFundingSources: getAvailableSurveyFundingSources,
     publishSurvey,
     getSubmissionCSVForView,
     makeAttachmentUnsecure,

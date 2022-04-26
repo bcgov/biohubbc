@@ -14,6 +14,7 @@ import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
 import { TaxonomyService } from '../../../../../services/taxonomy-service';
+import { SurveyService } from '../../../../../services/survey-service';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
@@ -312,47 +313,50 @@ export function getSurveyForView(): RequestHandler {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
-    const surveyId = Number(req.params.surveyId);
 
     try {
       await connection.open();
 
-      const [
-        surveyBasicData,
-        surveyPurposeAndMethodology,
-        surveyFundingSourcesData,
-        SurveyFocalSpeciesData,
-        SurveyAncillarySpeciesData,
-        surveyProprietorData
-      ] = await Promise.all([
-        getSurveyBasicDataForView(surveyId, connection),
-        getSurveyPurposeAndMethodologyDataForView(surveyId, connection),
-        getSurveyFundingSourcesDataForView(surveyId, connection),
-        getSurveyFocalSpeciesDataForView(surveyId, connection),
-        getSurveyAncillarySpeciesDataForView(surveyId, connection),
-        getSurveyProprietorDataForView(surveyId, connection)
-      ]);
+      const surveyService = new SurveyService(connection);
+
+      const result = await surveyService.getSurveyById(Number(req.params.surveyId));
+
+      // const [
+      //   surveyBasicData,
+      //   surveyPurposeAndMethodology,
+      //   surveyFundingSourcesData,
+      //   SurveyFocalSpeciesData,
+      //   SurveyAncillarySpeciesData,
+      //   surveyProprietorData
+      // ] = await Promise.all([
+      //   getSurveyBasicDataForView(surveyId, connection),
+      //   getSurveyPurposeAndMethodologyDataForView(surveyId, connection),
+      //   getSurveyFundingSourcesData(surveyId, connection),
+      //   getSurveyFocalSpeciesDataForView(surveyId, connection),
+      //   getSurveyAncillarySpeciesDataForView(surveyId, connection),
+      //   getSurveyProprietorDataForView(surveyId, connection)
+      // ]);
 
       await connection.commit();
 
-      const getSurveyData = new GetViewSurveyDetailsData({
-        ...surveyBasicData,
-        funding_sources: surveyFundingSourcesData,
-        ...SurveyFocalSpeciesData,
-        ...SurveyAncillarySpeciesData
-      });
+      // const getSurveyData = new GetViewSurveyDetailsData({
+      //   ...surveyBasicData,
+      //   funding_sources: surveyFundingSourcesData,
+      //   ...SurveyFocalSpeciesData,
+      //   ...SurveyAncillarySpeciesData
+      // });
 
-      const getSurveyPurposeAndMethodology =
-        (surveyPurposeAndMethodology && new GetSurveyPurposeAndMethodologyData(surveyPurposeAndMethodology))[0] || null;
+      // const getSurveyPurposeAndMethodology =
+      //   (surveyPurposeAndMethodology && new GetSurveyPurposeAndMethodologyData(surveyPurposeAndMethodology))[0] || null;
 
-      const getSurveyProprietorData =
-        (surveyProprietorData && new GetSurveyProprietorData(surveyProprietorData)) || null;
+      // const getSurveyProprietorData =
+      //   (surveyProprietorData && new GetSurveyProprietorData(surveyProprietorData)) || null;
 
-      const result = {
-        survey_details: getSurveyData,
-        survey_purpose_and_methodology: getSurveyPurposeAndMethodology,
-        survey_proprietor: getSurveyProprietorData
-      };
+      // const result = {
+      //   survey_details: getSurveyData,
+      //   survey_purpose_and_methodology: getSurveyPurposeAndMethodology,
+      //   survey_proprietor: getSurveyProprietorData
+      // };
 
       return res.status(200).json(result);
     } catch (error) {
@@ -380,43 +384,9 @@ export const getSurveyBasicDataForView = async (surveyId: number, connection: ID
   return (response && response.rows?.[0]) || null;
 };
 
-export const getSurveyPurposeAndMethodologyDataForView = async (
-  surveyId: number,
-  connection: IDBConnection
-): Promise<object> => {
-  const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
 
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
 
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to get survey purpose and methodology data');
-  }
-
-  return (response && response.rows) || [];
-};
-
-export const getSurveyFundingSourcesDataForView = async (
-  surveyId: number,
-  connection: IDBConnection
-): Promise<any[]> => {
-  const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response) {
-    throw new HTTP400('Failed to get survey funding sources data');
-  }
-
-  return (response && response.rows) || [];
-};
 
 export const getSurveyFocalSpeciesDataForView = async (
   surveyId: number,

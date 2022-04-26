@@ -2,6 +2,7 @@ import { Feature } from 'geojson';
 import moment from 'moment';
 import { COMPLETION_STATUS } from '../constants/status';
 import { getLogger } from '../utils/logger';
+import { GetSurveyPurposeAndMethodologyData } from './survey-view-update';
 
 const defaultLog = getLogger('models/survey-view');
 
@@ -86,6 +87,16 @@ export class GetSpeciesData {
   }
 }
 
+export class GetPermitData {
+  permit_number: number;
+  permit_type: string;
+
+  constructor(input?: any) {
+    this.permit_number = input?.number ?? null;
+    this.permit_type = input?.type ?? null;
+  }
+}
+
 /**
  * Pre-processes GET survey funding sources list data
  *
@@ -93,7 +104,7 @@ export class GetSpeciesData {
  * @class GetSurveyFundingSources
  */
 export class GetSurveyFundingSources {
-  fundingSources: any[];
+  funding_sources: any[];
 
   constructor(obj?: any) {
     defaultLog.debug({ label: 'GetSurveyFundingSources', message: 'params', obj });
@@ -111,7 +122,7 @@ export class GetSurveyFundingSources {
         });
       });
 
-    this.fundingSources = surveyFundingSourcesList;
+    this.funding_sources = surveyFundingSourcesList;
   }
 }
 
@@ -150,6 +161,9 @@ export class GetAncillarySpeciesData {
 export type SurveyObject = {
   survey: GetSurveyData;
   species: GetSpeciesData;
+  permit: GetPermitData;
+  purposeAndMethodology: GetSurveyPurposeAndMethodologyData;
+  funding_sources: GetSurveyFundingSources;
 };
 
 export class GetSurveyData {

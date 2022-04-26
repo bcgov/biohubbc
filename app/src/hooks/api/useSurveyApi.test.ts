@@ -77,7 +77,7 @@ describe('useSurveyApi', () => {
       }
     ]);
 
-    const result = await useSurveyApi(axios).getSurveyFundingSources(projectId);
+    const result = await useSurveyApi(axios).getAvailableSurveyFundingSources(projectId);
 
     expect(result[0].pfsId).toEqual(1);
   });
