@@ -1,6 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PostOccurrence } from '../../models/occurrence-create';
-
 import { parseLatLongString, parseUTMString } from '../../utils/spatial-utils';
 
 export const postOccurrenceSQL = (occurrenceSubmissionId: number, occurrence: PostOccurrence): SQLStatement | null => {

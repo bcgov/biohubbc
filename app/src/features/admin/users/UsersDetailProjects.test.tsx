@@ -1,12 +1,12 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
 import { useBiohubApi } from '../../../hooks/useBioHubApi';
-import UsersDetailProjects from './UsersDetailProjects';
-import { DialogContextProvider } from 'contexts/dialogContext';
 import { IGetUserProjectsListResponse } from '../../../interfaces/useProjectApi.interface';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import UsersDetailProjects from './UsersDetailProjects';
 
 const history = createMemoryHistory();
 

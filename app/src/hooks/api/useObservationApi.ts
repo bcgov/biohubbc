@@ -1,9 +1,9 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
-  IGetSubmissionCSVForViewResponse,
   IGetObservationSubmissionResponse,
-  IUploadObservationSubmissionResponse,
-  IGetOccurrencesForViewResponseDetails
+  IGetOccurrencesForViewResponseDetails,
+  IGetSubmissionCSVForViewResponse,
+  IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 
 /**

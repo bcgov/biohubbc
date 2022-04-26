@@ -1,11 +1,11 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectCoordinator from './ProjectCoordinator';
-import { DialogContextProvider } from 'contexts/dialogContext';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {

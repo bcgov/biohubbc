@@ -6,7 +6,6 @@ import {
   PutObjectivesData,
   PutProjectData
 } from '../../models/project-update';
-
 import { queries } from '../queries';
 
 /**

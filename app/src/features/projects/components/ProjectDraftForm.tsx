@@ -1,7 +1,7 @@
+import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
-import CustomTextField from 'components/fields/CustomTextField';
 
 export interface IProjectDraftForm {
   draft_name: string;

@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
+import { Formik } from 'formik';
 import React from 'react';
 import DollarAmountField from './DollarAmountField';
-import { Formik } from 'formik';
 
 describe('DollarAmountField', () => {
   it('matches the snapshot without error', () => {

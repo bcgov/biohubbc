@@ -4,16 +4,16 @@ import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
 import {
-  GetViewSurveyDetailsData,
+  GetAncillarySpeciesData,
   GetFocalSpeciesData,
-  GetAncillarySpeciesData
+  GetViewSurveyDetailsData
 } from '../../../../../models/survey-view';
 import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { getLogger } from '../../../../../utils/logger';
 import { TaxonomyService } from '../../../../../services/taxonomy-service';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 

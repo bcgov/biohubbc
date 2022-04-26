@@ -1,12 +1,12 @@
-import React from 'react';
-import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
-import LocationBoundary from './LocationBoundary';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { Feature } from 'geojson';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { codes } from 'test-helpers/code-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import { DialogContextProvider } from 'contexts/dialogContext';
+import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import LocationBoundary from './LocationBoundary';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {

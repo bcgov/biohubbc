@@ -1,5 +1,5 @@
 import { AxiosInstance } from 'axios';
-import { AdministrativeActivityType, AdministrativeActivityStatusType } from 'constants/misc';
+import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import {
   IgcNotifyGenericMessage,
   IgcNotifyRecipient,

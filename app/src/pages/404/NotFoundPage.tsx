@@ -1,10 +1,10 @@
-import Container from '@material-ui/core/Container';
 import Box from '@material-ui/core/Box';
-import React from 'react';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import Typography from '@material-ui/core/Typography';
 import { mdiHelpCircleOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
+import React from 'react';
 import { useHistory } from 'react-router';
 
 const NotFoundPage = () => {

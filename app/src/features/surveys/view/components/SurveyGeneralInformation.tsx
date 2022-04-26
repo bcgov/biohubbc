@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -11,30 +10,31 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import EditDialog from 'components/dialog/EditDialog';
+import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
+import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema,
   IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
-  IGetSurveyForViewResponse,
   IGetSurveyForUpdateResponseDetails,
-  UPDATE_GET_SURVEY_ENTITIES,
-  SurveyPermits,
+  IGetSurveyForViewResponse,
+  ISurveyFundingSourceForView,
   SurveyFundingSources,
-  ISurveyFundingSourceForView
+  SurveyPermits,
+  UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import { APIError } from 'hooks/api/useAxios';
-import EditDialog from 'components/dialog/EditDialog';
-import { EditSurveyGeneralInformationI18N } from 'constants/i18n';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import moment from 'moment';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyGeneralInformationProps {

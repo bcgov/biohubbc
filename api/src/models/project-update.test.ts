@@ -2,12 +2,12 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PutCoordinatorData,
-  PutPartnershipsData,
-  PutObjectivesData,
-  PutProjectData,
+  PutFundingSource,
   PutIUCNData,
   PutLocationData,
-  PutFundingSource
+  PutObjectivesData,
+  PutPartnershipsData,
+  PutProjectData
 } from './project-update';
 
 describe('PutProjectData', () => {

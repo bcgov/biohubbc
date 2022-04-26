@@ -1,9 +1,9 @@
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import PermitsPage from './PermitsPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { createMemoryHistory } from 'history';
 
 const history = createMemoryHistory();
 
