@@ -89,7 +89,10 @@ GET.apiDoc = {
                     rows: {
                       type: 'array',
                       items: {
-                        type: 'string'
+                        type: 'array',
+                        items: {
+                          nullable: true
+                        }
                       }
                     }
                   }

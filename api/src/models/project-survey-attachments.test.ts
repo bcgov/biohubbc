@@ -63,7 +63,7 @@ describe('PostReportAttachmentsMetaData', () => {
     });
 
     it('sets attachmentsData', function () {
-      expect(postReportAttachmentsData).to.eql({ title: null, year_published: null, authors: [], description: null });
+      expect(postReportAttachmentsData).to.eql({ title: null, year_published: 0, authors: [], description: null });
     });
   });
 
@@ -72,7 +72,7 @@ describe('PostReportAttachmentsMetaData', () => {
 
     const input = {
       title: 'Report 1',
-      year_published: '2000',
+      year_published: 2000,
       authors: [{ first_name: 'John', last_name: 'Smith' }],
       description: 'abstract of the report'
     };
@@ -84,7 +84,7 @@ describe('PostReportAttachmentsMetaData', () => {
     it('sets the report metadata', function () {
       expect(postReportAttachmentsData).to.eql({
         title: 'Report 1',
-        year_published: '2000',
+        year_published: 2000,
         authors: [{ first_name: 'John', last_name: 'Smith' }],
         description: 'abstract of the report'
       });
@@ -98,7 +98,7 @@ describe('PutReportAttachmentMetaData', () => {
       const putReportAttachmentData = new PutReportAttachmentMetadata(null);
 
       expect(putReportAttachmentData.title).to.equal(null);
-      expect(putReportAttachmentData.year_published).to.equal(null);
+      expect(putReportAttachmentData.year_published).to.equal(0);
       expect(putReportAttachmentData.authors).to.eql([]);
       expect(putReportAttachmentData.description).to.equal(null);
       expect(putReportAttachmentData.revision_count).to.equal(null);
@@ -108,7 +108,7 @@ describe('PutReportAttachmentMetaData', () => {
   describe('All values provided', () => {
     const input = {
       title: 'Report 1',
-      year_published: '2000',
+      year_published: 2000,
       authors: [{ first_name: 'John', last_name: 'Smith' }],
       description: 'abstract of the report',
       revision_count: 1
@@ -133,7 +133,7 @@ describe('GetReportAttachmentMetaData', () => {
       expect(getReportAttachmentData).to.eql({
         attachment_id: null,
         title: null,
-        year_published: null,
+        year_published: 0,
         authors: [],
         description: null,
         last_modified: null,
@@ -148,7 +148,7 @@ describe('GetReportAttachmentMetaData', () => {
       title: 'My Report',
       update_date: '2020-10-10',
       description: 'abstract of the report',
-      year: '2020',
+      year_published: 2020,
       revision_count: 2,
       authors: [{ first_name: 'John', last_name: 'Smith' }]
     };
@@ -157,7 +157,7 @@ describe('GetReportAttachmentMetaData', () => {
       const getReportAttachmentData = new GetReportAttachmentMetadata(input);
 
       expect(getReportAttachmentData.title).to.equal(input.title);
-      expect(getReportAttachmentData.year_published).to.equal(input.year);
+      expect(getReportAttachmentData.year_published).to.equal(input.year_published);
       expect(getReportAttachmentData.description).to.equal(input.description);
       expect(getReportAttachmentData.last_modified).to.equal(input.update_date);
       expect(getReportAttachmentData.revision_count).to.equal(input.revision_count);

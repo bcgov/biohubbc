@@ -21,7 +21,7 @@ export class GetAttachmentsData {
             id: item.id,
             fileName: item.file_name,
             fileType: item.file_type || 'Report',
-            lastModified: item.update_date || item.create_date,
+            lastModified: (item.update_date || item.create_date).toString(),
             size: item.file_size,
             securityToken: item.security_token
           };
@@ -37,13 +37,13 @@ export interface IReportAttachmentAuthor {
 
 export class PostReportAttachmentMetadata {
   title: string;
-  year_published: string;
+  year_published: number;
   authors: IReportAttachmentAuthor[];
   description: string;
 
   constructor(obj?: any) {
     this.title = (obj && obj?.title) || null;
-    this.year_published = (obj && obj?.year_published) || null;
+    this.year_published = Number((obj && obj?.year_published) || null);
     this.authors = (obj?.authors?.length && obj.authors) || [];
     this.description = (obj && obj?.description) || null;
   }
@@ -71,9 +71,9 @@ export class GetReportAttachmentMetadata {
   constructor(metaObj?: any, authorObj?: any) {
     this.attachment_id = (metaObj && metaObj?.attachment_id) || null;
     this.title = (metaObj && metaObj?.title) || null;
-    this.last_modified = (metaObj && metaObj?.update_date) || null;
+    this.last_modified = (metaObj && metaObj?.update_date.toString()) || null;
     this.description = (metaObj && metaObj?.description) || null;
-    this.year_published = (metaObj && metaObj?.year) || null;
+    this.year_published = Number((metaObj && metaObj?.year_published) || null);
     this.revision_count = (metaObj && metaObj?.revision_count) || null;
     this.authors =
       (authorObj &&

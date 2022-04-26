@@ -57,17 +57,23 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                fileName: {
-                  description: 'The file name of the attachment',
-                  type: 'string'
-                },
-                lastModified: {
-                  description: 'The date the object was last modified',
-                  type: 'string'
+            type: 'object',
+            required: ['attachmentsList'],
+            properties: {
+              attachmentsList: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    fileName: {
+                      description: 'The file name of the attachment',
+                      type: 'string'
+                    },
+                    lastModified: {
+                      description: 'The date the object was last modified',
+                      type: 'string'
+                    }
+                  }
                 }
               }
             }
