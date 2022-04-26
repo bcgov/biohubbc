@@ -73,7 +73,7 @@ export class GetReportAttachmentMetadata {
     this.title = (metaObj && metaObj?.title) || null;
     this.last_modified = (metaObj && metaObj?.update_date.toString()) || null;
     this.description = (metaObj && metaObj?.description) || null;
-    this.year_published = Number((metaObj && metaObj?.year) || null);
+    this.year_published = Number((metaObj && metaObj?.year_published) || null);
     this.revision_count = (metaObj && metaObj?.revision_count) || null;
     this.authors =
       (authorObj &&
