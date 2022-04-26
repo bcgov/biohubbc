@@ -84,13 +84,11 @@ export class PermitService extends DBService {
       throw new HTTP400('Missing request body param `coordinator`');
     }
 
-    const result = await Promise.all(
+    return await Promise.all(
       sanitizedNoSamplePermitPostData.permit.permits.map((permit: IPostPermitNoSampling) =>
         this.insertNoSamplePermit(permit, sanitizedNoSamplePermitPostData.coordinator)
       )
     );
-
-    return result;
   }
 
   /**
