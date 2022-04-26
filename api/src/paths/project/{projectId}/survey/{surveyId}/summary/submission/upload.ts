@@ -11,10 +11,10 @@ import { authorizeRequestHandler } from '../../../../../../../request-handlers/s
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
 import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
-import { IMediaState } from '../../../../../../../utils/media/media-file';
+import { IMediaState, MediaFile } from '../../../../../../../utils/media/media-file';
+import { parseUnknownMedia } from '../../../../../../../utils/media/media-utils';
 import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
-import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
@@ -79,7 +79,19 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Upload OK'
+      description: 'Upload OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              summarySubmissionId: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -204,6 +216,39 @@ export function uploadMedia(): RequestHandler {
       throw error;
     } finally {
       connection.release();
+    }
+  };
+}
+
+export function prepXLSX(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
+
+    try {
+      const s3File = req['s3File'];
+
+      const parsedMedia = parseUnknownMedia(s3File);
+
+      if (!parsedMedia) {
+        req['parseError'] = 'Failed to parse submission, file was empty';
+
+        return next();
+      }
+
+      if (!(parsedMedia instanceof MediaFile)) {
+        req['parseError'] = 'Failed to parse submission, not a valid XLSX CSV file';
+
+        return next();
+      }
+
+      const xlsxCsv = new XLSXCSV(parsedMedia);
+
+      req['xlsx'] = xlsxCsv;
+
+      next();
+    } catch (error) {
+      defaultLog.error({ label: 'prepXLSX', message: 'error', error });
+      throw error;
     }
   };
 }
