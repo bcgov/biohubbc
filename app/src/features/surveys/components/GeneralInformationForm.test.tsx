@@ -1,4 +1,4 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
   GeneralInformationYupSchema
@@ -34,7 +34,6 @@ const generalInformationFilledValues = {
 };
 
 describe('General Information Form', () => {
-
   mockBiohubApi().taxonomy.searchSpecies.mockResolvedValue({ searchResponse: [] });
   mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({ searchResponse: [] });
 
@@ -66,8 +65,9 @@ describe('General Information Form', () => {
         )}
       </Formik>
     );
-
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   it('renders correctly the filled component correctly', async () => {
@@ -99,7 +99,9 @@ describe('General Information Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 
   it('renders correctly when errors exist', async () => {
@@ -149,6 +151,8 @@ describe('General Information Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(asFragment()).toMatchSnapshot();
+    });
   });
 });
