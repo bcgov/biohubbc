@@ -69,7 +69,8 @@ POST.apiDoc = {
                   type: 'string'
                 },
                 year_published: {
-                  type: 'number'
+                  type: 'string',
+                  description: "Year the report is published. (Note: Content-Type: multipart/form-data requires all parameters to be strings.)"
                 },
                 authors: {
                   type: 'array',
