@@ -3,12 +3,17 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
-import { GetViewSurveyDetailsData } from '../../../../../models/survey-view';
+import {
+  GetViewSurveyDetailsData,
+  GetFocalSpeciesData,
+  GetAncillarySpeciesData
+} from '../../../../../models/survey-view';
 import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
+import { TaxonomyService } from '../../../../../services/taxonomy-service';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
@@ -70,7 +75,9 @@ GET.apiDoc = {
                   'id',
                   'occurrence_submission_id',
                   'focal_species',
+                  'focal_species_names',
                   'ancillary_species',
+                  'ancillary_species_names',
                   'biologist_first_name',
                   'biologist_last_name',
                   'completion_status',
@@ -96,7 +103,19 @@ GET.apiDoc = {
                       type: 'string'
                     }
                   },
+                  ancillary_species_names: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
                   focal_species: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  focal_species_names: {
                     type: 'array',
                     items: {
                       type: 'string'
@@ -302,13 +321,15 @@ export function getSurveyForView(): RequestHandler {
         surveyBasicData,
         surveyPurposeAndMethodology,
         surveyFundingSourcesData,
-        SurveySpeciesData,
+        SurveyFocalSpeciesData,
+        SurveyAncillarySpeciesData,
         surveyProprietorData
       ] = await Promise.all([
         getSurveyBasicDataForView(surveyId, connection),
         getSurveyPurposeAndMethodologyDataForView(surveyId, connection),
         getSurveyFundingSourcesDataForView(surveyId, connection),
-        getSurveySpeciesDataForView(surveyId, connection),
+        getSurveyFocalSpeciesDataForView(surveyId, connection),
+        getSurveyAncillarySpeciesDataForView(surveyId, connection),
         getSurveyProprietorDataForView(surveyId, connection)
       ]);
 
@@ -317,7 +338,8 @@ export function getSurveyForView(): RequestHandler {
       const getSurveyData = new GetViewSurveyDetailsData({
         ...surveyBasicData,
         funding_sources: surveyFundingSourcesData,
-        ...SurveySpeciesData
+        ...SurveyFocalSpeciesData,
+        ...SurveyAncillarySpeciesData
       });
 
       const getSurveyPurposeAndMethodology =
@@ -396,20 +418,52 @@ export const getSurveyFundingSourcesDataForView = async (
   return (response && response.rows) || [];
 };
 
-export const getSurveySpeciesDataForView = async (surveyId: number, connection: IDBConnection): Promise<any[]> => {
-  const sqlStatement = queries.survey.getSurveySpeciesDataForViewSQL(surveyId);
+export const getSurveyFocalSpeciesDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<GetFocalSpeciesData> => {
+  const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL get statement');
   }
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows) || null;
 
-  if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to get survey species data');
+  if (!result) {
+    throw new HTTP400('Failed to get species data');
   }
 
-  return (response && response.rows?.[0]) || null;
+  const taxonomyService = new TaxonomyService();
+
+  const species = await taxonomyService.getSpeciesFromIds(result);
+
+  return new GetFocalSpeciesData(species);
+};
+
+export const getSurveyAncillarySpeciesDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<GetAncillarySpeciesData> => {
+  const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to get species data');
+  }
+
+  const taxonomyService = new TaxonomyService();
+
+  const species = await taxonomyService.getSpeciesFromIds(result);
+
+  return new GetAncillarySpeciesData(species);
 };
 
 export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {

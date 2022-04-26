@@ -88,8 +88,6 @@ export const getProjectListSQL = (
       on s.project_id = p.project_id
     left outer join study_species as sp
       on sp.survey_id = s.survey_id
-    left outer join wldtaxonomic_units as wu
-      on wu.wldtaxonomic_units_id = sp.wldtaxonomic_units_id
     where 1 = 1
   `;
 
@@ -146,7 +144,7 @@ export const getProjectListSQL = (
     }
 
     if (filterFields.species && filterFields.species.length) {
-      sqlStatement.append(SQL` AND wu.wldtaxonomic_units_id =${filterFields.species[0]}`);
+      sqlStatement.append(SQL` AND sp.wldtaxonomic_units_id =${filterFields.species[0]}`);
     }
 
     if (filterFields.keyword) {

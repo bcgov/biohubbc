@@ -9,7 +9,6 @@ export const codes: IGetAllCodeSetsResponse = {
   activity: [{ id: 1, name: 'Activity code' }],
   project_type: [{ id: 1, name: 'Project type' }],
   region: [{ id: 1, name: 'Region code' }],
-  species: [{ id: 1, name: 'Species code' }],
   proprietor_type: [
     { id: 1, name: 'Proprietor code 1', is_first_nation: false },
     { id: 2, name: 'First Nations Land', is_first_nation: true }

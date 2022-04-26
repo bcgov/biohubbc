@@ -328,11 +328,6 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={
                     <GeneralInformationForm
-                      species={
-                        codes?.species?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
                       permit_numbers={
                         surveyPermits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };

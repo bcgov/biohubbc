@@ -138,7 +138,7 @@ exports[`SurveyDetails renders correctly 1`] = `
               <dd
                 class="MuiTypography-root MuiTypography-body1"
               >
-                ancillary species 1
+                ancillary species 2
               </dd>
             </div>
           </div>

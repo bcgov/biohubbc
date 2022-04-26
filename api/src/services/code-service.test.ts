@@ -34,7 +34,6 @@ describe('CodeService', () => {
         'project_type',
         'coordinator_agency',
         'region',
-        'species',
         'proprietor_type',
         'iucn_conservation_action_level_1_classification',
         'iucn_conservation_action_level_2_subclassification',

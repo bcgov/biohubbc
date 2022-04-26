@@ -363,11 +363,6 @@ const ProjectsListPage: React.FC = () => {
                         return item.name;
                       }) || []
                     }
-                    species={
-                      codes?.species?.map((item) => {
-                        return { value: item.id, label: item.name };
-                      }) || []
-                    }
                     funding_sources={
                       codes?.funding_source?.map((item) => {
                         return { value: item.id, label: item.name };
