@@ -1,13 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import moment from 'moment';
 import { PROJECT_ROLE } from '../../../constants/roles';
-import { COMPLETION_STATUS } from '../../../constants/status';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/custom-error';
-import { GetSurveyListData } from '../../../models/survey-view';
-import { queries } from '../../../queries/queries';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../services/survey-service';
 import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/surveys');
@@ -91,37 +88,25 @@ GET.apiDoc = {
  */
 export function getSurveyList(): RequestHandler {
   return async (req, res) => {
+    const connection = getDBConnection(req['keycloak_token']);
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
-
     try {
-      const getSurveyListSQLStatement = queries.survey.getSurveyListSQL(Number(req.params.projectId));
-
-      if (!getSurveyListSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const getSurveyListResponse = await connection.query(
-        getSurveyListSQLStatement.text,
-        getSurveyListSQLStatement.values
-      );
+      const surveyService = new SurveyService(connection);
+
+      const surveyIdsResponse = await surveyService.getSurveyIdsByProjectId(Number(req.params.projectId));
+
+      const surveyIds = surveyIdsResponse.map((item: { id: any }) => item.id);
+
+      const surveys = await surveyService.getSurveysByIds(surveyIds);
 
       await connection.commit();
 
-      let rows: any[] = [];
-
-      if (getSurveyListResponse && getSurveyListResponse.rows && new GetSurveyListData(getSurveyListResponse.rows)) {
-        rows = new GetSurveyListData(getSurveyListResponse.rows).surveys;
-      }
-
-      const result: any[] = _extractSurveys(rows);
-
-      return res.status(200).json(result);
+      return res.status(200).json(surveys);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyList', message: 'error', error });
       throw error;
@@ -129,37 +114,4 @@ export function getSurveyList(): RequestHandler {
       connection.release();
     }
   };
-}
-
-/**
- * Extract an array of survey data from DB query.
- *
- * @export
- * @param {any[]} rows DB query result rows
- * @return {any[]} An array of survey data
- */
-export function _extractSurveys(rows: any[]): any[] {
-  if (!rows || !rows.length) {
-    return [];
-  }
-
-  const surveys: any[] = [];
-
-  rows.forEach((row) => {
-    const survey: any = {
-      id: row.id,
-      name: row.name,
-      species: row.species,
-      start_date: row.start_date,
-      end_date: row.end_date,
-      publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
-      completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE
-    };
-
-    surveys.push(survey);
-  });
-
-  return surveys;
 }

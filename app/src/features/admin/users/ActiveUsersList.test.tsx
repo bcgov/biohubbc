@@ -18,11 +18,10 @@ const renderContainer = (props: IActiveUsersListProps) => {
 
 describe('ActiveUsersList', () => {
   it('shows `No Active Users` when there are no active users', async () => {
-    const mockGetUsers = jest.fn();
     const { getByText } = renderContainer({
       activeUsers: [],
       codes: codes,
-      getUsers: mockGetUsers
+      refresh: () => {}
     });
 
     await waitFor(() => {
@@ -31,8 +30,6 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with all fields having values', async () => {
-    const mockGetUsers = jest.fn();
-
     const { getByText } = renderContainer({
       activeUsers: [
         {
@@ -43,7 +40,7 @@ describe('ActiveUsersList', () => {
         }
       ],
       codes: codes,
-      getUsers: mockGetUsers
+      refresh: () => {}
     });
 
     await waitFor(() => {
@@ -53,7 +50,6 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with fields not having values', async () => {
-    const mockGetUsers = jest.fn();
     const { getByTestId } = renderContainer({
       activeUsers: [
         {
@@ -64,7 +60,7 @@ describe('ActiveUsersList', () => {
         }
       ],
       codes: codes,
-      getUsers: mockGetUsers
+      refresh: () => {}
     });
 
     await waitFor(() => {
@@ -73,11 +69,10 @@ describe('ActiveUsersList', () => {
   });
 
   it('renders the add new users button correctly', async () => {
-    const mockGetUsers = jest.fn();
     const { getByTestId } = renderContainer({
       activeUsers: [],
       codes: codes,
-      getUsers: mockGetUsers
+      refresh: () => {}
     });
 
     await waitFor(() => {

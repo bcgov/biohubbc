@@ -38,7 +38,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
         array_agg(
           DISTINCT CASE
             WHEN ss.is_focal = TRUE
-              THEN wtu.wldtaxonomic_units_id
+              THEN ss.wldtaxonomic_units_id
             END
           ),
           NULL
@@ -47,17 +47,13 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
         array_agg(
           DISTINCT CASE
             WHEN ss.is_focal = FALSE
-              THEN wtu.wldtaxonomic_units_id
+              THEN ss.wldtaxonomic_units_id
             END
         ),
         NULL
       ) as ancillary_species
     FROM
-      wldtaxonomic_units as wtu
-    LEFT OUTER JOIN
       study_species as ss
-    ON
-      ss.wldtaxonomic_units_id = wtu.wldtaxonomic_units_id
     LEFT OUTER JOIN
       survey as s
     ON

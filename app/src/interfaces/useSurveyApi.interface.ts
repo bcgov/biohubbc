@@ -40,8 +40,10 @@ export interface ISurveyFundingSourceForView {
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   survey_name: string;
-  focal_species: string[];
-  ancillary_species: string[];
+  focal_species: number[];
+  focal_species_names: string[];
+  ancillary_species: number[];
+  ancillary_species_names: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -157,12 +159,22 @@ export type IUpdateSurveyRequest = IGetSurveyForUpdateResponse;
  */
 export interface IGetSurveysListResponse {
   id: number;
+  survey: IGetSurveyDetailsResponse;
+  species: IGetSpeciesList;
+}
+
+export interface IGetSurveyDetailsResponse {
+  id: number;
   name: string;
-  species: string[];
   start_date: string;
   end_date: string;
   publish_status: string;
   completion_status: string;
+}
+
+export interface IGetSpeciesList {
+  species: number[];
+  species_names: string[];
 }
 
 export enum UPDATE_GET_SURVEY_ENTITIES {

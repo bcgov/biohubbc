@@ -14,8 +14,10 @@ const defaultLog = getLogger('models/survey-view');
 export class GetViewSurveyDetailsData {
   id: number;
   survey_name: string;
-  focal_species: (string | number)[];
-  ancillary_species: (string | number)[];
+  focal_species: number[];
+  focal_species_names: string[];
+  ancillary_species: number[];
+  ancillary_species_names: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -46,7 +48,9 @@ export class GetViewSurveyDetailsData {
     this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
     this.survey_name = surveyDetailsData?.name || '';
     this.focal_species = surveyDetailsData?.focal_species || [];
+    this.focal_species_names = surveyDetailsData?.focal_species_names || [];
     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
+    this.ancillary_species_names = surveyDetailsData?.ancillary_species_names || [];
     this.start_date = surveyDetailsData?.start_date || '';
     this.end_date = surveyDetailsData?.end_date || '';
     this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
@@ -67,41 +71,18 @@ export class GetViewSurveyDetailsData {
   }
 }
 
-/**
- * Pre-processes GET surveys list data
- *
- * @export
- * @class GetSurveyListData
- */
-export class GetSurveyListData {
-  surveys: any[];
+export class GetSpeciesData {
+  species: number[];
+  species_names: string[];
 
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'GetSurveyListData', message: 'params', obj });
-
-    const surveysList: any[] = [];
-    const seenSurveyIds: number[] = [];
-
-    obj &&
-      obj.map((survey: any) => {
-        if (!seenSurveyIds.includes(survey.id)) {
-          surveysList.push({
-            id: survey.id,
-            name: survey.name,
-            start_date: survey.start_date,
-            end_date: survey.end_date,
-            species: [survey.species],
-            publish_timestamp: survey.publish_timestamp
-          });
-        } else {
-          const index = surveysList.findIndex((item) => item.id === survey.id);
-          surveysList[index].species = [...surveysList[index].species, survey.species];
-        }
-
-        seenSurveyIds.push(survey.id);
+  constructor(input?: any[]) {
+    this.species = [];
+    this.species_names = [];
+    input?.length &&
+      input.forEach((item: any) => {
+        this.species.push(Number(item.id));
+        this.species_names.push(item.label);
       });
-
-    this.surveys = (surveysList.length && surveysList) || [];
   }
 }
 
@@ -131,5 +112,64 @@ export class GetSurveyFundingSources {
       });
 
     this.fundingSources = surveyFundingSourcesList;
+  }
+}
+
+export class GetFocalSpeciesData {
+  focal_species: number[];
+  focal_species_names: string[];
+
+  constructor(input?: any[]) {
+    this.focal_species = [];
+    this.focal_species_names = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        this.focal_species.push(Number(item.id));
+        this.focal_species_names.push(item.label);
+      });
+  }
+}
+
+export class GetAncillarySpeciesData {
+  ancillary_species: number[];
+  ancillary_species_names: string[];
+
+  constructor(input?: any[]) {
+    this.ancillary_species = [];
+    this.ancillary_species_names = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        this.ancillary_species.push(Number(item.id));
+        this.ancillary_species_names.push(item.label);
+      });
+  }
+}
+
+export type SurveyObject = {
+  survey: GetSurveyData;
+  species: GetSpeciesData;
+};
+
+export class GetSurveyData {
+  id: number;
+  name: string;
+  start_date: string;
+  end_date: string;
+  publish_status: string;
+  completion_status: number;
+
+  constructor(surveyData?: any) {
+    this.id = surveyData?.survey_id || null;
+    this.name = surveyData?.name || '';
+    this.start_date = surveyData?.start_date || null;
+    this.end_date = surveyData?.end_date || null;
+    this.publish_status = surveyData?.publish_timestamp ? 'Published' : 'Unpublished';
+    this.completion_status =
+      (surveyData.end_date &&
+        moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
+        COMPLETION_STATUS.COMPLETED) ||
+      COMPLETION_STATUS.ACTIVE;
   }
 }

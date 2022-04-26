@@ -28,6 +28,7 @@
     "npm": ">= 6.0.0"
   },
   "dependencies": {
+    "@elastic/elasticsearch": "~8.1.0",
     "adm-zip": "~0.5.5",
     "ajv": "~8.6.3",
     "aws-sdk": "~2.742.0",
