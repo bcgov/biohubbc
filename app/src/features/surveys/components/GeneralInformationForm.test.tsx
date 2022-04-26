@@ -4,9 +4,21 @@ import GeneralInformationForm, {
   GeneralInformationYupSchema
 } from 'features/surveys/components/GeneralInformationForm';
 import { Formik } from 'formik';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
-import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+
+jest.mock('../../../hooks/useBioHubApi');
+const mockUseBiohubApi = {
+  taxonomy: {
+    searchSpecies: jest.fn().mockResolvedValue({ searchResponse: [] }),
+    getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
+  }
+};
+
+const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBiohubApi>).mockReturnValue(
+  mockUseBiohubApi
+);
 
 const handleSaveAndNext = jest.fn();
 
@@ -22,7 +34,11 @@ const generalInformationFilledValues = {
 };
 
 describe('General Information Form', () => {
-  it('renders correctly the empty component correctly', () => {
+
+  mockBiohubApi().taxonomy.searchSpecies.mockResolvedValue({ searchResponse: [] });
+  mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({ searchResponse: [] });
+
+  it('renders correctly the empty component correctly', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={GeneralInformationInitialValues}
@@ -54,7 +70,7 @@ describe('General Information Form', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly the filled component correctly', () => {
+  it('renders correctly the filled component correctly', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={generalInformationFilledValues}
@@ -86,7 +102,7 @@ describe('General Information Form', () => {
     expect(asFragment()).toMatchSnapshot();
   });
 
-  it('renders correctly when errors exist', () => {
+  it('renders correctly when errors exist', async () => {
     const { asFragment } = render(
       <Formik
         initialValues={generalInformationFilledValues}
