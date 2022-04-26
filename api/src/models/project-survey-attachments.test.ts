@@ -98,7 +98,7 @@ describe('PutReportAttachmentMetaData', () => {
       const putReportAttachmentData = new PutReportAttachmentMetadata(null);
 
       expect(putReportAttachmentData.title).to.equal(null);
-      expect(putReportAttachmentData.year_published).to.equal(null);
+      expect(putReportAttachmentData.year_published).to.equal(0);
       expect(putReportAttachmentData.authors).to.eql([]);
       expect(putReportAttachmentData.description).to.equal(null);
       expect(putReportAttachmentData.revision_count).to.equal(null);
