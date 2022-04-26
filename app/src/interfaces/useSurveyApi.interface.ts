@@ -1,4 +1,10 @@
+import { IAgreementsForm } from 'features/surveys/components/AgreementsForm';
+import { IGeneralInformationForm } from 'features/surveys/components/GeneralInformationForm';
+import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDataForm';
+import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
+import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
+import { StringBoolean } from 'types/misc';
 
 /**
  * Create survey post object.
@@ -6,28 +12,12 @@ import { Feature } from 'geojson';
  * @export
  * @interface ICreateSurveyRequest
  */
-export interface ICreateSurveyRequest {
-  id: number;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  category_rationale: string;
-  data_sharing_agreement_required: string;
-  end_date: string;
-  first_nations_id: number;
-  foippa_requirements_accepted: boolean;
-  proprietary_data_category: string;
-  proprietor_name: string;
-  sedis_procedures_accepted: boolean;
-  focal_species: number[];
-  ancillary_species: number[];
-  start_date: string;
-  survey_area_name: string;
-  survey_data_proprietary: string;
-  survey_name: string;
-  survey_purpose: string;
-  geometry: Feature[];
-  permit_number: string;
-}
+export interface ICreateSurveyRequest
+  extends IGeneralInformationForm,
+    IPurposeAndMethodologyForm,
+    IStudyAreaForm,
+    IProprietaryDataForm,
+    IAgreementsForm {}
 
 /**
  * Create survey response object.
@@ -50,10 +40,10 @@ export interface ISurveyFundingSourceForView {
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   survey_name: string;
-  survey_purpose: string;
-  focal_species: string[];
-  ancillary_species: string[];
-  common_survey_methodology: string;
+  focal_species: number[];
+  focal_species_names: string[];
+  ancillary_species: number[];
+  ancillary_species_names: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -68,6 +58,16 @@ export interface IGetSurveyForViewResponseDetails {
   occurrence_submission_id: number | null;
 }
 
+export interface IGetSurveyForViewResponsePurposeAndMethodology {
+  id: number;
+  intended_outcome_id: number;
+  additional_details: string;
+  field_method_id: number;
+  ecological_season_id: number;
+  vantage_code_ids: number[];
+  surveyed_all_areas: StringBoolean;
+}
+
 export interface IGetSurveyForViewResponseProprietor {
   id: number;
   proprietary_data_category_name: string;
@@ -80,10 +80,8 @@ export interface IGetSurveyForViewResponseProprietor {
 export interface IGetSurveyForUpdateResponseDetails {
   id: number;
   survey_name: string;
-  survey_purpose: string;
   focal_species: number[];
   ancillary_species: number[];
-  common_survey_methodology_id: number;
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -94,6 +92,17 @@ export interface IGetSurveyForUpdateResponseDetails {
   permit_number: string;
   permit_type: string;
   funding_sources: number[];
+}
+
+export interface IGetSurveyForUpdateResponsePurposeAndMethodology {
+  id?: number;
+  intended_outcome_id: number;
+  additional_details: string;
+  field_method_id: number;
+  ecological_season_id: number;
+  vantage_code_ids: number[];
+  surveyed_all_areas: StringBoolean;
+  revision_count?: number;
 }
 
 export interface IGetSurveyForUpdateResponseProprietor {
@@ -117,6 +126,7 @@ export interface IGetSurveyForUpdateResponseProprietor {
  */
 export interface IGetSurveyForUpdateResponse {
   survey_details?: IGetSurveyForUpdateResponseDetails;
+  survey_purpose_and_methodology?: IGetSurveyForUpdateResponsePurposeAndMethodology | null;
   survey_proprietor?: IGetSurveyForUpdateResponseProprietor | null;
 }
 
@@ -128,6 +138,7 @@ export interface IGetSurveyForUpdateResponse {
  */
 export interface IGetSurveyForViewResponse {
   survey_details: IGetSurveyForViewResponseDetails;
+  survey_purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   survey_proprietor: IGetSurveyForViewResponseProprietor;
 }
 
@@ -148,16 +159,27 @@ export type IUpdateSurveyRequest = IGetSurveyForUpdateResponse;
  */
 export interface IGetSurveysListResponse {
   id: number;
+  survey: IGetSurveyDetailsResponse;
+  species: IGetSpeciesList;
+}
+
+export interface IGetSurveyDetailsResponse {
+  id: number;
   name: string;
-  species: string[];
   start_date: string;
   end_date: string;
   publish_status: string;
   completion_status: string;
 }
 
+export interface IGetSpeciesList {
+  species: number[];
+  species_names: string[];
+}
+
 export enum UPDATE_GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
+  survey_purpose_and_methodology = 'survey_purpose_and_methodology',
   survey_proprietor = 'survey_proprietor'
 }
 

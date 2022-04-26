@@ -92,10 +92,9 @@ describe('getSurveyForUpdate', () => {
     const survey_details = {
       id: 1,
       name: 'name',
-      objectives: 'objective',
       focal_species: [1],
       ancillary_species: [3],
-      common_survey_methodology_id: 1,
+      additional_details: 'details',
       start_date: '2020-04-04',
       end_date: '2020-05-05',
       lead_first_name: 'first',
@@ -124,6 +123,7 @@ describe('getSurveyForUpdate', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`some query`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
 
     const requestHandler = update.getSurveyForUpdate();
@@ -134,10 +134,8 @@ describe('getSurveyForUpdate', () => {
       survey_details: {
         id: 1,
         survey_name: survey_details.name,
-        survey_purpose: survey_details.objectives,
         focal_species: survey_details.focal_species,
         ancillary_species: survey_details.ancillary_species,
-        common_survey_methodology_id: survey_details.common_survey_methodology_id,
         start_date: survey_details.start_date,
         end_date: survey_details.end_date,
         biologist_first_name: survey_details.lead_first_name,
@@ -151,6 +149,7 @@ describe('getSurveyForUpdate', () => {
         publish_date: '',
         funding_sources: survey_details.pfs_id
       },
+      survey_purpose_and_methodology: null,
       survey_proprietor: null
     });
   });
@@ -203,6 +202,7 @@ describe('getSurveyForUpdate', () => {
 
     expect(mockRes.sendValue).to.eql({
       survey_details: null,
+      survey_purpose_and_methodology: null,
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,
         data_sharing_agreement_required: survey_proprietor.data_sharing_agreement_required,
@@ -218,7 +218,7 @@ describe('getSurveyForUpdate', () => {
     });
   });
 
-  it('should return survey details and proprietor info when no entity is specified, on success', async () => {
+  it('should return survey details, survey purpose and methodology, as well as proprietor info when no entity is specified, on success', async () => {
     const dbConnectionObj = getMockDBConnection();
 
     const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
@@ -231,10 +231,8 @@ describe('getSurveyForUpdate', () => {
     const survey_details = {
       id: 1,
       name: 'name',
-      objectives: 'objective',
       focal_species: [1],
       ancillary_species: [3],
-      common_survey_methodology_id: 1,
       start_date: '2020-04-04',
       end_date: '2020-05-05',
       lead_first_name: 'first',
@@ -244,6 +242,17 @@ describe('getSurveyForUpdate', () => {
       geometry: [],
       publish_timestamp: null,
       pfs_id: [10]
+    };
+
+    const survey_purpose_and_methodology = {
+      id: 1,
+      field_method_id: 1,
+      additional_details: 'details',
+      ecological_season_id: 1,
+      intended_outcome_id: 8,
+      surveyed_all_areas: true,
+      vantage_id: 2,
+      revision_count: 0
     };
 
     const survey_proprietor = {
@@ -268,6 +277,10 @@ describe('getSurveyForUpdate', () => {
       })
       .onSecondCall()
       .resolves({
+        rows: [survey_purpose_and_methodology]
+      })
+      .onThirdCall()
+      .resolves({
         rows: [survey_proprietor]
       });
 
@@ -280,6 +293,7 @@ describe('getSurveyForUpdate', () => {
     });
 
     sinon.stub(survey_queries, 'getSurveyDetailsForUpdateSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`some query`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`some query`);
 
     const requestHandler = update.getSurveyForUpdate();
@@ -290,10 +304,8 @@ describe('getSurveyForUpdate', () => {
       survey_details: {
         id: 1,
         survey_name: survey_details.name,
-        survey_purpose: survey_details.objectives,
         focal_species: survey_details.focal_species,
         ancillary_species: survey_details.ancillary_species,
-        common_survey_methodology_id: survey_details.common_survey_methodology_id,
         start_date: survey_details.start_date,
         end_date: survey_details.end_date,
         biologist_first_name: survey_details.lead_first_name,
@@ -306,6 +318,16 @@ describe('getSurveyForUpdate', () => {
         completion_status: COMPLETION_STATUS.COMPLETED,
         publish_date: '',
         funding_sources: survey_details.pfs_id
+      },
+      survey_purpose_and_methodology: {
+        id: 1,
+        intended_outcome_id: 8,
+        field_method_id: 1,
+        additional_details: 'details',
+        ecological_season_id: 1,
+        vantage_code_ids: [2],
+        surveyed_all_areas: 'true',
+        revision_count: 0
       },
       survey_proprietor: {
         category_rationale: survey_proprietor.category_rationale,
@@ -340,7 +362,6 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -382,7 +403,6 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -453,7 +473,6 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -495,7 +514,6 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -539,7 +557,7 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
+
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -588,7 +606,6 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -670,7 +687,6 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -719,7 +735,6 @@ describe('updateSurvey', () => {
     mockReq.body = {
       survey_details: {
         survey_name: 'name',
-        survey_purpose: 'purpose',
         species: 'species',
         start_date: '2020-03-03',
         end_date: '2020-04-04',
@@ -775,6 +790,7 @@ describe('updateSurveyProprietorData', () => {
       focal_species: [1],
       ancillary_species: [2]
     },
+    survey_purpose_and_methodology: {},
     survey_proprietor: {
       id: 0,
       survey_data_proprietary: 'true'
@@ -873,6 +889,7 @@ describe('updateSurveyDetailsData', () => {
       focal_species: [1],
       ancillary_species: [2]
     },
+    survey_purpose_and_methodology: null,
     survey_proprietor: null
   };
 

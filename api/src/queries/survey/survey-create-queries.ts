@@ -1,9 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
-import { getLogger } from '../../utils/logger';
-import { queries } from '../queries';
 
-const defaultLog = getLogger('queries/survey/survey-create-queries');
+import { queries } from '../queries';
 
 /**
  * SQL query to insert a survey row.
@@ -13,13 +11,6 @@ const defaultLog = getLogger('queries/survey/survey-create-queries');
  * @returns {SQLStatement} sql query object
  */
 export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postSurveySQL',
-    message: 'params',
-    projectId,
-    survey
-  });
-
   if (!projectId || !survey) {
     return null;
   }
@@ -28,26 +19,32 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
     INSERT INTO survey (
       project_id,
       name,
-      objectives,
+      additional_details,
+      ecological_season_id,
+      intended_outcome_id,
       start_date,
       end_date,
       lead_first_name,
       lead_last_name,
       location_name,
       geojson,
-      common_survey_methodology_id,
+      field_method_id,
+      surveyed_all_areas,
       geography
     ) VALUES (
       ${projectId},
       ${survey.survey_name},
-      ${survey.survey_purpose},
+      ${survey.additional_details},
+      ${survey.ecological_season_id},
+      ${survey.intended_outcome_id},
       ${survey.start_date},
       ${survey.end_date},
       ${survey.biologist_first_name},
       ${survey.biologist_last_name},
       ${survey.survey_area_name},
       ${JSON.stringify(survey.geometry)},
-      ${survey.common_survey_methodology_id}
+      ${survey.field_method_id},
+      ${survey.surveyed_all_areas}
   `;
 
   if (survey.geometry && survey.geometry.length) {
@@ -76,13 +73,6 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
       survey_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'postSurveySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -97,13 +87,6 @@ export const postSurveyProprietorSQL = (
   surveyId: number,
   survey_proprietor: PostSurveyProprietorData
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postSurveyProprietorSQL',
-    message: 'params',
-    surveyId,
-    survey_proprietor
-  });
-
   if (!surveyId || !survey_proprietor) {
     return null;
   }
@@ -128,13 +111,6 @@ export const postSurveyProprietorSQL = (
     survey_proprietor_id as id;
 `;
 
-  defaultLog.debug({
-    label: 'postSurveyProprietorSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -146,13 +122,6 @@ export const postSurveyProprietorSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveyFundingSourceSQL',
-    message: 'params',
-    surveyId,
-    fundingSourceId
-  });
-
   if (!surveyId || !fundingSourceId) {
     return null;
   }
@@ -166,13 +135,6 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
       ${fundingSourceId}
     );
   `;
-
-  defaultLog.debug({
-    label: 'insertSurveyFundingSourceSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -194,16 +156,6 @@ export const postNewSurveyPermitSQL = (
   permitNumber: string,
   permitType: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postNewSurveyPermitSQL',
-    message: 'params',
-    systemUserId,
-    projectId,
-    surveyId,
-    permitNumber,
-    permitType
-  });
-
   if (!systemUserId || !projectId || !surveyId || !permitNumber || !permitType) {
     return null;
   }
@@ -224,13 +176,6 @@ export const postNewSurveyPermitSQL = (
     );
   `;
 
-  defaultLog.debug({
-    label: 'postNewSurveyPermitSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -242,8 +187,6 @@ export const postNewSurveyPermitSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postFocalSpeciesSQL', message: 'params', speciesId, surveyId });
-
   if (!speciesId || !surveyId) {
     return null;
   }
@@ -260,13 +203,6 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
     ) RETURNING study_species_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'postFocalSpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -278,8 +214,6 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
  * @returns {SQLStatement} sql query object
  */
 export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'postAncillarySpeciesSQL', message: 'params', speciesId, surveyId });
-
   if (!speciesId || !surveyId) {
     return null;
   }
@@ -296,12 +230,30 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
     ) RETURNING study_species_id as id;
   `;
 
-  defaultLog.debug({
-    label: 'postAncillarySpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
+  return sqlStatement;
+};
+
+/**
+ * SQL query to insert a ancillary species row into the study_species table.
+ *
+ * @param {number} speciesId
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
+  if (!vantageCodeId || !surveyId) {
+    return null;
+  }
+
+  const sqlStatement: SQLStatement = SQL`
+    INSERT INTO survey_vantage (
+      vantage_id,
+      survey_id
+    ) VALUES (
+      ${vantageCodeId},
+      ${surveyId}
+    ) RETURNING survey_vantage_id as id;
+  `;
 
   return sqlStatement;
 };

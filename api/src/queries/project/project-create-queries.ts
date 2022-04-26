@@ -4,13 +4,10 @@ import {
   PostFundingSource,
   PostLocationData,
   PostObjectivesData,
-  PostProjectData,
-  PostProjectObject
+  PostProjectData
 } from '../../models/project-create';
-import { getLogger } from '../../utils/logger';
-import { queries } from '../queries';
 
-const defaultLog = getLogger('queries/project/project-create-queries');
+import { queries } from '../queries';
 
 /**
  * SQL query to insert a project row.
@@ -21,8 +18,6 @@ const defaultLog = getLogger('queries/project/project-create-queries');
 export const postProjectSQL = (
   project: PostProjectData & PostLocationData & PostCoordinatorData & PostObjectivesData
 ): SQLStatement | null => {
-  defaultLog.debug({ label: 'postProjectSQL', message: 'params', PostProjectObject });
-
   if (!project) {
     return null;
   }
@@ -87,13 +82,6 @@ export const postProjectSQL = (
       project_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'postProjectSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -107,8 +95,6 @@ export const postProjectFundingSourceSQL = (
   fundingSource: PostFundingSource,
   projectId: number
 ): SQLStatement | null => {
-  defaultLog.debug({ label: 'postProjectFundingSourceSQL', message: 'params', fundingSource, projectId });
-
   if (!fundingSource || !projectId) {
     return null;
   }
@@ -133,13 +119,6 @@ export const postProjectFundingSourceSQL = (
         project_funding_source_id as id;
     `;
 
-  defaultLog.debug({
-    label: 'postProjectFundingSourceSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -153,13 +132,6 @@ export const postProjectStakeholderPartnershipSQL = (
   stakeholderPartnership: string,
   projectId: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectStakeholderPartnershipSQL',
-    message: 'params',
-    stakeholderPartnership,
-    projectId
-  });
-
   if (!stakeholderPartnership || !projectId) {
     return null;
   }
@@ -177,13 +149,6 @@ export const postProjectStakeholderPartnershipSQL = (
         stakeholder_partnership_id as id;
     `;
 
-  defaultLog.debug({
-    label: 'postProjectStakeholderPartnershipSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -194,13 +159,6 @@ export const postProjectStakeholderPartnershipSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const postProjectIndigenousNationSQL = (indigenousNationId: number, projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectIndigenousNationSQL',
-    message: 'params',
-    indigenousNationId,
-    projectId
-  });
-
   if (!indigenousNationId || !projectId) {
     return null;
   }
@@ -218,13 +176,6 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
         first_nations_id as id;
     `;
 
-  defaultLog.debug({
-    label: 'postProjectIndigenousNationSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -236,13 +187,6 @@ export const postProjectIndigenousNationSQL = (indigenousNationId: number, proje
  * @returns {SQLStatement} sql query object
  */
 export const postProjectIUCNSQL = (iucn3_id: number, project_id: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectIUCNSQL',
-    message: 'params',
-    iucn3_id,
-    project_id
-  });
-
   if (!iucn3_id || !project_id) {
     return null;
   }
@@ -259,13 +203,6 @@ export const postProjectIUCNSQL = (iucn3_id: number, project_id: number): SQLSta
         project_iucn_action_classification_id as id;
     `;
 
-  defaultLog.debug({
-    label: 'postProjectIUCNSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -277,13 +214,6 @@ export const postProjectIUCNSQL = (iucn3_id: number, project_id: number): SQLSta
  * @returns {SQLStatement} sql query object
  */
 export const postProjectActivitySQL = (activityId: number, projectId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectActivity',
-    message: 'params',
-    activityId,
-    projectId
-  });
-
   if (!activityId || !projectId) {
     return null;
   }
@@ -299,13 +229,6 @@ export const postProjectActivitySQL = (activityId: number, projectId: number): S
       RETURNING
         project_activity_id as id;
     `;
-
-  defaultLog.debug({
-    label: 'postProjectActivity',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

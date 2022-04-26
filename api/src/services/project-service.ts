@@ -1,4 +1,5 @@
 import moment from 'moment';
+import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { HTTP400, HTTP409, HTTP500 } from '../errors/custom-error';
@@ -21,23 +22,24 @@ import {
   PutProjectData
 } from '../models/project-update';
 import {
-  GetIUCNClassificationData,
-  GetPermitData,
-  GetProjectData,
   GetCoordinatorData,
+  GetFundingData,
+  GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetFundingData,
+  GetPermitData,
+  GetProjectData,
+  GetSpeciesData,
   IGetProject
 } from '../models/project-view';
-import { GetPublicCoordinatorData, GetPublicProjectData } from '../models/public/project';
 import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
 import { userHasValidRole } from '../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { DBService } from './service';
+import { TaxonomyService } from './taxonomy-service';
 
 export class ProjectService extends DBService {
   /**
@@ -162,7 +164,7 @@ export class ProjectService extends DBService {
       name: row.name,
       start_date: row.start_date,
       end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency_name,
+      coordinator_agency: row.coordinator_agency,
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
@@ -171,55 +173,37 @@ export class ProjectService extends DBService {
     }));
   }
 
-  async getPublicProjectById(projectId: number): Promise<any> {
-    const getProjectSQLStatement = queries.public.getPublicProjectSQL(projectId);
-    const getProjectActivitiesSQLStatement = queries.public.getActivitiesByPublicProjectSQL(projectId);
-
-    if (!getProjectSQLStatement || !getProjectActivitiesSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
+  async getPublicProjectById(projectId: number): Promise<IGetProject> {
     const [
       projectData,
-      activityData,
+      objectiveData,
+      coordinatorData,
       permitData,
       locationData,
-      partnershipsData,
-      IUCNClassificationData,
-      fundingData
+      iucnData,
+      fundingData,
+      partnershipsData
     ] = await Promise.all([
-      await this.connection.query(getProjectSQLStatement.text, getProjectSQLStatement.values),
-      await this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values),
-      await this.getPermitData(projectId),
-      await this.getLocationData(projectId),
-      await this.getPartnershipsData(projectId),
-      await this.getIUCNClassificationData(projectId),
-      await this.getFundingData(projectId)
+      this.getPublicProjectData(projectId),
+      this.getObjectivesData(projectId),
+      this.getCoordinatorData(projectId),
+      this.getPermitData(projectId),
+      this.getLocationData(projectId),
+      this.getIUCNClassificationData(projectId),
+      this.getFundingData(projectId),
+      this.getPartnershipsData(projectId)
     ]);
-
-    const getProjectData =
-      (projectData &&
-        projectData.rows &&
-        activityData &&
-        activityData.rows &&
-        new GetPublicProjectData(projectData.rows[0], activityData.rows)) ||
-      null;
-
-    const getObjectivesData = (projectData && projectData.rows && new GetObjectivesData(projectData.rows[0])) || null;
-
-    const getCoordinatorData =
-      (projectData && projectData.rows && new GetPublicCoordinatorData(projectData.rows[0])) || null;
 
     return {
       id: projectId,
-      project: getProjectData,
-      objectives: getObjectivesData,
-      coordinator: getCoordinatorData,
+      project: projectData,
+      objectives: objectiveData,
+      coordinator: coordinatorData,
       permit: permitData,
       location: locationData,
-      partnerships: partnershipsData,
-      iucn: IUCNClassificationData,
-      funding: fundingData
+      iucn: iucnData,
+      funding: fundingData,
+      partnerships: partnershipsData
     };
   }
 
@@ -1139,5 +1123,53 @@ export class ProjectService extends DBService {
     }
 
     return true;
+  }
+
+  async getPublicProjectData(projectId: number): Promise<GetProjectData> {
+    const getProjectSqlStatement = queries.public.getPublicProjectSQL(projectId);
+    const getProjectActivitiesSQLStatement = queries.public.getActivitiesByPublicProjectSQL(projectId);
+
+    if (!getProjectSqlStatement || !getProjectActivitiesSQLStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const [project, activity] = await Promise.all([
+      this.connection.query(getProjectSqlStatement.text, getProjectSqlStatement.values),
+      this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
+    ]);
+
+    const projectResult = (project && project.rows && project.rows[0]) || null;
+    const activityResult = (activity && activity.rows) || null;
+
+    if (!projectResult || !activityResult) {
+      throw new HTTP400('Failed to get project data');
+    }
+
+    return new GetProjectData(projectResult, activityResult);
+  }
+
+  async getSpeciesData(projectId: number): Promise<GetSpeciesData> {
+    const sqlStatement = SQL`
+      SELECT
+        wldtaxonomic_units_id
+      FROM
+        project_species
+      WHERE
+        project_id = ${projectId};
+      `;
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new HTTP400('Failed to get species data');
+    }
+
+    const taxonomyService = new TaxonomyService();
+
+    const species = await taxonomyService.getSpeciesFromIds(result);
+
+    return new GetSpeciesData(species);
   }
 }

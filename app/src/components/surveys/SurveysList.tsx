@@ -88,16 +88,22 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       underline="always"
                       component="button"
                       variant="body2"
-                      onClick={() => history.push(`/admin/projects/${props.projectId}/surveys/${row.id}/details`)}>
-                      {row.name}
+                      onClick={() =>
+                        history.push(`/admin/projects/${props.projectId}/surveys/${row.survey.id}/details`)
+                      }>
+                      {row.survey.name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.species?.join(', ')}</TableCell>
+                  <TableCell>{row.species?.species_names?.join(', ')}</TableCell>
                   <TableCell>
-                    {getFormattedDateRangeString(DATE_FORMAT.ShortMediumDateFormat, row.start_date, row.end_date)}
+                    {getFormattedDateRangeString(
+                      DATE_FORMAT.ShortMediumDateFormat,
+                      row.survey.start_date,
+                      row.survey.end_date
+                    )}
                   </TableCell>
-                  <TableCell>{getChipIcon(row.completion_status)}</TableCell>
-                  <TableCell>{getChipIcon(row.publish_status)}</TableCell>
+                  <TableCell>{getChipIcon(row.survey.completion_status)}</TableCell>
+                  <TableCell>{getChipIcon(row.survey.publish_status)}</TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (

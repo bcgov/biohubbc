@@ -14,20 +14,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_name).to.equal(null);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(null);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
-    });
-
-    it('sets common survey methodology id', () => {
-      expect(data.common_survey_methodology_id).to.equal(null);
     });
 
     it('sets start_date', () => {
@@ -64,6 +56,10 @@ describe('PostSurveyObject', () => {
 
     it('sets survey_proprietor', () => {
       expect(data.survey_proprietor).to.equal(undefined);
+    });
+
+    it('sets surveyed_all_areas', () => {
+      expect(data.surveyed_all_areas).to.equal(false);
     });
   });
 
@@ -105,7 +101,8 @@ describe('PostSurveyObject', () => {
       first_nations_id: null,
       category_rationale: null,
       proprietor_name: null,
-      data_sharing_agreement_required: 'false'
+      data_sharing_agreement_required: 'false',
+      surveyed_all_areas: 'true'
     };
 
     before(() => {
@@ -116,20 +113,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_name).to.equal(surveyObj.survey_name);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(surveyObj.survey_purpose);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyObj.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
-    });
-
-    it('sets common_survey_methodology_id', () => {
-      expect(data.common_survey_methodology_id).to.eql(surveyObj.common_survey_methodology_id);
     });
 
     it('sets start_date', () => {
@@ -171,6 +160,10 @@ describe('PostSurveyObject', () => {
     it('sets the geometry', () => {
       expect(data.geometry).to.eql(surveyObj.geometry);
     });
+
+    it('sets surveyed_all_areas', () => {
+      expect(data.surveyed_all_areas).to.equal(true);
+    });
   });
 
   describe('All values provided with survey data proprietary is true', () => {
@@ -194,7 +187,8 @@ describe('PostSurveyObject', () => {
       first_nations_id: null,
       category_rationale: 'rationale',
       proprietor_name: 'name',
-      data_sharing_agreement_required: 'true'
+      data_sharing_agreement_required: 'true',
+      surveyed_all_areas: 'true'
     };
 
     before(() => {
@@ -205,20 +199,12 @@ describe('PostSurveyObject', () => {
       expect(data.survey_name).to.equal(surveyObj.survey_name);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(surveyObj.survey_purpose);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyObj.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyObj.ancillary_species);
-    });
-
-    it('sets common_survey_methodology_id', () => {
-      expect(data.common_survey_methodology_id).to.eql(surveyObj.common_survey_methodology_id);
     });
 
     it('sets start_date', () => {
@@ -261,6 +247,10 @@ describe('PostSurveyObject', () => {
         proprietor_name: 'name',
         disa_required: true
       });
+    });
+
+    it('sets surveyed_all_areas', () => {
+      expect(data.surveyed_all_areas).to.equal(true);
     });
   });
 });

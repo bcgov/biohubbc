@@ -9,7 +9,6 @@ export const codes: IGetAllCodeSetsResponse = {
   activity: [{ id: 1, name: 'Activity code' }],
   project_type: [{ id: 1, name: 'Project type' }],
   region: [{ id: 1, name: 'Region code' }],
-  species: [{ id: 1, name: 'Species code' }],
   proprietor_type: [
     { id: 1, name: 'Proprietor code 1', is_first_nation: false },
     { id: 2, name: 'First Nations Land', is_first_nation: true }
@@ -40,8 +39,20 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  common_survey_methodologies: [
-    { id: 1, name: 'Recruitment' },
-    { id: 2, name: 'SRB' }
+  field_methods: [
+    { id: 1, name: 'Recruitment', description: 'Description' },
+    { id: 2, name: 'SRB', description: 'Description' }
+  ],
+  ecological_seasons: [
+    { id: 1, name: 'Season 1', description: 'Description' },
+    { id: 2, name: 'Season 2', description: 'Description' }
+  ],
+  vantage_codes: [
+    { id: 1, name: 'Vantage Code 1' },
+    { id: 2, name: 'Vantage Code 2' }
+  ],
+  intended_outcomes: [
+    { id: 1, name: 'Intended Outcome 1', description: 'Description 1' },
+    { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
   ]
 };

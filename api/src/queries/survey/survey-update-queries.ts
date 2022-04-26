@@ -1,9 +1,11 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
-import { getLogger } from '../../utils/logger';
-import { queries } from '../queries';
+import {
+  PutSurveyDetailsData,
+  PutSurveyProprietorData,
+  PutSurveyPurposeAndMethodologyData
+} from '../../models/survey-update';
 
-const defaultLog = getLogger('queries/survey/survey-update-queries');
+import { queries } from '../queries';
 
 /**
  * SQL query to update a permit row based on an old survey association.
@@ -13,32 +15,17 @@ const defaultLog = getLogger('queries/survey/survey-update-queries');
  * @returns {SQLStatement} sql query object
  */
 export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'unassociatePermitFromSurveySQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE permit
     SET
       survey_id = ${null}
     WHERE
       survey_id = ${surveyId};
   `;
-
-  defaultLog.debug({
-    label: 'unassociatePermitFromSurveySQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -49,18 +36,11 @@ export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement |
  * @returns {SQLStatement} sql query object
  */
 export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: string): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putNewSurveyPermitNumberSQL',
-    message: 'params',
-    surveyId,
-    permitNumber
-  });
-
   if (!surveyId || !permitNumber) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     UPDATE permit
     SET
       survey_id = ${surveyId}
@@ -69,15 +49,6 @@ export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: stri
     AND
       survey_id IS NULL;
   `;
-
-  defaultLog.debug({
-    label: 'putNewSurveyPermitNumberSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -94,15 +65,6 @@ export const putSurveyDetailsSQL = (
   data: PutSurveyDetailsData | null,
   revision_count: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putSurveyDetailsSQL',
-    message: 'params',
-    projectId,
-    surveyId,
-    data,
-    revision_count
-  });
-
   if (!projectId || !surveyId || !data) {
     return null;
   }
@@ -133,14 +95,12 @@ export const putSurveyDetailsSQL = (
     UPDATE survey
     SET
       name = ${data.name},
-      objectives = ${data.objectives},
       start_date = ${data.start_date},
       end_date = ${data.end_date},
       lead_first_name = ${data.lead_first_name},
       lead_last_name = ${data.lead_last_name},
       location_name = ${data.location_name},
       geojson = ${JSON.stringify(data.geometry)},
-      common_survey_methodology_id = ${data.common_survey_methodology_id},
       geography =
   `;
 
@@ -155,13 +115,6 @@ export const putSurveyDetailsSQL = (
       revision_count = ${revision_count};
   `);
 
-  defaultLog.debug({
-    label: 'putSurveyDetailsSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -174,19 +127,13 @@ export const putSurveyDetailsSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyProprietorData | null): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'putSurveyProprietorSQL',
-    message: 'params',
-    surveyId,
-    data
-  });
-
   if (!surveyId || !data) {
     return null;
   }
 
-  const sqlStatement = SQL`
-    UPDATE survey_proprietor
+  return SQL`
+    UPDATE
+      survey_proprietor
     SET
       proprietor_type_id = ${data.prt_id},
       first_nations_id = ${data.fn_id},
@@ -199,15 +146,6 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
     AND
       survey_id = ${surveyId}
   `;
-
-  defaultLog.debug({
-    label: 'putSurveyProprietorSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -218,8 +156,6 @@ export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyPropriet
  * @returns {SQLStatement} sql query object
  */
 export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean): SQLStatement | null => {
-  defaultLog.debug({ label: 'updateSurveyPublishStatusSQL', message: 'params', surveyId, publish });
-
   if (!surveyId) {
     return null;
   }
@@ -253,12 +189,38 @@ export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean)
       survey_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'updateSurveyPublishStatusSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
+};
+
+/**
+ * SQL query to update a survey row.
+ *
+ * @param {number} projectId
+ * @param {number} surveyId
+ * @param {PutSurveyPurposeAndMethodologyData} data
+ * @returns {SQLStatement} sql query object
+ */
+export const putSurveyPurposeAndMethodologySQL = (
+  surveyId: number,
+  data: PutSurveyPurposeAndMethodologyData | null,
+  revision_count: number
+): SQLStatement | null => {
+  if (!surveyId || !data) {
+    return null;
+  }
+
+  return SQL`
+    UPDATE
+      survey
+    SET
+      field_method_id = ${data.field_method_id},
+     additional_details = ${data.additional_details},
+      ecological_season_id = ${data.ecological_season_id},
+      intended_outcome_id = ${data.intended_outcome_id},
+      surveyed_all_areas = ${data.surveyed_all_areas}
+    WHERE
+      survey_id = ${surveyId}
+    AND
+      revision_count = ${revision_count};
+  `;
 };

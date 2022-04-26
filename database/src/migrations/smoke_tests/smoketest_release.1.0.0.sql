@@ -1,4 +1,3 @@
--- smoketest_release.sql
 -- run as db super user
 \c biohub
 set role postgres;

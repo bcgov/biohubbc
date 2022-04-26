@@ -55,7 +55,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const {
     projectForViewData,
     surveyForViewData: { survey_details },
-    codes,
     refresh
   } = props;
 
@@ -169,16 +168,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         component={{
           element: (
             <GeneralInformationForm
-              species={
-                codes?.species?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
-              common_survey_methodologies={
-                codes?.common_survey_methodologies?.map((item) => {
-                  return { value: item.id, label: item.name };
-                }) || []
-              }
               permit_numbers={
                 surveyPermits?.map((item) => {
                   return { value: item.number, label: `${item.number} - ${item.type}` };
@@ -256,9 +245,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           toolbarProps={{ disableGutters: true }}
         />
         <Divider></Divider>
-        <Box my={3}>
-          <Typography variant="body1">{survey_details.survey_purpose}</Typography>
-        </Box>
         <dl>
           <Grid container spacing={2}>
             <Grid item xs={12} sm={6} md={4}>
@@ -267,14 +253,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               </Typography>
               <Typography component="dd" variant="body1">
                 {survey_details.survey_name}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Survey Methodology
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {survey_details.common_survey_methodology || 'No Survey Methodology'}
               </Typography>
             </Grid>
             <Grid item xs={12} sm={6} md={4}>
@@ -310,7 +288,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Focal Species
               </Typography>
-              {survey_details.focal_species.map((focalSpecies: string, index: number) => {
+              {survey_details.focal_species_names?.map((focalSpecies: string, index: number) => {
                 return (
                   <Typography component="dd" variant="body1" key={index}>
                     {focalSpecies}
@@ -322,14 +300,15 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Anciliary Species
               </Typography>
-              {survey_details.ancillary_species?.map((ancillarySpecies: string, index: number) => {
+
+              {survey_details.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
                 return (
                   <Typography component="dd" variant="body1" key={index}>
                     {ancillarySpecies}
                   </Typography>
                 );
               })}
-              {survey_details.ancillary_species.length <= 0 && (
+              {survey_details.ancillary_species_names?.length <= 0 && (
                 <Typography component="dd" variant="body1">
                   No Ancilliary Species
                 </Typography>

@@ -54,11 +54,6 @@ const appTheme = createMuiTheme({
       h6: {
         letterSpacing: '-0.01rem',
         fontWeight: 700
-      },
-      body1: {
-        '& + p': {
-          marginTop: '1rem'
-        }
       }
     },
     MuiAlert: {

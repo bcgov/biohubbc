@@ -1,10 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
-import SurveyGeneralInformation from './SurveyGeneralInformation';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import SurveyGeneralInformation from './SurveyGeneralInformation';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -13,6 +13,9 @@ const mockUseBiohubApi = {
     updateSurvey: jest.fn(),
     getSurveyPermits: jest.fn(),
     getSurveyFundingSources: jest.fn()
+  },
+  taxonomy: {
+    getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
   }
 };
 
@@ -40,6 +43,7 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.updateSurvey.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
     mockBiohubApi().survey.getSurveyFundingSources.mockClear();
+    mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
   });
 
   afterEach(() => {
@@ -54,8 +58,8 @@ describe('SurveyGeneralInformation', () => {
           survey_details: {
             ...getSurveyForViewResponse.survey_details,
             end_date: (null as unknown) as string,
-            focal_species: ['species 1'],
-            ancillary_species: ['ancillary species']
+            focal_species: [1],
+            ancillary_species: [2]
           }
         }}
         codes={codes}
@@ -79,8 +83,10 @@ describe('SurveyGeneralInformation', () => {
         id: 1,
         survey_name: 'survey name is this',
         survey_purpose: 'survey purpose is this',
-        focal_species: ['species 1'],
-        ancillary_species: ['ancillary species'],
+        focal_species: [1],
+        focal_species_names: ['focal species 1'],
+        ancillary_species: [2],
+        ancillary_species_names: ['ancillary species 2'],
         common_survey_methodology_id: 1,
         start_date: '1999-09-09',
         end_date: '2021-01-25',
@@ -147,8 +153,10 @@ describe('SurveyGeneralInformation', () => {
           id: 1,
           survey_name: 'survey name is this',
           survey_purpose: 'survey purpose is this',
-          focal_species: ['species 1'],
-          ancillary_species: ['ancillary species'],
+          focal_species: [1],
+          focal_species_names: ['focal species 1'],
+          ancillary_species: [2],
+          ancillary_species_names: ['ancillary species 2'],
           common_survey_methodology_id: 1,
           start_date: '1999-09-09',
           end_date: '2021-01-25',

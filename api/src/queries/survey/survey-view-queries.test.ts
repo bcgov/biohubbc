@@ -1,12 +1,13 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getSurveyListSQL } from '../../queries/survey/survey-view-queries';
+import { getSurveySQL } from '../../queries/survey/survey-view-queries';
 import {
   getAllAssignablePermitsForASurveySQL,
   getSurveyBasicDataForViewSQL,
   getSurveyFundingSourcesDataForViewSQL,
   getSurveyIdsSQL,
-  getSurveySpeciesDataForViewSQL
+  getSurveyFocalSpeciesDataForViewSQL,
+  getSurveyAncillarySpeciesDataForViewSQL
 } from './survey-view-queries';
 
 describe('getAllAssignablePermitsForASurveySQL', () => {
@@ -39,13 +40,13 @@ describe('getSurveyIdsSQL', () => {
 
 describe('getSurveyListSQL', () => {
   it('returns a null response when null project id param provided', () => {
-    const response = getSurveyListSQL((null as unknown) as number);
+    const response = getSurveySQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns a non null response when valid params passed in', () => {
-    const response = getSurveyListSQL(1);
+    const response = getSurveySQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -79,15 +80,29 @@ describe('getSurveyFundingSourcesDataForViewSQL', () => {
   });
 });
 
-describe('getSurveySpeciesDataForViewSQL', () => {
+describe('getSurveyFocalSpeciesDataForViewSQL', () => {
   it('returns a null response when null survey id param provided', () => {
-    const response = getSurveySpeciesDataForViewSQL((null as unknown) as number);
+    const response = getSurveyFocalSpeciesDataForViewSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns a non null response when valid params passed in', () => {
-    const response = getSurveySpeciesDataForViewSQL(1);
+    const response = getSurveyFocalSpeciesDataForViewSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getSurveyAncillarySpeciesDataForViewSQL', () => {
+  it('returns a null response when null survey id param provided', () => {
+    const response = getSurveyAncillarySpeciesDataForViewSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null response when valid params passed in', () => {
+    const response = getSurveyAncillarySpeciesDataForViewSQL(1);
 
     expect(response).to.not.be.null;
   });

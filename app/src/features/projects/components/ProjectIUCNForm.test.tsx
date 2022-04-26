@@ -186,7 +186,7 @@ describe('ProjectIUCNForm', () => {
       ]
     };
 
-    const { asFragment } = render(
+    const { getAllByText, getByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectIUCNFormYupSchema}
@@ -204,7 +204,10 @@ describe('ProjectIUCNForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getAllByText('Class 1').length).toEqual(2);
+    expect(getAllByText('A Sub-class 1').length).toEqual(2);
+    expect(getAllByText('A Sub-class 2').length).toEqual(2);
+    expect(getByText('Error is here')).toBeVisible();
   });
 
   it('renders correctly with error on the iucn classification individual fields', () => {
@@ -218,7 +221,7 @@ describe('ProjectIUCNForm', () => {
       ]
     };
 
-    const { asFragment } = render(
+    const { getByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectIUCNFormYupSchema}
@@ -247,7 +250,12 @@ describe('ProjectIUCNForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByText('Class 1')).toBeVisible();
+    expect(getByText('A Sub-class 1')).toBeVisible();
+    expect(getByText('A Sub-class 2')).toBeVisible();
+    expect(getByText('Error here')).toBeVisible();
+    expect(getByText('Error here too')).toBeVisible();
+    expect(getByText('Error again here too')).toBeVisible();
   });
 
   it('deletes existing iucn classifications when delete icon is clicked', async () => {

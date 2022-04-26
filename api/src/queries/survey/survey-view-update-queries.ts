@@ -1,7 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/survey/survey-view-queries');
 
 /**
  * SQL query to retrieve a survey row for update purposes.
@@ -10,21 +7,15 @@ const defaultLog = getLogger('queries/survey/survey-view-queries');
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyDetailsForUpdateSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       s.survey_id as id,
       s.name,
-      s.objectives,
+      s.additional_details,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -32,7 +23,8 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson as geometry,
       s.revision_count,
-      s.common_survey_methodology_id,
+      s.field_method_id,
+      s.surveyed_all_areas,
       s.publish_timestamp as publish_date,
       per.number,
       per.type,
@@ -46,7 +38,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
         array_agg(
           DISTINCT CASE
             WHEN ss.is_focal = TRUE
-              THEN wtu.wldtaxonomic_units_id
+              THEN ss.wldtaxonomic_units_id
             END
           ),
           NULL
@@ -55,17 +47,13 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
         array_agg(
           DISTINCT CASE
             WHEN ss.is_focal = FALSE
-              THEN wtu.wldtaxonomic_units_id
+              THEN ss.wldtaxonomic_units_id
             END
         ),
         NULL
       ) as ancillary_species
     FROM
-      wldtaxonomic_units as wtu
-    LEFT OUTER JOIN
       study_species as ss
-    ON
-      ss.wldtaxonomic_units_id = wtu.wldtaxonomic_units_id
     LEFT OUTER JOIN
       survey as s
     ON
@@ -83,7 +71,7 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
     group by
       s.survey_id,
       s.name,
-      s.objectives,
+      s.additional_details,
       s.start_date,
       s.end_date,
       s.lead_first_name,
@@ -91,20 +79,12 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson,
       s.revision_count,
-      s.common_survey_methodology_id,
+      s.field_method_id,
+      s.surveyed_all_areas,
       s.publish_timestamp,
       per.number,
       per.type;
   `;
-
-  defaultLog.debug({
-    label: 'getSurveyDetailsForUpdateSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -114,17 +94,11 @@ export const getSurveyDetailsForUpdateSQL = (surveyId: number): SQLStatement | n
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyProprietorForUpdateSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getSurveyProprietorForUpdateSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       sp.survey_proprietor_id as id,
       prt.name as proprietor_type_name,
@@ -148,13 +122,57 @@ export const getSurveyProprietorForUpdateSQL = (surveyId: number): SQLStatement 
     where
       survey_id = ${surveyId};
   `;
+};
 
-  defaultLog.debug({
-    label: 'getSurveyProprietorForUpdateSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
+/**
+ * SQL query to retrieve a survey_proprietor row.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
+    return null;
+  }
 
-  return sqlStatement;
+  return SQL`
+  SELECT
+    s.survey_id as id,
+    s.field_method_id,
+    s.additional_details,
+    s.ecological_season_id,
+    s.intended_outcome_id,
+    s.surveyed_all_areas,
+    sv.vantage_id,
+    s.revision_count
+  FROM
+    survey s
+  LEFT OUTER JOIN
+    survey_vantage sv
+  ON
+    sv.survey_id = s.survey_id
+  WHERE
+    s.survey_id = ${surveyId};
+  `;
+};
+
+/**
+ * SQL query to retrieve a survey_proprietor row.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
+    return null;
+  }
+
+  return SQL`
+    SELECT
+      vantage_id
+    FROM
+      survey_vantage
+    WHERE
+      survey_id = ${surveyId};
+    `;
 };

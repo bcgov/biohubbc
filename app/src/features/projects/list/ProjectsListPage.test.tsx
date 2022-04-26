@@ -1,11 +1,11 @@
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { createMemoryHistory } from 'history';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router-dom';
-import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import ProjectsListPage from './ProjectsListPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { createMemoryHistory } from 'history';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
-import { SYSTEM_ROLE } from 'constants/roles';
 
 const history = createMemoryHistory();
 
@@ -89,61 +89,61 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  // test('renders with a proper list of projects when published and completed', async () => {
-  //   mockBiohubApi().project.getProjectsList.mockResolvedValue([
-  //     {
-  //       id: 1,
-  //       name: 'Project 1',
-  //       start_date: null,
-  //       end_date: null,
-  //       coordinator_agency: 'contact agency',
-  //       project_type: 'project type',
-  //       permits_list: '1, 2, 3',
-  //       publish_status: 'Published',
-  //       completion_status: 'Completed'
-  //     }
-  //   ]);
+  test('renders with a proper list of projects when published and completed', async () => {
+    mockBiohubApi().project.getProjectsList.mockResolvedValue([
+      {
+        id: 1,
+        name: 'Project 1',
+        start_date: null,
+        end_date: null,
+        coordinator_agency: 'contact agency',
+        project_type: 'project type',
+        permits_list: '1, 2, 3',
+        publish_status: 'Published',
+        completion_status: 'Completed'
+      }
+    ]);
 
-  //   const { getByText, getByTestId } = render(
-  //     <MemoryRouter>
-  //       <ProjectsListPage />
-  //     </MemoryRouter>
-  //   );
+    const { getByText, getByTestId } = render(
+      <MemoryRouter>
+        <ProjectsListPage />
+      </MemoryRouter>
+    );
 
-  //   await waitFor(() => {
-  //     expect(getByTestId('project-table')).toBeInTheDocument();
-  //     expect(getByText('PUBLISHED')).toBeInTheDocument();
-  //     expect(getByText('COMPLETED')).toBeInTheDocument();
-  //   });
-  // });
+    await waitFor(() => {
+      expect(getByTestId('project-table')).toBeInTheDocument();
+      expect(getByText('Published')).toBeInTheDocument();
+      expect(getByText('Completed')).toBeInTheDocument();
+    });
+  });
 
-  // test('renders with a proper list of projects when unpublished and active', async () => {
-  //   mockBiohubApi().project.getProjectsList.mockResolvedValue([
-  //     {
-  //       id: 1,
-  //       name: 'Project 1',
-  //       start_date: null,
-  //       end_date: null,
-  //       coordinator_agency: 'contact agency',
-  //       project_type: 'project type',
-  //       permits_list: '1, 2, 3',
-  //       publish_status: 'Unpublished',
-  //       completion_status: 'Active'
-  //     }
-  //   ]);
+  test('renders with a proper list of projects when Unpublished and active', async () => {
+    mockBiohubApi().project.getProjectsList.mockResolvedValue([
+      {
+        id: 1,
+        name: 'Project 1',
+        start_date: null,
+        end_date: null,
+        coordinator_agency: 'contact agency',
+        project_type: 'project type',
+        permits_list: '1, 2, 3',
+        publish_status: 'Unpublished',
+        completion_status: 'Active'
+      }
+    ]);
 
-  //   const { getByText, getByTestId } = render(
-  //     <MemoryRouter>
-  //       <ProjectsListPage />
-  //     </MemoryRouter>
-  //   );
+    const { getByText, getByTestId } = render(
+      <MemoryRouter>
+        <ProjectsListPage />
+      </MemoryRouter>
+    );
 
-  //   await waitFor(() => {
-  //     expect(getByTestId('project-table')).toBeInTheDocument();
-  //     expect(getByText('UNPUBLISHED')).toBeInTheDocument();
-  //     expect(getByText('ACTIVE')).toBeInTheDocument();
-  //   });
-  // });
+    await waitFor(() => {
+      expect(getByTestId('project-table')).toBeInTheDocument();
+      expect(getByText('Unpublished')).toBeInTheDocument();
+      expect(getByText('Active')).toBeInTheDocument();
+    });
+  });
 
   test('renders with a list of drafts', async () => {
     mockBiohubApi().draft.getDraftsList.mockResolvedValue([

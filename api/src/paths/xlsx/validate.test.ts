@@ -135,7 +135,7 @@ describe('getTemplateMethodologySpeciesRecord', () => {
     sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(null);
 
     try {
-      await validate.getTemplateMethodologySpeciesRecord(1234, 1, 1, { ...dbConnectionObj, systemUserId: () => 20 });
+      await validate.getTemplateMethodologySpeciesRecord(1, 1, { ...dbConnectionObj, systemUserId: () => 20 });
 
       expect.fail();
     } catch (actualError) {
@@ -156,7 +156,7 @@ describe('getTemplateMethodologySpeciesRecord', () => {
     sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
 
     try {
-      await validate.getTemplateMethodologySpeciesRecord(1234, 1, 1, {
+      await validate.getTemplateMethodologySpeciesRecord(1, 1, {
         ...dbConnectionObj,
         systemUserId: () => 20
       });
@@ -180,7 +180,7 @@ describe('getTemplateMethodologySpeciesRecord', () => {
 
     sinon.stub(survey_queries, 'getTemplateMethodologySpeciesRecordSQL').returns(SQL`something`);
 
-    const result = await validate.getTemplateMethodologySpeciesRecord(1234, 1, 1, {
+    const result = await validate.getTemplateMethodologySpeciesRecord(1, 1, {
       ...dbConnectionObj,
       query: mockQuery,
       systemUserId: () => 20

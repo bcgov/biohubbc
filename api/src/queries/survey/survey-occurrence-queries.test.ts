@@ -245,25 +245,20 @@ describe('getOccurrenceSubmissionMessagesSQL', () => {
 });
 
 describe('getTemplateMethodologySpeciesRecordSQL', () => {
-  it('returns null response when null speciesId provided', () => {
-    const response = getTemplateMethodologySpeciesRecordSQL((null as unknown) as number, 1, 1);
-
-    expect(response).to.be.null;
-  });
   it('returns null response when null methodologyId provided', () => {
-    const response = getTemplateMethodologySpeciesRecordSQL(1234, (null as unknown) as number, 1);
+    const response = getTemplateMethodologySpeciesRecordSQL((null as unknown) as number, 1);
 
     expect(response).to.be.null;
   });
 
   it('returns null response when null templateId provided', () => {
-    const response = getTemplateMethodologySpeciesRecordSQL(1234, 1, (null as unknown) as number);
+    const response = getTemplateMethodologySpeciesRecordSQL(1, (null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesRecordSQL(1234, 1, 1);
+    const response = getTemplateMethodologySpeciesRecordSQL(1, 1);
 
     expect(response).to.not.be.null;
   });

@@ -230,7 +230,7 @@ export interface IGetProjectForViewResponse {
 
 export interface IGetProjectForViewResponseDetails {
   project_name: string;
-  project_type: string;
+  project_type: number;
   project_activities: number[];
   start_date: string;
   end_date: string;

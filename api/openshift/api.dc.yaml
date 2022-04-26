@@ -31,6 +31,10 @@ parameters:
     description: Application Environment type variable
     required: true
     value: 'dev'
+  - name: ELASTICSEARCH_URL
+    description: Platform Elasticsearch URL
+    required: true
+    value: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca'
   - name: TZ
     description: Application timezone
     required: false
@@ -187,6 +191,8 @@ objects:
                   value: ${CHANGE_ID}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
+                - name: ELASTICSEARCH_URL
+                  value: ${ELASTICSEARCH_URL}
                 - name: TZ
                   value: ${TZ}
                 - name: VERSION

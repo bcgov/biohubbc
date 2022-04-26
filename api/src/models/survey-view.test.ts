@@ -14,20 +14,12 @@ describe('GetViewSurveyDetailsData', () => {
       expect(data.survey_name).to.equal('');
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal('');
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql([]);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql([]);
-    });
-
-    it('sets common survey methodology', () => {
-      expect(data.common_survey_methodology).to.equal('');
     });
 
     it('sets start_date', () => {
@@ -115,20 +107,12 @@ describe('GetViewSurveyDetailsData', () => {
       expect(data.survey_name).to.equal(surveyData.name);
     });
 
-    it('sets survey_purpose', () => {
-      expect(data.survey_purpose).to.equal(surveyData.objectives);
-    });
-
     it('sets focal_species', () => {
       expect(data.focal_species).to.eql(surveyData.focal_species);
     });
 
     it('sets ancillary_species', () => {
       expect(data.ancillary_species).to.eql(surveyData.ancillary_species);
-    });
-
-    it('sets common survey methodology', () => {
-      expect(data.common_survey_methodology).to.equal(surveyData.common_survey_methodology);
     });
 
     it('sets start_date', () => {

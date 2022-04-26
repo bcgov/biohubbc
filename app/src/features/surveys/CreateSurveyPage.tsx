@@ -10,15 +10,23 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
+import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import { CreateSurveyI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import { Formik, FormikProps } from 'formik';
+import * as History from 'history';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { ICreateSurveyRequest, SurveyFundingSources, SurveyPermits } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
-import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
+import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
+import yup from 'utils/YupSchema';
 import AgreementsForm, { AgreementsInitialValues, AgreementsYupSchema } from './components/AgreementsForm';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
@@ -28,15 +36,11 @@ import ProprietaryDataForm, {
   ProprietaryDataInitialValues,
   ProprietaryDataYupSchema
 } from './components/ProprietaryDataForm';
+import PurposeAndMethodologyForm, {
+  PurposeAndMethodologyInitialValues,
+  PurposeAndMethodologyYupSchema
+} from './components/PurposeAndMethodologyForm';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from './components/StudyAreaForm';
-import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
-import * as History from 'history';
-import { APIError } from 'hooks/api/useAxios';
-import { DialogContext } from 'contexts/dialogContext';
-import yup from 'utils/YupSchema';
-import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
-import moment from 'moment';
-import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -114,8 +118,9 @@ const CreateSurveyPage = () => {
   };
 
   // Initial values for the survey form sections
-  const [surveyInitialValues] = useState({
+  const [surveyInitialValues] = useState<ICreateSurveyRequest>({
     ...GeneralInformationInitialValues,
+    ...PurposeAndMethodologyInitialValues,
     ...StudyAreaInitialValues,
     ...ProprietaryDataInitialValues,
     ...AgreementsInitialValues
@@ -158,6 +163,7 @@ const CreateSurveyPage = () => {
       )
   })
     .concat(StudyAreaYupSchema)
+    .concat(PurposeAndMethodologyYupSchema)
     .concat(ProprietaryDataYupSchema)
     .concat(AgreementsYupSchema);
 
@@ -224,51 +230,18 @@ const CreateSurveyPage = () => {
   };
 
   /**
-   * Creates a new project survey record
+   * Handle creation of surveys.
    *
-   * @param {ICreateSurveyRequest} surveyPostObject
    * @return {*}
    */
-  const createSurvey = async (surveyPostObject: ICreateSurveyRequest) => {
-    const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), surveyPostObject);
-
-    if (!response?.id) {
-      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a survey ID.' });
-      return;
-    }
-
-    return response;
-  };
-
-  /**
-   * Handle creation of surveys.
-   */
-  const handleSubmit = async () => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    await formikRef.current?.submitForm();
-
-    const isValid = await validateFormFieldsAndReportCompletion(
-      formikRef.current?.values,
-      formikRef.current?.validateForm
-    );
-
-    if (!isValid) {
-      showCreateErrorDialog({
-        dialogTitle: 'Create Survey Form Incomplete',
-        dialogText:
-          'The form is missing some required fields/sections highlighted in red. Please fill them out and try again.'
-      });
-
-      return;
-    }
-
+  const handleSubmit = async (values: ICreateSurveyRequest) => {
     try {
-      const response = await createSurvey(formikRef.current?.values);
+      const response = await biohubApi.survey.createSurvey(Number(projectWithDetails?.id), values);
 
-      if (!response) {
+      if (!response?.id) {
+        showCreateErrorDialog({
+          dialogError: 'The response from the server was null, or did not contain a survey ID.'
+        });
         return;
       }
 
@@ -346,23 +319,15 @@ const CreateSurveyPage = () => {
               validationSchema={surveyYupSchemas}
               validateOnBlur={true}
               validateOnChange={false}
-              onSubmit={() => {}}>
+              onSubmit={handleSubmit}>
               <>
+                <ScrollToFormikError fieldOrder={Object.keys(surveyInitialValues)} />
+
                 <HorizontalSplitFormComponent
                   title="General Information"
                   summary=""
                   component={
                     <GeneralInformationForm
-                      species={
-                        codes?.species?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      common_survey_methodologies={
-                        codes?.common_survey_methodologies?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
                       permit_numbers={
                         surveyPermits?.map((item) => {
                           return { value: item.number, label: `${item.number} - ${item.type}` };
@@ -384,6 +349,36 @@ const CreateSurveyPage = () => {
                       }
                       projectStartDate={projectWithDetails.project.start_date}
                       projectEndDate={projectWithDetails.project.end_date}
+                    />
+                  }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Purpose and Methodology"
+                  summary=""
+                  component={
+                    <PurposeAndMethodologyForm
+                      intended_outcomes={
+                        codes?.intended_outcomes.map((item) => {
+                          return { value: item.id, label: item.name, subText: item.description };
+                        }) || []
+                      }
+                      field_methods={
+                        codes?.field_methods.map((item) => {
+                          return { value: item.id, label: item.name, subText: item.description };
+                        }) || []
+                      }
+                      ecological_seasons={
+                        codes?.ecological_seasons.map((item) => {
+                          return { value: item.id, label: item.name, subText: item.description };
+                        }) || []
+                      }
+                      vantage_codes={
+                        codes?.vantage_codes.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
                     />
                   }></HorizontalSplitFormComponent>
 
@@ -429,7 +424,7 @@ const CreateSurveyPage = () => {
                 type="submit"
                 variant="contained"
                 color="primary"
-                onClick={handleSubmit}
+                onClick={() => formikRef.current?.submitForm()}
                 className={classes.actionButton}>
                 Save and Exit
               </Button>
