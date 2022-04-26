@@ -107,7 +107,7 @@ GET.apiDoc = {
                   }
                 },
                 create_date: {
-                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }]
                 }
               }
             }

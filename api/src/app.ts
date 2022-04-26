@@ -146,7 +146,7 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
 
       if (validationResult?.errors) {
         // Temporary log
-        console.log('Body:', JSON.stringify(body))
+        console.log('Body:', JSON.stringify(body));
 
         validationMessage = `Invalid response for status code ${res.statusCode}`;
 

@@ -57,7 +57,7 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'object', 
+            type: 'object',
             required: ['attachmentsList'],
             properties: {
               attachmentsList: {
