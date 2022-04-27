@@ -1,5 +1,5 @@
-import { PostSummaryDetails } from '../../models/summaryresults-create';
 import { SQL, SQLStatement } from 'sql-template-strings';
+import { PostSummaryDetails } from '../../models/summaryresults-create';
 
 /**
  * SQL query to insert a survey summary submission row.

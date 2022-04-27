@@ -3,10 +3,10 @@ import Typography from '@material-ui/core/Typography';
 import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
 import { useFormikContext } from 'formik';
 import React from 'react';
+import { AttachmentType } from '../../constants/attachments';
 import ReportMetaForm, { IReportMetaForm } from '../attachments/ReportMetaForm';
 import FileUpload, { IReplaceHandler } from './FileUpload';
 import { IFileHandler, IOnUploadSuccess, IUploadHandler, UploadFileStatus } from './FileUploadItem';
-import { AttachmentType } from '../../constants/attachments';
 
 export interface IFileUploadWithMetaProps {
   attachmentType: AttachmentType.REPORT | AttachmentType.OTHER;

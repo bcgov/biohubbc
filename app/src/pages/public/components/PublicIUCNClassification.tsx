@@ -1,11 +1,11 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 
 export interface IPublicIUCNClassificationProps {
   projectForViewData: IGetProjectForViewResponse;

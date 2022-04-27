@@ -2,13 +2,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as get_signed_url from './getSignedUrl';
-import * as db from '../../../../../../../../database/db';
-import survey_queries from '../../../../../../../../queries/survey';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../../../../../database/db';
+import { HTTPError } from '../../../../../../../../errors/custom-error';
+import survey_queries from '../../../../../../../../queries/survey';
 import * as file_utils from '../../../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
-import { HTTPError } from '../../../../../../../../errors/custom-error';
+import * as get_signed_url from './getSignedUrl';
 
 chai.use(sinonChai);
 

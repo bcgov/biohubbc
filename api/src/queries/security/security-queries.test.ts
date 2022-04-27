@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { unsecureAttachmentRecordSQL, secureAttachmentRecordSQL } from './security-queries';
+import { secureAttachmentRecordSQL, unsecureAttachmentRecordSQL } from './security-queries';
 
 describe('unsecureAttachmentRecordSQL', () => {
   it('returns null when no tableName provided', () => {

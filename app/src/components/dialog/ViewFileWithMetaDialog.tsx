@@ -5,7 +5,7 @@ import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { mdiTrayArrowDown, mdiPencilOutline } from '@mdi/js';
+import { mdiPencilOutline, mdiTrayArrowDown } from '@mdi/js';
 import Icon from '@mdi/react';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';

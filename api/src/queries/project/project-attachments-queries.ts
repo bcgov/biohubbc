@@ -1,8 +1,8 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import {
+  IReportAttachmentAuthor,
   PostReportAttachmentMetadata,
-  PutReportAttachmentMetadata,
-  IReportAttachmentAuthor
+  PutReportAttachmentMetadata
 } from '../../models/project-survey-attachments';
 
 /**

@@ -1,6 +1,6 @@
-import { COMPLETION_STATUS } from '../constants/status';
 import { Feature } from 'geojson';
 import moment from 'moment';
+import { COMPLETION_STATUS } from '../constants/status';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/project-view');

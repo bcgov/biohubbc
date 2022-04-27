@@ -3,14 +3,14 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
 import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
-import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import Icon from '@mdi/react';
-import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
 import OccurrenceFeatureGroup from 'components/map/OccurrenceFeatureGroup';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyStudyAreaI18N } from 'constants/i18n';
 import StudyAreaForm, {
   IStudyAreaForm,

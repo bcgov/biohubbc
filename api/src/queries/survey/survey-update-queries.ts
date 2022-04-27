@@ -4,7 +4,6 @@ import {
   PutSurveyProprietorData,
   PutSurveyPurposeAndMethodologyData
 } from '../../models/survey-update';
-
 import { queries } from '../queries';
 
 /**

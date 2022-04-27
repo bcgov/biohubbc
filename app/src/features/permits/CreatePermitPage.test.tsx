@@ -1,11 +1,11 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
+import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
-import CreatePermitPage from './CreatePermitPage';
 import { MemoryRouter, Router } from 'react-router';
-import { createMemoryHistory } from 'history';
-import { DialogContextProvider } from 'contexts/dialogContext';
+import CreatePermitPage from './CreatePermitPage';
 
 const history = createMemoryHistory();
 

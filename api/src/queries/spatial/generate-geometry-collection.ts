@@ -1,5 +1,5 @@
-import { SQL, SQLStatement } from 'sql-template-strings';
 import { Feature } from 'geojson';
+import { SQL, SQLStatement } from 'sql-template-strings';
 
 /*
   Function to generate the SQL for insertion of a geometry collection

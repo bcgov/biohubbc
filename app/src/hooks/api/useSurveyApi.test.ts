@@ -1,11 +1,11 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
-import { ICreateSurveyRequest, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
-import useSurveyApi from './useSurveyApi';
-import { AttachmentType } from '../../constants/attachments';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
+import { ICreateSurveyRequest, UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { AttachmentType } from '../../constants/attachments';
+import useSurveyApi from './useSurveyApi';
 
 describe('useSurveyApi', () => {
   let mock: any;

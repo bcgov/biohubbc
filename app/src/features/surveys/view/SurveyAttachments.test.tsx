@@ -1,10 +1,10 @@
 import {
   cleanup,
   fireEvent,
-  render,
-  waitFor,
+  getByTestId as rawGetByTestId,
   queryByTestId as rawQueryByTestId,
-  getByTestId as rawGetByTestId
+  render,
+  waitFor
 } from '@testing-library/react';
 import { AttachmentType } from 'constants/attachments';
 import { DialogContextProvider } from 'contexts/dialogContext';

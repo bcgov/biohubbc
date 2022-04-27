@@ -1,5 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getAPIUserDBConnection, getDBConnection, IDBConnection } from '../database/db';
 import { HTTP400, HTTP500 } from '../errors/custom-error';
@@ -9,10 +10,9 @@ import {
 } from '../openapi/schemas/administrative-activity';
 import { queries } from '../queries/queries';
 import { authorizeRequestHandler } from '../request-handlers/security/authorization';
+import { GCNotifyService } from '../services/gcnotify-service';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { GCNotifyService } from '../services/gcnotify-service';
-import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 

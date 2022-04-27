@@ -1,12 +1,12 @@
 // @ts-nocheck
-import React, { useRef, useEffect, useState } from 'react';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
+import YesNoDialog from 'components/dialog/YesNoDialog';
+import { Feature } from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import isEqual from 'lodash-es/isEqual';
-import { Feature } from 'geojson';
-import YesNoDialog from 'components/dialog/YesNoDialog';
+import React, { useEffect, useRef, useState } from 'react';
 
 /*
   Various types of events to listen for on map

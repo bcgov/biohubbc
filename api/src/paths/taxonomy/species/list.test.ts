@@ -3,11 +3,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { TaxonomyService } from '../../../services/taxonomy-service';
 import * as db from '../../../database/db';
+import { HTTPError } from '../../../errors/custom-error';
+import { TaxonomyService } from '../../../services/taxonomy-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../__mocks__/db';
 import { GET, getSpeciesFromIds } from './list';
-import { HTTPError } from '../../../errors/custom-error';
 
 chai.use(sinonChai);
 

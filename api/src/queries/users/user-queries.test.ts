@@ -1,14 +1,14 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  activateSystemUserSQL,
   addSystemUserSQL,
+  deactivateSystemUserSQL,
+  deleteAllProjectRolesSQL,
+  deleteAllSystemRolesSQL,
   getUserByIdSQL,
   getUserByUserIdentifierSQL,
-  getUserListSQL,
-  deactivateSystemUserSQL,
-  activateSystemUserSQL,
-  deleteAllSystemRolesSQL,
-  deleteAllProjectRolesSQL
+  getUserListSQL
 } from './user-queries';
 
 describe('getUserByUserIdentifierSQL', () => {

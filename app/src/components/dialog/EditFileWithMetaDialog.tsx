@@ -10,13 +10,13 @@ import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
 import EditFileWithMeta from 'components/attachments/EditFileWithMeta';
 import { Formik, FormikProps } from 'formik';
+import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 import React, { useRef, useState } from 'react';
 import {
   EditReportMetaFormInitialValues,
   EditReportMetaFormYupSchema,
   IEditReportMetaForm
 } from '../attachments/EditReportMetaForm';
-import { IGetReportMetaData } from 'interfaces/useProjectApi.interface';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {
