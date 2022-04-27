@@ -1,14 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/custom-error';
-import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../../models/permit-no-sampling';
-import { PostCoordinatorData } from '../../models/project-create';
-import { PutCoordinatorData } from '../../models/project-update';
+import { getDBConnection } from '../../database/db';
 import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../../openapi/schemas/permit-no-sampling';
-import { queries } from '../../queries/queries';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { PermitService } from '../../services/permit-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('/api/permit/create-no-sampling');
@@ -88,24 +84,11 @@ export function createNoSamplePermits(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const sanitizedNoSamplePermitPostData = new PostPermitNoSamplingObject(req.body);
-
-    if (!sanitizedNoSamplePermitPostData.permit || !sanitizedNoSamplePermitPostData.permit.permits.length) {
-      throw new HTTP400('Missing request body param `permit`');
-    }
-
-    if (!sanitizedNoSamplePermitPostData.coordinator) {
-      throw new HTTP400('Missing request body param `coordinator`');
-    }
-
     try {
       await connection.open();
+      const permitService = new PermitService(connection);
 
-      const result = await Promise.all(
-        sanitizedNoSamplePermitPostData.permit.permits.map((permit: IPostPermitNoSampling) =>
-          insertNoSamplePermit(permit, sanitizedNoSamplePermitPostData.coordinator, connection)
-        )
-      );
+      const result = await permitService.createNoSamplePermits(req.body);
 
       await connection.commit();
 
@@ -119,27 +102,3 @@ export function createNoSamplePermits(): RequestHandler {
     }
   };
 }
-
-export const insertNoSamplePermit = async (
-  permit: IPostPermitNoSampling,
-  coordinator: PostCoordinatorData | PutCoordinatorData,
-  connection: IDBConnection
-): Promise<number> => {
-  const systemUserId = connection.systemUserId();
-
-  const sqlStatement = queries.permit.postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert non-sampling permit data');
-  }
-
-  return result.id;
-};
