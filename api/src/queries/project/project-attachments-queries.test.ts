@@ -23,7 +23,7 @@ import {
 
 const post_sample_attachment_meta = {
   title: 'title',
-  year_published: '2000',
+  year_published: 2000,
   authors: [
     {
       first_name: 'John',
@@ -35,7 +35,7 @@ const post_sample_attachment_meta = {
 
 const put_sample_attachment_meta = {
   title: 'title',
-  year_published: '2000',
+  year_published: 2000,
   authors: [
     {
       first_name: 'John',

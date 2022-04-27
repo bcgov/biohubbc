@@ -61,7 +61,7 @@ export class GetUpdateSurveyDetailsData {
         moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.publish_date = surveyDetailsData?.publish_date || '';
+    this.publish_date = String(surveyDetailsData?.publish_date || '');
   }
 }
 

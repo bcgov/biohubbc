@@ -57,7 +57,8 @@ GET.apiDoc = {
                   type: 'string'
                 },
                 project_name: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 }
               }
             },

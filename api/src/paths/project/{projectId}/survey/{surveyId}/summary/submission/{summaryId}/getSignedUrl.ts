@@ -56,7 +56,19 @@ GET.apiDoc = {
       },
       required: true
     }
-  ]
+  ],
+  responses: {
+    200: {
+      description: 'Submission summary signed URL response.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 };
 
 export function getSingleSummarySubmissionURL(): RequestHandler {

@@ -81,14 +81,7 @@ PUT.apiDoc = {
                   type: 'string'
                 },
                 year_published: {
-                  oneOf: [
-                    {
-                      type: 'string'
-                    },
-                    {
-                      type: 'number'
-                    }
-                  ]
+                  type: 'number'
                 },
                 authors: {
                   type: 'array',
