@@ -9,9 +9,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { mdiFileExcelOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import React from 'react';
 
 /**
  * Page to display a list of resources.

@@ -1,17 +1,17 @@
+import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as validate from './validate';
-import * as db from '../../database/db';
-import survey_queries from '../../queries/survey';
 import SQL from 'sql-template-strings';
-import * as file_utils from '../../utils/file-utils';
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
-import { getMockDBConnection } from '../../__mocks__/db';
-import * as media_utils from '../../utils/media/media-utils';
-import { ArchiveFile } from '../../utils/media/media-file';
+import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
+import survey_queries from '../../queries/survey';
+import * as file_utils from '../../utils/file-utils';
+import { ArchiveFile } from '../../utils/media/media-file';
+import * as media_utils from '../../utils/media/media-utils';
+import { getMockDBConnection } from '../../__mocks__/db';
+import * as validate from './validate';
 
 chai.use(sinonChai);
 

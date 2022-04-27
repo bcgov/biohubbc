@@ -1,8 +1,8 @@
+import { cleanup, render, waitFor } from '@testing-library/react';
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { MemoryRouter } from 'react-router-dom';
-import { cleanup, render, waitFor } from '@testing-library/react';
 import PublicProjectsListPage from './PublicProjectsListPage';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 
 jest.mock('../../hooks/useBioHubApi');
 const mockUseBiohubApi = {

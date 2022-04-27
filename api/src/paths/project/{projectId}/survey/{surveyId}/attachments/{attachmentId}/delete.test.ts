@@ -1,16 +1,16 @@
+import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as delete_attachment from './delete';
-import * as db from '../../../../../../../database/db';
-import survey_queries from '../../../../../../../queries/survey';
-import security_queries from '../../../../../../../queries/security';
 import SQL from 'sql-template-strings';
-import * as file_utils from '../../../../../../../utils/file-utils';
-import { DeleteObjectOutput } from 'aws-sdk/clients/s3';
-import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/custom-error';
+import security_queries from '../../../../../../../queries/security';
+import survey_queries from '../../../../../../../queries/survey';
+import * as file_utils from '../../../../../../../utils/file-utils';
+import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import * as delete_attachment from './delete';
 
 chai.use(sinonChai);
 

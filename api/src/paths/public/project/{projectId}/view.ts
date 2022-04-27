@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../../database/db';
-import { getLogger } from '../../../../utils/logger';
 import { geoJsonFeature } from '../../../../openapi/schemas/geoJson';
 import { ProjectService } from '../../../../services/project-service';
+import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/public/project/{projectId}/view');
 

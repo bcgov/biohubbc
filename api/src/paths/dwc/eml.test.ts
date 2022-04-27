@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../../__mocks__/db';
+import SQL from 'sql-template-strings';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
-import * as eml from './eml';
 import eml_queries from '../../queries/dwc';
-import SQL from 'sql-template-strings';
+import { getMockDBConnection } from '../../__mocks__/db';
+import * as eml from './eml';
 
 chai.use(sinonChai);
 

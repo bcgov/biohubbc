@@ -3,11 +3,11 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/custom-error';
+import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { getLogger } from '../../../utils/logger';
-import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { ProjectService } from '../../../services/project-service';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/update');
 

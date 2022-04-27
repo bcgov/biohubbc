@@ -1,7 +1,7 @@
 import { render } from '@testing-library/react';
+import { Formik } from 'formik';
 import React from 'react';
 import MultiAutocompleteField from './MultiAutocompleteField';
-import { Formik } from 'formik';
 
 describe('MultiAutocompleteField', () => {
   it('matches the snapshot', () => {

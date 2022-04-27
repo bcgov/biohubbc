@@ -3,11 +3,11 @@ import { describe } from 'mocha';
 import { getSurveySQL } from '../../queries/survey/survey-view-queries';
 import {
   getAllAssignablePermitsForASurveySQL,
+  getSurveyAncillarySpeciesDataForViewSQL,
   getSurveyBasicDataForViewSQL,
-  getSurveyFundingSourcesDataForViewSQL,
-  getSurveyIdsSQL,
   getSurveyFocalSpeciesDataForViewSQL,
-  getSurveyAncillarySpeciesDataForViewSQL
+  getSurveyFundingSourcesDataForViewSQL,
+  getSurveyIdsSQL
 } from './survey-view-queries';
 
 describe('getAllAssignablePermitsForASurveySQL', () => {

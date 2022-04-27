@@ -2,10 +2,10 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   GetAttachmentsData,
-  PostReportAttachmentMetadata,
-  PutReportAttachmentMetadata,
+  GetReportAttachmentAuthor,
   GetReportAttachmentMetadata,
-  GetReportAttachmentAuthor
+  PostReportAttachmentMetadata,
+  PutReportAttachmentMetadata
 } from './project-survey-attachments';
 
 describe('GetAttachmentsData', () => {

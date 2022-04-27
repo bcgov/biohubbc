@@ -1,6 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
-
 import { queries } from '../queries';
 
 /**

@@ -6,10 +6,10 @@ import sinonChai from 'sinon-chai';
 import { SYSTEM_ROLE } from '../../constants/roles';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
+import * as authorization from '../../request-handlers/security/authorization';
 import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection } from '../../__mocks__/db';
 import { GET, getProjectList } from './list';
-import * as authorization from '../../request-handlers/security/authorization';
 
 chai.use(sinonChai);
 

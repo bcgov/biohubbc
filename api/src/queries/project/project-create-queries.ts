@@ -6,7 +6,6 @@ import {
   PostObjectivesData,
   PostProjectData
 } from '../../models/project-create';
-
 import { queries } from '../queries';
 
 /**

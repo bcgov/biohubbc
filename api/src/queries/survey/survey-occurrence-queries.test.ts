@@ -1,16 +1,16 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  deleteOccurrenceSubmissionSQL,
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL,
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
   getTemplateMethodologySpeciesRecordSQL,
-  insertSurveyOccurrenceSubmissionSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
-  updateSurveyOccurrenceSubmissionSQL,
-  deleteOccurrenceSubmissionSQL
+  insertSurveyOccurrenceSubmissionSQL,
+  updateSurveyOccurrenceSubmissionSQL
 } from './survey-occurrence-queries';
 
 describe('insertSurveyOccurrenceSubmissionSQL', () => {

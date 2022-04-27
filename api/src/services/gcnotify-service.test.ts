@@ -1,11 +1,11 @@
+import axios from 'axios';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiError } from '../errors/custom-error';
-import { GCNotifyService } from './gcnotify-service';
-import axios from 'axios';
 import { IgcNotifyGenericMessage } from '../models/gcnotify';
+import { GCNotifyService } from './gcnotify-service';
 
 chai.use(sinonChai);
 

@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getNonSamplingPermitsSQL, getAllPermitsSQL } from './permit-view-queries';
+import { getAllPermitsSQL, getNonSamplingPermitsSQL } from './permit-view-queries';
 
 describe('getNonSamplingPermitsSQL', () => {
   it('returns null when no system user id', () => {

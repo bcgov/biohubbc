@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
 import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
-import SurveysList from './SurveysList';
-import { createMemoryHistory } from 'history';
 import { Router } from 'react-router';
+import SurveysList from './SurveysList';
 
 const history = createMemoryHistory();
 

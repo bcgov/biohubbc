@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as makeUnsecure from './makeUnsecure';
-import * as db from '../../../../../../../database/db';
-import security_queries from '../../../../../../../queries/security';
 import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import * as db from '../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../errors/custom-error';
+import security_queries from '../../../../../../../queries/security';
+import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import * as makeUnsecure from './makeUnsecure';
 
 chai.use(sinonChai);
 

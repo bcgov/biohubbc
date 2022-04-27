@@ -1,14 +1,14 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
+import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import PublicProjectPage from './PublicProjectPage';
-import { DialogContextProvider } from 'contexts/dialogContext';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { codes } from 'test-helpers/code-helpers';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 

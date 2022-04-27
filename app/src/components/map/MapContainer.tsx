@@ -1,7 +1,15 @@
 import { Feature } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import L from 'leaflet';
 import 'leaflet-draw/dist/leaflet.draw.css';
+import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
+import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
+import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
+import icon from 'leaflet/dist/images/marker-icon.png';
+import iconShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
-import React, { useEffect, useState, useCallback, ReactElement, Fragment } from 'react';
+import { throttle } from 'lodash-es';
+import React, { Fragment, ReactElement, useCallback, useEffect, useState } from 'react';
 import {
   FeatureGroup,
   GeoJSON,
@@ -11,25 +19,17 @@ import {
   TileLayer,
   useMap
 } from 'react-leaflet';
-import MapEditControls from 'utils/MapEditControls';
-import WFSFeatureGroup, { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
-import { v4 as uuidv4 } from 'uuid';
 import MarkerClusterGroup from 'react-leaflet-cluster';
-import L from 'leaflet';
-import icon from 'leaflet/dist/images/marker-icon.png';
-import iconShadow from 'leaflet/dist/images/marker-shadow.png';
-import iconRetina from 'leaflet/dist/images/marker-icon-2x.png';
-import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
-import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
-import { throttle } from 'lodash-es';
 import { ReProjector } from 'reproj-helper';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import MapEditControls from 'utils/MapEditControls';
 import {
   determineMapGeometries,
   getInferredLayersInfoByProjectedGeometry,
   getInferredLayersInfoByWFSFeature,
   getLayerTypesToSkipByProjectedGeometry
 } from 'utils/mapLayersHelpers';
+import { v4 as uuidv4 } from 'uuid';
+import WFSFeatureGroup, { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
 
 /*
   Get leaflet icons working

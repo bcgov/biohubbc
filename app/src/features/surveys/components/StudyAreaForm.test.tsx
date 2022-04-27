@@ -1,6 +1,6 @@
 import { render, waitFor } from '@testing-library/react';
-import { Formik } from 'formik';
 import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from 'features/surveys/components/StudyAreaForm';
+import { Formik } from 'formik';
 import React from 'react';
 
 const handleSaveAndNext = jest.fn();

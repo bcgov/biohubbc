@@ -1,5 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-
 import {
   AppendSQLColumn,
   appendSQLColumns,

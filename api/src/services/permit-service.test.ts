@@ -1,12 +1,12 @@
 import chai, { expect } from 'chai';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
-import permit_queries from '../queries/permit';
-import { HTTPError } from '../errors/custom-error';
-import { PermitService } from './permit-service';
 import SQL from 'sql-template-strings';
-import { QueryResult } from 'pg';
+import { HTTPError } from '../errors/custom-error';
+import permit_queries from '../queries/permit';
+import { getMockDBConnection } from '../__mocks__/db';
+import { PermitService } from './permit-service';
 
 chai.use(sinonChai);
 
