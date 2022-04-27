@@ -4,10 +4,8 @@ import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import SurveyDetails from 'features/surveys/view/SurveyDetails';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
+import useDataLoader from 'hooks/useDataLoader';
+import React from 'react';
 import { useParams } from 'react-router';
 import SurveyStudyArea from './components/SurveyStudyArea';
 import SurveyAttachments from './SurveyAttachments';
@@ -25,98 +23,57 @@ const SurveyPage: React.FC = () => {
 
   const biohubApi = useBiohubApi();
 
-  const [isLoadingProject, setIsLoadingProject] = useState(true);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
 
-  const [isLoadingSurvey, setIsLoadingSurvey] = useState(true);
-  const [surveyWithDetails, setSurveyWithDetails] = useState<IGetSurveyForViewResponse | null>(null);
+  const projectDataLoader = useDataLoader(() => biohubApi.project.getProjectForView(urlParams['id']));
+  projectDataLoader.load();
 
-  const [isLoadingCodes, setIsLoadingCodes] = useState(true);
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
+  const surveyDataLoader = useDataLoader(() =>
+    biohubApi.survey.getSurveyForView(urlParams['id'], urlParams['survey_id'])
+  );
+  surveyDataLoader.load();
 
-  useEffect(() => {
-    const getCodes = async () => {
-      const codesResponse = await biohubApi.codes.getAllCodeSets();
-
-      if (!codesResponse) {
-        return;
-      }
-
-      setCodes(codesResponse);
-    };
-
-    if (isLoadingCodes && !codes) {
-      getCodes();
-      setIsLoadingCodes(false);
-    }
-  }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
-
-  const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.project.getProjectForView(urlParams['id']);
-
-    if (!projectWithDetailsResponse) {
-      return;
-    }
-
-    setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.project, urlParams]);
-
-  const getSurvey = useCallback(async () => {
-    const surveyWithDetailsResponse = await biohubApi.survey.getSurveyForView(urlParams['id'], urlParams['survey_id']);
-
-    if (!surveyWithDetailsResponse) {
-      return;
-    }
-    setSurveyWithDetails(surveyWithDetailsResponse);
-  }, [biohubApi.survey, urlParams]);
-
-  useEffect(() => {
-    if (isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(false);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
-
-  useEffect(() => {
-    if (isLoadingSurvey && !surveyWithDetails) {
-      getSurvey();
-      setIsLoadingSurvey(false);
-    }
-  }, [isLoadingSurvey, surveyWithDetails, getSurvey]);
-
-  if (!projectWithDetails || !surveyWithDetails || !codes) {
+  if (!projectDataLoader.data || !surveyDataLoader.data || !codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
   return (
     <>
-      <SurveyHeader projectWithDetails={projectWithDetails} surveyWithDetails={surveyWithDetails} refresh={getSurvey} />
+      <SurveyHeader
+        projectWithDetails={projectDataLoader.data}
+        surveyWithDetails={surveyDataLoader.data}
+        refresh={surveyDataLoader.refresh}
+      />
 
       <Container maxWidth="xl">
         <Box my={3}>
           <Grid container spacing={3}>
             <Grid item sm={12} lg={8}>
               <SurveyDetails
-                projectForViewData={projectWithDetails}
-                surveyForViewData={surveyWithDetails}
-                codes={codes}
-                refresh={getSurvey}
+                projectForViewData={projectDataLoader.data}
+                surveyForViewData={surveyDataLoader.data}
+                codes={codesDataLoader.data}
+                refresh={surveyDataLoader.refresh}
               />
               <Box mt={3}>
-                <SurveyObservations refresh={getSurvey} />
+                <SurveyObservations refresh={surveyDataLoader.refresh} />
               </Box>
               <Box mt={3}>
                 <SurveySummaryResults />
               </Box>
               <Box mt={3}>
-                <SurveyAttachments projectForViewData={projectWithDetails} surveyForViewData={surveyWithDetails} />
+                <SurveyAttachments
+                  projectForViewData={projectDataLoader.data}
+                  surveyForViewData={surveyDataLoader.data}
+                />
               </Box>
             </Grid>
             <Grid item sm={12} lg={4}>
               <SurveyStudyArea
-                surveyForViewData={surveyWithDetails}
-                projectForViewData={projectWithDetails}
-                refresh={getSurvey}
+                surveyForViewData={surveyDataLoader.data}
+                projectForViewData={projectDataLoader.data}
+                refresh={surveyDataLoader.refresh}
               />
             </Grid>
           </Grid>

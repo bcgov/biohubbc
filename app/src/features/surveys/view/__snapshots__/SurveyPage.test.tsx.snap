@@ -1292,6 +1292,9 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                     <div
                       class="leaflet-draw leaflet-control"
                     />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
                   </div>
                   <div
                     class="leaflet-bottom leaflet-left"
@@ -1319,7 +1322,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                               <input
                                 checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_124"
+                                name="leaflet-base-layers_133"
                                 type="radio"
                               />
                               <span>
@@ -1331,7 +1334,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                             <div>
                               <input
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_124"
+                                name="leaflet-base-layers_133"
                                 type="radio"
                               />
                               <span>
@@ -2671,6 +2674,9 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                     <div
                       class="leaflet-draw leaflet-control"
                     />
+                    <div
+                      class="leaflet-draw leaflet-control"
+                    />
                   </div>
                   <div
                     class="leaflet-bottom leaflet-left"
@@ -2698,7 +2704,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                               <input
                                 checked="checked"
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_96"
+                                name="leaflet-base-layers_102"
                                 type="radio"
                               />
                               <span>
@@ -2710,7 +2716,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                             <div>
                               <input
                                 class="leaflet-control-layers-selector"
-                                name="leaflet-base-layers_96"
+                                name="leaflet-base-layers_102"
                                 type="radio"
                               />
                               <span>

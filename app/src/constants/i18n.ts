@@ -6,6 +6,12 @@ export const CreateProjectI18N = {
     'An error has occurred while attempting to create your project, please try again. If the error persists, please contact your system administrator.'
 };
 
+export const ViewProjectI18N = {
+  errorTitle: 'Failed to load project',
+  errorText:
+    'An error has occurred while attempting to load the project, please try refreshing. If the error persists, please contact your system administrator.'
+};
+
 export const CreateSurveyI18N = {
   cancelTitle: 'Cancel Create Survey',
   cancelText: 'Are you sure you want to cancel?',

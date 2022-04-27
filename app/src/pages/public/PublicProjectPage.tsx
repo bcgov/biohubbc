@@ -17,13 +17,12 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ProjectStatusType } from 'constants/misc';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import useDataLoader from 'hooks/useDataLoader';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useEffect, useState } from 'react';
+import PublicProjectAttachments from 'pages/public/components/PublicProjectAttachments';
+import PublicProjectDetails from 'pages/public/PublicProjectDetails';
+import React from 'react';
 import { useLocation, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import PublicProjectAttachments from './components/PublicProjectAttachments';
-import PublicProjectDetails from './PublicProjectDetails';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -72,26 +71,8 @@ const PublicProjectPage = () => {
   const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
   codesDataLoader.load();
 
-  const [isLoadingProject, setIsLoadingProject] = useState(false);
-  const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
-
-  const getProject = useCallback(async () => {
-    const projectWithDetailsResponse = await biohubApi.public.project.getProjectForView(urlParams['id'] || 1);
-
-    if (!projectWithDetailsResponse) {
-      // TODO error handling/messaging
-      return;
-    }
-
-    setProjectWithDetails(projectWithDetailsResponse);
-  }, [biohubApi.public.project, urlParams]);
-
-  useEffect(() => {
-    if (!isLoadingProject && !projectWithDetails) {
-      getProject();
-      setIsLoadingProject(true);
-    }
-  }, [isLoadingProject, projectWithDetails, getProject]);
+  const projectDataLoader = useDataLoader(() => biohubApi.public.project.getProjectForView(urlParams['id']));
+  projectDataLoader.load();
 
   const getChipIcon = (status_name: string) => {
     let chipLabel;
@@ -108,7 +89,7 @@ const PublicProjectPage = () => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
-  if (!projectWithDetails || !codesDataLoader.data) {
+  if (!projectDataLoader.data || !codesDataLoader.data) {
     return <CircularProgress className="pageProgress" data-testid="loading_spinner" size={40} />;
   }
 
@@ -120,19 +101,19 @@ const PublicProjectPage = () => {
             <Box py={4}>
               <Box mb={1} display="flex">
                 <Typography className={classes.spacingRight} variant="h1">
-                  {projectWithDetails.project.project_name}
+                  {projectDataLoader.data.project.project_name}
                 </Typography>
-                {getChipIcon(projectWithDetails.project.completion_status)}
+                {getChipIcon(projectDataLoader.data.project.completion_status)}
               </Box>
               <Box>
                 <Typography variant="subtitle1" color="textSecondary">
                   <span>
-                    {projectWithDetails.project.end_date ? (
+                    {projectDataLoader.data.project.end_date ? (
                       <>
                         {getFormattedDateRangeString(
                           DATE_FORMAT.ShortMediumDateFormat,
-                          projectWithDetails.project.start_date,
-                          projectWithDetails.project.end_date
+                          projectDataLoader.data.project.start_date,
+                          projectDataLoader.data.project.end_date
                         )}
                       </>
                     ) : (
@@ -140,7 +121,7 @@ const PublicProjectPage = () => {
                         <span>Start Date:</span>{' '}
                         {getFormattedDateRangeString(
                           DATE_FORMAT.ShortMediumDateFormat,
-                          projectWithDetails.project.start_date
+                          projectDataLoader.data.project.start_date
                         )}
                       </>
                     )}
@@ -175,13 +156,13 @@ const PublicProjectPage = () => {
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
               <PublicProjectDetails
-                projectForViewData={projectWithDetails}
+                projectForViewData={projectDataLoader.data}
                 codes={codesDataLoader.data}
-                refresh={getProject}
+                refresh={projectDataLoader.refresh}
               />
             )}
             {location.pathname.includes('/attachments') && (
-              <PublicProjectAttachments projectForViewData={projectWithDetails} />
+              <PublicProjectAttachments projectForViewData={projectDataLoader.data} />
             )}
           </Box>
         </Box>

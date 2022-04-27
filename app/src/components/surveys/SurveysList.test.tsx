@@ -15,6 +15,7 @@ describe('SurveysList', () => {
         ...surveyObject,
         survey_details: {
           ...surveyObject.survey_details,
+          id: 1,
           survey_name: 'Moose Survey 1',
           start_date: '2021-04-09 11:53:53',
           end_date: '2021-05-09 11:53:53'
@@ -30,6 +31,7 @@ describe('SurveysList', () => {
         ...surveyObject,
         survey_details: {
           ...surveyObject.survey_details,
+          id: 2,
           survey_name: 'Moose Survey 2',
           start_date: '2021-04-09 11:53:53',
           end_date: '2021-06-10 11:53:53'

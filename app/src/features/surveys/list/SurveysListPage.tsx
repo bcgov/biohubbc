@@ -5,9 +5,9 @@ import Icon from '@mdi/react';
 import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router';
 
 export interface ISurveysListPageProps {
@@ -20,32 +20,21 @@ export interface ISurveysListPageProps {
  * @return {*}
  */
 const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
+  const { projectForViewData } = props;
+
   const history = useHistory();
   const biohubApi = useBiohubApi();
 
-  const { projectForViewData } = props;
-
-  const [surveys, setSurveys] = useState<SurveyViewObject[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const getSurveys = async () => {
-      const surveysResponse = await biohubApi.survey.getSurveysList(projectForViewData.id);
-
-      setSurveys(() => {
-        setIsLoading(false);
-        return surveysResponse;
-      });
-    };
-
-    if (isLoading) {
-      getSurveys();
-    }
-  }, [biohubApi, isLoading, projectForViewData.id]);
+  const surveyDataLoader = useDataLoader(() => biohubApi.survey.getSurveysList(projectForViewData.id));
+  surveyDataLoader.load();
 
   const navigateToCreateSurveyPage = (projectId: number) => {
     history.push(`/admin/projects/${projectId}/survey/create`);
   };
+
+  if (!surveyDataLoader.data) {
+    return <></>;
+  }
 
   return (
     <>
@@ -58,7 +47,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
           buttonOnClick={() => navigateToCreateSurveyPage(projectForViewData.id)}
         />
         <Box px={3} pb={2}>
-          <SurveysList projectId={projectForViewData.id} surveysList={surveys} />
+          <SurveysList projectId={projectForViewData.id} surveysList={surveyDataLoader.data} />
         </Box>
       </Paper>
     </>

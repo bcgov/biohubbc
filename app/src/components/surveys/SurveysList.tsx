@@ -83,8 +83,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           </TableHead>
           <TableBody>
             {props.surveysList.length > 0 &&
-              props.surveysList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <TableRow key={index}>
+              props.surveysList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row) => (
+                <TableRow key={row.survey_details.id}>
                   <TableCell component="th" scope="row">
                     <Link
                       underline="always"

@@ -83,6 +83,7 @@ export interface SurveyViewObject {
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
+  location: ISurveyLocation;
 }
 
 export interface SurveyUpdateObject {
@@ -180,4 +181,9 @@ export interface IGetSurveyAttachmentsResponse {
 export interface ISurveyPermits {
   permit_number: string;
   permit_type: string;
+}
+
+export interface ISurveyLocation {
+  survey_area_name: string;
+  geometry: Feature[];
 }
