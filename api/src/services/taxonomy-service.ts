@@ -61,40 +61,27 @@ export class TaxonomyService {
   }
 
   async searchSpecies(term: string) {
-    // Search config for the whole search string
-    const wholeTermSearchConfig = [
-      {
-        wildcard: {
-          english_name: { value: `*${term}*`, boost: 8.0, case_insensitive: true }
-        }
-      },
-      { wildcard: { unit_name1: { value: `*${term}*`, boost: 6.0, case_insensitive: true } } },
-      { wildcard: { unit_name2: { value: `*${term}*`, boost: 6.0, case_insensitive: true } } },
-      { wildcard: { unit_name3: { value: `*${term}*`, boost: 6.0, case_insensitive: true } } },
-      { wildcard: { code: { value: `*${term}*`, boost: 4.0, case_insensitive: true } } },
-      { wildcard: { tty_kingdom: { value: `*${term}*`, boost: 2.0, case_insensitive: true } } }
-    ];
+    const searchConfig: object[] = [];
 
-    // Search config for the individual space-delimited words in the search string
-    const splitTermSearchConfig: object[] = [];
+    const splitTerms = term.split(' ');
 
-    term.split(' ').forEach((item) => {
-      splitTermSearchConfig.push({
+    splitTerms.forEach((item) => {
+      searchConfig.push({
         wildcard: {
           english_name: { value: `*${item}*`, boost: 4.0, case_insensitive: true }
         }
       });
-      splitTermSearchConfig.push({
+      searchConfig.push({
         wildcard: { unit_name1: { value: `*${item}*`, boost: 3.0, case_insensitive: true } }
       });
-      splitTermSearchConfig.push({
+      searchConfig.push({
         wildcard: { unit_name2: { value: `*${item}*`, boost: 3.0, case_insensitive: true } }
       });
-      splitTermSearchConfig.push({
+      searchConfig.push({
         wildcard: { unit_name3: { value: `*${item}*`, boost: 3.0, case_insensitive: true } }
       });
-      splitTermSearchConfig.push({ wildcard: { code: { value: `*${item}*`, boost: 2, case_insensitive: true } } });
-      splitTermSearchConfig.push({
+      searchConfig.push({ wildcard: { code: { value: `*${item}*`, boost: 2, case_insensitive: true } } });
+      searchConfig.push({
         wildcard: { tty_kingdom: { value: `*${item}*`, boost: 1.0, case_insensitive: true } }
       });
     });
@@ -102,7 +89,7 @@ export class TaxonomyService {
     const response = await this.elasticSearch({
       query: {
         bool: {
-          should: [...wholeTermSearchConfig, ...splitTermSearchConfig]
+          should: searchConfig
         }
       }
     });
