@@ -214,7 +214,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             end_date: yup
               .string()
               .isValidDateString()
-              .isEndDateAfterStartDate('start_date')
+              .isEndDateSameOrAfterStartDate('start_date')
               .isBeforeDate(
                 projectForViewData.project.end_date,
                 DATE_FORMAT.ShortDateFormat,

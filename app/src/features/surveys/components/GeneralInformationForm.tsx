@@ -55,7 +55,7 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
     biologist_first_name: yup.string().required('Required'),
     biologist_last_name: yup.string().required('Required'),
     start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
-    end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateAfterStartDate('start_date'),
+    end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
     permit_number: yup.string().max(100, 'Cannot exceed 100 characters'),
     focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
     ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')

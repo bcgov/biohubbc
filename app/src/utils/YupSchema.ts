@@ -119,6 +119,31 @@ yup.addMethod(
 
 yup.addMethod(
   yup.string,
+  'isEndDateSameOrAfterStartDate',
+  function (
+    startDateName: string,
+    dateFormat: DATE_FORMAT = DATE_FORMAT.ShortDateFormat,
+    message = 'End date must be same or after start date'
+  ) {
+    return this.test('is-end-date-same-or-after-start-date', message, function (value) {
+      if (!value) {
+        // don't validate end_date if it is null
+        return true;
+      }
+
+      if (!moment(this.parent[startDateName], dateFormat, true).isValid()) {
+        // don't validate start_date if it is invalid
+        return true;
+      }
+
+      // compare valid start and end dates
+      return moment(this.parent.start_date, dateFormat, true).isSameOrBefore(moment(value, dateFormat, true));
+    });
+  }
+);
+
+yup.addMethod(
+  yup.string,
   'isBeforeDate',
   function (maxDate: string | undefined, dateFormat: DATE_FORMAT, message: string) {
     return this.test('is-before-date', message, function (value) {
