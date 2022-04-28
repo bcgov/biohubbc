@@ -1,20 +1,12 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
-import {
-  GetViewSurveyDetailsData,
-  GetFocalSpeciesData,
-  GetAncillarySpeciesData
-} from '../../../../../models/survey-view';
-import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
-import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
-import { getLogger } from '../../../../../utils/logger';
-import { TaxonomyService } from '../../../../../services/taxonomy-service';
 import { SurveyService } from '../../../../../services/survey-service';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
@@ -367,83 +359,3 @@ export function getSurveyForView(): RequestHandler {
     }
   };
 }
-
-export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
-  const sqlStatement = queries.survey.getSurveyBasicDataForViewSQL(surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response?.rows?.[0]) {
-    throw new HTTP400('Failed to get survey basic data');
-  }
-
-  return (response && response.rows?.[0]) || null;
-};
-
-
-
-
-
-export const getSurveyFocalSpeciesDataForView = async (
-  surveyId: number,
-  connection: IDBConnection
-): Promise<GetFocalSpeciesData> => {
-  const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-  const result = (response && response.rows) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get species data');
-  }
-
-  const taxonomyService = new TaxonomyService();
-
-  const species = await taxonomyService.getSpeciesFromIds(result);
-
-  return new GetFocalSpeciesData(species);
-};
-
-export const getSurveyAncillarySpeciesDataForView = async (
-  surveyId: number,
-  connection: IDBConnection
-): Promise<GetAncillarySpeciesData> => {
-  const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-  const result = (response && response.rows) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get species data');
-  }
-
-  const taxonomyService = new TaxonomyService();
-
-  const species = await taxonomyService.getSpeciesFromIds(result);
-
-  return new GetAncillarySpeciesData(species);
-};
-
-export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {
-  const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  return (response && response.rows?.[0]) || null;
-};

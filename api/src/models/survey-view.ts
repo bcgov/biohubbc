@@ -163,7 +163,8 @@ export type SurveyObject = {
   species: GetSpeciesData;
   permit: GetPermitData;
   purposeAndMethodology: GetSurveyPurposeAndMethodologyData;
-  funding_sources: GetSurveyFundingSources;
+  funding_sources: any[];
+  proprietorData: any;
 };
 
 export class GetSurveyData {

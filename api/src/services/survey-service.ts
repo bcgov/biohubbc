@@ -1,13 +1,7 @@
 import SQL from 'sql-template-strings';
 import { HTTP400 } from '../errors/custom-error';
 
-import {
-  GetSpeciesData,
-  GetPermitData,
-  GetSurveyData,
-  SurveyObject,
-  GetSurveyFundingSources
-} from '../models/survey-view';
+import { GetSpeciesData, GetPermitData, GetSurveyData, SurveyObject } from '../models/survey-view';
 import { queries } from '../queries/queries';
 import { DBService } from './service';
 import { TaxonomyService } from './taxonomy-service';
@@ -30,12 +24,20 @@ export class SurveyService extends DBService {
   }
 
   async getSurveyById(surveyId: number): Promise<SurveyObject> {
-    const [surveyData, speciesData, permitData, purposeAndMethodologyData, fundingData] = await Promise.all([
+    const [
+      surveyData,
+      speciesData,
+      permitData,
+      purposeAndMethodologyData,
+      fundingData,
+      proprietorData
+    ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
       this.getPermitData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
-      this.getSurveyFundingSourcesData(surveyId)
+      this.getSurveyFundingSourcesData(surveyId),
+      this.getSurveyProprietorDataForView(surveyId)
     ]);
 
     return {
@@ -43,7 +45,8 @@ export class SurveyService extends DBService {
       species: speciesData,
       permit: permitData,
       purposeAndMethodology: purposeAndMethodologyData,
-      funding_sources: fundingData
+      funding_sources: fundingData,
+      proprietorData: proprietorData
     };
   }
 
@@ -127,7 +130,7 @@ export class SurveyService extends DBService {
     return (response && response.rows) || [];
   }
 
-  async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources[]> {
+  async getSurveyFundingSourcesData(surveyId: number): Promise<any[]> {
     const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
 
     if (!sqlStatement) {
@@ -142,6 +145,90 @@ export class SurveyService extends DBService {
 
     return (response && response.rows) || [];
   }
+
+  async getSurveyProprietorDataForView(surveyId: number) {
+    const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    return (response && response.rows?.[0]) || null;
+  }
+
+
+// export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
+//   const sqlStatement = queries.survey.getSurveyBasicDataForViewSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+//   if (!response || !response?.rows?.[0]) {
+//     throw new HTTP400('Failed to get survey basic data');
+//   }
+
+//   return (response && response.rows?.[0]) || null;
+// };
+
+
+
+
+
+// export const getSurveyFocalSpeciesDataForView = async (
+//   surveyId: number,
+//   connection: IDBConnection
+// ): Promise<GetFocalSpeciesData> => {
+//   const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+//   const result = (response && response.rows) || null;
+
+//   if (!result) {
+//     throw new HTTP400('Failed to get species data');
+//   }
+
+//   const taxonomyService = new TaxonomyService();
+
+//   const species = await taxonomyService.getSpeciesFromIds(result);
+
+//   return new GetFocalSpeciesData(species);
+// };
+
+
+// export const getSurveyAncillarySpeciesDataForView = async (
+//   surveyId: number,
+//   connection: IDBConnection
+// ): Promise<GetAncillarySpeciesData> => {
+//   const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+//   const result = (response && response.rows) || null;
+
+//   if (!result) {
+//     throw new HTTP400('Failed to get species data');
+//   }
+
+//   const taxonomyService = new TaxonomyService();
+
+//   const species = await taxonomyService.getSpeciesFromIds(result);
+
+//   return new GetAncillarySpeciesData(species);
+// };
+
+
 
   /**
    * Get surveys by their ids.
