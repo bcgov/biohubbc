@@ -266,9 +266,6 @@ exports[`SurveyStudyArea renders correctly 1`] = `
     />
     <div
       class="MuiBox-root MuiBox-root-7"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-8"
     >
       <button
         aria-label="Show Expanded Location"
