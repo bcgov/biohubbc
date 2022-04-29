@@ -49,31 +49,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
 };
 
 /**
- * SQL query to get survey funding sources rows based on project funding source id.
- *
- * @param {number | undefined} projectFundingSourceId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveyFundingSourceByProjectFundingSourceIdSQL = (
-  projectFundingSourceId: number | undefined
-): SQLStatement | null => {
-  if (!projectFundingSourceId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      survey_id as id
-    FROM
-      survey_funding_source
-    WHERE
-      project_funding_source_id = ${projectFundingSourceId};
-  `;
-
-  return sqlStatement;
-};
-
-/**
  * SQL query to get all surveys for list view.
  *
  * @param {number} projectId
