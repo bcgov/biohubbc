@@ -141,6 +141,9 @@ export function getInferredLayersInfoByProjectedGeometry(projectedGeo: any, curr
 
     currentLayersInfo.nrmInfo.add(nrm);
     currentLayersInfo.envInfo.add(env);
+    currentLayersInfo.wmuInfo.add(
+      `${projectedGeo.properties?.WILDLIFE_MGMT_UNIT_ID}, ${gmzId}, ${projectedGeo.properties?.GAME_MANAGEMENT_ZONE_NAME}`
+    );
   }
 
   return currentLayersInfo;
