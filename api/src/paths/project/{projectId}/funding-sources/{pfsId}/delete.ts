@@ -47,25 +47,42 @@ export function deleteFundingSource(): RequestHandler {
     try {
       await connection.open();
 
-      const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
+      const surveyFundingSourceGetStatement = queries.survey.getSurveyFundingSourceByProjectFundingSourceIdSQL(
         Number(req.params.pfsId)
       );
+
       const deleteProjectFundingSourceSQLStatement = queries.project.deleteProjectFundingSourceSQL(
         Number(req.params.projectId),
         Number(req.params.pfsId)
       );
 
-      if (!deleteProjectFundingSourceSQLStatement || !surveyFundingSourceDeleteStatement) {
+      if (!deleteProjectFundingSourceSQLStatement || !surveyFundingSourceGetStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
       }
 
-      const surveyFundingSourceDeleteResponse = await connection.query(
-        surveyFundingSourceDeleteStatement.text,
-        surveyFundingSourceDeleteStatement.values
+      const surveyFundingSourceGetResponse = await connection.query(
+        surveyFundingSourceGetStatement.text,
+        surveyFundingSourceGetStatement.values
       );
 
-      if (!surveyFundingSourceDeleteResponse || !surveyFundingSourceDeleteResponse.rowCount) {
-        throw new HTTP400('Failed to delete survey funding source');
+      //if survey_funding_source has data assoicated to pfsId then delete first.
+      if (surveyFundingSourceGetResponse && surveyFundingSourceGetResponse.rowCount) {
+        const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
+          Number(req.params.pfsId)
+        );
+
+        if (!surveyFundingSourceDeleteStatement) {
+          throw new HTTP400('Failed to build SQL delete statement');
+        }
+
+        const surveyFundingSourceDeleteResponse = await connection.query(
+          surveyFundingSourceDeleteStatement.text,
+          surveyFundingSourceDeleteStatement.values
+        );
+
+        if (!surveyFundingSourceDeleteResponse || !surveyFundingSourceDeleteResponse.rowCount) {
+          throw new HTTP400('Failed to delete survey funding source');
+        }
       }
 
       const projectFundingSourceDeleteResponse = await connection.query(
