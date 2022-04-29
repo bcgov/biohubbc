@@ -164,7 +164,7 @@ describe('delete a funding source', () => {
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to delete survey funding source');
+      expect((actualError as HTTPError).message).to.equal('Failed to delete project funding source');
     }
   });
 
