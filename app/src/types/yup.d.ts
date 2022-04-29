@@ -39,7 +39,7 @@ declare module 'yup' {
     ): yup.StringSchema<string | undefined, Record<string, any>, string | undefined>;
 
     /**
-     * Determine if the end date string is after the start date string. Does nothing if either the end or start
+     * Determine if the end date string is on or after the start date string. Does nothing if either the end or start
      * date strings are null or invalid.
      *
      * @param {string} startDateName - name of the start date field
