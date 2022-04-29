@@ -1329,7 +1329,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
         <p
           class="MuiTypography-root makeStyles-bold-72 MuiTypography-body1"
         >
-          Project Boundary
+          Project Boundary *
         </p>
         <div
           class="MuiBox-root MuiBox-root-75"
