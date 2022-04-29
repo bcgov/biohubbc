@@ -47,7 +47,7 @@ export function deleteFundingSource(): RequestHandler {
     try {
       await connection.open();
 
-      const surveyFundingSourceGetStatement = queries.survey.getSurveyFundingSourceByProjectFundingSourceIdSQL(
+      const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
         Number(req.params.pfsId)
       );
 
@@ -56,41 +56,18 @@ export function deleteFundingSource(): RequestHandler {
         Number(req.params.pfsId)
       );
 
-      if (!deleteProjectFundingSourceSQLStatement || !surveyFundingSourceGetStatement) {
+      if (!deleteProjectFundingSourceSQLStatement || !surveyFundingSourceDeleteStatement) {
         throw new HTTP400('Failed to build SQL delete statement');
       }
 
-      const surveyFundingSourceGetResponse = await connection.query(
-        surveyFundingSourceGetStatement.text,
-        surveyFundingSourceGetStatement.values
-      );
-
-      //if survey_funding_source has data assoicated to pfsId then delete first.
-      if (surveyFundingSourceGetResponse && surveyFundingSourceGetResponse.rowCount) {
-        const surveyFundingSourceDeleteStatement = queries.survey.deleteSurveyFundingSourceByProjectFundingSourceIdSQL(
-          Number(req.params.pfsId)
-        );
-
-        if (!surveyFundingSourceDeleteStatement) {
-          throw new HTTP400('Failed to build SQL delete statement');
-        }
-
-        const surveyFundingSourceDeleteResponse = await connection.query(
-          surveyFundingSourceDeleteStatement.text,
-          surveyFundingSourceDeleteStatement.values
-        );
-
-        if (!surveyFundingSourceDeleteResponse || !surveyFundingSourceDeleteResponse.rowCount) {
-          throw new HTTP400('Failed to delete survey funding source');
-        }
-      }
+      await connection.query(surveyFundingSourceDeleteStatement.text, surveyFundingSourceDeleteStatement.values);
 
       const projectFundingSourceDeleteResponse = await connection.query(
         deleteProjectFundingSourceSQLStatement.text,
         deleteProjectFundingSourceSQLStatement.values
       );
 
-      if (!projectFundingSourceDeleteResponse || !projectFundingSourceDeleteResponse.rowCount) {
+      if (!projectFundingSourceDeleteResponse.rowCount) {
         throw new HTTP400('Failed to delete project funding source');
       }
 
