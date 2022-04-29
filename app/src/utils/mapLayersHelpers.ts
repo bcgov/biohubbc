@@ -9,7 +9,7 @@ import { getKeyByValue } from './Utils';
  * - If the map loads as view-only, then nonEditableGeometries may be defined.
  * - If the map loads as editable, then `geometry` may be defined.
  * - If neither are defined, returns an empty array.
- * 
+ *
  * Note: when there are existing nonEditableGeometries, and the map is edited,
  * the geometry array will contain all of the previous nonEditableGeometries
  * as well as any newly added/drawn geometries.

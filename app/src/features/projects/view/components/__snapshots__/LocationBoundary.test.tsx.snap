@@ -3,7 +3,7 @@
 exports[`LocationBoundary matches the snapshot when the geometry is a single polygon in valid GeoJSON format 1`] = `
 <DocumentFragment>
   <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-15 MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiBox-root MuiBox-root-13 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -15,7 +15,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         Project Location
       </h2>
       <div
-        class="MuiBox-root MuiBox-root-16"
+        class="MuiBox-root MuiBox-root-14"
       >
         <button
           aria-label="Edit Project Location"
@@ -54,7 +54,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-17"
+      class="MuiBox-root MuiBox-root-15"
     >
       <div
         class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -245,7 +245,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-18"
+      class="MuiBox-root MuiBox-root-16"
     >
       <p
         class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
@@ -259,13 +259,10 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       </p>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-19"
+      class="MuiBox-root MuiBox-root-17"
     />
     <div
-      class="MuiBox-root MuiBox-root-20"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-21"
+      class="MuiBox-root MuiBox-root-18"
     />
     <button
       aria-label="Show Expanded Location"
@@ -304,7 +301,7 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
 exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
 <DocumentFragment>
   <div
-    class="MuiPaper-root MuiBox-root MuiBox-root-8 MuiPaper-elevation1 MuiPaper-rounded"
+    class="MuiPaper-root MuiBox-root MuiBox-root-7 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -316,7 +313,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         Project Location
       </h2>
       <div
-        class="MuiBox-root MuiBox-root-9"
+        class="MuiBox-root MuiBox-root-8"
       >
         <button
           aria-label="Edit Project Location"
@@ -355,7 +352,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-10"
+      class="MuiBox-root MuiBox-root-9"
     >
       <div
         class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -523,7 +520,7 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-11"
+      class="MuiBox-root MuiBox-root-10"
     >
       <p
         class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
@@ -537,13 +534,10 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       </p>
     </div>
     <div
+      class="MuiBox-root MuiBox-root-11"
+    />
+    <div
       class="MuiBox-root MuiBox-root-12"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-13"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-14"
     />
     <button
       aria-label="Show Expanded Location"
@@ -819,9 +813,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
     />
     <div
       class="MuiBox-root MuiBox-root-6"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-7"
     />
     <button
       aria-label="Show Expanded Location"
