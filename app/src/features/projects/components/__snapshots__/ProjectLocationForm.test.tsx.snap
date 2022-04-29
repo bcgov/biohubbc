@@ -51,7 +51,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         <p
           class="MuiTypography-root makeStyles-bold-5 MuiTypography-body1"
         >
-          Project Boundary
+          Project Boundary *
         </p>
         <div
           class="MuiBox-root MuiBox-root-8"
@@ -500,7 +500,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         <p
           class="MuiTypography-root makeStyles-bold-32 MuiTypography-body1"
         >
-          Project Boundary
+          Project Boundary *
         </p>
         <div
           class="MuiBox-root MuiBox-root-35"
@@ -976,7 +976,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         <p
           class="MuiTypography-root makeStyles-bold-18 MuiTypography-body1"
         >
-          Project Boundary
+          Project Boundary *
         </p>
         <div
           class="MuiBox-root MuiBox-root-21"

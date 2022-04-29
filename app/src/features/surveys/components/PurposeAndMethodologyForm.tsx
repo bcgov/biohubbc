@@ -111,6 +111,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             />
           </Grid>
           <Grid item xs={12}>
+            <Typography component="legend">Surveyed Areas *</Typography>
             <FormControl
               required={true}
               component="fieldset"
