@@ -16,7 +16,7 @@ GET.apiDoc = {
             properties: {
               version: {
                 description: 'API Version',
-                type: 'number'
+                type: 'string'
               },
               environment: {
                 description: 'API Environment',
