@@ -148,7 +148,7 @@ describe('GetReportAttachmentMetaData', () => {
       title: 'My Report',
       update_date: '2020-10-10',
       description: 'abstract of the report',
-      year_published: 2020,
+      year: 2020,
       revision_count: 2,
       authors: [{ first_name: 'John', last_name: 'Smith' }]
     };
@@ -157,7 +157,7 @@ describe('GetReportAttachmentMetaData', () => {
       const getReportAttachmentData = new GetReportAttachmentMetadata(input);
 
       expect(getReportAttachmentData.title).to.equal(input.title);
-      expect(getReportAttachmentData.year_published).to.equal(input.year_published);
+      expect(getReportAttachmentData.year_published).to.equal(input.year);
       expect(getReportAttachmentData.description).to.equal(input.description);
       expect(getReportAttachmentData.last_modified).to.equal(input.update_date);
       expect(getReportAttachmentData.revision_count).to.equal(input.revision_count);

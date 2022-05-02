@@ -40,9 +40,7 @@ const ViewFileWithMetaDialog: React.FC<IViewFileWithMetaDialogProps> = (props) =
   return (
     <>
       <Dialog open={props.open} onClose={props.onClose} {...props.dialogProps} data-testid="view-meta-dialog">
-        <DialogTitle data-testid="view-meta-dialog-title">
-          {reportMetaData?.title}
-        </DialogTitle>
+        <DialogTitle data-testid="view-meta-dialog-title">{reportMetaData?.title}</DialogTitle>
         <DialogContent>
           <Box component="dl">
             <Grid container spacing={3}>
