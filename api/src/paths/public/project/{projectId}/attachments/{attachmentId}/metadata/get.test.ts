@@ -126,7 +126,7 @@ describe('gets metadata for a project report', () => {
           title: 'My report',
           update_date: '2020-10-10',
           description: 'some description',
-          year: 2020,
+          year_published: 2020,
           revision_count: '1'
         }
       ]
