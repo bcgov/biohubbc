@@ -253,7 +253,8 @@ GET.apiDoc = {
                           description: 'ISO 8601 date string for the funding end_date'
                         },
                         agency_project_id: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         },
                         revision_count: {
                           type: 'number'
@@ -320,6 +321,8 @@ export function viewProject(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       const result = await projectService.getProjectById(Number(req.params.projectId));
+
+      console.log('result is : ', result);
 
       await connection.commit();
 
