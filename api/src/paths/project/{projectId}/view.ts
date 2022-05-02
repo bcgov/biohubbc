@@ -322,8 +322,6 @@ export function viewProject(): RequestHandler {
 
       const result = await projectService.getProjectById(Number(req.params.projectId));
 
-      console.log('result is : ', result);
-
       await connection.commit();
 
       return res.status(200).json(result);

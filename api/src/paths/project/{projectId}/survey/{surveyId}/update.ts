@@ -609,8 +609,6 @@ export function getSurveyForUpdate(): RequestHandler {
 
       await connection.commit();
 
-      console.log('results in get for update : ', JSON.stringify(results));
-
       return res.status(200).send(results);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyForUpdate', message: 'error', error });
