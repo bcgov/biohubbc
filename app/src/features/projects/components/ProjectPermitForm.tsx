@@ -11,9 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import CustomTextField from 'components/fields/CustomTextField';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
@@ -80,16 +78,6 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit}>
-      {props.non_sampling_permits && props.non_sampling_permits.length > 0 && (
-        <Box pb={4}>
-          <MultiAutocompleteFieldVariableSize
-            id="existing_permits"
-            label="Select Existing Permits"
-            options={props.non_sampling_permits}
-            required={false}
-          />
-        </Box>
-      )}
       <FieldArray
         name="permits"
         render={(arrayHelpers) => (
