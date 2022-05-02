@@ -95,7 +95,7 @@ const EditReportMetaForm: React.FC = () => {
             <CustomTextField
               name="description"
               label="Report Summary"
-              other={{ required: true, multiline: true, rows: 6 }}
+              other={{ multiline: true, required: true, rows: 4 }}
             />
           </Grid>
         </Grid>

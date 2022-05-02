@@ -22,6 +22,9 @@ const appTheme = createMuiTheme({
       dark: '#001949',
       contrastText: '#ffffff'
     },
+    secondary: {
+      main: '#D8292F'
+    },
     text: {
       primary: '#313132',
       secondary: '#7f7f81'
@@ -97,7 +100,10 @@ const appTheme = createMuiTheme({
     },
     MuiDialogActions: {
       root: {
-        padding: '20px 24px'
+        padding: '20px 24px',
+        '& button': {
+          minWidth: '6rem'
+        }
       }
     },
     MuiLink: {
