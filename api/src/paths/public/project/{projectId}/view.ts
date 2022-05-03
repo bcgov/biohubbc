@@ -252,7 +252,7 @@ GET.apiDoc = {
                   indigenous_partnerships: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   stakeholder_partnerships: {
