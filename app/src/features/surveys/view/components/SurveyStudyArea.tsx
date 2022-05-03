@@ -219,7 +219,19 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             }
           />
         </Box>
-
+        <Box pt={2}>
+          <Button
+            variant="outlined"
+            component="label"
+            size="medium"
+            color="primary"
+            // className={classes.uploadButton}
+            onClick={() => {
+              setBounds(calculateUpdatedMapBounds(surveyGeometry));
+            }}>
+            Zoom to Boundary Extent
+          </Button>
+        </Box>
         <Box my={3}>
           <Typography variant="body2" color="textSecondary">
             Study Area Name
