@@ -181,13 +181,13 @@ GET.apiDoc = {
                       type: 'object',
                       properties: {
                         classification: {
-                          type: 'string'
+                          type: 'number'
                         },
                         subClassification1: {
-                          type: 'string'
+                          type: 'number'
                         },
                         subClassification2: {
-                          type: 'string'
+                          type: 'number'
                         }
                       }
                     }
