@@ -256,18 +256,6 @@ export class ProjectService extends DBService {
       this.getPartnershipsData(projectId)
     ]);
 
-    console.log(
-      'object returned is: ',
-      projectId,
-      projectData,
-      objectiveData,
-      coordinatorData,
-      permitData,
-      iucnData,
-      fundingData,
-      partnershipsData
-    );
-
     return {
       id: projectId,
       project: projectData,

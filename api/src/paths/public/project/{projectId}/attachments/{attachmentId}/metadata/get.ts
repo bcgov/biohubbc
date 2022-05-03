@@ -165,8 +165,6 @@ export function getPublicReportMetaData(): RequestHandler {
 
       const reportMetaObj = new GetReportAttachmentMetadata(getReportMetaData, getReportAuthorsData);
 
-      console.log('reportMetaObj:', reportMetaObj);
-
       return res.status(200).json(reportMetaObj);
     } catch (error) {
       defaultLog.error({ label: 'getPublicReportMetadata', message: 'error', error });
