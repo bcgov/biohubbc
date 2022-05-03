@@ -26,7 +26,7 @@ import {
   IUpdateSurveyRequest,
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
@@ -49,7 +49,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     refresh
   } = props;
 
-  const surveyGeometry = survey_details?.geometry;
+  const surveyGeometry = survey_details?.geometry || [];
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
@@ -64,17 +64,19 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
+  const zoomToBoundaryExtend = useCallback(() => {
+    setBounds(calculateUpdatedMapBounds(surveyGeometry));
+  }, [surveyGeometry])
+
   useEffect(() => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    if (!survey_details.occurrence_submission_id) {
-      setBounds(calculateUpdatedMapBounds(surveyGeometry));
-    }
+    zoomToBoundaryExtend()
 
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, survey_details.occurrence_submission_id]);
+  }, [surveyGeometry, survey_details.occurrence_submission_id, zoomToBoundaryExtend]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -219,19 +221,18 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             }
           />
         </Box>
-        <Box pt={2}>
-          <Button
-            variant="outlined"
-            component="label"
-            size="medium"
-            color="primary"
-            // className={classes.uploadButton}
-            onClick={() => {
-              setBounds(calculateUpdatedMapBounds(surveyGeometry));
-            }}>
-            Zoom to Boundary Extent
-          </Button>
-        </Box>
+        {surveyGeometry.length > 0 && (
+          <Box pt={2}>
+            <Button
+              variant="outlined"
+              component="label"
+              size="medium"
+              color="primary"
+              onClick={() => zoomToBoundaryExtend()}>
+              Zoom to Boundary Extent
+            </Button>
+          </Box>
+        )}
         <Box my={3}>
           <Typography variant="body2" color="textSecondary">
             Study Area Name
