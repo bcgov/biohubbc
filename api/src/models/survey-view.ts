@@ -143,17 +143,17 @@ export class GetFocalSpeciesData {
 }
 
 export type SurveyObject = {
-  survey: GetSurveyData;
+  survey_general_details: GetSurveyData;
   species: GetSpeciesData;
   permit: GetPermitData;
-  purposeAndMethodology: GetSurveyPurposeAndMethodologyData;
+  purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   funding_sources: any[];
-  proprietorData: any;
+  proprietor: any;
 };
 
 export class GetSurveyData {
   id: number;
-  name: string;
+  survey_name: string;
   start_date: string;
   end_date: string;
   publish_status: string;
@@ -161,7 +161,7 @@ export class GetSurveyData {
 
   constructor(surveyData?: any) {
     this.id = surveyData?.survey_id || null;
-    this.name = surveyData?.name || '';
+    this.survey_name = surveyData?.name || '';
     this.start_date = surveyData?.start_date || null;
     this.end_date = surveyData?.end_date || null;
     this.publish_status = surveyData?.publish_timestamp ? 'Published' : 'Unpublished';
@@ -188,3 +188,6 @@ export class GetAncillarySpeciesData {
       });
   }
 }
+
+
+

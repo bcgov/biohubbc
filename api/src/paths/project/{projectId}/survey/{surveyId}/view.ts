@@ -3,12 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
-// import {
-//   GetAncillarySpeciesData,
-//   GetFocalSpeciesData,
-//   GetViewSurveyDetailsData
-// } from '../../../../../models/survey-view';
-// import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../services/survey-service';
@@ -65,32 +59,146 @@ GET.apiDoc = {
           schema: {
             title: 'Survey get response object, for view purposes',
             type: 'object',
-            required: ['survey_details', 'survey_purpose_and_methodology', 'survey_proprietor'],
+            required: [
+              'survey_general_details',
+              'species',
+              'permit',
+              'funding_sources',
+              'purpose_and_methodology',
+              'proprietor'
+            ],
             properties: {
-              survey_details: {
+              survey_general_details: {
                 description: 'Survey Details',
                 type: 'object',
-                required: [
-                  'id',
-                  'occurrence_submission_id',
-                  'focal_species',
-                  'focal_species_names',
-                  'ancillary_species',
-                  'ancillary_species_names',
-                  'biologist_first_name',
-                  'biologist_last_name',
-                  'completion_status',
-                  'start_date',
-                  'end_date',
-                  'funding_sources',
-                  'geometry',
-                  'permit_number',
-                  'permit_type',
-                  'publish_date',
-                  'revision_count',
-                  'survey_area_name',
-                  'survey_name'
-                ],
+                // required: [
+                //   'id',
+                //   'occurrence_submission_id',
+                //   'focal_species',
+                //   'focal_species_names',
+                //   'ancillary_species',
+                //   'ancillary_species_names',
+                //   'biologist_first_name',
+                //   'biologist_last_name',
+                //   'completion_status',
+                //   'start_date',
+                //   'end_date',
+                //   'funding_sources',
+                //   'geometry',
+                //   'permit_number',
+                //   'permit_type',
+                //   'publish_date',
+                //   'revision_count',
+                //   'survey_area_name',
+                //   'survey_name'
+                // ],
+                properties: {
+                  id: {
+                    description: 'Survey id',
+                    type: 'number'
+                  },
+                  ancillary_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  ancillary_species_names: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  focal_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  focal_species_names: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  biologist_first_name: {
+                    type: 'string'
+                  },
+                  biologist_last_name: {
+                    type: 'string'
+                  },
+                  completion_status: {
+                    type: 'string'
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(geoJsonFeature as object)
+                    }
+                  },
+                  occurrence_submission_id: {
+                    description: 'A survey occurrence submission ID',
+                    type: 'number',
+                    nullable: true,
+                    example: 1
+                  },
+                  permit_number: {
+                    type: 'string'
+                  },
+                  permit_type: {
+                    type: 'string'
+                  },
+                  publish_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    nullable: true,
+                    description: 'Determines if the record has been published'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  },
+                  survey_area_name: {
+                    type: 'string'
+                  },
+                  survey_name: {
+                    type: 'string'
+                  }
+                }
+              },
+              species: {
+                description: 'Survey Details',
+                type: 'object',
+                // required: [
+                //   'id',
+                //   'occurrence_submission_id',
+                //   'focal_species',
+                //   'focal_species_names',
+                //   'ancillary_species',
+                //   'ancillary_species_names',
+                //   'biologist_first_name',
+                //   'biologist_last_name',
+                //   'completion_status',
+                //   'start_date',
+                //   'end_date',
+                //   'funding_sources',
+                //   'geometry',
+                //   'permit_number',
+                //   'permit_type',
+                //   'publish_date',
+                //   'revision_count',
+                //   'survey_area_name',
+                //   'survey_name'
+                // ],
                 properties: {
                   id: {
                     description: 'Survey id',
@@ -171,6 +279,7 @@ GET.apiDoc = {
                       }
                     }
                   },
+
                   geometry: {
                     type: 'array',
                     items: {
@@ -205,19 +314,220 @@ GET.apiDoc = {
                   }
                 }
               },
-              survey_purpose_and_methodology: {
+              permit: {
                 description: 'Survey Details',
                 type: 'object',
-                required: [
-                  'id',
-                  'field_method_id',
-                  'additional_details',
-                  'intended_outcome_id',
-                  'ecological_season_id',
-                  'vantage_code_ids',
-                  'surveyed_all_areas',
-                  'revision_count'
-                ],
+                // required: [
+                //   'id',
+                //   'occurrence_submission_id',
+                //   'focal_species',
+                //   'focal_species_names',
+                //   'ancillary_species',
+                //   'ancillary_species_names',
+                //   'biologist_first_name',
+                //   'biologist_last_name',
+                //   'completion_status',
+                //   'start_date',
+                //   'end_date',
+                //   'funding_sources',
+                //   'geometry',
+                //   'permit_number',
+                //   'permit_type',
+                //   'publish_date',
+                //   'revision_count',
+                //   'survey_area_name',
+                //   'survey_name'
+                // ],
+                properties: {
+                  permit_number: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  permit_type: {
+                    type: 'string',
+                    nullable: true
+                  }
+                }
+              },
+              funding_sources: {
+                description: 'Survey Details',
+                type: 'array',
+                nullable: true,
+                items: {
+                  properties: {
+                    pfs_id: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    agency_name: {
+                      type: 'string',
+                      nullable: true
+                    },
+                    funding_amount: {
+                      type: 'number',
+                      nullable: true
+                    },
+                    funding_start_date: {
+                      type: 'string',
+                      nullable: true,
+                      description: 'ISO 8601 date string'
+                    },
+                    funding_end_date: {
+                      type: 'string',
+                      nullable: true,
+                      description: 'ISO 8601 date string'
+                    }
+                  }
+                },
+                // required: [
+                //   'id',
+                //   'occurrence_submission_id',
+                //   'focal_species',
+                //   'focal_species_names',
+                //   'ancillary_species',
+                //   'ancillary_species_names',
+                //   'biologist_first_name',
+                //   'biologist_last_name',
+                //   'completion_status',
+                //   'start_date',
+                //   'end_date',
+                //   'funding_sources',
+                //   'geometry',
+                //   'permit_number',
+                //   'permit_type',
+                //   'publish_date',
+                //   'revision_count',
+                //   'survey_area_name',
+                //   'survey_name'
+                // ],
+                properties: {
+                  id: {
+                    description: 'Survey id',
+                    type: 'number'
+                  },
+                  ancillary_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  ancillary_species_names: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  focal_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  focal_species_names: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  biologist_first_name: {
+                    type: 'string'
+                  },
+                  biologist_last_name: {
+                    type: 'string'
+                  },
+                  completion_status: {
+                    type: 'string'
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      title: 'survey funding agency',
+                      type: 'object',
+                      required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
+                      properties: {
+                        pfs_id: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        agency_name: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        funding_amount: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        funding_start_date: {
+                          type: 'string',
+                          nullable: true,
+                          description: 'ISO 8601 date string'
+                        },
+                        funding_end_date: {
+                          type: 'string',
+                          nullable: true,
+                          description: 'ISO 8601 date string'
+                        }
+                      }
+                    }
+                  },
+
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(geoJsonFeature as object)
+                    }
+                  },
+                  occurrence_submission_id: {
+                    description: 'A survey occurrence submission ID',
+                    type: 'number',
+                    nullable: true,
+                    example: 1
+                  },
+                  permit_number: {
+                    type: 'string'
+                  },
+                  permit_type: {
+                    type: 'string'
+                  },
+                  publish_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    nullable: true,
+                    description: 'Determines if the record has been published'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  },
+                  survey_area_name: {
+                    type: 'string'
+                  },
+                  survey_name: {
+                    type: 'string'
+                  }
+                }
+              },
+              purpose_and_methodology: {
+                description: 'Survey Details',
+                type: 'object',
+                // required: [
+                //   'id',
+                //   'field_method_id',
+                //   'additional_details',
+                //   'intended_outcome_id',
+                //   'ecological_season_id',
+                //   'vantage_code_ids',
+                //   'surveyed_all_areas',
+                //   'revision_count'
+                // ],
                 properties: {
                   id: {
                     type: 'number'
@@ -252,7 +562,7 @@ GET.apiDoc = {
                   }
                 }
               },
-              survey_proprietor: {
+              proprietor: {
                 description: 'Survey Details',
                 type: 'object',
                 nullable: true,
@@ -330,6 +640,8 @@ export function getSurveyForView(): RequestHandler {
       const surveyService = new SurveyService(connection);
 
       const result = await surveyService.getSurveyById(Number(req.params.surveyId));
+
+      console.log('result is: ', result);
 
       // const [
       //   surveyBasicData,

@@ -45,7 +45,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details },
+    surveyForViewData: { survey_general_details, permits, species, funding_sources },
     refresh
   } = props;
 
