@@ -102,8 +102,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Attachment',
-    dialogText: 'Are you sure you want to delete the selected attachment?',
+    dialogTitle: 'Delete Document',
+    dialogText: 'Are you sure you want to delete the selected document? This action cannot be undone.',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -120,6 +120,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
       onYes: () => {
         deleteAttachment(attachment);
         dialogContext.setYesNoDialog({ open: false });

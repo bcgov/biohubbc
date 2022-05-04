@@ -176,27 +176,7 @@ GET.apiDoc = {
                     type: 'array',
                     items: {
                       title: 'survey funding agency',
-                      type: 'object',
-                      required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
-                      properties: {
-                        pfs_id: {
-                          type: 'number'
-                        },
-                        agency_name: {
-                          type: 'string'
-                        },
-                        funding_amount: {
-                          type: 'number'
-                        },
-                        funding_start_date: {
-                          type: 'string',
-                          description: 'ISO 8601 date string'
-                        },
-                        funding_end_date: {
-                          type: 'string',
-                          description: 'ISO 8601 date string'
-                        }
-                      }
+                      type: 'number'
                     }
                   },
                   geometry: {

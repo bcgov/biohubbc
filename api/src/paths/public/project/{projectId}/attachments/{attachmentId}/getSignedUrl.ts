@@ -47,7 +47,7 @@ GET.apiDoc = {
       content: {
         'text/plain': {
           schema: {
-            type: 'number'
+            type: 'string'
           }
         }
       }
