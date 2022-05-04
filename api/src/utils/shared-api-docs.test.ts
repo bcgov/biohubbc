@@ -1,9 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  addFundingSourceApiDocObject,
   attachmentApiDocObject,
-  deleteFundingSourceApiDocObject,
-  addFundingSourceApiDocObject
+  deleteFundingSourceApiDocObject
 } from './shared-api-docs';
 
 describe('attachmentApiResponseObject', () => {

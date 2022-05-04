@@ -1,10 +1,10 @@
 import SQL from 'sql-template-strings';
 import { HTTP400 } from '../errors/custom-error';
-
-import { GetSpeciesData, GetPermitData, GetSurveyData, SurveyObject } from '../models/survey-view';
+import { GetPermitData, GetSpeciesData, GetSurveyData, SurveyObject } from '../models/survey-view';
 import { queries } from '../queries/queries';
 import { DBService } from './service';
 import { TaxonomyService } from './taxonomy-service';
+
 
 export class SurveyService extends DBService {
   async getSurveyIdsByProjectId(projectId: number): Promise<any> {

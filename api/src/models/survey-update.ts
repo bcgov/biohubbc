@@ -1,6 +1,6 @@
-import { COMPLETION_STATUS } from '../constants/status';
 import { Feature } from 'geojson';
 import moment from 'moment';
+import { COMPLETION_STATUS } from '../constants/status';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/survey-update');
@@ -61,7 +61,7 @@ export class GetUpdateSurveyDetailsData {
         moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.publish_date = surveyDetailsData?.publish_date || '';
+    this.publish_date = String(surveyDetailsData?.publish_date || '');
   }
 }
 

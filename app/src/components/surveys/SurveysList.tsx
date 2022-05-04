@@ -1,5 +1,7 @@
 import Chip from '@material-ui/core/Chip';
 import Link from '@material-ui/core/Link';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
@@ -7,16 +9,14 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { SurveyStatusType } from 'constants/misc';
 import clsx from 'clsx';
+import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { SurveyStatusType } from 'constants/misc';
 import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
-import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { getFormattedDateRangeString } from 'utils/Utils';
-import { handleChangeRowsPerPage, handleChangePage } from 'utils/tablePaginationUtils';
 import { useHistory } from 'react-router';
+import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
+import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {

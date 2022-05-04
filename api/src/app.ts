@@ -4,7 +4,7 @@ import multer from 'multer';
 import { OpenAPIV3 } from 'openapi-types';
 import swaggerUIExperss from 'swagger-ui-express';
 import { defaultPoolConfig, initDBPool } from './database/db';
-import { ensureHTTPError } from './errors/custom-error';
+import { ensureHTTPError, HTTPErrorType } from './errors/custom-error';
 import { rootAPIDoc } from './openapi/root-api-doc';
 import { authenticateRequest } from './request-handlers/security/authentication';
 import { getLogger } from './utils/logger';
@@ -38,7 +38,11 @@ app.use(function (req: Request, res: Response, next: NextFunction) {
 
 // Initialize express-openapi framework
 const openAPIFramework = initialize({
-  apiDoc: rootAPIDoc as OpenAPIV3.Document, // base open api spec
+  apiDoc: {
+    ...(rootAPIDoc as OpenAPIV3.Document), // base open api spec
+    'x-express-openapi-additional-middleware': [validateAllResponses],
+    'x-express-openapi-validation-strict': true
+  },
   app: app, // express app to initialize
   paths: './src/paths', // base folder for endpoint routes
   pathsIgnore: new RegExp('.(spec|test)$'), // ignore test files in paths
@@ -106,4 +110,61 @@ try {
 } catch (error) {
   defaultLog.error({ label: 'start api', message: 'error', error });
   process.exit(1);
+}
+
+/**
+ * Middleware to apply openapi response validation to all routes.
+ *
+ * Note: validates `<data>` sent via `res.status(<status>).json(<data>)` against the matching openapi response schema
+ * for `<status>`.
+ *
+ * @param {Request} req
+ * @param {Response} res
+ * @param {NextFunction} next
+ */
+function validateAllResponses(req: Request, res: Response, next: NextFunction) {
+  const isStrictValidation = !!req['apiDoc']['x-express-openapi-validation-strict'] || false;
+
+  if (typeof res['validateResponse'] === 'function') {
+    const json = res.json;
+
+    res.json = (...args) => {
+      if (res.get('x-express-openapi-validation-error-for')) {
+        // Already validated, return
+        return json.apply(res, args);
+      }
+
+      const body = args[0];
+
+      const validationResult: { message: any; errors: any[] } | undefined = res['validateResponse'](
+        res.statusCode,
+        body
+      );
+
+      let validationMessage = '';
+      let errorList = [];
+
+      if (validationResult?.errors) {
+        validationMessage = `Invalid response for status code ${res.statusCode}`;
+
+        errorList = Array.from(validationResult.errors);
+
+        // Set to avoid a loop, and to provide the original status code
+        res.set('x-express-openapi-validation-error-for', res.statusCode.toString());
+      }
+
+      if (!isStrictValidation || !validationResult?.errors) {
+        return json.apply(res, args);
+      } else {
+        return res.status(500).json({
+          name: HTTPErrorType.INTERNAL_SERVER_ERROR,
+          status: 500,
+          message: validationMessage,
+          errors: errorList
+        });
+      }
+    };
+  }
+
+  next();
 }

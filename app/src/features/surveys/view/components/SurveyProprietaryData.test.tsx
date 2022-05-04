@@ -1,11 +1,11 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
-import React from 'react';
-import { codes } from 'test-helpers/code-helpers';
-import SurveyProprietaryData from './SurveyProprietaryData';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_SURVEY_ENTITIES } from 'interfaces/useSurveyApi.interface';
+import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import SurveyProprietaryData from './SurveyProprietaryData';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {

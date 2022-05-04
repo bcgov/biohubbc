@@ -3,11 +3,11 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/custom-error';
+import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
-import { getLogger } from '../../../utils/logger';
-import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
 import { ProjectService } from '../../../services/project-service';
+import { getLogger } from '../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/update');
 
@@ -90,6 +90,7 @@ GET.apiDoc = {
                   'publish_date',
                   'revision_count'
                 ],
+                nullable: true,
                 properties: {
                   project_name: {
                     type: 'string'
@@ -126,6 +127,7 @@ GET.apiDoc = {
               permit: {
                 type: 'object',
                 required: ['permits'],
+                nullable: true,
                 properties: {
                   permits: {
                     type: 'array',
@@ -147,6 +149,7 @@ GET.apiDoc = {
               coordinator: {
                 title: 'Project coordinator',
                 type: 'object',
+                nullable: true,
                 required: [
                   'first_name',
                   'last_name',
@@ -181,6 +184,7 @@ GET.apiDoc = {
                 description: 'The project objectives and caveats',
                 type: 'object',
                 required: ['objectives', 'caveats'],
+                nullable: true,
                 properties: {
                   objectives: {
                     type: 'string'
@@ -194,6 +198,7 @@ GET.apiDoc = {
                 description: 'The project location object',
                 type: 'object',
                 required: ['location_description', 'geometry'],
+                nullable: true,
                 properties: {
                   location_description: {
                     type: 'string'
@@ -210,6 +215,7 @@ GET.apiDoc = {
                 description: 'The International Union for Conservation of Nature number',
                 type: 'object',
                 required: ['classificationDetails'],
+                nullable: true,
                 properties: {
                   classificationDetails: {
                     type: 'array',
@@ -217,13 +223,13 @@ GET.apiDoc = {
                       type: 'object',
                       properties: {
                         classification: {
-                          type: 'string'
+                          type: 'number'
                         },
                         subClassification1: {
-                          type: 'string'
+                          type: 'number'
                         },
                         subClassification2: {
-                          type: 'string'
+                          type: 'number'
                         }
                       }
                     }
@@ -234,6 +240,7 @@ GET.apiDoc = {
                 description: 'The project funding details',
                 type: 'object',
                 required: ['fundingSources'],
+                nullable: true,
                 properties: {
                   fundingSources: {
                     type: 'array',
@@ -283,11 +290,12 @@ GET.apiDoc = {
                 description: 'The project partners',
                 type: 'object',
                 required: ['indigenous_partnerships', 'stakeholder_partnerships'],
+                nullable: true,
                 properties: {
                   indigenous_partnerships: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   stakeholder_partnerships: {

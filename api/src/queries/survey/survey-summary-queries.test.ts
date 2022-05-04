@@ -2,14 +2,14 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PostSummaryDetails } from '../../models/summaryresults-create';
 import {
-  insertSurveySummarySubmissionSQL,
+  deleteSummarySubmissionSQL,
   getLatestSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL,
+  getSummarySubmissionMessagesSQL,
   getSurveySummarySubmissionSQL,
   insertSurveySummaryDetailsSQL,
-  deleteSummarySubmissionSQL,
   insertSurveySummarySubmissionMessageSQL,
-  getSummarySubmissionMessagesSQL
+  insertSurveySummarySubmissionSQL,
+  updateSurveySummarySubmissionWithKeySQL
 } from './survey-summary-queries';
 
 describe('deleteSummarySubmissionSQL', () => {

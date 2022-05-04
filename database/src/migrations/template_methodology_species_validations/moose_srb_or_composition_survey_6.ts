@@ -1,4 +1,4 @@
-import { MooseItems, basicNumericValidator, basicCodeValidator } from './picklist_variables/v0.1';
+import { basicCodeValidator, basicNumericValidator, MooseItems } from './picklist_variables/v0.1';
 export const mooseSRBOrCompositionJSON = {
   name: '',
   description: '',

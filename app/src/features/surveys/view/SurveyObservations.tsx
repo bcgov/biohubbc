@@ -1,7 +1,6 @@
 import Box from '@material-ui/core/Box';
-import Divider from '@material-ui/core/Divider';
 import CircularProgress from '@material-ui/core/CircularProgress';
-import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
@@ -11,17 +10,18 @@ import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
 import {
   mdiAlertCircleOutline,
-  mdiInformationOutline,
   mdiClockOutline,
+  mdiDownload,
   mdiFileOutline,
   mdiImport,
-  mdiTrashCanOutline,
-  mdiDownload
+  mdiInformationOutline,
+  mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';

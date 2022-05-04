@@ -68,7 +68,7 @@ export class GetViewSurveyDetailsData {
         moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.publish_date = surveyDetailsData?.publish_date || '';
+    this.publish_date = String(surveyDetailsData?.publish_date || '');
   }
 }
 
@@ -142,22 +142,6 @@ export class GetFocalSpeciesData {
   }
 }
 
-export class GetAncillarySpeciesData {
-  ancillary_species: number[];
-  ancillary_species_names: string[];
-
-  constructor(input?: any[]) {
-    this.ancillary_species = [];
-    this.ancillary_species_names = [];
-
-    input?.length &&
-      input.forEach((item: any) => {
-        this.ancillary_species.push(Number(item.id));
-        this.ancillary_species_names.push(item.label);
-      });
-  }
-}
-
 export type SurveyObject = {
   survey: GetSurveyData;
   species: GetSpeciesData;
@@ -186,5 +170,21 @@ export class GetSurveyData {
         moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
+  }
+}
+
+export class GetAncillarySpeciesData {
+  ancillary_species: number[];
+  ancillary_species_names: string[];
+
+  constructor(input?: any[]) {
+    this.ancillary_species = [];
+    this.ancillary_species_names = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        this.ancillary_species.push(Number(item.id));
+        this.ancillary_species_names.push(item.label);
+      });
   }
 }

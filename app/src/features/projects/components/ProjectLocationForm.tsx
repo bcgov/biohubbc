@@ -43,7 +43,7 @@ const ProjectLocationForm = () => {
         </Grid>
         <MapBoundary
           name="geometry"
-          title="Project Boundary"
+          title="Project Boundary *"
           mapId="project_location_form_map"
           bounds={[]}
           formikProps={formikProps}

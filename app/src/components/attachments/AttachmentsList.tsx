@@ -2,8 +2,10 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
+import Menu from '@material-ui/core/Menu';
+import MenuItem from '@material-ui/core/MenuItem';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -13,16 +15,17 @@ import TableHead from '@material-ui/core/TableHead';
 import TablePagination from '@material-ui/core/TablePagination';
 import TableRow from '@material-ui/core/TableRow';
 import {
+  mdiDotsVertical,
   mdiDownload,
+  mdiInformationOutline,
   mdiLockOpenVariantOutline,
   mdiLockOutline,
-  mdiDotsVertical,
-  mdiInformationOutline,
   mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { AttachmentsI18N, EditReportMetaDataI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -31,13 +34,10 @@ import { IGetSurveyAttachment } from 'interfaces/useSurveyApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
 import { getFormattedDate, getFormattedFileSize } from 'utils/Utils';
+import { AttachmentType } from '../../constants/attachments';
 import { IEditReportMetaForm } from '../attachments/EditReportMetaForm';
 import EditFileWithMetaDialog from '../dialog/EditFileWithMetaDialog';
 import ViewFileWithMetaDialog from '../dialog/ViewFileWithMetaDialog';
-import { EditReportMetaDataI18N, AttachmentsI18N } from 'constants/i18n';
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
-import { AttachmentType } from '../../constants/attachments';
 
 const useStyles = makeStyles((theme: Theme) => ({
   attachmentsTable: {
@@ -102,8 +102,8 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
   };
 
   const defaultYesNoDialogProps = {
-    dialogTitle: 'Delete Attachment',
-    dialogText: 'Are you sure you want to delete the selected attachment?',
+    dialogTitle: 'Delete Document',
+    dialogText: 'Are you sure you want to delete the selected document? This action cannot be undone.',
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -120,6 +120,7 @@ const AttachmentsList: React.FC<IAttachmentsListProps> = (props) => {
     dialogContext.setYesNoDialog({
       ...defaultYesNoDialogProps,
       open: true,
+      yesButtonProps: { color: 'secondary' },
       onYes: () => {
         deleteAttachment(attachment);
         dialogContext.setYesNoDialog({ open: false });

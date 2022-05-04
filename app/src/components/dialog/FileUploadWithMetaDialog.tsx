@@ -11,9 +11,9 @@ import useMediaQuery from '@material-ui/core/useMediaQuery';
 import FileUploadWithMeta from 'components/attachments/FileUploadWithMeta';
 import { Formik, FormikProps } from 'formik';
 import React, { useRef, useState } from 'react';
+import { AttachmentType } from '../../constants/attachments';
 import { IFileHandler, IUploadHandler } from '../attachments/FileUploadItem';
 import { IReportMetaForm, ReportMetaFormInitialValues, ReportMetaFormYupSchema } from '../attachments/ReportMetaForm';
-import { AttachmentType } from '../../constants/attachments';
 
 const useStyles = makeStyles((theme) => ({
   wrapper: {

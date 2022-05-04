@@ -2,12 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as get_survey_metadata from './get';
-import * as db from '../../../../../../../../database/db';
-import survey_queries from '../../../../../../../../queries/survey';
 import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
+import * as db from '../../../../../../../../database/db';
 import { HTTPError } from '../../../../../../../../errors/custom-error';
+import survey_queries from '../../../../../../../../queries/survey';
+import { getMockDBConnection } from '../../../../../../../../__mocks__/db';
+import * as get_survey_metadata from './get';
 
 chai.use(sinonChai);
 
@@ -144,7 +144,7 @@ describe('gets metadata for a survey report', () => {
           title: 'My report',
           update_date: '2020-10-10',
           description: 'some description',
-          year: '2020',
+          year_published: 2020,
           revision_count: '1'
         }
       ]
@@ -171,7 +171,7 @@ describe('gets metadata for a survey report', () => {
       title: 'My report',
       last_modified: '2020-10-10',
       description: 'some description',
-      year_published: '2020',
+      year_published: 2020,
       revision_count: '1',
       authors: [{ first_name: 'John', last_name: 'Smith' }]
     });

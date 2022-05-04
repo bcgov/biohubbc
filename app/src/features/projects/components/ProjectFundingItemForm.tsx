@@ -2,11 +2,11 @@ import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
 import FormControl from '@material-ui/core/FormControl';
 import FormHelperText from '@material-ui/core/FormHelperText';
-import Typography from '@material-ui/core/Typography';
 import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
+import Typography from '@material-ui/core/Typography';
 import CustomTextField from 'components/fields/CustomTextField';
 import DollarAmountField from 'components/fields/DollarAmountField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -46,7 +46,7 @@ export const ProjectFundingFormArrayItemYupSchema = yup.object().shape({
     .transform((value) => (isNaN(value) && null) || value)
     .required('Required'),
   investment_action_category: yup.number().required('Required'),
-  agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters'),
+  agency_project_id: yup.string().max(50, 'Cannot exceed 50 characters').nullable(true),
   funding_amount: yup
     .number()
     .transform((value) => (isNaN(value) && null) || value)

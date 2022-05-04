@@ -1,13 +1,13 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as publish from './publish';
 import * as db from '../../../database/db';
-import { QueryResult } from 'pg';
-import { getMockDBConnection } from '../../../__mocks__/db';
 import { HTTPError } from '../../../errors/custom-error';
 import { ProjectService } from '../../../services/project-service';
+import { getMockDBConnection } from '../../../__mocks__/db';
+import * as publish from './publish';
 
 chai.use(sinonChai);
 

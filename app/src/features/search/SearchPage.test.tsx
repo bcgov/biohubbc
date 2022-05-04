@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react';
-import React from 'react';
-import SearchPage from './SearchPage';
 import { createMemoryHistory } from 'history';
+import React from 'react';
 import { Router } from 'react-router-dom';
+import SearchPage from './SearchPage';
 
 const history = createMemoryHistory();
 

@@ -1,5 +1,5 @@
-import 'styles.scss';
 import { createMuiTheme } from '@material-ui/core';
+import 'styles.scss';
 
 const appTheme = createMuiTheme({
   breakpoints: {
@@ -21,6 +21,9 @@ const appTheme = createMuiTheme({
       main: '#003366', // BC ID: corporate blue
       dark: '#001949',
       contrastText: '#ffffff'
+    },
+    secondary: {
+      main: '#D8292F'
     },
     text: {
       primary: '#313132',
@@ -85,11 +88,6 @@ const appTheme = createMuiTheme({
         width: '800px'
       }
     },
-    MuiDialogContent: {
-      root: {
-        paddingTop: 0
-      }
-    },
     MuiDialogTitle: {
       root: {
         padding: '20px 24px'
@@ -97,7 +95,10 @@ const appTheme = createMuiTheme({
     },
     MuiDialogActions: {
       root: {
-        padding: '20px 24px'
+        padding: '20px 24px',
+        '& button': {
+          minWidth: '6rem'
+        }
       }
     },
     MuiLink: {

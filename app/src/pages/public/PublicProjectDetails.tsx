@@ -1,19 +1,18 @@
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import PublicGeneralInformation from './components/PublicGeneralInformation';
-import PublicProjectObjectives from './components/PublicProjectObjectives';
-import PublicProjectCoordinator from './components/PublicProjectCoordinator';
-import PublicProjectPermits from './components/PublicProjectPermits';
-import PublicLocationBoundary from './components/PublicLocationBoundary';
-import PublicIUCNClassification from './components/PublicIUCNClassification';
-import PublicPartnerships from './components/PublicPartnerships';
 import PublicFundingSource from './components/PublicFundingSource';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import PublicGeneralInformation from './components/PublicGeneralInformation';
+import PublicIUCNClassification from './components/PublicIUCNClassification';
+import PublicLocationBoundary from './components/PublicLocationBoundary';
+import PublicPartnerships from './components/PublicPartnerships';
+import PublicProjectCoordinator from './components/PublicProjectCoordinator';
+import PublicProjectObjectives from './components/PublicProjectObjectives';
 
 export interface IPublicProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -65,12 +64,6 @@ const PublicProjectDetails: React.FC<IPublicProjectDetailsProps> = (props) => {
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
           <PublicProjectCoordinator projectForViewData={projectForViewData} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <PublicProjectPermits projectForViewData={projectForViewData} refresh={refresh} />
         </Box>
       </Box>
 

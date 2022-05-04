@@ -1,9 +1,9 @@
-import { fireEvent, render, waitFor, within, screen } from '@testing-library/react';
-import { Formik } from 'formik';
+import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import ProprietaryDataForm, {
   ProprietaryDataInitialValues,
   ProprietaryDataYupSchema
 } from 'features/surveys/components/ProprietaryDataForm';
+import { Formik } from 'formik';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 

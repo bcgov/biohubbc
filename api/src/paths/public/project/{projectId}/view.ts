@@ -1,9 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../../../../database/db';
-import { getLogger } from '../../../../utils/logger';
 import { geoJsonFeature } from '../../../../openapi/schemas/geoJson';
 import { ProjectService } from '../../../../services/project-service';
+import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('paths/public/project/{projectId}/view');
 
@@ -181,13 +181,13 @@ GET.apiDoc = {
                       type: 'object',
                       properties: {
                         classification: {
-                          type: 'string'
+                          type: 'number'
                         },
                         subClassification1: {
-                          type: 'string'
+                          type: 'number'
                         },
                         subClassification2: {
-                          type: 'string'
+                          type: 'number'
                         }
                       }
                     }
@@ -233,7 +233,8 @@ GET.apiDoc = {
                           description: 'ISO 8601 date string for the funding end date'
                         },
                         agency_project_id: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         },
                         revision_count: {
                           type: 'number'
@@ -251,7 +252,7 @@ GET.apiDoc = {
                   indigenous_partnerships: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   stakeholder_partnerships: {

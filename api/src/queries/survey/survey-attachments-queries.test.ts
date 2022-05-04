@@ -1,29 +1,29 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutReportAttachmentMetadata, IReportAttachmentAuthor } from '../../models/project-survey-attachments';
+import { IReportAttachmentAuthor, PutReportAttachmentMetadata } from '../../models/project-survey-attachments';
 import {
-  getSurveyAttachmentsSQL,
   deleteSurveyAttachmentSQL,
-  getSurveyAttachmentS3KeySQL,
-  postSurveyAttachmentSQL,
-  getSurveyAttachmentByFileNameSQL,
-  getSurveyReportAttachmentByFileNameSQL,
-  putSurveyAttachmentSQL,
-  getSurveyReportAttachmentsSQL,
-  deleteSurveyReportAttachmentSQL,
-  postSurveyReportAttachmentSQL,
-  putSurveyReportAttachmentSQL,
-  updateSurveyReportAttachmentMetadataSQL,
-  insertSurveyReportAttachmentAuthorSQL,
   deleteSurveyReportAttachmentAuthorsSQL,
-  getSurveyReportAuthorsSQL,
+  deleteSurveyReportAttachmentSQL,
+  getSurveyAttachmentByFileNameSQL,
+  getSurveyAttachmentS3KeySQL,
+  getSurveyAttachmentsSQL,
+  getSurveyReportAttachmentByFileNameSQL,
+  getSurveyReportAttachmentS3KeySQL,
   getSurveyReportAttachmentSQL,
-  getSurveyReportAttachmentS3KeySQL
+  getSurveyReportAttachmentsSQL,
+  getSurveyReportAuthorsSQL,
+  insertSurveyReportAttachmentAuthorSQL,
+  postSurveyAttachmentSQL,
+  postSurveyReportAttachmentSQL,
+  putSurveyAttachmentSQL,
+  putSurveyReportAttachmentSQL,
+  updateSurveyReportAttachmentMetadataSQL
 } from './survey-attachments-queries';
 
 const post_sample_attachment_meta = {
   title: 'title',
-  year_published: '2000',
+  year_published: 2000,
   authors: [
     {
       first_name: 'John',
@@ -35,7 +35,7 @@ const post_sample_attachment_meta = {
 
 const put_sample_attachment_meta = {
   title: 'title',
-  year_published: '2000',
+  year_published: 2000,
   authors: [
     {
       first_name: 'John',

@@ -3,6 +3,12 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
+// import {
+//   GetAncillarySpeciesData,
+//   GetFocalSpeciesData,
+//   GetViewSurveyDetailsData
+// } from '../../../../../models/survey-view';
+// import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
 import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../../../services/survey-service';
@@ -93,7 +99,7 @@ GET.apiDoc = {
                   ancillary_species: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   ancillary_species_names: {
@@ -105,7 +111,7 @@ GET.apiDoc = {
                   focal_species: {
                     type: 'array',
                     items: {
-                      type: 'string'
+                      type: 'number'
                     }
                   },
                   focal_species_names: {
@@ -141,20 +147,25 @@ GET.apiDoc = {
                       required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
                       properties: {
                         pfs_id: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         agency_name: {
-                          type: 'string'
+                          type: 'string',
+                          nullable: true
                         },
                         funding_amount: {
-                          type: 'number'
+                          type: 'number',
+                          nullable: true
                         },
                         funding_start_date: {
                           type: 'string',
+                          nullable: true,
                           description: 'ISO 8601 date string'
                         },
                         funding_end_date: {
                           type: 'string',
+                          nullable: true,
                           description: 'ISO 8601 date string'
                         }
                       }
@@ -169,6 +180,7 @@ GET.apiDoc = {
                   occurrence_submission_id: {
                     description: 'A survey occurrence submission ID',
                     type: 'number',
+                    nullable: true,
                     example: 1
                   },
                   permit_number: {
@@ -178,7 +190,9 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   publish_date: {
-                    type: 'string'
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    nullable: true,
+                    description: 'Determines if the record has been published'
                   },
                   revision_count: {
                     type: 'number'
@@ -212,13 +226,16 @@ GET.apiDoc = {
                     type: 'number'
                   },
                   additional_details: {
-                    type: 'string'
+                    type: 'string',
+                    nullable: true
                   },
                   intended_outcome_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   ecological_season_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   vantage_code_ids: {
                     type: 'array',
@@ -238,7 +255,7 @@ GET.apiDoc = {
               survey_proprietor: {
                 description: 'Survey Details',
                 type: 'object',
-                //Note: do not make any of these fields required as the object can be null
+                nullable: true,
                 properties: {
                   survey_data_proprietary: {
                     type: 'string'
@@ -253,10 +270,12 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   first_nations_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   first_nations_name: {
-                    type: 'string'
+                    type: 'string',
+                    nullable: true
                   },
                   proprietary_data_category: {
                     type: 'number'
@@ -304,7 +323,6 @@ export function getSurveyForView(): RequestHandler {
     if (!req.params.surveyId) {
       throw new HTTP400('Missing required path param `surveyId`');
     }
-
 
     try {
       await connection.open();
@@ -359,3 +377,117 @@ export function getSurveyForView(): RequestHandler {
     }
   };
 }
+
+// export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
+//   const sqlStatement = queries.survey.getSurveyBasicDataForViewSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+//   if (!response || !response?.rows?.[0]) {
+//     throw new HTTP400('Failed to get survey basic data');
+//   }
+
+//   return (response && response.rows?.[0]) || null;
+// };
+
+// export const getSurveyPurposeAndMethodologyDataForView = async (
+//   surveyId: number,
+//   connection: IDBConnection
+// ): Promise<object> => {
+//   const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+//   if (!response || !response?.rows?.[0]) {
+//     throw new HTTP400('Failed to get survey purpose and methodology data');
+//   }
+
+//   return (response && response.rows) || [];
+// };
+
+// export const getSurveyFundingSourcesDataForView = async (
+//   surveyId: number,
+//   connection: IDBConnection
+// ): Promise<any[]> => {
+//   const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+//   if (!response) {
+//     throw new HTTP400('Failed to get survey funding sources data');
+//   }
+
+//   return (response && response.rows) || [];
+// };
+
+// export const getSurveyFocalSpeciesDataForView = async (
+//   surveyId: number,
+//   connection: IDBConnection
+// ): Promise<GetFocalSpeciesData> => {
+//   const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+//   const result = (response && response.rows) || null;
+
+//   if (!result) {
+//     throw new HTTP400('Failed to get species data');
+//   }
+
+//   const taxonomyService = new TaxonomyService();
+
+//   const species = await taxonomyService.getSpeciesFromIds(result);
+
+//   return new GetFocalSpeciesData(species);
+// };
+
+// export const getSurveyAncillarySpeciesDataForView = async (
+//   surveyId: number,
+//   connection: IDBConnection
+// ): Promise<GetAncillarySpeciesData> => {
+//   const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+//   const result = (response && response.rows) || null;
+
+//   if (!result) {
+//     throw new HTTP400('Failed to get species data');
+//   }
+
+//   const taxonomyService = new TaxonomyService();
+
+//   const species = await taxonomyService.getSpeciesFromIds(result);
+
+//   return new GetAncillarySpeciesData(species);
+// };
+
+// export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {
+//   const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
+
+//   if (!sqlStatement) {
+//     throw new HTTP400('Failed to build SQL get statement');
+//   }
+
+//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+//   return (response && response.rows?.[0]) || null;
+// };

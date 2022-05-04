@@ -1,15 +1,15 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  getPublicProjectSQL,
   getActivitiesByPublicProjectSQL,
-  getPublicProjectListSQL,
-  getPublicProjectAttachmentsSQL,
+  getProjectReportAuthorsSQL,
   getPublicProjectAttachmentS3KeySQL,
-  getPublicProjectReportAttachmentsSQL,
+  getPublicProjectAttachmentsSQL,
+  getPublicProjectListSQL,
   getPublicProjectReportAttachmentS3KeySQL,
   getPublicProjectReportAttachmentSQL,
-  getProjectReportAuthorsSQL
+  getPublicProjectReportAttachmentsSQL,
+  getPublicProjectSQL
 } from './project-queries';
 
 describe('getPublicProjectSQL', () => {

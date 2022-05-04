@@ -1,6 +1,6 @@
 import { expect } from 'chai';
-import { GetPublicCoordinatorData } from './project';
 import { describe } from 'mocha';
+import { GetPublicCoordinatorData } from './project';
 
 describe('GetPublicCoordinatorData', () => {
   describe('No values provided', () => {

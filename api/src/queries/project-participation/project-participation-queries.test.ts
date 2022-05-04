@@ -1,11 +1,11 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  getAllUserProjectsSQL,
+  addProjectRoleByRoleNameSQL,
   deleteProjectParticipationSQL,
   getAllProjectParticipantsSQL,
-  getProjectParticipationBySystemUserSQL,
-  addProjectRoleByRoleNameSQL
+  getAllUserProjectsSQL,
+  getProjectParticipationBySystemUserSQL
 } from './project-participation-queries';
 
 describe('getAllUserProjectsSQL', () => {

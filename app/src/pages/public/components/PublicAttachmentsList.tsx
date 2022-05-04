@@ -133,7 +133,7 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                       component="button"
                       variant="body2"
                       onClick={() => {
-                        if (row.securityToken) {
+                        if (row.securityToken === 'true') {
                           showRequestAccessDialog();
                         } else {
                           openAttachment(row);
@@ -147,12 +147,12 @@ const PublicAttachmentsList: React.FC<IPublicAttachmentsListProps> = (props) => 
                   <TableCell>{getFormattedFileSize(row.size)}</TableCell>
                   <TableCell>
                     <Box display="flex" alignItems="center">
-                      <Icon path={row.securityToken ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
-                      <Box ml={0.5}>{row.securityToken ? 'Secured' : 'Unsecured'}</Box>
+                      <Icon path={row.securityToken === 'true' ? mdiLockOutline : mdiLockOpenVariantOutline} size={1} />
+                      <Box ml={0.5}>{row.securityToken === 'true' ? 'Secured' : 'Unsecured'}</Box>
                     </Box>
                   </TableCell>
                   <TableCell>
-                    {!row.securityToken && row.fileType === AttachmentType.REPORT && (
+                    {row.securityToken === 'false' && row.fileType === AttachmentType.REPORT && (
                       <IconButton
                         color="primary"
                         aria-label="view report"

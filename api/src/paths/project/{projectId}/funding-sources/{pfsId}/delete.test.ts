@@ -2,13 +2,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as deleteFundingSource from './delete';
+import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
+import { HTTPError } from '../../../../../errors/custom-error';
 import project_queries from '../../../../../queries/project';
 import survey_queries from '../../../../../queries/survey';
-import SQL from 'sql-template-strings';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import { HTTPError } from '../../../../../errors/custom-error';
+import * as deleteFundingSource from './delete';
 
 chai.use(sinonChai);
 
@@ -164,7 +164,7 @@ describe('delete a funding source', () => {
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to delete survey funding source');
+      expect((actualError as HTTPError).message).to.equal('Failed to delete project funding source');
     }
   });
 

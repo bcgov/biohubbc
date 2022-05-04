@@ -1,8 +1,8 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import {
+  IReportAttachmentAuthor,
   PostReportAttachmentMetadata,
-  PutReportAttachmentMetadata,
-  IReportAttachmentAuthor
+  PutReportAttachmentMetadata
 } from '../../models/project-survey-attachments';
 
 /**
@@ -503,7 +503,7 @@ export const getProjectReportAttachmentSQL = (projectId: number, attachmentId: n
       file_name,
       title,
       description,
-      year,
+      year as year_published,
       update_date,
       create_date,
       file_size,

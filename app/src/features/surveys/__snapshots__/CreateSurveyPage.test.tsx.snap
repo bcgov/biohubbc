@@ -1282,6 +1282,11 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   <div
                     class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                   >
+                    <legend
+                      class="MuiTypography-root MuiTypography-body1"
+                    >
+                      Surveyed Areas *
+                    </legend>
                     <fieldset
                       class="MuiFormControl-root"
                     >

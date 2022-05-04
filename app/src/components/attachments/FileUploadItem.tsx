@@ -5,7 +5,7 @@ import ListItem from '@material-ui/core/ListItem';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { mdiCheck, mdiTrashCanOutline, mdiFileOutline } from '@mdi/js';
+import { mdiCheck, mdiFileOutline, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import axios, { CancelTokenSource } from 'axios';
 import { APIError } from 'hooks/api/useAxios';

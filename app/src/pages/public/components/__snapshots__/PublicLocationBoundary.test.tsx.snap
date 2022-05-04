@@ -208,9 +208,6 @@ exports[`PublicLocationBoundary renders correctly 1`] = `
     <div
       class="MuiBox-root MuiBox-root-5"
     />
-    <div
-      class="MuiBox-root MuiBox-root-6"
-    />
   </div>
 </DocumentFragment>
 `;

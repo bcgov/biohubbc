@@ -1,4 +1,4 @@
-import { SheepItems, basicNumericValidator, basicCodeValidator } from './picklist_variables/v0.1';
+import { basicCodeValidator, basicNumericValidator, SheepItems } from './picklist_variables/v0.1';
 
 export const sheepCompositionOrRecruitmentJSON = {
   name: '',

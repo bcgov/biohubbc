@@ -1,14 +1,12 @@
 import Box from '@material-ui/core/Box';
 import Divider from '@material-ui/core/Divider';
-
-import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
-
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import EditDialog from 'components/dialog/EditDialog';
 import { ErrorDialog, IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditSurveyProprietorI18N } from 'constants/i18n';
 import ProprietaryDataForm, {
   IProprietaryDataForm,

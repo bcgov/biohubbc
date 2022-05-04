@@ -50,7 +50,11 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 3028,
+<<<<<<< HEAD
       securityToken: 'token123',
+=======
+      securityToken: 'true',
+>>>>>>> cc3b9bbb634499ce0a8f244e3727f71fea10d56d
       revisionCount: 1
     },
     {
@@ -59,7 +63,11 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.REPORT,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000,
+<<<<<<< HEAD
       securityToken: '',
+=======
+      securityToken: 'false',
+>>>>>>> cc3b9bbb634499ce0a8f244e3727f71fea10d56d
       revisionCount: 1
     },
     {
@@ -68,7 +76,11 @@ describe('PublicAttachmentsList', () => {
       fileType: AttachmentType.OTHER,
       lastModified: '2021-04-09 11:53:53',
       size: 30280000000,
+<<<<<<< HEAD
       securityToken: '',
+=======
+      securityToken: 'false',
+>>>>>>> cc3b9bbb634499ce0a8f244e3727f71fea10d56d
       revisionCount: 1
     }
   ];

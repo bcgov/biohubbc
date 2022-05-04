@@ -6,13 +6,13 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
+import { HTTPError } from '../../../errors/custom-error';
 import project_queries from '../../../queries/project';
 import survey_queries from '../../../queries/survey';
+import * as file_utils from '../../../utils/file-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import * as delete_project from './delete';
 import * as survey_delete from './survey/{surveyId}/delete';
-import * as file_utils from '../../../utils/file-utils';
-import { HTTPError } from '../../../errors/custom-error';
 
 chai.use(sinonChai);
 

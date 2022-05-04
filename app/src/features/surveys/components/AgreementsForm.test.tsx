@@ -1,9 +1,9 @@
 import { render } from '@testing-library/react';
-import { Formik } from 'formik';
 import AgreementsForm, {
   AgreementsInitialValues,
   AgreementsYupSchema
 } from 'features/surveys/components/AgreementsForm';
+import { Formik } from 'formik';
 import React from 'react';
 
 const handleSaveAndNext = jest.fn();
