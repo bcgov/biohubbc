@@ -13,7 +13,6 @@ import PublicLocationBoundary from './components/PublicLocationBoundary';
 import PublicPartnerships from './components/PublicPartnerships';
 import PublicProjectCoordinator from './components/PublicProjectCoordinator';
 import PublicProjectObjectives from './components/PublicProjectObjectives';
-import PublicProjectPermits from './components/PublicProjectPermits';
 
 export interface IPublicProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -65,12 +64,6 @@ const PublicProjectDetails: React.FC<IPublicProjectDetailsProps> = (props) => {
       <Box component={Paper} p={4} mt={4}>
         <Box component="section" className={classes.projectDetailsSection}>
           <PublicProjectCoordinator projectForViewData={projectForViewData} refresh={refresh} />
-        </Box>
-      </Box>
-
-      <Box component={Paper} p={4} mt={4}>
-        <Box component="section" className={classes.projectDetailsSection}>
-          <PublicProjectPermits projectForViewData={projectForViewData} refresh={refresh} />
         </Box>
       </Box>
 
