@@ -37,7 +37,7 @@ export interface ISurveyStudyAreaProps {
   refresh: () => void;
 }
 
-const useStyles = makeStyles((theme: Theme) =>
+const useStyles = makeStyles(() =>
   createStyles({
     zoomToBoundaryExtentBtn: {
       padding: '3px',
