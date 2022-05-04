@@ -5,11 +5,12 @@ import Grid from '@material-ui/core/Grid';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import { mdiTrayArrowUp } from '@mdi/js';
+import { mdiCompass, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import IconButton from '@material-ui/core/IconButton';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -27,21 +28,34 @@ import {
   handleShapefileUpload
 } from 'utils/mapBoundaryUploadHelpers';
 
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold'
-  },
-  uploadButton: {
-    border: '2px solid',
-    textTransform: 'capitalize',
-    fontWeight: 'bold'
-  },
-  mapLocations: {
-    '& dd': {
-      display: 'inline-block'
-    }
-  }
-});
+const useStyles = makeStyles(() => (
+  createStyles({
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
+    },
+    bold: {
+      fontWeight: 'bold'
+    },
+    uploadButton: {
+      border: '2px solid',
+      textTransform: 'capitalize',
+      fontWeight: 'bold'
+    },
+    mapLocations: {
+      '& dd': {
+        display: 'inline-block'
+      }
+    }  
+  })
+));
 
 export interface IMapBoundaryProps {
   name: string;
@@ -173,7 +187,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         <Box mt={2}>
           {get(errors, name) && <Typography style={{ color: '#f44336' }}>{get(errors, name)}</Typography>}
         </Box>
-        <Box mt={5} height={500}>
+        <Box mt={5} height={500} position='relative'>
           <MapContainer
             mapId={mapId}
             geometryState={{
@@ -184,26 +198,24 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             selectedLayer={selectedLayer}
             setInferredLayersInfo={setInferredLayersInfo}
           />
+          {values.geometry && values.geometry.length > 0 && (
+            <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <IconButton
+                aria-label="zoom to boundary extent"
+                title="Zoom to boundary extend"
+                className={classes.zoomToBoundaryExtentBtn}
+                onClick={() => {
+                  setUpdatedBounds(calculateUpdatedMapBounds(values.geometry));
+                  setShouldUpdateBounds(true);
+                }}>
+                <Icon size={1} path={mdiCompass} />
+              </IconButton>
+            </Box>
+          )}
         </Box>
         {get(errors, name) && (
           <Box pt={2}>
             <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name)}</Typography>
-          </Box>
-        )}
-        {values.geometry && values.geometry.length > 0 && (
-          <Box pt={2}>
-            <Button
-              variant="outlined"
-              component="label"
-              size="medium"
-              color="primary"
-              onClick={() => {
-                setUpdatedBounds(calculateUpdatedMapBounds(values.geometry));
-                setShouldUpdateBounds(true);
-              }}
-              className={classes.uploadButton}>
-              Zoom to Boundary Extent
-            </Button>
           </Box>
         )}
         {!Object.values(inferredLayersInfo).every((item: any) => !item.length) && (
