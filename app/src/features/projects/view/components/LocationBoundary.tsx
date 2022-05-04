@@ -155,9 +155,9 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
       return { feature: geom };
     });
 
-    zoomToBoundaryExtent()
+    zoomToBoundaryExtent();
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [zoomToBoundaryExtent]);
+  }, [location.geometry, zoomToBoundaryExtent]);
 
   const handleDialogViewOpen = () => {
     setShowFullScreenViewMapDialog(true);

@@ -28,7 +28,7 @@ import {
   handleShapefileUpload
 } from 'utils/mapBoundaryUploadHelpers';
 
-const useStyles = makeStyles(() => (
+const useStyles = makeStyles(() =>
   createStyles({
     zoomToBoundaryExtentBtn: {
       padding: '3px',
@@ -53,9 +53,9 @@ const useStyles = makeStyles(() => (
       '& dd': {
         display: 'inline-block'
       }
-    }  
+    }
   })
-));
+);
 
 export interface IMapBoundaryProps {
   name: string;
@@ -187,7 +187,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         <Box mt={2}>
           {get(errors, name) && <Typography style={{ color: '#f44336' }}>{get(errors, name)}</Typography>}
         </Box>
-        <Box mt={5} height={500} position='relative'>
+        <Box mt={5} height={500} position="relative">
           <MapContainer
             mapId={mapId}
             geometryState={{
