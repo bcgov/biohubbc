@@ -66,14 +66,14 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const zoomToBoundaryExtend = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
-  }, [surveyGeometry])
+  }, [surveyGeometry]);
 
   useEffect(() => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    zoomToBoundaryExtend()
+    zoomToBoundaryExtend();
 
     setNonEditableGeometries(nonEditableGeometriesResult);
   }, [surveyGeometry, survey_details.occurrence_submission_id, zoomToBoundaryExtend]);
