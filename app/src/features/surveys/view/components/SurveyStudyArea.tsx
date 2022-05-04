@@ -1,8 +1,10 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
+import { createStyles, makeStyles, Theme } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronRight, mdiPencilOutline, mdiCompass } from '@mdi/js';
 import Icon from '@mdi/react';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -35,12 +37,29 @@ export interface ISurveyStudyAreaProps {
   refresh: () => void;
 }
 
+const useStyles = makeStyles((theme: Theme) =>
+  createStyles({
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
+    }
+  })
+);
+
 /**
  * Study area content for a survey.
  *
  * @return {*}
  */
 const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
+  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const {
@@ -64,7 +83,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
-  const zoomToBoundaryExtend = useCallback(() => {
+  const zoomToBoundaryExtent = useCallback(() => {
     setBounds(calculateUpdatedMapBounds(surveyGeometry));
   }, [surveyGeometry]);
 
@@ -73,10 +92,10 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       return { feature: geom };
     });
 
-    zoomToBoundaryExtend();
+    zoomToBoundaryExtent();
 
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, survey_details.occurrence_submission_id, zoomToBoundaryExtend]);
+  }, [surveyGeometry, survey_details.occurrence_submission_id, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -202,7 +221,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           toolbarProps={{ disableGutters: true }}
         />
 
-        <Box mt={2} height={350}>
+        <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
@@ -220,19 +239,18 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 : undefined
             }
           />
+          {surveyGeometry.length > 0 && (
+            <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <IconButton
+                aria-label="zoom to boundary extent"
+                title="Zoom to boundary extend"
+                className={classes.zoomToBoundaryExtentBtn}
+                onClick={() => zoomToBoundaryExtent()}>
+                <Icon size={1} path={mdiCompass} />
+              </IconButton>
+            </Box>
+          )}
         </Box>
-        {surveyGeometry.length > 0 && (
-          <Box pt={2}>
-            <Button
-              variant="outlined"
-              component="label"
-              size="medium"
-              color="primary"
-              onClick={() => zoomToBoundaryExtend()}>
-              Zoom to Boundary Extent
-            </Button>
-          </Box>
-        )}
         <Box my={3}>
           <Typography variant="body2" color="textSecondary">
             Study Area Name
