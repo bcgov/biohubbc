@@ -32,13 +32,11 @@ exports[`PublicPartnerships renders correctly 1`] = `
         <dd
           class="MuiTypography-root MuiTypography-body1"
         >
-          partner 1
+          First nations code
         </dd>
         <dd
           class="MuiTypography-root MuiTypography-body1"
-        >
-          partner 2
-        </dd>
+        />
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"

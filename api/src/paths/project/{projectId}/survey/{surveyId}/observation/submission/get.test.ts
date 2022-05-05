@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as observationSubmission from './get';
-import * as db from '../../../../../../../database/db';
-import * as survey_occurrence_queries from '../../../../../../../queries/survey/survey-occurrence-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../../../../database/db';
+import { HTTPError } from '../../../../../../../errors/custom-error';
+import survey_queries from '../../../../../../../queries/survey';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import * as observationSubmission from './get';
 
 chai.use(sinonChai);
 
@@ -50,8 +51,8 @@ describe('getObservationSubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -63,7 +64,7 @@ describe('getObservationSubmission', () => {
       }
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = observationSubmission.getOccurrenceSubmission();
@@ -71,8 +72,10 @@ describe('getObservationSubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
+        'Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement'
+      );
     }
   });
 
@@ -98,7 +101,7 @@ describe('getObservationSubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     const result = observationSubmission.getOccurrenceSubmission();
 
@@ -134,8 +137,8 @@ describe('getObservationSubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
-    sinon.stub(survey_occurrence_queries, 'getOccurrenceSubmissionMessagesSQL').returns(null);
+    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getOccurrenceSubmissionMessagesSQL').returns(null);
 
     try {
       const result = observationSubmission.getOccurrenceSubmission();
@@ -143,8 +146,10 @@ describe('getObservationSubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL getOccurrenceSubmissionMessagesSQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
+        'Failed to build SQL getOccurrenceSubmissionMessagesSQL statement'
+      );
     }
   });
 
@@ -191,8 +196,8 @@ describe('getObservationSubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
-    sinon.stub(survey_occurrence_queries, 'getOccurrenceSubmissionMessagesSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getOccurrenceSubmissionMessagesSQL').returns(SQL`something`);
 
     const result = observationSubmission.getOccurrenceSubmission();
 
@@ -234,7 +239,7 @@ describe('getObservationSubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     const result = observationSubmission.getOccurrenceSubmission();
 

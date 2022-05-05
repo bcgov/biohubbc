@@ -1,10 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
-import React from 'react';
-import SurveyStudyArea from './SurveyStudyArea';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { Feature } from 'geojson';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import React from 'react';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import SurveyStudyArea from './SurveyStudyArea';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -145,6 +145,7 @@ describe('SurveyStudyArea', () => {
           end_date: '2021-01-25',
           biologist_first_name: 'firstttt',
           biologist_last_name: 'lastttt',
+          permit_type: '',
           survey_area_name: 'study area is this',
           revision_count: 1,
           geometry

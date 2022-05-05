@@ -9,7 +9,7 @@
     "baseUrl": "src",
     "outDir": "dist",
     "jsx": "react",
-    "target": "es5",
+    "target": "es2018",
     "sourceMap": true,
     "allowJs": false,
     "moduleResolution": "node",

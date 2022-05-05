@@ -59,7 +59,7 @@ export const permitNoSamplingPostBody = {
 export const permitNoSamplingResponseBody = {
   title: 'Permit no sampling Response Object',
   type: 'object',
-  required: ['id'],
+  required: ['ids'],
   properties: {
     ids: {
       type: 'array',

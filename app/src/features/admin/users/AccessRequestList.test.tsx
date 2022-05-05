@@ -1,10 +1,11 @@
-import { codes } from 'test-helpers/code-helpers';
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IAccessRequestDataObject, IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
-import { useBiohubApi } from 'hooks/useBioHubApi';
+import { codes } from 'test-helpers/code-helpers';
 
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -59,10 +60,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -72,11 +74,9 @@ describe('AccessRequestList', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('test user')).toBeVisible();
       expect(getByText('testusername')).toBeVisible();
-      expect(getByText('test company')).toBeVisible();
-      expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('PENDING')).toBeVisible();
+      expect(getByText('Apr 20, 2020')).toBeVisible();
+      expect(getByText('Pending')).toBeVisible();
       expect(getByRole('button')).toHaveTextContent('Review');
     });
   });
@@ -97,10 +97,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -110,11 +111,9 @@ describe('AccessRequestList', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('test user')).toBeVisible();
       expect(getByText('testusername')).toBeVisible();
-      expect(getByText('test company')).toBeVisible();
-      expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('DENIED')).toBeVisible();
+      expect(getByText('Apr 20, 2020')).toBeVisible();
+      expect(getByText('Denied')).toBeVisible();
       expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
@@ -135,10 +134,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -148,17 +148,15 @@ describe('AccessRequestList', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('test user')).toBeVisible();
       expect(getByText('testusername')).toBeVisible();
-      expect(getByText('test company')).toBeVisible();
-      expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('APPROVED')).toBeVisible();
+      expect(getByText('Apr 20, 2020')).toBeVisible();
+      expect(getByText('Approved')).toBeVisible();
       expect(queryByRole('button')).not.toBeInTheDocument();
     });
   });
 
   it('shows a table row when the data object is null', async () => {
-    const { getByText, getAllByText } = renderContainer(
+    const { getByText } = renderContainer(
       [
         {
           id: 1,
@@ -177,9 +175,8 @@ describe('AccessRequestList', () => {
     );
 
     await waitFor(() => {
-      expect(getAllByText('Not Applicable').length).toEqual(2);
-      expect(getByText('April-20-2020')).toBeVisible();
-      expect(getByText('PENDING')).toBeVisible();
+      expect(getByText('Apr 20, 2020')).toBeVisible();
+      expect(getByText('Pending')).toBeVisible();
     });
   });
 
@@ -201,10 +198,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 2,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -226,7 +224,13 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 2, [2]);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
+        'testusername',
+        SYSTEM_IDENTITY_SOURCE.IDIR,
+        1,
+        2,
+        [2]
+      );
     });
   });
 
@@ -248,10 +252,11 @@ describe('AccessRequestList', () => {
             username: 'testusername',
             email: 'email@email.com',
             role: 1,
-            identitySource: 'idir',
+            identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
             regional_offices: [1, 2],
-            comments: 'test comment'
+            comments: 'test comment',
+            request_reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -273,7 +278,12 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
       expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith('testusername', 'idir', 1, 3);
+      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
+        'testusername',
+        SYSTEM_IDENTITY_SOURCE.IDIR,
+        1,
+        3
+      );
     });
   });
 });

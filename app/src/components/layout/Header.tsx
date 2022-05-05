@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
+import OtherLink from '@material-ui/core/Link';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -15,18 +16,15 @@ import { mdiAccountCircle, mdiHelpCircle, mdiLoginVariant } from '@mdi/js';
 import Icon from '@mdi/react';
 import headerImageLarge from 'assets/images/gov-bc-logo-horiz.png';
 import headerImageSmall from 'assets/images/gov-bc-logo-vert.png';
+import { AuthGuard, SystemRoleGuard, UnAuthGuard } from 'components/security/Guards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { ConfigContext } from 'contexts/configContext';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
-import OtherLink from '@material-ui/core/Link';
-import { isAuthenticated } from 'utils/authUtils';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  govHeader: {
-    borderBottom: '2px solid #fcba19'
-  },
   govHeaderToolbar: {
     height: '70px'
   },
@@ -63,11 +61,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   appPhaseTag: {
-    marginLeft: theme.spacing(0.5),
+    marginLeft: theme.spacing(0.75),
     color: '#fcba19',
     textTransform: 'uppercase',
-    fontSize: '0.875rem',
-    fontWeight: 700
+    fontSize: '0.75rem',
+    fontWeight: 400
   },
   userProfile: {
     color: theme.palette.primary.contrastText,
@@ -112,6 +110,10 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
+function getDisplayName(userName: string, identitySource: string) {
+  return identitySource === SYSTEM_IDENTITY_SOURCE.BCEID ? `BCEID / ${userName}` : `IDIR / ${userName}`;
+}
+
 const Header: React.FC = () => {
   const classes = useStyles();
   const config = useContext(ConfigContext);
@@ -120,7 +122,11 @@ const Header: React.FC = () => {
 
   // Authenticated view
   const LoggedInUser = () => {
-    const loggedInUserDisplayName = `${keycloakWrapper?.getIdentitySource()} / ${keycloakWrapper?.getUserIdentifier()}`.toUpperCase();
+    const identitySource = keycloakWrapper?.getIdentitySource() || '';
+
+    const userIdentifier = keycloakWrapper?.getUserIdentifier() || '';
+
+    const loggedInUserDisplayName = getDisplayName(userIdentifier, identitySource);
 
     return (
       <Box display="flex" className={classes.userProfile} my="auto" alignItems="center">
@@ -135,7 +141,7 @@ const Header: React.FC = () => {
         <Box pl={2}>
           <Divider orientation="vertical" />
         </Box>
-        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
+        <IconButton aria-label="need help" className={classes.govHeaderIconButton} onClick={showSupportDialog}>
           <Icon path={mdiHelpCircle} size={1.12} />
         </IconButton>
       </Box>
@@ -145,10 +151,9 @@ const Header: React.FC = () => {
   // Unauthenticated public view
   const PublicViewUser = () => {
     return (
-      <Box display="flex" alignItems="center" my="auto">
+      <Box display="flex" className={classes.userProfile} alignItems="center" my="auto">
         <Button
           onClick={() => keycloakWrapper?.keycloak?.login()}
-          size="large"
           type="submit"
           variant="contained"
           color="primary"
@@ -157,9 +162,6 @@ const Header: React.FC = () => {
           data-testid="login">
           Log In
         </Button>
-        <Box pl={2}>
-          <Divider orientation="vertical" />
-        </Box>
         <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
           <Icon path={mdiHelpCircle} size={1.12} />
         </IconButton>
@@ -167,20 +169,7 @@ const Header: React.FC = () => {
     );
   };
 
-  const SecureLink: React.FC<{ to: string; label: string; validRoles: string[]; id: string }> = (props) => {
-    if (!keycloakWrapper?.hasSystemRole(props.validRoles)) {
-      return <></>;
-    }
-
-    return (
-      <Link to={props.to} color={'inherit'} id={props.id}>
-        {props.label}
-      </Link>
-    );
-  };
-
   const [open, setOpen] = React.useState(false);
-  const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
 
   const showSupportDialog = () => {
     setOpen(true);
@@ -190,79 +179,81 @@ const Header: React.FC = () => {
     setOpen(false);
   };
 
+  const BetaLabel = () => {
+    return <span aria-label="This application is currently in beta phase of development">Beta</span>;
+  };
+
+  const EnvironmentLabel = () => {
+    if (config?.REACT_APP_NODE_ENV === 'prod') {
+      return <></>;
+    }
+
+    return (
+      <span aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
+        & {config?.REACT_APP_NODE_ENV}
+      </span>
+    );
+  };
+
+
   return (
     <>
       <AppBar position="sticky" style={{ boxShadow: 'none' }}>
-        <Box className={classes.govHeader}>
-          <Toolbar className={classes.govHeaderToolbar}>
-            <Box display="flex" justifyContent="space-between" width="100%">
-              <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-                <picture>
-                  <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                  <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                  <img src={headerImageSmall} alt={'Government of British Columbia'} />
-                </picture>
-                <span>
-                  Species Inventory Management System
-                  <sup
-                    className={classes.appPhaseTag}
-                    aria-label="This application is currently in beta phase of development">
-                    Beta
-                  </sup>
-                  {config?.REACT_APP_NODE_ENV !== 'prod' && (
-                    <sup
-                      className={classes.appPhaseTag}
-                      aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
-                      & {config?.REACT_APP_NODE_ENV}
-                    </sup>
-                  )}
-                </span>
-              </Link>
-              {!isAuthenticated(keycloakWrapper) && <PublicViewUser />}
-              {isAuthenticated(keycloakWrapper) && <LoggedInUser />}
-            </Box>
-          </Toolbar>
-        </Box>
+        <Toolbar className={classes.govHeaderToolbar}>
+          <Box display="flex" justifyContent="space-between" width="100%">
+            <Link to="/projects" className={classes.brand} aria-label="Go to Habitat Restoration Tracker Home">
+              <picture>
+                <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                <img src={headerImageSmall} alt={'Government of British Columbia'} />
+              </picture>
+              <span>
+                Species Inventory Management System
+                <sup className={classes.appPhaseTag}>
+                  <BetaLabel />
+                  &nbsp;
+                  <EnvironmentLabel />
+                </sup>
+              </span>
+            </Link>
+            <UnAuthGuard>
+              <PublicViewUser />
+            </UnAuthGuard>
+            <AuthGuard>
+              <LoggedInUser />
+            </AuthGuard>
+          </Box>
+        </Toolbar>
+
         <Box className={classes.mainNav}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            {isAuthenticated(keycloakWrapper) && (
-              <SecureLink
-                to="/admin/projects"
-                label="Projects"
-                validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-                id="menu_projects"
-              />
-            )}
-            {!isAuthenticated(keycloakWrapper) && (
-              <>
-                <SecureLink to="/" label="Projects" validRoles={[]} id="menu_projects" />
-                <SecureLink to="/search" label="Map" validRoles={[]} id="menu_search" />
-              </>
-            )}
-            <SecureLink
-              to="/admin/permits"
-              label="Permits"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_permits"
-            />
-            <SecureLink
-              to="/admin/users"
-              label="Manage Users"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}
-              id="menu_admin_users"
-            />
-            <SecureLink
-              to="/admin/search"
-              label="Map"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_search"
-            />
-            <SecureLink
-              to="/admin/resources"
-              label="Resources"
-              validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]}
-              id="menu_resources"
-            />
+            <UnAuthGuard>
+              <Link to="/" id="menu_projects">
+                Projects
+              </Link>
+              <Link to="/search" id="menu_search">
+                Map
+              </Link>
+            </UnAuthGuard>
+            <AuthGuard>
+              <Link to="/admin/projects" id="menu_projects">
+                Projects
+              </Link>
+              <Link to="/admin/permits" id="menu_permits">
+                Permits
+              </Link>
+              <Link to="/admin/search" id="menu_search">
+                Map
+              </Link>
+              <Link to="/admin/resources" id="menu_resources">
+                Resources
+              </Link>
+            </AuthGuard>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <Link to="/admin/users" id="menu_admin_users">
+                Manage Users
+              </Link>
+            </SystemRoleGuard>
           </Toolbar>
         </Box>
       </AppBar>
@@ -270,17 +261,18 @@ const Header: React.FC = () => {
       <Dialog open={open}>
         <DialogTitle>Need Help?</DialogTitle>
         <DialogContent>
-          <Typography variant="body1" gutterBottom>
-            For technical support or questions about this application, please contact:{' '}
+          <Typography variant="body1" component="div" color="textSecondary" gutterBottom>
+            For technical support or questions about this application, please contact:&nbsp;
             <OtherLink
               href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
-              underline="always"
-              onClick={preventDefault}>
+              underline="always">
               biohub@gov.bc.ca
             </OtherLink>
-            .<Box></Box>
+            .
           </Typography>
-          <Typography variant="body1">A support representative will respond to your request shortly.</Typography>
+          <Typography variant="body1" color="textSecondary">
+            A support representative will respond to your request shortly.
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button variant="contained" color="primary" onClick={hideSupportDialog}>

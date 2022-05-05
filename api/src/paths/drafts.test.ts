@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as drafts from './drafts';
-import * as db from '../database/db';
-import * as draft_queries from '../queries/draft-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../database/db';
+import { HTTPError } from '../errors/custom-error';
+import draft_queries from '../queries/project/draft';
 import { getMockDBConnection } from '../__mocks__/db';
+import * as drafts from './drafts';
 
 chai.use(sinonChai);
 
@@ -43,8 +44,8 @@ describe('drafts', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect(actualError.status).to.equal(400);
-        expect(actualError.message).to.equal('Failed to identify system user ID');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to identify system user ID');
       }
     });
 
@@ -63,8 +64,8 @@ describe('drafts', () => {
         await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect(actualError.status).to.equal(400);
-        expect(actualError.message).to.equal('Failed to build SQL get statement');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
       }
     });
 
@@ -89,8 +90,8 @@ describe('drafts', () => {
         await result(sampleReq, sampleRes as any, (null as unknown) as any);
         expect.fail();
       } catch (actualError) {
-        expect(actualError.status).to.equal(400);
-        expect(actualError.message).to.equal('Failed to get drafts');
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to get drafts');
       }
     });
 

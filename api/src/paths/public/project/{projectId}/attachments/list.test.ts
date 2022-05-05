@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as list from './list';
-import * as db from '../../../../../database/db';
-import * as project_queries from '../../../../../queries/public/project-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../../database/db';
+import { HTTPError } from '../../../../../errors/custom-error';
+import public_queries from '../../../../../queries/public';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
+import * as list from './list';
 
 chai.use(sinonChai);
 
@@ -49,8 +50,8 @@ describe('getPublicProjectAttachments', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -62,7 +63,7 @@ describe('getPublicProjectAttachments', () => {
       }
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(null);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(null);
 
     try {
       const result = list.getPublicProjectAttachments();
@@ -70,8 +71,8 @@ describe('getPublicProjectAttachments', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -89,7 +90,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'Image',
-            is_secured: false
+            is_secured: null
           }
         ]
       })
@@ -103,7 +104,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'Report',
-            is_secured: false
+            is_secured: null
           }
         ]
       });
@@ -116,7 +117,7 @@ describe('getPublicProjectAttachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = list.getPublicProjectAttachments();
 
@@ -124,8 +125,8 @@ describe('getPublicProjectAttachments', () => {
 
     expect(actualResult).to.be.eql({
       attachmentsList: [
-        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-01-01', size: 50, securityToken: false },
-        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-01-01', size: 50, securityToken: false }
+        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-01-01', size: 50, securityToken: 'false' },
+        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-01-01', size: 50, securityToken: 'false' }
       ]
     });
   });
@@ -144,7 +145,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '2020-04-04',
             file_size: 50,
             file_type: 'Image',
-            is_secured: false
+            is_secured: null
           }
         ]
       })
@@ -158,7 +159,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '2020-04-04',
             file_size: 50,
             file_type: 'Report',
-            is_secured: false
+            is_secured: null
           }
         ]
       });
@@ -171,7 +172,7 @@ describe('getPublicProjectAttachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = list.getPublicProjectAttachments();
 
@@ -179,8 +180,8 @@ describe('getPublicProjectAttachments', () => {
 
     expect(actualResult).to.be.eql({
       attachmentsList: [
-        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-04-04', size: 50, securityToken: false },
-        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-04-04', size: 50, securityToken: false }
+        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-04-04', size: 50, securityToken: 'false' },
+        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-04-04', size: 50, securityToken: 'false' }
       ]
     });
   });
@@ -198,7 +199,7 @@ describe('getPublicProjectAttachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = list.getPublicProjectAttachments();
 

@@ -2,12 +2,13 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as upload from './upload';
-import * as db from '../../../../../../database/db';
-import * as file_utils from '../../../../../../utils/file-utils';
-import * as survey_attachment_queries from '../../../../../../queries/survey/survey-attachments-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../../../database/db';
+import { HTTPError } from '../../../../../../errors/custom-error';
+import survey_queries from '../../../../../../queries/survey';
+import * as file_utils from '../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
+import * as upload from './upload';
 
 chai.use(sinonChai);
 
@@ -22,8 +23,7 @@ describe('uploadMedia', () => {
     keycloak_token: {},
     params: {
       projectId: 1,
-      surveyId: 1,
-      attachmentId: 2
+      surveyId: 1
     },
     files: [
       {
@@ -35,7 +35,7 @@ describe('uploadMedia', () => {
       }
     ],
     body: {
-      attachmentType: 'Image'
+      attachmentType: 'Other'
     },
     auth_payload: {
       preferred_username: 'user',
@@ -55,6 +55,24 @@ describe('uploadMedia', () => {
     }
   };
 
+  it('should throw an error when projectId is missing', async () => {
+    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
+
+    try {
+      const result = upload.uploadMedia();
+
+      await result(
+        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        (null as unknown) as any,
+        (null as unknown) as any
+      );
+      expect.fail();
+    } catch (actualError) {
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing projectId');
+    }
+  });
+
   it('should throw an error when surveyId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
@@ -68,8 +86,8 @@ describe('uploadMedia', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing surveyId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing surveyId');
     }
   });
 
@@ -82,26 +100,8 @@ describe('uploadMedia', () => {
       await result({ ...sampleReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing upload data');
-    }
-  });
-
-  it('should throw an error when attachmentType is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...sampleReq, body: { attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing attachment file type');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing upload data');
     }
   });
 
@@ -121,8 +121,8 @@ describe('uploadMedia', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey attachment data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey attachment data');
     }
   });
 
@@ -135,7 +135,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0, key: '1/1/test.txt' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {
@@ -144,12 +144,12 @@ describe('uploadMedia', () => {
       await result(sampleReq, sampleRes as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Malicious content detected, upload cancelled');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
     }
   });
 
-  it('should return file key on success (with username and email)', async () => {
+  it('should return id and revision_count on success (with username and email)', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -158,17 +158,17 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0, key: '1/1/test.txt' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const result = upload.uploadMedia();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql('1/1/test.txt');
+    expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
 
-  it('should return file key on success (without username and email)', async () => {
+  it('should return id and revision_count on success (without username and email)', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -177,7 +177,7 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(upload, 'upsertSurveyAttachment').resolves(1);
+    sinon.stub(upload, 'upsertSurveyAttachment').resolves({ id: 1, revision_count: 0, key: '1/1/test.txt' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
 
     const result = upload.uploadMedia();
@@ -188,7 +188,7 @@ describe('uploadMedia', () => {
       (null as unknown) as any
     );
 
-    expect(actualResult).to.eql('1/1/test.txt');
+    expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
 });
 
@@ -216,15 +216,15 @@ describe('upsertSurveyAttachment', () => {
   const attachmentType = 'Image';
 
   it('should throw an error when failed to generate SQL get statement', async () => {
-    sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyAttachmentByFileNameSQL').returns(null);
 
     try {
       await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, dbConnectionObj);
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -235,8 +235,8 @@ describe('upsertSurveyAttachment', () => {
       rowCount: 1
     });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
-    sinon.stub(survey_attachment_queries, 'putSurveyAttachmentSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyAttachmentSQL').returns(null);
 
     try {
       await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
@@ -246,8 +246,8 @@ describe('upsertSurveyAttachment', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL update statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL update statement');
     }
   });
 
@@ -264,8 +264,8 @@ describe('upsertSurveyAttachment', () => {
         rowCount: null
       });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
-    sinon.stub(survey_attachment_queries, 'putSurveyAttachmentSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyAttachmentSQL').returns(SQL`something`);
 
     try {
       await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
@@ -275,12 +275,12 @@ describe('upsertSurveyAttachment', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to update survey attachment data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to update survey attachment data');
     }
   });
 
-  it('should return the rowCount of records updated on success (update)', async () => {
+  it('should return the id, revision_count of records updated on success (update)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -290,18 +290,19 @@ describe('upsertSurveyAttachment', () => {
       })
       .onSecondCall()
       .resolves({
-        rowCount: 1
+        rowCount: 1,
+        rows: [{ id: 1, revision_count: 0 }]
       });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
-    sinon.stub(survey_attachment_queries, 'putSurveyAttachmentSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'putSurveyAttachmentSQL').returns(SQL`something`);
 
     const result = await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
       ...dbConnectionObj,
       query: mockQuery
     });
 
-    expect(result).to.equal(1);
+    expect(result).to.eql({ id: 1, revision_count: 0, key: 'projects/1/surveys/2/test.txt' });
   });
 
   it('should throw an error when failed to generate SQL insert statement', async () => {
@@ -311,8 +312,8 @@ describe('upsertSurveyAttachment', () => {
       rowCount: null
     });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
-    sinon.stub(survey_attachment_queries, 'postSurveyAttachmentSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveyAttachmentSQL').returns(null);
 
     try {
       await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
@@ -322,12 +323,12 @@ describe('upsertSurveyAttachment', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL insert statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL insert statement');
     }
   });
 
-  it('should throw an error when insert result has no id', async () => {
+  it('should throw an error when insert result has no rows', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -337,11 +338,11 @@ describe('upsertSurveyAttachment', () => {
       })
       .onSecondCall()
       .resolves({
-        rows: [{ id: null }]
+        rows: []
       });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
-    sinon.stub(survey_attachment_queries, 'postSurveyAttachmentSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveyAttachmentSQL').returns(SQL`something`);
 
     try {
       await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
@@ -351,12 +352,12 @@ describe('upsertSurveyAttachment', () => {
 
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert survey attachment data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert survey attachment data');
     }
   });
 
-  it('should return the id of record inserted on success (insert)', async () => {
+  it('should return the id and revision_count of record inserted on success (insert)', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery
@@ -366,17 +367,17 @@ describe('upsertSurveyAttachment', () => {
       })
       .onSecondCall()
       .resolves({
-        rows: [{ id: 12 }]
+        rows: [{ id: 12, revision_count: 0, key: 'projects/1/surveys/2/test.txt' }]
       });
 
-    sinon.stub(survey_attachment_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
-    sinon.stub(survey_attachment_queries, 'postSurveyAttachmentSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyAttachmentByFileNameSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'postSurveyAttachmentSQL').returns(SQL`something`);
 
     const result = await upload.upsertSurveyAttachment(file, projectId, surveyId, attachmentType, {
       ...dbConnectionObj,
       query: mockQuery
     });
 
-    expect(result).to.equal(12);
+    expect(result).to.eql({ id: 12, revision_count: 0, key: 'projects/1/surveys/2/test.txt' });
   });
 });

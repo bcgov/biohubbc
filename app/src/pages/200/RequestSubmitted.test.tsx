@@ -50,7 +50,7 @@ describe('RequestSubmitted', () => {
     const authState = {
       keycloakWrapper: {
         hasLoadedAllUserInfo: true,
-        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN],
+        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR],
         hasAccessRequest: false,
 
         keycloak: {},

@@ -1,23 +1,17 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getAPIUserDBConnection } from '../database/db';
-import { HTTP500 } from '../errors/CustomError';
-import { getAllCodeSets } from '../utils/code-utils';
+import { HTTP500 } from '../errors/custom-error';
+import { CodeService } from '../services/code-service';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
 const defaultLog = getLogger('paths/code');
 
-export const GET: Operation = [logRequest('paths/code', 'GET'), getAllCodes()];
+export const GET: Operation = [getAllCodes()];
 
 GET.apiDoc = {
   description: 'Get all Codes.',
   tags: ['code'],
-  security: [
-    {
-      Bearer: []
-    }
-  ],
   responses: {
     200: {
       description: 'Code response object.',
@@ -113,6 +107,20 @@ GET.apiDoc = {
                   }
                 }
               },
+              coordinator_agency: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
               region: {
                 type: 'array',
                 items: {
@@ -151,6 +159,9 @@ GET.apiDoc = {
                     },
                     name: {
                       type: 'string'
+                    },
+                    is_first_nation: {
+                      type: 'boolean'
                     }
                   }
                 }
@@ -216,6 +227,104 @@ GET.apiDoc = {
                     }
                   }
                 }
+              },
+              project_role: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              regional_offices: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              administrative_activity_status_type: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              field_methods: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              ecological_seasons: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              intended_outcomes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
+              },
+              vantage_codes: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    }
+                  }
+                }
               }
             }
           }
@@ -250,7 +359,13 @@ export function getAllCodes(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const allCodeSets = await getAllCodeSets(connection);
+      await connection.open();
+
+      const codeService = new CodeService(connection);
+
+      const allCodeSets = await codeService.getAllCodeSets();
+
+      await connection.commit();
 
       if (!allCodeSets) {
         throw new HTTP500('Failed to fetch codes');
@@ -259,6 +374,7 @@ export function getAllCodes(): RequestHandler {
       return res.status(200).json(allCodeSets);
     } catch (error) {
       defaultLog.error({ label: 'getAllCodes', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

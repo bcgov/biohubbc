@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as listAttachments from './list';
-import * as db from '../../../../database/db';
-import * as project_attachments_queries from '../../../../queries/project/project-attachments-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../database/db';
+import { HTTPError } from '../../../../errors/custom-error';
+import project_queries from '../../../../queries/project';
 import { getMockDBConnection } from '../../../../__mocks__/db';
+import * as listAttachments from './list';
 
 chai.use(sinonChai);
 
@@ -45,7 +46,7 @@ describe('lists the project attachments', () => {
       }
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(null);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(null);
 
     try {
       const result = listAttachments.getAttachments();
@@ -53,8 +54,8 @@ describe('lists the project attachments', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -98,7 +99,7 @@ describe('lists the project attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 
@@ -166,7 +167,7 @@ describe('lists the project attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 
@@ -207,7 +208,7 @@ describe('lists the project attachments', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
 
     const result = listAttachments.getAttachments();
 
@@ -228,8 +229,8 @@ describe('lists the project attachments', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 });

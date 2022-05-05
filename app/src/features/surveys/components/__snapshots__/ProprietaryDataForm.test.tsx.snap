@@ -12,26 +12,32 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
         <fieldset
           class="MuiFormControl-root"
         >
-          <legend
-            class="MuiFormLabel-root makeStyles-legend-1 Mui-required"
+          <p
+            class="MuiTypography-root makeStyles-alignCenter-1 MuiTypography-body1"
           >
-            Is the data captured in this survey proprietary?
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk"
-            >
-               *
+            <span>
+              Is the data captured in this survey proprietary?
             </span>
-          </legend>
-          <div
-            class="MuiBox-root MuiBox-root-3"
-          >
             <button
-              class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-2 MuiButton-textPrimary"
+              data-testid="prop-dialog-btn"
+              tabindex="0"
+              type="button"
             >
-              Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+              <span
+                class="MuiButton-label"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-body1"
+                >
+                  Learn more
+                </span>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
             </button>
-          </div>
+          </p>
           <div
             class="MuiBox-root MuiBox-root-4"
           >
@@ -146,7 +152,7 @@ exports[`Proprietary Data Form renders correctly the empty component correctly w
                 </span>
               </label>
               <p
-                class="MuiFormHelperText-root Mui-required"
+                class="MuiFormHelperText-root"
               />
             </div>
           </div>
@@ -169,26 +175,32 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
         <fieldset
           class="MuiFormControl-root"
         >
-          <legend
-            class="MuiFormLabel-root makeStyles-legend-12 Mui-required"
+          <p
+            class="MuiTypography-root makeStyles-alignCenter-12 MuiTypography-body1"
           >
-            Is the data captured in this survey proprietary?
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk"
-            >
-               *
+            <span>
+              Is the data captured in this survey proprietary?
             </span>
-          </legend>
-          <div
-            class="MuiBox-root MuiBox-root-14"
-          >
             <button
-              class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-13 MuiButton-textPrimary"
+              data-testid="prop-dialog-btn"
+              tabindex="0"
+              type="button"
             >
-              Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+              <span
+                class="MuiButton-label"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-body1"
+                >
+                  Learn more
+                </span>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
             </button>
-          </div>
+          </p>
           <div
             class="MuiBox-root MuiBox-root-15"
           >
@@ -303,7 +315,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                 </span>
               </label>
               <p
-                class="MuiFormHelperText-root Mui-required"
+                class="MuiFormHelperText-root"
               />
             </div>
           </div>
@@ -313,7 +325,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-13 MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1"
         >
           Proprietary Information
         </p>
@@ -531,15 +543,9 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-12 Mui-required"
+            class="MuiTypography-root MuiTypography-body1"
           >
             Data and Information Sharing Agreement (DISA)
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk"
-            >
-               *
-            </span>
           </legend>
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -683,26 +689,32 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
         <fieldset
           class="MuiFormControl-root"
         >
-          <legend
-            class="MuiFormLabel-root makeStyles-legend-44 Mui-error Mui-required"
+          <p
+            class="MuiTypography-root makeStyles-alignCenter-44 MuiTypography-body1"
           >
-            Is the data captured in this survey proprietary?
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk Mui-error"
-            >
-               *
+            <span>
+              Is the data captured in this survey proprietary?
             </span>
-          </legend>
-          <div
-            class="MuiBox-root MuiBox-root-46"
-          >
             <button
-              class="MuiTypography-root MuiLink-root MuiLink-underlineHover MuiLink-button MuiTypography-body2 MuiTypography-colorPrimary"
+              class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-45 MuiButton-textPrimary"
+              data-testid="prop-dialog-btn"
+              tabindex="0"
+              type="button"
             >
-              Click here to view the Species and Ecosystems Data and Information Security Policy and Procedures.
+              <span
+                class="MuiButton-label"
+              >
+                <span
+                  class="MuiTypography-root MuiTypography-body1"
+                >
+                  Learn more
+                </span>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
             </button>
-          </div>
+          </p>
           <div
             class="MuiBox-root MuiBox-root-47"
           >
@@ -817,7 +829,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                 </span>
               </label>
               <p
-                class="MuiFormHelperText-root Mui-error Mui-required"
+                class="MuiFormHelperText-root Mui-error"
               >
                 error on survey data proprietary field
               </p>
@@ -829,7 +841,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-45 MuiTypography-body1"
+          class="MuiTypography-root MuiTypography-body1"
         >
           Proprietary Information
         </p>
@@ -1068,15 +1080,9 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
           class="MuiFormControl-root"
         >
           <legend
-            class="MuiFormLabel-root makeStyles-legend-44 Mui-error Mui-required"
+            class="MuiTypography-root MuiTypography-body1"
           >
             Data and Information Sharing Agreement (DISA)
-            <span
-              aria-hidden="true"
-              class="MuiFormLabel-asterisk Mui-error"
-            >
-               *
-            </span>
           </legend>
           <p
             class="MuiTypography-root MuiTypography-body1"

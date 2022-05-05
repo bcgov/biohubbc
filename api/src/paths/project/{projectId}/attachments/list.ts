@@ -1,27 +1,36 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/custom-error';
 import { GetAttachmentsData } from '../../../../models/project-survey-attachments';
-import {
-  getProjectAttachmentsSQL,
-  getProjectReportAttachmentsSQL
-} from '../../../../queries/project/project-attachments-queries';
+import { queries } from '../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/attachments/list');
 
-export const GET: Operation = [getAttachments()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getAttachments()
+];
 
 GET.apiDoc = {
   description: 'Fetches a list of attachments of a project.',
   tags: ['attachments'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -40,17 +49,35 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                fileName: {
-                  description: 'The file name of the attachment',
-                  type: 'string'
-                },
-                lastModified: {
-                  description: 'The date the object was last modified',
-                  type: 'string'
+            type: 'object',
+            properties: {
+              attachmentsList: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'fileName', 'fileType', 'lastModified', 'securityToken', 'size'],
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    fileName: {
+                      type: 'string'
+                    },
+                    fileType: {
+                      type: 'string'
+                    },
+                    lastModified: {
+                      type: 'string'
+                    },
+                    securityToken: {
+                      description: 'The security token of the attachment',
+                      type: 'string',
+                      nullable: true
+                    },
+                    size: {
+                      type: 'number'
+                    }
+                  }
                 }
               }
             }
@@ -78,8 +105,10 @@ export function getAttachments(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getProjectAttachmentsSQLStatement = getProjectAttachmentsSQL(Number(req.params.projectId));
-      const getProjectReportAttachmentsSQLStatement = getProjectReportAttachmentsSQL(Number(req.params.projectId));
+      const getProjectAttachmentsSQLStatement = queries.project.getProjectAttachmentsSQL(Number(req.params.projectId));
+      const getProjectReportAttachmentsSQLStatement = queries.project.getProjectReportAttachmentsSQL(
+        Number(req.params.projectId)
+      );
 
       if (!getProjectAttachmentsSQLStatement || !getProjectReportAttachmentsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

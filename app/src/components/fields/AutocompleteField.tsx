@@ -1,6 +1,7 @@
 import TextField from '@material-ui/core/TextField';
 import Autocomplete, { createFilterOptions } from '@material-ui/lab/Autocomplete';
 import { useFormikContext } from 'formik';
+import get from 'lodash-es/get';
 import React, { ChangeEvent } from 'react';
 
 export interface IAutocompleteFieldOption<T extends string | number> {
@@ -15,7 +16,7 @@ export interface IAutocompleteField<T extends string | number> {
   options: IAutocompleteFieldOption<T>[];
   required?: boolean;
   filterLimit?: number;
-  onChange?: (event: ChangeEvent<{}>, option: IAutocompleteFieldOption<T> | null) => void;
+  onChange?: (event: ChangeEvent<Record<string, unknown>>, option: IAutocompleteFieldOption<T> | null) => void;
 }
 
 // To be used when you want an autocomplete field with no freesolo allowed but only one option can be selected
@@ -54,7 +55,7 @@ const AutocompleteField: React.FC<IAutocompleteField<string | number>> = <T exte
       handleHomeEndKeys
       id={props.id}
       data-testid={props.id}
-      value={getExistingValue(values[props.name])}
+      value={getExistingValue(get(values, props.name))}
       options={props.options}
       getOptionLabel={(option) => option.label}
       getOptionSelected={handleGetOptionSelected}
@@ -74,8 +75,8 @@ const AutocompleteField: React.FC<IAutocompleteField<string | number>> = <T exte
           label={props.label}
           variant="outlined"
           fullWidth
-          error={touched[props.name] && Boolean(errors[props.name])}
-          helperText={touched[props.name] && errors[props.name]}
+          error={get(touched, props.name) && Boolean(get(errors, props.name))}
+          helperText={get(touched, props.name) && get(errors, props.name)}
         />
       )}
     />

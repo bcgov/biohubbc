@@ -1,15 +1,15 @@
-import { render, fireEvent, act, waitFor } from '@testing-library/react';
+import { act, fireEvent, render, waitFor } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
+import ProjectStepComponents from 'utils/ProjectStepComponents';
 import ProjectFundingForm, {
   IInvestmentActionCategoryOption,
   IProjectFundingForm,
   ProjectFundingFormInitialValues,
   ProjectFundingFormYupSchema
 } from './ProjectFundingForm';
-import { codes } from 'test-helpers/code-helpers';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
 
 const funding_sources: IMultiAutocompleteFieldOption[] = [
   {

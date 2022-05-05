@@ -102,7 +102,7 @@
         "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+        "bodyParametersJson": "={\n\"project_id\": {{$node[\"Webhook\"].json[\"body\"][\"project_id\"]}},\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
       "name": "XLSX Transform",
       "type": "n8n-nodes-base.httpRequest",
@@ -194,7 +194,7 @@
     }
   },
   "createdAt": "2021-09-23T14:54:04.504Z",
-  "updatedAt": "2021-10-07T17:58:04.544Z",
+  "updatedAt": "2021-12-08T23:02:03.845Z",
   "settings": {},
   "staticData": null
 }

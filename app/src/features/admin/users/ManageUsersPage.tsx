@@ -122,6 +122,7 @@ const ManageUsersPage: React.FC = () => {
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h1">Manage Users</Typography>
         </Box>
+
         <Box>
           <AccessRequestList
             accessRequests={accessRequests}
@@ -133,7 +134,7 @@ const ManageUsersPage: React.FC = () => {
           />
         </Box>
         <Box pt={3}>
-          <ActiveUsersList activeUsers={activeUsers} />
+          <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
         </Box>
       </Container>
     </Box>

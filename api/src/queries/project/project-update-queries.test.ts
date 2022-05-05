@@ -2,20 +2,20 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   PutCoordinatorData,
+  PutFundingSource,
   PutLocationData,
   PutObjectivesData,
-  PutProjectData,
-  PutFundingSource
+  PutProjectData
 } from '../../models/project-update';
 import {
-  getIndigenousPartnershipsByProjectSQL,
   getCoordinatorByProjectSQL,
+  getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getObjectivesByProjectSQL,
-  getProjectByProjectSQL,
-  putProjectSQL,
-  putProjectFundingSourceSQL,
   getPermitsByProjectSQL,
+  getProjectByProjectSQL,
+  putProjectFundingSourceSQL,
+  putProjectSQL,
   updateProjectPublishStatusSQL
 } from './project-update-queries';
 

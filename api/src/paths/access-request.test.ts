@@ -1,12 +1,21 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as access_request from './access-request';
-import * as user_queries from '../queries/users/user-queries';
-import * as db from '../database/db';
 import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../__mocks__/db';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import * as db from '../database/db';
+import { HTTPError } from '../errors/custom-error';
+import { IgcNotifyPostReturn } from '../models/gcnotify';
+import { UserObject } from '../models/user';
+import * as administrative_activity from '../paths/administrative-activity';
+import { queries } from '../queries/queries';
+import { GCNotifyService } from '../services/gcnotify-service';
+import { KeycloakService, KeycloakUser } from '../services/keycloak-service';
+import { UserService } from '../services/user-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../__mocks__/db';
+import * as access_request from './access-request';
 
 chai.use(sinonChai);
 
@@ -15,12 +24,10 @@ describe('updateAccessRequest', () => {
     sinon.restore();
   });
 
-  const dbConnectionObj = getMockDBConnection();
-
   const sampleReq = {
     keycloak_token: {},
     body: {
-      userIdentifier: 1,
+      userIdentifier: 'username',
       identitySource: 'identitySource',
       requestId: 1,
       requestStatusTypeId: 1
@@ -38,8 +45,8 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param: userIdentifier');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: userIdentifier');
     }
   });
 
@@ -54,8 +61,8 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param: identitySource');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: identitySource');
     }
   });
 
@@ -70,8 +77,8 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param: requestId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: requestId');
     }
   });
 
@@ -86,91 +93,163 @@ describe('updateAccessRequest', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param: requestStatusTypeId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param: requestStatusTypeId');
     }
   });
 
-  it('should throw a 400 error when fails to get getUserByUserIdentifierSQL statement', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+  it('re-throws any error that is thrown', async () => {
+    const mockDBConnection = getMockDBConnection({
+      open: () => {
+        throw new Error('test error');
       }
     });
-    sinon.stub(user_queries, 'getUserByUserIdentifierSQL').returns(null);
+
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
+
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.body = {
+      userIdentifier: 1,
+      identitySource: 'identitySource',
+      requestId: 1,
+      requestStatusTypeId: 1,
+      roleIds: [1, 3]
+    };
+
+    const requestHandler = access_request.updateAccessRequest();
 
     try {
-      const result = access_request.updateAccessRequest();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+      await requestHandler(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).message).to.equal('test error');
     }
   });
 
-  it('should throw a 400 error when no userId and no systemUserId', async () => {
-    const mockQuery = sinon.stub();
+  it('adds new system roles and updates administrative activity', async () => {
+    const mockDBConnection = getMockDBConnection();
 
-    mockQuery.resolves({
-      rows: [null],
-      rowCount: 1
-    });
+    sinon.stub(db, 'getDBConnection').returns(mockDBConnection);
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return null;
-      },
-      query: mockQuery
-    });
-    sinon.stub(user_queries, 'getUserByUserIdentifierSQL').returns(SQL`something`);
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-    try {
-      const result = access_request.updateAccessRequest();
+    const requestId = 1;
+    const requestStatusTypeId = 2;
+    const roleIdsToAdd = [1, 3];
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to identify system user ID');
-    }
+    mockReq.body = {
+      userIdentifier: 'username',
+      identitySource: 'identitySource',
+      requestId: requestId,
+      requestStatusTypeId: requestStatusTypeId,
+      roleIds: roleIdsToAdd
+    };
+
+    const systemUserId = 4;
+    const existingRoleIds = [1, 2];
+    const mockSystemUser: UserObject = {
+      id: systemUserId,
+      user_identifier: '',
+      record_end_date: '',
+      role_ids: existingRoleIds,
+      role_names: []
+    };
+    const ensureSystemUserStub = sinon.stub(UserService.prototype, 'ensureSystemUser').resolves(mockSystemUser);
+
+    const addSystemRolesStub = sinon.stub(UserService.prototype, 'addUserSystemRoles');
+
+    const updateAdministrativeActivityStub = sinon.stub(administrative_activity, 'updateAdministrativeActivity');
+
+    const requestHandler = access_request.updateAccessRequest();
+
+    await requestHandler(mockReq, mockRes, mockNext);
+
+    const expectedRoleIdsToAdd = [3];
+
+    expect(ensureSystemUserStub).to.have.been.calledOnce;
+    expect(addSystemRolesStub).to.have.been.calledWith(systemUserId, expectedRoleIdsToAdd);
+    expect(updateAdministrativeActivityStub).to.have.been.calledWith(requestId, requestStatusTypeId);
   });
 
-  it('should throw a 500 error when userId but no userObject', async () => {
-    const mockQuery = sinon.stub();
+  it('checks If Access request if approval is false', async () => {
+    const mockResponseRow = { name: 'Rejected' };
+    const mockQueryResponse = ({ rows: [mockResponseRow] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
 
-    mockQuery.resolves({
-      rows: [
-        {
-          id: 1,
-          user_identifier: null,
-          role_ids: [1, 2],
-          role_name: ['System Admin', 'Project Lead']
-        }
-      ],
-      rowCount: 1
-    });
+    const mockgetAdminActTypeSQLResponse = SQL`Test SQL Statement`;
+    const queriesStub = sinon
+      .stub(queries.administrativeActivity, 'getAdministrativeActivityById')
+      .resolves(mockgetAdminActTypeSQLResponse);
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return null;
-      },
-      query: mockQuery
-    });
-    sinon.stub(user_queries, 'getUserByUserIdentifierSQL').returns(SQL`something`);
+    const functionResponse = await access_request.checkIfAccessRequestIsApproval(1, mockDBConnection);
 
-    try {
-      const result = access_request.updateAccessRequest();
+    expect(functionResponse).to.equal(false);
+    expect(queriesStub).to.be.calledOnce;
+  });
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to get or add system user');
-    }
+  it('checks If Access request if approval is true', async () => {
+    const mockResponseRow = { name: 'Actioned' };
+    const mockQueryResponse = ({ rows: [mockResponseRow] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+    const mockgetAdminActTypeSQLResponse = SQL`Test SQL Statement`;
+    const queriesStub = sinon
+      .stub(queries.administrativeActivity, 'getAdministrativeActivityById')
+      .resolves(mockgetAdminActTypeSQLResponse);
+
+    const functionResponse = await access_request.checkIfAccessRequestIsApproval(2, mockDBConnection);
+
+    expect(functionResponse).to.equal(true);
+    expect(queriesStub).to.be.calledOnce;
+  });
+
+  it('attempts to send approval email', async () => {
+    const mockResponseRow = { name: 'Actioned' };
+    const mockQueryResponse = ({ rows: [mockResponseRow] } as unknown) as QueryResult<any>;
+    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+    const mockgetAdminActTypeSQLResponse = SQL`Test SQL Statement`;
+    const queriesStub = sinon
+      .stub(queries.administrativeActivity, 'getAdministrativeActivityById')
+      .resolves(mockgetAdminActTypeSQLResponse);
+
+    const keycloakUserReturnObject = {
+      id: '0',
+      username: '1',
+      firstName: '2',
+      lastName: '3',
+      enabled: false,
+      email: '123@PinpointEmail.com',
+      attributes: {
+        idir_user_guid: [''],
+        idir_userid: [''],
+        idir_guid: [''],
+        displayName: ['']
+      }
+    } as KeycloakUser;
+
+    const GCNotifyPostReturnObject = {
+      content: {},
+      id: 'string',
+      reference: 'string',
+      scheduled_for: 'string',
+      template: {},
+      uri: 'string'
+    } as IgcNotifyPostReturn;
+
+    const getUserByUsernameStub = sinon
+      .stub(KeycloakService.prototype, 'getUserByUsername')
+      .resolves(keycloakUserReturnObject);
+
+    const sendEmailGCNotificationStub = sinon
+      .stub(GCNotifyService.prototype, 'sendEmailGCNotification')
+      .resolves(GCNotifyPostReturnObject);
+
+    await access_request.sendApprovalEmail(2, mockDBConnection, 'name', SYSTEM_IDENTITY_SOURCE.IDIR);
+
+    expect(queriesStub).to.be.calledOnce;
+    expect(getUserByUsernameStub).to.be.calledOnce;
+    expect(sendEmailGCNotificationStub).to.be.calledOnce;
   });
 });

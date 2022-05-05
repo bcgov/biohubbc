@@ -9,9 +9,9 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
-import React from 'react';
 import { mdiFileExcelOutline } from '@mdi/js';
 import Icon from '@mdi/react';
+import React from 'react';
 
 /**
  * Page to display a list of resources.
@@ -22,22 +22,41 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose SRB Composition Survey 2.0',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_SRB_Composition_Survey_2.0.xlsx',
+      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.5',
+      url:
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '80 KB'
+      fileSize: '115 KB'
     },
     {
       id: '2',
-      name: 'Moose Recruitment Survey',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Survey.xlsx',
+      name: 'Moose Recruitment Using Telemetry Survey 1.0',
+      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Using_Telemetry_Survey_1.0.xlsx',
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '36 KB'
+      fileSize: '93 KB'
     },
     {
       id: '3',
+      name: 'Goat Aerial Population Composition Recruitment Survey 1.4',
+      url:
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx',
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '165 KB'
+    },
+    {
+      id: '4',
+      name: 'Sheep Aerial Population Composition Recruitment Survey 1.2',
+      url:
+        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx',
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '109 KB'
+    },
+    {
+      id: '5',
       name: 'Moose Summary Statistics',
       url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
       type: mdiFileExcelOutline,

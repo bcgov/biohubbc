@@ -1,9 +1,6 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 import { IPostPermitNoSampling } from '../../models/permit-no-sampling';
 import { PostCoordinatorData } from '../../models/project-create';
-import { getLogger } from '../../utils/logger';
-
-const defaultLog = getLogger('queries/permit/permit-create-queries');
 
 /**
  * SQL query to insert a permit row for permit associated to a project.
@@ -11,24 +8,15 @@ const defaultLog = getLogger('queries/permit/permit-create-queries');
  * @param {string} permitNumber
  * @param {string} permitType
  * @param {number} projectId
- * @param {number | null} systemUserId
+ * @param {number} systemUserId
  * @returns {SQLStatement} sql query object
  */
 export const postProjectPermitSQL = (
   permitNumber: string,
   permitType: string,
   projectId: number,
-  systemUserId: number | null
+  systemUserId: number
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postProjectPermitSQL',
-    message: 'params',
-    permitNumber,
-    permitType,
-    projectId,
-    systemUserId
-  });
-
   if (!permitNumber || !permitType || !projectId || !systemUserId) {
     return null;
   }
@@ -49,13 +37,6 @@ export const postProjectPermitSQL = (
         permit_id as id;
     `;
 
-  defaultLog.debug({
-    label: 'postProjectPermitSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -70,13 +51,6 @@ export const postPermitNoSamplingSQL = (
   noSamplePermit: IPostPermitNoSampling & PostCoordinatorData,
   systemUserId: number | null
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'postPermitNoSamplingSQL',
-    message: 'params',
-    noSamplePermit,
-    systemUserId
-  });
-
   if (!noSamplePermit || !systemUserId) {
     return null;
   }
@@ -102,13 +76,6 @@ export const postPermitNoSamplingSQL = (
       RETURNING
         permit_id as id;
     `;
-
-  defaultLog.debug({
-    label: 'postPermitNoSamplingSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };

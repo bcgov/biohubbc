@@ -1,5 +1,7 @@
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
+import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
+import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
 import { IProjectCoordinatorForm } from 'features/projects/components/ProjectCoordinatorForm';
 import { IProjectDetailsForm } from 'features/projects/components/ProjectDetailsForm';
 import { IProjectFundingForm } from 'features/projects/components/ProjectFundingForm';
@@ -23,9 +25,49 @@ describe('useProjectApi', () => {
     mock.restore();
   });
 
+  const userId = 123;
   const projectId = 1;
   const attachmentId = 1;
   const attachmentType = 'type';
+  const attachmentMeta: IReportMetaForm = {
+    title: 'upload file',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'file abstract',
+    year_published: 2000,
+    attachmentFile: new File(['foo'], 'foo.txt', {
+      type: 'text/plain'
+    })
+  };
+
+  const attachmentMetaForUpdate: IEditReportMetaForm = {
+    title: 'upload file',
+    authors: [{ first_name: 'John', last_name: 'Smith' }],
+    description: 'file abstract',
+    year_published: 2000,
+    revision_count: 1
+  };
+
+  it('getAllUserProjectsForView works as expected', async () => {
+    mock.onGet(`/api/user/${userId}/projects/get`).reply(200, [
+      {
+        project_id: 321,
+        name: 'test',
+        system_user_id: 1,
+        project_role_id: 2,
+        project_participation_id: 3
+      }
+    ]);
+
+    const result = await useProjectApi(axios).getAllUserProjectsForView(123);
+
+    expect(result[0]).toEqual({
+      project_id: 321,
+      name: 'test',
+      system_user_id: 1,
+      project_role_id: 2,
+      project_participation_id: 3
+    });
+  });
 
   it('getProjectAttachments works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/attachments/list`).reply(200, {
@@ -67,14 +109,6 @@ describe('useProjectApi', () => {
     expect(result).toEqual(1);
   });
 
-  it('getAttachmentSignedURL works as expected', async () => {
-    mock.onGet(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`).reply(200, 'www.signedurl.com');
-
-    const result = await useProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId);
-
-    expect(result).toEqual('www.signedurl.com');
-  });
-
   it('getProjectsList works as expected', async () => {
     const response = [
       {
@@ -94,7 +128,7 @@ describe('useProjectApi', () => {
       }
     ];
 
-    mock.onPost(`/api/projects`).reply(200, response);
+    mock.onGet(`/api/project/list`).reply(200, response);
 
     const result = await useProjectApi(axios).getProjectsList();
 
@@ -120,7 +154,7 @@ describe('useProjectApi', () => {
       }
     ];
 
-    mock.onGet(`/api/public/projects`).reply(200, response);
+    mock.onGet(`/api/public/project/list`).reply(200, response);
 
     const result = await usePublicProjectApi(axios).getProjectsList();
 
@@ -225,7 +259,7 @@ describe('useProjectApi', () => {
 
     mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file, attachmentType);
+    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file, attachmentType, attachmentMeta);
 
     expect(result).toEqual('result 1');
   });
@@ -242,7 +276,7 @@ describe('useProjectApi', () => {
       partnerships: (null as unknown) as IProjectPartnershipsForm
     };
 
-    mock.onPost('/api/project').reply(200, {
+    mock.onPost('/api/project/create').reply(200, {
       id: 1
     });
 
@@ -261,12 +295,26 @@ describe('useProjectApi', () => {
     expect(result).toEqual({ id: 1 });
   });
 
-  it('getAttachmentSignedURL works as expected', async () => {
+  it('getAttachmentSignedURL works as expected for public access', async () => {
     mock
-      .onPost(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`)
+      .onGet(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+        query: { attachmentType: 'Other' }
+      })
       .reply(200, 'www.signedurl.com');
 
-    const result = await usePublicProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Image');
+    const result = await usePublicProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Other');
+
+    expect(result).toEqual('www.signedurl.com');
+  });
+
+  it('getAttachmentSignedURL works as expected for authenticated access', async () => {
+    mock
+      .onGet(`/api/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {
+        query: { attachmentType: 'Other' }
+      })
+      .reply(200, 'www.signedurl.com');
+
+    const result = await useProjectApi(axios).getAttachmentSignedURL(projectId, attachmentId, 'Other');
 
     expect(result).toEqual('www.signedurl.com');
   });
@@ -293,5 +341,69 @@ describe('useProjectApi', () => {
         size: 3028
       }
     ]);
+  });
+
+  it('updateProjectAttachmentMetadata works as expected', async () => {
+    mock.onPut(`/api/project/${projectId}/attachments/${attachmentId}/metadata/update`).reply(200, 'result 1');
+
+    const result = await useProjectApi(axios).updateProjectReportMetadata(
+      projectId,
+      attachmentId,
+      attachmentMetaForUpdate,
+      attachmentMetaForUpdate.revision_count
+    );
+
+    expect(result).toEqual('result 1');
+  });
+
+  it('getProjectReportMetadata works as expected', async () => {
+    mock.onGet(`/api/project/${projectId}/attachments/${attachmentId}/metadata/get`).reply(200, 'result 1');
+
+    const result = await useProjectApi(axios).getProjectReportMetadata(projectId, attachmentId);
+
+    expect(result).toEqual('result 1');
+  });
+
+  it('getProjectParticipants works as expected', async () => {
+    const mockResponse = { participants: [] };
+    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);
+
+    const result = await useProjectApi(axios).getProjectParticipants(projectId);
+
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('addProjectParticipants works as expected', async () => {
+    const mockResponse = { participants: [] };
+    mock.onGet(`/api/project/${projectId}/participants/get`).reply(200, mockResponse);
+
+    const result = await useProjectApi(axios).getProjectParticipants(projectId);
+
+    expect(result).toEqual(mockResponse);
+  });
+
+  it('removeProjectParticipant works as expected', async () => {
+    const projectParticipationId = 1;
+
+    mock.onDelete(`/api/project/${projectId}/participants/${projectParticipationId}/delete`).reply(200);
+
+    const result = await useProjectApi(axios).removeProjectParticipant(projectId, projectParticipationId);
+
+    expect(result).toEqual(true);
+  });
+
+  it('removeProjectParticipant works as expected', async () => {
+    const projectParticipationId = 1;
+    const projectRoleId = 1;
+
+    mock.onPut(`/api/project/${projectId}/participants/${projectParticipationId}/update`).reply(200);
+
+    const result = await useProjectApi(axios).updateProjectParticipantRole(
+      projectId,
+      projectParticipationId,
+      projectRoleId
+    );
+
+    expect(result).toEqual(true);
   });
 });

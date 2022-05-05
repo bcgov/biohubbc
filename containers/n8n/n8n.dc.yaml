@@ -523,19 +523,19 @@ parameters:
   - name: CPU_REQUEST
     description: Minimal CPU needed to run
     displayName: CPU Request
-    value: 100m
+    value: 10m
   - name: CPU_LIMIT
     description: Maximum CPU allowed to use
     displayName: CPU Limit
-    value: 500m
+    value: 200m
   - name: MEMORY_REQUEST
     description: Minimal amount of memory needed to run
     displayName: Memory Request
-    value: 768Mi
+    value: 512Mi
   - name: MEMORY_LIMIT
     description: Maximum amount of memory allowed to use
     displayName: Memory Limit
-    value: 1.0Gi
+    value: 1Gi
   - name: PVC_SIZE
     description: Amount of disk space needed for persistence
     displayName: PVC Size

@@ -1,56 +1,68 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP409 } from '../../../../../errors/CustomError';
+import { HTTP400, HTTP409, HTTP500 } from '../../../../../errors/custom-error';
+import { PostSurveyProprietorData } from '../../../../../models/survey-create';
 import {
+  GetUpdateSurveyDetailsData,
   PutSurveyDetailsData,
   PutSurveyProprietorData,
-  GetUpdateSurveyDetailsData
+  PutSurveyPurposeAndMethodologyData
 } from '../../../../../models/survey-update';
-import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
-import {
-  surveyIdResponseObject,
-  surveyUpdateGetResponseObject,
-  surveyUpdatePutRequestObject
-} from '../../../../../openapi/schemas/survey';
-import {
-  getSurveyDetailsForUpdateSQL,
-  getSurveyProprietorForUpdateSQL
-} from '../../../../../queries/survey/survey-view-update-queries';
-import {
-  unassociatePermitFromSurveySQL,
-  putSurveyDetailsSQL,
-  putSurveyProprietorSQL
-} from '../../../../../queries/survey/survey-update-queries';
-import {
-  deleteFocalSpeciesSQL,
-  deleteAncillarySpeciesSQL,
-  deleteSurveyProprietorSQL,
-  deleteSurveyFundingSourcesBySurveyIdSQL
-} from '../../../../../queries/survey/survey-delete-queries';
+import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
+import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
+import { queries } from '../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
-import { logRequest } from '../../../../../utils/path-utils';
-import { insertAncillarySpecies, insertFocalSpecies, insertSurveyFundingSource, insertSurveyPermit } from '../create';
-import { postSurveyProprietorSQL } from '../../../../../queries/survey/survey-create-queries';
-import { PostSurveyProprietorData } from '../../../../../models/survey-create';
-
+import {
+  insertAncillarySpecies,
+  insertFocalSpecies,
+  insertSurveyFundingSource,
+  insertSurveyPermit,
+  insertVantageCodes
+} from '../create';
 export interface IUpdateSurvey {
   survey_details: object | null;
+  survey_purpose_and_methodology: object | null;
   survey_proprietor: object | null;
 }
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/update');
 
 export const GET: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/update', 'GET'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   getSurveyForUpdate()
 ];
 
-export const PUT: Operation = [logRequest('paths/project/{projectId}/survey/{surveyId}/update', 'PUT'), updateSurvey()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  updateSurvey()
+];
 
 export enum GET_SURVEY_ENTITIES {
   survey_details = 'survey_details',
+  survey_purpose_and_methodology = 'survey_purpose_and_methodology',
   survey_proprietor = 'survey_proprietor'
 }
 
@@ -61,7 +73,7 @@ GET.apiDoc = {
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -99,7 +111,179 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyUpdateGetResponseObject as object)
+            title: 'Survey get response object, for update purposes',
+            type: 'object',
+            required: ['survey_details', 'survey_purpose_and_methodology', 'survey_proprietor'],
+            properties: {
+              survey_details: {
+                description: 'Survey Details',
+                type: 'object',
+                nullable: true,
+                required: [
+                  'id',
+                  'focal_species',
+                  'ancillary_species',
+                  'biologist_first_name',
+                  'biologist_last_name',
+                  'completion_status',
+                  'start_date',
+                  'end_date',
+                  'funding_sources',
+                  'geometry',
+                  'permit_number',
+                  'permit_type',
+                  'publish_date',
+                  'revision_count',
+                  'survey_area_name',
+                  'survey_name'
+                ],
+                properties: {
+                  id: {
+                    description: 'Survey id',
+                    type: 'number'
+                  },
+                  ancillary_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  focal_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  biologist_first_name: {
+                    type: 'string'
+                  },
+                  biologist_last_name: {
+                    type: 'string'
+                  },
+                  completion_status: {
+                    type: 'string'
+                  },
+                  start_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the survey start date'
+                  },
+                  end_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    description: 'ISO 8601 date string for the survey end date',
+                    nullable: true
+                  },
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      title: 'survey funding agency',
+                      type: 'number'
+                    }
+                  },
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(geoJsonFeature as object)
+                    }
+                  },
+                  permit_number: {
+                    type: 'string'
+                  },
+                  permit_type: {
+                    type: 'string'
+                  },
+                  publish_date: {
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  },
+                  survey_area_name: {
+                    type: 'string'
+                  },
+                  survey_name: {
+                    type: 'string'
+                  }
+                }
+              },
+              survey_purpose_and_methodology: {
+                description: 'Survey Details',
+                type: 'object',
+                nullable: true,
+                required: [
+                  'field_method_id',
+                  'intended_outcome_id',
+                  'ecological_season_id',
+                  'vantage_code_ids',
+                  'surveyed_all_areas'
+                ],
+                properties: {
+                  id: {
+                    type: 'number'
+                  },
+                  field_method_id: {
+                    type: 'number'
+                  },
+                  additional_details: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  intended_outcome_id: {
+                    type: 'number'
+                  },
+                  ecological_season_id: {
+                    type: 'number'
+                  },
+                  vantage_code_ids: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  surveyed_all_areas: {
+                    type: 'string',
+                    enum: ['true', 'false']
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              },
+              survey_proprietor: {
+                description: 'Survey Details',
+                type: 'object',
+                nullable: true,
+                properties: {
+                  survey_data_proprietary: {
+                    type: 'string'
+                  },
+                  id: {
+                    type: 'number'
+                  },
+                  category_rationale: {
+                    type: 'string'
+                  },
+                  data_sharing_agreement_required: {
+                    type: 'string'
+                  },
+                  first_nations_id: {
+                    type: 'number',
+                    nullable: true
+                  },
+                  first_nations_name: {
+                    type: 'string'
+                  },
+                  proprietary_data_category: {
+                    type: 'number'
+                  },
+                  proprietary_data_category_name: {
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -127,7 +311,7 @@ PUT.apiDoc = {
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -153,7 +337,176 @@ PUT.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(surveyUpdatePutRequestObject as object)
+          title: 'Survey Put Object',
+          type: 'object',
+          properties: {
+            survey_details: {
+              description: 'Survey Details',
+              type: 'object',
+              required: [
+                'id',
+                'focal_species',
+                'ancillary_species',
+                'biologist_first_name',
+                'biologist_last_name',
+                'completion_status',
+                'start_date',
+                'end_date',
+                'funding_sources',
+                'geometry',
+                'permit_number',
+                'permit_type',
+                'publish_date',
+                'revision_count',
+                'survey_area_name',
+                'survey_name'
+              ],
+              properties: {
+                id: {
+                  description: 'Survey id',
+                  type: 'number'
+                },
+                ancillary_species: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
+                },
+                focal_species: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
+                },
+                biologist_first_name: {
+                  type: 'string'
+                },
+                biologist_last_name: {
+                  type: 'string'
+                },
+                completion_status: {
+                  type: 'string'
+                },
+                start_date: {
+                  type: 'string',
+                  format: 'date',
+                  description: 'ISO 8601 date string for the survey start date'
+                },
+                end_date: {
+                  type: 'string',
+                  oneOf: [{ maxLength: 0 }, { format: 'date' }],
+                  nullable: true,
+                  description: 'ISO 8601 date string for the survey end date'
+                },
+                funding_sources: {
+                  type: 'array',
+                  items: {
+                    title: 'survey funding agency',
+                    type: 'number'
+                  }
+                },
+                geometry: {
+                  type: 'array',
+                  items: {
+                    ...(geoJsonFeature as object)
+                  }
+                },
+                permit_number: {
+                  type: 'string'
+                },
+                permit_type: {
+                  type: 'string'
+                },
+                publish_date: {
+                  type: 'string'
+                },
+                revision_count: {
+                  type: 'number'
+                },
+                survey_area_name: {
+                  type: 'string'
+                },
+                survey_name: {
+                  type: 'string'
+                }
+              }
+            },
+            survey_purpose_and_methodology: {
+              description: 'Survey Details',
+              type: 'object',
+              required: [
+                'field_method_id',
+                'intended_outcome_id',
+                'ecological_season_id',
+                'vantage_code_ids',
+                'surveyed_all_areas'
+              ],
+              properties: {
+                id: {
+                  type: 'number'
+                },
+                field_method_id: {
+                  type: 'number'
+                },
+                additional_details: {
+                  type: 'string'
+                },
+                intended_outcome_id: {
+                  type: 'number'
+                },
+                ecological_season_id: {
+                  type: 'number'
+                },
+                vantage_code_ids: {
+                  type: 'array',
+                  items: {
+                    type: 'number'
+                  }
+                },
+                surveyed_all_areas: {
+                  type: 'string',
+                  enum: ['true', 'false']
+                },
+                revision_count: {
+                  type: 'number'
+                }
+              }
+            },
+            survey_proprietor: {
+              description: 'Survey Details',
+              type: 'object',
+              //Note: do not make any of these fields required as the object can be null
+              properties: {
+                survey_data_proprietary: {
+                  type: 'string'
+                },
+                id: {
+                  type: 'number'
+                },
+                category_rationale: {
+                  type: 'string'
+                },
+                data_sharing_agreement_required: {
+                  type: 'string'
+                },
+                first_nations_id: {
+                  type: 'number'
+                },
+                first_nations_name: {
+                  type: 'string'
+                },
+                proprietary_data_category: {
+                  type: 'number'
+                },
+                proprietary_data_category_name: {
+                  type: 'string'
+                },
+                revision_count: {
+                  type: 'number'
+                }
+              }
+            }
+          }
         }
       }
     }
@@ -164,7 +517,14 @@ PUT.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyIdResponseObject as object)
+            title: 'Survey Response Object',
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'number'
+              }
+            }
           }
         }
       }
@@ -189,6 +549,7 @@ PUT.apiDoc = {
 
 export interface IGetSurveyForUpdate {
   survey_details: GetUpdateSurveyDetailsData | null;
+  survey_purpose_and_methodology: GetSurveyPurposeAndMethodologyData | null;
   survey_proprietor: GetSurveyProprietorData | null;
 }
 
@@ -214,6 +575,7 @@ export function getSurveyForUpdate(): RequestHandler {
 
       const results: IGetSurveyForUpdate = {
         survey_details: null,
+        survey_purpose_and_methodology: null,
         survey_proprietor: null
       };
 
@@ -223,6 +585,14 @@ export function getSurveyForUpdate(): RequestHandler {
         promises.push(
           getSurveyDetailsData(surveyId, connection).then((value) => {
             results.survey_details = value;
+          })
+        );
+      }
+
+      if (entities.includes(GET_SURVEY_ENTITIES.survey_purpose_and_methodology)) {
+        promises.push(
+          getSurveyPurposeAndMethodologyData(surveyId, connection).then((value) => {
+            results.survey_purpose_and_methodology = value;
           })
         );
       }
@@ -253,7 +623,7 @@ export const getSurveyDetailsData = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<GetUpdateSurveyDetailsData> => {
-  const sqlStatement = getSurveyDetailsForUpdateSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveyDetailsForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey details SQL get statement');
@@ -261,7 +631,7 @@ export const getSurveyDetailsData = async (
 
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-  const result = (response && response.rows && new GetUpdateSurveyDetailsData(response.rows)) || null;
+  const result = (response && response?.rows.length && new GetUpdateSurveyDetailsData(response.rows[0])) || null;
 
   if (!result) {
     throw new HTTP400('Failed to get project survey details data');
@@ -270,11 +640,26 @@ export const getSurveyDetailsData = async (
   return result;
 };
 
+export const getSurveyPurposeAndMethodologyData = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<GetSurveyPurposeAndMethodologyData | null> => {
+  const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build survey proprietor SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (response && response.rows && new GetSurveyPurposeAndMethodologyData(response.rows)[0]) || null;
+};
+
 export const getSurveyProprietorData = async (
   surveyId: number,
   connection: IDBConnection
 ): Promise<GetSurveyProprietorData | null> => {
-  const sqlStatement = getSurveyProprietorForUpdateSQL(surveyId);
+  const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey proprietor SQL get statement');
@@ -320,6 +705,10 @@ export function updateSurvey(): RequestHandler {
         promises.push(updateSurveyDetailsData(projectId, surveyId, entities, connection));
       }
 
+      if (entities.survey_purpose_and_methodology) {
+        promises.push(updateSurveyPurposeAndMethodologyData(surveyId, entities, connection));
+      }
+
       if (entities.survey_proprietor) {
         promises.push(updateSurveyProprietorData(surveyId, entities, connection));
       }
@@ -353,7 +742,12 @@ export const updateSurveyDetailsData = async (
     throw new HTTP400('Failed to parse request body');
   }
 
-  const updateSurveySQLStatement = putSurveyDetailsSQL(projectId, surveyId, putDetailsData, revision_count);
+  const updateSurveySQLStatement = queries.survey.putSurveyDetailsSQL(
+    projectId,
+    surveyId,
+    putDetailsData,
+    revision_count
+  );
 
   if (!updateSurveySQLStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -365,9 +759,9 @@ export const updateSurveyDetailsData = async (
     throw new HTTP409('Failed to update stale survey data');
   }
 
-  const sqlDeleteFocalSpeciesStatement = deleteFocalSpeciesSQL(surveyId);
-  const sqlDeleteAncillarySpeciesStatement = deleteAncillarySpeciesSQL(surveyId);
-  const sqlDeleteSurveyFundingSourcesStatement = deleteSurveyFundingSourcesBySurveyIdSQL(surveyId);
+  const sqlDeleteFocalSpeciesStatement = queries.survey.deleteFocalSpeciesSQL(surveyId);
+  const sqlDeleteAncillarySpeciesStatement = queries.survey.deleteAncillarySpeciesSQL(surveyId);
+  const sqlDeleteSurveyFundingSourcesStatement = queries.survey.deleteSurveyFundingSourcesBySurveyIdSQL(surveyId);
 
   if (
     !sqlDeleteFocalSpeciesStatement ||
@@ -432,7 +826,7 @@ export const updateSurveyDetailsData = async (
     updating an existing record of the permit table and setting the survey id column value
   */
   promises.push(unassociatePermitFromSurvey(surveyId, connection));
-
+  // TODO 20211108: currently permit insert vs update is dictated by permit_type (needs fixing/updating)
   if (putDetailsData.permit_number) {
     promises.push(
       insertSurveyPermit(putDetailsData.permit_number, putDetailsData.permit_type, projectId, surveyId, connection)
@@ -462,17 +856,20 @@ export const updateSurveyProprietorData = async (
     // 2. did have proprietor data; no longer requires proprietor data
     // delete old record
 
-    sqlStatement = deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
+    sqlStatement = queries.survey.deleteSurveyProprietorSQL(surveyId, putProprietorData.id);
   } else if (!wasProprietary && isProprietary) {
     // 3. did not have proprietor data; now requires proprietor data
     // insert new record
 
-    sqlStatement = postSurveyProprietorSQL(surveyId, new PostSurveyProprietorData(entities.survey_proprietor));
+    sqlStatement = queries.survey.postSurveyProprietorSQL(
+      surveyId,
+      new PostSurveyProprietorData(entities.survey_proprietor)
+    );
   } else {
     // 4. did have proprietor data; updating proprietor data
     // update existing record
 
-    sqlStatement = putSurveyProprietorSQL(surveyId, putProprietorData);
+    sqlStatement = queries.survey.putSurveyProprietorSQL(surveyId, putProprietorData);
   }
 
   if (!sqlStatement) {
@@ -487,7 +884,7 @@ export const updateSurveyProprietorData = async (
 };
 
 export const unassociatePermitFromSurvey = async (survey_id: number, connection: IDBConnection): Promise<void> => {
-  const sqlStatement = unassociatePermitFromSurveySQL(survey_id);
+  const sqlStatement = queries.survey.unassociatePermitFromSurveySQL(survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -497,5 +894,70 @@ export const unassociatePermitFromSurvey = async (survey_id: number, connection:
 
   if (!response) {
     throw new HTTP400('Failed to update survey permit number data');
+  }
+};
+
+export const updateSurveyPurposeAndMethodologyData = async (
+  surveyId: number,
+  entities: IUpdateSurvey,
+  connection: IDBConnection
+): Promise<void> => {
+  const putPurposeAndMethodologyData =
+    (entities?.survey_purpose_and_methodology &&
+      new PutSurveyPurposeAndMethodologyData(entities.survey_purpose_and_methodology)) ||
+    null;
+
+  const revision_count = putPurposeAndMethodologyData?.revision_count ?? null;
+
+  if (!revision_count && revision_count !== 0) {
+    throw new HTTP400('Failed to parse request body');
+  }
+
+  const updateSurveySQLStatement = queries.survey.putSurveyPurposeAndMethodologySQL(
+    surveyId,
+    putPurposeAndMethodologyData,
+    revision_count
+  );
+
+  if (!updateSurveySQLStatement) {
+    throw new HTTP400('Failed to build SQL update statement');
+  }
+
+  const result = await connection.query(updateSurveySQLStatement.text, updateSurveySQLStatement.values);
+  if (!result || !result.rowCount) {
+    throw new HTTP409('Failed to update stale survey data');
+  }
+
+  const promises: Promise<any>[] = [];
+
+  promises.push(deleteSurveyVantageCodes(surveyId, connection));
+  //Handle vantage codes associated to this survey
+
+  if (putPurposeAndMethodologyData?.vantage_code_ids) {
+    promises.push(
+      Promise.all(
+        putPurposeAndMethodologyData.vantage_code_ids.map((vantageCode: number) =>
+          insertVantageCodes(vantageCode, surveyId, connection)
+        )
+      )
+    );
+  }
+
+  await Promise.all(promises);
+
+  await connection.commit();
+};
+
+export const deleteSurveyVantageCodes = async (survey_id: number, connection: IDBConnection): Promise<void> => {
+  const sqlStatement = queries.survey.deleteSurveyVantageCodesSQL(survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build delete survey vantage codes SQL statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP500('Failed to delete survey vantage codes');
   }
 };

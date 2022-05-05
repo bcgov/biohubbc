@@ -14,7 +14,8 @@ export interface IGetProjectAttachment {
   fileType: string;
   lastModified: string;
   size: number;
-  securityToken: any;
+  securityToken: string;
+  revisionCount: number;
 }
 
 /**
@@ -41,6 +42,20 @@ export interface IProjectAdvancedFilterRequest {
  */
 export interface IGetProjectAttachmentsResponse {
   attachmentsList: IGetProjectAttachment[];
+}
+
+/**
+ * Get projects list response object.
+ *
+ * @export
+ * @interface IGetUserProjectsListResponse
+ */
+export interface IGetUserProjectsListResponse {
+  project_id: number;
+  name: string;
+  system_user_id: number;
+  project_role_id: number;
+  project_participation_id: number;
 }
 
 /**
@@ -193,7 +208,7 @@ export interface IGetProjectForUpdateResponsePartnerships {
  * @interface IUpdateProjectRequest
  * @extends {IGetProjectForUpdateResponse}
  */
-export interface IUpdateProjectRequest extends IGetProjectForUpdateResponse {}
+export type IUpdateProjectRequest = IGetProjectForUpdateResponse;
 
 /**
  * An interface for a single instance of project metadata, for view-only use cases.
@@ -215,7 +230,7 @@ export interface IGetProjectForViewResponse {
 
 export interface IGetProjectForViewResponseDetails {
   project_name: string;
-  project_type: string;
+  project_type: number;
   project_activities: number[];
   start_date: string;
   end_date: string;
@@ -251,9 +266,9 @@ export interface IGetProjectForViewResponseCoordinator {
 }
 
 interface IGetProjectForViewResponseIUCNArrayItem {
-  classification: string;
-  subClassification1: string;
-  subClassification2: string;
+  classification: number;
+  subClassification1: number;
+  subClassification2: number;
 }
 
 export interface IGetProjectForViewResponseIUCN {
@@ -278,7 +293,7 @@ export interface IGetProjectForViewResponseFundingData {
 }
 
 export interface IGetProjectForViewResponsePartnerships {
-  indigenous_partnerships: string[];
+  indigenous_partnerships: number[];
   stakeholder_partnerships: string[];
 }
 
@@ -291,4 +306,49 @@ export interface IGetProjectForViewResponsePartnerships {
 export interface IGetProjectMediaListResponse {
   file_name: string;
   encoded_file: string;
+}
+
+/**
+ * A  file upload response.
+ *
+ * @export
+ * @interface IUploadAttachmentResponse
+ */
+export interface IUploadAttachmentResponse {
+  attachmentId: number;
+  revision_count: number;
+}
+
+export interface IGetReportMetaData {
+  attachment_id: number;
+  title: string;
+  year_published: number;
+  description: string;
+  last_modified: string;
+  revision_count: number;
+  authors: IGetReportAuthors[];
+}
+
+export interface IGetReportAuthors {
+  first_name: string;
+  last_name: string;
+}
+
+export interface IGetProjectParticipantsResponseArrayItem {
+  project_participation_id: number;
+  project_id: number;
+  system_user_id: number;
+  project_role_id: number;
+  project_role_name: string;
+  user_identifier: string;
+  user_identity_source_id: number;
+}
+export interface IGetProjectParticipantsResponse {
+  participants: IGetProjectParticipantsResponseArrayItem[];
+}
+
+export interface IAddProjectParticipant {
+  userIdentifier: string;
+  identitySource: string;
+  roleId: number;
 }

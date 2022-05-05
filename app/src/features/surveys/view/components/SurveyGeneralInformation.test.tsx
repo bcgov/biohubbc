@@ -1,10 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
-import SurveyGeneralInformation from './SurveyGeneralInformation';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import SurveyGeneralInformation from './SurveyGeneralInformation';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -13,6 +13,9 @@ const mockUseBiohubApi = {
     updateSurvey: jest.fn(),
     getSurveyPermits: jest.fn(),
     getSurveyFundingSources: jest.fn()
+  },
+  taxonomy: {
+    getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
   }
 };
 
@@ -40,6 +43,7 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.updateSurvey.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
     mockBiohubApi().survey.getSurveyFundingSources.mockClear();
+    mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
   });
 
   afterEach(() => {
@@ -54,8 +58,8 @@ describe('SurveyGeneralInformation', () => {
           survey_details: {
             ...getSurveyForViewResponse.survey_details,
             end_date: (null as unknown) as string,
-            focal_species: ['species 1'],
-            ancillary_species: ['ancillary species']
+            focal_species: [1],
+            ancillary_species: [2]
           }
         }}
         codes={codes}
@@ -79,8 +83,10 @@ describe('SurveyGeneralInformation', () => {
         id: 1,
         survey_name: 'survey name is this',
         survey_purpose: 'survey purpose is this',
-        focal_species: ['species 1'],
-        ancillary_species: ['ancillary species'],
+        focal_species: [1],
+        focal_species_names: ['focal species 1'],
+        ancillary_species: [2],
+        ancillary_species_names: ['ancillary species 2'],
         common_survey_methodology_id: 1,
         start_date: '1999-09-09',
         end_date: '2021-01-25',
@@ -108,13 +114,13 @@ describe('SurveyGeneralInformation', () => {
       { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
     ]);
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, getByTestId, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
@@ -132,7 +138,7 @@ describe('SurveyGeneralInformation', () => {
       expect(queryByText('Edit Survey General Information')).not.toBeInTheDocument();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(getByText('Edit Survey General Information')).toBeVisible();
@@ -147,8 +153,10 @@ describe('SurveyGeneralInformation', () => {
           id: 1,
           survey_name: 'survey name is this',
           survey_purpose: 'survey purpose is this',
-          focal_species: ['species 1'],
-          ancillary_species: ['ancillary species'],
+          focal_species: [1],
+          focal_species_names: ['focal species 1'],
+          ancillary_species: [2],
+          ancillary_species_names: ['ancillary species 2'],
           common_survey_methodology_id: 1,
           start_date: '1999-09-09',
           end_date: '2021-01-25',
@@ -177,13 +185,13 @@ describe('SurveyGeneralInformation', () => {
   it('displays an error dialog when fetching the update data fails', async () => {
     mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue(null);
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, getByTestId, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(getByText('Error Editing Survey General Information')).toBeVisible();
@@ -199,13 +207,13 @@ describe('SurveyGeneralInformation', () => {
   it('shows error dialog with API error message when getting survey data for update fails', async () => {
     mockBiohubApi().survey.getSurveyForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText, getAllByRole } = renderContainer();
+    const { getByText, getByTestId, queryByText, getAllByRole } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();
@@ -246,13 +254,13 @@ describe('SurveyGeneralInformation', () => {
     ]);
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByText, queryByText } = renderContainer();
+    const { getByText, getByTestId, queryByText } = renderContainer();
 
     await waitFor(() => {
       expect(getByText('General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Edit'));
+    fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
       expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [

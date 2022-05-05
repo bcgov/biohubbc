@@ -56,12 +56,16 @@ export const submissionTransformationSchema = {
             properties: {
               if: {
                 type: 'object',
+                required: ['columns'],
                 properties: {
                   columns: {
                     type: 'array',
                     items: {
                       type: 'string'
                     }
+                  },
+                  not: {
+                    type: 'boolean'
                   }
                 },
                 additionalProperties: false
@@ -112,7 +116,8 @@ export const submissionTransformationSchema = {
                         }
                       ]
                     }
-                  }
+                  },
+                  additionalProperties: false
                 }
               },
               additionalProperties: false
@@ -162,12 +167,43 @@ export const submissionTransformationSchema = {
               type: 'object',
               properties: {
                 source: {
-                  type: 'string'
+                  oneOf: [
+                    {
+                      type: 'object',
+                      required: ['columns'],
+                      properties: {
+                        columns: {
+                          type: 'array',
+                          items: {
+                            type: 'string'
+                          }
+                        },
+                        separator: {
+                          type: 'string'
+                        },
+                        unique: {
+                          type: 'string'
+                        }
+                      },
+                      additionalProperties: false
+                    },
+                    {
+                      type: 'object',
+                      required: ['value'],
+                      properties: {
+                        value: {
+                          type: ['string', 'number']
+                        }
+                      },
+                      additionalProperties: false
+                    }
+                  ]
                 },
                 target: {
                   type: 'string'
                 }
-              }
+              },
+              additionalProperties: false
             }
           },
           conditionalFields: {

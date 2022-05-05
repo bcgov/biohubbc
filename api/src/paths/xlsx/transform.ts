@@ -1,7 +1,7 @@
 import AdmZip from 'adm-zip';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE } from '../../constants/roles';
 import { SUBMISSION_STATUS_TYPE } from '../../constants/status';
 import { getDBConnection } from '../../database/db';
 import {
@@ -12,18 +12,28 @@ import {
   sendResponse,
   updateSurveyOccurrenceSubmissionWithOutputKey
 } from '../../paths/dwc/validate';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { uploadBufferToS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { TransformationSchemaParser } from '../../utils/media/xlsx/transformation/transformation-schema-parser';
 import { XLSXTransformation } from '../../utils/media/xlsx/transformation/xlsx-transformation';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
-import { logRequest } from '../../utils/path-utils';
-import { getTemplateMethodologySpecies, prepXLSX } from './validate';
+import { getTemplateMethodologySpeciesRecord, prepXLSX } from './validate';
 
 const defaultLog = getLogger('paths/xlsx/transform');
 
 export const POST: Operation = [
-  logRequest('paths/xlsx/transform', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.body.project_id),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   getOccurrenceSubmission(),
   getOccurrenceSubmissionInputS3Key(),
   getS3File(),
@@ -41,7 +51,7 @@ POST.apiDoc = {
   tags: ['survey', 'observation', 'xlsx'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -50,8 +60,11 @@ POST.apiDoc = {
       'application/json': {
         schema: {
           type: 'object',
-          required: ['occurrence_submission_id'],
+          required: ['project_id', 'occurrence_submission_id'],
           properties: {
+            project_id: {
+              type: 'number'
+            },
             occurrence_submission_id: {
               description: 'A survey occurrence submission ID',
               type: 'number',
@@ -123,10 +136,17 @@ export function getTransformationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      const templateMethodologySpeciesRecord = await getTemplateMethodologySpecies(
-        req.body.occurrence_submission_id,
+      const xlsxCsv = req['xlsx'];
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const field_method_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
+        Number(field_method_id),
+        Number(template_id),
         connection
       );
+
+      await connection.commit();
 
       const transformationSchema = templateMethodologySpeciesRecord?.transform;
 

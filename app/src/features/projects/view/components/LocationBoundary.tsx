@@ -1,13 +1,17 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import Paper from '@material-ui/core/Paper';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiPencilOutline } from '@mdi/js';
+import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
-import { displayInferredLayersInfo } from 'components/boundary/MapBoundary';
+import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer from 'components/map/MapContainer';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { EditLocationBoundaryI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import {
@@ -24,8 +28,7 @@ import {
   IGetProjectForViewResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
-import { useEffect } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
@@ -34,6 +37,22 @@ export interface ILocationBoundaryProps {
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
+    }
+  })
+);
 
 /**
  * Location boundary content for a project.
@@ -45,6 +64,8 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     projectForViewData: { location, id },
     codes
   } = props;
+
+  const classes = useStyles();
 
   const biohubApi = useBiohubApi();
 
@@ -69,7 +90,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [locationDataForUpdate, setLocationDataForUpdate] = useState<IGetProjectForUpdateResponseLocation>(null as any);
   const [locationFormData, setLocationFormData] = useState<IProjectLocationForm>(ProjectLocationFormInitialValues);
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -77,6 +98,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
   });
   const [bounds, setBounds] = useState<any[] | undefined>([]);
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
+  const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
   const handleDialogEditOpen = async () => {
     let locationResponseData;
@@ -91,7 +113,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
 
       locationResponseData = response.location;
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
@@ -114,7 +136,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     try {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     } finally {
@@ -124,14 +146,26 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     props.refresh();
   };
 
+  const zoomToBoundaryExtent = useCallback(() => {
+    setBounds(calculateUpdatedMapBounds(location.geometry));
+  }, [location.geometry]);
+
   useEffect(() => {
     const nonEditableGeometriesResult = location.geometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    setBounds(calculateUpdatedMapBounds(location.geometry));
+    zoomToBoundaryExtent();
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [location.geometry]);
+  }, [location.geometry, zoomToBoundaryExtent]);
+
+  const handleDialogViewOpen = () => {
+    setShowFullScreenViewMapDialog(true);
+  };
+
+  const handleClose = () => {
+    setShowFullScreenViewMapDialog(false);
+  };
 
   return (
     <>
@@ -146,33 +180,37 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         onCancel={() => setOpenEditDialog(false)}
         onSave={handleDialogEditSave}
       />
-      <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
-          <Typography variant="h3">Location / Project Boundary</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Location / Project Boundary"
-            aria-label="Edit Location / Project Boundary"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
-        <dl>
-          <Grid container spacing={2}>
-            <Grid item xs={12}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Location Description
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {location.location_description ? <>{location.location_description}</> : 'No Description'}
-              </Typography>
-            </Grid>
-          </Grid>
-        </dl>
-        <Box mt={4} mb={4} height={500}>
+      <FullScreenViewMapDialog
+        open={showFullScreenViewMapDialog}
+        onClose={handleClose}
+        map={
+          <MapContainer
+            mapId="project_location_form_map"
+            hideDrawControls={true}
+            scrollWheelZoom={true}
+            nonEditableGeometries={nonEditableGeometries}
+            bounds={bounds}
+            setInferredLayersInfo={setInferredLayersInfo}
+          />
+        }
+        description={location.location_description}
+        layers={<InferredLocationDetails layers={inferredLayersInfo} />}
+        backButtonTitle={'Back To Project'}
+        mapTitle={'Project Location'}
+      />
+
+      <Box component={Paper} px={3} pt={1} pb={3}>
+        <H2ButtonToolbar
+          label="Project Location"
+          buttonLabel="Edit"
+          buttonTitle="Edit Project Location"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          buttonProps={{ variant: 'text' }}
+          toolbarProps={{ disableGutters: true }}
+        />
+
+        <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="project_location_form_map"
             hideDrawControls={true}
@@ -180,21 +218,40 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
           />
+          {location.geometry && location.geometry.length > 0 && (
+            <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <IconButton
+                aria-label="zoom to initial extent"
+                title="Zoom to initial extent"
+                className={classes.zoomToBoundaryExtentBtn}
+                onClick={() => zoomToBoundaryExtent()}>
+                <Icon size={1} path={mdiRefresh} />
+              </IconButton>
+            </Box>
+          )}
         </Box>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-          </Grid>
-          <Grid item xs={6}>
-            {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-          </Grid>
-        </Grid>
+
+        <Box my={3}>
+          <Typography variant="body2" color="textSecondary">
+            Location Description
+          </Typography>
+          <Typography variant="body1">
+            {location.location_description ? <>{location.location_description}</> : 'No Description'}
+          </Typography>
+        </Box>
+
+        <InferredLocationDetails layers={inferredLayersInfo} />
+
+        <Button
+          variant="text"
+          color="primary"
+          className="sectionHeaderButton"
+          onClick={() => handleDialogViewOpen()}
+          title="Expand Location"
+          aria-label="Show Expanded Location"
+          endIcon={<Icon path={mdiChevronRight} size={0.875} />}>
+          Show More
+        </Button>
       </Box>
     </>
   );

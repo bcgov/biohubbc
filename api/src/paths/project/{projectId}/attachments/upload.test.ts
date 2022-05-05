@@ -2,11 +2,11 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as upload from './upload';
-import * as project from '../../../project';
 import * as db from '../../../../database/db';
+import { HTTPError } from '../../../../errors/custom-error';
 import * as file_utils from '../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../__mocks__/db';
+import * as upload from './upload';
 
 chai.use(sinonChai);
 
@@ -17,7 +17,7 @@ describe('uploadMedia', () => {
 
   const dbConnectionObj = getMockDBConnection();
 
-  const sampleReq = {
+  const mockReq = {
     keycloak_token: {},
     params: {
       projectId: 1,
@@ -32,14 +32,12 @@ describe('uploadMedia', () => {
         size: 340
       }
     ],
-    body: {
-      attachmentType: 'type'
-    }
+    body: {}
   } as any;
 
   let actualResult: any = null;
 
-  const sampleRes = {
+  const mockRes = {
     status: () => {
       return {
         json: (result: any) => {
@@ -47,25 +45,7 @@ describe('uploadMedia', () => {
         }
       };
     }
-  };
-
-  it('should throw an error when attachmentType is missing', async () => {
-    sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-
-    try {
-      const result = upload.uploadMedia();
-
-      await result(
-        { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing attachment file type');
-    }
-  });
+  } as any;
 
   it('should throw an error when projectId is missing', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
@@ -74,14 +54,14 @@ describe('uploadMedia', () => {
       const result = upload.uploadMedia();
 
       await result(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
+        { ...mockReq, params: { ...mockReq.params, projectId: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing projectId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing projectId');
     }
   });
 
@@ -91,11 +71,11 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...mockReq, files: [] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing upload data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing upload data');
     }
   });
 
@@ -112,11 +92,11 @@ describe('uploadMedia', () => {
     try {
       const result = upload.uploadMedia();
 
-      await result({ ...sampleReq, files: ['file1'] }, (null as unknown) as any, (null as unknown) as any);
+      await result({ ...mockReq, files: ['file1'] }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -129,21 +109,21 @@ describe('uploadMedia', () => {
     });
 
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(project, 'upsertProjectAttachment').resolves(1);
+    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
     sinon.stub(file_utils, 'scanFileForVirus').resolves(false);
 
     try {
       const result = upload.uploadMedia();
 
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      await result(mockReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Malicious content detected, upload cancelled');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Malicious content detected, upload cancelled');
     }
   });
 
-  it('should return file key on success (with username and email)', async () => {
+  it('should return id and revision_count on success (with username and email) with valid parameters', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -153,12 +133,12 @@ describe('uploadMedia', () => {
 
     sinon.stub(file_utils, 'scanFileForVirus').resolves(true);
     sinon.stub(file_utils, 'uploadFileToS3').resolves({ Key: '1/1/test.txt' } as any);
-    sinon.stub(project, 'upsertProjectAttachment').resolves(1);
+    sinon.stub(upload, 'upsertProjectAttachment').resolves({ id: 1, revision_count: 0, key: 'key' });
 
     const result = upload.uploadMedia();
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+    await result(mockReq, mockRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql('1/1/test.txt');
+    expect(actualResult).to.eql({ attachmentId: 1, revision_count: 0 });
   });
 });

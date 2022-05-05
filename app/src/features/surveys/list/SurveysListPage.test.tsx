@@ -1,11 +1,11 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
-import React from 'react';
-import { Router } from 'react-router';
-import SurveysListPage from './SurveysListPage';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
+import React from 'react';
+import { Router } from 'react-router';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import SurveysListPage from './SurveysListPage';
 
 const history = createMemoryHistory();
 
@@ -49,21 +49,33 @@ describe('SurveysListPage', () => {
     const surveysList: IGetSurveysListResponse[] = [
       {
         id: 1,
-        name: 'Moose Survey 1',
-        species: ['Moose'],
-        start_date: '2021-04-09 11:53:53',
-        end_date: '2021-05-09 11:53:53',
-        publish_status: 'Published',
-        completion_status: 'Completed'
+        survey: {
+          id: 1,
+          name: 'Moose Survey 1',
+          start_date: '2021-04-09 11:53:53',
+          end_date: '2021-05-09 11:53:53',
+          publish_status: 'Published',
+          completion_status: 'Completed'
+        },
+        species: {
+          species: [1],
+          species_names: ['Moose']
+        }
       },
       {
         id: 2,
-        name: 'Moose Survey 2',
-        species: ['Moose'],
-        start_date: '2021-04-09 11:53:53',
-        end_date: '2021-06-10 11:53:53',
-        publish_status: 'Unpublished',
-        completion_status: 'Active'
+        survey: {
+          id: 2,
+          name: 'Moose Survey 2',
+          start_date: '2021-04-09 11:53:53',
+          end_date: '2021-06-10 11:53:53',
+          publish_status: 'Unpublished',
+          completion_status: 'Active'
+        },
+        species: {
+          species: [1],
+          species_names: ['Moose']
+        }
       }
     ];
 

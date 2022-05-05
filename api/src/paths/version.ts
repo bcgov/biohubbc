@@ -16,10 +16,14 @@ GET.apiDoc = {
             properties: {
               version: {
                 description: 'API Version',
-                type: 'number'
+                type: 'string'
               },
               environment: {
                 description: 'API Environment',
+                type: 'string'
+              },
+              timezone: {
+                description: 'API Timezone',
                 type: 'string'
               }
             }

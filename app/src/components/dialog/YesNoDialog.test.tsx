@@ -61,7 +61,10 @@ describe('EditDialog', () => {
   });
 
   it('calls the onNo prop when `No` button is clicked', async () => {
-    const { findByText } = renderContainer({ dialogTitle: 'this is a test', dialogText: 'this is text' });
+    const { findByText } = renderContainer({
+      dialogTitle: 'this is a test',
+      dialogText: 'this is text'
+    });
 
     const NoButton = await findByText('No', { exact: false });
 

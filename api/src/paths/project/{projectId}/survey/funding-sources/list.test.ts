@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as list from './list';
-import * as db from '../../../../../database/db';
-import * as project_view_update_queries from '../../../../../queries/project/project-view-update-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../../database/db';
+import { HTTPError } from '../../../../../errors/custom-error';
+import project_queries from '../../../../../queries/project';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
+import * as list from './list';
 
 chai.use(sinonChai);
 
@@ -54,8 +55,8 @@ describe('getSurveyFundingSources', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -67,7 +68,7 @@ describe('getSurveyFundingSources', () => {
       }
     });
 
-    sinon.stub(project_view_update_queries, 'getFundingSourceByProjectSQL').returns(null);
+    sinon.stub(project_queries, 'getFundingSourceByProjectSQL').returns(null);
 
     try {
       const result = list.getSurveyFundingSources();
@@ -75,8 +76,8 @@ describe('getSurveyFundingSources', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -108,7 +109,7 @@ describe('getSurveyFundingSources', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_view_update_queries, 'getFundingSourceByProjectSQL').returns(SQL`some query`);
+    sinon.stub(project_queries, 'getFundingSourceByProjectSQL').returns(SQL`some query`);
 
     const result = list.getSurveyFundingSources();
 
@@ -138,7 +139,7 @@ describe('getSurveyFundingSources', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_view_update_queries, 'getFundingSourceByProjectSQL').returns(SQL`some query`);
+    sinon.stub(project_queries, 'getFundingSourceByProjectSQL').returns(SQL`some query`);
 
     const result = list.getSurveyFundingSources();
 

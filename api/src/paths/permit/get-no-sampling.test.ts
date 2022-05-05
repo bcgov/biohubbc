@@ -2,112 +2,61 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as get_no_sampling from './get-no-sampling';
 import * as db from '../../database/db';
-import * as permit_view_queries from '../../queries/permit/permit-view-queries';
-import SQL from 'sql-template-strings';
-import { getMockDBConnection } from '../../__mocks__/db';
+import { HTTPError } from '../../errors/custom-error';
+import { PermitService } from '../../services/permit-service';
+import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
+import { getNonSamplingPermits } from './get-no-sampling';
 
 chai.use(sinonChai);
 
-describe('getNonSamplingPermits', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
+describe('get-no-sampling', () => {
+  describe('getNonSamplingPermits', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
 
-  const dbConnectionObj = getMockDBConnection();
+    it('catches error, calls rollback, and re-throws error', async () => {
+      const dbConnectionObj = getMockDBConnection({ rollback: sinon.stub(), release: sinon.stub() });
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-  const sampleReq = {
-    keycloak_token: {}
-  } as any;
+      sinon.stub(PermitService.prototype, 'getNonSamplingPermits').rejects(new Error('a test error'));
 
-  let actualResult: any = null;
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
-  const sampleRes = {
-    status: () => {
-      return {
-        json: (result: any) => {
-          actualResult = result;
-        }
-      };
-    }
-  };
+      try {
+        const requestHandler = getNonSamplingPermits();
 
-  it('should throw a 400 error when no sql statement returned for non-sampling permits', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
+        await requestHandler(mockReq, mockRes, mockNext);
+        expect.fail();
+      } catch (actualError) {
+        expect(dbConnectionObj.rollback).to.have.been.called;
+        expect(dbConnectionObj.release).to.have.been.called;
+        expect((actualError as HTTPError).message).to.equal('a test error');
       }
     });
 
-    sinon.stub(permit_view_queries, 'getNonSamplingPermitsSQL').returns(null);
+    it('gets non sample permits', async () => {
+      const dbConnectionObj = getMockDBConnection();
 
-    try {
-      const result = get_no_sampling.getNonSamplingPermits();
+      sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
-    }
-  });
+      sinon
+        .stub(PermitService.prototype, 'getNonSamplingPermits')
+        .resolves([{ permit_id: '1', number: '2', type: '3' }]);
 
-  it('should return non-sampling permits on success', async () => {
-    const nonSamplingPermits = [
-      {
-        permit_id: 1,
-        number: '123',
-        type: 'scientific'
-      },
-      {
-        permit_id: 2,
-        number: '12345',
-        type: 'wildlife'
+      const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+      try {
+        const requestHandler = getNonSamplingPermits();
+
+        await requestHandler(mockReq, mockRes, mockNext);
+      } catch (actualError) {
+        expect.fail();
       }
-    ];
 
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: nonSamplingPermits });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
+      expect(mockRes.statusValue).to.equal(200);
+      expect(mockRes.jsonValue).to.eql([{ permit_id: '1', number: '2', type: '3' }]);
     });
-
-    sinon.stub(permit_view_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
-
-    const result = get_no_sampling.getNonSamplingPermits();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.eql(nonSamplingPermits);
-  });
-
-  it('should return null when permits response has no rows', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: null });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(permit_view_queries, 'getNonSamplingPermitsSQL').returns(SQL`some query`);
-
-    const result = get_no_sampling.getNonSamplingPermits();
-
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
-
-    expect(actualResult).to.be.null;
   });
 });

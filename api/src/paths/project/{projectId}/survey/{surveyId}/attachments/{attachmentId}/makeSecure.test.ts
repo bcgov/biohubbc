@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as makeSecure from './makeSecure';
-import * as db from '../../../../../../../database/db';
-import * as security_queries from '../../../../../../../queries/security/security-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../../../../database/db';
+import { HTTPError } from '../../../../../../../errors/custom-error';
+import security_queries from '../../../../../../../queries/security';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import * as makeSecure from './makeSecure';
 
 chai.use(sinonChai);
 
@@ -54,8 +55,8 @@ describe('makeSurveyAttachmentSecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -72,8 +73,8 @@ describe('makeSurveyAttachmentSecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -90,8 +91,8 @@ describe('makeSurveyAttachmentSecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -108,8 +109,8 @@ describe('makeSurveyAttachmentSecure', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `attachmentType`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param `attachmentType`');
     }
   });
 
@@ -123,8 +124,8 @@ describe('makeSurveyAttachmentSecure', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL secure record statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL secure record statement');
     }
   });
 
@@ -144,8 +145,8 @@ describe('makeSurveyAttachmentSecure', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to secure record');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to secure record');
     }
   });
 

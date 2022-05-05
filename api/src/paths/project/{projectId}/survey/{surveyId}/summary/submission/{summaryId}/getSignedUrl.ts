@@ -1,17 +1,30 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { HTTP400 } from '../../../../../../../../errors/CustomError';
-import { getLogger } from '../../../../../../../../utils/logger';
+import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
+import { HTTP400 } from '../../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
-import { getSurveySummarySubmissionSQL } from '../../../../../../../../queries/survey/survey-summary-queries';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/submission/{summaryId}/getSignedUrl');
 
-export const GET: Operation = [getSingleSummarySubmissionURL()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSingleSummarySubmissionURL()
+];
 
 GET.apiDoc = {
   ...attachmentApiDocObject(
@@ -43,7 +56,19 @@ GET.apiDoc = {
       },
       required: true
     }
-  ]
+  ],
+  responses: {
+    200: {
+      description: 'Submission summary signed URL response.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 };
 
 export function getSingleSummarySubmissionURL(): RequestHandler {
@@ -65,7 +90,9 @@ export function getSingleSummarySubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveySummarySubmissionSQLStatement = getSurveySummarySubmissionSQL(Number(req.params.summaryId));
+      const getSurveySummarySubmissionSQLStatement = queries.survey.getSurveySummarySubmissionSQL(
+        Number(req.params.summaryId)
+      );
 
       if (!getSurveySummarySubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

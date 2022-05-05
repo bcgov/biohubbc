@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
@@ -8,9 +8,8 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
-  mdiAlertCircle,
+  mdiAlertCircleOutline,
   mdiDownload,
   mdiFileOutline,
   mdiImport,
@@ -21,43 +20,27 @@ import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
-import React, { useContext, useEffect, useState, useCallback } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  textSpacing: {
-    marginBottom: '1rem'
-  },
   browseLink: {
     cursor: 'pointer'
   },
   center: {
     alignSelf: 'center'
   },
-  box: {
-    width: '100%',
-    background: 'rgba(241, 243, 245, 1)',
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    minHeight: '3rem'
-  },
-  infoBox: {
-    background: 'rgba(241, 243, 245, 1)'
-  },
-  tab: {
-    paddingLeft: theme.spacing(2)
-  },
-  nested: {
-    paddingLeft: theme.spacing(4)
+  alertLink: {
+    color: 'inherit'
   },
   alertActions: {
     '& > *': {
-      marginLeft: theme.spacing(2)
+      marginLeft: theme.spacing(0.5)
     }
   }
 }));
@@ -180,10 +163,10 @@ const SurveySummaryResults = () => {
   //Action prop for the Alert MUI component to render the delete icon and associated action
   const submissionAlertAction = () => (
     <Box className={classes.alertActions}>
-      <IconButton aria-label="open" color="inherit" size="small" onClick={() => viewFileContents()}>
+      <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>
-      <IconButton aria-label="delete" color="inherit" size="small" onClick={() => showDeleteDialog()}>
+      <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     </Box>
@@ -279,12 +262,17 @@ const SurveySummaryResults = () => {
   function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
     return (
       <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
-        <Box component={AlertTitle} display="flex">
-          <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+        <Box display="flex" alignItems="center" m={0}>
+          <Link
+            className={classes.alertLink}
+            component="button"
+            variant="body2"
+            onClick={() => viewFileContents()}
+            gutterBottom={false}>
             <strong>{fileName}</strong>
           </Link>
         </Box>
-        {message}
+        <Typography variant="body2">{message}</Typography>
       </Alert>
     );
   }
@@ -293,17 +281,16 @@ const SurveySummaryResults = () => {
     return (
       <Box>
         {Object.entries(list).map(([key, value], index) => (
-          <Box key={index}>
-            <Box display="flex" alignItems="center">
-              <Icon path={iconName} size={1} color="#ff5252" />
-              <strong className={classes.tab}>{msgGroup[key].label}</strong>
-            </Box>
-            <Box pl={2}>
-              <ul>
-                {value.map((message: string, index2: number) => {
-                  return <li key={`${index}-${index2}`}>{message}</li>;
-                })}
-              </ul>
+          <Box key={index} pl={0.25}>
+            <Alert severity="error">{msgGroup[key].label}</Alert>
+            <Box component="ul" my={3}>
+              {value.map((message: string, index2: number) => {
+                return (
+                  <li key={`${index}-${index2}`}>
+                    <Typography variant="body2">{message}</Typography>
+                  </li>
+                );
+              })}
             </Box>
           </Box>
         ))}
@@ -312,64 +299,61 @@ const SurveySummaryResults = () => {
   }
 
   return (
-    <Box>
-      <Box mb={5} display="flex" justifyContent="space-between">
-        <Typography data-testid="summary-results-heading" variant="h2">
-          Summary Results
-        </Typography>
-        <Button
-          startIcon={<Icon path={mdiImport} size={1} />}
-          variant="outlined"
-          color="primary"
-          onClick={() => showUploadDialog()}>
-          Import
-        </Button>
-      </Box>
+    <>
+      <Paper>
+        <H2ButtonToolbar
+          label="Summary Results"
+          buttonLabel="Import"
+          buttonTitle="Import Summary Results"
+          buttonStartIcon={<Icon path={mdiImport} size={1} />}
+          buttonOnClick={() => showUploadDialog()}
+        />
 
-      <Box component={Paper} p={4}>
-        {!submission && (
-          <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
-            No Summary Results. &nbsp;
-            <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
-              Click Here to Import
-            </Link>
-          </Typography>
-        )}
+        <Box>
+          {!submission && (
+            <>
+              <Box component={Divider} m={0} />
+              <Box p={3} textAlign="center">
+                <Typography data-testid="observations-nodata" variant="body2">
+                  No Summary Results. &nbsp;
+                  <Link onClick={() => setOpenImportSummaryResults(true)} className={classes.browseLink}>
+                    Click Here to Import
+                  </Link>
+                </Typography>
+              </Box>
+            </>
+          )}
 
-        {submission && hasErrorMessages && (
-          <>
-            {displayAlertBox('error', mdiAlertCircle, submission.fileName, 'Validation Failed')}
-
-            <Box mt={3} mb={1}>
-              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
-                What's next?
-              </Typography>
-            </Box>
-            <Box mb={3}>
-              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
-                Resolve the following errors in your local file and re-import.
-              </Typography>
-            </Box>
-
-            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
-
-            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-          </>
-        )}
-        {submission && !hasErrorMessages && (
-          <>
-            {displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}
-
-            <Box mt={5} overflow="hidden">
-              <ObservationSubmissionCSV
-                getCSVData={() => {
-                  return biohubApi.survey.getSubmissionCSVForView(projectId, surveyId, submission.id);
-                }}
-              />
-            </Box>
-          </>
-        )}
-      </Box>
+          {submission && hasErrorMessages && (
+            <>
+              <Box px={3} pb={3}>
+                {displayAlertBox('error', mdiAlertCircleOutline, submission.fileName, 'Validation Failed')}
+                <Box my={3}>
+                  <Typography data-testid="observations-error-details" variant="body1">
+                    Resolve the following errors in your local file and re-import.
+                  </Typography>
+                </Box>
+                <Box>
+                  {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                  {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+                </Box>
+              </Box>
+            </>
+          )}
+          {submission && !hasErrorMessages && (
+            <>
+              <Box px={3}>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
+              <Box mt={1} overflow="hidden">
+                <ObservationSubmissionCSV
+                  getCSVData={() => {
+                    return biohubApi.survey.getSubmissionCSVForView(projectId, surveyId, submission.id);
+                  }}
+                />
+              </Box>
+            </>
+          )}
+        </Box>
+      </Paper>
 
       <ComponentDialog
         open={openImportSummaryResults}
@@ -383,7 +367,7 @@ const SurveySummaryResults = () => {
           uploadHandler={importSummaryResults()}
         />
       </ComponentDialog>
-    </Box>
+    </>
   );
 };
 

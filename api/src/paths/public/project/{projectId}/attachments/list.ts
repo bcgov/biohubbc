@@ -1,15 +1,10 @@
-'use strict';
-
-import { getAPIUserDBConnection } from '../../../../../database/db';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { getLogger } from '../../../../../utils/logger';
-import {
-  getPublicProjectAttachmentsSQL,
-  getPublicProjectReportAttachmentsSQL
-} from '../../../../../queries/public/project-queries';
+import { getAPIUserDBConnection } from '../../../../../database/db';
+import { HTTP400 } from '../../../../../errors/custom-error';
 import { GetPublicAttachmentsData } from '../../../../../models/public/project';
+import { queries } from '../../../../../queries/queries';
+import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/public/project/{projectId}/attachments/list');
 
@@ -30,21 +25,38 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Public (published) project get response file description array.',
+      description: 'Project get response file description array.',
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                fileName: {
-                  description: 'The file name of the attachment',
-                  type: 'string'
-                },
-                lastModified: {
-                  description: 'The date the object was last modified',
-                  type: 'string'
+            type: 'object',
+            properties: {
+              attachmentsList: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: ['id', 'fileName', 'fileType', 'lastModified', 'securityToken', 'size'],
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    fileName: {
+                      type: 'string'
+                    },
+                    fileType: {
+                      type: 'string'
+                    },
+                    lastModified: {
+                      type: 'string'
+                    },
+                    securedToken: {
+                      type: 'string',
+                      enum: ['true', 'false']
+                    },
+                    size: {
+                      type: 'number'
+                    }
+                  }
                 }
               }
             }
@@ -72,8 +84,10 @@ export function getPublicProjectAttachments(): RequestHandler {
     const connection = getAPIUserDBConnection();
 
     try {
-      const getPublicProjectAttachmentsSQLStatement = getPublicProjectAttachmentsSQL(Number(req.params.projectId));
-      const getPublicProjectReportAttachmentsSQLStatement = getPublicProjectReportAttachmentsSQL(
+      const getPublicProjectAttachmentsSQLStatement = queries.public.getPublicProjectAttachmentsSQL(
+        Number(req.params.projectId)
+      );
+      const getPublicProjectReportAttachmentsSQLStatement = queries.public.getPublicProjectReportAttachmentsSQL(
         Number(req.params.projectId)
       );
 

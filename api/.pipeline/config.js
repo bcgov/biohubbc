@@ -5,7 +5,9 @@ let options = require('pipeline-cli').Util.parseArguments();
 const config = require('../../.config/config.json');
 
 const defaultHost = 'biohubbc-af2668-api.apps.silver.devops.gov.bc.ca';
+const defaultHostAPP = 'biohubbc-af2668-dev.apps.silver.devops.gov.bc.ca';
 
+const appName = (config.module && config.module['app']) || 'biohubbc-app';
 const name = (config.module && config.module['api']) || 'biohubbc-api';
 const dbName = (config.module && config.module['db']) || 'biohubbc-db';
 
@@ -21,6 +23,7 @@ const tag = (branch && `build-${version}-${changeId}-${branch}`) || `build-${ver
 
 const staticBranches = config.staticBranches || [];
 const staticUrlsAPI = config.staticUrlsAPI || {};
+const staticUrls = config.staticUrls || {};
 
 const processOptions = (options) => {
   const result = { ...options };
@@ -58,9 +61,10 @@ const phases = {
     version: `${version}-${changeId}`,
     tag: tag,
     env: 'build',
+    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
     branch: branch,
-    logLevel: 'debug'
+    logLevel: isStaticDeployment && 'info' || 'debug'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -75,12 +79,16 @@ const phases = {
     host:
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
       `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    appHost:
+    (isStaticDeployment && (staticUrls.dev || defaultHostAPP)) ||
+      `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     env: 'dev',
+    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
     certificateURL: config.certificateURL.dev,
     replicas: 1,
     maxReplicas: 2,
-    logLevel: 'debug'
+    logLevel: isStaticDeployment && 'info' || 'debug'
   },
   test: {
     namespace: 'af2668-test',
@@ -94,11 +102,12 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrlsAPI.test,
     env: 'test',
+    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
     certificateURL: config.certificateURL.test,
     replicas: 3,
     maxReplicas: 5,
-    logLevel: 'debug'
+    logLevel: 'info'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -112,6 +121,7 @@ const phases = {
     tag: `prod-${version}`,
     host: staticUrlsAPI.prod,
     env: 'prod',
+    elasticsearchURL: 'http://es01:9200',
     tz: config.timezone.api,
     certificateURL: config.certificateURL.prod,
     replicas: 3,

@@ -1,70 +1,30 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../database/db';
-import { HTTP400, HTTP409 } from '../../../errors/CustomError';
-import {
-  GetCoordinatorData,
-  GetIUCNClassificationData,
-  GetPartnershipsData,
-  GetObjectivesData,
-  GetProjectData,
-  PutCoordinatorData,
-  PutPartnershipsData,
-  PutLocationData,
-  PutObjectivesData,
-  PutProjectData,
-  PutIUCNData,
-  IGetPutIUCN,
-  GetLocationData,
-  PutFundingSource,
-  GetPermitData
-} from '../../../models/project-update';
-import { GetFundingData } from '../../../models/project-view-update';
-import {
-  projectIdResponseObject,
-  projectUpdateGetResponseObject,
-  projectUpdatePutRequestObject
-} from '../../../openapi/schemas/project';
-import {
-  getCoordinatorByProjectSQL,
-  getIndigenousPartnershipsByProjectSQL,
-  getIUCNActionClassificationByProjectSQL,
-  getObjectivesByProjectSQL,
-  getPermitsByProjectSQL,
-  getProjectByProjectSQL,
-  putProjectFundingSourceSQL,
-  putProjectSQL
-} from '../../../queries/project/project-update-queries';
-import {
-  deleteActivitiesSQL,
-  deleteIUCNSQL,
-  deleteIndigenousPartnershipsSQL,
-  deleteStakeholderPartnershipsSQL,
-  deleteProjectFundingSourceSQL,
-  deletePermitSQL
-} from '../../../queries/project/project-delete-queries';
-import {
-  getStakeholderPartnershipsByProjectSQL,
-  getLocationByProjectSQL,
-  getActivitiesByProjectSQL
-} from '../../../queries/project/project-view-update-queries';
+import { PROJECT_ROLE } from '../../../constants/roles';
+import { getDBConnection } from '../../../database/db';
+import { HTTP400 } from '../../../errors/custom-error';
+import { geoJsonFeature } from '../../../openapi/schemas/geoJson';
+import { projectIdResponseObject, projectUpdatePutRequestObject } from '../../../openapi/schemas/project';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
-import {
-  insertClassificationDetail,
-  insertIndigenousNation,
-  insertProjectActivity,
-  insertStakeholderPartnership,
-  insertPermit,
-  associateExistingPermitToProject
-} from '../../project';
-import { IPostExistingPermit, IPostPermit, PostPermitData } from '../../../models/project-create';
-import { deleteSurveyFundingSourceByProjectFundingSourceIdSQL } from '../../../queries/survey/survey-delete-queries';
 
-const defaultLog = getLogger('paths/project/{projectId}');
+const defaultLog = getLogger('paths/project/{projectId}/update');
 
-export const GET: Operation = [logRequest('paths/project/{projectId}/update', 'GET'), getProjectForUpdate()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getProjectForUpdate()
+];
 
 export enum GET_ENTITIES {
   coordinator = 'coordinator',
@@ -84,7 +44,7 @@ GET.apiDoc = {
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -114,8 +74,239 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            // TODO this is currently empty, and needs updating
-            ...(projectUpdateGetResponseObject as object)
+            title: 'Project get response object, for update purposes',
+            type: 'object',
+            required: ['project', 'permit', 'coordinator', 'objectives', 'location', 'iucn', 'funding', 'partnerships'],
+            properties: {
+              project: {
+                description: 'Basic project metadata',
+                type: 'object',
+                required: [
+                  'project_name',
+                  'project_type',
+                  'project_activities',
+                  'start_date',
+                  'end_date',
+                  'publish_date',
+                  'revision_count'
+                ],
+                nullable: true,
+                properties: {
+                  project_name: {
+                    type: 'string'
+                  },
+                  project_type: {
+                    type: 'number'
+                  },
+                  project_activities: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the project start date'
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the project end date'
+                  },
+                  publish_date: {
+                    description: 'Status of the project being published/unpublished',
+                    format: 'date',
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              },
+              permit: {
+                type: 'object',
+                required: ['permits'],
+                nullable: true,
+                properties: {
+                  permits: {
+                    type: 'array',
+                    items: {
+                      title: 'Project permit',
+                      type: 'object',
+                      properties: {
+                        permit_number: {
+                          type: 'string'
+                        },
+                        permit_type: {
+                          type: 'string'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              coordinator: {
+                title: 'Project coordinator',
+                type: 'object',
+                nullable: true,
+                required: [
+                  'first_name',
+                  'last_name',
+                  'email_address',
+                  'coordinator_agency',
+                  'share_contact_details',
+                  'revision_count'
+                ],
+                properties: {
+                  first_name: {
+                    type: 'string'
+                  },
+                  last_name: {
+                    type: 'string'
+                  },
+                  email_address: {
+                    type: 'string'
+                  },
+                  coordinator_agency: {
+                    type: 'string'
+                  },
+                  share_contact_details: {
+                    type: 'string',
+                    enum: ['true', 'false']
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              },
+              objectives: {
+                description: 'The project objectives and caveats',
+                type: 'object',
+                required: ['objectives', 'caveats'],
+                nullable: true,
+                properties: {
+                  objectives: {
+                    type: 'string'
+                  },
+                  caveats: {
+                    type: 'string'
+                  }
+                }
+              },
+              location: {
+                description: 'The project location object',
+                type: 'object',
+                required: ['location_description', 'geometry'],
+                nullable: true,
+                properties: {
+                  location_description: {
+                    type: 'string'
+                  },
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(geoJsonFeature as object)
+                    }
+                  }
+                }
+              },
+              iucn: {
+                description: 'The International Union for Conservation of Nature number',
+                type: 'object',
+                required: ['classificationDetails'],
+                nullable: true,
+                properties: {
+                  classificationDetails: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        classification: {
+                          type: 'number'
+                        },
+                        subClassification1: {
+                          type: 'number'
+                        },
+                        subClassification2: {
+                          type: 'number'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              funding: {
+                description: 'The project funding details',
+                type: 'object',
+                required: ['fundingSources'],
+                nullable: true,
+                properties: {
+                  fundingSources: {
+                    type: 'array',
+                    items: {
+                      type: 'object',
+                      properties: {
+                        id: {
+                          type: 'number'
+                        },
+                        agency_id: {
+                          type: 'number'
+                        },
+                        investment_action_category: {
+                          type: 'number'
+                        },
+                        investment_action_category_name: {
+                          type: 'string'
+                        },
+                        agency_name: {
+                          type: 'string'
+                        },
+                        funding_amount: {
+                          type: 'number'
+                        },
+                        start_date: {
+                          type: 'string',
+                          format: 'date',
+                          description: 'ISO 8601 date string for the funding start date'
+                        },
+                        end_date: {
+                          type: 'string',
+                          format: 'date',
+                          description: 'ISO 8601 date string for the funding end_date'
+                        },
+                        agency_project_id: {
+                          type: 'string'
+                        },
+                        revision_count: {
+                          type: 'number'
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              partnerships: {
+                description: 'The project partners',
+                type: 'object',
+                required: ['indigenous_partnerships', 'stakeholder_partnerships'],
+                nullable: true,
+                properties: {
+                  indigenous_partnerships: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  stakeholder_partnerships: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -138,23 +329,12 @@ GET.apiDoc = {
   }
 };
 
-export interface IGetProjectForUpdate {
-  coordinator: GetCoordinatorData | null;
-  permit: any;
-  project: any;
-  objectives: GetObjectivesData | null;
-  location: any;
-  iucn: GetIUCNClassificationData | null;
-  funding: GetFundingData | null;
-  partnerships: GetPartnershipsData | null;
-}
-
 /**
  * Get a project, for update purposes.
  *
  * @returns {RequestHandler}
  */
-function getProjectForUpdate(): RequestHandler {
+export function getProjectForUpdate(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -169,83 +349,9 @@ function getProjectForUpdate(): RequestHandler {
 
       await connection.open();
 
-      const results: IGetProjectForUpdate = {
-        coordinator: null,
-        permit: null,
-        project: null,
-        objectives: null,
-        location: null,
-        iucn: null,
-        funding: null,
-        partnerships: null
-      };
+      const projectService = new ProjectService(connection);
 
-      const promises: Promise<any>[] = [];
-
-      if (entities.includes(GET_ENTITIES.coordinator)) {
-        promises.push(
-          getProjectCoordinatorData(projectId, connection).then((value) => {
-            results.coordinator = value;
-          })
-        );
-      }
-
-      if (entities.includes(GET_ENTITIES.permit)) {
-        promises.push(
-          getPermitData(projectId, connection).then((value) => {
-            results.permit = value;
-          })
-        );
-      }
-
-      if (entities.includes(GET_ENTITIES.partnerships)) {
-        promises.push(
-          getPartnershipsData(projectId, connection).then((value) => {
-            results.partnerships = value;
-          })
-        );
-      }
-
-      if (entities.includes(GET_ENTITIES.location)) {
-        promises.push(
-          getLocationData(projectId, connection).then((value) => {
-            results.location = value;
-          })
-        );
-      }
-
-      if (entities.includes(GET_ENTITIES.iucn)) {
-        promises.push(
-          getIUCNClassificationData(projectId, connection).then((value) => {
-            results.iucn = value;
-          })
-        );
-      }
-
-      if (entities.includes(GET_ENTITIES.objectives)) {
-        promises.push(
-          getObjectivesData(projectId, connection).then((value) => {
-            results.objectives = value;
-          })
-        );
-      }
-
-      if (entities.includes(GET_ENTITIES.project)) {
-        promises.push(
-          getProjectData(projectId, connection).then((value) => {
-            results.project = value;
-          })
-        );
-      }
-      if (entities.includes(GET_ENTITIES.funding)) {
-        promises.push(
-          getProjectData(projectId, connection).then((value) => {
-            results.project = value;
-          })
-        );
-      }
-
-      await Promise.all(promises);
+      const results = await projectService.getProjectEntitiesById(projectId, entities);
 
       await connection.commit();
 
@@ -259,159 +365,27 @@ function getProjectForUpdate(): RequestHandler {
   };
 }
 
-export const getPermitData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getPermitsByProjectSQL(projectId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get project permit data');
-  }
-
-  return new GetPermitData(result);
-};
-
-export const getLocationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getLocationByProjectSQL(projectId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get project location data');
-  }
-
-  return new GetLocationData(result);
-};
-
-export const getIUCNClassificationData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatement = getIUCNActionClassificationByProjectSQL(projectId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get project IUCN data');
-  }
-
-  return new GetIUCNClassificationData(result);
-};
-
-export const getProjectCoordinatorData = async (
-  projectId: number,
-  connection: IDBConnection
-): Promise<GetCoordinatorData> => {
-  const sqlStatement = getCoordinatorByProjectSQL(projectId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get project coordinator data');
-  }
-
-  return new GetCoordinatorData(result);
-};
-
-export const getPartnershipsData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatementIndigenous = getIndigenousPartnershipsByProjectSQL(projectId);
-  const sqlStatementStakeholder = getStakeholderPartnershipsByProjectSQL(projectId);
-
-  if (!sqlStatementIndigenous || !sqlStatementStakeholder) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const responseIndigenous = await connection.query(sqlStatementIndigenous.text, sqlStatementIndigenous.values);
-  const responseStakeholder = await connection.query(sqlStatementStakeholder.text, sqlStatementStakeholder.values);
-
-  const resultIndigenous = (responseIndigenous && responseIndigenous.rows) || null;
-  const resultStakeholder = (responseStakeholder && responseStakeholder.rows) || null;
-
-  if (!resultIndigenous) {
-    throw new HTTP400('Failed to get indigenous partnership data');
-  }
-
-  if (!resultStakeholder) {
-    throw new HTTP400('Failed to get stakeholder partnership data');
-  }
-
-  return new GetPartnershipsData(resultIndigenous, resultStakeholder);
-};
-
-export const getObjectivesData = async (projectId: number, connection: IDBConnection): Promise<GetObjectivesData> => {
-  const sqlStatement = getObjectivesByProjectSQL(projectId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result) {
-    throw new HTTP400('Failed to get project objectives data');
-  }
-
-  return new GetObjectivesData(result);
-};
-
-export const getProjectData = async (projectId: number, connection: IDBConnection): Promise<any> => {
-  const sqlStatementDetails = getProjectByProjectSQL(projectId);
-  const sqlStatementActivities = getActivitiesByProjectSQL(projectId);
-
-  if (!sqlStatementDetails || !sqlStatementActivities) {
-    throw new HTTP400('Failed to build SQL get statement');
-  }
-
-  const [responseDetails, responseActivities] = await Promise.all([
-    connection.query(sqlStatementDetails.text, sqlStatementDetails.values),
-    connection.query(sqlStatementActivities.text, sqlStatementActivities.values)
-  ]);
-
-  const resultDetails = (responseDetails && responseDetails.rows && responseDetails.rows[0]) || null;
-  const resultActivities = (responseActivities && responseActivities.rows && responseActivities.rows) || null;
-
-  if (!resultDetails) {
-    throw new HTTP400('Failed to get project details data');
-  }
-
-  if (!resultActivities) {
-    throw new HTTP400('Failed to get project activities data');
-  }
-
-  return new GetProjectData(resultDetails, resultActivities);
-};
-
-export const PUT: Operation = [logRequest('paths/project/{projectId}/update', 'PUT'), updateProject()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  updateProject()
+];
 
 PUT.apiDoc = {
   description: 'Update a project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -471,7 +445,7 @@ export interface IUpdateProject {
  *
  * @returns {RequestHandler}
  */
-function updateProject(): RequestHandler {
+export function updateProject(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -490,33 +464,13 @@ function updateProject(): RequestHandler {
 
       await connection.open();
 
-      const promises: Promise<any>[] = [];
+      const projectService = new ProjectService(connection);
 
-      if (entities?.partnerships) {
-        promises.push(updateProjectPartnershipsData(projectId, entities, connection));
-      }
-
-      if (entities?.project || entities?.location || entities?.objectives || entities?.coordinator) {
-        promises.push(updateProjectData(projectId, entities, connection));
-      }
-
-      if (entities?.permit && entities?.coordinator) {
-        promises.push(updateProjectPermitData(projectId, entities, connection));
-      }
-
-      if (entities?.iucn) {
-        promises.push(updateProjectIUCNData(projectId, entities, connection));
-      }
-
-      if (entities?.funding) {
-        promises.push(updateProjectFundingData(projectId, entities, connection));
-      }
-
-      await Promise.all(promises);
+      await projectService.updateProject(projectId, entities);
 
       await connection.commit();
 
-      return res.status(200).send();
+      return res.status(200).json({ id: projectId });
     } catch (error) {
       defaultLog.error({ label: 'updateProject', message: 'error', error });
       await connection.rollback();
@@ -526,225 +480,3 @@ function updateProject(): RequestHandler {
     }
   };
 }
-
-export const updateProjectPermitData = async (
-  projectId: number,
-  entities: IUpdateProject,
-  connection: IDBConnection
-): Promise<void> => {
-  if (!entities.permit) {
-    throw new HTTP400('Missing request body entity `permit`');
-  }
-
-  const putPermitData = new PostPermitData(entities.permit);
-
-  const sqlDeleteStatement = deletePermitSQL(projectId);
-
-  if (!sqlDeleteStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-  if (!deleteResult) {
-    throw new HTTP409('Failed to delete project permit data');
-  }
-
-  const insertPermitPromises =
-    putPermitData?.permits?.map((permit: IPostPermit) => {
-      return insertPermit(permit.permit_number, permit.permit_type, projectId, connection);
-    }) || [];
-
-  // Handle existing non-sampling permits which are now being associated to a project
-  const updateExistingPermitPromises =
-    putPermitData?.existing_permits?.map((existing_permit: IPostExistingPermit) => {
-      return associateExistingPermitToProject(existing_permit.permit_id, projectId, connection);
-    }) || [];
-
-  await Promise.all([insertPermitPromises, updateExistingPermitPromises]);
-};
-
-export const updateProjectIUCNData = async (
-  projectId: number,
-  entities: IUpdateProject,
-  connection: IDBConnection
-): Promise<void> => {
-  const putIUCNData = (entities?.iucn && new PutIUCNData(entities.iucn)) || null;
-
-  const sqlDeleteStatement = deleteIUCNSQL(projectId);
-
-  if (!sqlDeleteStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const deleteResult = await connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-  if (!deleteResult) {
-    throw new HTTP409('Failed to delete project IUCN data');
-  }
-
-  const insertIUCNPromises =
-    putIUCNData?.classificationDetails?.map((iucnClassification: IGetPutIUCN) =>
-      insertClassificationDetail(iucnClassification.subClassification2, projectId, connection)
-    ) || [];
-
-  await Promise.all(insertIUCNPromises);
-};
-
-export const updateProjectPartnershipsData = async (
-  projectId: number,
-  entities: IUpdateProject,
-  connection: IDBConnection
-): Promise<void> => {
-  const putPartnershipsData = (entities?.partnerships && new PutPartnershipsData(entities.partnerships)) || null;
-
-  const sqlDeleteIndigenousPartnershipsStatement = deleteIndigenousPartnershipsSQL(projectId);
-  const sqlDeleteStakeholderPartnershipsStatement = deleteStakeholderPartnershipsSQL(projectId);
-
-  if (!sqlDeleteIndigenousPartnershipsStatement || !sqlDeleteStakeholderPartnershipsStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const deleteIndigenousPartnershipsPromises = connection.query(
-    sqlDeleteIndigenousPartnershipsStatement.text,
-    sqlDeleteIndigenousPartnershipsStatement.values
-  );
-
-  const deleteStakeholderPartnershipsPromises = connection.query(
-    sqlDeleteStakeholderPartnershipsStatement.text,
-    sqlDeleteStakeholderPartnershipsStatement.values
-  );
-
-  const [deleteIndigenousPartnershipsResult, deleteStakeholderPartnershipsResult] = await Promise.all([
-    deleteIndigenousPartnershipsPromises,
-    deleteStakeholderPartnershipsPromises
-  ]);
-
-  if (!deleteIndigenousPartnershipsResult) {
-    throw new HTTP409('Failed to delete project indigenous partnerships data');
-  }
-
-  if (!deleteStakeholderPartnershipsResult) {
-    throw new HTTP409('Failed to delete project stakeholder partnerships data');
-  }
-
-  const insertIndigenousPartnershipsPromises =
-    putPartnershipsData?.indigenous_partnerships?.map((indigenousPartnership: number) =>
-      insertIndigenousNation(indigenousPartnership, projectId, connection)
-    ) || [];
-
-  const insertStakeholderPartnershipsPromises =
-    putPartnershipsData?.stakeholder_partnerships?.map((stakeholderPartnership: string) =>
-      insertStakeholderPartnership(stakeholderPartnership, projectId, connection)
-    ) || [];
-
-  await Promise.all([...insertIndigenousPartnershipsPromises, ...insertStakeholderPartnershipsPromises]);
-};
-
-export const updateProjectData = async (
-  projectId: number,
-  entities: IUpdateProject,
-  connection: IDBConnection
-): Promise<void> => {
-  const putProjectData = (entities?.project && new PutProjectData(entities.project)) || null;
-  const putLocationData = (entities?.location && new PutLocationData(entities.location)) || null;
-  const putObjectivesData = (entities?.objectives && new PutObjectivesData(entities.objectives)) || null;
-  const putCoordinatorData = (entities?.coordinator && new PutCoordinatorData(entities.coordinator)) || null;
-
-  // Update project table
-  const revision_count =
-    putProjectData?.revision_count ??
-    putLocationData?.revision_count ??
-    putObjectivesData?.revision_count ??
-    putCoordinatorData?.revision_count ??
-    null;
-
-  if (!revision_count && revision_count !== 0) {
-    throw new HTTP400('Failed to parse request body');
-  }
-
-  const sqlUpdateProject = putProjectSQL(
-    projectId,
-    putProjectData,
-    putLocationData,
-    putObjectivesData,
-    putCoordinatorData,
-    revision_count
-  );
-
-  if (!sqlUpdateProject) {
-    throw new HTTP400('Failed to build SQL update statement');
-  }
-
-  const result = await connection.query(sqlUpdateProject.text, sqlUpdateProject.values);
-
-  if (!result || !result.rowCount) {
-    // TODO if revision count is bad, it is supposed to raise an exception?
-    // It currently does skip the update as expected, but it just returns 0 rows updated, and doesn't result in any errors
-    throw new HTTP409('Failed to update stale project data');
-  }
-
-  const sqlDeleteActivities = deleteActivitiesSQL(projectId);
-
-  if (!sqlDeleteActivities) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const deleteActivitiesResult = await connection.query(sqlDeleteActivities.text, sqlDeleteActivities.values);
-
-  if (!deleteActivitiesResult) {
-    throw new HTTP409('Failed to update project activity data');
-  }
-
-  const insertActivityPromises =
-    putProjectData?.project_activities?.map((activityId: number) =>
-      insertProjectActivity(activityId, projectId, connection)
-    ) || [];
-
-  await Promise.all([...insertActivityPromises]);
-};
-
-export const updateProjectFundingData = async (
-  projectId: number,
-  entities: IUpdateProject,
-  connection: IDBConnection
-): Promise<void> => {
-  const putFundingSource = entities?.funding && new PutFundingSource(entities.funding);
-
-  const surveyFundingSourceDeleteStatement = deleteSurveyFundingSourceByProjectFundingSourceIdSQL(putFundingSource?.id);
-  const projectFundingSourceDeleteStatement = deleteProjectFundingSourceSQL(projectId, putFundingSource?.id);
-
-  if (!projectFundingSourceDeleteStatement || !surveyFundingSourceDeleteStatement) {
-    throw new HTTP400('Failed to build SQL delete statement');
-  }
-
-  const surveyFundingSourceDeleteResult = await connection.query(
-    surveyFundingSourceDeleteStatement.text,
-    surveyFundingSourceDeleteStatement.values
-  );
-
-  if (!surveyFundingSourceDeleteResult) {
-    throw new HTTP409('Failed to delete survey funding source');
-  }
-
-  const projectFundingSourceDeleteResult = await connection.query(
-    projectFundingSourceDeleteStatement.text,
-    projectFundingSourceDeleteStatement.values
-  );
-
-  if (!projectFundingSourceDeleteResult) {
-    throw new HTTP409('Failed to delete project funding source');
-  }
-
-  const sqlInsertStatement = putProjectFundingSourceSQL(putFundingSource, projectId);
-
-  if (!sqlInsertStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const insertResult = await connection.query(sqlInsertStatement.text, sqlInsertStatement.values);
-
-  if (!insertResult) {
-    throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
-  }
-};

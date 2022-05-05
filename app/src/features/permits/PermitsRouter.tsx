@@ -3,32 +3,29 @@ import PermitsLayout from 'features/permits/PermitsLayout';
 import React from 'react';
 import { Redirect, Switch } from 'react-router';
 import AppRoute from 'utils/AppRoute';
-import PrivateRoute from 'utils/PrivateRoute';
 import PermitsPage from './PermitsPage';
 
-interface IPermitsRouterProps {
-  classes: any;
-}
-
 /**
- * Router for all `/permit/*` pages.
+ * Router for all `/admin/permits/*` pages.
  *
  * @param {*} props
  * @return {*}
  */
-const PermitsRouter: React.FC<IPermitsRouterProps> = (props) => {
+const PermitsRouter: React.FC = () => {
   return (
     <Switch>
-      <PrivateRoute exact layout={PermitsLayout} path="/admin/permits" component={PermitsPage} componentProps={props} />
-      <PrivateRoute
-        exact
-        layout={PermitsLayout}
-        path="/admin/permits/create"
-        component={CreatePermitPage}
-        componentProps={props}
-      />
+      <AppRoute exact path="/admin/permits" layout={PermitsLayout}>
+        <PermitsPage />
+      </AppRoute>
+
+      <AppRoute exact path="/admin/permits/create" layout={PermitsLayout}>
+        <CreatePermitPage />
+      </AppRoute>
+
       {/*  Catch any unknown routes, and re-direct to the not found page */}
-      <AppRoute title="*" path="/admin/permits/*" component={() => <Redirect to="/page-not-found" />} />
+      <AppRoute path="/admin/permits/*">
+        <Redirect to="/page-not-found" />
+      </AppRoute>
     </Switch>
   );
 };
