@@ -60,7 +60,7 @@ GET.apiDoc = {
             title: 'Survey get response object, for view purposes',
             type: 'object',
             required: [
-              'survey_general_details',
+              'survey_details',
               'species',
               'permit',
               'funding_sources',
@@ -68,7 +68,7 @@ GET.apiDoc = {
               'proprietor'
             ],
             properties: {
-              survey_general_details: {
+              survey_details: {
                 description: 'Survey Details',
                 type: 'object',
                 // required: [
@@ -643,42 +643,8 @@ export function getSurveyForView(): RequestHandler {
 
       console.log('result is: ', result);
 
-      // const [
-      //   surveyBasicData,
-      //   surveyPurposeAndMethodology,
-      //   surveyFundingSourcesData,
-      //   SurveyFocalSpeciesData,
-      //   SurveyAncillarySpeciesData,
-      //   surveyProprietorData
-      // ] = await Promise.all([
-      //   getSurveyBasicDataForView(surveyId, connection),
-      //   getSurveyPurposeAndMethodologyDataForView(surveyId, connection),
-      //   getSurveyFundingSourcesData(surveyId, connection),
-      //   getSurveyFocalSpeciesDataForView(surveyId, connection),
-      //   getSurveyAncillarySpeciesDataForView(surveyId, connection),
-      //   getSurveyProprietorDataForView(surveyId, connection)
-      // ]);
-
       await connection.commit();
 
-      // const getSurveyData = new GetViewSurveyDetailsData({
-      //   ...surveyBasicData,
-      //   funding_sources: surveyFundingSourcesData,
-      //   ...SurveyFocalSpeciesData,
-      //   ...SurveyAncillarySpeciesData
-      // });
-
-      // const getSurveyPurposeAndMethodology =
-      //   (surveyPurposeAndMethodology && new GetSurveyPurposeAndMethodologyData(surveyPurposeAndMethodology))[0] || null;
-
-      // const getSurveyProprietorData =
-      //   (surveyProprietorData && new GetSurveyProprietorData(surveyProprietorData)) || null;
-
-      // const result = {
-      //   survey_details: getSurveyData,
-      //   survey_purpose_and_methodology: getSurveyPurposeAndMethodology,
-      //   survey_proprietor: getSurveyProprietorData
-      // };
 
       return res.status(200).json(result);
     } catch (error) {
@@ -690,40 +656,9 @@ export function getSurveyForView(): RequestHandler {
   };
 }
 
-// export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
-//   const sqlStatement = queries.survey.getSurveyBasicDataForViewSQL(surveyId);
 
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL get statement');
-//   }
 
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
-//   if (!response || !response?.rows?.[0]) {
-//     throw new HTTP400('Failed to get survey basic data');
-//   }
-
-//   return (response && response.rows?.[0]) || null;
-// };
-
-// export const getSurveyPurposeAndMethodologyDataForView = async (
-//   surveyId: number,
-//   connection: IDBConnection
-// ): Promise<object> => {
-//   const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
-
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL get statement');
-//   }
-
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-//   if (!response || !response?.rows?.[0]) {
-//     throw new HTTP400('Failed to get survey purpose and methodology data');
-//   }
-
-//   return (response && response.rows) || [];
-// };
 
 // export const getSurveyFundingSourcesDataForView = async (
 //   surveyId: number,
@@ -744,62 +679,3 @@ export function getSurveyForView(): RequestHandler {
 //   return (response && response.rows) || [];
 // };
 
-// export const getSurveyFocalSpeciesDataForView = async (
-//   surveyId: number,
-//   connection: IDBConnection
-// ): Promise<GetFocalSpeciesData> => {
-//   const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
-
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL get statement');
-//   }
-
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-//   const result = (response && response.rows) || null;
-
-//   if (!result) {
-//     throw new HTTP400('Failed to get species data');
-//   }
-
-//   const taxonomyService = new TaxonomyService();
-
-//   const species = await taxonomyService.getSpeciesFromIds(result);
-
-//   return new GetFocalSpeciesData(species);
-// };
-
-// export const getSurveyAncillarySpeciesDataForView = async (
-//   surveyId: number,
-//   connection: IDBConnection
-// ): Promise<GetAncillarySpeciesData> => {
-//   const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
-
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL get statement');
-//   }
-
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-//   const result = (response && response.rows) || null;
-
-//   if (!result) {
-//     throw new HTTP400('Failed to get species data');
-//   }
-
-//   const taxonomyService = new TaxonomyService();
-
-//   const species = await taxonomyService.getSpeciesFromIds(result);
-
-//   return new GetAncillarySpeciesData(species);
-// };
-
-// export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {
-//   const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
-
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL get statement');
-//   }
-
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-//   return (response && response.rows?.[0]) || null;
-// };

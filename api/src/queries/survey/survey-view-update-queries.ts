@@ -156,23 +156,3 @@ export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQ
   `;
 };
 
-/**
- * SQL query to retrieve a survey_proprietor row.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      vantage_id
-    FROM
-      survey_vantage
-    WHERE
-      survey_id = ${surveyId};
-    `;
-};

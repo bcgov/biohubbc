@@ -18,6 +18,7 @@ const CustomTextField: React.FC<ICustomTextField> = (props) => {
       name={name}
       label={label}
       id={name}
+      data-testid={name}
       onChange={handleChange}
       variant="outlined"
       value={get(values, name)}

@@ -12,65 +12,55 @@ const defaultLog = getLogger('models/survey-view');
  * @export
  * @class GetViewSurveyDetailsData
  */
-export class GetViewSurveyDetailsData {
-  id: number;
-  survey_name: string;
-  focal_species: number[];
-  focal_species_names: string[];
-  ancillary_species: number[];
-  ancillary_species_names: string[];
-  start_date: string;
-  end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
-  revision_count: number;
-  permit_number: string;
-  permit_type: string;
-  funding_sources: object[];
-  completion_status: string;
-  publish_date: string;
-  occurrence_submission_id: number;
+// export class GetViewSurveyDetailsData {
+//   id: number;
+//   survey_name: string;
+//   focal_species: number[];
+//   focal_species_names: string[];
+//   ancillary_species: number[];
+//   ancillary_species_names: string[];
+//   start_date: string;
+//   end_date: string;
+//   biologist_first_name: string;
+//   biologist_last_name: string;
+//   survey_area_name: string;
+//   geometry: Feature[];
+//   revision_count: number;
+//   permit_number: string;
+//   permit_type: string;
+//   funding_sources: object[];
+//   completion_status: string;
+//   publish_date: string;
+//   occurrence_submission_id: number;
 
-  constructor(surveyDetailsData?: any) {
-    defaultLog.debug({
-      label: 'GetViewSurveyDetailsData',
-      message: 'params',
-      surveyDetailsData: {
-        ...surveyDetailsData,
-        geometry: surveyDetailsData?.geometry?.map((item: any) => {
-          return { ...item, geometry: 'Too big to print' };
-        })
-      }
-    });
+//   constructor(surveyDetailsData?: any) {
+//     this.id = surveyDetailsData?.id ?? null;
+//     this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
+//     this.survey_name = surveyDetailsData?.survey_name || '';
 
-    this.id = surveyDetailsData?.id ?? null;
-    this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
-    this.survey_name = surveyDetailsData?.name || '';
-    this.focal_species = surveyDetailsData?.focal_species || [];
-    this.focal_species_names = surveyDetailsData?.focal_species_names || [];
-    this.ancillary_species = surveyDetailsData?.ancillary_species || [];
-    this.ancillary_species_names = surveyDetailsData?.ancillary_species_names || [];
-    this.start_date = surveyDetailsData?.start_date || '';
-    this.end_date = surveyDetailsData?.end_date || '';
-    this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
-    this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
-    this.survey_area_name = surveyDetailsData?.location_name || '';
-    this.geometry = (surveyDetailsData?.geometry?.length && surveyDetailsData.geometry) || [];
-    this.permit_number = surveyDetailsData?.number || '';
-    this.permit_type = surveyDetailsData?.type || '';
-    this.funding_sources = surveyDetailsData?.funding_sources || [];
-    this.revision_count = surveyDetailsData?.revision_count ?? null;
-    this.completion_status =
-      (surveyDetailsData &&
-        surveyDetailsData.end_date &&
-        moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
-        COMPLETION_STATUS.COMPLETED) ||
-      COMPLETION_STATUS.ACTIVE;
-    this.publish_date = String(surveyDetailsData?.publish_date || '');
-  }
-}
+//     this.focal_species = surveyDetailsData?.focal_species || [];
+//     this.focal_species_names = surveyDetailsData?.focal_species_names || [];
+//     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
+//     this.ancillary_species_names = surveyDetailsData?.ancillary_species_names || [];
+//     this.start_date = surveyDetailsData?.start_date || '';
+//     this.end_date = surveyDetailsData?.end_date || '';
+//     this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
+//     this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
+//     this.survey_area_name = surveyDetailsData?.location_name || '';
+//     this.geometry = (surveyDetailsData?.geometry?.length && surveyDetailsData.geometry) || [];
+//     this.permit_number = surveyDetailsData?.number || '';
+//     this.permit_type = surveyDetailsData?.type || '';
+//     this.funding_sources = surveyDetailsData?.funding_sources || [];
+//     this.revision_count = surveyDetailsData?.revision_count ?? null;
+//     this.completion_status =
+//       (surveyDetailsData &&
+//         surveyDetailsData.end_date &&
+//         moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
+//         COMPLETION_STATUS.COMPLETED) ||
+//       COMPLETION_STATUS.ACTIVE;
+//     this.publish_date = String(surveyDetailsData?.publish_date || '');
+//   }
+// }
 
 export class GetSpeciesData {
   species: number[];
@@ -143,12 +133,14 @@ export class GetFocalSpeciesData {
 }
 
 export type SurveyObject = {
-  survey_general_details: GetSurveyData;
+  survey_details: GetSurveyData;
   species: GetSpeciesData;
   permit: GetPermitData;
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   funding_sources: any[];
   proprietor: any;
+  occurrence_submission: number;
+  summary_result: number;
 };
 
 export class GetSurveyData {
@@ -156,20 +148,28 @@ export class GetSurveyData {
   survey_name: string;
   start_date: string;
   end_date: string;
+  publish_date: string;
   publish_status: string;
   completion_status: number;
+  geometry: Feature[];
+  biologist_first_name: string;
+  biologist_last_name: string;
 
   constructor(surveyData?: any) {
     this.id = surveyData?.survey_id || null;
     this.survey_name = surveyData?.name || '';
     this.start_date = surveyData?.start_date || null;
     this.end_date = surveyData?.end_date || null;
+    this.publish_date = String(surveyData?.publish_date || '');
     this.publish_status = surveyData?.publish_timestamp ? 'Published' : 'Unpublished';
     this.completion_status =
       (surveyData.end_date &&
         moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
+    this.geometry = (surveyData?.geometry?.length && surveyData.geometry) || [];
+    this.biologist_first_name = surveyData?.lead_first_name || '';
+    this.biologist_last_name = surveyData?.lead_last_name || '';
   }
 }
 
@@ -188,6 +188,3 @@ export class GetAncillarySpeciesData {
       });
   }
 }
-
-
-

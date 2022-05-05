@@ -1,6 +1,14 @@
 import SQL from 'sql-template-strings';
 import { HTTP400 } from '../errors/custom-error';
-import { GetPermitData, GetSpeciesData, GetSurveyData, SurveyObject } from '../models/survey-view';
+import {
+  GetAncillarySpeciesData,
+  GetFocalSpeciesData,
+  GetPermitData,
+  GetSpeciesData,
+  GetSurveyData,
+  // GetViewSurveyDetailsData,
+  SurveyObject
+} from '../models/survey-view';
 import { GetSurveyPurposeAndMethodologyData } from '../models/survey-view-update';
 import { queries } from '../queries/queries';
 import { DBService } from './service';
@@ -30,23 +38,29 @@ export class SurveyService extends DBService {
       permitData,
       fundingData,
       purposeAndMethodologyData,
-      proprietorData
+      proprietorData,
+      occurrenceSubmissionId,
+      summaryResultId
     ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
       this.getPermitData(surveyId),
       this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
-      this.getSurveyProprietorDataForView(surveyId)
+      this.getSurveyProprietorDataForView(surveyId),
+      this.getOccurrenceSubmissionId(surveyId),
+      this.getSummaryResultId(surveyId)
     ]);
 
     return {
-      survey_general_details: surveyData,
+      survey_details: surveyData,
       species: speciesData,
       permit: permitData,
       purpose_and_methodology: purposeAndMethodologyData,
       funding_sources: fundingData,
-      proprietor: proprietorData
+      proprietor: proprietorData,
+      occurrence_submission: occurrenceSubmissionId,
+      summary_result: summaryResultId
     };
   }
 
@@ -71,7 +85,7 @@ export class SurveyService extends DBService {
   async getSpeciesData(surveyId: number): Promise<GetSpeciesData> {
     const sqlStatement = SQL`
       SELECT
-        wldtaxonomic_units_id
+        wldtaxonomic_units_id, is_focal
       FROM
         study_species
       WHERE
@@ -87,6 +101,11 @@ export class SurveyService extends DBService {
     }
 
     const taxonomyService = new TaxonomyService();
+
+    const focal_species = new GetFocalSpeciesData(result);
+    const ancillary_species = new GetAncillarySpeciesData(result);
+
+
 
     const species = await taxonomyService.getSpeciesFromIds(result);
 
@@ -156,6 +175,72 @@ export class SurveyService extends DBService {
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     return (response && response.rows?.[0]) || null;
+  }
+
+  async getOccurrenceSubmissionId(surveyId: number) {
+    const sqlStatement = queries.survey.getLatestOccurrenceSubmissionIdSQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    return (response && response.rows?.[0]) || null;
+  }
+
+  async getSummaryResultId(surveyId: number) {
+    const sqlStatement = queries.survey.getLatestSummaryResultIdSQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    return (response && response.rows?.[0]) || null;
+  }
+
+  async getSurveyFocalSpeciesDataForView(surveyId: number): Promise<GetFocalSpeciesData> {
+    const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new HTTP400('Failed to get focal species data');
+    }
+
+    const taxonomyService = new TaxonomyService();
+
+    const species = await taxonomyService.getSpeciesFromIds(result);
+
+    return new GetFocalSpeciesData(species);
+  }
+
+  async getSurveyAncillarySpeciesDataForView(surveyId: number): Promise<GetAncillarySpeciesData> {
+    const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+
+    if (!result) {
+      throw new HTTP400('Failed to get ancillary species data');
+    }
+
+    const taxonomyService = new TaxonomyService();
+
+    const species = await taxonomyService.getSpeciesFromIds(result);
+
+    return new GetAncillarySpeciesData(species);
   }
 
   // export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
@@ -240,7 +325,7 @@ export class SurveyService extends DBService {
     surveyIds: number[]
   ): Promise<
     {
-      survey_general_details: GetSurveyData;
+      survey_details: GetSurveyData;
       species: GetSpeciesData;
     }[]
   > {

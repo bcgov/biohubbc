@@ -186,7 +186,7 @@ export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatem
 
   return SQL`
     SELECT
-      wldtaxonomic_units_id
+      wldtaxonomic_units_id, is_focal
     FROM
       study_species
     WHERE
@@ -196,19 +196,49 @@ export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatem
   `;
 };
 
-export const getSurveyAncillarySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
+// export const getSurveyAncillarySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
+//   if (!surveyId) {
+//     return null;
+//   }
+
+//   return SQL`
+//     SELECT
+//       wldtaxonomic_units_id
+//     FROM
+//       study_species
+//     WHERE
+//       survey_id = ${surveyId}
+//     AND
+//       is_focal = FALSE;
+//     `;
+// };
+
+export const getLatestOccurrenceSubmissionIdSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }
 
   return SQL`
     SELECT
-      wldtaxonomic_units_id
+      max(occurrence_submission_id) as id
     FROM
-      study_species
+    occurrence_submission
     WHERE
-      survey_id = ${surveyId}
-    AND
-      is_focal = FALSE;
+      survey_id = ${surveyId};
+    `;
+};
+
+export const getLatestSummaryResultIdSQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
+    return null;
+  }
+
+  return SQL`
+    SELECT
+      max(survey_summary_submission_id) as id
+    FROM
+      survey_summary_submission
+    WHERE
+      survey_id = ${surveyId};
     `;
 };

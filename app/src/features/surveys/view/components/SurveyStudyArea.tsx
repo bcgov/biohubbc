@@ -45,7 +45,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_general_details, permits, species, funding_sources },
+    surveyForViewData: { survey_details, occurrence_submission },
     refresh
   } = props;
 
@@ -69,12 +69,12 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       return { feature: geom };
     });
 
-    if (!survey_details.occurrence_submission_id) {
+    if (!occurrence_submission.id) {
       setBounds(calculateUpdatedMapBounds(surveyGeometry));
     }
 
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, survey_details.occurrence_submission_id]);
+  }, [surveyGeometry, occurrence_submission.id]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -212,7 +212,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 ? [
                     <OccurrenceFeatureGroup
                       projectId={projectForViewData.id}
-                      occurrenceSubmissionId={survey_details.occurrence_submission_id}
+                      occurrenceSubmissionId={occurrence_submission.id}
                     />
                   ]
                 : undefined
