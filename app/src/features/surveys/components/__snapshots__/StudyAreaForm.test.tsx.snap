@@ -910,7 +910,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           <span
             class="MuiButton-label"
           >
-            Zoom to Boundary Extent
+            Zoom to initial extent
           </span>
           <span
             class="MuiTouchRipple-root"
@@ -1395,7 +1395,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           <span
             class="MuiButton-label"
           >
-            Zoom to Boundary Extent
+            Zoom to initial extent
           </span>
           <span
             class="MuiTouchRipple-root"

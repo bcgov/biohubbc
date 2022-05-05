@@ -910,7 +910,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             <span
               class="MuiButton-label"
             >
-              Zoom to Boundary Extent
+              Zoom to initial extent
             </span>
             <span
               class="MuiTouchRipple-root"
@@ -1386,7 +1386,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             <span
               class="MuiButton-label"
             >
-              Zoom to Boundary Extent
+              Zoom to initial extent
             </span>
             <span
               class="MuiTouchRipple-root"

@@ -3,7 +3,7 @@ import Button from '@material-ui/core/Button';
 import Paper from '@material-ui/core/Paper';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight, mdiCompass, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronRight, mdiRefresh, mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@material-ui/core/IconButton';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
@@ -221,11 +221,11 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           {location.geometry && location.geometry.length > 0 && (
             <Box position="absolute" top="126px" left="10px" zIndex="999">
               <IconButton
-                aria-label="zoom to boundary extent"
-                title="Zoom to boundary extend"
+                aria-label="zoom to initial extent"
+                title="Zoom to initial extent"
                 className={classes.zoomToBoundaryExtentBtn}
                 onClick={() => zoomToBoundaryExtent()}>
-                <Icon size={1} path={mdiCompass} />
+                <Icon size={1} path={mdiRefresh} />
               </IconButton>
             </Box>
           )}

@@ -8,7 +8,7 @@ import Select from '@material-ui/core/Select';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import { mdiCompass, mdiTrayArrowUp } from '@mdi/js';
+import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
 import IconButton from '@material-ui/core/IconButton';
 import FileUpload from 'components/attachments/FileUpload';
@@ -201,14 +201,14 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
           {values.geometry && values.geometry.length > 0 && (
             <Box position="absolute" top="126px" left="10px" zIndex="999">
               <IconButton
-                aria-label="zoom to boundary extent"
-                title="Zoom to boundary extend"
+                aria-label="zoom to initial extent"
+                title="Zoom to initial extent"
                 className={classes.zoomToBoundaryExtentBtn}
                 onClick={() => {
                   setUpdatedBounds(calculateUpdatedMapBounds(values.geometry));
                   setShouldUpdateBounds(true);
                 }}>
-                <Icon size={1} path={mdiCompass} />
+                <Icon size={1} path={mdiRefresh} />
               </IconButton>
             </Box>
           )}
