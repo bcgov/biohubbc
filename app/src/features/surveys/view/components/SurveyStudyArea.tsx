@@ -1,8 +1,10 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -26,7 +28,7 @@ import {
   IUpdateSurveyRequest,
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
 export interface ISurveyStudyAreaProps {
@@ -35,12 +37,29 @@ export interface ISurveyStudyAreaProps {
   refresh: () => void;
 }
 
+const useStyles = makeStyles(() =>
+  createStyles({
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
+    }
+  })
+);
+
 /**
  * Study area content for a survey.
  *
  * @return {*}
  */
 const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
+  const classes = useStyles();
   const biohubApi = useBiohubApi();
 
   const {
@@ -49,7 +68,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     refresh
   } = props;
 
-  const surveyGeometry = survey_details?.geometry;
+  const surveyGeometry = survey_details?.geometry || [];
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
@@ -64,17 +83,19 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const [nonEditableGeometries, setNonEditableGeometries] = useState<any[]>([]);
   const [showFullScreenViewMapDialog, setShowFullScreenViewMapDialog] = useState<boolean>(false);
 
+  const zoomToBoundaryExtent = useCallback(() => {
+    setBounds(calculateUpdatedMapBounds(surveyGeometry));
+  }, [surveyGeometry]);
+
   useEffect(() => {
     const nonEditableGeometriesResult = surveyGeometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    if (!survey_details.occurrence_submission_id) {
-      setBounds(calculateUpdatedMapBounds(surveyGeometry));
-    }
+    zoomToBoundaryExtent();
 
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, survey_details.occurrence_submission_id]);
+  }, [surveyGeometry, survey_details.occurrence_submission_id, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -200,7 +221,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
           toolbarProps={{ disableGutters: true }}
         />
 
-        <Box mt={2} height={350}>
+        <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="survey_study_area_map"
             hideDrawControls={true}
@@ -218,8 +239,18 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 : undefined
             }
           />
+          {surveyGeometry.length > 0 && (
+            <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <IconButton
+                aria-label="zoom to initial extent"
+                title="Zoom to initial extent"
+                className={classes.zoomToBoundaryExtentBtn}
+                onClick={() => zoomToBoundaryExtent()}>
+                <Icon size={1} path={mdiRefresh} />
+              </IconButton>
+            </Box>
+          )}
         </Box>
-
         <Box my={3}>
           <Typography variant="body2" color="textSecondary">
             Study Area Name

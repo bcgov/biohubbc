@@ -33,7 +33,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-523"
+        class="MuiBox-root MuiBox-root-531"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -46,7 +46,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-516 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-524 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -74,30 +74,30 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-524"
+        class="MuiBox-root MuiBox-root-532"
       >
         <div
-          class="MuiBox-root MuiBox-root-525"
+          class="MuiBox-root MuiBox-root-533"
         >
           <div
-            class="MuiBox-root MuiBox-root-526"
+            class="MuiBox-root MuiBox-root-534"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-520 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-528 MuiTypography-h1"
             >
               Project - 
               <span
-                class="makeStyles-projectTitle-522"
+                class="makeStyles-projectTitle-530"
               >
                 Test Project Name
               </span>
             </h1>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-527"
+            class="MuiBox-root MuiBox-root-535"
           >
             <div
-              class="MuiChip-root makeStyles-chip-517 makeStyles-chipActive-518 MuiChip-sizeSmall"
+              class="MuiChip-root makeStyles-chip-525 makeStyles-chipActive-526 MuiChip-sizeSmall"
             >
               <span
                 class="MuiChip-label MuiChip-labelSmall"
@@ -117,11 +117,11 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-528"
+          class="MuiBox-root MuiBox-root-536"
         >
           <button
             aria-label="Manage Project Team"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-521 MuiButton-disableElevation"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-529 MuiButton-disableElevation"
             data-testid="manage-project-team-button"
             tabindex="0"
             type="button"
@@ -137,7 +137,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           </button>
           <button
             aria-label="Unpublish Project"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-521 MuiButton-disableElevation"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-529 MuiButton-disableElevation"
             data-testid="publish-project-button"
             tabindex="0"
             type="button"
@@ -159,7 +159,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-529"
+      class="MuiBox-root MuiBox-root-537"
     >
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -168,10 +168,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-lg-8"
         >
           <div
-            class="MuiBox-root MuiBox-root-530"
+            class="MuiBox-root MuiBox-root-538"
           >
             <div
-              class="MuiPaper-root MuiBox-root MuiBox-root-531 MuiPaper-elevation1 MuiPaper-rounded"
+              class="MuiPaper-root MuiBox-root MuiBox-root-539 MuiPaper-elevation1 MuiPaper-rounded"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -179,10 +179,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 Project Details
               </h2>
               <section
-                class="MuiBox-root MuiBox-root-532"
+                class="MuiBox-root MuiBox-root-540"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-533"
+                  class="MuiBox-root MuiBox-root-541"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -194,7 +194,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                       General Information
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-534"
+                      class="MuiBox-root MuiBox-root-542"
                     >
                       <button
                         aria-label="Edit General Information"
@@ -301,10 +301,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-535"
+                class="MuiBox-root MuiBox-root-543"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-536"
+                  class="MuiBox-root MuiBox-root-544"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -316,7 +316,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                       Objectives
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-537"
+                      class="MuiBox-root MuiBox-root-545"
                     >
                       <button
                         aria-label="Edit Project Objectives"
@@ -358,10 +358,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     class="MuiDivider-root"
                   />
                   <div
-                    class="MuiBox-root MuiBox-root-538"
+                    class="MuiBox-root MuiBox-root-546"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root-539"
+                      class="MuiBox-root MuiBox-root-547"
                     >
                       <p
                         class="MuiTypography-root MuiTypography-body1"
@@ -370,7 +370,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                       </p>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root-540"
+                      class="MuiBox-root MuiBox-root-548"
                     >
                       <p
                         class="MuiTypography-root MuiTypography-body1"
@@ -382,10 +382,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-541"
+                class="MuiBox-root MuiBox-root-549"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-542"
+                  class="MuiBox-root MuiBox-root-550"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -397,7 +397,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                       Project Contact
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-543"
+                      class="MuiBox-root MuiBox-root-551"
                     >
                       <button
                         aria-label="Edit Project Contact Information"
@@ -489,7 +489,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-544"
+                class="MuiBox-root MuiBox-root-552"
               >
                 <div
                   class="MuiToolbar-root MuiToolbar-regular"
@@ -501,7 +501,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     IUCN Conservation Actions Classification
                   </h3>
                   <div
-                    class="MuiBox-root MuiBox-root-546"
+                    class="MuiBox-root MuiBox-root-554"
                   >
                     <button
                       aria-label="Edit IUCN Classifications"
@@ -540,13 +540,13 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                   </div>
                 </div>
                 <hr
-                  class="MuiDivider-root MuiBox-root MuiBox-root-547"
+                  class="MuiDivider-root MuiBox-root MuiBox-root-555"
                 />
                 <ul
                   class="MuiList-root"
                 >
                   <li
-                    class="MuiListItem-root makeStyles-iucnListItem-545 MuiListItem-divider"
+                    class="MuiListItem-root makeStyles-iucnListItem-553 MuiListItem-divider"
                   >
                     <p
                       class="MuiTypography-root MuiTypography-body2"
@@ -563,7 +563,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     </p>
                   </li>
                   <li
-                    class="MuiListItem-root makeStyles-iucnListItem-545 MuiListItem-divider"
+                    class="MuiListItem-root makeStyles-iucnListItem-553 MuiListItem-divider"
                   >
                     <p
                       class="MuiTypography-root MuiTypography-body2"
@@ -582,10 +582,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </ul>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-548"
+                class="MuiBox-root MuiBox-root-556"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-549"
+                  class="MuiBox-root MuiBox-root-557"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -597,7 +597,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                       Project Permits
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-550"
+                      class="MuiBox-root MuiBox-root-558"
                     >
                       <button
                         aria-label="Edit Permits"
@@ -684,7 +684,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-551"
+                class="MuiBox-root MuiBox-root-559"
               >
                 <div
                   class="MuiToolbar-root MuiToolbar-regular"
@@ -696,7 +696,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     Funding Sources
                   </h3>
                   <div
-                    class="MuiBox-root MuiBox-root-553"
+                    class="MuiBox-root MuiBox-root-561"
                   >
                     <button
                       aria-label="Add Funding Source"
@@ -738,7 +738,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                   class="MuiTableContainer-root"
                 >
                   <table
-                    class="MuiTable-root makeStyles-fundingSourceTable-552"
+                    class="MuiTable-root makeStyles-fundingSourceTable-560"
                   >
                     <thead
                       class="MuiTableHead-root"
@@ -881,7 +881,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-554"
+                class="MuiBox-root MuiBox-root-562"
               >
                 <div
                   class="MuiToolbar-root MuiToolbar-regular"
@@ -893,7 +893,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     Partnerships
                   </h3>
                   <div
-                    class="MuiBox-root MuiBox-root-555"
+                    class="MuiBox-root MuiBox-root-563"
                   >
                     <button
                       aria-label="Edit Partnerships"
@@ -977,7 +977,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-556"
+            class="MuiBox-root MuiBox-root-564"
           >
             <div
               class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
@@ -992,7 +992,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                   Surveys
                 </h2>
                 <div
-                  class="MuiBox-root MuiBox-root-557"
+                  class="MuiBox-root MuiBox-root-565"
                 >
                   <button
                     aria-label="Create Survey"
@@ -1031,7 +1031,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-558"
+                class="MuiBox-root MuiBox-root-566"
               >
                 <div
                   class="MuiTableContainer-root"
@@ -1098,7 +1098,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-563"
+            class="MuiBox-root MuiBox-root-571"
           >
             <div
               class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
@@ -1113,7 +1113,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                   Documents
                 </h2>
                 <div
-                  class="MuiBox-root MuiBox-root-566"
+                  class="MuiBox-root MuiBox-root-574"
                 >
                   <button
                     aria-controls="basic-menu"
@@ -1165,17 +1165,17 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-567"
+                class="MuiBox-root MuiBox-root-575"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-572"
+                  class="MuiBox-root MuiBox-root-580"
                 >
                   <div
                     class="MuiTableContainer-root"
                   >
                     <table
                       aria-label="attachments-list-table"
-                      class="MuiTable-root makeStyles-attachmentsTable-568"
+                      class="MuiTable-root makeStyles-attachmentsTable-576"
                     >
                       <thead
                         class="MuiTableHead-root"
@@ -1246,7 +1246,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-lg-4"
         >
           <div
-            class="MuiPaper-root MuiBox-root MuiBox-root-573 MuiPaper-elevation1 MuiPaper-rounded"
+            class="MuiPaper-root MuiBox-root MuiBox-root-582 MuiPaper-elevation1 MuiPaper-rounded"
           >
             <div
               class="MuiToolbar-root MuiToolbar-regular"
@@ -1258,7 +1258,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 Project Location
               </h2>
               <div
-                class="MuiBox-root MuiBox-root-574"
+                class="MuiBox-root MuiBox-root-583"
               >
                 <button
                   aria-label="Edit Project Location"
@@ -1297,7 +1297,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-575"
+              class="MuiBox-root MuiBox-root-584"
             >
               <div
                 class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1471,7 +1471,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-576"
+              class="MuiBox-root MuiBox-root-585"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
@@ -1485,10 +1485,10 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
               </p>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-577"
+              class="MuiBox-root MuiBox-root-586"
             />
             <div
-              class="MuiBox-root MuiBox-root-578"
+              class="MuiBox-root MuiBox-root-587"
             />
             <button
               aria-label="Show Expanded Location"
@@ -2747,7 +2747,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-lg-4"
         >
           <div
-            class="MuiPaper-root MuiBox-root MuiBox-root-59 MuiPaper-elevation1 MuiPaper-rounded"
+            class="MuiPaper-root MuiBox-root MuiBox-root-60 MuiPaper-elevation1 MuiPaper-rounded"
           >
             <div
               class="MuiToolbar-root MuiToolbar-regular"
@@ -2759,7 +2759,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                 Project Location
               </h2>
               <div
-                class="MuiBox-root MuiBox-root-60"
+                class="MuiBox-root MuiBox-root-61"
               >
                 <button
                   aria-label="Edit Project Location"
@@ -2798,7 +2798,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-61"
+              class="MuiBox-root MuiBox-root-62"
             >
               <div
                 class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -2972,7 +2972,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-62"
+              class="MuiBox-root MuiBox-root-63"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
@@ -2986,10 +2986,10 @@ exports[`ProjectPage renders project page when project is loaded (project is act
               </p>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-63"
+              class="MuiBox-root MuiBox-root-64"
             />
             <div
-              class="MuiBox-root MuiBox-root-64"
+              class="MuiBox-root MuiBox-root-65"
             />
             <button
               aria-label="Show Expanded Location"
@@ -3038,7 +3038,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-73"
+        class="MuiBox-root MuiBox-root-74"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -3051,7 +3051,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-66 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-67 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -3079,30 +3079,30 @@ exports[`ProjectPage renders project page when project is loaded (project is com
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-74"
+        class="MuiBox-root MuiBox-root-75"
       >
         <div
-          class="MuiBox-root MuiBox-root-75"
+          class="MuiBox-root MuiBox-root-76"
         >
           <div
-            class="MuiBox-root MuiBox-root-76"
+            class="MuiBox-root MuiBox-root-77"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-70 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-71 MuiTypography-h1"
             >
               Project - 
               <span
-                class="makeStyles-projectTitle-72"
+                class="makeStyles-projectTitle-73"
               >
                 Test Project Name
               </span>
             </h1>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-77"
+            class="MuiBox-root MuiBox-root-78"
           >
             <div
-              class="MuiChip-root makeStyles-chip-67 makeStyles-chipCompleted-69 MuiChip-sizeSmall"
+              class="MuiChip-root makeStyles-chip-68 makeStyles-chipCompleted-70 MuiChip-sizeSmall"
             >
               <span
                 class="MuiChip-label MuiChip-labelSmall"
@@ -3122,11 +3122,11 @@ exports[`ProjectPage renders project page when project is loaded (project is com
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-78"
+          class="MuiBox-root MuiBox-root-79"
         >
           <button
             aria-label="Manage Project Team"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-71 MuiButton-disableElevation"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-72 MuiButton-disableElevation"
             data-testid="manage-project-team-button"
             tabindex="0"
             type="button"
@@ -3142,7 +3142,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
           </button>
           <button
             aria-label="Unpublish Project"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-71 MuiButton-disableElevation"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-72 MuiButton-disableElevation"
             data-testid="publish-project-button"
             tabindex="0"
             type="button"
@@ -3164,7 +3164,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-79"
+      class="MuiBox-root MuiBox-root-80"
     >
       <div
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
@@ -3173,10 +3173,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-lg-8"
         >
           <div
-            class="MuiBox-root MuiBox-root-80"
+            class="MuiBox-root MuiBox-root-81"
           >
             <div
-              class="MuiPaper-root MuiBox-root MuiBox-root-81 MuiPaper-elevation1 MuiPaper-rounded"
+              class="MuiPaper-root MuiBox-root MuiBox-root-82 MuiPaper-elevation1 MuiPaper-rounded"
             >
               <h2
                 class="MuiTypography-root MuiTypography-h2"
@@ -3184,10 +3184,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 Project Details
               </h2>
               <section
-                class="MuiBox-root MuiBox-root-82"
+                class="MuiBox-root MuiBox-root-83"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-83"
+                  class="MuiBox-root MuiBox-root-84"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -3199,7 +3199,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                       General Information
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-84"
+                      class="MuiBox-root MuiBox-root-85"
                     >
                       <button
                         aria-label="Edit General Information"
@@ -3303,10 +3303,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-85"
+                class="MuiBox-root MuiBox-root-86"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-86"
+                  class="MuiBox-root MuiBox-root-87"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -3318,7 +3318,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                       Objectives
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-87"
+                      class="MuiBox-root MuiBox-root-88"
                     >
                       <button
                         aria-label="Edit Project Objectives"
@@ -3360,10 +3360,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     class="MuiDivider-root"
                   />
                   <div
-                    class="MuiBox-root MuiBox-root-88"
+                    class="MuiBox-root MuiBox-root-89"
                   >
                     <div
-                      class="MuiBox-root MuiBox-root-89"
+                      class="MuiBox-root MuiBox-root-90"
                     >
                       <p
                         class="MuiTypography-root MuiTypography-body1"
@@ -3372,7 +3372,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                       </p>
                     </div>
                     <div
-                      class="MuiBox-root MuiBox-root-90"
+                      class="MuiBox-root MuiBox-root-91"
                     >
                       <p
                         class="MuiTypography-root MuiTypography-body1"
@@ -3384,10 +3384,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-91"
+                class="MuiBox-root MuiBox-root-92"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-92"
+                  class="MuiBox-root MuiBox-root-93"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -3399,7 +3399,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                       Project Contact
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-93"
+                      class="MuiBox-root MuiBox-root-94"
                     >
                       <button
                         aria-label="Edit Project Contact Information"
@@ -3491,7 +3491,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-94"
+                class="MuiBox-root MuiBox-root-95"
               >
                 <div
                   class="MuiToolbar-root MuiToolbar-regular"
@@ -3503,7 +3503,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     IUCN Conservation Actions Classification
                   </h3>
                   <div
-                    class="MuiBox-root MuiBox-root-96"
+                    class="MuiBox-root MuiBox-root-97"
                   >
                     <button
                       aria-label="Edit IUCN Classifications"
@@ -3542,13 +3542,13 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                   </div>
                 </div>
                 <hr
-                  class="MuiDivider-root MuiBox-root MuiBox-root-97"
+                  class="MuiDivider-root MuiBox-root MuiBox-root-98"
                 />
                 <ul
                   class="MuiList-root"
                 >
                   <li
-                    class="MuiListItem-root makeStyles-iucnListItem-95 MuiListItem-divider"
+                    class="MuiListItem-root makeStyles-iucnListItem-96 MuiListItem-divider"
                   >
                     <p
                       class="MuiTypography-root MuiTypography-body2"
@@ -3565,7 +3565,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     </p>
                   </li>
                   <li
-                    class="MuiListItem-root makeStyles-iucnListItem-95 MuiListItem-divider"
+                    class="MuiListItem-root makeStyles-iucnListItem-96 MuiListItem-divider"
                   >
                     <p
                       class="MuiTypography-root MuiTypography-body2"
@@ -3584,10 +3584,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </ul>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-98"
+                class="MuiBox-root MuiBox-root-99"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-99"
+                  class="MuiBox-root MuiBox-root-100"
                 >
                   <div
                     class="MuiToolbar-root MuiToolbar-regular"
@@ -3599,7 +3599,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                       Project Permits
                     </h3>
                     <div
-                      class="MuiBox-root MuiBox-root-100"
+                      class="MuiBox-root MuiBox-root-101"
                     >
                       <button
                         aria-label="Edit Permits"
@@ -3686,7 +3686,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-101"
+                class="MuiBox-root MuiBox-root-102"
               >
                 <div
                   class="MuiToolbar-root MuiToolbar-regular"
@@ -3698,7 +3698,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     Funding Sources
                   </h3>
                   <div
-                    class="MuiBox-root MuiBox-root-103"
+                    class="MuiBox-root MuiBox-root-104"
                   >
                     <button
                       aria-label="Add Funding Source"
@@ -3740,7 +3740,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                   class="MuiTableContainer-root"
                 >
                   <table
-                    class="MuiTable-root makeStyles-fundingSourceTable-102"
+                    class="MuiTable-root makeStyles-fundingSourceTable-103"
                   >
                     <thead
                       class="MuiTableHead-root"
@@ -3883,7 +3883,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </div>
               </section>
               <section
-                class="MuiBox-root MuiBox-root-104"
+                class="MuiBox-root MuiBox-root-105"
               >
                 <div
                   class="MuiToolbar-root MuiToolbar-regular"
@@ -3895,7 +3895,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     Partnerships
                   </h3>
                   <div
-                    class="MuiBox-root MuiBox-root-105"
+                    class="MuiBox-root MuiBox-root-106"
                   >
                     <button
                       aria-label="Edit Partnerships"
@@ -3979,7 +3979,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-106"
+            class="MuiBox-root MuiBox-root-107"
           >
             <div
               class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
@@ -3994,7 +3994,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                   Surveys
                 </h2>
                 <div
-                  class="MuiBox-root MuiBox-root-107"
+                  class="MuiBox-root MuiBox-root-108"
                 >
                   <button
                     aria-label="Create Survey"
@@ -4033,7 +4033,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-108"
+                class="MuiBox-root MuiBox-root-109"
               >
                 <div
                   class="MuiTableContainer-root"
@@ -4100,7 +4100,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-113"
+            class="MuiBox-root MuiBox-root-114"
           >
             <div
               class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
@@ -4115,7 +4115,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                   Documents
                 </h2>
                 <div
-                  class="MuiBox-root MuiBox-root-116"
+                  class="MuiBox-root MuiBox-root-117"
                 >
                   <button
                     aria-controls="basic-menu"
@@ -4167,17 +4167,17 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-117"
+                class="MuiBox-root MuiBox-root-118"
               >
                 <div
-                  class="MuiBox-root MuiBox-root-122"
+                  class="MuiBox-root MuiBox-root-123"
                 >
                   <div
                     class="MuiTableContainer-root"
                   >
                     <table
                       aria-label="attachments-list-table"
-                      class="MuiTable-root makeStyles-attachmentsTable-118"
+                      class="MuiTable-root makeStyles-attachmentsTable-119"
                     >
                       <thead
                         class="MuiTableHead-root"
@@ -4248,7 +4248,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-lg-4"
         >
           <div
-            class="MuiPaper-root MuiBox-root MuiBox-root-123 MuiPaper-elevation1 MuiPaper-rounded"
+            class="MuiPaper-root MuiBox-root MuiBox-root-125 MuiPaper-elevation1 MuiPaper-rounded"
           >
             <div
               class="MuiToolbar-root MuiToolbar-regular"
@@ -4260,7 +4260,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 Project Location
               </h2>
               <div
-                class="MuiBox-root MuiBox-root-124"
+                class="MuiBox-root MuiBox-root-126"
               >
                 <button
                   aria-label="Edit Project Location"
@@ -4299,7 +4299,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-125"
+              class="MuiBox-root MuiBox-root-127"
             >
               <div
                 class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -4473,7 +4473,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
               </div>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-126"
+              class="MuiBox-root MuiBox-root-128"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2 MuiTypography-colorTextSecondary"
@@ -4487,10 +4487,10 @@ exports[`ProjectPage renders project page when project is loaded (project is com
               </p>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-127"
+              class="MuiBox-root MuiBox-root-129"
             />
             <div
-              class="MuiBox-root MuiBox-root-128"
+              class="MuiBox-root MuiBox-root-130"
             />
             <button
               aria-label="Show Expanded Location"

@@ -1,8 +1,10 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import IconButton from '@material-ui/core/IconButton';
 import Paper from '@material-ui/core/Paper';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
-import { mdiChevronRight, mdiPencilOutline } from '@mdi/js';
+import { mdiChevronRight, mdiPencilOutline, mdiRefresh } from '@mdi/js';
 import Icon from '@mdi/react';
 import FullScreenViewMapDialog from 'components/boundary/FullScreenViewMapDialog';
 import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
@@ -26,7 +28,7 @@ import {
   IGetProjectForViewResponse,
   UPDATE_GET_ENTITIES
 } from 'interfaces/useProjectApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 
@@ -35,6 +37,22 @@ export interface ILocationBoundaryProps {
   codes: IGetAllCodeSetsResponse;
   refresh: () => void;
 }
+
+const useStyles = makeStyles(() =>
+  createStyles({
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
+    }
+  })
+);
 
 /**
  * Location boundary content for a project.
@@ -46,6 +64,8 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     projectForViewData: { location, id },
     codes
   } = props;
+
+  const classes = useStyles();
 
   const biohubApi = useBiohubApi();
 
@@ -126,14 +146,18 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
     props.refresh();
   };
 
+  const zoomToBoundaryExtent = useCallback(() => {
+    setBounds(calculateUpdatedMapBounds(location.geometry));
+  }, [location.geometry]);
+
   useEffect(() => {
     const nonEditableGeometriesResult = location.geometry.map((geom: Feature) => {
       return { feature: geom };
     });
 
-    setBounds(calculateUpdatedMapBounds(location.geometry));
+    zoomToBoundaryExtent();
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [location.geometry]);
+  }, [location.geometry, zoomToBoundaryExtent]);
 
   const handleDialogViewOpen = () => {
     setShowFullScreenViewMapDialog(true);
@@ -186,7 +210,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
           toolbarProps={{ disableGutters: true }}
         />
 
-        <Box mt={2} height={350}>
+        <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="project_location_form_map"
             hideDrawControls={true}
@@ -194,6 +218,17 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
           />
+          {location.geometry && location.geometry.length > 0 && (
+            <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <IconButton
+                aria-label="zoom to initial extent"
+                title="Zoom to initial extent"
+                className={classes.zoomToBoundaryExtentBtn}
+                onClick={() => zoomToBoundaryExtent()}>
+                <Icon size={1} path={mdiRefresh} />
+              </IconButton>
+            </Box>
+          )}
         </Box>
 
         <Box my={3}>
