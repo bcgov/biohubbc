@@ -233,7 +233,7 @@ export const getPublicProjectReportAttachmentSQL = (projectId: number, attachmen
       file_name,
       title,
       description,
-      year,
+      year as year_published,
       update_date,
       create_date,
       file_size,

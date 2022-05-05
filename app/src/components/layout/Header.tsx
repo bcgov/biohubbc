@@ -1,7 +1,6 @@
 import AppBar from '@material-ui/core/AppBar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Container from '@material-ui/core/Container';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogContent from '@material-ui/core/DialogContent';
@@ -26,9 +25,6 @@ import React, { useContext } from 'react';
 import { Link } from 'react-router-dom';
 
 const useStyles = makeStyles((theme: Theme) => ({
-  govHeader: {
-    borderBottom: '2px solid #fcba19'
-  },
   govHeaderToolbar: {
     height: '70px'
   },
@@ -65,11 +61,11 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   appPhaseTag: {
-    marginLeft: theme.spacing(0.5),
+    marginLeft: theme.spacing(0.75),
     color: '#fcba19',
     textTransform: 'uppercase',
-    fontSize: '0.875rem',
-    fontWeight: 700
+    fontSize: '0.75rem',
+    fontWeight: 400
   },
   userProfile: {
     color: theme.palette.primary.contrastText,
@@ -145,7 +141,7 @@ const Header: React.FC = () => {
         <Box pl={2}>
           <Divider orientation="vertical" />
         </Box>
-        <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
+        <IconButton aria-label="need help" className={classes.govHeaderIconButton} onClick={showSupportDialog}>
           <Icon path={mdiHelpCircle} size={1.12} />
         </IconButton>
       </Box>
@@ -155,10 +151,9 @@ const Header: React.FC = () => {
   // Unauthenticated public view
   const PublicViewUser = () => {
     return (
-      <Box display="flex" alignItems="center" my="auto">
+      <Box display="flex" className={classes.userProfile} alignItems="center" my="auto">
         <Button
           onClick={() => keycloakWrapper?.keycloak?.login()}
-          size="large"
           type="submit"
           variant="contained"
           color="primary"
@@ -167,9 +162,6 @@ const Header: React.FC = () => {
           data-testid="login">
           Log In
         </Button>
-        <Box pl={2}>
-          <Divider orientation="vertical" />
-        </Box>
         <IconButton className={classes.govHeaderIconButton} onClick={showSupportDialog}>
           <Icon path={mdiHelpCircle} size={1.12} />
         </IconButton>
@@ -178,7 +170,6 @@ const Header: React.FC = () => {
   };
 
   const [open, setOpen] = React.useState(false);
-  const preventDefault = (event: React.SyntheticEvent) => event.preventDefault();
 
   const showSupportDialog = () => {
     setOpen(true);
@@ -189,11 +180,7 @@ const Header: React.FC = () => {
   };
 
   const BetaLabel = () => {
-    return (
-      <sup className={classes.appPhaseTag} aria-label="This application is currently in beta phase of development">
-        Beta
-      </sup>
-    );
+    return <span aria-label="This application is currently in beta phase of development">Beta</span>;
   };
 
   const EnvironmentLabel = () => {
@@ -202,97 +189,89 @@ const Header: React.FC = () => {
     }
 
     return (
-      <sup
-        className={classes.appPhaseTag}
-        aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
+      <span aria-label={`This application is currently being run in the ${config?.REACT_APP_NODE_ENV} environment`}>
         & {config?.REACT_APP_NODE_ENV}
-      </sup>
+      </span>
     );
   };
 
   return (
     <>
       <AppBar position="sticky" style={{ boxShadow: 'none' }}>
-        <Box className={classes.govHeader}>
-          <Toolbar className={classes.govHeaderToolbar}>
-            <Container maxWidth="xl">
-              <Box display="flex" justifyContent="space-between" width="100%">
-                <Link to="/projects" className={classes.brand} aria-label="Go to SIMS Home">
-                  <picture>
-                    <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
-                    <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
-                    <img src={headerImageSmall} alt={'Government of British Columbia'} />
-                  </picture>
-                  <span>
-                    Species Inventory Management System
-                    <BetaLabel />
-                    <EnvironmentLabel />
-                  </span>
-                </Link>
-                <UnAuthGuard>
-                  <PublicViewUser />
-                </UnAuthGuard>
-                <AuthGuard>
-                  <LoggedInUser />
-                </AuthGuard>
-              </Box>
-            </Container>
-          </Toolbar>
-        </Box>
+        <Toolbar className={classes.govHeaderToolbar}>
+          <Box display="flex" justifyContent="space-between" width="100%">
+            <Link to="/projects" className={classes.brand} aria-label="Go to Habitat Restoration Tracker Home">
+              <picture>
+                <source srcSet={headerImageLarge} media="(min-width: 1200px)"></source>
+                <source srcSet={headerImageSmall} media="(min-width: 600px)"></source>
+                <img src={headerImageSmall} alt={'Government of British Columbia'} />
+              </picture>
+              <span>
+                Species Inventory Management System
+                <sup className={classes.appPhaseTag}>
+                  <BetaLabel />
+                  &nbsp;
+                  <EnvironmentLabel />
+                </sup>
+              </span>
+            </Link>
+            <UnAuthGuard>
+              <PublicViewUser />
+            </UnAuthGuard>
+            <AuthGuard>
+              <LoggedInUser />
+            </AuthGuard>
+          </Box>
+        </Toolbar>
+
         <Box className={classes.mainNav}>
-          <Container maxWidth="xl">
-            <Toolbar
-              variant="dense"
-              className={classes.mainNavToolbar}
-              role="navigation"
-              aria-label="Main Navigation"
-              disableGutters>
-              <UnAuthGuard>
-                <Link to="/" id="menu_projects">
-                  Projects
-                </Link>
-                <Link to="/search" id="menu_search">
-                  Map
-                </Link>
-              </UnAuthGuard>
-              <AuthGuard>
-                <Link to="/admin/projects" id="menu_projects">
-                  Projects
-                </Link>
-                <Link to="/admin/permits" id="menu_permits">
-                  Permits
-                </Link>
-                <Link to="/admin/search" id="menu_search">
-                  Map
-                </Link>
-                <Link to="/admin/resources" id="menu_resources">
-                  Resources
-                </Link>
-              </AuthGuard>
-              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-                <Link to="/admin/users" id="menu_admin_users">
-                  Manage Users
-                </Link>
-              </SystemRoleGuard>
-            </Toolbar>
-          </Container>
+          <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
+            <UnAuthGuard>
+              <Link to="/" id="menu_projects">
+                Projects
+              </Link>
+              <Link to="/search" id="menu_search">
+                Map
+              </Link>
+            </UnAuthGuard>
+            <AuthGuard>
+              <Link to="/admin/projects" id="menu_projects">
+                Projects
+              </Link>
+              <Link to="/admin/permits" id="menu_permits">
+                Permits
+              </Link>
+              <Link to="/admin/search" id="menu_search">
+                Map
+              </Link>
+              <Link to="/admin/resources" id="menu_resources">
+                Resources
+              </Link>
+            </AuthGuard>
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <Link to="/admin/users" id="menu_admin_users">
+                Manage Users
+              </Link>
+            </SystemRoleGuard>
+          </Toolbar>
         </Box>
       </AppBar>
 
       <Dialog open={open}>
         <DialogTitle>Need Help?</DialogTitle>
         <DialogContent>
-          <Typography variant="body1" gutterBottom>
+          <Typography variant="body1" component="div" color="textSecondary" gutterBottom>
             For technical support or questions about this application, please contact:&nbsp;
             <OtherLink
               href="mailto:biohub@gov.bc.ca?subject=BioHub - Secure Document Access Request"
-              underline="always"
-              onClick={preventDefault}>
+              underline="always">
               biohub@gov.bc.ca
             </OtherLink>
             .
           </Typography>
-          <Typography variant="body1">A support representative will respond to your request shortly.</Typography>
+          <Typography variant="body1" color="textSecondary">
+            A support representative will respond to your request shortly.
+          </Typography>
         </DialogContent>
         <DialogActions>
           <Button variant="contained" color="primary" onClick={hideSupportDialog}>

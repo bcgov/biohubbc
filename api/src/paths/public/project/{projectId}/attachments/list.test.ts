@@ -90,7 +90,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'Image',
-            is_secured: false
+            is_secured: null
           }
         ]
       })
@@ -104,7 +104,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '',
             file_size: 50,
             file_type: 'Report',
-            is_secured: false
+            is_secured: null
           }
         ]
       });
@@ -125,8 +125,8 @@ describe('getPublicProjectAttachments', () => {
 
     expect(actualResult).to.be.eql({
       attachmentsList: [
-        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-01-01', size: 50, securityToken: false },
-        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-01-01', size: 50, securityToken: false }
+        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-01-01', size: 50, securityToken: 'false' },
+        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-01-01', size: 50, securityToken: 'false' }
       ]
     });
   });
@@ -145,7 +145,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '2020-04-04',
             file_size: 50,
             file_type: 'Image',
-            is_secured: false
+            is_secured: null
           }
         ]
       })
@@ -159,7 +159,7 @@ describe('getPublicProjectAttachments', () => {
             update_date: '2020-04-04',
             file_size: 50,
             file_type: 'Report',
-            is_secured: false
+            is_secured: null
           }
         ]
       });
@@ -180,8 +180,8 @@ describe('getPublicProjectAttachments', () => {
 
     expect(actualResult).to.be.eql({
       attachmentsList: [
-        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-04-04', size: 50, securityToken: false },
-        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-04-04', size: 50, securityToken: false }
+        { fileName: 'name1', fileType: 'Image', id: 13, lastModified: '2020-04-04', size: 50, securityToken: 'false' },
+        { fileName: 'name2', fileType: 'Report', id: 14, lastModified: '2020-04-04', size: 50, securityToken: 'false' }
       ]
     });
   });
