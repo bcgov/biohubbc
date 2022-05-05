@@ -12,7 +12,7 @@ export enum SYSTEM_IDENTITY_SOURCE {
 export enum SYSTEM_USER_ROLE_ID {
   SYSTEM_ADMINISTRATOR = 1,
   CREATOR = 2,
-  DATA_ADMINISTRATOR = 3
+  DATA_ADMINISTRATOR = 6
 }
 
 const systemUsers = [
