@@ -2,22 +2,34 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
+import { HTTP400 } from '../../../errors/custom-error';
 import { draftGetResponseObject } from '../../../openapi/schemas/draft';
-import { getDraftSQL } from '../../../queries/draft-queries';
+import { queries } from '../../../queries/queries';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/draft/{draftId}');
 
-export const GET: Operation = [logRequest('paths/draft/{draftId}', 'GET'), getSingleDraft()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  getSingleDraft()
+];
 
 GET.apiDoc = {
   description: 'Get a draft.',
   tags: ['draft'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -48,7 +60,7 @@ GET.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -69,7 +81,7 @@ export function getSingleDraft(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getDraftSQLStatement = getDraftSQL(Number(req.params.draftId));
+      const getDraftSQLStatement = queries.project.draft.getDraftSQL(Number(req.params.draftId));
 
       if (!getDraftSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

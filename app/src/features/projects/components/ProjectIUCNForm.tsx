@@ -7,8 +7,8 @@ import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
 import Select from '@material-ui/core/Select';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { mdiArrowRight, mdiPlus, mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -68,8 +68,8 @@ export const ProjectIUCNFormYupSchema = yup.object().shape({
 
 export interface IProjectIUCNFormProps {
   classifications: IMultiAutocompleteFieldOption[];
-  subClassifications1: IMultiAutocompleteFieldOption[];
-  subClassifications2: IMultiAutocompleteFieldOption[];
+  subClassifications1: IIUCNSubClassification1Option[];
+  subClassifications2: IIUCNSubClassification2Option[];
 }
 
 /**

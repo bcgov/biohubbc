@@ -78,7 +78,7 @@
         "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+        "bodyParametersJson": "={\n\"project_id\": {{$node[\"Webhook\"].json[\"body\"][\"project_id\"]}},\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
       "name": "XLSX Validate",
       "type": "n8n-nodes-base.httpRequest",
@@ -102,7 +102,7 @@
         "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+        "bodyParametersJson": "={\n\"project_id\": {{$node[\"Webhook\"].json[\"body\"][\"project_id\"]}},\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
       "name": "XLSX Transform",
       "type": "n8n-nodes-base.httpRequest",
@@ -126,7 +126,7 @@
         "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+        "bodyParametersJson": "={\n\"project_id\": {{$node[\"Webhook\"].json[\"body\"][\"project_id\"]}},\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
       "name": "Scrape Occurrences",
       "type": "n8n-nodes-base.httpRequest",
@@ -150,7 +150,7 @@
         "responseFormat": "string",
         "jsonParameters": true,
         "options": {},
-        "bodyParametersJson": "={\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
+        "bodyParametersJson": "={\n\"project_id\": {{$node[\"Webhook\"].json[\"body\"][\"project_id\"]}},\n\"occurrence_submission_id\": {{$node[\"Webhook\"].json[\"body\"][\"occurrence_submission_id\"]}}\n}"
       },
       "name": "DWC Validate",
       "type": "n8n-nodes-base.httpRequest",
@@ -440,11 +440,6 @@
         ]
       ]
     },
-    "Throw Error": {
-      "main": [
-        []
-      ]
-    },
     "If Zip": {
       "main": [
         [
@@ -465,7 +460,7 @@
     }
   },
   "createdAt": "2021-09-29T15:30:03.805Z",
-  "updatedAt": "2021-10-07T18:01:07.427Z",
+  "updatedAt": "2021-12-08T23:01:41.277Z",
   "settings": {},
   "staticData": null
 }

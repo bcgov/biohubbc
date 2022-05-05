@@ -9,17 +9,29 @@ export const codes: IGetAllCodeSetsResponse = {
   activity: [{ id: 1, name: 'Activity code' }],
   project_type: [{ id: 1, name: 'Project type' }],
   region: [{ id: 1, name: 'Region code' }],
-  species: [{ id: 1, name: 'Species code' }],
   proprietor_type: [
-    { id: 1, name: 'Proprietor code 1' },
-    { id: 2, name: 'First Nations Land' }
+    { id: 1, name: 'Proprietor code 1', is_first_nation: false },
+    { id: 2, name: 'First Nations Land', is_first_nation: true }
   ],
-  iucn_conservation_action_level_1_classification: [{ id: 1, name: 'IUCN class' }],
-  iucn_conservation_action_level_2_subclassification: [{ id: 1, iucn1_id: 1, name: 'IUCN subclass 1' }],
-  iucn_conservation_action_level_3_subclassification: [{ id: 1, iucn2_id: 1, name: 'IUCN subclass 2' }],
+  iucn_conservation_action_level_1_classification: [
+    { id: 1, name: 'IUCN class 1' },
+    { id: 12, name: 'IUCN class 2' }
+  ],
+  iucn_conservation_action_level_2_subclassification: [
+    { id: 1, iucn1_id: 1, name: 'IUCN subclass 1 - 1' },
+    { id: 2, iucn1_id: 2, name: 'IUCN subclass 1 - 2' }
+  ],
+  iucn_conservation_action_level_3_subclassification: [
+    { id: 1, iucn2_id: 1, name: 'IUCN subclass 2 - 1' },
+    { id: 2, iucn2_id: 2, name: 'IUCN subclass 2 - 2' }
+  ],
   system_roles: [
     { id: 1, name: 'Role 1' },
     { id: 2, name: 'Role 2' }
+  ],
+  project_roles: [
+    { id: 1, name: 'Project Role 1' },
+    { id: 2, name: 'Project Role 2' }
   ],
   regional_offices: [{ id: 1, name: 'Office 1' }],
   administrative_activity_status_type: [
@@ -27,8 +39,20 @@ export const codes: IGetAllCodeSetsResponse = {
     { id: 2, name: 'Actioned' },
     { id: 3, name: 'Rejected' }
   ],
-  common_survey_methodologies: [
-    { id: 1, name: 'Recruitment' },
-    { id: 2, name: 'SRB' }
+  field_methods: [
+    { id: 1, name: 'Recruitment', description: 'Description' },
+    { id: 2, name: 'SRB', description: 'Description' }
+  ],
+  ecological_seasons: [
+    { id: 1, name: 'Season 1', description: 'Description' },
+    { id: 2, name: 'Season 2', description: 'Description' }
+  ],
+  vantage_codes: [
+    { id: 1, name: 'Vantage Code 1' },
+    { id: 2, name: 'Vantage Code 2' }
+  ],
+  intended_outcomes: [
+    { id: 1, name: 'Intended Outcome 1', description: 'Description 1' },
+    { id: 2, name: 'Intended Outcome 2', description: 'Description 2' }
   ]
 };

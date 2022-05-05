@@ -8,10 +8,10 @@ import {
 } from '../csv/validation/csv-header-validator';
 import {
   getCodeValueFieldsValidator,
+  getNumericFieldsValidator,
   getRequiredFieldsValidator,
   getValidFormatFieldsValidator,
-  getValidRangeFieldsValidator,
-  getNumericFieldsValidator
+  getValidRangeFieldsValidator
 } from '../csv/validation/csv-row-validator';
 import { DWCArchiveValidator } from '../dwc/dwc-archive-file';
 import { XLSXCSVValidator } from '../xlsx/xlsx-file';

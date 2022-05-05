@@ -4,7 +4,8 @@
   "description": "Contains dependencies and scripts for executing OpenShift pipeline build/deploy scripts",
   "license": "Apache-2.0",
   "engines": {
-    "node": ">=10"
+    "node": ">= 14.0.0",
+    "npm": ">= 6.0.0"
   },
   "repository": {
     "type": "git",

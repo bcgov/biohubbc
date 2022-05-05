@@ -1,28 +1,43 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
+import { ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL } from '../constants/notifications';
 import { SYSTEM_ROLE } from '../constants/roles';
-import { getDBConnection } from '../database/db';
-import { HTTP400, HTTP500 } from '../errors/CustomError';
-import { UserObject } from '../models/user';
-import { getUserByUserIdentifierSQL } from '../queries/users/user-queries';
+import { getDBConnection, IDBConnection } from '../database/db';
+import { ApiBuildSQLError, ApiGeneralError, HTTP400 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
+import { GCNotifyService } from '../services/gcnotify-service';
+import { KeycloakService } from '../services/keycloak-service';
+import { UserService } from '../services/user-service';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 import { updateAdministrativeActivity } from './administrative-activity';
-import { addSystemUser } from './user';
-import { addSystemRoles } from './user/{userId}/system-roles';
 
 const defaultLog = getLogger('paths/access-request');
 
-export const PUT: Operation = [logRequest('paths/access-request', 'POST'), updateAccessRequest()];
+const APP_HOST = process.env.APP_HOST;
+const NODE_ENV = process.env.NODE_ENV;
+
+export const PUT: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  updateAccessRequest()
+];
 
 PUT.apiDoc = {
   description: "Update a user's system access request and add any specified system roles to the user.",
   tags: ['user'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -38,7 +53,7 @@ PUT.apiDoc = {
             },
             identitySource: {
               type: 'string',
-              description: 'The identity source for the user.'
+              enum: [SYSTEM_IDENTITY_SOURCE.IDIR, SYSTEM_IDENTITY_SOURCE.BCEID]
             },
             requestId: {
               type: 'number',
@@ -120,49 +135,29 @@ export function updateAccessRequest(): RequestHandler {
       throw new HTTP400('Missing required body param: requestStatusTypeId');
     }
 
-    const getUserSQLStatement = getUserByUserIdentifierSQL(userIdentifier);
-
-    if (!getUserSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
       await connection.open();
 
-      // Get the user by their user identifier (user may not exist)
-      const getUserResponse = await connection.query(getUserSQLStatement.text, getUserSQLStatement.values);
+      const userService = new UserService(connection);
 
-      let userData = (getUserResponse && getUserResponse.rowCount && getUserResponse.rows[0]) || null;
-
-      if (!userData) {
-        const systemUserId = connection.systemUserId();
-
-        if (!systemUserId) {
-          throw new HTTP400('Failed to identify system user ID');
-        }
-
-        // Found no existing user, add them
-        userData = await addSystemUser(userIdentifier, identitySource, systemUserId, connection);
-      }
-
-      const userObject = new UserObject(userData);
-
-      if (!userObject.id || !userObject.user_identifier) {
-        throw new HTTP500('Failed to get or add system user');
-      }
+      // Get the system user (adding or activating them if they already existed).
+      const systemUserObject = await userService.ensureSystemUser(userIdentifier, identitySource);
 
       // Filter out any system roles that have already been added to the user
-      const rolesIdsToAdd = roleIds.filter((roleId) => !userObject.role_ids.includes(roleId));
+      const rolesIdsToAdd = roleIds.filter((roleId) => !systemUserObject.role_ids.includes(roleId));
 
       if (rolesIdsToAdd?.length) {
         // Add any missing roles (if any)
-        await addSystemRoles(userObject.id, rolesIdsToAdd, connection);
+        await userService.addUserSystemRoles(systemUserObject.id, rolesIdsToAdd);
       }
 
       // Update the access request record status
       await updateAdministrativeActivity(administrativeActivityId, administrativeActivityStatusTypeId, connection);
+
+      //if the access request is an approval send Approval email
+      sendApprovalEmail(administrativeActivityStatusTypeId, connection, userIdentifier, identitySource);
 
       await connection.commit();
 
@@ -174,4 +169,62 @@ export function updateAccessRequest(): RequestHandler {
       connection.release();
     }
   };
+}
+
+export async function sendApprovalEmail(
+  adminActivityTypeId: number,
+  connection: IDBConnection,
+  userIdentifier: string,
+  identitySource: string
+) {
+  if (await checkIfAccessRequestIsApproval(adminActivityTypeId, connection)) {
+    const userEmail = await getUserKeycloakEmail(userIdentifier, identitySource);
+    sendAccessRequestApprovalEmail(userEmail);
+  }
+}
+
+export async function checkIfAccessRequestIsApproval(
+  adminActivityTypeId: number,
+  connection: IDBConnection
+): Promise<boolean> {
+  const adminActivityStatusTypeSQLStatment = queries.administrativeActivity.getAdministrativeActivityById(
+    adminActivityTypeId
+  );
+
+  if (!adminActivityStatusTypeSQLStatment) {
+    throw new ApiBuildSQLError('Failed to build SQL select statement');
+  }
+
+  const response = await connection.query(
+    adminActivityStatusTypeSQLStatment.text,
+    adminActivityStatusTypeSQLStatment.values
+  );
+
+  if (response.rows?.[0]?.name === 'Actioned') {
+    return true;
+  }
+  return false;
+}
+
+export async function getUserKeycloakEmail(userIdentifier: string, identitySource: string): Promise<string> {
+  const keycloakService = new KeycloakService();
+  const userDetails = await keycloakService.getUserByUsername(`${userIdentifier}@${identitySource}`);
+  return userDetails.email;
+}
+
+export async function sendAccessRequestApprovalEmail(userEmail: string) {
+  const gcnotifyService = new GCNotifyService();
+
+  const url = `${APP_HOST}/`;
+  const hrefUrl = `[click here.](${url})`;
+  try {
+    await gcnotifyService.sendEmailGCNotification(userEmail, {
+      ...ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL,
+      subject: `${NODE_ENV}: ${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.subject}`,
+      body1: `${ACCESS_REQUEST_APPROVAL_ADMIN_EMAIL.body1} ${hrefUrl}`,
+      footer: `${APP_HOST}`
+    });
+  } catch (error) {
+    throw new ApiGeneralError('Failed to send gcNotification approval email', [(error as Error).message]);
+  }
 }

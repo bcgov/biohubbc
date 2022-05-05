@@ -4,7 +4,7 @@
 
 Sub-project under the SEISM Capital project, the source of BC’s species inventory data.
 
-The objectives for the BioHubBC project are:
+The objectives for the SIMS project are:
 
 - To provide a single source for aquatic and terrestrial species and habitat data.
 - To reduce the barriers for collecting and sharing aquatic and terrestrial species and habitat data throughout the province of British Columbia.
@@ -32,12 +32,14 @@ The objectives for the BioHubBC project are:
 
 ### Windows
 
+_Note: there are 2 mutually exclusive modes that Docker Desktop supports on Windows: Hyper-V or WSL2. You should be able to run the application in either mode, but this documentation was only written with instructions for Hyper-V. See https://code.visualstudio.com/blogs/2020/03/02/docker-in-wsl2 for possible instructions on using Docker Desktop in WSL2._
+
 If prompted, install Docker using Hyper-V (not WSL 2)
 
 ### Grant Docker access to your local folders
 
-This setup for biohub uses volumes to support live reload.  
-To leverage live reload you will need to ensure Docker is running using Hyper-V (not the WSL2 engine).
+This setup uses volumes to support live reload.  
+Ensure Docker Desktop has access to your file system so that it can detect file changes and trigger live reload.
 
 #### MacOS
 
@@ -113,9 +115,9 @@ make env
 Result of running `make env` for the first time:  
 ![make env screenshot](readme_screenshots/running_make_env.png "Running `make env`")
 
-## Start all BioHub Applications
+## Start all Applications
 
-Starts all applications (database, api, and web app).
+Starts all applications (database, api, app, and n8n).
 
 ```
 make web
@@ -133,6 +135,10 @@ api:
 app:
 
 - `localhost:7100`
+
+n8n:
+
+- `localhost:5100`
 
 # Helpful Makefile Commands
 
@@ -156,7 +162,7 @@ make install
 
 ## Delete All Containers
 
-Will stop and delete the biohub docker containers.  
+Will stop and delete the application docker containers.  
 This is useful when you want to clear out all database content, returning it to its initial default state.  
 After you've run `make clean`, running `make web` will launch new containers, with a fresh instance of the database.
 
@@ -321,7 +327,6 @@ _Note: all of the above connection values can be found in the `.env` file_
 # Acknowledgements
 
 [![SonarCloud](https://sonarcloud.io/images/project_badges/sonarcloud-black.svg)](https://sonarcloud.io/dashboard?id=bcgov_biohubbc)
-
 
 # License
 

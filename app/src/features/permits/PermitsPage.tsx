@@ -2,8 +2,6 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Container from '@material-ui/core/Container';
 import Divider from '@material-ui/core/Divider';
-import { mdiPlus } from '@mdi/js';
-import Icon from '@mdi/react';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,10 +10,12 @@ import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
+import { mdiPlus } from '@mdi/js';
+import Icon from '@mdi/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetPermitsListResponse } from 'interfaces/usePermitApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
-import { IGetPermitsListResponse } from 'interfaces/usePermitApi.interface';
 
 /**
  * Page to display a list of permits.
@@ -60,7 +60,7 @@ const PermitsPage: React.FC = () => {
             <TableRow>
               <TableCell>Number</TableCell>
               <TableCell>Type</TableCell>
-              <TableCell>Coordinator Agency</TableCell>
+              <TableCell>Contact Agency</TableCell>
               <TableCell>Associated Project</TableCell>
             </TableRow>
           </TableHead>
@@ -83,7 +83,7 @@ const PermitsPage: React.FC = () => {
               <TableRow>
                 <TableCell>Number</TableCell>
                 <TableCell>Type</TableCell>
-                <TableCell>Coordinator Agency</TableCell>
+                <TableCell>Contact Agency</TableCell>
                 <TableCell>Associated Project</TableCell>
               </TableRow>
             </TableHead>

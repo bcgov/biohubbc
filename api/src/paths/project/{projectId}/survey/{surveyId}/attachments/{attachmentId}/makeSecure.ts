@@ -1,23 +1,35 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../utils/logger';
-import { secureAttachmentRecordSQL } from '../../../../../../../queries/security/security-queries';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/{attachmentId}/makeSecure');
 
-export const PUT: Operation = [makeSurveyAttachmentSecure()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  makeSurveyAttachmentSecure()
+];
 
 PUT.apiDoc = {
   description: 'Make security status of a survey attachment secure.',
   tags: ['attachment', 'security_status'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -108,12 +120,12 @@ export function makeSurveyAttachmentSecure(): RequestHandler {
 
       const secureRecordSQLStatement =
         req.body.attachmentType === 'Report'
-          ? secureAttachmentRecordSQL(
+          ? queries.security.secureAttachmentRecordSQL(
               Number(req.params.attachmentId),
               'survey_report_attachment',
               Number(req.params.projectId)
             )
-          : secureAttachmentRecordSQL(
+          : queries.security.secureAttachmentRecordSQL(
               Number(req.params.attachmentId),
               'survey_attachment',
               Number(req.params.projectId)

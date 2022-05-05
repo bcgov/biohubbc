@@ -1,31 +1,35 @@
-'use strict';
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
 import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
-import {
-  insertSurveySummaryDetailsSQL,
-  insertSurveySummarySubmissionSQL,
-  updateSurveySummarySubmissionWithKeySQL,
-  insertSurveySummarySubmissionMessageSQL
-} from '../../../../../../../queries/survey/survey-summary-queries';
+import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
+import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
+import { queries } from '../../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
 import { getLogger } from '../../../../../../../utils/logger';
-import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
-import { logRequest } from '../../../../../../../utils/path-utils';
-import { prepXLSX } from './../../../../../../../paths/xlsx/validate';
-import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
-import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
-import { IMediaState } from '../../../../../../../utils/media/media-file';
 import { ICsvState } from '../../../../../../../utils/media/csv/csv-file';
-import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
+import { IMediaState, MediaFile } from '../../../../../../../utils/media/media-file';
+import { parseUnknownMedia } from '../../../../../../../utils/media/media-utils';
+import { ValidationSchemaParser } from '../../../../../../../utils/media/validation/validation-schema-parser';
+import { XLSXCSV } from '../../../../../../../utils/media/xlsx/xlsx-file';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/summary/upload');
 
 export const POST: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/summary/upload', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   uploadMedia(),
   prepXLSX(),
   persistSummaryParseErrors(),
@@ -41,7 +45,7 @@ POST.apiDoc = {
   tags: ['results'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -75,7 +79,19 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Upload OK'
+      description: 'Upload OK',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              summarySubmissionId: {
+                type: 'number'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -204,6 +220,39 @@ export function uploadMedia(): RequestHandler {
   };
 }
 
+export function prepXLSX(): RequestHandler {
+  return async (req, res, next) => {
+    defaultLog.debug({ label: 'prepXLSX', message: 's3File' });
+
+    try {
+      const s3File = req['s3File'];
+
+      const parsedMedia = parseUnknownMedia(s3File);
+
+      if (!parsedMedia) {
+        req['parseError'] = 'Failed to parse submission, file was empty';
+
+        return next();
+      }
+
+      if (!(parsedMedia instanceof MediaFile)) {
+        req['parseError'] = 'Failed to parse submission, not a valid XLSX CSV file';
+
+        return next();
+      }
+
+      const xlsxCsv = new XLSXCSV(parsedMedia);
+
+      req['xlsx'] = xlsxCsv;
+
+      next();
+    } catch (error) {
+      defaultLog.error({ label: 'prepXLSX', message: 'error', error });
+      throw error;
+    }
+  };
+}
+
 /**
  * Inserts a new record into the `survey_summary_submission` table.
  *
@@ -219,7 +268,7 @@ export const insertSurveySummarySubmission = async (
   file_name: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const insertSqlStatement = insertSurveySummarySubmissionSQL(surveyId, source, file_name);
+  const insertSqlStatement = queries.survey.insertSurveySummarySubmissionSQL(surveyId, source, file_name);
 
   if (!insertSqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -247,7 +296,7 @@ export const updateSurveySummarySubmissionWithKey = async (
   key: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const updateSqlStatement = updateSurveySummarySubmissionWithKeySQL(submissionId, key);
+  const updateSqlStatement = queries.survey.updateSurveySummarySubmissionWithKeySQL(submissionId, key);
 
   if (!updateSqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');
@@ -284,7 +333,7 @@ export function persistSummaryParseErrors(): RequestHandler {
       await connection.commit();
 
       // archive is not parsable, don't continue to next step and return early
-      return res.send(200);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'persistParseErrors', message: 'error', error });
       await connection.rollback();
@@ -521,7 +570,7 @@ export function persistSummaryValidationResults(): RequestHandler {
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.debug({ label: 'persistValidationResults', message: 'error', error });
+      defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -643,7 +692,7 @@ export const uploadScrapedSummarySubmission = async (
   scrapedSummaryDetail: any,
   connection: IDBConnection
 ) => {
-  const sqlStatement = insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
+  const sqlStatement = queries.survey.insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL post statement');
@@ -673,7 +722,7 @@ export const insertSummarySubmissionMessage = async (
   errorCode: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertSurveySummarySubmissionMessageSQL(
+  const sqlStatement = queries.survey.insertSurveySummarySubmissionMessageSQL(
     submissionStatusId,
     submissionMessageType,
     message,

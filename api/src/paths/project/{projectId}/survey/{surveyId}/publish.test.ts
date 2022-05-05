@@ -5,8 +5,8 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
-import * as survey_occurrence_queries from '../../../../../queries/survey/survey-occurrence-queries';
-import * as survey_update_queries from '../../../../../queries/survey/survey-update-queries';
+import { HTTPError } from '../../../../../errors/custom-error';
+import survey_queries from '../../../../../queries/survey';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
 import * as publish from './publish';
 
@@ -63,8 +63,8 @@ describe('publishSurveyAndOccurrences', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Missing required path parameter: surveyId');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path parameter: surveyId');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -82,8 +82,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: (null as unknown) as any }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Missing request body');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing request body');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -101,8 +101,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { ...sampleReq.body, publish: undefined } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Missing publish flag in request body');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing publish flag in request body');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -114,7 +114,7 @@ describe('publishSurveyAndOccurrences', () => {
       }
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = publish.publishSurveyAndOccurrences();
@@ -122,8 +122,10 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to build get survey occurrence submission SQL statement');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
+        'Failed to build get survey occurrence submission SQL statement'
+      );
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -139,7 +141,7 @@ describe('publishSurveyAndOccurrences', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'getLatestSurveyOccurrenceSubmissionSQL').returns(SQL`some query`);
 
     try {
       const result = publish.publishSurveyAndOccurrences();
@@ -147,8 +149,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to get survey occurrence submissions');
-      expect(actualError.status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to get survey occurrence submissions');
+      expect((actualError as HTTPError).status).to.equal(500);
     }
   });
 
@@ -162,7 +164,7 @@ describe('publishSurveyAndOccurrences', () => {
 
     sinon.stub(publish, 'getSurveyOccurrenceSubmission').resolves({ occurrence_submission_id: 1 });
 
-    sinon.stub(survey_occurrence_queries, 'deleteSurveyOccurrencesSQL').returns(null);
+    sinon.stub(survey_queries, 'deleteSurveyOccurrencesSQL').returns(null);
 
     try {
       const result = publish.publishSurveyAndOccurrences();
@@ -170,8 +172,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to build delete survey occurrences SQL statement');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build delete survey occurrences SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -189,7 +191,7 @@ describe('publishSurveyAndOccurrences', () => {
 
     sinon.stub(publish, 'getSurveyOccurrenceSubmission').resolves({ occurrence_submission_id: 1 });
 
-    sinon.stub(survey_occurrence_queries, 'deleteSurveyOccurrencesSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'deleteSurveyOccurrencesSQL').returns(SQL`some query`);
 
     try {
       const result = publish.publishSurveyAndOccurrences();
@@ -197,8 +199,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result({ ...sampleReq, body: { publish: false } }, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to delete survey occurrences');
-      expect(actualError.status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to delete survey occurrences');
+      expect((actualError as HTTPError).status).to.equal(500);
     }
   });
 
@@ -210,7 +212,7 @@ describe('publishSurveyAndOccurrences', () => {
       }
     });
 
-    sinon.stub(survey_update_queries, 'updateSurveyPublishStatusSQL').returns(null);
+    sinon.stub(survey_queries, 'updateSurveyPublishStatusSQL').returns(null);
 
     try {
       const result = publish.publishSurveyAndOccurrences();
@@ -218,8 +220,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result(sampleReq, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to build survey publish SQL statement');
-      expect(actualError.status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build survey publish SQL statement');
+      expect((actualError as HTTPError).status).to.equal(400);
     }
   });
 
@@ -235,7 +237,7 @@ describe('publishSurveyAndOccurrences', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_update_queries, 'updateSurveyPublishStatusSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'updateSurveyPublishStatusSQL').returns(SQL`some query`);
 
     try {
       const result = publish.publishSurveyAndOccurrences();
@@ -243,8 +245,8 @@ describe('publishSurveyAndOccurrences', () => {
       await result(sampleReq, sampleRes, sampleNext);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.message).to.equal('Failed to update survey publish status');
-      expect(actualError.status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to update survey publish status');
+      expect((actualError as HTTPError).status).to.equal(500);
     }
   });
 
@@ -270,7 +272,7 @@ describe('publishSurveyAndOccurrences', () => {
       }
     });
 
-    sinon.stub(survey_update_queries, 'updateSurveyPublishStatusSQL').returns(SQL`some query`);
+    sinon.stub(survey_queries, 'updateSurveyPublishStatusSQL').returns(SQL`some query`);
 
     const result = publish.publishSurveyAndOccurrences();
 

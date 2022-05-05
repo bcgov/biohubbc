@@ -1,8 +1,8 @@
-import React from 'react';
-import { render, getByText, queryByText } from '@testing-library/react';
-import MapEditControls from './MapEditControls';
-import { FeatureGroup, MapContainer } from 'react-leaflet';
+import { getByText, queryByText, render } from '@testing-library/react';
 import { Feature } from 'geojson';
+import React from 'react';
+import { FeatureGroup, MapContainer } from 'react-leaflet';
+import MapEditControls from './MapEditControls';
 
 describe('MapEditControls.test', () => {
   const geometry: Feature[] = [

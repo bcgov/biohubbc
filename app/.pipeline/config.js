@@ -25,6 +25,9 @@ const staticUrls = config.staticUrls || {};
 const staticUrlsAPI = config.staticUrlsAPI || {};
 const staticUrlsN8N = config.staticUrlsN8N || {};
 
+const maxUploadNumFiles = 10;
+const maxUploadFileSize = 52428800; // (bytes)
+
 const sso = config.sso;
 
 const processOptions = (options) => {
@@ -81,6 +84,8 @@ const phases = {
       `${apiName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     n8nHost: '', // staticUrlsN8N.dev, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.dev,
+    maxUploadNumFiles,
+    maxUploadFileSize,
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
@@ -99,6 +104,8 @@ const phases = {
     apiHost: staticUrlsAPI.test || defaultHostAPI,
     n8nHost: '', // staticUrlsN8N.test, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.test,
+    maxUploadNumFiles,
+    maxUploadFileSize,
     env: 'test',
     sso: sso.test,
     replicas: 3,
@@ -117,6 +124,8 @@ const phases = {
     apiHost: staticUrlsAPI.prod || defaultHostAPI,
     n8nHost: '', // staticUrlsN8N.prod, // Disable until nginx is setup: https://quartech.atlassian.net/browse/BHBC-1435
     siteminderLogoutURL: config.siteminderLogoutURL.prod,
+    maxUploadNumFiles,
+    maxUploadFileSize,
     env: 'prod',
     sso: sso.prod,
     replicas: 3,

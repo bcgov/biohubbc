@@ -2,14 +2,26 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import { getAdministrativeActivitiesSQL } from '../queries/administrative-activity/administrative-activity-queries';
+import { HTTP400 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
-const defaultLog = getLogger('paths/administrative-activity');
+const defaultLog = getLogger('paths/administrative-activities');
 
-export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getAdministrativeActivities()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  getAdministrativeActivities()
+];
 
 export enum ADMINISTRATIVE_ACTIVITY_STATUS_TYPE {
   PENDING = 'Pending',
@@ -25,7 +37,7 @@ GET.apiDoc = {
   tags: ['admin'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -80,10 +92,12 @@ GET.apiDoc = {
                   description: 'Administrative activity status type name'
                 },
                 description: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 },
                 notes: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 },
                 data: {
                   type: 'object',
@@ -93,7 +107,7 @@ GET.apiDoc = {
                   }
                 },
                 create_date: {
-                  type: 'string'
+                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }]
                 }
               }
             }
@@ -134,7 +148,7 @@ export function getAdministrativeActivities(): RequestHandler {
       const administrativeActivityStatusTypes: string[] =
         (req.query?.status as string[]) || getAllAdministrativeActivityStatusTypes();
 
-      const sqlStatement = getAdministrativeActivitiesSQL(
+      const sqlStatement = queries.administrativeActivity.getAdministrativeActivitiesSQL(
         administrativeActivityTypeName,
         administrativeActivityStatusTypes
       );

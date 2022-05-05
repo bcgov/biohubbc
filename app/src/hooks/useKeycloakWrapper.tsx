@@ -4,6 +4,14 @@ import { KeycloakInstance } from 'keycloak-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 
+export enum SYSTEM_IDENTITY_SOURCE {
+  BCEID = 'BCEID',
+  IDIR = 'IDIR'
+}
+
+const raw_bceid_identity_sources = ['BCEID-BASIC-AND-BUSINESS', 'BCEID'];
+const raw_idir_identity_sources = ['IDIR'];
+
 /**
  * IUserInfo interface, represents the userinfo provided by keycloak.
  */
@@ -45,6 +53,12 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   systemRoles: string[];
+  /**
+   * Returns `true` if the keycloak user is a registered system user, `false` otherwise.
+   *
+   * @memberof IKeycloakWrapper
+   */
+  isSystemUser: () => boolean;
   /**
    * Returns `true` if the user's `systemRoles` contain at least 1 of the specified `validSystemRoles`, `false` otherwise.
    *
@@ -130,10 +144,18 @@ function useKeycloakWrapper(): IKeycloakWrapper {
    * @return {*} {(string | null)}
    */
   const getIdentitySource = useCallback((): string | null => {
-    const identitySource = keycloakUser?.['preferred_username']?.split('@')?.[1];
+    const identitySource = keycloakUser?.['preferred_username']?.split('@')?.[1].toUpperCase();
 
     if (!identitySource) {
       return null;
+    }
+
+    if (raw_bceid_identity_sources.includes(identitySource)) {
+      return SYSTEM_IDENTITY_SOURCE.BCEID;
+    }
+
+    if (raw_idir_identity_sources.includes(identitySource)) {
+      return SYSTEM_IDENTITY_SOURCE.IDIR;
     }
 
     return identitySource;
@@ -145,10 +167,12 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
       try {
         userDetails = await biohubApi.user.getUser();
-      } catch {}
+      } catch {
+        // do nothing
+      }
 
       setBioHubUser(() => {
-        if (userDetails?.role_names?.length) {
+        if (userDetails?.role_names?.length && !userDetails?.user_record_end_date) {
           setHasLoadedAllUserInfo(true);
         } else {
           setShouldLoadAccessRequest(true);
@@ -177,7 +201,9 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
       try {
         accessRequests = await biohubApi.admin.hasPendingAdministrativeActivities();
-      } catch {}
+      } catch {
+        // do nothing
+      }
 
       setHasAccessRequest(() => {
         setHasLoadedAllUserInfo(true);
@@ -214,6 +240,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
     getKeycloakUser();
   }, [keycloak, keycloakUser, isKeycloakUserLoading]);
+
+  const isSystemUser = (): boolean => {
+    return !!bioHubUser;
+  };
 
   const getSystemRoles = (): string[] => {
     return bioHubUser?.role_names || [];
@@ -266,6 +296,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     keycloak: keycloak,
     hasLoadedAllUserInfo,
     systemRoles: getSystemRoles(),
+    isSystemUser,
     hasSystemRole,
     hasAccessRequest,
     getUserIdentifier,

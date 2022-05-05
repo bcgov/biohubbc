@@ -4,9 +4,8 @@
 
 | Technology | Version | Website                              | Description          |
 | ---------- | ------- | ------------------------------------ | -------------------- |
-| node       | 10.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
+| node       | 14.x.x  | https://nodejs.org/en/               | JavaScript Runtime   |
 | npm        | 6.x.x   | https://www.npmjs.com/               | Node Package Manager |
-| PostgreSQL | 9.6     | https://www.postgresql.org/download/ | PSQL database        |
 
 <br />
 
@@ -14,7 +13,9 @@
 
 The root API schema is defined in `./src/openapi/api.ts`.
 
-If this project is running in docker you can view the api docs at: `http://localhost:6100/api/api-docs/`.
+If this project is running in docker you can view the beautified api docs at: `http://localhost:6100/api-docs/`.
+
+- The raw api-docs are available at: `http://localhost:6100/raw-api-docs/`.
 
 This project uses npm package `express-openapi` via `./app.ts` to automatically generate the express server and its routes, based on the contents of the `./src/openapi/api.ts` and the `./src/path/` content.
 

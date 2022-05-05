@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as summarySubmission from './get';
-import * as db from '../../../../../../../database/db';
-import * as survey_summary_queries from '../../../../../../../queries/survey/survey-summary-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../../../../database/db';
+import { HTTPError } from '../../../../../../../errors/custom-error';
+import survey_queries from '../../../../../../../queries/survey';
 import { getMockDBConnection } from '../../../../../../../__mocks__/db';
+import * as summarySubmission from './get';
 
 chai.use(sinonChai);
 
@@ -50,8 +51,8 @@ describe('getSummarySubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `surveyId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `surveyId`');
     }
   });
 
@@ -63,7 +64,7 @@ describe('getSummarySubmission', () => {
       }
     });
 
-    sinon.stub(survey_summary_queries, 'getLatestSurveySummarySubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'getLatestSurveySummarySubmissionSQL').returns(null);
 
     try {
       const result = summarySubmission.getSurveySummarySubmission();
@@ -71,8 +72,10 @@ describe('getSummarySubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build getLatestSurveySummarySubmissionSQLStatement statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
+        'Failed to build getLatestSurveySummarySubmissionSQLStatement statement'
+      );
     }
   });
 
@@ -97,7 +100,7 @@ describe('getSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'getLatestSurveySummarySubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getLatestSurveySummarySubmissionSQL').returns(SQL`something`);
 
     const result = summarySubmission.getSurveySummarySubmission();
 
@@ -123,7 +126,7 @@ describe('getSummarySubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_summary_queries, 'getLatestSurveySummarySubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getLatestSurveySummarySubmissionSQL').returns(SQL`something`);
 
     const result = summarySubmission.getSurveySummarySubmission();
 

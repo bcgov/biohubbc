@@ -1,14 +1,10 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400, HTTP500 } from '../../errors/CustomError';
-import {
-  getSurveyOccurrenceSubmissionSQL,
-  insertOccurrenceSubmissionMessageSQL,
-  insertOccurrenceSubmissionStatusSQL,
-  updateSurveyOccurrenceSubmissionSQL
-} from '../../queries/survey/survey-occurrence-queries';
+import { HTTP400, HTTP500 } from '../../errors/custom-error';
+import { queries } from '../../queries/queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getFileFromS3 } from '../../utils/file-utils';
 import { getLogger } from '../../utils/logger';
 import { ICsvState, IHeaderError, IRowError } from '../../utils/media/csv/csv-file';
@@ -16,12 +12,21 @@ import { DWCArchive } from '../../utils/media/dwc/dwc-archive-file';
 import { ArchiveFile, IMediaState } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
-import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/dwc/validate');
 
 export const POST: Operation = [
-  logRequest('paths/dwc/validate', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.body.project_id),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   getOccurrenceSubmission(),
   getOccurrenceSubmissionInputS3Key(),
   getS3File(),
@@ -31,7 +36,7 @@ export const POST: Operation = [
   getValidationRules(),
   validateDWCArchive(),
   persistValidationResults({ initialSubmissionStatusType: 'Darwin Core Validated' }),
-  updateOccurrenceSubmission,
+  updateOccurrenceSubmission(),
   sendResponse()
 ];
 
@@ -41,7 +46,7 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
     tags: tags,
     security: [
       {
-        Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+        Bearer: []
       }
     ],
     requestBody: {
@@ -50,8 +55,11 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
         'application/json': {
           schema: {
             type: 'object',
-            required: ['occurrence_submission_id'],
+            required: ['project_id', 'occurrence_submission_id'],
             properties: {
+              project_id: {
+                type: 'number'
+              },
               occurrence_submission_id: {
                 description: 'A survey occurrence submission ID',
                 type: 'number',
@@ -88,7 +96,7 @@ export const getValidateAPIDoc = (basicDescription: string, successDescription: 
         $ref: '#/components/responses/401'
       },
       403: {
-        $ref: '#/components/responses/401'
+        $ref: '#/components/responses/403'
       },
       500: {
         $ref: '#/components/responses/500'
@@ -121,7 +129,7 @@ export function getOccurrenceSubmission(): RequestHandler {
     }
 
     try {
-      const sqlStatement = getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
+      const sqlStatement = queries.survey.getSurveyOccurrenceSubmissionSQL(occurrenceSubmissionId);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -130,6 +138,8 @@ export function getOccurrenceSubmission(): RequestHandler {
       await connection.open();
 
       const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+      await connection.commit();
 
       if (!response || !response.rows.length) {
         throw new HTTP400('Failed to get survey occurrence submission');
@@ -449,7 +459,7 @@ export const insertSubmissionStatus = async (
   submissionStatusType: string,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
+  const sqlStatement = queries.survey.insertOccurrenceSubmissionStatusSQL(occurrenceSubmissionId, submissionStatusType);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -482,7 +492,7 @@ export const insertSubmissionMessage = async (
   errorCode: string,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertOccurrenceSubmissionMessageSQL(
+  const sqlStatement = queries.survey.insertOccurrenceSubmissionMessageSQL(
     submissionStatusId,
     submissionMessageType,
     message,
@@ -515,7 +525,11 @@ export const updateSurveyOccurrenceSubmissionWithOutputKey = async (
   outputKey: string,
   connection: IDBConnection
 ): Promise<any> => {
-  const updateSqlStatement = updateSurveyOccurrenceSubmissionSQL({ submissionId, outputFileName, outputKey });
+  const updateSqlStatement = queries.survey.updateSurveyOccurrenceSubmissionSQL({
+    submissionId,
+    outputFileName,
+    outputKey
+  });
 
   if (!updateSqlStatement) {
     throw new HTTP400('Failed to build SQL update statement');

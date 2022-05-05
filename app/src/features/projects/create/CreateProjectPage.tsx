@@ -256,7 +256,7 @@ const CreateProjectPage: React.FC = () => {
 
     setStepForms([
       {
-        stepTitle: 'Project Coordinator',
+        stepTitle: 'Project Contact',
         stepSubTitle:
           'Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.',
         stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
@@ -364,7 +364,7 @@ const CreateProjectPage: React.FC = () => {
     const isValid = await isStepFormValid();
 
     setStepForms((currentStepForms) => {
-      let updatedStepForms = [...currentStepForms];
+      const updatedStepForms = [...currentStepForms];
       updatedStepForms[activeStep].stepInitialValues = formikRef.current?.values;
       updatedStepForms[activeStep].isValid = isValid;
       updatedStepForms[activeStep].isTouched = true;
@@ -412,7 +412,7 @@ const CreateProjectPage: React.FC = () => {
 
     // Update the step form isValid/isTouched
     setStepForms((currentStepForms) => {
-      let updatedStepForms = [...currentStepForms];
+      const updatedStepForms = [...currentStepForms];
       updatedStepForms[activeStep].isValid = false;
       updatedStepForms[activeStep].isTouched = true;
       return updatedStepForms;
@@ -539,8 +539,8 @@ const CreateProjectPage: React.FC = () => {
     } catch (error) {
       showCreateErrorDialog({
         dialogTitle: 'Error Creating Project',
-        dialogError: error?.message,
-        dialogErrorDetails: error?.errors
+        dialogError: (error as APIError)?.message,
+        dialogErrorDetails: (error as APIError)?.errors
       });
     }
   };

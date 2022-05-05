@@ -1,47 +1,33 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import Typography from '@material-ui/core/Typography';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import { mdiPencilOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import {
-  IGetProjectForUpdateResponseCoordinator,
-  IGetProjectForViewResponse,
-  UPDATE_GET_ENTITIES
-} from 'interfaces/useProjectApi.interface';
-import React, { useContext, useState } from 'react';
+import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { H3ButtonToolbar } from 'components/toolbar/ActionToolbars';
+import { EditPermitI18N } from 'constants/i18n';
+import { DialogContext } from 'contexts/dialogContext';
 import ProjectPermitForm, {
   IProjectPermitForm,
   ProjectPermitEditFormYupSchema,
   ProjectPermitFormArrayItemInitialValues,
   ProjectPermitFormInitialValues
 } from 'features/projects/components/ProjectPermitForm';
-import EditDialog from 'components/dialog/EditDialog';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import { APIError } from 'hooks/api/useAxios';
-import { EditPermitI18N } from 'constants/i18n';
-import { DialogContext } from 'contexts/dialogContext';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
-
-const useStyles = makeStyles({
-  table: {
-    minWidth: 650
-  },
-  heading: {
-    fontWeight: 'bold'
-  },
-  tableCellBorderTop: {
-    borderTop: '1px solid rgba(224, 224, 224, 1)'
-  }
-});
+import {
+  IGetProjectForUpdateResponseCoordinator,
+  IGetProjectForViewResponse,
+  UPDATE_GET_ENTITIES
+} from 'interfaces/useProjectApi.interface';
+import React, { useContext, useState } from 'react';
 
 export interface IProjectPermitsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -60,7 +46,6 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
   } = props;
 
   const biohubApi = useBiohubApi();
-  const classes = useStyles();
 
   const dialogContext = useContext(DialogContext);
 
@@ -127,7 +112,7 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
     try {
       await biohubApi.project.updateProject(id, projectData);
     } catch (error) {
-      const apiError = new APIError(error);
+      const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     } finally {
@@ -163,54 +148,44 @@ const ProjectPermits: React.FC<IProjectPermitsProps> = (props) => {
         onSave={handleDialogEditSave}
       />
       <Box>
-        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2} height="2rem">
-          <Typography variant="h3">Project Permits</Typography>
-          <Button
-            variant="text"
-            color="primary"
-            className="sectionHeaderButton"
-            onClick={() => handleDialogEditOpen()}
-            title="Edit Permits"
-            aria-label="Edit Permits"
-            startIcon={<Icon path={mdiPencilOutline} size={0.875} />}>
-            Edit
-          </Button>
-        </Box>
+        <H3ButtonToolbar
+          label="Project Permits"
+          buttonLabel="Edit"
+          buttonTitle="Edit Permits"
+          buttonStartIcon={<Icon path={mdiPencilOutline} size={0.875} />}
+          buttonOnClick={() => handleDialogEditOpen()}
+          toolbarProps={{ disableGutters: true }}
+        />
 
-        {hasPermits && (
-          <TableContainer>
-            <Table className={classes.table} aria-label="permits-list-table">
-              <TableHead>
-                <TableRow>
-                  <TableCell className={classes.heading}>Permit Number</TableCell>
-                  <TableCell className={classes.heading}>Permit Type</TableCell>
-                </TableRow>
-              </TableHead>
-              {permit.permits.map((item: any) => (
-                <TableBody key={item.permit_number}>
-                  <TableRow>
-                    <TableCell component="th" scope="row">
-                      {item.permit_number}
-                    </TableCell>
-                    <TableCell component="th" scope="row">
-                      {item.permit_type}
-                    </TableCell>
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell>Number</TableCell>
+                <TableCell>Type</TableCell>
+              </TableRow>
+            </TableHead>
+
+            {hasPermits && (
+              <TableBody>
+                {permit.permits.map((item: any) => (
+                  <TableRow key={item.permit_number}>
+                    <TableCell>{item.permit_number}</TableCell>
+                    <TableCell>{item.permit_type}</TableCell>
                   </TableRow>
-                </TableBody>
-              ))}
-            </Table>
-          </TableContainer>
-        )}
+                ))}
+              </TableBody>
+            )}
 
-        {!hasPermits && (
-          <Box component="ul" className="listNoBullets">
-            <Box component="li">
-              <Typography component="dd" variant="body1">
-                No Permits
-              </Typography>
-            </Box>
-          </Box>
-        )}
+            {!hasPermits && (
+              <TableBody>
+                <TableRow>
+                  <TableCell colSpan={2}>No Permits</TableCell>
+                </TableRow>
+              </TableBody>
+            )}
+          </Table>
+        </TableContainer>
       </Box>
     </>
   );

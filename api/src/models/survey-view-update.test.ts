@@ -29,12 +29,17 @@ describe('GetSurveyProprietorData', () => {
     it('sets data_sharing_agreement_required', () => {
       expect(data.data_sharing_agreement_required).to.equal('false');
     });
+
+    it('sets survey_data_proprietary', () => {
+      expect(data.survey_data_proprietary).to.equal('false');
+    });
   });
 
   describe('All values provided', () => {
     let data: GetSurveyProprietorData;
 
     const proprietorData = {
+      id: 1,
       proprietor_type_name: 'type',
       first_nations_name: 'fn name',
       category_rationale: 'rationale',
@@ -64,6 +69,10 @@ describe('GetSurveyProprietorData', () => {
 
     it('sets data_sharing_agreement_required', () => {
       expect(data.data_sharing_agreement_required).to.equal('true');
+    });
+
+    it('sets survey_data_proprietary', () => {
+      expect(data.survey_data_proprietary).to.equal('true');
     });
   });
 });

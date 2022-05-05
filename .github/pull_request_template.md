@@ -1,30 +1,18 @@
 # Overview
 
-## Links to jira tickets
+## Links to Jira tickets
 
-- {Include links to all of the applicable Jira tickets}
+- {List all applicable Jira tickets}
 
-## This PR contains the following changes
+## Description of relevant changes
 
-- {List all the relevant changes. If there are many changes across many Jira tickets, organize the changes by Jira ticket}
+- {List all relevant changes, in particular anything that will help the reviewers test/verify this PR}
 
-## This PR contains the following types of changes
-
-- [ ] New feature (change which adds functionality)
-- [ ] Enhancement (improvements to existing functionality)
-- [ ] Bug fix (change which fixes an issue)
-- [ ] Misc cleanup / Refactoring / Documentation
-- [ ] Version change
-
-## Checklist
+## PR Checklist
 
 A list of items that are good to consider when making any changes.
 
 _Note: this list is not exhaustive, and not all items are always applicable._
-
-### General
-
-- [ ] I have performed a self-review of my own code
 
 ### Code
 
@@ -60,11 +48,3 @@ _Note: this list is not exhaustive, and not all items are always applicable._
 ### SonarCloud
 
 - [ ] I have addressed all SonarCloud Bugs, Vulnerabilities, Security Hotspots, and Code Smells
-
-## How Has This Been Tested?
-
-Please describe the tests that you ran to verify your changes.
-
-## Screenshots
-
-Please add any relevant UI screenshots, if applicable.

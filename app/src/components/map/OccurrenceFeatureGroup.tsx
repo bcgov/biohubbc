@@ -8,6 +8,7 @@ import MarkerClusterGroup from 'react-leaflet-cluster';
 import { OccurrenceFeaturePopup } from './OccurrenceFeaturePopup';
 
 interface IOccurrenceFeatureGroupProps {
+  projectId: number;
   occurrenceSubmissionId: number;
 }
 
@@ -23,7 +24,10 @@ const OccurrenceFeatureGroup: React.FC<IOccurrenceFeatureGroupProps> = (props) =
   const [occurrences, setOccurrences] = useState<IGetOccurrencesForViewResponseDetails[]>([]);
 
   const getOccurrences = async () => {
-    const occurrencesResponse = await biohubApi.observation.getOccurrencesForView(props.occurrenceSubmissionId);
+    const occurrencesResponse = await biohubApi.observation.getOccurrencesForView(
+      props.projectId,
+      props.occurrenceSubmissionId
+    );
 
     if (!occurrencesResponse || !occurrencesResponse.length) {
       // TODO: Handle error

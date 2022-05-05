@@ -1,27 +1,36 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
-import { HTTP400 } from '../../../../../../errors/CustomError';
+import { HTTP400 } from '../../../../../../errors/custom-error';
 import { GetAttachmentsData } from '../../../../../../models/project-survey-attachments';
-import {
-  getSurveyAttachmentsSQL,
-  getSurveyReportAttachmentsSQL
-} from '../../../../../../queries/survey/survey-attachments-queries';
+import { queries } from '../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/attachments/list');
 
-export const GET: Operation = [getSurveyAttachments()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSurveyAttachments()
+];
 
 GET.apiDoc = {
   description: 'Fetches a list of attachments of a survey.',
   tags: ['attachments'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -48,17 +57,23 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                fileName: {
-                  description: 'The file name of the attachment',
-                  type: 'string'
-                },
-                lastModified: {
-                  description: 'The date the object was last modified',
-                  type: 'string'
+            type: 'object',
+            required: ['attachmentsList'],
+            properties: {
+              attachmentsList: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    fileName: {
+                      description: 'The file name of the attachment',
+                      type: 'string'
+                    },
+                    lastModified: {
+                      description: 'The date the object was last modified',
+                      type: 'string'
+                    }
+                  }
                 }
               }
             }
@@ -66,8 +81,17 @@ GET.apiDoc = {
         }
       }
     },
+    400: {
+      $ref: '#/components/responses/400'
+    },
     401: {
       $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
     },
     default: {
       $ref: '#/components/responses/default'
@@ -86,8 +110,10 @@ export function getSurveyAttachments(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyAttachmentsSQLStatement = getSurveyAttachmentsSQL(Number(req.params.surveyId));
-      const getSurveyReportAttachmentsSQLStatement = getSurveyReportAttachmentsSQL(Number(req.params.surveyId));
+      const getSurveyAttachmentsSQLStatement = queries.survey.getSurveyAttachmentsSQL(Number(req.params.surveyId));
+      const getSurveyReportAttachmentsSQLStatement = queries.survey.getSurveyReportAttachmentsSQL(
+        Number(req.params.surveyId)
+      );
 
       if (!getSurveyAttachmentsSQLStatement || !getSurveyReportAttachmentsSQLStatement) {
         throw new HTTP400('Failed to build SQL get statement');

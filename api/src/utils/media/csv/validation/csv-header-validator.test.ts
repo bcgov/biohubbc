@@ -5,8 +5,8 @@ import { CSVWorksheet } from '../csv-file';
 import {
   getDuplicateHeadersValidator,
   getValidHeadersValidator,
-  hasRequiredHeadersValidator,
-  hasRecommendedHeadersValidator
+  hasRecommendedHeadersValidator,
+  hasRequiredHeadersValidator
 } from './csv-header-validator';
 
 describe('getDuplicateHeadersValidator', () => {

@@ -6,14 +6,13 @@ import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
 import { SYSTEM_ROLE } from '../../../constants/roles';
 import * as db from '../../../database/db';
-import * as project_attachments_queries from '../../../queries/project/project-attachments-queries';
-import * as project_delete_queries from '../../../queries/project/project-delete-queries';
-import * as project_queries from '../../../queries/project/project-view-queries';
-import * as survey_view_queries from '../../../queries/survey/survey-view-queries';
+import { HTTPError } from '../../../errors/custom-error';
+import project_queries from '../../../queries/project';
+import survey_queries from '../../../queries/survey';
+import * as file_utils from '../../../utils/file-utils';
 import { getMockDBConnection } from '../../../__mocks__/db';
 import * as delete_project from './delete';
 import * as survey_delete from './survey/{surveyId}/delete';
-import * as file_utils from '../../../utils/file-utils';
 
 chai.use(sinonChai);
 
@@ -59,8 +58,8 @@ describe('deleteProject', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param: `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param: `projectId`');
     }
   });
 
@@ -80,8 +79,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -106,8 +105,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get the project');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get the project');
     }
   });
 
@@ -136,12 +135,12 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get the project');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get the project');
     }
   });
 
-  it('should throw a 400 error when user has insufficient role to delete', async () => {
+  it('should throw a 400 error when user has insufficient role to delete published project', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,
       systemUserId: () => {
@@ -164,14 +163,16 @@ describe('deleteProject', () => {
       const result = delete_project.deleteProject();
 
       await result(
-        { ...sampleReq, system_user: { role_names: [SYSTEM_ROLE.PROJECT_ADMIN] } },
+        { ...sampleReq, system_user: { role_names: [SYSTEM_ROLE.PROJECT_CREATOR] } },
         (null as unknown) as any,
         (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Cannot delete a published project if you are not a system administrator.');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal(
+        'Cannot delete a published project if you are not a system administrator.'
+      );
     }
   });
 
@@ -193,8 +194,8 @@ describe('deleteProject', () => {
       }
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`some nice query`);
-    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(null);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`some nice query`);
+    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(null);
 
     try {
       const result = delete_project.deleteProject();
@@ -202,8 +203,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -231,8 +232,8 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
 
     try {
       const result = delete_project.deleteProject();
@@ -240,8 +241,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get project attachments');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get project attachments');
     }
   });
 
@@ -272,8 +273,8 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
 
     try {
       const result = delete_project.deleteProject();
@@ -281,8 +282,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get survey ids associated to project');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get survey ids associated to project');
     }
   });
 
@@ -313,10 +314,10 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
     sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
-    sinon.stub(project_delete_queries, 'deleteProjectSQL').returns(null);
+    sinon.stub(project_queries, 'deleteProjectSQL').returns(null);
 
     try {
       const result = delete_project.deleteProject();
@@ -324,8 +325,8 @@ describe('deleteProject', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL delete statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
     }
   });
 
@@ -359,10 +360,10 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
     sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
-    sinon.stub(project_delete_queries, 'deleteProjectSQL').returns(SQL`some`);
+    sinon.stub(project_queries, 'deleteProjectSQL').returns(SQL`some`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves(null);
 
     const result = delete_project.deleteProject();
@@ -402,10 +403,10 @@ describe('deleteProject', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_attachments_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_view_queries, 'getSurveyIdsSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(SQL`something`);
     sinon.stub(survey_delete, 'getSurveyAttachmentS3Keys').resolves(['key1', 'key2']);
-    sinon.stub(project_delete_queries, 'deleteProjectSQL').returns(SQL`some`);
+    sinon.stub(project_queries, 'deleteProjectSQL').returns(SQL`some`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves({});
 
     const result = delete_project.deleteProject();

@@ -1,10 +1,18 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
+import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
+import { Router } from 'react-router';
 import ManageUsersPage from './ManageUsersPage';
 
+const history = createMemoryHistory();
+
 const renderContainer = () => {
-  return render(<ManageUsersPage />);
+  return render(
+    <Router history={history}>
+      <ManageUsersPage />
+    </Router>
+  );
 };
 
 jest.mock('../../../hooks/useBioHubApi');

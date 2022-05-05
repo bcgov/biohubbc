@@ -1,26 +1,35 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../database/db';
-import { HTTP400 } from '../../../../../../../errors/CustomError';
-import {
-  getLatestSurveyOccurrenceSubmissionSQL,
-  getOccurrenceSubmissionMessagesSQL
-} from '../../../../../../../queries/survey/survey-occurrence-queries';
+import { HTTP400 } from '../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/observation/submission/get');
 
-export const GET: Operation = [getOccurrenceSubmission()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getOccurrenceSubmission()
+];
 
 GET.apiDoc = {
   description: 'Fetches an observation occurrence submission for a survey.',
   tags: ['observation_submission'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -48,6 +57,7 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            nullable: true,
             properties: {
               id: {
                 type: 'number'
@@ -58,6 +68,7 @@ GET.apiDoc = {
               },
               status: {
                 description: 'The validation status of the submission',
+                nullable: true,
                 type: 'string'
               },
               messages: {
@@ -102,7 +113,9 @@ export function getOccurrenceSubmission(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getOccurrenceSubmissionSQLStatement = getLatestSurveyOccurrenceSubmissionSQL(Number(req.params.surveyId));
+      const getOccurrenceSubmissionSQLStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(
+        Number(req.params.surveyId)
+      );
 
       if (!getOccurrenceSubmissionSQLStatement) {
         throw new HTTP400('Failed to build SQL getLatestSurveyOccurrenceSubmissionSQL statement');
@@ -132,7 +145,9 @@ export function getOccurrenceSubmission(): RequestHandler {
       if (errorStatus === 'Rejected' || errorStatus === 'System Error') {
         const occurrence_submission_id = occurrenceSubmissionData.rows[0].id;
 
-        const getSubmissionErrorListSQLStatement = getOccurrenceSubmissionMessagesSQL(Number(occurrence_submission_id));
+        const getSubmissionErrorListSQLStatement = queries.survey.getOccurrenceSubmissionMessagesSQL(
+          Number(occurrence_submission_id)
+        );
 
         if (!getSubmissionErrorListSQLStatement) {
           throw new HTTP400('Failed to build SQL getOccurrenceSubmissionMessagesSQL statement');

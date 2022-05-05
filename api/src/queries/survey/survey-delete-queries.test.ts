@@ -1,12 +1,12 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
-  deleteFocalSpeciesSQL,
   deleteAncillarySpeciesSQL,
-  deleteSurveyProprietorSQL,
-  deleteSurveySQL,
+  deleteFocalSpeciesSQL,
+  deleteSurveyFundingSourceByProjectFundingSourceIdSQL,
   deleteSurveyFundingSourcesBySurveyIdSQL,
-  deleteSurveyFundingSourceByProjectFundingSourceIdSQL
+  deleteSurveyProprietorSQL,
+  deleteSurveySQL
 } from './survey-delete-queries';
 
 describe('deleteFocalSpeciesSQL', () => {

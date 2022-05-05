@@ -17,6 +17,9 @@ parameters:
   - name: HOST
     description: Host name of the application
     required: true
+  - name: APP_HOST
+    description: APP host for application frontend
+    value: ''
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
@@ -28,6 +31,10 @@ parameters:
     description: Application Environment type variable
     required: true
     value: 'dev'
+  - name: ELASTICSEARCH_URL
+    description: Platform Elasticsearch URL
+    required: true
+    value: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca'
   - name: TZ
     description: Application timezone
     required: false
@@ -36,16 +43,18 @@ parameters:
     description: Authentication certificate urls
     required: true
     value: 'https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs'
-  - name: CPU_REQ
-    value: '500m'
-  - name: CPU_LIMIT
-    value: '750m'
-  - name: MEMORY_REQ
-    value: '1Gi'
-  - name: MEMORY_LIMIT
-    value: '2Gi'
-  - name: REPLICAS
-    value: '1'
+  - name: KEYCLOAK_HOST
+    description: keycloak host url
+    value: https://dev.oidc.gov.bc.ca
+  - name: KEYCLOAK_REALM
+    description: keycloak realm definition
+    value: 35r1iman
+  - name: KEYCLOAK_ADMIN_USERNAME
+    description: keycloak host admin username
+    value: biohubbc-svc
+  - name: KEYCLOAK_ADMIN_PASSWORD
+    description: keycloak host url
+    value: 'keycloak-admin-password'
   - name: API_PORT_DEFAULT
     value: '6100'
   - name: API_PORT_DEFAULT_NAME
@@ -54,11 +63,37 @@ parameters:
   - name: OBJECT_STORE_SECRETS
     description: Secrets used to read and write to the S3 storage
     value: 'biohubbc-object-store'
+  - name: LOG_LEVEL
+    value: 'info'
+  - name: GCNOTIFY_API_SECRET
+    description: Secret for gcnotify api key
+    value: 'gcnotify-api-key'
+  - name: GCNOTIFY_ADMIN_EMAIL
+    description: admin email for gcnotify api
+    value: biohub@gov.bc.ca
+  - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
+    description: gcnotify email template id
+    value: 7779a104-b863-40ac-902f-1aa607d2071a
+  - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
+    description: gcnotify sms template id
+    value: af2f1e40-bd72-4612-9c5a-567ee5b26ca5
+  - name: GCNOTIFY_EMAIL_URL
+    value: https://api.notification.canada.ca/v2/notifications/email
+  - name: GCNOTIFY_SMS_URL
+    value: https://api.notification.canada.ca/v2/notifications/sms
+  - name: CPU_REQUEST
+    value: '100m'
+  - name: CPU_LIMIT
+    value: '500m'
+  - name: MEMORY_REQUEST
+    value: '512Mi'
+  - name: MEMORY_LIMIT
+    value: '2Gi'
+  - name: REPLICAS
+    value: '1'
   - name: REPLICA_MAX
     required: true
     value: '1'
-  - name: LOG_LEVEL
-    value: 'info'
 objects:
   - apiVersion: image.openshift.io/v1
     kind: ImageStream
@@ -99,8 +134,8 @@ objects:
             cpu: ${CPU_LIMIT}
             memory: ${MEMORY_LIMIT}
           requests:
-            cpu: ${CPU_REQ}
-            memory: ${MEMORY_REQ}
+            cpu: ${CPU_REQUEST}
+            memory: ${MEMORY_REQUEST}
         type: Rolling
       template:
         metadata:
@@ -116,6 +151,8 @@ objects:
                   value: ${HOST}
                 - name: API_PORT
                   value: ${API_PORT_DEFAULT}
+                - name: APP_HOST
+                  value: ${APP_HOST}
                 - name: ENABLE_FILE_VIRUS_SCAN
                   value: ${ENABLE_FILE_VIRUS_SCAN}
                 - name: DB_HOST
@@ -139,10 +176,23 @@ objects:
                   value: '5432'
                 - name: KEYCLOAK_URL
                   value: ${CERTIFICATE_URL}
+                - name: KEYCLOAK_HOST
+                  value: ${KEYCLOAK_HOST}
+                - name: KEYCLOAK_REALM
+                  value: ${KEYCLOAK_REALM}
+                - name: KEYCLOAK_ADMIN_USERNAME
+                  value: ${KEYCLOAK_ADMIN_USERNAME}
+                - name: KEYCLOAK_ADMIN_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: keycloak_admin_password
+                      name: ${KEYCLOAK_ADMIN_PASSWORD}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
+                - name: ELASTICSEARCH_URL
+                  value: ${ELASTICSEARCH_URL}
                 - name: TZ
                   value: ${TZ}
                 - name: VERSION
@@ -169,6 +219,21 @@ objects:
                       name: ${OBJECT_STORE_SECRETS}
                 - name: LOG_LEVEL
                   value: ${LOG_LEVEL}
+                - name: GCNOTIFY_SECRET_API_KEY
+                  valueFrom:
+                    secretKeyRef:
+                      key: key
+                      name: ${GCNOTIFY_API_SECRET}
+                - name: GCNOTIFY_ADMIN_EMAIL
+                  value: ${GCNOTIFY_ADMIN_EMAIL}
+                - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
+                  value: ${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
+                - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
+                  value: ${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
+                - name: GCNOTIFY_EMAIL_URL
+                  value: ${GCNOTIFY_EMAIL_URL}
+                - name: GCNOTIFY_SMS_URL
+                  value: ${GCNOTIFY_SMS_URL}
               image: ' '
               imagePullPolicy: Always
               name: api
@@ -180,8 +245,8 @@ objects:
                   cpu: ${CPU_LIMIT}
                   memory: ${MEMORY_LIMIT}
                 requests:
-                  cpu: ${CPU_REQ}
-                  memory: ${MEMORY_REQ}
+                  cpu: ${CPU_REQUEST}
+                  memory: ${MEMORY_REQUEST}
               readinessProbe:
                 failureThreshold: 10
                 httpGet:

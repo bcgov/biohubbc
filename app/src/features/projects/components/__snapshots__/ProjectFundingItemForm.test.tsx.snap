@@ -9,7 +9,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
       class="MuiBox-root MuiBox-root-29"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
         id="agency_details"
       >
         Agency Details
@@ -134,7 +134,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
       class="MuiBox-root MuiBox-root-34"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
       >
         Funding Details
       </legend>
@@ -316,7 +316,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
       class="MuiBox-root MuiBox-root-36"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
         id="agency_details"
       >
         Agency Details
@@ -441,7 +441,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
       class="MuiBox-root MuiBox-root-41"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
       >
         Funding Details
       </legend>
@@ -623,7 +623,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
       class="MuiBox-root MuiBox-root-8"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
         id="agency_details"
       >
         Agency Details
@@ -819,7 +819,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
       class="MuiBox-root MuiBox-root-13"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
       >
         Funding Details
       </legend>
@@ -1001,7 +1001,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
       class="MuiBox-root MuiBox-root-15"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
         id="agency_details"
       >
         Agency Details
@@ -1197,7 +1197,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
       class="MuiBox-root MuiBox-root-20"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
       >
         Funding Details
       </legend>
@@ -1379,7 +1379,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
       class="MuiBox-root MuiBox-root-22"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
         id="agency_details"
       >
         Agency Details
@@ -1504,7 +1504,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
       class="MuiBox-root MuiBox-root-27"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
       >
         Funding Details
       </legend>
@@ -1686,7 +1686,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
       class="MuiBox-root MuiBox-root-1"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
         id="agency_details"
       >
         Agency Details
@@ -1813,7 +1813,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
       class="MuiBox-root MuiBox-root-6"
     >
       <legend
-        class="MuiFormLabel-root"
+        class="MuiTypography-root MuiTypography-body1"
       >
         Funding Details
       </legend>

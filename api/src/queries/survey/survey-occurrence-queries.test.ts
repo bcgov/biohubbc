@@ -1,17 +1,16 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  deleteOccurrenceSubmissionSQL,
   deleteSurveyOccurrencesSQL,
   getLatestSurveyOccurrenceSubmissionSQL,
   getOccurrenceSubmissionMessagesSQL,
   getSurveyOccurrenceSubmissionSQL,
-  getTemplateMethodologySpeciesIdSQLStatement,
-  getTemplateMethodologySpeciesSQL,
-  insertSurveyOccurrenceSubmissionSQL,
+  getTemplateMethodologySpeciesRecordSQL,
   insertOccurrenceSubmissionMessageSQL,
   insertOccurrenceSubmissionStatusSQL,
-  updateSurveyOccurrenceSubmissionSQL,
-  deleteOccurrenceSubmissionSQL
+  insertSurveyOccurrenceSubmissionSQL,
+  updateSurveyOccurrenceSubmissionSQL
 } from './survey-occurrence-queries';
 
 describe('insertSurveyOccurrenceSubmissionSQL', () => {
@@ -19,8 +18,7 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
     const response = insertSurveyOccurrenceSubmissionSQL({
       surveyId: (null as unknown) as number,
       source: 'fileSource',
-      inputKey: 'fileKey',
-      templateMethodologyId: 1
+      inputKey: 'fileKey'
     });
 
     expect(response).to.be.null;
@@ -30,22 +28,10 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
     const response = insertSurveyOccurrenceSubmissionSQL({
       surveyId: 1,
       source: (null as unknown) as string,
-      inputKey: 'fileKey',
-      templateMethodologyId: 1
+      inputKey: 'fileKey'
     });
 
     expect(response).to.be.null;
-  });
-
-  it('returns non null response when null templateMethodologyId provided', () => {
-    const response = insertSurveyOccurrenceSubmissionSQL({
-      surveyId: 1,
-      source: 'fileSource',
-      inputKey: 'fileKey',
-      templateMethodologyId: null
-    });
-
-    expect(response).to.not.be.null;
   });
 
   it('returns non null response when all valid params provided without inputKey', () => {
@@ -54,8 +40,7 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
       source: 'fileSource',
       inputFileName: 'inputFileName',
       outputFileName: 'outputFileName',
-      outputKey: 'outputfileKey',
-      templateMethodologyId: 1
+      outputKey: 'outputfileKey'
     });
 
     expect(response).to.not.be.null;
@@ -68,8 +53,7 @@ describe('insertSurveyOccurrenceSubmissionSQL', () => {
       inputFileName: 'inputFileName',
       inputKey: 'inputfileKey',
       outputFileName: 'outputFileName',
-      outputKey: 'outputfileKey',
-      templateMethodologyId: 1
+      outputKey: 'outputfileKey'
     });
 
     expect(response).to.not.be.null;
@@ -260,29 +244,21 @@ describe('getOccurrenceSubmissionMessagesSQL', () => {
   });
 });
 
-describe('getTemplateMethodologySpeciesIdSQLStatement', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQLStatement((null as unknown) as number);
+describe('getTemplateMethodologySpeciesRecordSQL', () => {
+  it('returns null response when null methodologyId provided', () => {
+    const response = getTemplateMethodologySpeciesRecordSQL((null as unknown) as number, 1);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns null response when null templateId provided', () => {
+    const response = getTemplateMethodologySpeciesRecordSQL(1, (null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesIdSQLStatement(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getTemplateMethodologySpeciesSQL', () => {
-  it('returns null response when null occurrenceId provided', () => {
-    const response = getTemplateMethodologySpeciesSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns non null response when valid params provided', () => {
-    const response = getTemplateMethodologySpeciesSQL(1);
+    const response = getTemplateMethodologySpeciesRecordSQL(1, 1);
 
     expect(response).to.not.be.null;
   });

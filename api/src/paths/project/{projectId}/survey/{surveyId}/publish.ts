@@ -1,21 +1,27 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../errors/CustomError';
-import { surveyIdResponseObject } from '../../../../../openapi/schemas/survey';
-import {
-  deleteSurveyOccurrencesSQL,
-  getLatestSurveyOccurrenceSubmissionSQL
-} from '../../../../../queries/survey/survey-occurrence-queries';
-import { updateSurveyPublishStatusSQL } from '../../../../../queries/survey/survey-update-queries';
+import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
+import { queries } from '../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
-import { logRequest } from '../../../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish');
 
 export const PUT: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/publish', 'PUT'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+
   publishSurveyAndOccurrences()
 ];
 
@@ -24,7 +30,7 @@ PUT.apiDoc = {
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -62,7 +68,14 @@ PUT.apiDoc = {
         'application/json': {
           schema: {
             // TODO is there any return value? or is it just an HTTP status with no content?
-            ...(surveyIdResponseObject as object)
+            title: 'Survey Response Object',
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'number'
+              }
+            }
           }
         }
       }
@@ -119,6 +132,8 @@ export function publishSurveyAndOccurrences(): RequestHandler {
 
       await publishSurvey(surveyId, publish, connection);
 
+      await connection.commit();
+
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'publishSurveyAndOccurrences', message: 'error', error });
@@ -139,7 +154,7 @@ export function publishSurveyAndOccurrences(): RequestHandler {
 export const deleteOccurrences = async (surveyId: number, connection: IDBConnection) => {
   const occurrenceSubmission = await getSurveyOccurrenceSubmission(surveyId, connection);
 
-  const sqlStatement = deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
+  const sqlStatement = queries.survey.deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build delete survey occurrences SQL statement');
@@ -158,7 +173,7 @@ export const deleteOccurrences = async (surveyId: number, connection: IDBConnect
  * @returns {RequestHandler}
  */
 export const publishSurvey = async (surveyId: number, publish: boolean, connection: IDBConnection) => {
-  const sqlStatement = updateSurveyPublishStatusSQL(surveyId, publish);
+  const sqlStatement = queries.survey.updateSurveyPublishStatusSQL(surveyId, publish);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build survey publish SQL statement');
@@ -181,7 +196,7 @@ export const publishSurvey = async (surveyId: number, publish: boolean, connecti
  * @return {*}
  */
 export const getSurveyOccurrenceSubmission = async (surveyId: number, connection: IDBConnection) => {
-  const sqlStatement = getLatestSurveyOccurrenceSubmissionSQL(surveyId);
+  const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build get survey occurrence submission SQL statement');

@@ -1,12 +1,12 @@
-import React from 'react';
-import { render, waitFor, fireEvent, cleanup } from '@testing-library/react';
-import LocationBoundary from './LocationBoundary';
+import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { Feature } from 'geojson';
-import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { codes } from 'test-helpers/code-helpers';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
-import { DialogContextProvider } from 'contexts/dialogContext';
+import React from 'react';
+import { codes } from 'test-helpers/code-helpers';
+import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import LocationBoundary from './LocationBoundary';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
@@ -135,7 +135,7 @@ describe('LocationBoundary', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Location / Project Boundary')).toBeVisible();
+      expect(getByText('Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -147,19 +147,19 @@ describe('LocationBoundary', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Edit Location / Project Boundary')).toBeVisible();
+      expect(getByText('Edit Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Cancel'));
 
     await waitFor(() => {
-      expect(queryByText('Edit Location / Project Boundary')).not.toBeInTheDocument();
+      expect(queryByText('Edit Project Location')).not.toBeInTheDocument();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Edit Location / Project Boundary')).toBeVisible();
+      expect(getByText('Edit Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));
@@ -190,19 +190,19 @@ describe('LocationBoundary', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Location / Project Boundary')).toBeVisible();
+      expect(getByText('Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(getByText('Error Editing Location / Project Boundary')).toBeVisible();
+      expect(getByText('Error Editing Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Ok'));
 
     await waitFor(() => {
-      expect(queryByText('Error Editing Location / Project Boundary')).not.toBeInTheDocument();
+      expect(queryByText('Error Editing Project Location')).not.toBeInTheDocument();
     });
   });
 
@@ -216,7 +216,7 @@ describe('LocationBoundary', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Location / Project Boundary')).toBeVisible();
+      expect(getByText('Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -249,7 +249,7 @@ describe('LocationBoundary', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Location / Project Boundary')).toBeVisible();
+      expect(getByText('Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Edit'));
@@ -261,7 +261,7 @@ describe('LocationBoundary', () => {
     });
 
     await waitFor(() => {
-      expect(getByText('Edit Location / Project Boundary')).toBeVisible();
+      expect(getByText('Edit Project Location')).toBeVisible();
     });
 
     fireEvent.click(getByText('Save Changes'));

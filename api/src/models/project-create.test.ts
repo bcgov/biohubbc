@@ -1,16 +1,16 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
+  PostCoordinatorData,
+  PostFundingData,
+  PostFundingSource,
   PostIUCNData,
   PostLocationData,
   PostObjectivesData,
-  PostCoordinatorData,
   PostPartnershipsData,
   PostPermitData,
   PostProjectData,
-  PostFundingData,
-  PostProjectObject,
-  PostFundingSource
+  PostProjectObject
 } from './project-create';
 
 describe('PostProjectObject', () => {

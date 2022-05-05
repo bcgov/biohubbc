@@ -1,26 +1,26 @@
 import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
+import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
+import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableCell from '@material-ui/core/TableCell';
-import Link from '@material-ui/core/Link';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Typography from '@material-ui/core/Typography';
+import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ProjectStatusType } from 'constants/misc';
 import { AuthStateContext } from 'contexts/authStateContext';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectsListResponse } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import { getFormattedDate } from 'utils/Utils';
-import { ProjectStatusType } from 'constants/misc';
-import clsx from 'clsx';
-import Chip from '@material-ui/core/Chip';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 
 const useStyles = makeStyles((theme: Theme) => ({
   chip: {
@@ -90,7 +90,7 @@ const PublicProjectsListPage = () => {
               <TableCell>Name</TableCell>
               <TableCell>Type</TableCell>
               <TableCell>Permits</TableCell>
-              <TableCell>Coordinator Agency</TableCell>
+              <TableCell>Contact Agency</TableCell>
               <TableCell>Start Date</TableCell>
               <TableCell>End Date</TableCell>
             </TableRow>
@@ -115,7 +115,7 @@ const PublicProjectsListPage = () => {
                 <TableCell>Name</TableCell>
                 <TableCell>Type</TableCell>
                 <TableCell>Permits</TableCell>
-                <TableCell>Coordinator Agency</TableCell>
+                <TableCell>Contact Agency</TableCell>
                 <TableCell>Start Date</TableCell>
                 <TableCell>End Date</TableCell>
                 <TableCell>Completion Status</TableCell>

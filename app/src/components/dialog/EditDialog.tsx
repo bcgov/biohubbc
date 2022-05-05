@@ -5,16 +5,16 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogTitle from '@material-ui/core/DialogTitle';
 import useTheme from '@material-ui/core/styles/useTheme';
 import useMediaQuery from '@material-ui/core/useMediaQuery';
-import { Formik } from 'formik';
-import React from 'react';
+import { Formik, FormikValues } from 'formik';
+import React, { PropsWithChildren } from 'react';
 
-export interface IEditDialogComponentProps {
+export interface IEditDialogComponentProps<T> {
   element: any;
-  initialValues: any;
+  initialValues: T;
   validationSchema: any;
 }
 
-export interface IEditDialogProps {
+export interface IEditDialogProps<T> {
   /**
    * The dialog window title text.
    *
@@ -44,7 +44,7 @@ export interface IEditDialogProps {
    * @type {IEditDialogComponentProps}
    * @memberof IEditDialogProps
    */
-  component: IEditDialogComponentProps;
+  component: IEditDialogComponentProps<T>;
 
   /**
    * Error message to display when an error exists
@@ -62,17 +62,18 @@ export interface IEditDialogProps {
    *
    * @memberof IEditDialogProps
    */
-  onSave: (values: any) => void;
+  onSave: (values: T) => void;
 }
 
 /**
  * A dialog for displaying a component for editing purposes and giving the user the option to say
  * `Yes`(Save) or `No`.
  *
- * @param {*} props
+ * @template T
+ * @param {PropsWithChildren<IEditDialogProps<T>>} props
  * @return {*}
  */
-export const EditDialog: React.FC<IEditDialogProps> = (props) => {
+export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEditDialogProps<T>>) => {
   const theme = useTheme();
 
   const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
