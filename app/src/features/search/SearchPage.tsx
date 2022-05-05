@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import centroid from '@turf/centroid';
+import centerOfMass from '@turf/center-of-mass'
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer, { IClusteredPointGeometries } from 'components/map/MapContainer';
 import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
@@ -61,7 +61,7 @@ const SearchPage: React.FC = () => {
         const feature = generateValidGeometryCollection(result.geometry, result.id).geometryCollection[0];
 
         clusteredPointGeometries.push({
-          coordinates: centroid(feature as any).geometry.coordinates,
+          coordinates: centerOfMass(feature as any).geometry.coordinates,
           popupComponent: <SearchFeaturePopup featureData={result} />
         });
       });
