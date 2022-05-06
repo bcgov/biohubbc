@@ -21,7 +21,7 @@ describe('useAdminApi', () => {
     expect(result).toEqual(true);
   });
 
-  it('getAccessRequests works as expected', async () => {
+  it('getAdministrativeActivities works as expected', async () => {
     const response = [
       {
         id: 1,
@@ -38,25 +38,9 @@ describe('useAdminApi', () => {
 
     mock.onGet(`/api/administrative-activities`).reply(200, response);
 
-    const result = await useAdminApi(axios).getAccessRequests();
+    const result = await useAdminApi(axios).getAdministrativeActivities();
 
     expect(result).toEqual(response);
-  });
-
-  it('updateAccessRequest works as expected', async () => {
-    mock.onPut(`/api/access-request`).reply(200, true);
-
-    const result = await useAdminApi(axios).updateAccessRequest('userIdentifier', 'identitySource', 2, 2, [1, 2, 3]);
-
-    expect(result).toEqual(true);
-  });
-
-  it('updateAdministrativeActivity works as expected', async () => {
-    mock.onPut(`/api/administrative-activity`).reply(200, true);
-
-    const result = await useAdminApi(axios).updateAdministrativeActivity(2, 2);
-
-    expect(result).toEqual(true);
   });
 
   it('createAdministrativeActivity works as expected', async () => {

@@ -3,7 +3,6 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -13,14 +12,15 @@ import { DialogContext } from 'contexts/dialogContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useCodes from 'hooks/useCodes';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import { IBCeIDAccessRequestDataObject, IIDIRAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
+import React, { ReactElement, useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSchema } from './BCeIDRequestForm';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {
@@ -29,13 +29,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   }
 }));
 
-interface IAccessRequestForm {
-  role: number;
-  work_from_regional_office: string;
-  regional_offices: number[];
-  comments: string;
-}
-
 /**
  * Access Request form
  *
@@ -43,8 +36,6 @@ interface IAccessRequestForm {
  */
 export const AccessRequestPage: React.FC = () => {
   const classes = useStyles();
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
@@ -66,23 +57,7 @@ export const AccessRequestPage: React.FC = () => {
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
-  useEffect(() => {
-    const getAllCodeSets = async () => {
-      const response = await biohubApi.codes.getAllCodeSets();
-
-      // TODO error handling/user messaging - Cant submit an access request if required code sets fail to fetch
-
-      setCodes(() => {
-        setIsLoadingCodes(false);
-        return response;
-      });
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getAllCodeSets();
-      setIsLoadingCodes(true);
-    }
-  }, [biohubApi, isLoadingCodes, codes]);
+  const codes = useCodes();
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -94,14 +69,14 @@ export const AccessRequestPage: React.FC = () => {
     });
   };
 
-  const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
+  const handleSubmitAccessRequest = async (values: IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject) => {
     try {
       const response = await biohubApi.admin.createAdministrativeActivity({
         ...values,
-        name: keycloakWrapper?.displayName,
-        username: keycloakWrapper?.getUserIdentifier(),
-        email: keycloakWrapper?.email,
-        identitySource: keycloakWrapper?.getIdentitySource()
+        name: keycloakWrapper?.displayName as string,
+        username: keycloakWrapper?.getUserIdentifier() as string,
+        email: keycloakWrapper?.email as string,
+        identitySource: keycloakWrapper?.getIdentitySource() as string
       });
 
       if (!response?.id) {
@@ -142,9 +117,10 @@ export const AccessRequestPage: React.FC = () => {
     return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
 
-  let initialValues: any;
-  let validationSchema: any;
-  let requestForm: any;
+  let initialValues: IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject;
+  let validationSchema: typeof IDIRRequestFormYupSchema | typeof BCeIDRequestFormYupSchema;
+  let requestForm: ReactElement;
+
   if (keycloakWrapper?.getIdentitySource() === SYSTEM_IDENTITY_SOURCE.BCEID) {
     initialValues = BCeIDRequestFormInitialValues;
     validationSchema = BCeIDRequestFormYupSchema;
@@ -152,7 +128,7 @@ export const AccessRequestPage: React.FC = () => {
   } else {
     initialValues = IDIRRequestFormInitialValues;
     validationSchema = IDIRRequestFormYupSchema;
-    requestForm = <IDIRRequestForm codes={codes} />;
+    requestForm = <IDIRRequestForm codes={codes.codes} />;
   }
 
   return (
@@ -197,11 +173,6 @@ export const AccessRequestPage: React.FC = () => {
                         />
                       )}
                     </Box>
-                    {/*
-                      CircularProgress styling examples:
-                      https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
-                      https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
-                    */}
                     <Button
                       variant="outlined"
                       color="primary"

@@ -1,6 +1,7 @@
 import { AxiosInstance } from 'axios';
 import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import {
+  IAccessRequestDataObject,
   IgcNotifyGenericMessage,
   IgcNotifyRecipient,
   IGetAccessRequestsListResponse
@@ -36,14 +37,16 @@ const useAdminApi = (axios: AxiosInstance) => {
   /**
    * Get user access requests
    *
+   * @param {AdministrativeActivityType[]} [type=[]]
    * @param {AdministrativeActivityStatusType[]} [status=[]]
-   * @returns {*} {Promise<IGetAccessRequestsListResponse>}
+   * @return {*}  {Promise<IGetAccessRequestsListResponse[]>}
    */
-  const getAccessRequests = async (
+  const getAdministrativeActivities = async (
+    type: AdministrativeActivityType[] = [],
     status: AdministrativeActivityStatusType[] = []
   ): Promise<IGetAccessRequestsListResponse[]> => {
     const { data } = await axios.get(`/api/administrative-activities`, {
-      params: { type: AdministrativeActivityType.SYSTEM_ACCESS, status },
+      params: { type, status },
       paramsSerializer: (params) => {
         return qs.stringify(params);
       }
@@ -52,48 +55,23 @@ const useAdminApi = (axios: AxiosInstance) => {
     return data;
   };
 
-  /**
-   * Update a user access request
-   *
-   * @param {string} userIdentifier
-   * @param {string} identitySource
-   * @param {number} requestId
-   * @param {string} requestStatusTypeId
-   * @param {number[]} [roleIds=[]]
-   * @returns {*} {Promise<void>}
-   */
-  const updateAccessRequest = async (
+  const approveAccessRequest = async (
+    administrativeActivityId: number,
     userIdentifier: string,
     identitySource: string,
-    requestId: number,
-    requestStatusTypeId: number,
     roleIds: number[] = []
   ): Promise<void> => {
-    const { data } = await axios.put(`/api/access-request`, {
+    const { data } = await axios.put(`/api/administrative-activity/system-access/${administrativeActivityId}/approve`, {
       userIdentifier,
       identitySource,
-      requestId,
-      requestStatusTypeId,
       roleIds: roleIds
     });
 
     return data;
   };
 
-  /**
-   * Update an administrative activity
-   *
-   * @param {AxiosInstance} axios
-   * @returns {*} {Promise<IGetAccessRequestsListResponse>}
-   */
-  const updateAdministrativeActivity = async (
-    administrativeActivityId: number,
-    administrativeActivityStatusTypeId: number
-  ): Promise<void> => {
-    const { data } = await axios.put(`/api/administrative-activity`, {
-      id: administrativeActivityId,
-      status: administrativeActivityStatusTypeId
-    });
+  const denyAccessRequest = async (administrativeActivityId: number): Promise<void> => {
+    const { data } = await axios.put(`/api/administrative-activity/system-access/${administrativeActivityId}/reject`);
 
     return data;
   };
@@ -101,11 +79,11 @@ const useAdminApi = (axios: AxiosInstance) => {
   /**
    * Create a new access request record.
    *
-   * @param {unknown} administrativeActivityData
+   * @param {IAccessRequestDataObject} administrativeActivityData
    * @return {*} {Promise<IGetAccessRequestsListResponse>}
    */
   const createAdministrativeActivity = async (
-    administrativeActivityData: unknown
+    administrativeActivityData: IAccessRequestDataObject
   ): Promise<IGetAccessRequestsListResponse> => {
     const { data } = await axios.post('/api/administrative-activity', administrativeActivityData);
 
@@ -158,9 +136,9 @@ const useAdminApi = (axios: AxiosInstance) => {
 
   return {
     sendGCNotification,
-    getAccessRequests,
-    updateAccessRequest,
-    updateAdministrativeActivity,
+    getAdministrativeActivities,
+    approveAccessRequest,
+    denyAccessRequest,
     createAdministrativeActivity,
     hasPendingAdministrativeActivities,
     addSystemUserRoles,
