@@ -1,18 +1,17 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
+import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../paths/administrative-activities';
 
 /**
- * SQL query to get a list of administrative activities, optionally filtered by the administrative activity type name.
+ * SQL query to get a list of administrative activities.
  *
- * @param {string} [administrativeActivityTypeName]
+ * @param {string[]} [administrativeActivityTypeNames]
+ * @param {string[]} [administrativeActivityStatusTypes]
  * @returns {SQLStatement} sql query object
  */
 export const getAdministrativeActivitiesSQL = (
-  administrativeActivityTypeName?: string,
+  administrativeActivityTypeNames?: string[],
   administrativeActivityStatusTypes?: string[]
-): SQLStatement | null => {
-  if (!administrativeActivityTypeName || !administrativeActivityStatusTypes) {
-    return null;
-  }
+): SQLStatement => {
   const sqlStatement = SQL`
     SELECT
       aa.administrative_activity_id as id,
@@ -38,11 +37,21 @@ export const getAdministrativeActivitiesSQL = (
       1 = 1
   `;
 
-  if (administrativeActivityTypeName) {
+  if (administrativeActivityTypeNames?.length) {
     sqlStatement.append(SQL`
       AND
-        aat.name = ${administrativeActivityTypeName}
+        aat.name IN (
     `);
+
+    // Add first element
+    sqlStatement.append(SQL`${administrativeActivityTypeNames[0]}`);
+
+    for (let idx = 1; idx < administrativeActivityTypeNames.length; idx++) {
+      // Add subsequent elements, which get a comma prefix
+      sqlStatement.append(SQL`, ${administrativeActivityTypeNames[idx]}`);
+    }
+
+    sqlStatement.append(SQL`)`);
   }
 
   if (administrativeActivityStatusTypes?.length) {
@@ -65,27 +74,6 @@ export const getAdministrativeActivitiesSQL = (
   sqlStatement.append(`;`);
 
   return sqlStatement;
-};
-
-/**
- * SQL query to get a list of administrative activities, optionally filtered by the administrative activity type name.
- *
- * @param {number} [administrativeActivityTypeId]
- * @returns {SQLStatement} sql query object
- */
-export const getAdministrativeActivityById = (administrativeActivityTypeId: number): SQLStatement | null => {
-  if (!administrativeActivityTypeId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      *
-    FROM
-      administrative_activity_status_type
-    WHERE
-      administrative_activity_status_type_id = ${administrativeActivityTypeId}
-    ;`;
 };
 
 /**
@@ -147,22 +135,26 @@ export const countPendingAdministrativeActivitiesSQL = (userIdentifier: string):
  * SQL query update an existing administrative activity record.
  *
  * @param {number} administrativeActivityId
- * @param {number} administrativeActivityStatusTypeId
+ * @param {ADMINISTRATIVE_ACTIVITY_STATUS_TYPE} administrativeActivityStatusTypeName
  * @return {*}  {(SQLStatement | null)}
  */
 export const putAdministrativeActivitySQL = (
   administrativeActivityId: number,
-  administrativeActivityStatusTypeId: number
-): SQLStatement | null => {
-  if (!administrativeActivityId || !administrativeActivityStatusTypeId) {
-    return null;
-  }
-
+  administrativeActivityStatusTypeName: ADMINISTRATIVE_ACTIVITY_STATUS_TYPE
+): SQLStatement => {
   return SQL`
+
     UPDATE
       administrative_activity
     SET
-      administrative_activity_status_type_id = ${administrativeActivityStatusTypeId}
+      administrative_activity_status_type_id = (
+        SELECT
+          administrative_activity_status_type_id
+        FROM
+          administrative_activity_status_type
+        WHERE
+          name = ${administrativeActivityStatusTypeName}
+      )
     WHERE
       administrative_activity_id = ${administrativeActivityId}
     RETURNING

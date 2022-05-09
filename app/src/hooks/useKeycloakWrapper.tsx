@@ -9,8 +9,8 @@ export enum SYSTEM_IDENTITY_SOURCE {
   IDIR = 'IDIR'
 }
 
-const raw_bceid_identity_sources = ['BCEID-BASIC-AND-BUSINESS', 'BCEID'];
-const raw_idir_identity_sources = ['IDIR'];
+const EXTERNAL_BCEID_IDENTITY_SOURCES = ['BCEID-BASIC-AND-BUSINESS', 'BCEID'];
+const EXTERNAL_IDIR_IDENTITY_SOURCES = ['IDIR'];
 
 /**
  * IUserInfo interface, represents the userinfo provided by keycloak.
@@ -140,6 +140,9 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   /**
    * Parses out the identity source portion of the preferred_username from the token.
    *
+   * Note: Some identity sources have multiple variations (ie: BCEID) and are mapped to a single value supported by
+   * this app.
+   *
    * @param {object} keycloakToken
    * @return {*} {(string | null)}
    */
@@ -150,11 +153,11 @@ function useKeycloakWrapper(): IKeycloakWrapper {
       return null;
     }
 
-    if (raw_bceid_identity_sources.includes(identitySource)) {
+    if (EXTERNAL_BCEID_IDENTITY_SOURCES.includes(identitySource)) {
       return SYSTEM_IDENTITY_SOURCE.BCEID;
     }
 
-    if (raw_idir_identity_sources.includes(identitySource)) {
+    if (EXTERNAL_IDIR_IDENTITY_SOURCES.includes(identitySource)) {
       return SYSTEM_IDENTITY_SOURCE.IDIR;
     }
 

@@ -11,6 +11,7 @@ exports[`General Information Form renders correctly the empty component correctl
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="survey_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -403,6 +404,7 @@ exports[`General Information Form renders correctly the empty component correctl
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="biologist_first_name"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -450,6 +452,7 @@ exports[`General Information Form renders correctly the empty component correctl
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="biologist_last_name"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -785,6 +788,7 @@ exports[`General Information Form renders correctly the filled component correct
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="survey_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -1177,6 +1181,7 @@ exports[`General Information Form renders correctly the filled component correct
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="biologist_first_name"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -1224,6 +1229,7 @@ exports[`General Information Form renders correctly the filled component correct
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="biologist_last_name"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -1559,6 +1565,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="survey_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
@@ -1958,6 +1965,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="biologist_first_name"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
@@ -2012,6 +2020,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="biologist_last_name"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"

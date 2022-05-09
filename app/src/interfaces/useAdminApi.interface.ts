@@ -1,14 +1,19 @@
-export interface IAccessRequestDataObject {
+export type IIDIRAccessRequestDataObject = {
+  role: number;
+  reason: string;
+};
+
+export type IBCeIDAccessRequestDataObject = {
+  company: string;
+  reason: string;
+};
+
+export type IAccessRequestDataObject = {
   name: string;
   username: string;
   email: string;
   identitySource: string;
-  role: number;
-  company: string;
-  regional_offices: number[];
-  comments: string;
-  request_reason: string;
-}
+} & (IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject);
 
 export interface IGetAccessRequestsListResponse {
   id: number;
@@ -23,7 +28,6 @@ export interface IGetAccessRequestsListResponse {
 }
 
 export interface IgcNotifyGenericMessage {
-  subject: string;
   header: string;
   body1: string;
   body2: string;

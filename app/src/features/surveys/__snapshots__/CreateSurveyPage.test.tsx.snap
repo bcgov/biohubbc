@@ -112,6 +112,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="survey_name"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -504,6 +505,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      data-testid="biologist_first_name"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -551,6 +553,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      data-testid="biologist_last_name"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -984,6 +987,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      data-testid="additional_details"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -1450,6 +1454,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               >
                 <div
                   class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                  data-testid="survey_area_name"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
