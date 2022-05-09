@@ -60,6 +60,8 @@ describe('ProjectPage', () => {
     mockBiohubApi().survey.getSurveysList.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().project.publishProject.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

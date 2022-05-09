@@ -546,6 +546,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     >
                       <div
                         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                        data-testid="first_name"
                       >
                         <label
                           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -593,6 +594,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     >
                       <div
                         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                        data-testid="last_name"
                       >
                         <label
                           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -640,6 +642,7 @@ exports[`CreateProjectPage renders the initial default page correctly 1`] = `
                     >
                       <div
                         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                        data-testid="email_address"
                       >
                         <label
                           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
