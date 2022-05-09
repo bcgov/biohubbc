@@ -22,7 +22,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
     the max character length.
   */
   const willTruncateText = (body: string): boolean => {
-    return body ? body.trim().length > maxCharLength : false;
+    return body?.trim().length > maxCharLength || false;
   };
 
   const [isTruncatedText, setIsTruncatedText] = useState(willTruncateText(text));
