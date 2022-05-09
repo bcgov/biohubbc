@@ -21,8 +21,8 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
     Determines whether or not the given body of text will be truncated based on
     the max character length.
   */
-  const willTruncateText = (body: string): boolean => {
-    return body?.trim().length > maxCharLength || false;
+  const willTruncateText = (content: string): boolean => {
+    return content?.trim().length > maxCharLength || false;
   };
 
   const [isTruncatedText, setIsTruncatedText] = useState(willTruncateText(text));
