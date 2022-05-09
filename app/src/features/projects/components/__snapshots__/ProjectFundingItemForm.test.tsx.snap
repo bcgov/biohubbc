@@ -93,6 +93,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="agency_project_id"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -400,6 +401,7 @@ exports[`ProjectFundingItemForm auto selection of investment action category wor
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="agency_project_id"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -778,6 +780,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 1 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="agency_project_id"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
@@ -1156,6 +1159,7 @@ exports[`ProjectFundingItemForm renders correctly with agency 2 1`] = `
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="agency_project_id"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
@@ -1463,6 +1467,7 @@ exports[`ProjectFundingItemForm renders correctly with any agency other than 1 o
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="agency_project_id"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
@@ -1772,6 +1777,7 @@ exports[`ProjectFundingItemForm renders correctly with default empty values 1`] 
         >
           <div
             class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+            data-testid="agency_project_id"
           >
             <label
               class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"

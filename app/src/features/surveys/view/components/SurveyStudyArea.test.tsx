@@ -33,8 +33,6 @@ const renderContainer = () => {
   );
 };
 
-jest.spyOn(console, 'debug').mockImplementation(() => {});
-
 describe('SurveyStudyArea', () => {
   beforeEach(() => {
     // clear mocks before each test

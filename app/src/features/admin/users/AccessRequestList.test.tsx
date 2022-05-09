@@ -10,7 +10,8 @@ import { codes } from 'test-helpers/code-helpers';
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   admin: {
-    updateAccessRequest: jest.fn()
+    approveAccessRequest: jest.fn(),
+    denyAccessRequest: jest.fn()
   }
 };
 
@@ -29,7 +30,8 @@ const renderContainer = (
 describe('AccessRequestList', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().admin.updateAccessRequest.mockClear();
+    mockBiohubApi().admin.approveAccessRequest.mockClear();
+    mockBiohubApi().admin.denyAccessRequest.mockClear();
   });
 
   afterEach(() => {
@@ -62,9 +64,7 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
-            regional_offices: [1, 2],
-            comments: 'test comment',
-            request_reason: 'my reason'
+            reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -99,9 +99,7 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
-            regional_offices: [1, 2],
-            comments: 'test comment',
-            request_reason: 'my reason'
+            reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -136,9 +134,7 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
-            regional_offices: [1, 2],
-            comments: 'test comment',
-            request_reason: 'my reason'
+            reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -180,10 +176,10 @@ describe('AccessRequestList', () => {
     });
   });
 
-  it('opens the review dialog and calls updateAccessRequest on approval', async () => {
+  it('opens the review dialog and calls approveAccessRequest on approval', async () => {
     const refresh = jest.fn();
 
-    const { getByText, getByRole } = renderContainer(
+    const { getByText, getByRole, getByTestId } = renderContainer(
       [
         {
           id: 1,
@@ -200,9 +196,7 @@ describe('AccessRequestList', () => {
             role: 2,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
-            regional_offices: [1, 2],
-            comments: 'test comment',
-            request_reason: 'my reason'
+            reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -218,26 +212,25 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       // wait for dialog to open
       expect(getByText('Review Access Request')).toBeVisible();
-      fireEvent.click(getByText('Approve'));
+      fireEvent.click(getByTestId('request_approve_button'));
     });
 
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
+      expect(mockBiohubApi().admin.approveAccessRequest).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().admin.approveAccessRequest).toHaveBeenCalledWith(
+        1,
         'testusername',
         SYSTEM_IDENTITY_SOURCE.IDIR,
-        1,
-        2,
         [2]
       );
     });
   });
 
-  it('opens the review dialog and calls updateAccessRequest on denial', async () => {
+  it('opens the review dialog and calls denyAccessRequest on denial', async () => {
     const refresh = jest.fn();
 
-    const { getByText, getByRole } = renderContainer(
+    const { getByText, getByRole, getByTestId } = renderContainer(
       [
         {
           id: 1,
@@ -254,9 +247,7 @@ describe('AccessRequestList', () => {
             role: 1,
             identitySource: SYSTEM_IDENTITY_SOURCE.IDIR,
             company: 'test company',
-            regional_offices: [1, 2],
-            comments: 'test comment',
-            request_reason: 'my reason'
+            reason: 'my reason'
           },
           create_date: '2020-04-20'
         }
@@ -272,18 +263,13 @@ describe('AccessRequestList', () => {
     await waitFor(() => {
       // wait for dialog to open
       expect(getByText('Review Access Request')).toBeVisible();
-      fireEvent.click(getByText('Deny'));
+      fireEvent.click(getByTestId('request_deny_button'));
     });
 
     await waitFor(() => {
       expect(refresh).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().admin.updateAccessRequest).toHaveBeenCalledWith(
-        'testusername',
-        SYSTEM_IDENTITY_SOURCE.IDIR,
-        1,
-        3
-      );
+      expect(mockBiohubApi().admin.denyAccessRequest).toHaveBeenCalledTimes(1);
+      expect(mockBiohubApi().admin.denyAccessRequest).toHaveBeenCalledWith(1);
     });
   });
 });
