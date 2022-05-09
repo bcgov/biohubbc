@@ -17,7 +17,15 @@ export interface IReadMoreFieldProps {
 export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
   const { text, maxCharLength } = props;
 
-  const [isTruncatedText, setIsTruncatedText] = useState(text?.length > maxCharLength);
+  /*
+    Determines whether or not the given body of text will be truncated based on
+    the max character length.
+  */
+  const willTruncateText = (body: string): boolean => {
+    return body ? body.trim().length > maxCharLength : false;
+  };
+
+  const [isTruncatedText, setIsTruncatedText] = useState(willTruncateText(text));
 
   const renderParagraph = (paragraph: string) => {
     if (paragraph) {
@@ -66,7 +74,7 @@ export const ReadMoreField: React.FC<IReadMoreFieldProps> = (props) => {
           {text?.split('\n').map((paragraph: string) => {
             return renderParagraph(paragraph);
           })}
-          {text?.length > maxCharLength && (
+          {willTruncateText(text) && (
             <Box mt={3}>
               <Button size="small" variant="outlined" color="primary" onClick={() => setIsTruncatedText(true)}>
                 Read Less
