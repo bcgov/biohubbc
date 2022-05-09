@@ -11,6 +11,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="location_description"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -49,12 +50,12 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-5 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-6 MuiTypography-body1"
         >
           Project Boundary *
         </p>
         <div
-          class="MuiBox-root MuiBox-root-8"
+          class="MuiBox-root MuiBox-root-9"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -62,7 +63,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
           <div
-            class="MuiBox-root MuiBox-root-9"
+            class="MuiBox-root MuiBox-root-10"
           >
             <p
               class="MuiTypography-root MuiTypography-body1"
@@ -72,7 +73,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-11"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -104,7 +105,7 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-11"
+            class="MuiBox-root MuiBox-root-12"
           >
             <div
               class="MuiFormControl-root"
@@ -167,10 +168,10 @@ exports[`ProjectLocationForm renders correctly with default empty values 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-13"
         />
         <div
-          class="MuiBox-root MuiBox-root-13"
+          class="MuiBox-root MuiBox-root-14"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -451,6 +452,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="location_description"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled"
@@ -475,10 +477,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-30 PrivateNotchedOutline-legendNotched-31"
+                class="PrivateNotchedOutline-legendLabelled-32 PrivateNotchedOutline-legendNotched-33"
               >
                 <span>
                   Location Description
@@ -498,12 +500,12 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-32 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-35 MuiTypography-body1"
         >
           Project Boundary *
         </p>
         <div
-          class="MuiBox-root MuiBox-root-35"
+          class="MuiBox-root MuiBox-root-38"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -511,7 +513,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
           <div
-            class="MuiBox-root MuiBox-root-36"
+            class="MuiBox-root MuiBox-root-39"
           >
             <p
               class="MuiTypography-root MuiTypography-body1"
@@ -521,7 +523,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-37"
+          class="MuiBox-root MuiBox-root-40"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -553,7 +555,7 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-38"
+            class="MuiBox-root MuiBox-root-41"
           >
             <div
               class="MuiFormControl-root"
@@ -601,10 +603,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-28 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-30 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-30"
+                    class="PrivateNotchedOutline-legendLabelled-32"
                   >
                     <span>
                       Select Layer
@@ -616,10 +618,10 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-39"
+          class="MuiBox-root MuiBox-root-42"
         />
         <div
-          class="MuiBox-root MuiBox-root-40"
+          class="MuiBox-root MuiBox-root-43"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -897,25 +899,35 @@ exports[`ProjectLocationForm renders correctly with errors on fields 1`] = `
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-41"
-        >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-33 MuiButton-outlinedPrimary"
-            role="button"
-            tabindex="0"
+          <div
+            class="MuiBox-root MuiBox-root-44"
           >
-            <span
-              class="MuiButton-label"
+            <button
+              aria-label="zoom to initial extent"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-zoomToBoundaryExtentBtn-34"
+              tabindex="0"
+              title="Zoom to initial extent"
+              type="button"
             >
-              Zoom to Boundary Extent
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -934,6 +946,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="location_description"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
@@ -957,10 +970,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             </textarea>
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
+                class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
               >
                 <span>
                   Location Description
@@ -974,12 +987,12 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-18 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-20 MuiTypography-body1"
         >
           Project Boundary *
         </p>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiBox-root MuiBox-root-23"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -987,7 +1000,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
           <div
-            class="MuiBox-root MuiBox-root-22"
+            class="MuiBox-root MuiBox-root-24"
           >
             <p
               class="MuiTypography-root MuiTypography-body1"
@@ -997,7 +1010,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-25"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1029,7 +1042,7 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-24"
+            class="MuiBox-root MuiBox-root-26"
           >
             <div
               class="MuiFormControl-root"
@@ -1077,10 +1090,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-16"
+                    class="PrivateNotchedOutline-legendLabelled-17"
                   >
                     <span>
                       Select Layer
@@ -1092,10 +1105,10 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-25"
+          class="MuiBox-root MuiBox-root-27"
         />
         <div
-          class="MuiBox-root MuiBox-root-26"
+          class="MuiBox-root MuiBox-root-28"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1373,25 +1386,35 @@ exports[`ProjectLocationForm renders correctly with existing location values 1`]
               </div>
             </div>
           </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-27"
-        >
-          <label
-            aria-disabled="false"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-uploadButton-19 MuiButton-outlinedPrimary"
-            role="button"
-            tabindex="0"
+          <div
+            class="MuiBox-root MuiBox-root-29"
           >
-            <span
-              class="MuiButton-label"
+            <button
+              aria-label="zoom to initial extent"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-zoomToBoundaryExtentBtn-19"
+              tabindex="0"
+              title="Zoom to initial extent"
+              type="button"
             >
-              Zoom to Boundary Extent
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </label>
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
         </div>
       </div>
     </div>

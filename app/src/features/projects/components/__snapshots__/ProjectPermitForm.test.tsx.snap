@@ -53,6 +53,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                data-testid="permits.[0].permit_number"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -207,6 +208,7 @@ exports[`ProjectPermitForm renders correctly with error on the permits field due
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                data-testid="permits.[1].permit_number"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -405,6 +407,7 @@ exports[`ProjectPermitForm renders correctly with errors on the permit_number an
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                data-testid="permits.[0].permit_number"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
@@ -602,6 +605,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                data-testid="permits.[0].permit_number"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -756,6 +760,7 @@ exports[`ProjectPermitForm renders correctly with existing permit values 1`] = `
             >
               <div
                 class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                data-testid="permits.[1].permit_number"
               >
                 <label
                   class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"

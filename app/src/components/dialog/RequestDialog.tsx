@@ -81,6 +81,7 @@ const RequestDialog: React.FC<IRequestDialog> = (props) => {
             </DialogContent>
             <DialogActions>
               <Button
+                data-testid="request_approve_button"
                 startIcon={<Icon path={mdiCheck} size={1} />}
                 onClick={formikProps.submitForm}
                 color="primary"
@@ -89,6 +90,7 @@ const RequestDialog: React.FC<IRequestDialog> = (props) => {
                 Approve
               </Button>
               <Button
+                data-testid="request_deny_button"
                 startIcon={<Icon path={mdiWindowClose} size={1} />}
                 onClick={props.onDeny}
                 color="primary"

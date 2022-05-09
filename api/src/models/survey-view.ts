@@ -132,6 +132,25 @@ export class GetFocalSpeciesData {
   }
 }
 
+export class ParsedSpeciesIds {
+  focal_species: string[];
+  ancillary_species: string[];
+
+  constructor(input?: any[]) {
+    this.focal_species = [];
+    this.ancillary_species = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        if (!item.is_focal) {
+          this.ancillary_species.push(item.id);
+        } else {
+          this.focal_species.push(item.id);
+        }
+      });
+  }
+}
+
 export type SurveyObject = {
   survey_details: GetSurveyData;
   species: GetSpeciesData;

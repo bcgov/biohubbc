@@ -5,7 +5,7 @@ import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSch
 
 describe('BCeIDRequestForm', () => {
   it('matches the snapshot', () => {
-    const { asFragment } = render(
+    const { getByTestId } = render(
       <Formik
         initialValues={BCeIDRequestFormInitialValues}
         validationSchema={BCeIDRequestFormYupSchema}
@@ -14,6 +14,7 @@ describe('BCeIDRequestForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByTestId('company')).toBeVisible();
+    expect(getByTestId('reason')).toBeVisible();
   });
 });

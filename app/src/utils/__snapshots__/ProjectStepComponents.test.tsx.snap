@@ -99,6 +99,7 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="first_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -146,6 +147,7 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="last_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -193,6 +195,7 @@ exports[`ProjectStepComponents renders the project contact 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="email_address"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -473,6 +476,7 @@ exports[`ProjectStepComponents renders the project details with the codes values
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="project_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -805,6 +809,7 @@ exports[`ProjectStepComponents renders the project details without the codes val
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="project_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -1289,6 +1294,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="location_description"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -1327,12 +1333,12 @@ exports[`ProjectStepComponents renders the project location 1`] = `
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <p
-          class="MuiTypography-root makeStyles-bold-72 MuiTypography-body1"
+          class="MuiTypography-root makeStyles-bold-73 MuiTypography-body1"
         >
           Project Boundary *
         </p>
         <div
-          class="MuiBox-root MuiBox-root-75"
+          class="MuiBox-root MuiBox-root-76"
         >
           <p
             class="MuiTypography-root MuiTypography-body1"
@@ -1340,7 +1346,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </p>
           <div
-            class="MuiBox-root MuiBox-root-76"
+            class="MuiBox-root MuiBox-root-77"
           >
             <p
               class="MuiTypography-root MuiTypography-body1"
@@ -1350,7 +1356,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-77"
+          class="MuiBox-root MuiBox-root-78"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1382,7 +1388,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-78"
+            class="MuiBox-root MuiBox-root-79"
           >
             <div
               class="MuiFormControl-root"
@@ -1445,10 +1451,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           </div>
         </div>
         <div
-          class="MuiBox-root MuiBox-root-79"
+          class="MuiBox-root MuiBox-root-80"
         />
         <div
-          class="MuiBox-root MuiBox-root-80"
+          class="MuiBox-root MuiBox-root-81"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1729,6 +1735,7 @@ exports[`ProjectStepComponents renders the project objectives 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="objectives"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -1775,6 +1782,7 @@ exports[`ProjectStepComponents renders the project objectives 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="caveats"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"

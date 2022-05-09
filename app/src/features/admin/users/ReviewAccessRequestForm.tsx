@@ -1,33 +1,29 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import MultiAutocompleteFieldVariableSize, {
-  IMultiAutocompleteFieldOption
-} from 'components/fields/MultiAutocompleteFieldVariableSize';
+import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
-import { CodeSet, ICode } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export interface IReviewAccessRequestForm {
-  system_roles: number[];
+  system_role: number;
 }
 
 export const ReviewAccessRequestFormInitialValues: IReviewAccessRequestForm = {
-  system_roles: []
+  system_role: ('' as unknown) as number
 };
 
 export const ReviewAccessRequestFormYupSchema = yup.object().shape({
-  system_roles: yup.array().of(yup.number()).min(1, 'Required').required('Required')
+  system_role: yup.number().nullable().notRequired()
 });
 
 export interface IReviewAccessRequestFormProps {
   request: IGetAccessRequestsListResponse;
-  system_roles: IMultiAutocompleteFieldOption[];
-  regional_offices: CodeSet<ICode>;
+  system_roles: IAutocompleteFieldOption<number>[];
 }
 
 /**
@@ -38,14 +34,6 @@ export interface IReviewAccessRequestFormProps {
 const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props) => {
   const { handleSubmit } = useFormikContext<IReviewAccessRequestForm>();
 
-  const regional_offices =
-    props.request.data.regional_offices
-      ?.map((regionId) => props.regional_offices.find((code) => code.id === regionId)?.name)
-      .join(', ') || 'Not Applicable';
-
-  const company = props.request.data.company || 'Not Applicable';
-  const request_reason = props.request.data.request_reason || 'Not Applicable';
-
   return (
     <Box>
       <Box mb={5}>
@@ -54,7 +42,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
         </Box>
         <dl>
           <Grid container spacing={2}>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Name
               </Typography>
@@ -62,15 +50,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 {props.request.data.name}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Username
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {props.request.data.identitySource.toUpperCase()}/{props.request.data.username}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Email Address
               </Typography>
@@ -78,24 +58,17 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 {props.request.data.email}
               </Typography>
             </Grid>
-            <Grid item xs={12} sm={6} md={4}>
+
+            <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Regional Offices
+                Username
               </Typography>
               <Typography component="dd" variant="body1">
-                {regional_offices}
-              </Typography>
-            </Grid>
-            <Grid item xs={12} sm={6} md={4}>
-              <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Company
-              </Typography>
-              <Typography component="dd" variant="body1">
-                {company}
+                {props.request.data.identitySource.toUpperCase()}/{props.request.data.username}
               </Typography>
             </Grid>
 
-            <Grid item xs={12} sm={6} md={4}>
+            <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Request Date
               </Typography>
@@ -103,12 +76,13 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 {getFormattedDate(DATE_FORMAT.ShortDateFormatMonthFirst, props.request.create_date)}
               </Typography>
             </Grid>
-            <Grid item xs={12}>
+
+            <Grid item xs={12} md={6}>
               <Typography component="dt" variant="subtitle2" color="textSecondary">
-                Additional Comments
+                Company
               </Typography>
               <Typography component="dd" variant="body1">
-                {props.request.data.comments || 'Not Applicable'}
+                {('company' in props.request.data && props.request.data.company) || 'Not Applicable'}
               </Typography>
             </Grid>
 
@@ -117,7 +91,7 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
                 Reason
               </Typography>
               <Typography component="dd" variant="body1">
-                {request_reason}
+                {props.request.data.reason}
               </Typography>
             </Grid>
           </Grid>
@@ -125,16 +99,16 @@ const ReviewAccessRequestForm: React.FC<IReviewAccessRequestFormProps> = (props)
       </Box>
       <Box mb={5}>
         <Box mb={2}>
-          <Typography variant="h3">Review / Update Role</Typography>
+          <Typography variant="h3">Review / Update Requested System Role</Typography>
         </Box>
         <form onSubmit={handleSubmit}>
           <Grid container spacing={2}>
             <Grid item xs={12}>
-              <MultiAutocompleteFieldVariableSize
-                id={'system_roles'}
-                label={'Requested Role'}
+              <AutocompleteField
+                id="system_role"
+                name="system_role"
+                label={'System Role'}
                 options={props.system_roles}
-                required={true}
               />
             </Grid>
           </Grid>

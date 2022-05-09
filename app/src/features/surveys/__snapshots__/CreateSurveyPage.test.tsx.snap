@@ -3,13 +3,13 @@
 exports[`CreateSurveyPage renders correctly when codes and project data are loaded 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-153"
+    class="MuiBox-root MuiBox-root-155"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-154"
+        class="MuiBox-root MuiBox-root-156"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -22,7 +22,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-148 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-150 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -42,7 +42,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             >
               <a
                 aria-current="page"
-                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-148 MuiTypography-colorPrimary"
+                class="MuiTypography-root MuiLink-root MuiLink-underlineHover makeStyles-breadCrumbLink-150 MuiTypography-colorPrimary"
               >
                 <p
                   class="MuiTypography-root MuiTypography-body2"
@@ -70,7 +70,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-155"
+        class="MuiBox-root MuiBox-root-157"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -79,13 +79,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
         </h1>
       </div>
       <div
-        class="MuiPaper-root MuiBox-root MuiBox-root-156 MuiPaper-elevation1 MuiPaper-rounded"
+        class="MuiPaper-root MuiBox-root MuiBox-root-158 MuiPaper-elevation1 MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-157"
+          class="MuiBox-root MuiBox-root-159"
         >
           <div
-            class="MuiBox-root MuiBox-root-158"
+            class="MuiBox-root MuiBox-root-160"
           >
             <h2
               class="MuiTypography-root MuiTypography-h2"
@@ -93,7 +93,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               General Information
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-159"
+              class="MuiBox-root MuiBox-root-161"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -101,7 +101,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-160"
+            class="MuiBox-root MuiBox-root-162"
           >
             <form>
               <div
@@ -112,6 +112,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="survey_name"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -141,10 +142,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-163"
+                          class="PrivateNotchedOutline-legendLabelled-165"
                         >
                           <span>
                             Survey Name *
@@ -195,10 +196,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163 PrivateNotchedOutline-legendNotched-164"
+                            class="PrivateNotchedOutline-legendLabelled-165 PrivateNotchedOutline-legendNotched-166"
                           >
                             <span>
                               Start Date *
@@ -245,10 +246,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163 PrivateNotchedOutline-legendNotched-164"
+                            class="PrivateNotchedOutline-legendLabelled-165 PrivateNotchedOutline-legendNotched-166"
                           >
                             <span>
                               End Date
@@ -368,10 +369,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </div>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               Focal Species *
@@ -473,10 +474,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </div>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               Ancillary Species
@@ -489,7 +490,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 </div>
               </div>
               <fieldset
-                class="MuiBox-root MuiBox-root-166"
+                class="MuiBox-root MuiBox-root-168"
               >
                 <legend
                   class="MuiTypography-root MuiTypography-body1"
@@ -504,6 +505,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      data-testid="biologist_first_name"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -533,10 +535,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               First Name *
@@ -551,6 +553,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      data-testid="biologist_last_name"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -580,10 +583,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               Last Name *
@@ -596,7 +599,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 </div>
               </fieldset>
               <fieldset
-                class="MuiBox-root MuiBox-root-167"
+                class="MuiBox-root MuiBox-root-169"
               >
                 <legend
                   class="MuiTypography-root MuiTypography-body1"
@@ -609,10 +612,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   If a permit is required for this survey, select a permit or add new one.
                 </p>
                 <div
-                  class="MuiBox-root MuiBox-root-168"
+                  class="MuiBox-root MuiBox-root-170"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-169"
+                    class="MuiBox-root MuiBox-root-171"
                   >
                     <div
                       aria-expanded="false"
@@ -701,10 +704,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           </div>
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-163"
+                              class="PrivateNotchedOutline-legendLabelled-165"
                             >
                               <span>
                                 Select Permit
@@ -716,7 +719,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-170"
+                    class="MuiBox-root MuiBox-root-172"
                   >
                     <p
                       class="MuiTypography-root MuiTypography-body1"
@@ -725,7 +728,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     </p>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-171"
+                    class="MuiBox-root MuiBox-root-173"
                   >
                     <button
                       aria-label="add-permit"
@@ -762,7 +765,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 </div>
               </fieldset>
               <fieldset
-                class="MuiBox-root MuiBox-root-172"
+                class="MuiBox-root MuiBox-root-174"
               >
                 <legend
                   class="MuiTypography-root MuiTypography-body1"
@@ -857,10 +860,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </div>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-163"
+                          class="PrivateNotchedOutline-legendLabelled-165"
                         >
                           <span>
                             Select Funding Sources
@@ -875,13 +878,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-152"
+          class="MuiDivider-root makeStyles-sectionDivider-154"
         />
         <div
-          class="MuiBox-root MuiBox-root-173"
+          class="MuiBox-root MuiBox-root-175"
         >
           <div
-            class="MuiBox-root MuiBox-root-174"
+            class="MuiBox-root MuiBox-root-176"
           >
             <h2
               class="MuiTypography-root MuiTypography-h2"
@@ -889,7 +892,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               Purpose and Methodology
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-175"
+              class="MuiBox-root MuiBox-root-177"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -897,11 +900,11 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-176"
+            class="MuiBox-root MuiBox-root-178"
           >
             <form>
               <fieldset
-                class="MuiBox-root MuiBox-root-177"
+                class="MuiBox-root MuiBox-root-179"
               >
                 <legend
                   class="MuiTypography-root MuiTypography-body1"
@@ -963,10 +966,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-178 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-180 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-180"
+                            class="PrivateNotchedOutline-legendLabelled-182"
                           >
                             <span>
                               Intended Outcomes
@@ -984,6 +987,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      data-testid="additional_details"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -1005,10 +1009,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               Additional Details
@@ -1021,7 +1025,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 </div>
               </fieldset>
               <fieldset
-                class="MuiBox-root MuiBox-root-182"
+                class="MuiBox-root MuiBox-root-184"
               >
                 <legend
                   class="MuiTypography-root MuiTypography-body1"
@@ -1083,10 +1087,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-178 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-180 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-180"
+                            class="PrivateNotchedOutline-legendLabelled-182"
                           >
                             <span>
                               Field Method
@@ -1151,10 +1155,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-178 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-180 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-180"
+                            class="PrivateNotchedOutline-legendLabelled-182"
                           >
                             <span>
                               Ecological Season
@@ -1265,10 +1269,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           </div>
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-163"
+                              class="PrivateNotchedOutline-legendLabelled-165"
                             >
                               <span>
                                 Vantage Code *
@@ -1296,7 +1300,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         Did you survey all areas that include your population of interest?
                       </p>
                       <div
-                        class="MuiBox-root MuiBox-root-183"
+                        class="MuiBox-root MuiBox-root-185"
                       >
                         <div
                           aria-label="Data and Information Sharing Agreement"
@@ -1308,20 +1312,20 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           >
                             <span
                               aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-184 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-186 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                             >
                               <span
                                 class="MuiIconButton-label"
                               >
                                 <input
-                                  class="PrivateSwitchBase-input-187"
+                                  class="PrivateSwitchBase-input-189"
                                   name="surveyed_all_areas"
                                   required=""
                                   type="radio"
                                   value="true"
                                 />
                                 <div
-                                  class="PrivateRadioButtonIcon-root-188"
+                                  class="PrivateRadioButtonIcon-root-190"
                                 >
                                   <svg
                                     aria-hidden="true"
@@ -1335,7 +1339,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                   </svg>
                                   <svg
                                     aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-189"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-191"
                                     focusable="false"
                                     viewBox="0 0 24 24"
                                   >
@@ -1360,20 +1364,20 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           >
                             <span
                               aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-184 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-186 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                             >
                               <span
                                 class="MuiIconButton-label"
                               >
                                 <input
-                                  class="PrivateSwitchBase-input-187"
+                                  class="PrivateSwitchBase-input-189"
                                   name="surveyed_all_areas"
                                   required=""
                                   type="radio"
                                   value="false"
                                 />
                                 <div
-                                  class="PrivateRadioButtonIcon-root-188"
+                                  class="PrivateRadioButtonIcon-root-190"
                                 >
                                   <svg
                                     aria-hidden="true"
@@ -1387,7 +1391,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                   </svg>
                                   <svg
                                     aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-189"
+                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-191"
                                     focusable="false"
                                     viewBox="0 0 24 24"
                                   >
@@ -1420,13 +1424,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-152"
+          class="MuiDivider-root makeStyles-sectionDivider-154"
         />
         <div
-          class="MuiBox-root MuiBox-root-191"
+          class="MuiBox-root MuiBox-root-193"
         >
           <div
-            class="MuiBox-root MuiBox-root-192"
+            class="MuiBox-root MuiBox-root-194"
           >
             <h2
               class="MuiTypography-root MuiTypography-h2"
@@ -1434,7 +1438,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               Study Area
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-193"
+              class="MuiBox-root MuiBox-root-195"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -1442,14 +1446,15 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-194"
+            class="MuiBox-root MuiBox-root-196"
           >
             <form>
               <div
-                class="MuiBox-root MuiBox-root-195"
+                class="MuiBox-root MuiBox-root-197"
               >
                 <div
                   class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                  data-testid="survey_area_name"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -1479,10 +1484,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-163"
+                        class="PrivateNotchedOutline-legendLabelled-165"
                       >
                         <span>
                           Survey Area Name *
@@ -1496,12 +1501,12 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <p
-                  class="MuiTypography-root makeStyles-bold-196 MuiTypography-body1"
+                  class="MuiTypography-root makeStyles-bold-199 MuiTypography-body1"
                 >
                   Study Area Boundary
                 </p>
                 <div
-                  class="MuiBox-root MuiBox-root-199"
+                  class="MuiBox-root MuiBox-root-202"
                 >
                   <p
                     class="MuiTypography-root MuiTypography-body1"
@@ -1509,7 +1514,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
                   </p>
                   <div
-                    class="MuiBox-root MuiBox-root-200"
+                    class="MuiBox-root MuiBox-root-203"
                   >
                     <p
                       class="MuiTypography-root MuiTypography-body1"
@@ -1519,7 +1524,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   </div>
                 </div>
                 <div
-                  class="MuiBox-root MuiBox-root-201"
+                  class="MuiBox-root MuiBox-root-204"
                 >
                   <button
                     class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
@@ -1551,7 +1556,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     />
                   </button>
                   <div
-                    class="MuiBox-root MuiBox-root-202"
+                    class="MuiBox-root MuiBox-root-205"
                   >
                     <div
                       class="MuiFormControl-root"
@@ -1599,10 +1604,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-161 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-163"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               Select Layer
@@ -1614,10 +1619,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   </div>
                 </div>
                 <div
-                  class="MuiBox-root MuiBox-root-203"
+                  class="MuiBox-root MuiBox-root-206"
                 />
                 <div
-                  class="MuiBox-root MuiBox-root-204"
+                  class="MuiBox-root MuiBox-root-207"
                 >
                   <div
                     class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1886,13 +1891,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-152"
+          class="MuiDivider-root makeStyles-sectionDivider-154"
         />
         <div
-          class="MuiBox-root MuiBox-root-205"
+          class="MuiBox-root MuiBox-root-208"
         >
           <div
-            class="MuiBox-root MuiBox-root-206"
+            class="MuiBox-root MuiBox-root-209"
           >
             <h2
               class="MuiTypography-root MuiTypography-h2"
@@ -1900,7 +1905,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               Proprietary Data
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-207"
+              class="MuiBox-root MuiBox-root-210"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -1908,7 +1913,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-208"
+            class="MuiBox-root MuiBox-root-211"
           >
             <form>
               <div
@@ -1921,13 +1926,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     class="MuiFormControl-root"
                   >
                     <p
-                      class="MuiTypography-root makeStyles-alignCenter-209 MuiTypography-body1"
+                      class="MuiTypography-root makeStyles-alignCenter-212 MuiTypography-body1"
                     >
                       <span>
                         Is the data captured in this survey proprietary?
                       </span>
                       <button
-                        class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-210 MuiButton-textPrimary"
+                        class="MuiButtonBase-root MuiButton-root MuiButton-text makeStyles-learnMoreBtn-213 MuiButton-textPrimary"
                         data-testid="prop-dialog-btn"
                         tabindex="0"
                         type="button"
@@ -1947,7 +1952,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </button>
                     </p>
                     <div
-                      class="MuiBox-root MuiBox-root-212"
+                      class="MuiBox-root MuiBox-root-215"
                     >
                       <div
                         aria-label="Survey Data Proprietary"
@@ -1959,21 +1964,21 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <span
                             aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-184 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-185 Mui-checked MuiIconButton-colorPrimary"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-186 MuiRadio-root MuiRadio-colorPrimary PrivateSwitchBase-checked-187 Mui-checked MuiIconButton-colorPrimary"
                           >
                             <span
                               class="MuiIconButton-label"
                             >
                               <input
                                 checked=""
-                                class="PrivateSwitchBase-input-187"
+                                class="PrivateSwitchBase-input-189"
                                 name="survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="false"
                               />
                               <div
-                                class="PrivateRadioButtonIcon-root-188 PrivateRadioButtonIcon-checked-190"
+                                class="PrivateRadioButtonIcon-root-190 PrivateRadioButtonIcon-checked-192"
                               >
                                 <svg
                                   aria-hidden="true"
@@ -1987,7 +1992,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 </svg>
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-189"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-191"
                                   focusable="false"
                                   viewBox="0 0 24 24"
                                 >
@@ -2012,20 +2017,20 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         >
                           <span
                             aria-disabled="false"
-                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-184 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-186 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
                           >
                             <span
                               class="MuiIconButton-label"
                             >
                               <input
-                                class="PrivateSwitchBase-input-187"
+                                class="PrivateSwitchBase-input-189"
                                 name="survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="true"
                               />
                               <div
-                                class="PrivateRadioButtonIcon-root-188"
+                                class="PrivateRadioButtonIcon-root-190"
                               >
                                 <svg
                                   aria-hidden="true"
@@ -2039,7 +2044,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 </svg>
                                 <svg
                                   aria-hidden="true"
-                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-189"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-191"
                                   focusable="false"
                                   viewBox="0 0 24 24"
                                 >
@@ -2071,13 +2076,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-152"
+          class="MuiDivider-root makeStyles-sectionDivider-154"
         />
         <div
-          class="MuiBox-root MuiBox-root-213"
+          class="MuiBox-root MuiBox-root-216"
         >
           <div
-            class="MuiBox-root MuiBox-root-214"
+            class="MuiBox-root MuiBox-root-217"
           >
             <h2
               class="MuiTypography-root MuiTypography-h2"
@@ -2085,7 +2090,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               Agreements
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-215"
+              class="MuiBox-root MuiBox-root-218"
             >
               <p
                 class="MuiTypography-root MuiTypography-body2"
@@ -2093,7 +2098,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-216"
+            class="MuiBox-root MuiBox-root-219"
           >
             <form>
               <div
@@ -2103,7 +2108,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <p
-                    class="MuiTypography-root makeStyles-bold-217 MuiTypography-body1"
+                    class="MuiTypography-root makeStyles-bold-220 MuiTypography-body1"
                   >
                     Species and Ecosystems Data and Information Security (SEDIS) Procedures
                   </p>
@@ -2119,13 +2124,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     >
                       <span
                         aria-disabled="false"
-                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-184 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
+                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-186 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
                       >
                         <span
                           class="MuiIconButton-label"
                         >
                           <input
-                            class="PrivateSwitchBase-input-187"
+                            class="PrivateSwitchBase-input-189"
                             data-indeterminate="false"
                             name="sedis_procedures_accepted"
                             type="checkbox"
@@ -2161,10 +2166,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-218"
+                    class="MuiBox-root MuiBox-root-221"
                   >
                     <p
-                      class="MuiTypography-root makeStyles-bold-217 MuiTypography-body1"
+                      class="MuiTypography-root makeStyles-bold-220 MuiTypography-body1"
                     >
                       Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
                     </p>
@@ -2181,13 +2186,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     >
                       <span
                         aria-disabled="false"
-                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-184 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
+                        class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-186 MuiCheckbox-root MuiCheckbox-colorPrimary MuiIconButton-colorPrimary"
                       >
                         <span
                           class="MuiIconButton-label"
                         >
                           <input
-                            class="PrivateSwitchBase-input-187"
+                            class="PrivateSwitchBase-input-189"
                             data-indeterminate="false"
                             name="foippa_requirements_accepted"
                             type="checkbox"
@@ -2224,13 +2229,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
           </div>
         </div>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-152"
+          class="MuiDivider-root makeStyles-sectionDivider-154"
         />
         <div
-          class="MuiBox-root MuiBox-root-219"
+          class="MuiBox-root MuiBox-root-222"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-147 MuiButton-containedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-149 MuiButton-containedPrimary"
             tabindex="0"
             type="submit"
           >
@@ -2244,7 +2249,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             />
           </button>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-147 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-149 MuiButton-outlinedPrimary"
             tabindex="0"
             type="button"
           >

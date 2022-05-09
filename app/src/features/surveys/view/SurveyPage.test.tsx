@@ -71,6 +71,8 @@ describe('SurveyPage', () => {
     mockBiohubApi().observation.getObservationSubmission.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().external.post.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {

@@ -1,8 +1,9 @@
 import SQL from 'sql-template-strings';
 import { HTTP400 } from '../errors/custom-error';
 import {
-  GetAncillarySpeciesData,
-  GetFocalSpeciesData,
+  // GetAncillarySpeciesData,
+  // GetFocalSpeciesData,
+  ParsedSpeciesIds,
   GetPermitData,
   GetSpeciesData,
   GetSurveyData,
@@ -82,7 +83,7 @@ export class SurveyService extends DBService {
     return new GetSurveyData(result);
   }
 
-  async getSpeciesData(surveyId: number): Promise<GetSpeciesData> {
+  async getSpeciesData(surveyId: number): Promise<any> {
     const sqlStatement = SQL`
       SELECT
         wldtaxonomic_units_id, is_focal
@@ -100,16 +101,20 @@ export class SurveyService extends DBService {
       throw new HTTP400('Failed to get species data');
     }
 
+    //parse result into focal and ancillary species
+
+    const speciesIds = new ParsedSpeciesIds(result);
+
     const taxonomyService = new TaxonomyService();
 
-    const focal_species = new GetFocalSpeciesData(result);
-    const ancillary_species = new GetAncillarySpeciesData(result);
+    const focal_species_result = await taxonomyService.getSpeciesFromIds(speciesIds.focal_species);
+    const ancillary_species_result = await taxonomyService.getSpeciesFromIds(speciesIds.ancillary_species);
 
+    //parse
 
+    return [focal_species_result, ancillary_species_result];
 
-    const species = await taxonomyService.getSpeciesFromIds(result);
-
-    return new GetSpeciesData(species);
+    //return new GetSpeciesData(species);
   }
 
   async getPermitData(surveyId: number): Promise<GetPermitData> {
@@ -201,47 +206,47 @@ export class SurveyService extends DBService {
     return (response && response.rows?.[0]) || null;
   }
 
-  async getSurveyFocalSpeciesDataForView(surveyId: number): Promise<GetFocalSpeciesData> {
-    const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
+  // async getSurveyFocalSpeciesDataForView(surveyId: number): Promise<GetFocalSpeciesData> {
+  //   const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
+  //   if (!sqlStatement) {
+  //     throw new HTTP400('Failed to build SQL get statement');
+  //   }
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
+  //   const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+  //   const result = (response && response.rows) || null;
 
-    if (!result) {
-      throw new HTTP400('Failed to get focal species data');
-    }
+  //   if (!result) {
+  //     throw new HTTP400('Failed to get focal species data');
+  //   }
 
-    const taxonomyService = new TaxonomyService();
+  //   const taxonomyService = new TaxonomyService();
 
-    const species = await taxonomyService.getSpeciesFromIds(result);
+  //   const species = await taxonomyService.getSpeciesFromIds(result);
 
-    return new GetFocalSpeciesData(species);
-  }
+  //   return new GetFocalSpeciesData(species);
+  // }
 
-  async getSurveyAncillarySpeciesDataForView(surveyId: number): Promise<GetAncillarySpeciesData> {
-    const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
+  // async getSurveyAncillarySpeciesDataForView(surveyId: number): Promise<GetAncillarySpeciesData> {
+  //   const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
+  //   if (!sqlStatement) {
+  //     throw new HTTP400('Failed to build SQL get statement');
+  //   }
 
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows) || null;
+  //   const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+  //   const result = (response && response.rows) || null;
 
-    if (!result) {
-      throw new HTTP400('Failed to get ancillary species data');
-    }
+  //   if (!result) {
+  //     throw new HTTP400('Failed to get ancillary species data');
+  //   }
 
-    const taxonomyService = new TaxonomyService();
+  //   const taxonomyService = new TaxonomyService();
 
-    const species = await taxonomyService.getSpeciesFromIds(result);
+  //   const species = await taxonomyService.getSpeciesFromIds(result);
 
-    return new GetAncillarySpeciesData(species);
-  }
+  //   return new GetAncillarySpeciesData(species);
+  // }
 
   // export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
   //   const sqlStatement = queries.survey.getSurveyBasicDataForViewSQL(surveyId);

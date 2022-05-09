@@ -5,6 +5,7 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
+import { getMockAuthState } from 'test-helpers/auth-helpers';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
@@ -24,7 +25,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 );
 
 const renderContainer = () => {
-  const authState = {
+  const authState = getMockAuthState({
     keycloakWrapper: {
       keycloak: {
         authenticated: true
@@ -43,7 +44,7 @@ const renderContainer = () => {
       lastName: 'testlast',
       refresh: () => {}
     }
-  };
+  });
 
   return render(
     <AuthStateContext.Provider value={authState as any}>
@@ -87,7 +88,7 @@ describe('AccessRequestPage', () => {
         system_roles: [{ id: 1, name: 'Creator' }]
       });
 
-      const authState = {
+      const authState = getMockAuthState({
         keycloakWrapper: {
           keycloak: {
             authenticated: true
@@ -106,7 +107,7 @@ describe('AccessRequestPage', () => {
           lastName: 'testlast',
           refresh: () => {}
         }
-      };
+      });
 
       const { getByText } = render(
         <AuthStateContext.Provider value={authState as any}>
@@ -157,7 +158,7 @@ describe('AccessRequestPage', () => {
       system_roles: [{ id: 1, name: 'Creator' }]
     });
 
-    const authState = {
+    const authState = getMockAuthState({
       keycloakWrapper: {
         keycloak: {
           authenticated: true
@@ -176,7 +177,7 @@ describe('AccessRequestPage', () => {
         lastName: '',
         refresh: () => {}
       }
-    };
+    });
 
     render(
       <AuthStateContext.Provider value={authState as any}>

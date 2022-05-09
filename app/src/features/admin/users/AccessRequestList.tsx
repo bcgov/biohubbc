@@ -1,8 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -12,12 +10,13 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import clsx from 'clsx';
+import { AccessStatusChip } from 'components/chips/RequestChips';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ReviewAccessRequestI18N } from 'constants/i18n';
 import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -29,24 +28,12 @@ import ReviewAccessRequestForm, {
   ReviewAccessRequestFormYupSchema
 } from './ReviewAccessRequestForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   table: {
     tableLayout: 'fixed',
     '& td': {
       verticalAlign: 'middle'
     }
-  },
-  chip: {
-    color: 'white'
-  },
-  chipPending: {
-    backgroundColor: theme.palette.primary.main
-  },
-  chipActioned: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipRejected: {
-    backgroundColor: theme.palette.error.main
   }
 }));
 
@@ -68,13 +55,6 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   const classes = useStyles();
 
   const biohubApi = useBiohubApi();
-
-  const approvedCodeId = codes?.administrative_activity_status_type.find(
-    (item) => item.name === AdministrativeActivityStatusType.ACTIONED
-  )?.id as any;
-  const rejectedCodeId = codes?.administrative_activity_status_type.find(
-    (item) => item.name === AdministrativeActivityStatusType.REJECTED
-  )?.id as any;
 
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
     open: boolean;
@@ -104,17 +84,20 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
-      await biohubApi.admin.updateAccessRequest(
+      await biohubApi.admin.approveAccessRequest(
+        updatedRequest.id,
         updatedRequest.data.username,
         updatedRequest.data.identitySource,
-        updatedRequest.id,
-        approvedCodeId,
-        values.system_roles
+        (values.system_role && [values.system_role]) || []
       );
 
       refresh();
     } catch (error) {
-      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
     }
   };
 
@@ -124,35 +107,16 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
-      await biohubApi.admin.updateAccessRequest(
-        updatedRequest.data.username,
-        updatedRequest.data.identitySource,
-        updatedRequest.id,
-        rejectedCodeId
-      );
+      await biohubApi.admin.denyAccessRequest(updatedRequest.id);
 
       refresh();
     } catch (error) {
-      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
     }
-  };
-
-  const getChipIcon = (status_name: string) => {
-    let chipLabel;
-    let chipStatusClass;
-
-    if (AdministrativeActivityStatusType.REJECTED === status_name) {
-      chipLabel = 'Denied';
-      chipStatusClass = classes.chipRejected;
-    } else if (AdministrativeActivityStatusType.ACTIONED === status_name) {
-      chipLabel = 'Approved';
-      chipStatusClass = classes.chipActioned;
-    } else {
-      chipLabel = 'Pending';
-      chipStatusClass = classes.chipPending;
-    }
-
-    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
   return (
@@ -166,7 +130,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
         component={{
           initialValues: {
             ...ReviewAccessRequestFormInitialValues,
-            system_roles: [activeReviewDialog.request?.data?.role]
+            system_role: activeReviewDialog.request?.data?.role
           },
           validationSchema: ReviewAccessRequestFormYupSchema,
           element: (
@@ -177,7 +141,6 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
-              regional_offices={codes?.regional_offices}
             />
           )
         }}
@@ -213,7 +176,9 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                   <TableRow data-testid={`access-request-row-${index}`} key={index}>
                     <TableCell>{row.data?.username || ''}</TableCell>
                     <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
-                    <TableCell>{getChipIcon(row.status_name)}</TableCell>
+                    <TableCell>
+                      <AccessStatusChip status={row.status_name} />
+                    </TableCell>
 
                     <TableCell align="center">
                       {row.status_name === AdministrativeActivityStatusType.PENDING && (
