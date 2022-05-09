@@ -143,9 +143,9 @@ export class ParsedSpeciesIds {
     input?.length &&
       input.forEach((item: any) => {
         if (!item.is_focal) {
-          this.ancillary_species.push(item.id);
+          this.ancillary_species.push(item.wldtaxonomic_units_id);
         } else {
-          this.focal_species.push(item.id);
+          this.focal_species.push(item.wldtaxonomic_units_id);
         }
       });
   }
@@ -153,7 +153,12 @@ export class ParsedSpeciesIds {
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
-  species: GetSpeciesData;
+  species: {
+    focal_species: number[];
+    focal_species_names: string[];
+    ancillary_species: number[];
+    ancillary_species_names: string[];
+  };
   permit: GetPermitData;
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   funding_sources: any[];
@@ -173,6 +178,7 @@ export class GetSurveyData {
   geometry: Feature[];
   biologist_first_name: string;
   biologist_last_name: string;
+  survey_area_name: string;
 
   constructor(surveyData?: any) {
     this.id = surveyData?.survey_id || null;
@@ -186,9 +192,10 @@ export class GetSurveyData {
         moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.geometry = (surveyData?.geometry?.length && surveyData.geometry) || [];
+    this.geometry = (surveyData?.geojson?.length && surveyData.geojson) || [];
     this.biologist_first_name = surveyData?.lead_first_name || '';
     this.biologist_last_name = surveyData?.lead_last_name || '';
+    this.survey_area_name = surveyData?.location_name || '';
   }
 }
 

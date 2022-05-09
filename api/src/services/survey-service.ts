@@ -5,10 +5,12 @@ import {
   // GetFocalSpeciesData,
   ParsedSpeciesIds,
   GetPermitData,
-  GetSpeciesData,
+  //GetSpeciesData,
   GetSurveyData,
   // GetViewSurveyDetailsData,
-  SurveyObject
+  SurveyObject,
+  GetFocalSpeciesData,
+  GetAncillarySpeciesData
 } from '../models/survey-view';
 import { GetSurveyPurposeAndMethodologyData } from '../models/survey-view-update';
 import { queries } from '../queries/queries';
@@ -74,16 +76,37 @@ export class SurveyService extends DBService {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
+    // const result = (response && response?.rows.length && new GetUpdateSurveyDetailsData(response.rows[0])) || null;
+
+    // const result = (response && response.rows && response.rows[0]) || null;
+
+    // console.log( 'getting all survey data: ', result);
+
+    // if (!result) {
+    //   throw new HTTP400('Failed to get project data');
+    // }
+
+    // return new GetSurveyData(result);
+
+    const result = (response && response?.rows.length && new GetSurveyData(response.rows[0])) || null;
+
+    console.log('getting all survey data: ', result);
 
     if (!result) {
-      throw new HTTP400('Failed to get project data');
+      throw new HTTP400('Failed to get project survey details data');
     }
 
-    return new GetSurveyData(result);
+    return result;
   }
 
-  async getSpeciesData(surveyId: number): Promise<any> {
+  async getSpeciesData(
+    surveyId: number
+  ): Promise<{
+    focal_species: number[];
+    focal_species_names: string[];
+    ancillary_species: number[];
+    ancillary_species_names: string[];
+  }> {
     const sqlStatement = SQL`
       SELECT
         wldtaxonomic_units_id, is_focal
@@ -101,20 +124,23 @@ export class SurveyService extends DBService {
       throw new HTTP400('Failed to get species data');
     }
 
-    //parse result into focal and ancillary species
-
-    const speciesIds = new ParsedSpeciesIds(result);
+    //parse result from DB into focal and ancillary species
+    const parsedSpeciesIds = new ParsedSpeciesIds(result);
 
     const taxonomyService = new TaxonomyService();
 
-    const focal_species_result = await taxonomyService.getSpeciesFromIds(speciesIds.focal_species);
-    const ancillary_species_result = await taxonomyService.getSpeciesFromIds(speciesIds.ancillary_species);
+    const focal_species_result = await taxonomyService.getSpeciesFromIds(parsedSpeciesIds.focal_species);
+    const ancillary_species_result = await taxonomyService.getSpeciesFromIds(parsedSpeciesIds.ancillary_species);
 
-    //parse
+    const focal_species = new GetFocalSpeciesData(focal_species_result);
+    const ancillary_species = new GetAncillarySpeciesData(ancillary_species_result);
 
-    return [focal_species_result, ancillary_species_result];
-
-    //return new GetSpeciesData(species);
+    return {
+      focal_species: focal_species.focal_species,
+      focal_species_names: focal_species.focal_species_names,
+      ancillary_species: ancillary_species.ancillary_species,
+      ancillary_species_names: ancillary_species.ancillary_species_names
+    };
   }
 
   async getPermitData(surveyId: number): Promise<GetPermitData> {
@@ -129,7 +155,9 @@ export class SurveyService extends DBService {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows) || null;
+    const result = (response && response.rows[0]) || null;
+
+    console.log('permit result : ', result);
 
     if (!result) {
       throw new HTTP400('Failed to get permit data');
@@ -331,7 +359,12 @@ export class SurveyService extends DBService {
   ): Promise<
     {
       survey_details: GetSurveyData;
-      species: GetSpeciesData;
+      species: {
+        focal_species: number[];
+        focal_species_names: string[];
+        ancillary_species: number[];
+        ancillary_species_names: string[];
+      };
     }[]
   > {
     return Promise.all(surveyIds.map(async (surveyId) => this.getSurveyById(surveyId)));

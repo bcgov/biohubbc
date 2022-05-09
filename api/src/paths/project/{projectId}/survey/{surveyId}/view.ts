@@ -645,7 +645,6 @@ export function getSurveyForView(): RequestHandler {
 
       await connection.commit();
 
-
       return res.status(200).json(result);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyForView', message: 'error', error });
@@ -655,10 +654,6 @@ export function getSurveyForView(): RequestHandler {
     }
   };
 }
-
-
-
-
 
 // export const getSurveyFundingSourcesDataForView = async (
 //   surveyId: number,
@@ -678,4 +673,3 @@ export function getSurveyForView(): RequestHandler {
 
 //   return (response && response.rows) || [];
 // };
-

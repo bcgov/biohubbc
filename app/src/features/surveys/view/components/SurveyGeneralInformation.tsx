@@ -54,7 +54,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details },
+    surveyForViewData: { survey_details, species, permit, funding_sources },
     refresh
   } = props;
 
@@ -288,7 +288,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               <Typography component="dt" variant="subtitle2" color="textSecondary">
                 Focal Species
               </Typography>
-              {survey_details.focal_species_names?.map((focalSpecies: string, index: number) => {
+
+              {species.focal_species_names?.map((focalSpecies: string, index: number) => {
                 return (
                   <Typography component="dd" variant="body1" key={index}>
                     {focalSpecies}
@@ -301,14 +302,14 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 Anciliary Species
               </Typography>
 
-              {survey_details.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
+              {species.ancillary_species_names?.map((ancillarySpecies: string, index: number) => {
                 return (
                   <Typography component="dd" variant="body1" key={index}>
                     {ancillarySpecies}
                   </Typography>
                 );
               })}
-              {survey_details.ancillary_species_names?.length <= 0 && (
+              {species.ancillary_species_names?.length <= 0 && (
                 <Typography component="dd" variant="body1">
                   No Ancilliary Species
                 </Typography>
@@ -336,8 +337,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             </TableHead>
             <TableBody>
               <TableRow>
-                <TableCell>{survey_details.permit_number}</TableCell>
-                <TableCell>{survey_details.permit_type}</TableCell>
+                <TableCell>{permit.permit_number}</TableCell>
+                <TableCell>{permit.permit_type}</TableCell>
               </TableRow>
             </TableBody>
             {/* <Typography variant="body1">
@@ -366,13 +367,13 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               </TableRow>
             </TableHead>
             <TableBody>
-              {(!survey_details.funding_sources || survey_details.funding_sources.length === 0) && (
+              {(!funding_sources || funding_sources.length === 0) && (
                 <TableRow>
                   <TableCell colSpan={3}>No Funding Sources</TableCell>
                 </TableRow>
               )}
-              {survey_details.funding_sources &&
-                survey_details.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
+              {funding_sources &&
+                funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
                   return (
                     <TableRow key={index}>
                       <TableCell>{fundingSource.agency_name}</TableCell>

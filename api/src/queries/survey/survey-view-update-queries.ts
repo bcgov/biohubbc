@@ -155,4 +155,3 @@ export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQ
     s.survey_id = ${surveyId};
   `;
 };
-

@@ -41,7 +41,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details, survey_proprietor },
+    surveyForViewData: { survey_details, proprietor },
     codes,
     refresh
   } = props;
@@ -72,7 +72,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   };
 
   const handleDialogEditOpen = async () => {
-    if (!survey_proprietor) {
+    if (!proprietor) {
       setSurveyDataForUpdate(null);
       setSurveyProprietorFormData(ProprietaryDataInitialValues);
       setOpenEditDialog(true);
@@ -178,21 +178,21 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         />
         <Divider></Divider>
         <dl>
-          {!survey_proprietor && (
+          {!proprietor && (
             <Grid container spacing={2}>
               <Grid item>
                 <Typography>The data captured in this survey is not proprietary.</Typography>
               </Grid>
             </Grid>
           )}
-          {survey_proprietor && (
+          {proprietor && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Proprietor Name
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_proprietor.proprietor_name}
+                  {proprietor.proprietor_name}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -200,7 +200,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                   Data Category
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_proprietor.proprietary_data_category_name}
+                  {proprietor.proprietor_type_name}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -208,14 +208,14 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                   DISA Required
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
+                  {proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Category Rationale
                 </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>{survey_proprietor.category_rationale}</Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>{proprietor.category_rationale}</Typography>
               </Grid>
             </Grid>
           )}

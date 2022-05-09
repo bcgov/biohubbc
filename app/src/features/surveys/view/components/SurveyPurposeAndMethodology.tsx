@@ -42,7 +42,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details, survey_purpose_and_methodology },
+    surveyForViewData: { survey_details, purpose_and_methodology },
     codes,
     refresh
   } = props;
@@ -73,7 +73,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
   };
 
   const handleDialogEditOpen = async () => {
-    if (!survey_purpose_and_methodology) {
+    if (!purpose_and_methodology) {
       setSurveyPurposeAndMethodologyForUpdate(null);
       setPurposeAndMethodologyFormData(PurposeAndMethodologyInitialValues);
       setOpenEditDialog(true);
@@ -193,7 +193,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
         />
         <Divider></Divider>
         <dl>
-          {!survey_purpose_and_methodology && (
+          {!purpose_and_methodology && (
             <Grid container spacing={2}>
               <Grid item>
                 <Typography>
@@ -202,16 +202,16 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
               </Grid>
             </Grid>
           )}
-          {survey_purpose_and_methodology && (
+          {purpose_and_methodology && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Intended Outcome
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.intended_outcome_id &&
+                  {purpose_and_methodology.intended_outcome_id &&
                     codes?.intended_outcomes?.find(
-                      (item: any) => item.id === survey_purpose_and_methodology.intended_outcome_id
+                      (item: any) => item.id === purpose_and_methodology.intended_outcome_id
                     )?.name}
                 </Typography>
               </Grid>
@@ -220,7 +220,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Additional Details
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.additional_details}
+                  {purpose_and_methodology.additional_details}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -229,10 +229,9 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 </Typography>
 
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.field_method_id &&
-                    codes?.field_methods?.find(
-                      (item: any) => item.id === survey_purpose_and_methodology.field_method_id
-                    )?.name}
+                  {purpose_and_methodology.field_method_id &&
+                    codes?.field_methods?.find((item: any) => item.id === purpose_and_methodology.field_method_id)
+                      ?.name}
                 </Typography>
                 <Typography component="dd" variant="body1"></Typography>
               </Grid>
@@ -241,9 +240,9 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Ecological Season
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.ecological_season_id &&
+                  {purpose_and_methodology.ecological_season_id &&
                     codes?.ecological_seasons?.find(
-                      (item: any) => item.id === survey_purpose_and_methodology.ecological_season_id
+                      (item: any) => item.id === purpose_and_methodology.ecological_season_id
                     )?.name}
                 </Typography>
               </Grid>
@@ -251,7 +250,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Vantage Code
                 </Typography>
-                {survey_purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
+                {purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
                   return (
                     <Typography component="dd" variant="body1" key={index}>
                       {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
@@ -264,9 +263,8 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Surveyed all areas?
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {(survey_purpose_and_methodology.surveyed_all_areas === 'true' && 'Yes - all areas were surveyed') ||
-                    (survey_purpose_and_methodology.surveyed_all_areas === 'false' &&
-                      'No - only some areas were surveyed')}
+                  {(purpose_and_methodology.surveyed_all_areas === 'true' && 'Yes - all areas were surveyed') ||
+                    (purpose_and_methodology.surveyed_all_areas === 'false' && 'No - only some areas were surveyed')}
                 </Typography>
               </Grid>
             </Grid>
