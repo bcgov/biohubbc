@@ -233,7 +233,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
                 ? [
                     <OccurrenceFeatureGroup
                       projectId={projectForViewData.id}
-                      occurrenceSubmissionId={survey_details.occurrence_submission_id}
+                      occurrenceSubmissionId={occurrence_submission.id}
                     />
                   ]
                 : undefined

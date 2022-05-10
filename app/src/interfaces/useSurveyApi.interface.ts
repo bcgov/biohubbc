@@ -138,12 +138,12 @@ export interface IGetSurveyForUpdateResponse {
  */
 export interface IGetSurveyForViewResponse {
   survey_details: IGetSurveyForViewResponseDetails;
-  species: any[];
+  species: IGetSpecies;
   permit: any[];
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding_sources: any[];
   proprietor: IGetSurveyForViewResponseProprietor;
-  occurrence_submission: number;
+  occurrence_submission: { id: number };
   summary_result: number;
 }
 
@@ -156,18 +156,6 @@ export interface IGetSurveyForViewResponse {
  */
 export type IUpdateSurveyRequest = IGetSurveyForUpdateResponse;
 
-/**
- * Get surveys list response object.
- *
- * @export
- * @interface IGetSurveysListResponse
- */
-export interface IGetSurveysListResponse {
-  id: number;
-  survey: IGetSurveyDetailsResponse;
-  species: IGetSpeciesList;
-}
-
 export interface IGetSurveyDetailsResponse {
   id: number;
   name: string;
@@ -177,9 +165,11 @@ export interface IGetSurveyDetailsResponse {
   completion_status: string;
 }
 
-export interface IGetSpeciesList {
-  species: number[];
-  species_names: string[];
+export interface IGetSpecies {
+  focal_species: number[];
+  focal_species_names: string[];
+  ancillary_species: number[];
+  ancillary_species_names: string[];
 }
 
 export enum UPDATE_GET_SURVEY_ENTITIES {

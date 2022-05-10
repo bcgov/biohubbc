@@ -354,19 +354,7 @@ export class SurveyService extends DBService {
    *   >}
    * @memberof SurveyService
    */
-  async getSurveysByIds(
-    surveyIds: number[]
-  ): Promise<
-    {
-      survey_details: GetSurveyData;
-      species: {
-        focal_species: number[];
-        focal_species_names: string[];
-        ancillary_species: number[];
-        ancillary_species_names: string[];
-      };
-    }[]
-  > {
+  async getSurveysByIds(surveyIds: number[]): Promise<SurveyObject[]> {
     return Promise.all(surveyIds.map(async (surveyId) => this.getSurveyById(surveyId)));
   }
 }

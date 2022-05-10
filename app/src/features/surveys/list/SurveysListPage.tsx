@@ -6,7 +6,7 @@ import SurveysList from 'components/surveys/SurveysList';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router';
 
@@ -25,7 +25,7 @@ const SurveysListPage: React.FC<ISurveysListPageProps> = (props) => {
 
   const { projectForViewData } = props;
 
-  const [surveys, setSurveys] = useState<IGetSurveysListResponse[]>([]);
+  const [surveys, setSurveys] = useState<IGetSurveyForViewResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {

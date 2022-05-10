@@ -61,60 +61,12 @@ exports[`SurveyProprietaryData renders correctly 1`] = `
         class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
       >
         <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Proprietor Name
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            prop name
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Data Category
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            proprietor type
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            DISA Required
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            Yes
-          </dd>
-        </div>
-        <div
           class="MuiGrid-root MuiGrid-item"
         >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Category Rationale
-          </dt>
           <p
             class="MuiTypography-root MuiTypography-body1"
-            style="word-break: break-all;"
           >
-            rationale
+            The data captured in this survey is not proprietary.
           </p>
         </div>
       </div>

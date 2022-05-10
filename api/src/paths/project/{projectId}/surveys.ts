@@ -53,35 +53,35 @@ GET.apiDoc = {
               title: 'Survey Response Object',
               type: 'object',
               properties: {
-                survey: {
-                  type: 'object',
-                  properties: {
-                    id: {
-                      type: 'number'
-                    },
-                    name: {
-                      type: 'string'
-                    },
-                    publish_status: {
-                      type: 'string'
-                    },
-                    completion_status: {
-                      type: 'string'
-                    },
-                    start_date: {
-                      type: 'string',
-                      description: 'ISO 8601 date string'
-                    },
-                    end_date: {
-                      type: 'string',
-                      description: 'ISO 8601 date string',
-                      nullable: true
-                    }
-                  }
-                },
-                species: {
-                  type: 'object'
-                }
+                // survey: {
+                //   type: 'object',
+                //   properties: {
+                //     id: {
+                //       type: 'number'
+                //     },
+                //     name: {
+                //       type: 'string'
+                //     },
+                //     publish_status: {
+                //       type: 'string'
+                //     },
+                //     completion_status: {
+                //       type: 'string'
+                //     },
+                //     start_date: {
+                //       type: 'string',
+                //       description: 'ISO 8601 date string'
+                //     },
+                //     end_date: {
+                //       type: 'string',
+                //       description: 'ISO 8601 date string',
+                //       nullable: true
+                //     }
+                //   }
+                // },
+                // species: {
+                //   type: 'object'
+                // }
               }
             }
           }
@@ -128,6 +128,8 @@ export function getSurveyList(): RequestHandler {
       const surveyIds = surveyIdsResponse.map((item: { id: any }) => item.id);
 
       const surveys = await surveyService.getSurveysByIds(surveyIds);
+
+      console.log('list of surveys: ', surveys);
 
       await connection.commit();
 
