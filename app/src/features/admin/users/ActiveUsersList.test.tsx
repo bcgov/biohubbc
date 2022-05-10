@@ -1,15 +1,27 @@
 import { render, waitFor } from '@testing-library/react';
-import { IGetUserResponse } from 'interfaces/useUserApi.interface';
+import { createMemoryHistory } from 'history';
 import React from 'react';
-import ActiveUsersList from './ActiveUsersList';
+import { Router } from 'react-router';
+import { codes } from 'test-helpers/code-helpers';
+import ActiveUsersList, { IActiveUsersListProps } from './ActiveUsersList';
 
-const renderContainer = (activeUsers: IGetUserResponse[]) => {
-  return render(<ActiveUsersList activeUsers={activeUsers} />);
+const history = createMemoryHistory();
+
+const renderContainer = (props: IActiveUsersListProps) => {
+  return render(
+    <Router history={history}>
+      <ActiveUsersList {...props} />
+    </Router>
+  );
 };
 
 describe('ActiveUsersList', () => {
   it('shows `No Active Users` when there are no active users', async () => {
-    const { getByText } = renderContainer([]);
+    const { getByText } = renderContainer({
+      activeUsers: [],
+      codes: codes,
+      refresh: () => {}
+    });
 
     await waitFor(() => {
       expect(getByText('No Active Users')).toBeVisible();
@@ -17,13 +29,18 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with all fields having values', async () => {
-    const { getByText } = renderContainer([
-      {
-        id: 1,
-        user_identifier: 'username',
-        role_names: ['role 1', 'role 2']
-      }
-    ]);
+    const { getByText } = renderContainer({
+      activeUsers: [
+        {
+          id: 1,
+          user_identifier: 'username',
+          user_record_end_date: '2020-10-10',
+          role_names: ['role 1', 'role 2']
+        }
+      ],
+      codes: codes,
+      refresh: () => {}
+    });
 
     await waitFor(() => {
       expect(getByText('username')).toBeVisible();
@@ -32,16 +49,33 @@ describe('ActiveUsersList', () => {
   });
 
   it('shows a table row for an active user with fields not having values', async () => {
-    const { getAllByText } = renderContainer([
-      {
-        id: 1,
-        user_identifier: '',
-        role_names: []
-      }
-    ]);
+    const { getByTestId } = renderContainer({
+      activeUsers: [
+        {
+          id: 1,
+          user_identifier: 'username',
+          user_record_end_date: '2020-10-10',
+          role_names: []
+        }
+      ],
+      codes: codes,
+      refresh: () => {}
+    });
 
     await waitFor(() => {
-      expect(getAllByText('Not Applicable').length).toEqual(2);
+      expect(getByTestId('custom-menu-button-NotApplicable')).toBeInTheDocument();
+    });
+  });
+
+  it('renders the add new users button correctly', async () => {
+    const { getByTestId } = renderContainer({
+      activeUsers: [],
+      codes: codes,
+      refresh: () => {}
+    });
+
+    await waitFor(() => {
+      expect(getByTestId('invite-system-users-button')).toBeVisible();
     });
   });
 });

@@ -1,26 +1,35 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400 } from '../../../errors/CustomError';
-import { GetSurveyListData } from '../../../models/survey-view';
-import { surveyIdResponseObject } from '../../../openapi/schemas/survey';
-import { getSurveyListSQL } from '../../../queries/survey/survey-view-queries';
+import { HTTP400 } from '../../../errors/custom-error';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../services/survey-service';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
-import moment from 'moment';
-import { COMPLETION_STATUS } from '../../../constants/status';
 
 const defaultLog = getLogger('paths/project/{projectId}/surveys');
 
-export const GET: Operation = [logRequest('paths/project/{projectId}/surveys', 'GET'), getSurveyList()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSurveyList()
+];
 
 GET.apiDoc = {
   description: 'Get all Surveys.',
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -41,7 +50,39 @@ GET.apiDoc = {
           schema: {
             type: 'array',
             items: {
-              ...(surveyIdResponseObject as object)
+              title: 'Survey Response Object',
+              type: 'object',
+              properties: {
+                survey: {
+                  type: 'object',
+                  properties: {
+                    id: {
+                      type: 'number'
+                    },
+                    name: {
+                      type: 'string'
+                    },
+                    publish_status: {
+                      type: 'string'
+                    },
+                    completion_status: {
+                      type: 'string'
+                    },
+                    start_date: {
+                      type: 'string',
+                      description: 'ISO 8601 date string'
+                    },
+                    end_date: {
+                      type: 'string',
+                      description: 'ISO 8601 date string',
+                      nullable: true
+                    }
+                  }
+                },
+                species: {
+                  type: 'object'
+                }
+              }
             }
           }
         }
@@ -72,37 +113,25 @@ GET.apiDoc = {
  */
 export function getSurveyList(): RequestHandler {
   return async (req, res) => {
+    const connection = getDBConnection(req['keycloak_token']);
     if (!req.params.projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    const connection = getDBConnection(req['keycloak_token']);
-
     try {
-      const getSurveyListSQLStatement = getSurveyListSQL(Number(req.params.projectId));
-
-      if (!getSurveyListSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const getSurveyListResponse = await connection.query(
-        getSurveyListSQLStatement.text,
-        getSurveyListSQLStatement.values
-      );
+      const surveyService = new SurveyService(connection);
+
+      const surveyIdsResponse = await surveyService.getSurveyIdsByProjectId(Number(req.params.projectId));
+
+      const surveyIds = surveyIdsResponse.map((item: { id: any }) => item.id);
+
+      const surveys = await surveyService.getSurveysByIds(surveyIds);
 
       await connection.commit();
 
-      let rows: any[] = [];
-
-      if (getSurveyListResponse && getSurveyListResponse.rows && new GetSurveyListData(getSurveyListResponse.rows)) {
-        rows = new GetSurveyListData(getSurveyListResponse.rows).surveys;
-      }
-
-      const result: any[] = _extractSurveys(rows);
-
-      return res.status(200).json(result);
+      return res.status(200).json(surveys);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyList', message: 'error', error });
       throw error;
@@ -110,37 +139,4 @@ export function getSurveyList(): RequestHandler {
       connection.release();
     }
   };
-}
-
-/**
- * Extract an array of survey data from DB query.
- *
- * @export
- * @param {any[]} rows DB query result rows
- * @return {any[]} An array of survey data
- */
-export function _extractSurveys(rows: any[]): any[] {
-  if (!rows || !rows.length) {
-    return [];
-  }
-
-  const surveys: any[] = [];
-
-  rows.forEach((row) => {
-    const survey: any = {
-      id: row.id,
-      name: row.name,
-      species: row.species,
-      start_date: row.start_date,
-      end_date: row.end_date,
-      publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
-      completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE
-    };
-
-    surveys.push(survey);
-  });
-
-  return surveys;
 }

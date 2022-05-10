@@ -1,4 +1,5 @@
 import Box from '@material-ui/core/Box';
+import Chip from '@material-ui/core/Chip';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import List from '@material-ui/core/List';
@@ -7,22 +8,22 @@ import ListItemIcon from '@material-ui/core/ListItemIcon';
 import ListItemText from '@material-ui/core/ListItemText';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import Typography from '@material-ui/core/Typography';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import Typography from '@material-ui/core/Typography';
 import { mdiInformationOutline, mdiPaperclip } from '@mdi/js';
 import Icon from '@mdi/react';
+import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
+import { ProjectStatusType } from 'constants/misc';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useCodes from 'hooks/useCodes';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useParams, useLocation } from 'react-router';
+import { useLocation, useParams } from 'react-router';
 import { NavLink } from 'react-router-dom';
 import { getFormattedDateRangeString } from 'utils/Utils';
-import { ProjectStatusType } from 'constants/misc';
-import Chip from '@material-ui/core/Chip';
-import clsx from 'clsx';
-import PublicProjectDetails from './PublicProjectDetails';
 import PublicProjectAttachments from './components/PublicProjectAttachments';
+import PublicProjectDetails from './PublicProjectDetails';
 
 const useStyles = makeStyles((theme: Theme) => ({
   projectNav: {
@@ -67,6 +68,7 @@ const PublicProjectPage = () => {
   const biohubApi = useBiohubApi();
   const classes = useStyles();
   const location = useLocation();
+  const codes = useCodes();
 
   const [isLoadingProject, setIsLoadingProject] = useState(false);
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
@@ -104,8 +106,8 @@ const PublicProjectPage = () => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
-  if (!projectWithDetails) {
-    return <CircularProgress className="pageProgress" size={40} />;
+  if (!projectWithDetails || !codes.isReady || !codes.codes) {
+    return <CircularProgress className="pageProgress" data-testid="loading_spinner" size={40} />;
   }
 
   return (
@@ -170,7 +172,7 @@ const PublicProjectPage = () => {
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
-              <PublicProjectDetails projectForViewData={projectWithDetails} refresh={getProject} />
+              <PublicProjectDetails projectForViewData={projectWithDetails} codes={codes.codes} refresh={getProject} />
             )}
             {location.pathname.includes('/attachments') && (
               <PublicProjectAttachments projectForViewData={projectWithDetails} />

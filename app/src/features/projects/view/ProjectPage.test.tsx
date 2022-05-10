@@ -1,15 +1,15 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
+import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
+import { DialogContextProvider } from 'contexts/dialogContext';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
+import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import ProjectPage from './ProjectPage';
-import { DialogContextProvider } from 'contexts/dialogContext';
-import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext, IAuthState } from 'contexts/authStateContext';
 
 const history = createMemoryHistory({ initialEntries: ['/admin/projects/1'] });
 
@@ -21,7 +21,7 @@ const mockUseBiohubApi = {
     publishProject: jest.fn()
   },
   survey: {
-    getSurveysList: jest.fn()
+    getSurveysList: jest.fn().mockResolvedValue([])
   },
   codes: {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
@@ -60,6 +60,8 @@ describe('ProjectPage', () => {
     mockBiohubApi().survey.getSurveysList.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().project.publishProject.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
@@ -92,7 +94,7 @@ describe('ProjectPage', () => {
       </DialogContextProvider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     await waitFor(() => {
@@ -117,7 +119,7 @@ describe('ProjectPage', () => {
       </DialogContextProvider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     await waitFor(() => {
@@ -150,7 +152,7 @@ describe('ProjectPage', () => {
       </AuthStateContext.Provider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     fireEvent.click(getByTestId('delete-project-button'));
@@ -193,7 +195,7 @@ describe('ProjectPage', () => {
       </AuthStateContext.Provider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     fireEvent.click(getByTestId('delete-project-button'));
@@ -244,7 +246,7 @@ describe('ProjectPage', () => {
       </AuthStateContext.Provider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     fireEvent.click(getByTestId('delete-project-button'));
@@ -283,7 +285,7 @@ describe('ProjectPage', () => {
     const authState = {
       keycloakWrapper: {
         ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
+        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
         hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
       }
     };
@@ -298,7 +300,7 @@ describe('ProjectPage', () => {
       </AuthStateContext.Provider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     expect(getByTestId('delete-project-button')).toBeEnabled();
@@ -317,7 +319,7 @@ describe('ProjectPage', () => {
     const authState = {
       keycloakWrapper: {
         ...defaultAuthState.keycloakWrapper,
-        systemRoles: [SYSTEM_ROLE.PROJECT_ADMIN] as string[],
+        systemRoles: [SYSTEM_ROLE.PROJECT_CREATOR] as string[],
         hasSystemRole: jest.fn().mockReturnValueOnce(true).mockReturnValueOnce(false).mockReturnValueOnce(true)
       }
     };
@@ -332,7 +334,7 @@ describe('ProjectPage', () => {
       </AuthStateContext.Provider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     expect(getByTestId('delete-project-button')).toBeDisabled();
@@ -362,7 +364,7 @@ describe('ProjectPage', () => {
       </AuthStateContext.Provider>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     expect(queryByTestId('delete-project-button')).toBeNull();
@@ -386,7 +388,7 @@ describe('ProjectPage', () => {
       </Router>
     );
 
-    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1' });
+    const projectHeaderText = await findByText('Test Project Name', { selector: 'h1 span' });
     expect(projectHeaderText).toBeVisible();
 
     await waitFor(() => {
@@ -404,7 +406,7 @@ describe('ProjectPage', () => {
     });
     mockBiohubApi().project.publishProject.mockResolvedValue({ id: 1 });
 
-    const { getByTestId, findByText } = render(
+    const { getByTestId } = render(
       <DialogContextProvider>
         <Router history={history}>
           <ProjectPage />
@@ -412,8 +414,11 @@ describe('ProjectPage', () => {
       </DialogContextProvider>
     );
 
-    const publishButtonText1 = await findByText('Publish Project');
-    expect(publishButtonText1).toBeVisible();
+    await waitFor(() => {
+      const publishButtonText1 = getByTestId('publish-project-button');
+      expect(publishButtonText1).toBeVisible();
+      expect(publishButtonText1.textContent).toEqual('Publish');
+    });
 
     //re-mock response to return the project with a non-null publish date
     mockBiohubApi().project.getProjectForView.mockResolvedValue({
@@ -423,8 +428,11 @@ describe('ProjectPage', () => {
 
     fireEvent.click(getByTestId('publish-project-button'));
 
-    const unpublishButtonText = await findByText('Unpublish Project');
-    expect(unpublishButtonText).toBeVisible();
+    await waitFor(() => {
+      const publishButtonText1 = getByTestId('publish-project-button');
+      expect(publishButtonText1).toBeVisible();
+      expect(publishButtonText1.textContent).toEqual('Unpublish');
+    });
 
     //re-mock response to return the project with a null publish date
     mockBiohubApi().project.getProjectForView.mockResolvedValue({
@@ -434,8 +442,11 @@ describe('ProjectPage', () => {
 
     fireEvent.click(getByTestId('publish-project-button'));
 
-    const publishButtonText2 = await findByText('Publish Project');
-    expect(publishButtonText2).toBeVisible();
+    await waitFor(() => {
+      const publishButtonText1 = getByTestId('publish-project-button');
+      expect(publishButtonText1).toBeVisible();
+      expect(publishButtonText1.textContent).toEqual('Publish');
+    });
   });
 
   it('shows API error when fails to publish project', async () => {
@@ -448,7 +459,7 @@ describe('ProjectPage', () => {
     });
     mockBiohubApi().project.publishProject = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
-    const { getByTestId, findByText, queryByText, getAllByRole } = render(
+    const { getByTestId, queryByText, getAllByRole } = render(
       <DialogContextProvider>
         <Router history={history}>
           <ProjectPage />
@@ -456,8 +467,11 @@ describe('ProjectPage', () => {
       </DialogContextProvider>
     );
 
-    const publishButtonText1 = await findByText('Publish Project');
-    expect(publishButtonText1).toBeVisible();
+    await waitFor(() => {
+      const publishButtonText1 = getByTestId('publish-project-button');
+      expect(publishButtonText1).toBeVisible();
+      expect(publishButtonText1.textContent).toEqual('Publish');
+    });
 
     //re-mock response to return the project with a non-null publish date
     mockBiohubApi().project.getProjectForView.mockResolvedValue({
@@ -490,7 +504,7 @@ describe('ProjectPage', () => {
     });
     mockBiohubApi().project.publishProject.mockResolvedValue(null);
 
-    const { getByTestId, findByText, queryByText, getAllByRole } = render(
+    const { getByTestId, queryByText, getAllByRole } = render(
       <DialogContextProvider>
         <Router history={history}>
           <ProjectPage />
@@ -498,8 +512,11 @@ describe('ProjectPage', () => {
       </DialogContextProvider>
     );
 
-    const publishButtonText1 = await findByText('Publish Project');
-    expect(publishButtonText1).toBeVisible();
+    await waitFor(() => {
+      const publishButtonText1 = getByTestId('publish-project-button');
+      expect(publishButtonText1).toBeVisible();
+      expect(publishButtonText1.textContent).toEqual('Publish');
+    });
 
     //re-mock response to return the project with a non-null publish date
     mockBiohubApi().project.getProjectForView.mockResolvedValue({

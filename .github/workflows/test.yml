@@ -13,12 +13,12 @@ jobs:
     name: Running Tests
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v1
+      - uses: actions/checkout@v2
 
       - name: Setup node
-        uses: actions/setup-node@v1
+        uses: actions/setup-node@v2
         with:
-          node-version: "12"
+          node-version: 14
 
       - name: Cache api node modules
         uses: actions/cache@v2.1.6

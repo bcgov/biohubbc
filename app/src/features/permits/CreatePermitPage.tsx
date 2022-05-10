@@ -7,22 +7,22 @@ import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import { CreatePermitsI18N } from 'constants/i18n';
-import { Formik, FormikProps } from 'formik';
-import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useContext, useEffect, useRef, useState } from 'react';
-import { Prompt, useHistory, useParams } from 'react-router';
+import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
+import { CreatePermitsI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import yup from 'utils/YupSchema';
 import ProjectCoordinatorForm from 'features/projects/components/ProjectCoordinatorForm';
 import ProjectPermitForm from 'features/projects/components/ProjectPermitForm';
-import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
-import { APIError } from 'hooks/api/useAxios';
+import { Formik, FormikProps } from 'formik';
 import * as History from 'history';
-import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { APIError } from 'hooks/api/useAxios';
+import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreatePermitsRequest } from 'interfaces/usePermitApi.interface';
+import React, { useContext, useEffect, useRef, useState } from 'react';
+import { Prompt, useHistory, useParams } from 'react-router';
+import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
+import yup from 'utils/YupSchema';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {

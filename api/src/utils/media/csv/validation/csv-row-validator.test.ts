@@ -4,10 +4,10 @@ import xlsx from 'xlsx';
 import { CSVWorksheet } from '../csv-file';
 import {
   getCodeValueFieldsValidator,
-  getRequiredFieldsValidator,
-  getValidRangeFieldsValidator,
   getNumericFieldsValidator,
-  getValidFormatFieldsValidator
+  getRequiredFieldsValidator,
+  getValidFormatFieldsValidator,
+  getValidRangeFieldsValidator
 } from './csv-row-validator';
 
 describe('getRequiredFieldsValidator', () => {

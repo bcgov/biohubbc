@@ -1,23 +1,36 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
-import { getOccurrencesForViewSQL } from '../../queries/occurrence/occurrence-view-queries';
+import { HTTP400 } from '../../errors/custom-error';
 import { GetOccurrencesViewData } from '../../models/occurrence-view';
+import { queries } from '../../queries/queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('paths/dwc/view-occurrences');
 
-export const POST: Operation = [logRequest('paths/dwc/view-occurrences', 'POST'), getOccurrencesForView()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.body.project_id),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getOccurrencesForView()
+];
 
 POST.apiDoc = {
   description: 'Get occurrence spatial and metadata, for view-only purposes.',
   tags: ['occurrences'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -28,6 +41,9 @@ POST.apiDoc = {
           type: 'object',
           required: ['occurrence_submission_id'],
           properties: {
+            project_id: {
+              type: 'number'
+            },
             occurrence_submission_id: {
               description: 'A survey occurrence submission ID',
               type: 'number',
@@ -45,8 +61,8 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             title: 'Occurrences spatial and metadata response object, for view purposes',
-            type: 'object',
-            properties: {}
+            type: 'array',
+            items: {}
           }
         }
       }
@@ -58,7 +74,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -85,7 +101,7 @@ export function getOccurrencesForView(): RequestHandler {
     try {
       await connection.open();
 
-      const sqlStatement = getOccurrencesForViewSQL(Number(req.body.occurrence_submission_id));
+      const sqlStatement = queries.occurrence.getOccurrencesForViewSQL(Number(req.body.occurrence_submission_id));
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get occurrences for view statement');

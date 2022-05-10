@@ -23,6 +23,12 @@ parameters:
   - name: REACT_APP_SITEMINDER_LOGOUT_URL
     description: Siteminder URL to log out and clear the session for the logged in user
     value: ''
+  - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+    description: Default maximum number of files that can be uploaded at a time vai the upload component UI.
+    value: '10'
+  - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+    description: Default maximum size of a single file that can be uploaded by the upload component UI.
+    value: '52428800'
   - name: NODE_ENV
     description: NODE_ENV specification variable
     value: 'dev'
@@ -35,18 +41,6 @@ parameters:
   - name: APP_PORT_DEFAULT_NAME
     description: Default port resource name
     value: '7100-tcp'
-  - name: CPU_REQUEST
-    description: CPU REQUEST for deployment config
-    value: '200m'
-  - name: CPU_LIMIT
-    description: CPU LIMIT for dc
-    value: '500m'
-  - name: MEMORY_REQUEST
-    description: MEMORY REQUEST for dc
-    value: '1Gi'
-  - name: MEMORY_LIMIT
-    description: MEMORY LIMIT for dc
-    value: '2Gi'
   - name: SSO_URL
     description: Key clock login url
     value: 'https://oidc.gov.bc.ca/auth'
@@ -56,6 +50,14 @@ parameters:
   - name: SSO_REALM
     description: Realm identifier or name
     value: 35r1iman
+  - name: CPU_REQUEST
+    value: '10m'
+  - name: CPU_LIMIT
+    value: '200m'
+  - name: MEMORY_REQUEST
+    value: '50Mi'
+  - name: MEMORY_LIMIT
+    value: '200Mi'
   - name: REPLICAS
     value: '1'
   - name: REPLICA_MAX
@@ -122,6 +124,10 @@ objects:
                   value: ${REACT_APP_N8N_HOST}
                 - name: REACT_APP_SITEMINDER_LOGOUT_URL
                   value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
+                - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+                  value: ${REACT_APP_MAX_UPLOAD_NUM_FILES}
+                - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+                  value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: REACT_APP_NODE_ENV

@@ -1,5 +1,4 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { getLogger } from '../../utils/logger';
 import {
   AppendSQLColumn,
   appendSQLColumns,
@@ -8,8 +7,6 @@ import {
   AppendSQLValue,
   appendSQLValues
 } from '../../utils/sql-utils';
-
-const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 
 /**
  * SQL query to insert a survey occurrence submission row.
@@ -23,18 +20,11 @@ const defaultLog = getLogger('queries/survey/survey-occurrence-queries');
 export const insertSurveyOccurrenceSubmissionSQL = (data: {
   surveyId: number;
   source: string;
-  templateMethodologyId: number | null;
   inputFileName?: string;
   inputKey?: string;
   outputFileName?: string;
   outputKey?: string;
 }): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveyOccurrenceSubmissionSQL',
-    message: 'params',
-    data
-  });
-
   if (!data || !data.surveyId || !data.source) {
     return null;
   }
@@ -68,7 +58,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     INSERT INTO occurrence_submission (
       survey_id,
       source,
-      template_methodology_species_id,
       event_timestamp,
   `;
 
@@ -78,7 +67,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     ) VALUES (
       ${data.surveyId},
       ${data.source},
-      ${data.templateMethodologyId},
       now(),
   `);
 
@@ -89,57 +77,6 @@ export const insertSurveyOccurrenceSubmissionSQL = (data: {
     RETURNING
       occurrence_submission_id as id;
   `);
-
-  defaultLog.debug({
-    label: 'insertSurveyOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to get a template methodology species id.
- *
- * @param {number} surveyId
- * @param {string} source
- * @param {string} inputKey
- * @return {*}  {(SQLStatement | null)}
- */
-export const getTemplateMethodologySpeciesIdSQLStatement = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesIdSQLStatement',
-    message: 'params',
-    surveyId
-  });
-
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    SELECT
-      tms.template_methodology_species_id
-    FROM
-      template_methodology_species tms
-    LEFT OUTER JOIN
-      template t on tms.template_id = t.template_id
-    LEFT OUTER JOIN
-      common_survey_methodology csm  on tms.common_survey_methodology_id = csm.common_survey_methodology_id
-    LEFT OUTER JOIN
-      survey s on csm.common_survey_methodology_id = s.common_survey_methodology_id
-    WHERE
-      s.survey_id = ${surveyId};
-    `;
-
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesIdSQLStatement',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
 
   return sqlStatement;
 };
@@ -162,12 +99,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
   outputFileName?: string;
   outputKey?: string;
 }): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'updateSurveyOccurrenceSubmissionSQL',
-    message: 'params',
-    data
-  });
-
   if (!data.submissionId || (!data.inputFileName && !data.inputKey && !data.outputFileName && !data.outputKey)) {
     return null;
   }
@@ -205,13 +136,6 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
     RETURNING occurrence_submission_id as id;
   `);
 
-  defaultLog.debug({
-    label: 'updateSurveyOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
   return sqlStatement;
 };
 
@@ -222,17 +146,11 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
  * @returns {SQLStatement} sql query object
  */
 export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getLatestSurveyOccurrenceSubmissionSQL',
-    message: 'params',
-    surveyId
-  });
-
   if (!surveyId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       os.occurrence_submission_id as id,
       os.survey_id,
@@ -273,15 +191,6 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
     LIMIT 1
     ;
   `;
-
-  defaultLog.debug({
-    label: 'getLatestSurveyOccurrenceSubmission',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -291,31 +200,16 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
  * @return {*}  {(SQLStatement | null)}
  */
 export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteSurveyOccurrencesSQL',
-    message: 'params',
-    occurrenceSubmissionId
-  });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     DELETE FROM
       occurrence
     WHERE
       occurrence_submission_id = ${occurrenceSubmissionId};
   `;
-
-  defaultLog.debug({
-    label: 'deleteSurveyOccurrencesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -325,13 +219,11 @@ export const deleteSurveyOccurrencesSQL = (occurrenceSubmissionId: number): SQLS
  * @returns {SQLStatement} sql query object
  */
 export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({ label: 'getSurveyOccurrenceSubmissionSQL', message: 'params', occurrenceSubmissionId });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     SELECT
       *
     FROM
@@ -339,15 +231,6 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
     WHERE
       occurrence_submission_id = ${occurrenceSubmissionId};
   `;
-
-  defaultLog.debug({
-    label: 'getSurveyOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -357,30 +240,15 @@ export const getSurveyOccurrenceSubmissionSQL = (occurrenceSubmissionId: number)
  * @returns {SQLStatement} sql query object
  */
 export const deleteOccurrenceSubmissionSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'deleteOccurrenceSubmissionSQL',
-    message: 'params',
-    occurrenceSubmissionId
-  });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     UPDATE occurrence_submission
     SET delete_timestamp = now()
     WHERE occurrence_submission_id = ${occurrenceSubmissionId};
   `;
-
-  defaultLog.debug({
-    label: 'deleteOccurrenceSubmissionSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -394,18 +262,11 @@ export const insertOccurrenceSubmissionStatusSQL = (
   occurrenceSubmissionId: number,
   submissionStatusType: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertSurveySubmissionStatusSQL',
-    message: 'params',
-    occurrenceSubmissionId,
-    submissionStatusType
-  });
-
   if (!occurrenceSubmissionId || !submissionStatusType) {
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     INSERT INTO submission_status (
       occurrence_submission_id,
       submission_status_type_id,
@@ -425,15 +286,6 @@ export const insertOccurrenceSubmissionStatusSQL = (
     RETURNING
       submission_status_id as id;
   `;
-
-  defaultLog.debug({
-    label: 'insertSurveySubmissionStatusSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -450,20 +302,11 @@ export const insertOccurrenceSubmissionMessageSQL = (
   submissionMessage: string,
   errorCode: string
 ): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'insertOccurrenceSubmissionMessageSQL',
-    message: 'params',
-    submissionStatusId,
-    submissionMessageType,
-    submissionMessage,
-    errorCode
-  });
-
   if (!submissionStatusId || !submissionMessageType || !submissionMessage || !errorCode) {
     return null;
   }
 
-  const sqlStatement: SQLStatement = SQL`
+  return SQL`
     INSERT INTO submission_message (
       submission_status_id,
       submission_message_type_id,
@@ -485,15 +328,6 @@ export const insertOccurrenceSubmissionMessageSQL = (
     RETURNING
       submission_message_id;
   `;
-
-  defaultLog.debug({
-    label: 'insertSurveySubmissionMessageSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
@@ -503,17 +337,11 @@ export const insertOccurrenceSubmissionMessageSQL = (
  * @returns {SQLStatement} sql query object
  */
 export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getOccurrenceSubmissionMessagesSQL',
-    message: 'params',
-    occurrenceSubmissionId
-  });
-
   if (!occurrenceSubmissionId) {
     return null;
   }
 
-  const sqlStatement = SQL`
+  return SQL`
     SELECT
       sm.submission_message_id as id,
       smt.name as type,
@@ -546,53 +374,31 @@ export const getOccurrenceSubmissionMessagesSQL = (occurrenceSubmissionId: numbe
       os.occurrence_submission_id = ${occurrenceSubmissionId}
     ORDER BY sm.submission_message_id;
   `;
-
-  defaultLog.debug({
-    label: 'getOccurrenceSubmissionMessagesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
 };
 
 /**
- * SQL query to get a template_methodology_species record for a submission based on the occurrence_submission_id.
+ * SQL query to get a template methodology species id.
  *
- * @param {number} occurrenceId
- * @returns {SQLStatement} sql query object
+ * @param {number} fieldMethodId
+ * @param {number} templateId
+ * @return {*}  {(SQLStatement | null)}
  */
-export const getTemplateMethodologySpeciesSQL = (occurrenceId: number): SQLStatement | null => {
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesSQL',
-    message: 'params',
-    occurrenceId
-  });
-
-  if (!occurrenceId) {
+export const getTemplateMethodologySpeciesRecordSQL = (
+  fieldMethodId: number,
+  templateId: number
+): SQLStatement | null => {
+  if (!fieldMethodId || !templateId) {
     return null;
   }
 
-  const sqlStatement = SQL`
-    SELECT
-      tms.*
+  return SQL`
+    SELECT *
     FROM
-      occurrence_submission os
-    LEFT OUTER JOIN
-      template_methodology_species tms on os.template_methodology_species_id = tms.template_methodology_species_id
-    LEFT OUTER JOIN
-      template t on tms.template_id = t.template_id
+      template_methodology_species tms
     WHERE
-      os.occurrence_submission_id = ${occurrenceId};
-  `;
-
-  defaultLog.debug({
-    label: 'getTemplateMethodologySpeciesSQL',
-    message: 'sql',
-    'sqlStatement.text': sqlStatement.text,
-    'sqlStatement.values': sqlStatement.values
-  });
-
-  return sqlStatement;
+      tms.field_method_id = ${fieldMethodId}
+    AND
+      tms.template_id = ${templateId}
+    ;
+    `;
 };

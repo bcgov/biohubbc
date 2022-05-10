@@ -1,0 +1,305 @@
+{
+  "flatten": [
+    {
+      "fileName": "Effort & Site Conditions",
+      "uniqueId": ["Survey Area", "Block ID/SU ID"]
+    },
+    {
+      "fileName": "Observations",
+      "uniqueId": ["GPS Unit Name", "Waypoint"],
+      "parent": {
+        "fileName": "Effort & Site Conditions",
+        "uniqueId": ["Survey Area", "Block ID/SU ID"]
+      }
+    },
+    {
+      "fileName": "UTM_LatLong",
+      "uniqueId": ["GPS Unit Name", "Waypoint"],
+      "parent": {
+        "fileName": "Observations",
+        "uniqueId": ["GPS Unit Name", "Waypoint"]
+      }
+    }
+  ],
+  "transform": [
+    {
+      "condition": {
+        "if": {
+          "columns": ["Adult - Unclassified"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Adult - Unclassified"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Unknown"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Unclassified"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Unclassified"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Unknown"
+            },
+            "sex": {
+              "value": "Unknown"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Kid"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Kid"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Kid"
+            },
+            "sex": {
+              "value": "Unknown"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Nanny"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Nanny"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Female"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "condition": {
+        "if": {
+          "columns": ["Billy"]
+        }
+      },
+      "transformations": [
+        {
+          "fields": {
+            "id": {
+              "columns": ["Survey Area", "Block ID/SU ID", "Waypoint"],
+              "separator": ":"
+            },
+            "eventID": {
+              "columns": ["Survey Area", "Block ID/SU ID"],
+              "separator": ":"
+            },
+            "eventDate": {
+              "columns": ["Date"]
+            },
+            "verbatimCoordinatesUTM": {
+              "columns": ["UTM Zone", "Easting", "Northing"]
+            },
+            "verbatimCoordinatesLatLong": {
+              "columns": ["Lat", "Long"]
+            },
+            "occurrenceID": {
+              "columns": ["Waypoint"],
+              "unique": "occ"
+            },
+            "individualCount": {
+              "columns": ["Billy"]
+            },
+            "vernacularName": {
+              "columns": ["Species"]
+            },
+            "lifeStage": {
+              "value": "Adult"
+            },
+            "sex": {
+              "value": "Male"
+            }
+          }
+        }
+      ]
+    }
+  ],
+  "parse": [
+    {
+      "fileName": "event",
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "eventID", "target": "eventID" },
+        { "source": "eventDate", "target": "eventDate" },
+        { "source": ["verbatimCoordinatesUTM", "verbatimCoordinatesLatLong"], "target": "verbatimCoordinates" }
+      ]
+    },
+    {
+      "fileName": "occurrence",
+      "condition": {
+        "if": {
+          "columns": ["individualCount"]
+        }
+      },
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "occurrenceID", "target": "occurrenceID" },
+        { "source": "individualCount", "target": "individualCount" },
+        { "source": "vernacularName", "target": "associatedTaxa" },
+        { "source": "lifeStage", "target": "lifeStage" },
+        { "source": "sex", "target": "sex" }
+      ]
+    },
+    {
+      "fileName": "taxon",
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "occurrenceID", "target": "occurrenceID" },
+        { "source": "vernacularName", "target": "vernacularName" }
+      ]
+    },
+    {
+      "fileName": "resourcerelationship",
+      "condition": {
+        "if": {
+          "columns": ["resourceID"]
+        }
+      },
+      "columns": [
+        { "source": "id", "target": "id" },
+        { "source": "resourceID", "target": "resourceID" },
+        { "source": "relatedResourceID", "target": "relatedResourceID" },
+        { "source": "relationshipOfResource", "target": "relationshipOfResource" }
+      ]
+    }
+  ]
+}

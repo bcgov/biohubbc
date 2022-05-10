@@ -1,6 +1,6 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Divider from '@material-ui/core/Divider';
 import IconButton from '@material-ui/core/IconButton';
 import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
@@ -8,20 +8,20 @@ import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import Alert from '@material-ui/lab/Alert';
-import AlertTitle from '@material-ui/lab/AlertTitle';
 import {
-  mdiAlertCircle,
-  mdiInformationOutline,
+  mdiAlertCircleOutline,
   mdiClockOutline,
+  mdiDownload,
   mdiFileOutline,
   mdiImport,
-  mdiTrashCanOutline,
-  mdiDownload
+  mdiInformationOutline,
+  mdiTrashCanOutline
 } from '@mdi/js';
 import Icon from '@mdi/react';
 import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
+import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
@@ -36,31 +36,11 @@ interface ISurveyObservationsProps {
 }
 
 const useStyles = makeStyles((theme: Theme) => ({
-  textSpacing: {
-    marginBottom: '1rem'
-  },
   browseLink: {
     cursor: 'pointer'
   },
-  center: {
-    alignSelf: 'center'
-  },
-  box: {
-    width: '100%',
-    background: 'rgba(241, 243, 245, 1)',
-    alignItems: 'center',
-    display: 'flex',
-    justifyContent: 'center',
-    minHeight: '3rem'
-  },
-  infoBox: {
-    background: 'rgba(241, 243, 245, 1)'
-  },
-  tab: {
-    paddingLeft: theme.spacing(2)
-  },
-  nested: {
-    paddingLeft: theme.spacing(4)
+  alertLink: {
+    color: 'inherit'
   },
   alertActions: {
     '& > *': {
@@ -75,15 +55,15 @@ export enum ClassGrouping {
   WARNING = 'Warning'
 }
 
-const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'System Error'];
+const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 'Template Transformed', 'System Error'];
 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
   const config = useContext(ConfigContext);
 
-  const projectId = urlParams['id'];
-  const surveyId = urlParams['survey_id'];
+  const projectId = Number(urlParams['id']);
+  const surveyId = Number(urlParams['survey_id']);
   const [occurrenceSubmissionId, setOccurrenceSubmissionId] = useState<number | null>(null);
   const [openImportObservations, setOpenImportObservations] = useState(false);
 
@@ -99,20 +79,20 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           }
 
           if (config?.N8N_HOST) {
-            biohubApi.n8n.initiateOccurrenceSubmissionProcessing(result.submissionId, file.type);
+            biohubApi.n8n.initiateOccurrenceSubmissionProcessing(projectId, result.submissionId, file.type);
             return;
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            biohubApi.observation.initiateDwCSubmissionValidation(result.submissionId).then(() => {
-              biohubApi.observation.initiateScrapeOccurrences(result.submissionId).then(() => {
+            biohubApi.observation.initiateDwCSubmissionValidation(projectId, result.submissionId).then(() => {
+              biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
                 props.refresh();
               });
             });
           } else {
-            biohubApi.observation.initiateXLSXSubmissionValidation(result.submissionId).then(() => {
-              biohubApi.observation.initiateXLSXSubmissionTransform(result.submissionId).then(() => {
-                biohubApi.observation.initiateScrapeOccurrences(result.submissionId).then(() => {
+            biohubApi.observation.initiateXLSXSubmissionValidation(projectId, result.submissionId).then(() => {
+              biohubApi.observation.initiateXLSXSubmissionTransform(projectId, result.submissionId).then(() => {
+                biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
                   props.refresh();
                 });
               });
@@ -153,7 +133,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }, [biohubApi.observation, projectId, surveyId]);
 
-  useInterval(fetchObservationSubmission, pollingTime);
+  useInterval(fetchObservationSubmission, pollingTime, 60000);
 
   useEffect(() => {
     if (isLoading) {
@@ -161,7 +141,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     }
 
     if (isPolling && !pollingTime) {
-      setPollingTime(2000);
+      setPollingTime(5000);
     }
   }, [
     biohubApi,
@@ -231,11 +211,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
   // Action prop for the Alert MUI component to render the delete icon and associated action
   const submissionAlertAction = () => (
-    <Box className={classes.alertActions}>
-      <IconButton aria-label="open" color="inherit" size="small" onClick={() => viewFileContents()}>
+    <Box>
+      <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
         <Icon path={mdiDownload} size={1} />
       </IconButton>
-      <IconButton aria-label="delete" color="inherit" size="small" onClick={() => showDeleteDialog()}>
+      <IconButton aria-label="delete" color="inherit" onClick={() => showDeleteDialog()}>
         <Icon path={mdiTrashCanOutline} size={1} />
       </IconButton>
     </Box>
@@ -332,12 +312,12 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   function displayAlertBox(severityLevel: severityLevel, iconName: string, fileName: string, message: string) {
     return (
       <Alert icon={<Icon path={iconName} size={1} />} severity={severityLevel} action={submissionAlertAction()}>
-        <Box component={AlertTitle} display="flex">
-          <Link underline="always" component="button" variant="body2" onClick={() => viewFileContents()}>
+        <Box display="flex" alignItems="center" m={0}>
+          <Link className={classes.alertLink} component="button" variant="body2" onClick={() => viewFileContents()}>
             <strong>{fileName}</strong>
           </Link>
         </Box>
-        {message}
+        <Typography variant="body2">{message}</Typography>
       </Alert>
     );
   }
@@ -347,16 +327,15 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       <Box>
         {Object.entries(list).map(([key, value], index) => (
           <Box key={index}>
-            <Box display="flex" alignItems="center">
-              <Icon path={iconName} size={1} color="#ff5252" />
-              <strong className={classes.tab}>{msgGroup[key].label}</strong>
-            </Box>
-            <Box pl={2}>
-              <ul>
-                {value.map((message: string, index2: number) => {
-                  return <li key={`${index}-${index2}`}>{message}</li>;
-                })}
-              </ul>
+            <Alert severity="error">{msgGroup[key].label}</Alert>
+            <Box component="ul" my={3}>
+              {value.map((message: string, index2: number) => {
+                return (
+                  <li key={`${index}-${index2}`}>
+                    <Typography variant="body2">{message}</Typography>
+                  </li>
+                );
+              })}
             </Box>
           </Box>
         ))}
@@ -365,96 +344,92 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   }
 
   return (
-    <Box>
-      <Box mb={5} display="flex" justifyContent="space-between">
-        <Typography data-testid="observations-heading" variant="h2">
-          Observations
-        </Typography>
-        <Button
-          startIcon={<Icon path={mdiImport} size={1} />}
-          variant="outlined"
-          color="primary"
-          onClick={() => showUploadDialog()}>
-          Import
-        </Button>
-      </Box>
+    <>
+      <Paper>
+        <H2ButtonToolbar
+          label="Observations"
+          buttonLabel="Import"
+          buttonTitle="Import"
+          buttonStartIcon={<Icon path={mdiImport} size={1} />}
+          buttonOnClick={() => showUploadDialog()}
+        />
 
-      <Box component={Paper} p={4}>
-        {!submissionStatus && (
-          <Typography data-testid="observations-nodata" variant="body2" className={`${classes.infoBox} ${classes.box}`}>
-            No Observation Data. &nbsp;
-            <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
-              Click Here to Import
-            </Link>
-          </Typography>
-        )}
-
-        {!isValidating && submissionStatus?.status === 'System Error' && (
-          <>
-            {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed to Start')}
-
-            <Box mt={3} mb={1}>
-              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
-                What's next?
-              </Typography>
-            </Box>
-            <Box mb={3}>
-              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
-                Resolve the following errors in your local file and re-import.
-              </Typography>
-            </Box>
-
-            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
-
-            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-          </>
-        )}
-
-        {!isValidating && submissionStatus?.status === 'Rejected' && (
-          <>
-            {displayAlertBox('error', mdiAlertCircle, submissionStatus.inputFileName, 'Validation Failed')}
-            <Box mt={3} mb={1}>
-              <Typography data-testid="observations-error-details" variant="h4" className={classes.center}>
-                What's next?
-              </Typography>
-            </Box>
-            <Box mb={3}>
-              <Typography data-testid="observations-error-details" variant="body2" className={classes.center}>
-                Resolve the following errors in your local file and re-import.
-              </Typography>
-            </Box>
-
-            {displayMessages(submissionErrors, messageGrouping, mdiAlertCircle)}
-
-            {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
-          </>
-        )}
-        {!isValidating &&
-          submissionStatus &&
-          (submissionStatus.status === 'Darwin Core Validated' || submissionStatus.status === 'Template Validated') && (
+        <Box>
+          {!submissionStatus && (
             <>
-              {displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}
-
-              <Box mt={5} overflow="hidden">
-                <ObservationSubmissionCSV
-                  getCSVData={() => {
-                    return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
-                  }}
-                />
+              <Box component={Divider} m={0} />
+              <Box p={3} textAlign="center">
+                <Typography data-testid="observations-nodata" variant="body2">
+                  No Observation Data. &nbsp;
+                  <Link onClick={() => setOpenImportObservations(true)} className={classes.browseLink}>
+                    Click Here to Import
+                  </Link>
+                </Typography>
               </Box>
             </>
           )}
-        {isValidating && submissionStatus && (
-          <>
-            {displayAlertBox(
-              'info',
-              mdiClockOutline,
-              submissionStatus?.inputFileName,
-              'Validating observation data. Please wait ...'
+
+          {!isValidating && submissionStatus?.status === 'System Error' && (
+            <Box px={3} pb={3}>
+              {displayAlertBox(
+                'error',
+                mdiAlertCircleOutline,
+                submissionStatus.inputFileName,
+                'Validation Failed to Start'
+              )}
+              <Box my={3}>
+                <Typography data-testid="observations-error-details" variant="body1">
+                  Resolve the following errors in your local file and re-import.
+                </Typography>
+              </Box>
+              <Box>
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Box>
+            </Box>
+          )}
+
+          {!isValidating && submissionStatus?.status === 'Rejected' && (
+            <Box px={3} pb={3}>
+              {displayAlertBox('error', mdiAlertCircleOutline, submissionStatus.inputFileName, 'Validation Failed')}
+              <Box my={3}>
+                <Typography data-testid="observations-error-details" variant="body1">
+                  Resolve the following errors in your local file and re-import.
+                </Typography>
+              </Box>
+              <Box>
+                {displayMessages(submissionErrors, messageGrouping, mdiAlertCircleOutline)}
+                {displayMessages(submissionWarnings, messageGrouping, mdiInformationOutline)}
+              </Box>
+            </Box>
+          )}
+          {!isValidating &&
+            submissionStatus &&
+            (submissionStatus.status === 'Darwin Core Validated' ||
+              submissionStatus.status === 'Template Validated') && (
+              <>
+                <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
+                <Box mt={1} overflow="hidden">
+                  <ObservationSubmissionCSV
+                    getCSVData={() => {
+                      return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
+                    }}
+                  />
+                </Box>
+              </>
             )}
-          </>
-        )}
-      </Box>
+          {isValidating && submissionStatus && (
+            <Box px={3} pb={3}>
+              {displayAlertBox(
+                'info',
+                mdiClockOutline,
+                submissionStatus?.inputFileName,
+                'Validating observation data. Please wait ...'
+              )}
+            </Box>
+          )}
+        </Box>
+      </Paper>
 
       <ComponentDialog
         open={openImportObservations}
@@ -469,7 +444,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           uploadHandler={importObservations()}
         />
       </ComponentDialog>
-    </Box>
+    </>
   );
 };
 

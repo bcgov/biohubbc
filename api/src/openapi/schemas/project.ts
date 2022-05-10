@@ -163,15 +163,6 @@ export const projectCreatePostRequestObject = {
   }
 };
 
-/**
- * Response object for project view GET request
- */
-export const projectViewGetResponseObject = {
-  title: 'Project get response object, for view purposes',
-  type: 'object',
-  properties: {}
-};
-
 const projectUpdateProperties = {
   coordinator: {
     type: 'object',

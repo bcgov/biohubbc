@@ -4,6 +4,14 @@ import { KeycloakInstance } from 'keycloak-js';
 import { useCallback, useEffect, useState } from 'react';
 import { useBiohubApi } from './useBioHubApi';
 
+export enum SYSTEM_IDENTITY_SOURCE {
+  BCEID = 'BCEID',
+  IDIR = 'IDIR'
+}
+
+const EXTERNAL_BCEID_IDENTITY_SOURCES = ['BCEID-BASIC-AND-BUSINESS', 'BCEID'];
+const EXTERNAL_IDIR_IDENTITY_SOURCES = ['IDIR'];
+
 /**
  * IUserInfo interface, represents the userinfo provided by keycloak.
  */
@@ -45,6 +53,12 @@ export interface IKeycloakWrapper {
    * @memberof IKeycloakWrapper
    */
   systemRoles: string[];
+  /**
+   * Returns `true` if the keycloak user is a registered system user, `false` otherwise.
+   *
+   * @memberof IKeycloakWrapper
+   */
+  isSystemUser: () => boolean;
   /**
    * Returns `true` if the user's `systemRoles` contain at least 1 of the specified `validSystemRoles`, `false` otherwise.
    *
@@ -126,14 +140,25 @@ function useKeycloakWrapper(): IKeycloakWrapper {
   /**
    * Parses out the identity source portion of the preferred_username from the token.
    *
+   * Note: Some identity sources have multiple variations (ie: BCEID) and are mapped to a single value supported by
+   * this app.
+   *
    * @param {object} keycloakToken
    * @return {*} {(string | null)}
    */
   const getIdentitySource = useCallback((): string | null => {
-    const identitySource = keycloakUser?.['preferred_username']?.split('@')?.[1];
+    const identitySource = keycloakUser?.['preferred_username']?.split('@')?.[1].toUpperCase();
 
     if (!identitySource) {
       return null;
+    }
+
+    if (EXTERNAL_BCEID_IDENTITY_SOURCES.includes(identitySource)) {
+      return SYSTEM_IDENTITY_SOURCE.BCEID;
+    }
+
+    if (EXTERNAL_IDIR_IDENTITY_SOURCES.includes(identitySource)) {
+      return SYSTEM_IDENTITY_SOURCE.IDIR;
     }
 
     return identitySource;
@@ -145,10 +170,12 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
       try {
         userDetails = await biohubApi.user.getUser();
-      } catch {}
+      } catch {
+        // do nothing
+      }
 
       setBioHubUser(() => {
-        if (userDetails?.role_names?.length) {
+        if (userDetails?.role_names?.length && !userDetails?.user_record_end_date) {
           setHasLoadedAllUserInfo(true);
         } else {
           setShouldLoadAccessRequest(true);
@@ -177,7 +204,9 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
       try {
         accessRequests = await biohubApi.admin.hasPendingAdministrativeActivities();
-      } catch {}
+      } catch {
+        // do nothing
+      }
 
       setHasAccessRequest(() => {
         setHasLoadedAllUserInfo(true);
@@ -214,6 +243,10 @@ function useKeycloakWrapper(): IKeycloakWrapper {
 
     getKeycloakUser();
   }, [keycloak, keycloakUser, isKeycloakUserLoading]);
+
+  const isSystemUser = (): boolean => {
+    return !!bioHubUser;
+  };
 
   const getSystemRoles = (): string[] => {
     return bioHubUser?.role_names || [];
@@ -266,6 +299,7 @@ function useKeycloakWrapper(): IKeycloakWrapper {
     keycloak: keycloak,
     hasLoadedAllUserInfo,
     systemRoles: getSystemRoles(),
+    isSystemUser,
     hasSystemRole,
     hasAccessRequest,
     getUserIdentifier,

@@ -1,20 +1,34 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../../constants/roles';
-import { getDBConnection } from '../../../../../database/db';
-import { HTTP400 } from '../../../../../errors/CustomError';
-import { GetSurveyProprietorData } from '../../../../../models/survey-view-update';
-import { GetViewSurveyDetailsData } from '../../../../../models/survey-view';
-import { surveyViewGetResponseObject } from '../../../../../openapi/schemas/survey';
-import { getSurveyForViewSQL } from '../../../../../queries/survey/survey-view-queries';
-import { getSurveyProprietorForUpdateSQL } from '../../../../../queries/survey/survey-view-update-queries';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
+import { getDBConnection, IDBConnection } from '../../../../../database/db';
+import { HTTP400 } from '../../../../../errors/custom-error';
+import {
+  GetAncillarySpeciesData,
+  GetFocalSpeciesData,
+  GetViewSurveyDetailsData
+} from '../../../../../models/survey-view';
+import { GetSurveyProprietorData, GetSurveyPurposeAndMethodologyData } from '../../../../../models/survey-view-update';
+import { geoJsonFeature } from '../../../../../openapi/schemas/geoJson';
+import { queries } from '../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { TaxonomyService } from '../../../../../services/taxonomy-service';
 import { getLogger } from '../../../../../utils/logger';
-import { logRequest } from '../../../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/view');
 
 export const GET: Operation = [
-  logRequest('paths/project/{projectId}/survey/{surveyId}/view', 'GET'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   getSurveyForView()
 ];
 
@@ -23,7 +37,7 @@ GET.apiDoc = {
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -46,11 +60,236 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey with matching surveyId.',
+      description: 'Survey with matching surveyId and projectId.',
       content: {
         'application/json': {
           schema: {
-            ...(surveyViewGetResponseObject as object)
+            title: 'Survey get response object, for view purposes',
+            type: 'object',
+            required: ['survey_details', 'survey_purpose_and_methodology', 'survey_proprietor'],
+            properties: {
+              survey_details: {
+                description: 'Survey Details',
+                type: 'object',
+                required: [
+                  'id',
+                  'occurrence_submission_id',
+                  'focal_species',
+                  'focal_species_names',
+                  'ancillary_species',
+                  'ancillary_species_names',
+                  'biologist_first_name',
+                  'biologist_last_name',
+                  'completion_status',
+                  'start_date',
+                  'end_date',
+                  'funding_sources',
+                  'geometry',
+                  'permit_number',
+                  'permit_type',
+                  'publish_date',
+                  'revision_count',
+                  'survey_area_name',
+                  'survey_name'
+                ],
+                properties: {
+                  id: {
+                    description: 'Survey id',
+                    type: 'number'
+                  },
+                  ancillary_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  ancillary_species_names: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  focal_species: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  focal_species_names: {
+                    type: 'array',
+                    items: {
+                      type: 'string'
+                    }
+                  },
+                  biologist_first_name: {
+                    type: 'string'
+                  },
+                  biologist_last_name: {
+                    type: 'string'
+                  },
+                  completion_status: {
+                    type: 'string'
+                  },
+                  start_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  end_date: {
+                    type: 'string',
+                    format: 'date',
+                    description: 'ISO 8601 date string for the funding end_date'
+                  },
+                  funding_sources: {
+                    type: 'array',
+                    items: {
+                      title: 'survey funding agency',
+                      type: 'object',
+                      required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
+                      properties: {
+                        pfs_id: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        agency_name: {
+                          type: 'string',
+                          nullable: true
+                        },
+                        funding_amount: {
+                          type: 'number',
+                          nullable: true
+                        },
+                        funding_start_date: {
+                          type: 'string',
+                          nullable: true,
+                          description: 'ISO 8601 date string'
+                        },
+                        funding_end_date: {
+                          type: 'string',
+                          nullable: true,
+                          description: 'ISO 8601 date string'
+                        }
+                      }
+                    }
+                  },
+                  geometry: {
+                    type: 'array',
+                    items: {
+                      ...(geoJsonFeature as object)
+                    }
+                  },
+                  occurrence_submission_id: {
+                    description: 'A survey occurrence submission ID',
+                    type: 'number',
+                    nullable: true,
+                    example: 1
+                  },
+                  permit_number: {
+                    type: 'string'
+                  },
+                  permit_type: {
+                    type: 'string'
+                  },
+                  publish_date: {
+                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                    nullable: true,
+                    description: 'Determines if the record has been published'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  },
+                  survey_area_name: {
+                    type: 'string'
+                  },
+                  survey_name: {
+                    type: 'string'
+                  }
+                }
+              },
+              survey_purpose_and_methodology: {
+                description: 'Survey Details',
+                type: 'object',
+                required: [
+                  'id',
+                  'field_method_id',
+                  'additional_details',
+                  'intended_outcome_id',
+                  'ecological_season_id',
+                  'vantage_code_ids',
+                  'surveyed_all_areas',
+                  'revision_count'
+                ],
+                properties: {
+                  id: {
+                    type: 'number'
+                  },
+                  field_method_id: {
+                    type: 'number'
+                  },
+                  additional_details: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  intended_outcome_id: {
+                    type: 'number',
+                    nullable: true
+                  },
+                  ecological_season_id: {
+                    type: 'number',
+                    nullable: true
+                  },
+                  vantage_code_ids: {
+                    type: 'array',
+                    items: {
+                      type: 'number'
+                    }
+                  },
+                  surveyed_all_areas: {
+                    type: 'string',
+                    enum: ['true', 'false']
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              },
+              survey_proprietor: {
+                description: 'Survey Details',
+                type: 'object',
+                nullable: true,
+                properties: {
+                  survey_data_proprietary: {
+                    type: 'string'
+                  },
+                  id: {
+                    type: 'number'
+                  },
+                  category_rationale: {
+                    type: 'string'
+                  },
+                  data_sharing_agreement_required: {
+                    type: 'string'
+                  },
+                  first_nations_id: {
+                    type: 'number',
+                    nullable: true
+                  },
+                  first_nations_name: {
+                    type: 'string',
+                    nullable: true
+                  },
+                  proprietary_data_category: {
+                    type: 'number'
+                  },
+                  proprietary_data_category_name: {
+                    type: 'string'
+                  },
+                  revision_count: {
+                    type: 'number'
+                  }
+                }
+              }
+            }
           }
         }
       }
@@ -82,34 +321,49 @@ export function getSurveyForView(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
+    if (!req.params.surveyId) {
+      throw new HTTP400('Missing required path param `surveyId`');
+    }
+
+    const surveyId = Number(req.params.surveyId);
+
     try {
-      const getSurveySQLStatement = getSurveyForViewSQL(Number(req.params.surveyId));
-      const getSurveyProprietorSQLStatement = getSurveyProprietorForUpdateSQL(Number(req.params.surveyId));
-
-      if (!getSurveySQLStatement || !getSurveyProprietorSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const [surveyData, surveyProprietorData] = await Promise.all([
-        await connection.query(getSurveySQLStatement.text, getSurveySQLStatement.values),
-        await connection.query(getSurveyProprietorSQLStatement.text, getSurveyProprietorSQLStatement.values)
+      const [
+        surveyBasicData,
+        surveyPurposeAndMethodology,
+        surveyFundingSourcesData,
+        SurveyFocalSpeciesData,
+        SurveyAncillarySpeciesData,
+        surveyProprietorData
+      ] = await Promise.all([
+        getSurveyBasicDataForView(surveyId, connection),
+        getSurveyPurposeAndMethodologyDataForView(surveyId, connection),
+        getSurveyFundingSourcesDataForView(surveyId, connection),
+        getSurveyFocalSpeciesDataForView(surveyId, connection),
+        getSurveyAncillarySpeciesDataForView(surveyId, connection),
+        getSurveyProprietorDataForView(surveyId, connection)
       ]);
 
       await connection.commit();
 
-      const getSurveyData = (surveyData && surveyData.rows && new GetViewSurveyDetailsData(surveyData.rows)) || null;
+      const getSurveyData = new GetViewSurveyDetailsData({
+        ...surveyBasicData,
+        funding_sources: surveyFundingSourcesData,
+        ...SurveyFocalSpeciesData,
+        ...SurveyAncillarySpeciesData
+      });
+
+      const getSurveyPurposeAndMethodology =
+        (surveyPurposeAndMethodology && new GetSurveyPurposeAndMethodologyData(surveyPurposeAndMethodology))[0] || null;
 
       const getSurveyProprietorData =
-        (surveyProprietorData &&
-          surveyProprietorData.rows &&
-          surveyProprietorData.rows[0] &&
-          new GetSurveyProprietorData(surveyProprietorData.rows[0])) ||
-        null;
+        (surveyProprietorData && new GetSurveyProprietorData(surveyProprietorData)) || null;
 
       const result = {
         survey_details: getSurveyData,
+        survey_purpose_and_methodology: getSurveyPurposeAndMethodology,
         survey_proprietor: getSurveyProprietorData
       };
 
@@ -122,3 +376,117 @@ export function getSurveyForView(): RequestHandler {
     }
   };
 }
+
+export const getSurveyBasicDataForView = async (surveyId: number, connection: IDBConnection): Promise<object> => {
+  const sqlStatement = queries.survey.getSurveyBasicDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to get survey basic data');
+  }
+
+  return (response && response.rows?.[0]) || null;
+};
+
+export const getSurveyPurposeAndMethodologyDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<object> => {
+  const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response || !response?.rows?.[0]) {
+    throw new HTTP400('Failed to get survey purpose and methodology data');
+  }
+
+  return (response && response.rows) || [];
+};
+
+export const getSurveyFundingSourcesDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<any[]> => {
+  const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to get survey funding sources data');
+  }
+
+  return (response && response.rows) || [];
+};
+
+export const getSurveyFocalSpeciesDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<GetFocalSpeciesData> => {
+  const sqlStatement = queries.survey.getSurveyFocalSpeciesDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to get species data');
+  }
+
+  const taxonomyService = new TaxonomyService();
+
+  const species = await taxonomyService.getSpeciesFromIds(result);
+
+  return new GetFocalSpeciesData(species);
+};
+
+export const getSurveyAncillarySpeciesDataForView = async (
+  surveyId: number,
+  connection: IDBConnection
+): Promise<GetAncillarySpeciesData> => {
+  const sqlStatement = queries.survey.getSurveyAncillarySpeciesDataForViewSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows) || null;
+
+  if (!result) {
+    throw new HTTP400('Failed to get species data');
+  }
+
+  const taxonomyService = new TaxonomyService();
+
+  const species = await taxonomyService.getSpeciesFromIds(result);
+
+  return new GetAncillarySpeciesData(species);
+};
+
+export const getSurveyProprietorDataForView = async (surveyId: number, connection: IDBConnection) => {
+  const sqlStatement = queries.survey.getSurveyProprietorForUpdateSQL(surveyId);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL get statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  return (response && response.rows?.[0]) || null;
+};

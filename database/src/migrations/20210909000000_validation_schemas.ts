@@ -1,5 +1,5 @@
 import * as fs from 'fs';
-import Knex from 'knex';
+import { Knex } from 'knex';
 import path from 'path';
 
 const VALIDATION_SCHEMAS = 'template_methodology_species_validations';

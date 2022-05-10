@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`Project Coordinator Form renders correctly the empty component correctly 1`] = `
+exports[`Project Contact Form renders correctly the empty component correctly 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -11,6 +11,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="first_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -58,6 +59,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="last_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -105,6 +107,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="email_address"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -165,7 +168,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
               for="coordinator_agency"
               id="coordinator_agency-label"
             >
-              Coordinator Agency
+              Contact Agency
               <span
                 aria-hidden="true"
                 class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -225,7 +228,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
                   class="PrivateNotchedOutline-legendLabelled-4"
                 >
                   <span>
-                    Coordinator Agency *
+                    Contact Agency *
                   </span>
                 </legend>
               </fieldset>
@@ -248,7 +251,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project coordinator contact information visible to the public?
+          Do you want the project contact’s name and email address visible to the public?
         </p>
         <div
           class="MuiBox-root MuiBox-root-8"
@@ -374,7 +377,7 @@ exports[`Project Coordinator Form renders correctly the empty component correctl
 </DocumentFragment>
 `;
 
-exports[`Project Coordinator Form renders correctly the filled component correctly 1`] = `
+exports[`Project Contact Form renders correctly the filled component correctly 1`] = `
 <DocumentFragment>
   <form>
     <div
@@ -385,6 +388,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="first_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -432,6 +436,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="last_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -479,6 +484,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="email_address"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -539,7 +545,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
               for="coordinator_agency"
               id="coordinator_agency-label"
             >
-              Coordinator Agency
+              Contact Agency
               <span
                 aria-hidden="true"
                 class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -599,7 +605,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
                   class="PrivateNotchedOutline-legendLabelled-19 PrivateNotchedOutline-legendNotched-20"
                 >
                   <span>
-                    Coordinator Agency *
+                    Contact Agency *
                   </span>
                 </legend>
               </fieldset>
@@ -622,7 +628,7 @@ exports[`Project Coordinator Form renders correctly the filled component correct
         <p
           class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
         >
-          Do you want the project coordinator contact information visible to the public?
+          Do you want the project contact’s name and email address visible to the public?
         </p>
         <div
           class="MuiBox-root MuiBox-root-23"

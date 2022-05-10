@@ -1,7 +1,7 @@
 import { AxiosError } from 'axios';
 import { APIError } from './useAxios';
 
-describe('useAxios', () => {
+describe('APIError', () => {
   it('assigns all values correctly', () => {
     const error = {
       name: 'error name',
@@ -10,9 +10,6 @@ describe('useAxios', () => {
       config: {
         baseURL: 'localhost',
         url: '/test'
-      },
-      request: {
-        responseURL: 'localhost/test-error'
       }
     } as Partial<AxiosError>;
 
@@ -25,6 +22,5 @@ describe('useAxios', () => {
     expect(apiError.status).toEqual(500);
     expect(apiError.errors).toEqual(['some errors']);
     expect(apiError.requestURL).toEqual('localhost/test');
-    expect(apiError.responseURL).toEqual('localhost/test-error');
   });
 });

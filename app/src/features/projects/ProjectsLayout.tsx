@@ -11,8 +11,7 @@ const useStyles = makeStyles(() => ({
     flexDirection: 'column'
   },
   projectsContainer: {
-    flex: '1',
-    overflow: 'auto'
+    flex: '1'
   }
 }));
 

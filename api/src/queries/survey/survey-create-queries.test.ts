@@ -2,12 +2,12 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
 import {
-  postFocalSpeciesSQL,
+  insertSurveyFundingSourceSQL,
   postAncillarySpeciesSQL,
-  postSurveyProprietorSQL,
-  postSurveySQL,
+  postFocalSpeciesSQL,
   postNewSurveyPermitSQL,
-  insertSurveyFundingSourceSQL
+  postSurveyProprietorSQL,
+  postSurveySQL
 } from './survey-create-queries';
 
 describe('postSurveySQL', () => {

@@ -1,23 +1,38 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getAllPermitsSQL } from '../../queries/permit/permit-view-queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { PermitService } from '../../services/permit-service';
 import { getLogger } from '../../utils/logger';
 
 const defaultLog = getLogger('/api/permits/list');
 
-export const GET: Operation = [getAllPermits()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR],
+          discriminator: 'SystemRole'
+        },
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getAllPermits()
+];
 
 GET.apiDoc = {
   description: 'Fetches a list of all permits by system user id.',
   tags: ['permits'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   responses: {
@@ -41,7 +56,8 @@ GET.apiDoc = {
                   type: 'string'
                 },
                 project_name: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 }
               }
             },
@@ -50,8 +66,17 @@ GET.apiDoc = {
         }
       }
     },
+    400: {
+      $ref: '#/components/responses/400'
+    },
     401: {
       $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/403'
+    },
+    500: {
+      $ref: '#/components/responses/500'
     },
     default: {
       $ref: '#/components/responses/default'
@@ -61,8 +86,6 @@ GET.apiDoc = {
 
 export function getAllPermits(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Get permits list', message: 'params', req_params: req.params });
-
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
@@ -70,17 +93,11 @@ export function getAllPermits(): RequestHandler {
 
       const systemUserId = connection.systemUserId();
 
-      const getPermitsSQLStatement = getAllPermitsSQL(systemUserId);
+      const permitService = new PermitService(connection);
 
-      if (!getPermitsSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
-      const permitsData = await connection.query(getPermitsSQLStatement.text, getPermitsSQLStatement.values);
+      const getPermitsData = await permitService.getAllPermits(systemUserId);
 
       await connection.commit();
-
-      const getPermitsData = (permitsData && permitsData.rows) || null;
 
       return res.status(200).json(getPermitsData);
     } catch (error) {

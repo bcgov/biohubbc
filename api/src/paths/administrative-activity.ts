@@ -1,25 +1,27 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../constants/roles';
-import { getAPIUserDBConnection, getDBConnection, IDBConnection } from '../database/db';
-import { HTTP400, HTTP500 } from '../errors/CustomError';
+import { ACCESS_REQUEST_ADMIN_EMAIL } from '../constants/notifications';
+import { getAPIUserDBConnection, IDBConnection } from '../database/db';
+import { HTTP400, HTTP500 } from '../errors/custom-error';
 import {
   administrativeActivityResponseObject,
   hasPendingAdministrativeActivitiesResponseObject
 } from '../openapi/schemas/administrative-activity';
-import {
-  countPendingAdministrativeActivitiesSQL,
-  postAdministrativeActivitySQL,
-  putAdministrativeActivitySQL
-} from '../queries/administrative-activity/administrative-activity-queries';
+import { queries } from '../queries/queries';
+import { GCNotifyService } from '../services/gcnotify-service';
 import { getUserIdentifier } from '../utils/keycloak-utils';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
+import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from './administrative-activities';
 
 const defaultLog = getLogger('paths/administrative-activity-request');
 
-export const POST: Operation = [logRequest('paths/administrative-activity', 'POST'), createAdministrativeActivity()];
-export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getPendingAccessRequestsCount()];
+const ADMIN_EMAIL = process.env.GCNOTIFY_ADMIN_EMAIL || '';
+const APP_HOST = process.env.APP_HOST;
+const NODE_ENV = process.env.NODE_ENV;
+
+export const POST: Operation = [createAdministrativeActivity()];
+
+export const GET: Operation = [getPendingAccessRequestsCount()];
 
 POST.apiDoc = {
   description: 'Create a new Administrative Activity.',
@@ -137,7 +139,10 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to identify system user ID');
       }
 
-      const postAdministrativeActivitySQLStatement = postAdministrativeActivitySQL(systemUserId, req?.body);
+      const postAdministrativeActivitySQLStatement = queries.administrativeActivity.postAdministrativeActivitySQL(
+        systemUserId,
+        req?.body
+      );
 
       if (!postAdministrativeActivitySQLStatement) {
         throw new HTTP500('Failed to build SQL insert statement');
@@ -160,6 +165,8 @@ export function createAdministrativeActivity(): RequestHandler {
         throw new HTTP500('Failed to submit administrative activity');
       }
 
+      sendAccessRequestEmail();
+
       return res
         .status(200)
         .json({ id: administrativeActivityResult.id, date: administrativeActivityResult.create_date });
@@ -173,6 +180,17 @@ export function createAdministrativeActivity(): RequestHandler {
   };
 }
 
+function sendAccessRequestEmail() {
+  const gcnotifyService = new GCNotifyService();
+  const url = `${APP_HOST}/admin/users?authLogin=true`;
+  const hrefUrl = `[click here.](${url})`;
+  gcnotifyService.sendEmailGCNotification(ADMIN_EMAIL, {
+    ...ACCESS_REQUEST_ADMIN_EMAIL,
+    subject: `${NODE_ENV}: ${ACCESS_REQUEST_ADMIN_EMAIL.subject}`,
+    body1: `${ACCESS_REQUEST_ADMIN_EMAIL.body1} ${hrefUrl}`,
+    footer: `${APP_HOST}`
+  });
+}
 /**
  * Get all projects.
  *
@@ -189,7 +207,7 @@ export function getPendingAccessRequestsCount(): RequestHandler {
         throw new HTTP400('Missing required userIdentifier');
       }
 
-      const sqlStatement = countPendingAdministrativeActivitiesSQL(userIdentifier);
+      const sqlStatement = queries.administrativeActivity.countPendingAdministrativeActivitiesSQL(userIdentifier);
 
       if (!sqlStatement) {
         throw new HTTP400('Failed to build SQL get statement');
@@ -214,119 +232,22 @@ export function getPendingAccessRequestsCount(): RequestHandler {
   };
 }
 
-export const PUT: Operation = [
-  logRequest('paths/administrative-activity', 'PUT'),
-  getUpdateAdministrativeActivityHandler()
-];
-
-PUT.apiDoc = {
-  description: 'Update an existing administrative activity.',
-  tags: ['admin'],
-  security: [
-    {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
-    }
-  ],
-  requestBody: {
-    description: 'Administrative activity request object.',
-    content: {
-      'application/json': {
-        schema: {
-          title: 'Administrative activity put object',
-          type: 'object',
-          required: ['id', 'status'],
-          properties: {
-            id: {
-              title: 'administrative activity record ID',
-              type: 'number'
-            },
-            status: {
-              title: 'administrative activity status type code ID',
-              type: 'number'
-            }
-          }
-        }
-      }
-    }
-  },
-  responses: {
-    200: {
-      description: 'Put administrative activity OK'
-    },
-    400: {
-      $ref: '#/components/responses/400'
-    },
-    401: {
-      $ref: '#/components/responses/401'
-    },
-    403: {
-      $ref: '#/components/responses/401'
-    },
-    500: {
-      $ref: '#/components/responses/500'
-    },
-    default: {
-      $ref: '#/components/responses/default'
-    }
-  }
-};
-
-/**
- * Get a request handler to update an existing administrative activity.
- *
- * @returns {RequestHandler}
- */
-export function getUpdateAdministrativeActivityHandler(): RequestHandler {
-  return async (req, res) => {
-    defaultLog.debug({
-      label: 'getUpdateAdministrativeActivityHandler',
-      message: 'params',
-      req_body: req.body
-    });
-
-    const administrativeActivityId = Number(req.body?.id);
-    const administrativeActivityStatusTypeId = Number(req.body?.status);
-
-    if (!administrativeActivityId) {
-      throw new HTTP400('Missing required body parameter: id');
-    }
-
-    if (!administrativeActivityStatusTypeId) {
-      throw new HTTP400('Missing required body parameter: status');
-    }
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    try {
-      await connection.open();
-
-      await updateAdministrativeActivity(administrativeActivityId, administrativeActivityStatusTypeId, connection);
-
-      await connection.commit();
-
-      return res.status(200).send();
-    } catch (error) {
-      defaultLog.error({ label: 'getUpdateAdministrativeActivityHandler', message: 'error', error });
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
 /**
  * Update an existing administrative activity.
  *
  * @param {number} administrativeActivityId
- * @param {number} administrativeActivityStatusTypeId
+ * @param {ADMINISTRATIVE_ACTIVITY_STATUS_TYPE} administrativeActivityStatusTypeName
  * @param {IDBConnection} connection
  */
 export const updateAdministrativeActivity = async (
   administrativeActivityId: number,
-  administrativeActivityStatusTypeId: number,
+  administrativeActivityStatusTypeName: ADMINISTRATIVE_ACTIVITY_STATUS_TYPE,
   connection: IDBConnection
 ) => {
-  const sqlStatement = putAdministrativeActivitySQL(administrativeActivityId, administrativeActivityStatusTypeId);
+  const sqlStatement = queries.administrativeActivity.putAdministrativeActivitySQL(
+    administrativeActivityId,
+    administrativeActivityStatusTypeName
+  );
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL put statement');

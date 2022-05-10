@@ -1,3 +1,4 @@
+import Container from '@material-ui/core/Container';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Toolbar from '@material-ui/core/Toolbar';
@@ -37,22 +38,24 @@ const Footer: React.FC = () => {
 
   return (
     <footer className={classes.appFooter}>
-      <Toolbar className={classes.appFooterToolbar} role="navigation" aria-label="Footer">
-        <ul>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
-          </li>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/privacy">Privacy</a>
-          </li>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/accessible-government">Accessibility</a>
-          </li>
-          <li>
-            <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
-          </li>
-        </ul>
-      </Toolbar>
+      <Container maxWidth="xl">
+        <Toolbar className={classes.appFooterToolbar} role="navigation" aria-label="Footer" disableGutters>
+          <ul>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/disclaimer">Disclaimer</a>
+            </li>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/privacy">Privacy</a>
+            </li>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/accessible-government">Accessibility</a>
+            </li>
+            <li>
+              <a href="https://www.gov.bc.ca/gov/content/home/copyright">Copyright</a>
+            </li>
+          </ul>
+        </Toolbar>
+      </Container>
     </footer>
   );
 };

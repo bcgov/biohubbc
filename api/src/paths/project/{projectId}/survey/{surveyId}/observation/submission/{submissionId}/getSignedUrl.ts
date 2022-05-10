@@ -1,19 +1,32 @@
-'use strict';
-
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { HTTP400 } from '../../../../../../../../errors/CustomError';
-import { getLogger } from '../../../../../../../../utils/logger';
+import { PROJECT_ROLE } from '../../../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../../../database/db';
-import { getSurveyOccurrenceSubmissionSQL } from '../../../../../../../../queries/survey/survey-occurrence-queries';
+import { HTTP400 } from '../../../../../../../../errors/custom-error';
+import { queries } from '../../../../../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../../../../../request-handlers/security/authorization';
 import { getS3SignedURL } from '../../../../../../../../utils/file-utils';
+import { getLogger } from '../../../../../../../../utils/logger';
 import { attachmentApiDocObject } from '../../../../../../../../utils/shared-api-docs';
 
 const defaultLog = getLogger(
   '/api/project/{projectId}/survey/{surveyId}/observation/submission/{submissionId}/getSignedUrl'
 );
 
-export const GET: Operation = [getSingleSubmissionURL()];
+export const GET: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  getSingleSubmissionURL()
+];
 
 GET.apiDoc = {
   ...attachmentApiDocObject(
@@ -45,7 +58,19 @@ GET.apiDoc = {
       },
       required: true
     }
-  ]
+  ],
+  responses: {
+    200: {
+      description: 'Obsesrvation submission signed URL response.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'string'
+          }
+        }
+      }
+    }
+  }
 };
 
 export function getSingleSubmissionURL(): RequestHandler {
@@ -67,7 +92,7 @@ export function getSingleSubmissionURL(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyOccurrenceSubmissionSQLStatement = getSurveyOccurrenceSubmissionSQL(
+      const getSurveyOccurrenceSubmissionSQLStatement = queries.survey.getSurveyOccurrenceSubmissionSQL(
         Number(req.params.submissionId)
       );
 

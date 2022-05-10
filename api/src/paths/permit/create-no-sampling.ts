@@ -1,26 +1,39 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { IPostPermitNoSampling, PostPermitNoSamplingObject } from '../../models/permit-no-sampling';
-import { PostCoordinatorData } from '../../models/project-create';
-import { PutCoordinatorData } from '../../models/project-update';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
+import { getDBConnection } from '../../database/db';
 import { permitNoSamplingPostBody, permitNoSamplingResponseBody } from '../../openapi/schemas/permit-no-sampling';
-import { postPermitNoSamplingSQL } from '../../queries/permit/permit-create-queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { PermitService } from '../../services/permit-service';
 import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('/api/permit/create-no-sampling');
 
-export const POST: Operation = [logRequest('/api/permit/create-no-sampling', 'POST'), createNoSamplePermits()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      or: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR],
+          discriminator: 'SystemRole'
+        },
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  createNoSamplePermits()
+];
 
 POST.apiDoc = {
   description: 'Creates new no sample permit records.',
   tags: ['no-sample-permit'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -51,7 +64,7 @@ POST.apiDoc = {
       $ref: '#/components/responses/401'
     },
     403: {
-      $ref: '#/components/responses/401'
+      $ref: '#/components/responses/403'
     },
     500: {
       $ref: '#/components/responses/500'
@@ -71,24 +84,11 @@ export function createNoSamplePermits(): RequestHandler {
   return async (req, res) => {
     const connection = getDBConnection(req['keycloak_token']);
 
-    const sanitizedNoSamplePermitPostData = new PostPermitNoSamplingObject(req.body);
-
-    if (!sanitizedNoSamplePermitPostData.permit || !sanitizedNoSamplePermitPostData.permit.permits.length) {
-      throw new HTTP400('Missing request body param `permit`');
-    }
-
-    if (!sanitizedNoSamplePermitPostData.coordinator) {
-      throw new HTTP400('Missing request body param `coordinator`');
-    }
-
     try {
       await connection.open();
+      const permitService = new PermitService(connection);
 
-      const result = await Promise.all(
-        sanitizedNoSamplePermitPostData.permit.permits.map((permit: IPostPermitNoSampling) =>
-          insertNoSamplePermit(permit, sanitizedNoSamplePermitPostData.coordinator, connection)
-        )
-      );
+      const result = await permitService.createNoSamplePermits(req.body);
 
       await connection.commit();
 
@@ -102,27 +102,3 @@ export function createNoSamplePermits(): RequestHandler {
     }
   };
 }
-
-export const insertNoSamplePermit = async (
-  permit: IPostPermitNoSampling,
-  coordinator: PostCoordinatorData | PutCoordinatorData,
-  connection: IDBConnection
-): Promise<number> => {
-  const systemUserId = connection.systemUserId();
-
-  const sqlStatement = postPermitNoSamplingSQL({ ...permit, ...coordinator }, systemUserId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL insert statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result || !result.id) {
-    throw new HTTP400('Failed to insert non-sampling permit data');
-  }
-
-  return result.id;
-};

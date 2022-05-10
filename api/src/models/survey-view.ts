@@ -1,6 +1,6 @@
-import { COMPLETION_STATUS } from '../constants/status';
 import { Feature } from 'geojson';
 import moment from 'moment';
+import { COMPLETION_STATUS } from '../constants/status';
 import { getLogger } from '../utils/logger';
 
 const defaultLog = getLogger('models/survey-view');
@@ -14,10 +14,10 @@ const defaultLog = getLogger('models/survey-view');
 export class GetViewSurveyDetailsData {
   id: number;
   survey_name: string;
-  survey_purpose: string;
-  focal_species: (string | number)[];
-  ancillary_species: (string | number)[];
-  common_survey_methodology: string;
+  focal_species: number[];
+  focal_species_names: string[];
+  ancillary_species: number[];
+  ancillary_species_names: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
@@ -27,11 +27,10 @@ export class GetViewSurveyDetailsData {
   revision_count: number;
   permit_number: string;
   permit_type: string;
-  funding_sources: any[];
+  funding_sources: object[];
   completion_status: string;
   publish_date: string;
   occurrence_submission_id: number;
-  summary_results_submission_id: number;
 
   constructor(surveyDetailsData?: any) {
     defaultLog.debug({
@@ -45,105 +44,45 @@ export class GetViewSurveyDetailsData {
       }
     });
 
-    const surveyDataItem = surveyDetailsData && surveyDetailsData.length && surveyDetailsData[0];
-
-    const focalSpeciesList: string[] = [];
-    const seenFocalSpecies: string[] = [];
-
-    const ancillarySpeciesList: string[] = [];
-    const seenAncillarySpecies: string[] = [];
-
-    const fundingSourcesList: any[] = [];
-    const seenFundingSourceIds: number[] = [];
-
-    surveyDetailsData &&
-      surveyDetailsData.map((item: any) => {
-        if (!seenFundingSourceIds.includes(item.pfs_id) && item.pfs_id) {
-          fundingSourcesList.push({
-            agency_name: item.agency_name,
-            pfs_id: item.pfs_id,
-            funding_amount: item.funding_amount,
-            funding_start_date: item.funding_start_date,
-            funding_end_date: item.funding_end_date
-          });
-        }
-        seenFundingSourceIds.push(item.pfs_id);
-
-        if (!seenFocalSpecies.includes(item.focal_species)) {
-          focalSpeciesList.push(item.focal_species);
-        }
-        seenFocalSpecies.push(item.focal_species);
-
-        if (!seenAncillarySpecies.includes(item.ancillary_species)) {
-          ancillarySpeciesList.push(item.ancillary_species);
-        }
-        seenAncillarySpecies.push(item.ancillary_species);
-      });
-
-    this.id = surveyDataItem?.id ?? null;
-    this.occurrence_submission_id = surveyDataItem?.occurrence_submission_id ?? null;
-    this.summary_results_submission_id = surveyDataItem?.summary_results_submission_id ?? null;
-    this.survey_name = surveyDataItem?.name || '';
-    this.survey_purpose = surveyDataItem?.objectives || '';
-    this.focal_species = (focalSpeciesList.length && focalSpeciesList.filter((item: string | number) => !!item)) || [];
-    this.ancillary_species =
-      (ancillarySpeciesList.length && ancillarySpeciesList.filter((item: string | number) => !!item)) || [];
-    this.start_date = surveyDataItem?.start_date || '';
-    this.end_date = surveyDataItem?.end_date || '';
-    this.biologist_first_name = surveyDataItem?.lead_first_name || '';
-    this.common_survey_methodology = surveyDataItem?.common_survey_methodology || '';
-    this.biologist_last_name = surveyDataItem?.lead_last_name || '';
-    this.survey_area_name = surveyDataItem?.location_name || '';
-    this.geometry = (surveyDataItem?.geometry?.length && surveyDataItem.geometry) || [];
-    this.permit_number = surveyDataItem?.number || '';
-    this.permit_type = surveyDataItem?.type || '';
-    this.funding_sources = (fundingSourcesList.length && fundingSourcesList.filter((item: any) => !!item)) || [];
-    this.revision_count = surveyDataItem?.revision_count ?? null;
+    this.id = surveyDetailsData?.id ?? null;
+    this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
+    this.survey_name = surveyDetailsData?.name || '';
+    this.focal_species = surveyDetailsData?.focal_species || [];
+    this.focal_species_names = surveyDetailsData?.focal_species_names || [];
+    this.ancillary_species = surveyDetailsData?.ancillary_species || [];
+    this.ancillary_species_names = surveyDetailsData?.ancillary_species_names || [];
+    this.start_date = surveyDetailsData?.start_date || '';
+    this.end_date = surveyDetailsData?.end_date || '';
+    this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
+    this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
+    this.survey_area_name = surveyDetailsData?.location_name || '';
+    this.geometry = (surveyDetailsData?.geometry?.length && surveyDetailsData.geometry) || [];
+    this.permit_number = surveyDetailsData?.number || '';
+    this.permit_type = surveyDetailsData?.type || '';
+    this.funding_sources = surveyDetailsData?.funding_sources || [];
+    this.revision_count = surveyDetailsData?.revision_count ?? null;
     this.completion_status =
-      (surveyDataItem &&
-        surveyDataItem.end_date &&
-        moment(surveyDataItem.end_date).endOf('day').isBefore(moment()) &&
+      (surveyDetailsData &&
+        surveyDetailsData.end_date &&
+        moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.publish_date = surveyDataItem?.publish_date || '';
+    this.publish_date = String(surveyDetailsData?.publish_date || '');
   }
 }
 
-/**
- * Pre-processes GET surveys list data
- *
- * @export
- * @class GetSurveyListData
- */
-export class GetSurveyListData {
-  surveys: any[];
+export class GetSpeciesData {
+  species: number[];
+  species_names: string[];
 
-  constructor(obj?: any) {
-    defaultLog.debug({ label: 'GetSurveyListData', message: 'params', obj });
-
-    const surveysList: any[] = [];
-    const seenSurveyIds: number[] = [];
-
-    obj &&
-      obj.map((survey: any) => {
-        if (!seenSurveyIds.includes(survey.id)) {
-          surveysList.push({
-            id: survey.id,
-            name: survey.name,
-            start_date: survey.start_date,
-            end_date: survey.end_date,
-            species: [survey.species],
-            publish_timestamp: survey.publish_timestamp
-          });
-        } else {
-          const index = surveysList.findIndex((item) => item.id === survey.id);
-          surveysList[index].species = [...surveysList[index].species, survey.species];
-        }
-
-        seenSurveyIds.push(survey.id);
+  constructor(input?: any[]) {
+    this.species = [];
+    this.species_names = [];
+    input?.length &&
+      input.forEach((item: any) => {
+        this.species.push(Number(item.id));
+        this.species_names.push(item.label);
       });
-
-    this.surveys = (surveysList.length && surveysList) || [];
   }
 }
 
@@ -173,5 +112,64 @@ export class GetSurveyFundingSources {
       });
 
     this.fundingSources = surveyFundingSourcesList;
+  }
+}
+
+export class GetFocalSpeciesData {
+  focal_species: number[];
+  focal_species_names: string[];
+
+  constructor(input?: any[]) {
+    this.focal_species = [];
+    this.focal_species_names = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        this.focal_species.push(Number(item.id));
+        this.focal_species_names.push(item.label);
+      });
+  }
+}
+
+export class GetAncillarySpeciesData {
+  ancillary_species: number[];
+  ancillary_species_names: string[];
+
+  constructor(input?: any[]) {
+    this.ancillary_species = [];
+    this.ancillary_species_names = [];
+
+    input?.length &&
+      input.forEach((item: any) => {
+        this.ancillary_species.push(Number(item.id));
+        this.ancillary_species_names.push(item.label);
+      });
+  }
+}
+
+export type SurveyObject = {
+  survey: GetSurveyData;
+  species: GetSpeciesData;
+};
+
+export class GetSurveyData {
+  id: number;
+  name: string;
+  start_date: string;
+  end_date: string;
+  publish_status: string;
+  completion_status: number;
+
+  constructor(surveyData?: any) {
+    this.id = surveyData?.survey_id || null;
+    this.name = surveyData?.name || '';
+    this.start_date = surveyData?.start_date || null;
+    this.end_date = surveyData?.end_date || null;
+    this.publish_status = surveyData?.publish_timestamp ? 'Published' : 'Unpublished';
+    this.completion_status =
+      (surveyData.end_date &&
+        moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
+        COMPLETION_STATUS.COMPLETED) ||
+      COMPLETION_STATUS.ACTIVE;
   }
 }

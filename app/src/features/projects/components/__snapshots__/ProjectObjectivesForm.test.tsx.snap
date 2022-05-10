@@ -11,6 +11,7 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="objectives"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -57,6 +58,7 @@ exports[`ProjectObjectivesForm renders correctly with default empty values 1`] =
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="caveats"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
@@ -107,6 +109,7 @@ exports[`ProjectObjectivesForm renders correctly with existing objective/caveat 
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="objectives"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -155,6 +158,7 @@ exports[`ProjectObjectivesForm renders correctly with existing objective/caveat 
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="caveats"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"

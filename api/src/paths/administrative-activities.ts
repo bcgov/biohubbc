@@ -2,14 +2,31 @@ import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { SYSTEM_ROLE } from '../constants/roles';
 import { getDBConnection } from '../database/db';
-import { HTTP400 } from '../errors/CustomError';
-import { getAdministrativeActivitiesSQL } from '../queries/administrative-activity/administrative-activity-queries';
+import { queries } from '../queries/queries';
+import { authorizeRequestHandler } from '../request-handlers/security/authorization';
 import { getLogger } from '../utils/logger';
-import { logRequest } from '../utils/path-utils';
 
-const defaultLog = getLogger('paths/administrative-activity');
+const defaultLog = getLogger('paths/administrative-activities');
 
-export const GET: Operation = [logRequest('paths/administrative-activity', 'GET'), getAdministrativeActivities()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
+          discriminator: 'SystemRole'
+        }
+      ]
+    };
+  }),
+  getAdministrativeActivities()
+];
+
+export enum ADMINISTRATIVE_ACTIVITY_TYPE {
+  SYSTEM_ACCESS = 'System Access'
+}
+
+export const getAllAdministrativeActivityTypes = (): string[] => Object.values(ADMINISTRATIVE_ACTIVITY_TYPE);
 
 export enum ADMINISTRATIVE_ACTIVITY_STATUS_TYPE {
   PENDING = 'Pending',
@@ -25,7 +42,7 @@ GET.apiDoc = {
   tags: ['admin'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -33,8 +50,11 @@ GET.apiDoc = {
       in: 'query',
       name: 'type',
       schema: {
-        type: 'string',
-        enum: ['System Access']
+        type: 'array',
+        items: {
+          type: 'string',
+          enum: getAllAdministrativeActivityTypes()
+        }
       }
     },
     {
@@ -58,32 +78,27 @@ GET.apiDoc = {
             type: 'array',
             items: {
               type: 'object',
+              required: ['id', 'type', 'type_name', 'status', 'status_name', 'create_date'],
+              additionalProperties: true,
               properties: {
                 id: {
-                  type: 'number',
-                  description: 'Administrative activity row ID'
+                  type: 'number'
                 },
                 type: {
-                  type: 'number',
-                  description: 'Administrative activity type ID'
+                  type: 'number'
                 },
                 type_name: {
-                  type: 'string',
-                  description: 'Administrative activity type name'
+                  type: 'string'
                 },
                 status: {
-                  type: 'number',
-                  description: 'Administrative activity status type ID'
+                  type: 'number'
                 },
                 status_name: {
-                  type: 'string',
-                  description: 'Administrative activity status type name'
+                  type: 'string'
                 },
                 description: {
-                  type: 'string'
-                },
-                notes: {
-                  type: 'string'
+                  type: 'string',
+                  nullable: true
                 },
                 data: {
                   type: 'object',
@@ -92,8 +107,13 @@ GET.apiDoc = {
                     // Don't specify as this is a JSON blob column
                   }
                 },
+                notes: {
+                  type: 'string',
+                  nullable: true
+                },
                 create_date: {
-                  type: 'string'
+                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                  description: 'ISO 8601 date string for the project start date'
                 }
               }
             }
@@ -129,19 +149,15 @@ export function getAdministrativeActivities(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const administrativeActivityTypeName = (req.query?.type as string) || undefined;
+      const administrativeActivityTypes = (req.query.type as string[]) || getAllAdministrativeActivityTypes();
 
       const administrativeActivityStatusTypes: string[] =
-        (req.query?.status as string[]) || getAllAdministrativeActivityStatusTypes();
+        (req.query.status as string[]) || getAllAdministrativeActivityStatusTypes();
 
-      const sqlStatement = getAdministrativeActivitiesSQL(
-        administrativeActivityTypeName,
+      const sqlStatement = queries.administrativeActivity.getAdministrativeActivitiesSQL(
+        administrativeActivityTypes,
         administrativeActivityStatusTypes
       );
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
 
       await connection.open();
 

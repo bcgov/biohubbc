@@ -1,22 +1,32 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getUserByIdSQL } from '../../queries/users/user-queries';
+import { HTTP400 } from '../../errors/custom-error';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { UserService } from '../../services/user-service';
 import { getLogger } from '../../utils/logger';
-import { logRequest } from '../../utils/path-utils';
 
 const defaultLog = getLogger('paths/user/{userId}');
 
-export const GET: Operation = [logRequest('paths/user/{userId}', 'GET'), getUser()];
+export const GET: Operation = [
+  authorizeRequestHandler(() => {
+    return {
+      and: [
+        {
+          discriminator: 'SystemUser'
+        }
+      ]
+    };
+  }),
+  getUser()
+];
 
 GET.apiDoc = {
   description: 'Get user details for the currently authenticated user.',
   tags: ['user'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   responses: {
@@ -27,8 +37,35 @@ GET.apiDoc = {
           schema: {
             title: 'User Response Object',
             type: 'object',
+            required: ['id', 'user_identifier', 'role_ids', 'role_names'],
             properties: {
-              // TODO needs finalizing (here and in the user-queries.ts SQL)
+              id: {
+                description: 'user id',
+                type: 'number'
+              },
+              user_identifier: {
+                description: 'The unique user identifier',
+                type: 'string'
+              },
+              record_end_date: {
+                oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                description: 'Determines if the user record has expired',
+                nullable: true
+              },
+              role_ids: {
+                description: 'list of role ids for the user',
+                type: 'array',
+                items: {
+                  type: 'number'
+                }
+              },
+              role_names: {
+                description: 'list of role names for the user',
+                type: 'array',
+                items: {
+                  type: 'string'
+                }
+              }
             }
           }
         }
@@ -64,27 +101,26 @@ export function getUser(): RequestHandler {
     try {
       await connection.open();
 
-      const systemUserId = connection.systemUserId();
+      const userId = connection.systemUserId();
 
-      if (!systemUserId) {
+      if (!userId) {
         throw new HTTP400('Failed to identify system user ID');
       }
 
-      const getUserSQLStatement = getUserByIdSQL(systemUserId);
+      const userService = new UserService(connection);
 
-      if (!getUserSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
+      const userObject = await userService.getUserById(userId);
+
+      if (!userObject) {
+        throw new HTTP400('Failed to get system user');
       }
-
-      const response = await connection.query(getUserSQLStatement.text, getUserSQLStatement.values);
 
       await connection.commit();
 
-      const result = (response && response.rows && response.rows[0]) || null;
-
-      return res.status(200).json(result);
+      return res.status(200).json(userObject);
     } catch (error) {
       defaultLog.error({ label: 'getUser', message: 'error', error });
+      await connection.rollback();
       throw error;
     } finally {
       connection.release();

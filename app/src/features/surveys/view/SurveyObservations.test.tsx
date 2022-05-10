@@ -28,14 +28,14 @@ describe('SurveyObservations', () => {
   });
 
   it('renders correctly', async () => {
-    const { getByTestId } = render(
+    const { getByText } = render(
       <MemoryRouter>
-        <SurveyObservations />
+        <SurveyObservations refresh={() => {}} />
       </MemoryRouter>
     );
 
     await waitFor(() => {
-      expect(getByTestId('observations-heading')).toBeInTheDocument();
+      expect(getByText('Observations')).toBeInTheDocument();
       expect(mockBiohubApi().observation.getObservationSubmission).toHaveBeenCalledTimes(1);
     });
   });
@@ -43,7 +43,7 @@ describe('SurveyObservations', () => {
   it('shows circular spinner when observation data not yet loaded', async () => {
     const { asFragment } = render(
       <MemoryRouter>
-        <SurveyObservations />
+        <SurveyObservations refresh={() => {}} />
       </MemoryRouter>
     );
 

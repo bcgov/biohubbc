@@ -1,18 +1,19 @@
 import axios from 'axios';
+import { ConfigContext } from 'contexts/configContext';
+import { useContext } from 'react';
 import useAdminApi from './api/useAdminApi';
 import useAxios from './api/useAxios';
 import useCodesApi from './api/useCodesApi';
 import useDraftApi from './api/useDraftApi';
 import useExternalApi from './api/useExternalApi';
+import useN8NApi from './api/useN8NApi';
+import useObservationApi from './api/useObservationApi';
+import usePermitApi from './api/usePermitApi';
 import useProjectApi, { usePublicProjectApi } from './api/useProjectApi';
 import useSearchApi, { usePublicSearchApi } from './api/useSearchApi';
 import useSurveyApi from './api/useSurveyApi';
+import useTaxonomyApi from './api/useTaxonomyApi';
 import useUserApi from './api/useUserApi';
-import usePermitApi from './api/usePermitApi';
-import useObservationApi from './api/useObservationApi';
-import { useContext } from 'react';
-import { ConfigContext } from 'contexts/configContext';
-import useN8NApi from './api/useN8NApi';
 
 /**
  * Returns a set of supported api methods.
@@ -29,6 +30,8 @@ export const useBiohubApi = () => {
   const permit = usePermitApi(apiAxios);
 
   const search = useSearchApi(apiAxios);
+
+  const taxonomy = useTaxonomyApi(apiAxios);
 
   const survey = useSurveyApi(apiAxios);
 
@@ -55,6 +58,7 @@ export const useBiohubApi = () => {
     project,
     permit,
     search,
+    taxonomy,
     survey,
     observation,
     codes,

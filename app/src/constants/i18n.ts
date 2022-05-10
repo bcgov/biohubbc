@@ -22,12 +22,18 @@ export const CreatePermitsI18N = {
     'An error has occurred while attempting to create your permits, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const UploadProjectAttachmentsI18N = {
+export const AttachmentsI18N = {
   cancelTitle: 'Cancel Upload',
   cancelText: 'Are you sure you want to cancel?',
-  uploadErrorTitle: 'Error Uploading Project Attachments',
+  uploadErrorTitle: 'Error Uploading Attachments',
   uploadErrorText:
-    'An error has occurred while attempting to upload project attachments, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to upload attachments, please try again. If the error persists, please contact your system administrator.',
+  deleteErrorTitle: 'Error Deleting Attachment',
+  deleteErrorText:
+    'An error has occurred while attempting to delete attachments, please try again. If the error persists, please contact your system administrator.',
+  downloadErrorTitle: 'Error Downloading Attachment',
+  downloadErrorText:
+    'An error has occurred while attempting to download an attachment, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const CreateProjectDraftI18N = {
@@ -51,10 +57,10 @@ export const EditObjectivesI18N = {
 };
 
 export const EditCoordinatorI18N = {
-  editTitle: 'Edit Project Coordinator',
-  editErrorTitle: 'Error Editing Project Coordinator',
+  editTitle: 'Edit Project Contact',
+  editErrorTitle: 'Error Editing Project Contact',
   editErrorText:
-    'An error has occurred while attempting to edit your project coordinator details, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to edit your project contact details, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditGeneralInformationI18N = {
@@ -85,11 +91,18 @@ export const EditSurveyProprietorI18N = {
     'An error has occurred while attempting to edit your survey proprietor information, please try again. If the error persists, please contact your system administrator.'
 };
 
-export const EditLocationBoundaryI18N = {
-  editTitle: 'Edit Location / Project Boundary',
-  editErrorTitle: 'Error Editing Location / Project Boundary',
+export const EditSurveyPurposeAndMethodologyI18N = {
+  editTitle: 'Edit Survey Purpose and Methodology',
+  editErrorTitle: 'Error Editing Survey Purpose and Methodology',
   editErrorText:
-    'An error has occurred while attempting to edit your location boundary, please try again. If the error persists, please contact your system administrator.'
+    'An error has occurred while attempting to edit your survey purpose and methodology information, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditLocationBoundaryI18N = {
+  editTitle: 'Edit Project Location',
+  editErrorTitle: 'Error Editing Project Location',
+  editErrorText:
+    'An error has occurred while attempting to edit your location, please try again. If the error persists, please contact your system administrator.'
 };
 
 export const EditIUCNI18N = {
@@ -170,4 +183,63 @@ export const PublishProjectI18N = {
   publishErrorTitle: 'Error Publishing Project',
   publishErrorText:
     'An error has occurred while attempting to publish this project, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const DeleteSurveyI18N = {
+  deleteTitle: 'Delete Survey',
+  deleteText: 'Are you sure you want to delete this survey, its attachments and associated observations?',
+  deleteErrorTitle: 'Error Deleting Project',
+  deleteErrorText:
+    'An error has occurred while attempting to delete this project, its attachments and associated surveys/observations, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const PublishSurveyI18N = {
+  publishTitle: 'Publish Survey',
+  publishText: 'Are you sure you want to publish this survey?',
+  publishErrorTitle: 'Error Publishing Survey',
+  publishErrorText:
+    'An error has occurred while attempting to publish this survey, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const EditReportMetaDataI18N = {
+  editTitle: 'Edit Report Meta Data',
+  editErrorTitle: 'Error Editing Report Meta Data',
+  editErrorText:
+    'An error has occurred while attempting to edit your report meta data, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const DeleteSystemUserI18N = {
+  deleteErrorTitle: 'Error Deleting System User',
+  deleteErrorText:
+    'An error has occurred while attempting to delete the system user, please try again. If the error persists, please contact your system administrator.'
+};
+
+export const ProjectParticipantsI18N = {
+  getParticipantsErrorTitle: 'Error Fetching Project Team Members',
+  getParticipantsErrorText:
+    'An error has occurred while attempting to fetch project team members, please try again. If the error persists, please contact your system administrator.',
+  addParticipantsErrorTitle: 'Error Adding Project Team Members',
+  addParticipantsErrorText:
+    'An error has occurred while attempting to add project team members, please try again. If the error persists, please contact your system administrator.',
+  removeParticipantTitle: 'Remove Team Member?',
+  removeParticipantErrorTitle: 'Error Removing Project Team Member',
+  removeParticipantErrorText:
+    'An error has occurred while attempting to remove the project team member, please try again. If the error persists, please contact your system administrator.',
+  updateParticipantRoleErrorTitle: 'Error Updating Project Role',
+  updateParticipantRoleErrorText:
+    "An error has occurred while attempting to update the user's project role, please try again. If the error persists, please contact your system administrator."
+};
+
+export const SystemUserI18N = {
+  deleteProjectLeadErrorTitle: 'Error Deleting Project Lead',
+  deleteProjectLeadErrorText:
+    'An error has occurred while attempting to delete the project lead, please assign a different project lead before removing. Please try again, if the error persists please contact your system administrator.',
+  updateProjectLeadRoleErrorTitle: 'Error Updating Project Lead Role',
+  updateProjectLeadRoleErrorText:
+    "An error has occurred while attempting to update the user's project lead role, please assign a different project lead before changing. Please try again, if the error persists please contact your system administrator.",
+  removeSystemUserTitle: 'Remove System User ',
+  removeUserFromProject: 'Remove User From Project',
+  removeUserErrorTitle: 'Error Removing User From Team',
+  removeUserErrorText:
+    'An error has occurred while attempting to remove the user from the team, please try again. If the error persists, please contact your system administrator.'
 };

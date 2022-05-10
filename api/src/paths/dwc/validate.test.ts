@@ -1,16 +1,17 @@
+import { GetObjectOutput } from 'aws-sdk/clients/s3';
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as validate from './validate';
-import * as db from '../../database/db';
-import * as survey_occurrence_queries from '../../queries/survey/survey-occurrence-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../database/db';
+import { HTTPError } from '../../errors/custom-error';
+import survey_queries from '../../queries/survey';
 import * as file_utils from '../../utils/file-utils';
-import { GetObjectOutput } from 'aws-sdk/clients/s3';
-import { getMockDBConnection } from '../../__mocks__/db';
-import * as media_utils from '../../utils/media/media-utils';
 import { ArchiveFile } from '../../utils/media/media-file';
+import * as media_utils from '../../utils/media/media-utils';
+import { getMockDBConnection } from '../../__mocks__/db';
+import * as validate from './validate';
 
 chai.use(sinonChai);
 
@@ -51,14 +52,14 @@ describe('getOccurrenceSubmission', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `occurrence_submission_id`.');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required body param `occurrence_submission_id`.');
     }
   });
 
   it('should throw a 400 error when no sql statement returned for getSurveyOccurrenceSubmissionSQL', async () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(null);
 
     try {
       const result = validate.getOccurrenceSubmission();
@@ -66,8 +67,8 @@ describe('getOccurrenceSubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
     }
   });
 
@@ -83,7 +84,7 @@ describe('getOccurrenceSubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     try {
       const result = validate.getOccurrenceSubmission();
@@ -91,8 +92,8 @@ describe('getOccurrenceSubmission', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to get survey occurrence submission');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to get survey occurrence submission');
     }
   });
 
@@ -112,7 +113,7 @@ describe('getOccurrenceSubmission', () => {
       query: mockQuery
     });
 
-    sinon.stub(survey_occurrence_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
+    sinon.stub(survey_queries, 'getSurveyOccurrenceSubmissionSQL').returns(SQL`something`);
 
     const result = validate.getOccurrenceSubmission();
     await result(sampleReq, (null as unknown) as any, nextSpy as any);
@@ -138,8 +139,8 @@ describe('getS3File', () => {
       await result(updatedSampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to get file from S3');
+      expect((actualError as HTTPError).status).to.equal(500);
+      expect((actualError as HTTPError).message).to.equal('Failed to get file from S3');
     }
   });
 

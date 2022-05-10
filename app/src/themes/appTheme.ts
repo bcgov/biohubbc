@@ -8,7 +8,7 @@ const appTheme = createMuiTheme({
       sm: 600,
       md: 960,
       lg: 1280,
-      xl: 1440
+      xl: 1600
     }
   },
   palette: {
@@ -21,6 +21,9 @@ const appTheme = createMuiTheme({
       main: '#003366', // BC ID: corporate blue
       dark: '#001949',
       contrastText: '#ffffff'
+    },
+    secondary: {
+      main: '#D8292F'
     },
     text: {
       primary: '#313132',
@@ -40,11 +43,11 @@ const appTheme = createMuiTheme({
       },
       h2: {
         letterSpacing: '-0.01rem',
-        fontSize: '1.5rem',
+        fontSize: '1.25rem',
         fontWeight: 700
       },
       h3: {
-        fontSize: '1.25rem',
+        fontSize: '1rem',
         fontWeight: 700
       },
       h4: {
@@ -56,6 +59,12 @@ const appTheme = createMuiTheme({
         fontWeight: 700
       }
     },
+    MuiAlert: {
+      root: {
+        alignItems: 'center',
+        fontSize: '1rem'
+      }
+    },
     MuiButton: {
       root: {
         textTransform: 'none'
@@ -63,8 +72,8 @@ const appTheme = createMuiTheme({
       outlinedPrimary: {
         background: '#ffffff'
       },
-      startIcon: {
-        marginTop: '-1px'
+      endIcon: {
+        marginLeft: '4px'
       }
     },
     MuiContainer: {
@@ -86,21 +95,28 @@ const appTheme = createMuiTheme({
     },
     MuiDialogActions: {
       root: {
-        padding: '20px 24px'
-      }
-    },
-    MuiFormLabel: {
-      asterisk: {
-        color: '#db3131',
-        '&.Mui-error': {
-          color: '#db3131'
+        padding: '20px 24px',
+        '& button': {
+          minWidth: '6rem'
         }
       }
     },
     MuiLink: {
       root: {
         textAlign: 'left',
-        color: '#1a5a96'
+        color: '#1a5a96',
+        cursor: 'pointer'
+      }
+    },
+    MuiLinearProgress: {
+      root: {
+        height: '6px',
+        borderRadius: '3px'
+      }
+    },
+    MuiListItemIcon: {
+      root: {
+        minWidth: '42px'
       }
     },
     MuiOutlinedInput: {
@@ -164,11 +180,17 @@ const appTheme = createMuiTheme({
     MuiTableCell: {
       root: {
         verticalAlign: 'top'
+      },
+      head: {
+        backgroundColor: '#f5f5f5',
+        lineHeight: 'normal'
       }
     },
     MuiTab: {
       root: {
-        textTransform: 'none'
+        textTransform: 'none',
+        minWidth: '100px !important',
+        fontWeight: 700
       }
     }
   }

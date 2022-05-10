@@ -1,23 +1,36 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../constants/roles';
+import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
-import { HTTP400, HTTP500 } from '../../../errors/CustomError';
+import { HTTP400 } from '../../../errors/custom-error';
 import { projectIdResponseObject } from '../../../openapi/schemas/project';
+import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../services/project-service';
 import { getLogger } from '../../../utils/logger';
-import { logRequest } from '../../../utils/path-utils';
-import { updateProjectPublishStatusSQL } from '../../../queries/project/project-update-queries';
 
 const defaultLog = getLogger('paths/project/{projectId}/publish');
 
-export const PUT: Operation = [logRequest('paths/project/{projectId}/publish', 'PUT'), publishProject()];
+export const PUT: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  publishProject()
+];
 
 PUT.apiDoc = {
   description: 'Publish or unpublish a project.',
   tags: ['project'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   parameters: [
@@ -104,24 +117,14 @@ export function publishProject(): RequestHandler {
 
       const publish: boolean = req.body.publish;
 
-      const sqlStatement = updateProjectPublishStatusSQL(projectId, publish);
-
-      if (!sqlStatement) {
-        throw new HTTP400('Failed to build SQL statement');
-      }
-
       await connection.open();
 
-      const response = await connection.query(sqlStatement.text, sqlStatement.values);
+      const projectService = new ProjectService(connection);
 
-      const result = (response && response.rows && response.rows[0]) || null;
-
-      if (!response || !result) {
-        throw new HTTP500('Failed to update project publish status');
-      }
+      const result = await projectService.updatePublishStatus(projectId, publish);
 
       await connection.commit();
-      return res.status(200).json({ id: result.id });
+      return res.status(200).json({ id: result });
     } catch (error) {
       defaultLog.error({ label: 'publishProject', message: 'error', error });
       await connection.rollback();

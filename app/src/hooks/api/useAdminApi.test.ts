@@ -13,7 +13,15 @@ describe('useAdminApi', () => {
     mock.restore();
   });
 
-  it('getAccessRequests works as expected', async () => {
+  it('sendGCNotification works as expected', async () => {
+    mock.onPost('/api/gcnotify/send').reply(200);
+
+    const result = await useAdminApi(axios).sendGCNotification({ emailAddress: 'test@@email.com' }, { body: 'test' });
+
+    expect(result).toEqual(true);
+  });
+
+  it('getAdministrativeActivities works as expected', async () => {
     const response = [
       {
         id: 1,
@@ -30,25 +38,9 @@ describe('useAdminApi', () => {
 
     mock.onGet(`/api/administrative-activities`).reply(200, response);
 
-    const result = await useAdminApi(axios).getAccessRequests();
+    const result = await useAdminApi(axios).getAdministrativeActivities();
 
     expect(result).toEqual(response);
-  });
-
-  it('updateAccessRequest works as expected', async () => {
-    mock.onPut(`/api/access-request`).reply(200, true);
-
-    const result = await useAdminApi(axios).updateAccessRequest('userIdentifier', 'identitySource', 2, 2, [1, 2, 3]);
-
-    expect(result).toEqual(true);
-  });
-
-  it('updateAdministrativeActivity works as expected', async () => {
-    mock.onPut(`/api/administrative-activity`).reply(200, true);
-
-    const result = await useAdminApi(axios).updateAdministrativeActivity(2, 2);
-
-    expect(result).toEqual(true);
   });
 
   it('createAdministrativeActivity works as expected', async () => {
@@ -74,22 +66,18 @@ describe('useAdminApi', () => {
   });
 
   it('addSystemUserRoles works as expected', async () => {
-    const userId = 1;
+    mock.onPost(`/api/user/1/system-roles/create`).reply(200, true);
 
-    mock.onPost(`/api/user/${userId}/system-roles`).reply(200, 3);
+    const result = await useAdminApi(axios).addSystemUserRoles(1, [2]);
 
-    const result = await useAdminApi(axios).addSystemUserRoles(1, [1, 2, 3]);
-
-    expect(result).toEqual(3);
+    expect(result).toEqual(true);
   });
 
-  it('removeSystemUserRoles works as expected', async () => {
-    const userId = 1;
+  it('addSystemUser works as expected', async () => {
+    mock.onPost(`/api/user/add`).reply(200, true);
 
-    mock.onDelete(`/api/user/${userId}/system-roles`).reply(200, 3);
+    const result = await useAdminApi(axios).addSystemUser('userIdentifier', 'identitySource', 1);
 
-    const result = await useAdminApi(axios).removeSystemUserRoles(1, [1, 2, 3]);
-
-    expect(result).toEqual(3);
+    expect(result).toEqual(true);
   });
 });

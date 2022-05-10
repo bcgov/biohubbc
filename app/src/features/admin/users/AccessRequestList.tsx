@@ -1,8 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
-import Chip from '@material-ui/core/Chip';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
@@ -10,13 +8,15 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
+import Toolbar from '@material-ui/core/Toolbar';
 import Typography from '@material-ui/core/Typography';
-import clsx from 'clsx';
+import { AccessStatusChip } from 'components/chips/RequestChips';
 import RequestDialog from 'components/dialog/RequestDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { ReviewAccessRequestI18N } from 'constants/i18n';
 import { AdministrativeActivityStatusType } from 'constants/misc';
 import { DialogContext } from 'contexts/dialogContext';
+import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -28,25 +28,11 @@ import ReviewAccessRequestForm, {
   ReviewAccessRequestFormYupSchema
 } from './ReviewAccessRequestForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
-  chip: {
-    padding: '0px 8px',
-    borderRadius: '4px',
-    color: 'white'
-  },
-  chipPending: {
-    backgroundColor: theme.palette.primary.main
-  },
-  chipActioned: {
-    backgroundColor: theme.palette.success.main
-  },
-  chipRejected: {
-    backgroundColor: theme.palette.error.main
-  },
-  actionButton: {
-    minWidth: '6rem',
-    '& + button': {
-      marginLeft: '0.5rem'
+const useStyles = makeStyles(() => ({
+  table: {
+    tableLayout: 'fixed',
+    '& td': {
+      verticalAlign: 'middle'
     }
   }
 }));
@@ -69,13 +55,6 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
   const classes = useStyles();
 
   const biohubApi = useBiohubApi();
-
-  const approvedCodeId = codes?.administrative_activity_status_type.find(
-    (item) => item.name === AdministrativeActivityStatusType.ACTIONED
-  )?.id as any;
-  const rejectedCodeId = codes?.administrative_activity_status_type.find(
-    (item) => item.name === AdministrativeActivityStatusType.REJECTED
-  )?.id as any;
 
   const [activeReviewDialog, setActiveReviewDialog] = useState<{
     open: boolean;
@@ -105,17 +84,20 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
-      await biohubApi.admin.updateAccessRequest(
+      await biohubApi.admin.approveAccessRequest(
+        updatedRequest.id,
         updatedRequest.data.username,
         updatedRequest.data.identitySource,
-        updatedRequest.id,
-        approvedCodeId,
-        values.system_roles
+        (values.system_role && [values.system_role]) || []
       );
 
       refresh();
     } catch (error) {
-      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
     }
   };
 
@@ -125,35 +107,16 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
     setActiveReviewDialog({ open: false, request: null });
 
     try {
-      await biohubApi.admin.updateAccessRequest(
-        updatedRequest.data.username,
-        updatedRequest.data.identitySource,
-        updatedRequest.id,
-        rejectedCodeId
-      );
+      await biohubApi.admin.denyAccessRequest(updatedRequest.id);
 
       refresh();
     } catch (error) {
-      dialogContext.setErrorDialog({ ...defaultErrorDialogProps, open: true, dialogErrorDetails: error });
+      dialogContext.setErrorDialog({
+        ...defaultErrorDialogProps,
+        open: true,
+        dialogErrorDetails: (error as APIError).errors
+      });
     }
-  };
-
-  const getChipIcon = (status_name: string) => {
-    let chipLabel;
-    let chipStatusClass;
-
-    if (AdministrativeActivityStatusType.REJECTED === status_name) {
-      chipLabel = 'DENIED';
-      chipStatusClass = classes.chipRejected;
-    } else if (AdministrativeActivityStatusType.ACTIONED === status_name) {
-      chipLabel = 'APPROVED';
-      chipStatusClass = classes.chipActioned;
-    } else {
-      chipLabel = 'PENDING';
-      chipStatusClass = classes.chipPending;
-    }
-
-    return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
   return (
@@ -167,7 +130,7 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
         component={{
           initialValues: {
             ...ReviewAccessRequestFormInitialValues,
-            system_roles: [activeReviewDialog.request?.data?.role]
+            system_role: activeReviewDialog.request?.data?.role
           },
           validationSchema: ReviewAccessRequestFormYupSchema,
           element: (
@@ -178,58 +141,52 @@ const AccessRequestList: React.FC<IAccessRequestListProps> = (props) => {
                   return { value: item.id, label: item.name };
                 }) || []
               }
-              regional_offices={codes?.regional_offices}
             />
           )
         }}
       />
       <Paper>
-        <Box p={2}>
-          <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
-        </Box>
+        <Toolbar disableGutters>
+          <Box px={2}>
+            <Typography variant="h2">Access Requests ({accessRequests?.length || 0})</Typography>
+          </Box>
+        </Toolbar>
         <TableContainer>
-          <Table>
+          <Table className={classes.table}>
             <TableHead>
               <TableRow>
-                <TableCell>Name</TableCell>
                 <TableCell>Username</TableCell>
-                <TableCell>Company</TableCell>
-                <TableCell>Regional Offices</TableCell>
-                <TableCell>Request Date</TableCell>
-                <TableCell>Status</TableCell>
-                <TableCell></TableCell>
+                <TableCell>Date of Request</TableCell>
+                <TableCell>Access Status</TableCell>
+                <TableCell width="130px" align="center">
+                  Actions
+                </TableCell>
               </TableRow>
             </TableHead>
             <TableBody data-testid="access-request-table">
               {!accessRequests?.length && (
                 <TableRow data-testid={'access-request-row-0'}>
-                  <TableCell colSpan={6} style={{ textAlign: 'center' }}>
+                  <TableCell colSpan={4} align="center">
                     No Access Requests
                   </TableCell>
                 </TableRow>
               )}
               {accessRequests?.map((row, index) => {
-                const regional_offices = row.data?.regional_offices
-                  ?.map((regionId) => codes.regional_offices.find((code) => code.id === regionId)?.name)
-                  .join(', ');
-
                 return (
                   <TableRow data-testid={`access-request-row-${index}`} key={index}>
-                    <TableCell>{row.data?.name || ''}</TableCell>
                     <TableCell>{row.data?.username || ''}</TableCell>
-                    <TableCell>{row.data?.company || 'Not Applicable'}</TableCell>
-                    <TableCell>{regional_offices || 'Not Applicable'}</TableCell>
-                    <TableCell>{getFormattedDate(DATE_FORMAT.MediumDateFormat2, row.create_date)}</TableCell>
-                    <TableCell>{getChipIcon(row.status_name)}</TableCell>
-
+                    <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.create_date)}</TableCell>
                     <TableCell>
+                      <AccessStatusChip status={row.status_name} />
+                    </TableCell>
+
+                    <TableCell align="center">
                       {row.status_name === AdministrativeActivityStatusType.PENDING && (
                         <Button
-                          className={classes.actionButton}
                           color="primary"
                           variant="outlined"
                           onClick={() => setActiveReviewDialog({ open: true, request: row })}>
-                          Review
+                          <strong>Review</strong>
                         </Button>
                       )}
                     </TableCell>

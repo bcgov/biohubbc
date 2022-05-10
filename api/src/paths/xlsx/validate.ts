@@ -1,15 +1,16 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
+import { PROJECT_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
-import { HTTP400 } from '../../errors/CustomError';
-import { getTemplateMethodologySpeciesSQL } from '../../queries/survey/survey-occurrence-queries';
+import { HTTP400 } from '../../errors/custom-error';
+import { queries } from '../../queries/queries';
+import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { getLogger } from '../../utils/logger';
 import { ICsvState } from '../../utils/media/csv/csv-file';
 import { IMediaState, MediaFile } from '../../utils/media/media-file';
 import { parseUnknownMedia } from '../../utils/media/media-utils';
 import { ValidationSchemaParser } from '../../utils/media/validation/validation-schema-parser';
 import { XLSXCSV } from '../../utils/media/xlsx/xlsx-file';
-import { logRequest } from '../../utils/path-utils';
 import {
   getOccurrenceSubmission,
   getOccurrenceSubmissionInputS3Key,
@@ -26,7 +27,17 @@ import {
 const defaultLog = getLogger('paths/xlsx/validate');
 
 export const POST: Operation = [
-  logRequest('paths/xlsx/validate', 'POST'),
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.body.project_id),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
   getOccurrenceSubmission(),
   getOccurrenceSubmissionInputS3Key(),
   getS3File(),
@@ -70,6 +81,14 @@ export function prepXLSX(): RequestHandler {
 
       const xlsxCsv = new XLSXCSV(parsedMedia);
 
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
+      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      if (!template_id || !species_id || !csm_id) {
+        req['parseError'] = 'Failed to parse submission, template identification properties are missing';
+      }
+
       req['xlsx'] = xlsxCsv;
 
       next();
@@ -87,8 +106,13 @@ export function getValidationSchema(): RequestHandler {
     try {
       await connection.open();
 
-      const templateMethodologySpeciesRecord = await getTemplateMethodologySpecies(
-        req.body.occurrence_submission_id,
+      const xlsxCsv = req['xlsx'];
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const field_method_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
+        Number(field_method_id),
+        Number(template_id),
         connection
       );
 
@@ -106,7 +130,7 @@ export function getValidationSchema(): RequestHandler {
         await insertSubmissionMessage(
           submissionStatusId,
           'Error',
-          `Unable to fetch an appropriate validation schema for your submission`,
+          `Unable to fetch an appropriate template validation schema for your submission`,
           'Missing Validation Schema',
           connection
         );
@@ -160,23 +184,28 @@ export function validateXLSX(): RequestHandler {
 }
 
 /**
- * Get a template_methodology_species record from the template table.
+ * Get a template_methodology_species record from the template_methodologies_species table
  *
- * @param {number} occurrenceSubmissionId
+ * @param {number} fieldMethodId
+ * @param {number} templateId
  * @param {IDBConnection} connection
- * @return {*}  {Promise<any>}
+ * @return {*}  {Promise<void>}
  */
-export const getTemplateMethodologySpecies = async (
-  occurrenceSubmissionId: number,
+export const getTemplateMethodologySpeciesRecord = async (
+  fieldMethodId: number,
+  templateId: number,
   connection: IDBConnection
 ): Promise<any> => {
-  const sqlStatement = getTemplateMethodologySpeciesSQL(occurrenceSubmissionId);
+  const sqlStatement = queries.survey.getTemplateMethodologySpeciesRecordSQL(fieldMethodId, templateId);
 
   if (!sqlStatement) {
-    throw new HTTP400('Failed to build SQL get statement');
+    throw new HTTP400('Failed to build SQL get template methodology species record sql statement');
   }
-
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
+
+  if (!response) {
+    throw new HTTP400('Failed to query template methodology species table');
+  }
 
   return (response && response.rows && response.rows[0]) || null;
 };

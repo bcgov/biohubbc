@@ -2,16 +2,18 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as get_signed_url from './getSignedUrl';
-import * as db from '../../../../../../database/db';
-import * as project_queries from '../../../../../../queries/public/project-queries';
 import SQL from 'sql-template-strings';
+import { ATTACHMENT_TYPE } from '../../../../../../constants/attachments';
+import * as db from '../../../../../../database/db';
+import { HTTPError } from '../../../../../../errors/custom-error';
+import public_queries from '../../../../../../queries/public';
 import * as file_utils from '../../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../../__mocks__/db';
+import * as get_signed_url from './getSignedUrl';
 
 chai.use(sinonChai);
 
-describe('getSingleAttachmentURL', () => {
+describe('getAttachmentSignedURL', () => {
   afterEach(() => {
     sinon.restore();
   });
@@ -24,8 +26,8 @@ describe('getSingleAttachmentURL', () => {
       projectId: 1,
       attachmentId: 2
     },
-    body: {
-      attachmentType: 'Image'
+    query: {
+      attachmentType: 'Other'
     }
   } as any;
 
@@ -45,7 +47,7 @@ describe('getSingleAttachmentURL', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = get_signed_url.getSingleAttachmentURL();
+      const result = get_signed_url.getAttachmentSignedURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
@@ -54,8 +56,8 @@ describe('getSingleAttachmentURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -63,7 +65,7 @@ describe('getSingleAttachmentURL', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = get_signed_url.getSingleAttachmentURL();
+      const result = get_signed_url.getAttachmentSignedURL();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, attachmentId: null } },
@@ -72,8 +74,8 @@ describe('getSingleAttachmentURL', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `attachmentId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `attachmentId`');
     }
   });
 
@@ -81,38 +83,17 @@ describe('getSingleAttachmentURL', () => {
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
     try {
-      const result = get_signed_url.getSingleAttachmentURL();
+      const result = get_signed_url.getAttachmentSignedURL();
 
       await result(
-        { ...sampleReq, body: { ...sampleReq.body, attachmentType: null } },
+        { ...sampleReq, query: { ...sampleReq.query, attachmentType: null } },
         (null as unknown) as any,
         (null as unknown) as any
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required body param `attachmentType`');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement returned', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(project_queries, 'getPublicProjectAttachmentS3KeySQL').returns(null);
-
-    try {
-      const result = get_signed_url.getSingleAttachmentURL();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required query param `attachmentType`');
     }
   });
 
@@ -129,36 +110,123 @@ describe('getSingleAttachmentURL', () => {
       query: mockQuery
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
+    sinon.stub(public_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
     sinon.stub(file_utils, 'getS3SignedURL').resolves(null);
 
-    const result = get_signed_url.getSingleAttachmentURL();
+    const result = get_signed_url.getAttachmentSignedURL();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
     expect(actualResult).to.equal(null);
   });
 
-  it('should return the signed url response on success', async () => {
-    const mockQuery = sinon.stub();
+  describe('non report attachments', () => {
+    it('should throw a 400 error when no sql statement returned', async () => {
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        }
+      });
 
-    mockQuery.resolves({ rows: [{ key: 's3Key' }] });
+      sinon.stub(public_queries, 'getPublicProjectAttachmentS3KeySQL').returns(null);
 
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
+      try {
+        const result = get_signed_url.getAttachmentSignedURL();
+
+        await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build attachment S3 key SQLstatement');
+      }
     });
 
-    sinon.stub(project_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
-    sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
+    it('should return the attachment signed url response on success', async () => {
+      const mockQuery = sinon.stub();
 
-    const result = get_signed_url.getSingleAttachmentURL();
+      mockQuery.resolves({ rows: [{ key: 's3Key' }] });
 
-    await result(sampleReq, sampleRes as any, (null as unknown) as any);
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        },
+        query: mockQuery
+      });
 
-    expect(actualResult).to.eql('myurlsigned.com');
+      sinon.stub(public_queries, 'getPublicProjectAttachmentS3KeySQL').returns(SQL`some query`);
+      sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
+
+      const result = get_signed_url.getAttachmentSignedURL();
+
+      await result(sampleReq, sampleRes as any, (null as unknown) as any);
+
+      expect(actualResult).to.eql('myurlsigned.com');
+    });
+  });
+
+  describe('report attachments', () => {
+    it('should throw a 400 error when no sql statement returned', async () => {
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        }
+      });
+
+      sinon.stub(public_queries, 'getPublicProjectReportAttachmentS3KeySQL').returns(null);
+
+      try {
+        const result = get_signed_url.getAttachmentSignedURL();
+
+        await result(
+          {
+            ...sampleReq,
+            query: {
+              attachmentType: ATTACHMENT_TYPE.REPORT
+            }
+          },
+          sampleRes as any,
+          (null as unknown) as any
+        );
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as HTTPError).status).to.equal(400);
+        expect((actualError as HTTPError).message).to.equal('Failed to build report attachment S3 key SQLstatement');
+      }
+    });
+
+    it('should return the report attachment signed url response on success', async () => {
+      const mockQuery = sinon.stub();
+
+      mockQuery.resolves({ rows: [{ key: 's3Key' }] });
+
+      sinon.stub(db, 'getDBConnection').returns({
+        ...dbConnectionObj,
+        systemUserId: () => {
+          return 20;
+        },
+        query: mockQuery
+      });
+
+      sinon.stub(public_queries, 'getPublicProjectReportAttachmentS3KeySQL').returns(SQL`some query`);
+      sinon.stub(file_utils, 'getS3SignedURL').resolves('myurlsigned.com');
+
+      const result = get_signed_url.getAttachmentSignedURL();
+
+      await result(
+        {
+          ...sampleReq,
+          query: {
+            attachmentType: ATTACHMENT_TYPE.REPORT
+          }
+        },
+        sampleRes as any,
+        (null as unknown) as any
+      );
+
+      expect(actualResult).to.eql('myurlsigned.com');
+    });
   });
 });

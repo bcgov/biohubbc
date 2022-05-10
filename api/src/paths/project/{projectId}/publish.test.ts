@@ -1,13 +1,13 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as publish from './publish';
 import * as db from '../../../database/db';
-import * as project_update_queries from '../../../queries/project/project-update-queries';
-import { QueryResult } from 'pg';
-import SQL from 'sql-template-strings';
+import { HTTPError } from '../../../errors/custom-error';
+import { ProjectService } from '../../../services/project-service';
 import { getMockDBConnection } from '../../../__mocks__/db';
+import * as publish from './publish';
 
 chai.use(sinonChai);
 
@@ -60,8 +60,8 @@ describe('project/{projectId}/publish', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path parameter: projectId');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path parameter: projectId');
     }
   });
 
@@ -83,8 +83,8 @@ describe('project/{projectId}/publish', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing request body');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing request body');
     }
   });
 
@@ -106,54 +106,8 @@ describe('project/{projectId}/publish', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing publish flag in request body');
-    }
-  });
-
-  it('should throw a 400 error when no sql statement produced', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-    sinon.stub(project_update_queries, 'updateProjectPublishStatusSQL').returns(null);
-
-    try {
-      const result = publish.publishProject();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build SQL statement');
-    }
-  });
-
-  it('should throw a 500 error when no result', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: async () => {
-        return {
-          rows: null
-        } as any;
-      }
-    });
-
-    sinon.stub(project_update_queries, 'updateProjectPublishStatusSQL').returns(SQL`some query`);
-
-    try {
-      const result = publish.publishProject();
-
-      await result(sampleReq, sampleRes as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect(actualError.status).to.equal(500);
-      expect(actualError.message).to.equal('Failed to update project publish status');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing publish flag in request body');
     }
   });
 
@@ -176,7 +130,7 @@ describe('project/{projectId}/publish', () => {
       }
     });
 
-    sinon.stub(project_update_queries, 'updateProjectPublishStatusSQL').returns(SQL`some query`);
+    sinon.stub(ProjectService.prototype, 'updatePublishStatus').resolves(1);
 
     const result = publish.publishProject();
 

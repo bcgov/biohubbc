@@ -1,6 +1,6 @@
 {
 	"info": {
-		"_postman_id": "c4f67ff9-7252-4a76-a5b7-0bc5d3077e9d",
+		"_postman_id": "70d72162-d2ee-40f6-bb07-08dd8b65601b",
 		"name": "BioHubBC-API-DEV",
 		"description": "API for BioHubBC",
 		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
@@ -62,6 +62,36 @@
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "eml",
+					"protocolProfileBehavior": {
+						"disabledSystemHeaders": {}
+					},
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"project_id\": {{PROJECT_ID}},\n    \"data_package_id\": 1,\n    \"supplied_title\": \"my title\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/dwc/eml",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"dwc",
+								"eml"
+							]
+						}
+					},
+					"response": []
 				}
 			]
 		},
@@ -107,7 +137,7 @@
 			"name": "project",
 			"item": [
 				{
-					"name": "{projectId}",
+					"name": "1",
 					"item": [
 						{
 							"name": "attachments",
@@ -572,7 +602,15 @@
 								"method": "GET",
 								"header": [],
 								"url": {
-									"raw": ""
+									"raw": "{{BASEURL}}/project/1/view",
+									"host": [
+										"{{BASEURL}}"
+									],
+									"path": [
+										"project",
+										"1",
+										"view"
+									]
 								}
 							},
 							"response": []
@@ -621,11 +659,133 @@
 					"item": [
 						{
 							"name": "system-roles",
+							"item": [
+								{
+									"name": "create",
+									"request": {
+										"method": "POST",
+										"header": [],
+										"body": {
+											"mode": "urlencoded",
+											"urlencoded": [],
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASEURL}}/user/{userId}/system-roles/create",
+											"host": [
+												"{{BASEURL}}"
+											],
+											"path": [
+												"user",
+												"{userId}",
+												"system-roles",
+												"create"
+											]
+										}
+									},
+									"response": []
+								},
+								{
+									"name": "update",
+									"request": {
+										"method": "PATCH",
+										"header": [],
+										"body": {
+											"mode": "raw",
+											"raw": "",
+											"options": {
+												"raw": {
+													"language": "json"
+												}
+											}
+										},
+										"url": {
+											"raw": "{{BASEURL}}/user/{userId}/system-roles/update",
+											"host": [
+												"{{BASEURL}}"
+											],
+											"path": [
+												"user",
+												"{userId}",
+												"system-roles",
+												"update"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "projects",
+							"item": [
+								{
+									"name": "get",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASEURL}}/user/{userId}/projects/get",
+											"host": [
+												"{{BASEURL}}"
+											],
+											"path": [
+												"user",
+												"{userId}",
+												"projects",
+												"get"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						},
+						{
+							"name": "delete",
 							"request": {
-								"method": "POST",
+								"method": "DELETE",
 								"header": [],
 								"url": {
+									"raw": "{{BASEURL}}/user/{userId}/delete",
+									"host": [
+										"{{BASEURL}}"
+									],
+									"path": [
+										"user",
+										"{userId}",
+										"delete"
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
 									"raw": ""
+								},
+								"url": {
+									"raw": "{{BASEURL}}/user/{userId}/get",
+									"host": [
+										"{{BASEURL}}"
+									],
+									"path": [
+										"user",
+										"{userId}",
+										"get"
+									]
 								}
 							},
 							"response": []
@@ -638,10 +798,104 @@
 						"method": "GET",
 						"header": [],
 						"url": {
-							"raw": ""
+							"raw": "{{BASEURL}}/user/self",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"user",
+								"self"
+							]
 						}
 					},
 					"response": []
+				},
+				{
+					"name": "add",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "",
+								"value": "",
+								"type": "text",
+								"disabled": true
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"userIdentifier\": \"abc\",\n    \"identitySource\":\"idir\",\n    \"roleId\":1\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{BASEURL}}/user/add/",
+							"host": [
+								"{{BASEURL}}"
+							],
+							"path": [
+								"user",
+								"add",
+								""
+							],
+							"query": [
+								{
+									"key": "userIdentifier",
+									"value": "abc",
+									"disabled": true
+								},
+								{
+									"key": "identitySource",
+									"value": "idir",
+									"disabled": true
+								},
+								{
+									"key": "roleId",
+									"value": "1",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "public",
+			"item": [
+				{
+					"name": "project",
+					"item": [
+						{
+							"name": "1",
+							"item": [
+								{
+									"name": "view",
+									"request": {
+										"method": "GET",
+										"header": [],
+										"url": {
+											"raw": "{{BASEURL}}/public/project/1/view",
+											"host": [
+												"{{BASEURL}}"
+											],
+											"path": [
+												"public",
+												"project",
+												"1",
+												"view"
+											]
+										}
+									},
+									"response": []
+								}
+							]
+						}
+					]
 				}
 			]
 		},

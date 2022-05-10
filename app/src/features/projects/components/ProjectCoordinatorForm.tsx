@@ -38,7 +38,7 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
     .max(500, 'Cannot exceed 500 characters')
     .email('Must be a valid email address')
     .required('Required'),
-  coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
+  coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required').nullable(),
   share_contact_details: yup.string().required('Required')
 });
 
@@ -98,7 +98,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           <AutocompleteFreeSoloField
             id="coordinator_agency"
             name="coordinator_agency"
-            label="Coordinator Agency"
+            label="Contact Agency"
             options={props.coordinator_agency}
             required={true}
           />
@@ -113,7 +113,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
             Share Contact Details
           </Box>
           <Typography color="textSecondary">
-            Do you want the project coordinator contact information visible to the public?
+            Do you want the project contact’s name and email address visible to the public?
           </Typography>
           <Box mt={2} pl={1}>
             <RadioGroup

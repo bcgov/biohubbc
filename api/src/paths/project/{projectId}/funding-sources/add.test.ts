@@ -2,11 +2,12 @@ import chai, { expect } from 'chai';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import * as addFunding from './add';
-import * as db from '../../../../database/db';
-import * as addFundingSource_queries from '../../../../queries/project/project-create-queries';
 import SQL from 'sql-template-strings';
+import * as db from '../../../../database/db';
+import { HTTPError } from '../../../../errors/custom-error';
+import project_queries from '../../../../queries/project';
 import { getMockDBConnection } from '../../../../__mocks__/db';
+import * as addFunding from './add';
 
 chai.use(sinonChai);
 
@@ -57,8 +58,8 @@ describe('add a funding source', () => {
       );
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing required path param `projectId`');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing required path param `projectId`');
     }
   });
 
@@ -76,8 +77,8 @@ describe('add a funding source', () => {
       await result({ ...sampleReq, body: null }, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Missing funding source data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Missing funding source data');
     }
   });
 
@@ -94,7 +95,7 @@ describe('add a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(SQL`some query`);
+    sinon.stub(project_queries, 'postProjectFundingSourceSQL').returns(SQL`some query`);
 
     try {
       const result = addFunding.addFundingSource();
@@ -102,8 +103,8 @@ describe('add a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert project funding source data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert project funding source data');
     }
   });
 
@@ -115,7 +116,7 @@ describe('add a funding source', () => {
       }
     });
 
-    sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(null);
+    sinon.stub(project_queries, 'postProjectFundingSourceSQL').returns(null);
 
     try {
       const result = addFunding.addFundingSource();
@@ -123,8 +124,8 @@ describe('add a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to build addFundingSourceSQLStatement');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to build addFundingSourceSQLStatement');
     }
   });
 
@@ -141,7 +142,7 @@ describe('add a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(SQL`some query`);
+    sinon.stub(project_queries, 'postProjectFundingSourceSQL').returns(SQL`some query`);
 
     try {
       const result = addFunding.addFundingSource();
@@ -149,8 +150,8 @@ describe('add a funding source', () => {
       await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
       expect.fail();
     } catch (actualError) {
-      expect(actualError.status).to.equal(400);
-      expect(actualError.message).to.equal('Failed to insert project funding source data');
+      expect((actualError as HTTPError).status).to.equal(400);
+      expect((actualError as HTTPError).message).to.equal('Failed to insert project funding source data');
     }
   });
 
@@ -167,7 +168,7 @@ describe('add a funding source', () => {
       query: mockQuery
     });
 
-    sinon.stub(addFundingSource_queries, 'postProjectFundingSourceSQL').returns(SQL`something`);
+    sinon.stub(project_queries, 'postProjectFundingSourceSQL').returns(SQL`something`);
 
     const result = addFunding.addFundingSource();
 

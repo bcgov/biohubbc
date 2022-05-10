@@ -26,6 +26,8 @@ module.exports = (settings) => {
         REACT_APP_API_HOST: phases[phase].apiHost,
         REACT_APP_N8N_HOST: phases[phase].n8nHost,
         REACT_APP_SITEMINDER_LOGOUT_URL: phases[phase].siteminderLogoutURL,
+        REACT_APP_MAX_UPLOAD_NUM_FILES: phases[phase].maxUploadNumFiles,
+        REACT_APP_MAX_UPLOAD_FILE_SIZE: phases[phase].maxUploadFileSize,
         NODE_ENV: phases[phase].env || 'dev',
         REACT_APP_NODE_ENV: phases[phase].env || 'dev',
         SSO_URL: phases[phase].sso.url,

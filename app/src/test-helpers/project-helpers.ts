@@ -4,7 +4,7 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
   id: 1,
   project: {
     project_name: 'Test Project Name',
-    project_type: '1',
+    project_type: 1,
     start_date: '1998-10-10',
     end_date: '2021-02-26',
     project_activities: [1],
@@ -37,14 +37,14 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
   iucn: {
     classificationDetails: [
       {
-        classification: 'classification',
-        subClassification1: 'sub classification 1',
-        subClassification2: 'sub classification 2'
+        classification: 1,
+        subClassification1: 1,
+        subClassification2: 1
       },
       {
-        classification: 'classification again',
-        subClassification1: 'sub classification 1 again',
-        subClassification2: 'sub classification 2 again'
+        classification: 2,
+        subClassification1: 2,
+        subClassification2: 2
       }
     ]
   },
@@ -65,7 +65,7 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     ]
   },
   partnerships: {
-    indigenous_partnerships: ['partner 1', 'partner 2'],
+    indigenous_partnerships: [1, 2],
     stakeholder_partnerships: ['partner 3', 'partner 4']
   }
 };

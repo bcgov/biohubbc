@@ -2,187 +2,198 @@
 
 exports[`FundingSource renders correctly 1`] = `
 <DocumentFragment>
-  <header
-    class="MuiBox-root MuiBox-root-1"
+  <div
+    class="MuiToolbar-root MuiToolbar-regular"
+    style="justify-content: space-between;"
   >
     <h3
-      class="MuiTypography-root MuiTypography-h3"
+      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
     >
       Funding Sources
     </h3>
-    <button
-      aria-label="Add Funding Source"
-      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-      tabindex="0"
-      title="Add Funding Source"
-      type="button"
+    <div
+      class="MuiBox-root MuiBox-root-2"
     >
-      <span
-        class="MuiButton-label"
+      <button
+        aria-label="Add Funding Source"
+        class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
+        data-testid="h3-button-toolbar-AddFundingSource"
+        id="h3-button-toolbar-AddFundingSource"
+        tabindex="0"
+        title="Add Funding Source"
+        type="button"
       >
         <span
-          class="MuiButton-startIcon MuiButton-iconSizeMedium"
+          class="MuiButton-label"
         >
-          <svg
-            role="presentation"
-            style="width: 1.5rem; height: 1.5rem;"
-            viewBox="0 0 24 24"
+          <span
+            class="MuiButton-startIcon MuiButton-iconSizeMedium"
           >
-            <path
-              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-              style="fill: currentColor;"
-            />
-          </svg>
+            <svg
+              role="presentation"
+              style="width: 1.3125rem; height: 1.3125rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <strong>
+            Add Funding Source
+          </strong>
         </span>
-        Add Funding Source
-      </span>
-      <span
-        class="MuiTouchRipple-root"
-      />
-    </button>
-  </header>
-  <div
-    class="MuiBox-root MuiBox-root-2"
-  >
-    <hr
-      class="MuiDivider-root"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-3"
-    >
-      <h4
-        class="MuiTypography-root MuiTypography-h4"
-      >
-        agency name
-      </h4>
-      <div
-        class="MuiBox-root MuiBox-root-4"
-      >
-        <button
-          aria-label="Edit Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-          tabindex="0"
-          title="Edit Funding Source"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.3125rem; height: 1.3125rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            Edit
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-        <button
-          aria-label="Remove Funding Source"
-          class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
-          data-testid="delete-funding-source"
-          tabindex="0"
-          title="Remove Funding Source"
-          type="button"
-        >
-          <span
-            class="MuiButton-label"
-          >
-            <span
-              class="MuiButton-startIcon MuiButton-iconSizeMedium"
-            >
-              <svg
-                role="presentation"
-                style="width: 1.3125rem; height: 1.3125rem;"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            Remove
-          </span>
-          <span
-            class="MuiTouchRipple-root"
-          />
-        </button>
-      </div>
+        <span
+          class="MuiTouchRipple-root"
+        />
+      </button>
     </div>
-    <dl>
-      <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
+  </div>
+  <div
+    class="MuiTableContainer-root"
+  >
+    <table
+      class="MuiTable-root makeStyles-fundingSourceTable-1"
+    >
+      <thead
+        class="MuiTableHead-root"
       >
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+        <tr
+          class="MuiTableRow-root MuiTableRow-head"
         >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          <th
+            class="MuiTableCell-root MuiTableCell-head"
+            scope="col"
           >
-            Agency Project ID
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
+            Agency
+          </th>
+          <th
+            class="MuiTableCell-root MuiTableCell-head"
+            scope="col"
+            width="100px"
           >
-            ABC123
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
+            Project ID
+          </th>
+          <th
+            class="MuiTableCell-root MuiTableCell-head"
+            scope="col"
+          >
+            Amount
+          </th>
+          <th
+            class="MuiTableCell-root MuiTableCell-head"
+            scope="col"
+          >
+            Dates
+          </th>
+          <th
+            class="MuiTableCell-root MuiTableCell-head MuiTableCell-alignCenter"
+            scope="col"
+            width="130px"
+          >
+            Actions
+          </th>
+        </tr>
+      </thead>
+      <tbody
+        class="MuiTableBody-root"
+      >
+        <tr
+          class="MuiTableRow-root"
         >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          <td
+            class="MuiTableCell-root MuiTableCell-body"
           >
-            Funding Amount
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
+            agency name
+            <em
+              class="MuiTypography-root MuiTypography-body2"
+            >
+               (investment action)
+            </em>
+          </td>
+          <td
+            class="MuiTableCell-root MuiTableCell-body"
+          >
+            <p
+              class="MuiTypography-root MuiTypography-body2 MuiTypography-noWrap"
+            >
+              ABC123
+            </p>
+          </td>
+          <td
+            class="MuiTableCell-root MuiTableCell-body"
           >
             $333
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
+          </td>
+          <td
+            class="MuiTableCell-root MuiTableCell-body"
           >
-            Funding Dates
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
+            <p
+              class="MuiTypography-root MuiTypography-body2 MuiTypography-noWrap"
+            >
+              Apr 14, 2000 - Apr 13, 2021
+            </p>
+          </td>
+          <td
+            class="MuiTableCell-root MuiTableCell-body MuiTableCell-alignCenter"
           >
-            04/14/2000 - 04/13/2021
-          </dd>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
-        >
-          <dt
-            class="MuiTypography-root MuiTypography-subtitle2 MuiTypography-colorTextSecondary"
-          >
-            Investment Category
-          </dt>
-          <dd
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            investment action
-          </dd>
-        </div>
-      </div>
-    </dl>
+            <button
+              aria-label="Edit Funding Source"
+              class="MuiButtonBase-root MuiIconButton-root"
+              data-testid="edit-funding-source"
+              tabindex="0"
+              title="Edit Funding Source"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M14.06,9L15,9.94L5.92,19H5V18.08L14.06,9M17.66,3C17.41,3 17.15,3.1 16.96,3.29L15.13,5.12L18.88,8.87L20.71,7.04C21.1,6.65 21.1,6 20.71,5.63L18.37,3.29C18.17,3.09 17.92,3 17.66,3M14.06,6.19L3,17.25V21H6.75L17.81,9.94L14.06,6.19Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+            <button
+              aria-label="Remove Funding Source"
+              class="MuiButtonBase-root MuiIconButton-root"
+              data-testid="delete-funding-source"
+              tabindex="0"
+              title="Remove Funding Source"
+              type="button"
+            >
+              <span
+                class="MuiIconButton-label"
+              >
+                <svg
+                  role="presentation"
+                  style="width: 1.3125rem; height: 1.3125rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </td>
+        </tr>
+      </tbody>
+    </table>
   </div>
 </DocumentFragment>
 `;

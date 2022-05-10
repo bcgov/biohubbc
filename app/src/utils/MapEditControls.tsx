@@ -1,12 +1,12 @@
 // @ts-nocheck
-import React, { useRef, useEffect, useState } from 'react';
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
+import YesNoDialog from 'components/dialog/YesNoDialog';
+import { Feature } from 'geojson';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
 import isEqual from 'lodash-es/isEqual';
-import { Feature } from 'geojson';
-import YesNoDialog from 'components/dialog/YesNoDialog';
+import React, { useEffect, useRef, useState } from 'react';
 
 /*
   Various types of events to listen for on map
@@ -107,9 +107,9 @@ const MapEditControls: React.FC<IMapEditControlsProps> = (props) => {
 
     for (const key in eventHandlers) {
       map.on(eventHandlers[key], (evt: any) => {
-        let handlers = Object.keys(eventHandlers).filter((handler) => eventHandlers[handler] === evt.type);
+        const handlers = Object.keys(eventHandlers).filter((handler) => eventHandlers[handler] === evt.type);
         if (handlers.length === 1) {
-          let handler = handlers[0];
+          const handler = handlers[0];
           props[handler] && props[handler](evt);
         }
       });

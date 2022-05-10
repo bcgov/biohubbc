@@ -13,7 +13,7 @@ describe('LogOutPage', () => {
 
   let getLogOutUrlSpy: jest.SpyInstance;
 
-  let replace = jest.fn();
+  const replace = jest.fn();
 
   beforeAll(() => {
     // @ts-ignore

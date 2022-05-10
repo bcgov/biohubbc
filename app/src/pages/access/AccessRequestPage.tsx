@@ -2,9 +2,7 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
-import Divider from '@material-ui/core/Divider';
 import Paper from '@material-ui/core/Paper';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
@@ -14,54 +12,22 @@ import { DialogContext } from 'contexts/dialogContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import React, { useContext, useEffect, useState } from 'react';
+import useCodes from 'hooks/useCodes';
+import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
+import { IBCeIDAccessRequestDataObject, IIDIRAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
+import React, { ReactElement, useContext, useState } from 'react';
 import { Redirect, useHistory } from 'react-router';
 import BCeIDRequestForm, { BCeIDRequestFormInitialValues, BCeIDRequestFormYupSchema } from './BCeIDRequestForm';
 import IDIRRequestForm, { IDIRRequestFormInitialValues, IDIRRequestFormYupSchema } from './IDIRRequestForm';
 
-const useStyles = makeStyles((theme: Theme) => ({
+const useStyles = makeStyles(() => ({
   actionButton: {
     minWidth: '6rem',
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
-  },
-  finishContainer: {
-    padding: theme.spacing(3),
-    backgroundColor: 'transparent'
-  },
-  stepper: {
-    backgroundColor: 'transparent'
-  },
-  stepTitle: {
-    marginBottom: '0.45rem'
-  },
-  spacingBottom: {
-    marginBottom: '0.9rem'
-  },
-  legend: {
-    marginTop: '1rem',
-    float: 'left',
-    marginBottom: '0.75rem',
-    letterSpacing: '-0.01rem'
   }
 }));
-
-interface IAccessRequestForm {
-  role: number;
-  work_from_regional_office: string;
-  regional_offices: number[];
-  comments: string;
-}
 
 /**
  * Access Request form
@@ -70,8 +36,6 @@ interface IAccessRequestForm {
  */
 export const AccessRequestPage: React.FC = () => {
   const classes = useStyles();
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const biohubApi = useBiohubApi();
   const history = useHistory();
 
@@ -93,23 +57,7 @@ export const AccessRequestPage: React.FC = () => {
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
-  useEffect(() => {
-    const getAllCodeSets = async () => {
-      const response = await biohubApi.codes.getAllCodeSets();
-
-      // TODO error handling/user messaging - Cant submit an access request if required code sets fail to fetch
-
-      setCodes(() => {
-        setIsLoadingCodes(false);
-        return response;
-      });
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getAllCodeSets();
-      setIsLoadingCodes(true);
-    }
-  }, [biohubApi, isLoadingCodes, codes]);
+  const codes = useCodes();
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -121,14 +69,14 @@ export const AccessRequestPage: React.FC = () => {
     });
   };
 
-  const handleSubmitAccessRequest = async (values: IAccessRequestForm) => {
+  const handleSubmitAccessRequest = async (values: IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject) => {
     try {
       const response = await biohubApi.admin.createAdministrativeActivity({
         ...values,
-        name: keycloakWrapper?.displayName,
-        username: keycloakWrapper?.getUserIdentifier(),
-        email: keycloakWrapper?.email,
-        identitySource: keycloakWrapper?.getIdentitySource()
+        name: keycloakWrapper?.displayName as string,
+        username: keycloakWrapper?.getUserIdentifier() as string,
+        email: keycloakWrapper?.email as string,
+        identitySource: keycloakWrapper?.getIdentitySource() as string
       });
 
       if (!response?.id) {
@@ -169,22 +117,22 @@ export const AccessRequestPage: React.FC = () => {
     return <Redirect to={{ pathname: '/request-submitted' }} />;
   }
 
-  let initialValues: any;
-  let validationSchema: any;
-  let requestForm: any;
+  let initialValues: IIDIRAccessRequestDataObject | IBCeIDAccessRequestDataObject;
+  let validationSchema: typeof IDIRRequestFormYupSchema | typeof BCeIDRequestFormYupSchema;
+  let requestForm: ReactElement;
 
-  if (keycloakWrapper?.getIdentitySource()?.toLowerCase() === 'bceid') {
+  if (keycloakWrapper?.getIdentitySource() === SYSTEM_IDENTITY_SOURCE.BCEID) {
     initialValues = BCeIDRequestFormInitialValues;
     validationSchema = BCeIDRequestFormYupSchema;
     requestForm = <BCeIDRequestForm />;
   } else {
     initialValues = IDIRRequestFormInitialValues;
     validationSchema = IDIRRequestFormYupSchema;
-    requestForm = <IDIRRequestForm codes={codes} />;
+    requestForm = <IDIRRequestForm codes={codes.codes} />;
   }
 
   return (
-    <Box mb={4}>
+    <Box p={4}>
       <Container maxWidth="md">
         <Formik
           initialValues={initialValues}
@@ -196,61 +144,49 @@ export const AccessRequestPage: React.FC = () => {
             handleSubmitAccessRequest(values);
           }}>
           {({ handleSubmit }) => (
-            <>
-              <Box>
-                <h1>Request Access to SIMS</h1>
-                <Typography variant="subtitle1" className={classes.spacingBottom}>
-                  You will need to provide some additional details before accessing this application. Complete the form
-                  below to request access.
+            <Box component={Paper} p={3}>
+              <Typography variant="h1">Request Access</Typography>
+              <Box mt={3}>
+                <Typography variant="body1" color="textSecondary">
+                  You will need to provide some additional details before accessing this application.
                 </Typography>
-                <Paper elevation={2} square={true} className={classes.finishContainer}>
-                  <h2>Request Details</h2>
-                  <Box mb={3}>
-                    <form onSubmit={handleSubmit}>
-                      {requestForm}
-                      <Box my={4}>
-                        <Divider />
-                      </Box>
-                      <Box display="flex" justifyContent="flex-end">
-                        <Box className="buttonWrapper" mr={1}>
-                          <Button
-                            type="submit"
-                            variant="contained"
-                            color="primary"
-                            className={classes.actionButton}
-                            disabled={isSubmittingRequest}>
-                            Submit Request
-                          </Button>
-                          {isSubmittingRequest && (
-                            <CircularProgress
-                              className="buttonProgress"
-                              variant="indeterminate"
-                              size={20}
-                              color="primary"
-                            />
-                          )}
-                        </Box>
-                        {/*
-                          CircularProgress styling examples:
-                          https://codesandbox.io/s/wonderful-cartwright-e18nc?file=/demo.tsx:895-1013
-                          https://menubar.io/creating-a-material-ui-button-with-spinner-that-reflects-loading-state
-                        */}
-                        <Button
-                          variant="outlined"
-                          color="primary"
-                          onClick={() => {
-                            history.push('/logout');
-                          }}
-                          className={classes.actionButton}
-                          data-testid="logout-button">
-                          Log out
-                        </Button>
-                      </Box>
-                    </form>
-                  </Box>
-                </Paper>
               </Box>
-            </>
+              <Box mt={4}>
+                <form onSubmit={handleSubmit}>
+                  {requestForm}
+                  <Box mt={4} display="flex" justifyContent="flex-end">
+                    <Box className="buttonWrapper" mr={1}>
+                      <Button
+                        type="submit"
+                        variant="contained"
+                        color="primary"
+                        className={classes.actionButton}
+                        disabled={isSubmittingRequest}>
+                        <strong>Submit Request</strong>
+                      </Button>
+                      {isSubmittingRequest && (
+                        <CircularProgress
+                          className="buttonProgress"
+                          variant="indeterminate"
+                          size={20}
+                          color="primary"
+                        />
+                      )}
+                    </Box>
+                    <Button
+                      variant="outlined"
+                      color="primary"
+                      onClick={() => {
+                        history.push('/logout');
+                      }}
+                      className={classes.actionButton}
+                      data-testid="logout-button">
+                      Log out
+                    </Button>
+                  </Box>
+                </form>
+              </Box>
+            </Box>
           )}
         </Formik>
       </Container>

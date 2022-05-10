@@ -4,10 +4,10 @@ import {
   deleteActivitiesSQL,
   deleteIndigenousPartnershipsSQL,
   deleteIUCNSQL,
-  deleteStakeholderPartnershipsSQL,
-  deleteProjectFundingSourceSQL,
   deletePermitSQL,
-  deleteProjectSQL
+  deleteProjectFundingSourceSQL,
+  deleteProjectSQL,
+  deleteStakeholderPartnershipsSQL
 } from './project-delete-queries';
 
 describe('deleteIUCNSQL', () => {

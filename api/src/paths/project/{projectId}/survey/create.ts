@@ -1,32 +1,36 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../../../constants/roles';
+import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
-import { HTTP400 } from '../../../../errors/CustomError';
+import { HTTP400 } from '../../../../errors/custom-error';
 import { PostSurveyObject, PostSurveyProprietorData } from '../../../../models/survey-create';
-import { surveyCreatePostRequestObject, surveyIdResponseObject } from '../../../../openapi/schemas/survey';
-import {
-  insertSurveyFundingSourceSQL,
-  postAncillarySpeciesSQL,
-  postFocalSpeciesSQL,
-  postNewSurveyPermitSQL,
-  postSurveyProprietorSQL,
-  postSurveySQL
-} from '../../../../queries/survey/survey-create-queries';
-import { putNewSurveyPermitNumberSQL } from '../../../../queries/survey/survey-update-queries';
+import { queries } from '../../../../queries/queries';
+import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../utils/logger';
-import { logRequest } from '../../../../utils/path-utils';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/create');
 
-export const POST: Operation = [logRequest('paths/project/{projectId}/survey/create', 'POST'), createSurvey()];
+export const POST: Operation = [
+  authorizeRequestHandler((req) => {
+    return {
+      and: [
+        {
+          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
+          projectId: Number(req.params.projectId),
+          discriminator: 'ProjectRole'
+        }
+      ]
+    };
+  }),
+  createSurvey()
+];
 
 POST.apiDoc = {
   description: 'Create a new Survey.',
   tags: ['survey'],
   security: [
     {
-      Bearer: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_ADMIN]
+      Bearer: []
     }
   ],
   requestBody: {
@@ -34,7 +38,126 @@ POST.apiDoc = {
     content: {
       'application/json': {
         schema: {
-          ...(surveyCreatePostRequestObject as object)
+          title: 'SurveyProject post request object',
+          type: 'object',
+          required: [
+            'survey_name',
+            'start_date',
+            'end_date',
+            'focal_species',
+            'ancillary_species',
+            'intended_outcome_id',
+            'additional_details',
+            'field_method_id',
+            'vantage_code_ids',
+            'ecological_season_id',
+            'biologist_first_name',
+            'biologist_last_name',
+            'survey_area_name',
+            'survey_data_proprietary',
+            'foippa_requirements_accepted',
+            'sedis_procedures_accepted'
+          ],
+          properties: {
+            survey_name: {
+              type: 'string'
+            },
+            start_date: {
+              type: 'string',
+              description: 'ISO 8601 date string'
+            },
+            end_date: {
+              type: 'string',
+              description: 'ISO 8601 date string'
+            },
+            focal_species: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
+              description: 'Selected focal species ids'
+            },
+            ancillary_species: {
+              type: 'array',
+              items: {
+                type: 'number'
+              },
+              description: 'Selected ancillary species ids'
+            },
+            intended_outcome_id: {
+              type: 'number'
+            },
+            additional_details: {
+              type: 'string'
+            },
+            field_method_id: {
+              type: 'number'
+            },
+            vantage_code_ids: {
+              type: 'array',
+              items: {
+                type: 'number'
+              }
+            },
+            ecological_season_id: {
+              type: 'number'
+            },
+            surveyed_all_areas: {
+              type: 'string',
+              enum: ['true', 'false']
+            },
+            biologist_first_name: {
+              type: 'string'
+            },
+            biologist_last_name: {
+              type: 'string'
+            },
+            survey_area_name: {
+              type: 'string'
+            },
+            survey_data_proprietary: {
+              type: 'string'
+            },
+            proprietary_data_category: {
+              type: 'number'
+            },
+            proprietor_name: {
+              type: 'string'
+            },
+            category_rationale: {
+              type: 'string'
+            },
+            first_nations_id: {
+              type: 'number'
+            },
+            data_sharing_agreement_required: {
+              type: 'string'
+            },
+            foippa_requirements_accepted: {
+              type: 'boolean',
+              enum: [true],
+              description:
+                'Data meets or exceeds the Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements'
+            },
+            sedis_procedures_accepted: {
+              type: 'boolean',
+              enum: [true],
+              description:
+                'Data is in accordance with the Species and Ecosystems Data and Information Security (SEDIS) Procedures'
+            },
+            funding_sources: {
+              type: 'array',
+              items: {
+                type: 'number'
+              }
+            },
+            permit_number: {
+              type: 'string'
+            },
+            permit_type: {
+              type: 'string'
+            }
+          }
         }
       }
     }
@@ -45,7 +168,14 @@ POST.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            ...(surveyIdResponseObject as object)
+            title: 'Survey Response Object',
+            type: 'object',
+            required: ['id'],
+            properties: {
+              id: {
+                type: 'number'
+              }
+            }
           }
         }
       }
@@ -95,7 +225,7 @@ export function createSurvey(): RequestHandler {
     }
 
     try {
-      const postSurveySQLStatement = postSurveySQL(projectId, sanitizedPostSurveyData);
+      const postSurveySQLStatement = queries.survey.postSurveySQL(projectId, sanitizedPostSurveyData);
 
       if (!postSurveySQLStatement) {
         throw new HTTP400('Failed to build survey SQL insert statement');
@@ -164,6 +294,15 @@ export function createSurvey(): RequestHandler {
         sanitizedPostSurveyData.survey_proprietor &&
           promises.push(insertSurveyProprietor(sanitizedPostSurveyData.survey_proprietor, surveyId, connection));
 
+        //Handle vantage codes associated to this survey
+        promises.push(
+          Promise.all(
+            sanitizedPostSurveyData.vantage_code_ids.map((vantageCode: number) =>
+              insertVantageCodes(vantageCode, surveyId, connection)
+            )
+          )
+        );
+
         await Promise.all(promises);
 
         await connection.commit();
@@ -187,7 +326,7 @@ export const insertFocalSpecies = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postFocalSpeciesSQL(focal_species_id, survey_id);
+  const sqlStatement = queries.survey.postFocalSpeciesSQL(focal_species_id, survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -208,7 +347,28 @@ export const insertAncillarySpecies = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postAncillarySpeciesSQL(ancillary_species_id, survey_id);
+  const sqlStatement = queries.survey.postAncillarySpeciesSQL(ancillary_species_id, survey_id);
+
+  if (!sqlStatement) {
+    throw new HTTP400('Failed to build SQL insert statement');
+  }
+
+  const response = await connection.query(sqlStatement.text, sqlStatement.values);
+  const result = (response && response.rows && response.rows[0]) || null;
+
+  if (!result || !result.id) {
+    throw new HTTP400('Failed to insert ancillary species data');
+  }
+
+  return result.id;
+};
+
+export const insertVantageCodes = async (
+  vantage_code_id: number,
+  survey_id: number,
+  connection: IDBConnection
+): Promise<number> => {
+  const sqlStatement = queries.survey.postVantageCodesSQL(vantage_code_id, survey_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -229,7 +389,7 @@ export const insertSurveyProprietor = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<number> => {
-  const sqlStatement = postSurveyProprietorSQL(survey_id, survey_proprietor);
+  const sqlStatement = queries.survey.postSurveyProprietorSQL(survey_id, survey_proprietor);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL insert statement');
@@ -255,11 +415,11 @@ export const insertSurveyPermit = async (
   let sqlStatement;
 
   if (!permitType) {
-    sqlStatement = putNewSurveyPermitNumberSQL(surveyId, permitNumber);
+    sqlStatement = queries.survey.putNewSurveyPermitNumberSQL(surveyId, permitNumber);
   } else {
     const systemUserId = connection.systemUserId();
 
-    sqlStatement = postNewSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
+    sqlStatement = queries.survey.postNewSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
   }
 
   if (!sqlStatement) {
@@ -278,7 +438,7 @@ export const insertSurveyFundingSource = async (
   survey_id: number,
   connection: IDBConnection
 ): Promise<void> => {
-  const sqlStatement = insertSurveyFundingSourceSQL(survey_id, funding_source_id);
+  const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(survey_id, funding_source_id);
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL statement for insertSurveyFundingSource');

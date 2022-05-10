@@ -19,15 +19,13 @@ const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps>
   return (
     <>
       <Box width="100%" display="flex" flexWrap="nowrap">
-        <Box width="30%" p={3}>
-          <Box>
-            <Typography variant="h2">{title}</Typography>
-          </Box>
+        <Box width="30%" p={5}>
+          <Typography variant="h2">{title}</Typography>
           <Box pt={3}>
             <Typography variant="body2">{summary}</Typography>
           </Box>
         </Box>
-        <Box width="70%" p={3}>
+        <Box width="70%" p={5}>
           {component}
         </Box>
       </Box>

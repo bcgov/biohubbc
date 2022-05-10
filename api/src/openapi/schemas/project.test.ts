@@ -5,8 +5,7 @@ import {
   projectCreatePostRequestObject,
   projectIdResponseObject,
   projectUpdateGetResponseObject,
-  projectUpdatePutRequestObject,
-  projectViewGetResponseObject
+  projectUpdatePutRequestObject
 } from './project';
 
 describe('projectCreatePostRequestObject', () => {
@@ -38,13 +37,5 @@ describe('projectUpdatePutRequestObject', () => {
 
   it('is valid openapi v3 schema', () => {
     expect(ajv.validateSchema(projectUpdatePutRequestObject)).to.be.true;
-  });
-});
-
-describe('projectViewGetResponseObject', () => {
-  const ajv = new Ajv();
-
-  it('is valid openapi v3 schema', () => {
-    expect(ajv.validateSchema(projectViewGetResponseObject)).to.be.true;
   });
 });

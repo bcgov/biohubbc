@@ -2,7 +2,7 @@ import Box from '@material-ui/core/Box';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Typography from '@material-ui/core/Typography';
-import { AdministrativeActivityStatusType } from 'constants/misc';
+import { AdministrativeActivityStatusType, AdministrativeActivityType } from 'constants/misc';
 import AccessRequestList from 'features/admin/users/AccessRequestList';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAccessRequestsListResponse } from 'interfaces/useAdminApi.interface';
@@ -31,20 +31,20 @@ const ManageUsersPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
 
   const refreshAccessRequests = async () => {
-    const accessResponse = await biohubApi.admin.getAccessRequests([
-      AdministrativeActivityStatusType.PENDING,
-      AdministrativeActivityStatusType.REJECTED
-    ]);
+    const accessResponse = await biohubApi.admin.getAdministrativeActivities(
+      [AdministrativeActivityType.SYSTEM_ACCESS],
+      [AdministrativeActivityStatusType.PENDING, AdministrativeActivityStatusType.REJECTED]
+    );
 
     setAccessRequests(accessResponse);
   };
 
   useEffect(() => {
     const getAccessRequests = async () => {
-      const accessResponse = await biohubApi.admin.getAccessRequests([
-        AdministrativeActivityStatusType.PENDING,
-        AdministrativeActivityStatusType.REJECTED
-      ]);
+      const accessResponse = await biohubApi.admin.getAdministrativeActivities(
+        [AdministrativeActivityType.SYSTEM_ACCESS],
+        [AdministrativeActivityStatusType.PENDING, AdministrativeActivityStatusType.REJECTED]
+      );
 
       setAccessRequests(() => {
         setHasLoadedAccessRequests(true);
@@ -122,6 +122,7 @@ const ManageUsersPage: React.FC = () => {
         <Box mb={5} display="flex" alignItems="center" justifyContent="space-between">
           <Typography variant="h1">Manage Users</Typography>
         </Box>
+
         <Box>
           <AccessRequestList
             accessRequests={accessRequests}
@@ -133,7 +134,7 @@ const ManageUsersPage: React.FC = () => {
           />
         </Box>
         <Box pt={3}>
-          <ActiveUsersList activeUsers={activeUsers} />
+          <ActiveUsersList activeUsers={activeUsers} codes={codes} refresh={refreshActiveUsers} />
         </Box>
       </Container>
     </Box>

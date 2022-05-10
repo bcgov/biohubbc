@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { ADMINISTRATIVE_ACTIVITY_STATUS_TYPE } from '../../paths/administrative-activities';
 import {
   countPendingAdministrativeActivitiesSQL,
   getAdministrativeActivitiesSQL,
@@ -14,32 +15,32 @@ describe('getAdministrativeActivitiesSQL', () => {
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when administrativeActivityStatusTypes is null and administrativeActivityStatusTypes is valid', () => {
-    const response = getAdministrativeActivitiesSQL((null as unknown) as string, ['status']);
+  it('returns non null response when administrativeActivityStatusTypes is undefined and administrativeActivityStatusTypes is provided', () => {
+    const response = getAdministrativeActivitiesSQL(undefined, ['status']);
 
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when administrativeActivityStatusTypes is empty string and administrativeActivityStatusTypes is valid', () => {
-    const response = getAdministrativeActivitiesSQL('', ['status']);
+  it('returns non null response when administrativeActivityStatusTypes is empty and administrativeActivityStatusTypes is provided', () => {
+    const response = getAdministrativeActivitiesSQL([], ['status']);
 
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when administrativeActivityStatusTypes is valid and administrativeActivityStatusTypes is null', () => {
-    const response = getAdministrativeActivitiesSQL('type', (null as unknown) as string[]);
+  it('returns non null response when administrativeActivityStatusTypes is provided and administrativeActivityStatusTypes is undefined', () => {
+    const response = getAdministrativeActivitiesSQL(['type'], undefined);
 
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when administrativeActivityStatusTypes is valid and administrativeActivityStatusTypes is empty', () => {
-    const response = getAdministrativeActivitiesSQL('type', []);
+  it('returns non null response when administrativeActivityStatusTypes is provided and administrativeActivityStatusTypes is empty', () => {
+    const response = getAdministrativeActivitiesSQL(['type'], []);
 
     expect(response).to.not.be.null;
   });
 
-  it('returns non null response when valid parameters provided', () => {
-    const response = getAdministrativeActivitiesSQL('type', ['status 1', 'status 2']);
+  it('returns non null response when allor parameters provided', () => {
+    const response = getAdministrativeActivitiesSQL(['type 1', 'type 2'], ['status 1', 'status 2']);
 
     expect(response).to.not.be.null;
   });
@@ -75,18 +76,8 @@ describe('countPendingAdministrativeActivitiesSQL', () => {
 });
 
 describe('putAdministrativeActivitySQL', () => {
-  it('has a null administrativeActivityId', () => {
-    const response = putAdministrativeActivitySQL((null as unknown) as number, 1);
-    expect(response).to.be.null;
-  });
-
-  it('has a null administrativeActivityStatusTypeId', () => {
-    const response = putAdministrativeActivitySQL((null as unknown) as number, 1);
-    expect(response).to.be.null;
-  });
-
-  it('has valid parameters', () => {
-    const response = putAdministrativeActivitySQL(1, 1);
+  it('returns valid sql statement', () => {
+    const response = putAdministrativeActivitySQL(1, ADMINISTRATIVE_ACTIVITY_STATUS_TYPE.ACTIONED);
     expect(response).to.not.be.null;
   });
 });

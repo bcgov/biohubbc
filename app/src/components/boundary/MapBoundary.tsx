@@ -1,83 +1,88 @@
 import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
-import Typography from '@material-ui/core/Typography';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import React, { useState, useEffect } from 'react';
 import Button from '@material-ui/core/Button';
-import ComponentDialog from 'components/dialog/ComponentDialog';
-import FileUpload from 'components/attachments/FileUpload';
-import { mdiUploadOutline } from '@mdi/js';
+import FormControl from '@material-ui/core/FormControl';
+import Grid from '@material-ui/core/Grid';
+import IconButton from '@material-ui/core/IconButton';
+import InputLabel from '@material-ui/core/InputLabel';
+import MenuItem from '@material-ui/core/MenuItem';
+import Select from '@material-ui/core/Select';
+import { createStyles, makeStyles } from '@material-ui/core/styles';
+import Typography from '@material-ui/core/Typography';
+import Alert from '@material-ui/lab/Alert';
+import { mdiRefresh, mdiTrayArrowUp } from '@mdi/js';
 import Icon from '@mdi/react';
+import FileUpload from 'components/attachments/FileUpload';
+import { IUploadHandler } from 'components/attachments/FileUploadItem';
+import InferredLocationDetails, { IInferredLayers } from 'components/boundary/InferredLocationDetails';
+import ComponentDialog from 'components/dialog/ComponentDialog';
 import MapContainer from 'components/map/MapContainer';
+import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
+import { FormikContextType } from 'formik';
 import { Feature } from 'geojson';
+import get from 'lodash-es/get';
+import React, { useEffect, useState } from 'react';
 import {
   calculateUpdatedMapBounds,
   handleGPXUpload,
   handleKMLUpload,
   handleShapefileUpload
 } from 'utils/mapBoundaryUploadHelpers';
-import FormControl from '@material-ui/core/FormControl';
-import InputLabel from '@material-ui/core/InputLabel';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
-import { ProjectSurveyAttachmentValidExtensions } from 'constants/attachments';
-import { IUploadHandler } from 'components/attachments/FileUploadItem';
 
-const useStyles = makeStyles({
-  bold: {
-    fontWeight: 'bold'
-  },
-  uploadButton: {
-    border: '2px solid',
-    textTransform: 'capitalize',
-    fontWeight: 'bold'
-  }
-});
+const useStyles = makeStyles(() =>
+  createStyles({
+    zoomToBoundaryExtentBtn: {
+      padding: '3px',
+      borderRadius: '4px',
+      background: '#ffffff',
+      color: '#000000',
+      border: '2px solid rgba(0,0,0,0.2)',
+      backgroundClip: 'padding-box',
+      '&:hover': {
+        backgroundColor: '#eeeeee'
+      }
+    },
+    bold: {
+      fontWeight: 'bold'
+    },
+    uploadButton: {
+      border: '2px solid',
+      textTransform: 'capitalize',
+      fontWeight: 'bold'
+    },
+    mapLocations: {
+      '& dd': {
+        display: 'inline-block'
+      }
+    }
+  })
+);
 
 export interface IMapBoundaryProps {
+  name: string;
   title: string;
   mapId: string;
-  uploadError: string;
-  setUploadError: (error: string) => void;
-  values: any;
   bounds: any[];
-  errors?: any;
-  setFieldValue: (key: string, value: any) => void;
+  formikProps: FormikContextType<any>;
 }
-
-export const displayInferredLayersInfo = (data: any[], type: string) => {
-  if (!data.length) {
-    return;
-  }
-
-  return (
-    <Box>
-      <Typography component="dt" variant="subtitle2" color="textSecondary">
-        {type}
-      </Typography>
-      {data.map((item: string, index: number) => (
-        <Typography key={index} component="dd" variant="body1">
-          {item}
-        </Typography>
-      ))}
-    </Box>
-  );
-};
 
 /**
  * Shared component for map boundary component
  *
+ * @param {*} props
  * @return {*}
  */
 const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   const classes = useStyles();
-  const { title, mapId, uploadError, setUploadError, values, bounds, setFieldValue, errors } = props;
+
+  const { name, title, mapId, bounds, formikProps } = props;
+
+  const { values, errors, setFieldValue } = formikProps;
 
   const [openUploadBoundary, setOpenUploadBoundary] = useState(false);
   const [shouldUpdateBounds, setShouldUpdateBounds] = useState<boolean>(false);
   const [updatedBounds, setUpdatedBounds] = useState<any[][] | undefined>(undefined);
   const [selectedLayer, setSelectedLayer] = useState('');
-  const [inferredLayersInfo, setInferredLayersInfo] = useState({
+  const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
     nrm: [],
     env: [],
@@ -89,13 +94,13 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
   }, [updatedBounds]);
 
   const boundaryUploadHandler = (): IUploadHandler => {
-    return (file, cancelToken, handleFileUploadProgress) => {
+    return (file) => {
       if (file?.type.includes('zip') || file?.name.includes('.zip')) {
-        handleShapefileUpload(file, values, setFieldValue, setUploadError);
+        handleShapefileUpload(file, name, formikProps);
       } else if (file?.type.includes('gpx') || file?.name.includes('.gpx')) {
-        handleGPXUpload(file, setUploadError, values, setFieldValue);
+        handleGPXUpload(file, name, formikProps);
       } else if (file?.type.includes('kml') || file?.name.includes('.kml')) {
-        handleKMLUpload(file, setUploadError, values, setFieldValue);
+        handleKMLUpload(file, name, formikProps);
       }
 
       return Promise.resolve();
@@ -109,7 +114,9 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         dialogTitle="Upload Boundary"
         onClose={() => setOpenUploadBoundary(false)}>
         <Box>
-          <Typography style={{ marginBottom: '1rem' }}>Accepted file types: .gpx, .klm, .zip (shapefiles)</Typography>
+          <Box mb={3}>
+            <Alert severity="info">If uploading a shapefile, it must be configured with a valid projection.</Alert>
+          </Box>
           <FileUpload
             uploadHandler={boundaryUploadHandler()}
             dropZoneProps={{
@@ -121,19 +128,22 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
       <Grid item xs={12}>
         <Typography className={classes.bold}>{title}</Typography>
         <Box mt={2}>
-          <Typography variant="body2">
-            You may select a boundary from an existing layer or upload a KML or Shapefile, KMZ files will not be
-            accepted. The Shapefile being uploaded must be configured with a valid projection. To select a boundary from
-            an existing layer, toggle the appropriate layer and select a boundary from the map, then press add boundary.
-            When done, press the hide layer button.
+          <Typography variant="body1">
+            Define your boundary by selecting a boundary from an existing layer or by uploading KML file or shapefile.
           </Typography>
+          <Box mt={2}>
+            <Typography variant="body1">
+              To select a boundary from an existing layer, select a layer from the dropdown, click a boundary on the map
+              and click 'Add Boundary'.
+            </Typography>
+          </Box>
         </Box>
         <Box display="flex" mt={3}>
           <Button
             color="primary"
             data-testid="boundary_file-upload"
             variant="outlined"
-            startIcon={<Icon path={mdiUploadOutline} size={1} />}
+            startIcon={<Icon path={mdiTrayArrowUp} size={1} />}
             onClick={() => setOpenUploadBoundary(true)}>
             Upload Boundary
           </Button>
@@ -174,38 +184,38 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             </Button>
           )}
         </Box>
-        <Box mt={2}>{uploadError && <Typography style={{ color: '#db3131' }}>{uploadError}</Typography>}</Box>
-        <Box mt={5} height={500}>
+        <Box mt={2}>
+          {get(errors, name) && <Typography style={{ color: '#f44336' }}>{get(errors, name)}</Typography>}
+        </Box>
+        <Box mt={5} height={500} position="relative">
           <MapContainer
             mapId={mapId}
             geometryState={{
               geometry: values.geometry,
-              setGeometry: (newGeo: Feature[]) => setFieldValue('geometry', newGeo)
+              setGeometry: (newGeo: Feature[]) => setFieldValue(name, newGeo)
             }}
             bounds={(shouldUpdateBounds && updatedBounds) || bounds}
             selectedLayer={selectedLayer}
             setInferredLayersInfo={setInferredLayersInfo}
           />
+          {values.geometry && values.geometry.length > 0 && (
+            <Box position="absolute" top="126px" left="10px" zIndex="999">
+              <IconButton
+                aria-label="zoom to initial extent"
+                title="Zoom to initial extent"
+                className={classes.zoomToBoundaryExtentBtn}
+                onClick={() => {
+                  setUpdatedBounds(calculateUpdatedMapBounds(values.geometry));
+                  setShouldUpdateBounds(true);
+                }}>
+                <Icon size={1} path={mdiRefresh} />
+              </IconButton>
+            </Box>
+          )}
         </Box>
-        {errors && errors.geometry && (
+        {get(errors, name) && (
           <Box pt={2}>
-            <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.geometry}</Typography>
-          </Box>
-        )}
-        {values.geometry && values.geometry.length > 0 && (
-          <Box pt={2}>
-            <Button
-              variant="outlined"
-              component="label"
-              size="medium"
-              color="primary"
-              onClick={() => {
-                setUpdatedBounds(calculateUpdatedMapBounds(values.geometry));
-                setShouldUpdateBounds(true);
-              }}
-              className={classes.uploadButton}>
-              Zoom to Boundary Extent
-            </Button>
+            <Typography style={{ fontSize: '12px', color: '#f44336' }}>{get(errors, name)}</Typography>
           </Box>
         )}
         {!Object.values(inferredLayersInfo).every((item: any) => !item.length) && (
@@ -214,20 +224,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
               <Typography className={classes.bold}>Boundary Information</Typography>
             </Box>
             <dl>
-              <Grid container spacing={2}>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.nrm, 'NRM Regions')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.env, 'ENV Regions')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.wmu, 'WMU ID/GMZ ID/GMZ Name')}
-                </Grid>
-                <Grid item xs={6}>
-                  {displayInferredLayersInfo(inferredLayersInfo.parks, 'Parks and EcoReserves')}
-                </Grid>
-              </Grid>
+              <InferredLocationDetails layers={inferredLayersInfo} />
             </dl>
           </>
         )}

@@ -11,6 +11,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="project_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
@@ -155,6 +156,7 @@ exports[`ProjectDetailsForm renders correctly with default empty values 1`] = `
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="project_activities"
+                name="project_activities"
                 spellcheck="false"
                 type="text"
                 value=""
@@ -342,6 +344,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
       >
         <div
           class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+          data-testid="project_name"
         >
           <label
             class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
@@ -528,6 +531,7 @@ exports[`ProjectDetailsForm renders correctly with existing details values 1`] =
                 autocomplete="off"
                 class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
                 id="project_activities"
+                name="project_activities"
                 spellcheck="false"
                 type="text"
                 value=""

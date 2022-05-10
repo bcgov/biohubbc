@@ -16,9 +16,9 @@ services:
       - ${DB_PORT}:5432
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U $DB_ADMIN -p 5432 -d $DB_DATABASE"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+      interval: 5s
+      timeout: 5s
+      retries: 30
     environment:
       - NODE_ENV=${NODE_ENV}
       - POSTGRES_USER=${DB_ADMIN}
@@ -41,6 +41,7 @@ services:
       - ${API_PORT}:${API_PORT}
     environment:
       - NODE_ENV=${NODE_ENV}
+      - ELASTICSEARCH_URL=${ELASTICSEARCH_URL}
       - TZ=${API_TZ}
       - API_HOST=${API_HOST}
       - API_PORT=${API_PORT}
@@ -51,6 +52,10 @@ services:
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
       - KEYCLOAK_URL=${KEYCLOAK_URL}
+      - KEYCLOAK_HOST=${KEYCLOAK_HOST}
+      - KEYCLOAK_REALM=${KEYCLOAK_REALM}
+      - KEYCLOAK_ADMIN_USERNAME=${KEYCLOAK_ADMIN_USERNAME}
+      - KEYCLOAK_ADMIN_PASSWORD=${KEYCLOAK_ADMIN_PASSWORD}
       - OBJECT_STORE_URL=${OBJECT_STORE_URL}
       - OBJECT_STORE_ACCESS_KEY_ID=${OBJECT_STORE_ACCESS_KEY_ID}
       - OBJECT_STORE_SECRET_KEY_ID=${OBJECT_STORE_SECRET_KEY_ID}
@@ -62,6 +67,13 @@ services:
       - CLAMAV_PORT=${CLAMAV_PORT}
       - CLAMAV_HOST=${CLAMAV_HOST}
       - ENABLE_FILE_VIRUS_SCAN=${ENABLE_FILE_VIRUS_SCAN}
+      - GCNOTIFY_SECRET_API_KEY=${GCNOTIFY_SECRET_API_KEY}
+      - GCNOTIFY_ADMIN_EMAIL=${GCNOTIFY_ADMIN_EMAIL}
+      - GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE=${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
+      - GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE=${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
+      - GCNOTIFY_EMAIL_URL=${GCNOTIFY_EMAIL_URL}
+      - GCNOTIFY_SMS_URL=${GCNOTIFY_SMS_URL}
+      - APP_HOST=${APP_HOST}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
@@ -208,8 +220,6 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
       - local-network
-    depends_on:
-      - api
 
   ## Run the database migrations and seeding
   db_setup:

@@ -5,6 +5,7 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
 import { Router } from 'react-router';
+import { getMockAuthState } from 'test-helpers/auth-helpers';
 import AccessRequestPage from './AccessRequestPage';
 
 const history = createMemoryHistory();
@@ -24,7 +25,7 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 );
 
 const renderContainer = () => {
-  const authState = {
+  const authState = getMockAuthState({
     keycloakWrapper: {
       keycloak: {
         authenticated: true
@@ -43,7 +44,7 @@ const renderContainer = () => {
       lastName: 'testlast',
       refresh: () => {}
     }
-  };
+  });
 
   return render(
     <AuthStateContext.Provider value={authState as any}>
@@ -69,8 +70,7 @@ describe('AccessRequestPage', () => {
 
   it('renders correctly', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Role 1' }],
-      regional_offices: [{ id: 1, name: 'Office 1' }]
+      system_roles: [{ id: 1, name: 'Creator' }]
     });
 
     const { asFragment } = renderContainer();
@@ -85,11 +85,10 @@ describe('AccessRequestPage', () => {
 
     it('should redirect to `/logout`', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        system_roles: [{ id: 1, name: 'Role 1' }],
-        regional_offices: [{ id: 1, name: 'Office 1' }]
+        system_roles: [{ id: 1, name: 'Creator' }]
       });
 
-      const authState = {
+      const authState = getMockAuthState({
         keycloakWrapper: {
           keycloak: {
             authenticated: true
@@ -108,7 +107,7 @@ describe('AccessRequestPage', () => {
           lastName: 'testlast',
           refresh: () => {}
         }
-      };
+      });
 
       const { getByText } = render(
         <AuthStateContext.Provider value={authState as any}>
@@ -126,32 +125,9 @@ describe('AccessRequestPage', () => {
     });
   });
 
-  // TODO Release 1 Patch (BHBC-1442): Remove regional offices
-  // it('shows and hides the regional offices section when the regional offices radio button is selected (respectively)', async () => {
-  //   mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-  //     system_roles: [{ id: 1, name: 'Role 1' }],
-  //     regional_offices: [{ id: 1, name: 'Office 1' }]
-  //   });
-
-  //   const { queryByText, getByText, getByTestId } = renderContainer();
-
-  //   expect(queryByText('Which Regional Offices do you work for?')).toBeNull();
-
-  //   fireEvent.click(getByTestId('yes-regional-office'));
-
-  //   await waitFor(() => {
-  //     expect(getByText('Which Regional Offices do you work for?')).toBeInTheDocument();
-  //   });
-
-  //   fireEvent.click(getByTestId('no-regional-office'));
-
-  //   expect(queryByText('Which Regional Offices do you work for?')).toBeNull();
-  // });
-
   it('processes a successful request submission', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Role 1' }],
-      regional_offices: [{ id: 1, name: 'Office 1' }]
+      system_roles: [{ id: 1, name: 'Creator' }]
     });
 
     mockBiohubApi().admin.createAdministrativeActivity.mockResolvedValue({
@@ -165,11 +141,11 @@ describe('AccessRequestPage', () => {
     const systemRoleListbox = within(getByRole('listbox'));
 
     await waitFor(() => {
-      expect(systemRoleListbox.getByText(/Role 1/i)).toBeInTheDocument();
+      expect(systemRoleListbox.getByText('Creator')).toBeInTheDocument();
     });
 
-    fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
-    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch (BHBC-1442): Remove regional offices
+    fireEvent.click(systemRoleListbox.getByText('Creator'));
+
     fireEvent.click(getByText('Submit Request'));
 
     await waitFor(() => {
@@ -179,11 +155,10 @@ describe('AccessRequestPage', () => {
 
   it('takes the user to the request-submitted page immediately if they already have an access request', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Role 1' }],
-      regional_offices: [{ id: 1, name: 'Office 1' }]
+      system_roles: [{ id: 1, name: 'Creator' }]
     });
 
-    const authState = {
+    const authState = getMockAuthState({
       keycloakWrapper: {
         keycloak: {
           authenticated: true
@@ -202,7 +177,7 @@ describe('AccessRequestPage', () => {
         lastName: '',
         refresh: () => {}
       }
-    };
+    });
 
     render(
       <AuthStateContext.Provider value={authState as any}>
@@ -219,8 +194,7 @@ describe('AccessRequestPage', () => {
 
   it('shows error dialog with api error message when submission fails', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Role 1' }],
-      regional_offices: [{ id: 1, name: 'Office 1' }]
+      system_roles: [{ id: 1, name: 'Creator' }]
     });
 
     mockBiohubApi().admin.createAdministrativeActivity = jest.fn(() => Promise.reject(new Error('API Error is Here')));
@@ -232,11 +206,11 @@ describe('AccessRequestPage', () => {
     const systemRoleListbox = within(getByRole('listbox'));
 
     await waitFor(() => {
-      expect(systemRoleListbox.getByText(/Role 1/i)).toBeInTheDocument();
+      expect(systemRoleListbox.getByText('Creator')).toBeInTheDocument();
     });
 
-    fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
-    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch (BHBC-1442): Remove regional offices
+    fireEvent.click(systemRoleListbox.getByText('Creator'));
+
     fireEvent.click(getByText('Submit Request'));
 
     await waitFor(() => {
@@ -252,8 +226,7 @@ describe('AccessRequestPage', () => {
 
   it('shows error dialog with default error message when response from createAdministrativeActivity is invalid', async () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      system_roles: [{ id: 1, name: 'Role 1' }],
-      regional_offices: [{ id: 1, name: 'Office 1' }]
+      system_roles: [{ id: 1, name: 'Creator' }]
     });
 
     mockBiohubApi().admin.createAdministrativeActivity.mockResolvedValue({
@@ -267,11 +240,11 @@ describe('AccessRequestPage', () => {
     const systemRoleListbox = within(getByRole('listbox'));
 
     await waitFor(() => {
-      expect(systemRoleListbox.getByText(/Role 1/i)).toBeInTheDocument();
+      expect(systemRoleListbox.getByText('Creator')).toBeInTheDocument();
     });
 
-    fireEvent.click(systemRoleListbox.getByText(/Role 1/i));
-    // fireEvent.click(getByTestId('no-regional-office')); // TODO Release 1 Patch (BHBC-1442): Remove regional offices
+    fireEvent.click(systemRoleListbox.getByText('Creator'));
+
     fireEvent.click(getByText('Submit Request'));
 
     await waitFor(() => {
