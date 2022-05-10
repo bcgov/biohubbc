@@ -57,6 +57,8 @@ describe('CreateSurveyPage', () => {
     mockBiohubApi().survey.createSurvey.mockClear();
     mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
     mockBiohubApi().taxonomy.searchSpecies.mockClear();
+
+    jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
 
   afterEach(() => {
