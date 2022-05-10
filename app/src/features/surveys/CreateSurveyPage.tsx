@@ -21,7 +21,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest, SurveyFundingSources, SurveyPermits } from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, ISurveyFundingSourceForView, ISurveyPermits } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -92,8 +92,8 @@ const CreateSurveyPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
-  const [surveyFundingSources, setSurveyFundingSources] = useState<SurveyFundingSources[]>([]);
+  const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
+  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyFundingSourceForView[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -330,19 +330,19 @@ const CreateSurveyPage = () => {
                     <GeneralInformationForm
                       permit_numbers={
                         surveyPermits?.map((item) => {
-                          return { value: item.number, label: `${item.number} - ${item.type}` };
+                          return { value: item.permit_number, label: `${item.permit_number} - ${item.permit_type}` };
                         }) || []
                       }
                       funding_sources={
                         surveyFundingSources?.map((item) => {
                           return {
-                            value: item.pfsId,
-                            label: `${item.agencyName} | ${getFormattedAmount(
-                              item.amount
+                            value: item.pfs_id,
+                            label: `${item.agency_name} | ${getFormattedAmount(
+                              item.funding_amount
                             )} | ${getFormattedDateRangeString(
                               DATE_FORMAT.ShortMediumDateFormat,
-                              item.startDate,
-                              item.endDate
+                              item.funding_start_date,
+                              item.funding_end_date
                             )}`
                           };
                         }) || []

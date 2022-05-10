@@ -40,22 +40,15 @@ export interface ISurveyFundingSourceForView {
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   survey_name: string;
-  // focal_species: number[];
-  // focal_species_names: string[];
-  // ancillary_species: number[];
-  // ancillary_species_names: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
   survey_area_name: string;
-  permit_number: string;
-  permit_type: string;
-  funding_sources: ISurveyFundingSourceForView[];
   geometry: Feature[];
   completion_status: string;
   publish_date: string;
-  occurrence_submission_id: number | null;
+  publish_status: string;
 }
 
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
@@ -74,7 +67,11 @@ export interface IGetSurveyForViewResponseProprietor {
   first_nations_name: string;
   category_rationale: string;
   proprietor_name: string;
-  data_sharing_agreement_required: string;
+  disa_required: string;
+  first_nations_id?: string;
+  proprietor_type_id?: number;
+  proprietor_type_name?: string;
+  revision_count?: number;
 }
 
 export interface IGetSurveyForUpdateResponseDetails {
@@ -139,12 +136,12 @@ export interface IGetSurveyForUpdateResponse {
 export interface IGetSurveyForViewResponse {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
-  permit: any[];
+  permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
-  funding_sources: any[];
+  funding_sources: ISurveyFundingSourceForView[];
   proprietor: IGetSurveyForViewResponseProprietor;
-  occurrence_submission: { id: number };
-  summary_result: number;
+  occurrence_submission: { id: number | null };
+  summary_result: { id: number | null };
 }
 
 /**
@@ -198,15 +195,7 @@ export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
 }
 
-export interface SurveyPermits {
-  number: string;
-  type: string;
-}
-
-export interface SurveyFundingSources {
-  pfsId: number;
-  amount: number;
-  startDate: string;
-  endDate: string;
-  agencyName: string;
+export interface ISurveyPermits {
+  permit_number: string;
+  permit_type: string;
 }

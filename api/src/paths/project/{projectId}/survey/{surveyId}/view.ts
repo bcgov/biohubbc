@@ -641,8 +641,6 @@ export function getSurveyForView(): RequestHandler {
 
       const result = await surveyService.getSurveyById(Number(req.params.surveyId));
 
-      console.log('result is: ', result);
-
       await connection.commit();
 
       return res.status(200).json(result);

@@ -95,7 +95,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
     zoomToBoundaryExtent();
 
     setNonEditableGeometries(nonEditableGeometriesResult);
-  }, [surveyGeometry, survey_details.occurrence_submission_id, zoomToBoundaryExtent]);
+  }, [surveyGeometry, occurrence_submission.id, zoomToBoundaryExtent]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyStudyAreaI18N.editErrorTitle,
@@ -229,7 +229,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
             additionalLayers={
-              survey_details.occurrence_submission_id
+              occurrence_submission.id
                 ? [
                     <OccurrenceFeatureGroup
                       projectId={projectForViewData.id}

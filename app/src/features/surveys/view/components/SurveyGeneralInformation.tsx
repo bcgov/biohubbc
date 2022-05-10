@@ -28,8 +28,7 @@ import {
   IGetSurveyForUpdateResponseDetails,
   IGetSurveyForViewResponse,
   ISurveyFundingSourceForView,
-  SurveyFundingSources,
-  SurveyPermits,
+  ISurveyPermits,
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
@@ -63,8 +62,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
-  const [surveyPermits, setSurveyPermits] = useState<SurveyPermits[]>([]);
-  const [surveyFundingSources, setSurveyFundingSources] = useState<SurveyFundingSources[]>([]);
+  const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
+  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyFundingSourceForView[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
@@ -116,7 +115,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     */
     if (surveyDetailsResponseData.permit_number && surveyDetailsResponseData.permit_type) {
       setSurveyPermits([
-        { number: surveyDetailsResponseData.permit_number, type: surveyDetailsResponseData.permit_type },
+        { permit_number: surveyDetailsResponseData.permit_number, permit_type: surveyDetailsResponseData.permit_type },
         ...surveyPermitsResponseData
       ]);
     } else {
@@ -170,17 +169,19 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
             <GeneralInformationForm
               permit_numbers={
                 surveyPermits?.map((item) => {
-                  return { value: item.number, label: `${item.number} - ${item.type}` };
+                  return { value: item.permit_number, label: `${item.permit_number} - ${item.permit_type}` };
                 }) || []
               }
               funding_sources={
                 surveyFundingSources?.map((item) => {
                   return {
-                    value: item.pfsId,
-                    label: `${item.agencyName} | ${getFormattedAmount(item.amount)} | ${getFormattedDateRangeString(
+                    value: item.pfs_id,
+                    label: `${item.agency_name} | ${getFormattedAmount(
+                      item.funding_amount
+                    )} | ${getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
-                      item.startDate,
-                      item.endDate
+                      item.funding_start_date,
+                      item.funding_end_date
                     )}`
                   };
                 }) || []

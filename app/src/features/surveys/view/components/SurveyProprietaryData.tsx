@@ -208,7 +208,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                   DISA Required
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
+                  {proprietor.disa_required === 'true' ? 'Yes' : 'No'}
                 </Typography>
               </Grid>
               <Grid item>

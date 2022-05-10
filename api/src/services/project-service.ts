@@ -30,7 +30,6 @@ import {
   GetPartnershipsData,
   GetPermitData,
   GetProjectData,
-  //GetSpeciesData,
   IGetProject
 } from '../models/project-view';
 import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
@@ -39,7 +38,6 @@ import { queries } from '../queries/queries';
 import { userHasValidRole } from '../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { DBService } from './service';
-//import { TaxonomyService } from './taxonomy-service';
 
 export class ProjectService extends DBService {
   /**

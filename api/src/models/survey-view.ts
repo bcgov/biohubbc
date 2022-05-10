@@ -97,12 +97,7 @@ export class ParsedSpeciesIds {
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
-  species: {
-    focal_species: number[];
-    focal_species_names: string[];
-    ancillary_species: number[];
-    ancillary_species_names: string[];
-  };
+  species: GetFocalSpeciesData & GetAncillarySpeciesData;
   permit: GetPermitData;
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   funding_sources: any[];

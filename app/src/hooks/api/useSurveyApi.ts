@@ -11,8 +11,8 @@ import {
   IGetSurveyForUpdateResponse,
   IGetSurveyForViewResponse,
   IUpdateSurveyRequest,
-  SurveyFundingSources,
-  SurveyPermits,
+  ISurveyFundingSourceForView,
+  ISurveyPermits,
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
 import qs from 'qs';
@@ -283,7 +283,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @returns {*} {Promise<SurveyPermits[]>}
    */
-  const getSurveyPermits = async (projectId: number): Promise<SurveyPermits[]> => {
+  const getSurveyPermits = async (projectId: number): Promise<ISurveyPermits[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/permits/list`);
 
     return data;
@@ -295,7 +295,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @returns {*} {Promise<SurveyFundingSources[]>}
    */
-  const getAvailableSurveyFundingSources = async (projectId: number): Promise<SurveyFundingSources[]> => {
+  const getAvailableSurveyFundingSources = async (projectId: number): Promise<ISurveyFundingSourceForView[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/funding-sources/list`);
 
     return data;

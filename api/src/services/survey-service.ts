@@ -81,14 +81,7 @@ export class SurveyService extends DBService {
     return result;
   }
 
-  async getSpeciesData(
-    surveyId: number
-  ): Promise<{
-    focal_species: number[];
-    focal_species_names: string[];
-    ancillary_species: number[];
-    ancillary_species_names: string[];
-  }> {
+  async getSpeciesData(surveyId: number): Promise<GetFocalSpeciesData & GetAncillarySpeciesData> {
     const sqlStatement = SQL`
       SELECT
         wldtaxonomic_units_id, is_focal
