@@ -298,6 +298,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
   const getAvailableSurveyFundingSources = async (projectId: number): Promise<ISurveyFundingSourceForView[]> => {
     const { data } = await axios.get(`/api/project/${projectId}/survey/funding-sources/list`);
 
+    console.log('available funding sources: ', data);
+
     return data;
   };
 
@@ -431,6 +433,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
    */
   const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<boolean> => {
+    console.log('publishSurvey in app:', surveyId, publish);
     const { status } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
 
     return status === 200;

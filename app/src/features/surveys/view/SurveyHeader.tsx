@@ -28,6 +28,8 @@ import React, { useContext } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
+
+
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
     minWidth: '15rem',
@@ -88,6 +90,8 @@ export interface ISurveyHeaderProps {
 const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const { projectWithDetails, surveyWithDetails, refresh } = props;
 
+  console.log('surveywithDetails :', surveyWithDetails);
+
   const classes = useStyles();
   const history = useHistory();
   const urlParams = useParams();
@@ -119,9 +123,15 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     }
   };
 
-  const publishSurvey = async (publish: boolean) => {
+  const togglePublishSurvey = async () => {
     if (!projectWithDetails || !surveyWithDetails) {
       return;
+    }
+
+    let publish = true;
+
+    if (surveyWithDetails.survey_details.publish_status === SurveyStatusType.PUBLISHED) {
+      publish = false;
     }
 
     try {
@@ -261,8 +271,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 color="primary"
                 className={classes.actionButton}
                 data-testid="publish-survey-button"
-                onClick={() => publishSurvey(!surveyWithDetails.survey_details.publish_date)}>
-                {surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
+                onClick={() => togglePublishSurvey()}>
+                {surveyWithDetails.survey_details.publish_status === SurveyStatusType.PUBLISHED
+                  ? 'Unpublish Survey'
+                  : 'Publish Survey'}
               </Button>
               {showDeleteSurveyButton && (
                 <Tooltip

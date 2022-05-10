@@ -30,17 +30,6 @@ export class GetUpdateSurveyDetailsData {
   publish_date: string;
 
   constructor(surveyDetailsData?: any) {
-    defaultLog.debug({
-      label: 'GetUpdateSurveyDetailsData',
-      message: 'params',
-      surveyDetailsData: {
-        ...surveyDetailsData,
-        geometry: surveyDetailsData?.geometry?.map((item: any) => {
-          return { ...item, geometry: 'Too big to print' };
-        })
-      }
-    });
-
     this.id = surveyDetailsData?.id ?? null;
     this.survey_name = surveyDetailsData?.name || '';
     this.focal_species = surveyDetailsData?.focal_species || [];

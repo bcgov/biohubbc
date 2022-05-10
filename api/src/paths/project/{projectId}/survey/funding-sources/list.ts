@@ -54,19 +54,19 @@ GET.apiDoc = {
               title: 'Funding Sources Get Response Object',
               type: 'object',
               properties: {
-                pfsId: {
+                pfs_id: {
                   type: 'number'
                 },
-                amount: {
+                funding_amount: {
                   type: 'number'
                 },
-                startDate: {
+                funding_start_date: {
                   type: 'string'
                 },
-                endDate: {
+                funding_end_date: {
                   type: 'string'
                 },
-                agencyName: {
+                agency_ame: {
                   type: 'string'
                 }
               }

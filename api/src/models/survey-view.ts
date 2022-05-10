@@ -48,11 +48,11 @@ export class GetSurveyFundingSources {
     obj &&
       obj.map((fundingSource: any) => {
         surveyFundingSourcesList.push({
-          pfsId: fundingSource.id,
-          amount: fundingSource.funding_amount,
-          startDate: fundingSource.start_date,
-          endDate: fundingSource.end_date,
-          agencyName: fundingSource.agency_name
+          pfs_id: fundingSource.id,
+          funding_amount: fundingSource.funding_amount,
+          funding_start_date: fundingSource.start_date,
+          funding_end_date: fundingSource.end_date,
+          agency_name: fundingSource.agency_name
         });
       });
 

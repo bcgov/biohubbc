@@ -173,6 +173,7 @@ export const deleteOccurrences = async (surveyId: number, connection: IDBConnect
  * @returns {RequestHandler}
  */
 export const publishSurvey = async (surveyId: number, publish: boolean, connection: IDBConnection) => {
+  console.log('publish survey parameters : ', surveyId, publish);
   const sqlStatement = queries.survey.updateSurveyPublishStatusSQL(surveyId, publish);
 
   if (!sqlStatement) {
@@ -182,6 +183,7 @@ export const publishSurvey = async (surveyId: number, publish: boolean, connecti
   const response = await connection.query(sqlStatement.text, sqlStatement.values);
 
   const result = (response && response.rows && response.rows[0]) || null;
+  console.log('result is: ', result);
 
   if (!result) {
     throw new HTTP500('Failed to update survey publish status');
