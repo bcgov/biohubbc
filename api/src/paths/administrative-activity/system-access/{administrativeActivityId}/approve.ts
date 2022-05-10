@@ -28,14 +28,20 @@ export const PUT: Operation = [
   approveAccessRequest()
 ];
 
-const AllUserIdentitySources = Array.from(
+const UniqueUserIdentitySources = Array.from(
   new Set([
-    ...SYSTEM_IDENTITY_SOURCE.IDIR,
-    ...SYSTEM_IDENTITY_SOURCE.BCEID,
+    SYSTEM_IDENTITY_SOURCE.IDIR,
+    SYSTEM_IDENTITY_SOURCE.BCEID,
     ...EXTERNAL_IDIR_IDENTITY_SOURCES,
     ...EXTERNAL_BCEID_IDENTITY_SOURCES
   ])
 );
+
+// Contains both uppercase and lowercase versions of the identity sources
+const AllUserIdentitySources = [
+  ...UniqueUserIdentitySources,
+  ...UniqueUserIdentitySources.map((item) => item.toLowerCase())
+];
 
 PUT.apiDoc = {
   description: "Update a user's system access request and add any specified system roles to the user.",
