@@ -1147,29 +1147,4 @@ export class ProjectService extends DBService {
 
     return new GetProjectData(projectResult, activityResult);
   }
-
-  // async getSpeciesData(projectId: number): Promise<GetSpeciesData> {
-  //   const sqlStatement = SQL`
-  //     SELECT
-  //       wldtaxonomic_units_id
-  //     FROM
-  //       project_species
-  //     WHERE
-  //       project_id = ${projectId};
-  //     `;
-
-  //   const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-  //   const result = (response && response.rows) || null;
-
-  //   if (!result) {
-  //     throw new HTTP400('Failed to get species data');
-  //   }
-
-  //   const taxonomyService = new TaxonomyService();
-
-  //   const species = await taxonomyService.getSpeciesFromIds(result);
-
-  //   return new GetSpeciesData(species);
-  // }
 }

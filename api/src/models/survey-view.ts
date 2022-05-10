@@ -6,62 +6,6 @@ import { GetSurveyPurposeAndMethodologyData } from './survey-view-update';
 
 const defaultLog = getLogger('models/survey-view');
 
-/**
- * Pre-processes GET /project/{projectId}/survey/{surveyId} survey details data for view
- *
- * @export
- * @class GetViewSurveyDetailsData
- */
-// export class GetViewSurveyDetailsData {
-//   id: number;
-//   survey_name: string;
-//   focal_species: number[];
-//   focal_species_names: string[];
-//   ancillary_species: number[];
-//   ancillary_species_names: string[];
-//   start_date: string;
-//   end_date: string;
-//   biologist_first_name: string;
-//   biologist_last_name: string;
-//   survey_area_name: string;
-//   geometry: Feature[];
-//   revision_count: number;
-//   permit_number: string;
-//   permit_type: string;
-//   funding_sources: object[];
-//   completion_status: string;
-//   publish_date: string;
-//   occurrence_submission_id: number;
-
-//   constructor(surveyDetailsData?: any) {
-//     this.id = surveyDetailsData?.id ?? null;
-//     this.occurrence_submission_id = surveyDetailsData?.occurrence_submission_id ?? null;
-//     this.survey_name = surveyDetailsData?.survey_name || '';
-
-//     this.focal_species = surveyDetailsData?.focal_species || [];
-//     this.focal_species_names = surveyDetailsData?.focal_species_names || [];
-//     this.ancillary_species = surveyDetailsData?.ancillary_species || [];
-//     this.ancillary_species_names = surveyDetailsData?.ancillary_species_names || [];
-//     this.start_date = surveyDetailsData?.start_date || '';
-//     this.end_date = surveyDetailsData?.end_date || '';
-//     this.biologist_first_name = surveyDetailsData?.lead_first_name || '';
-//     this.biologist_last_name = surveyDetailsData?.lead_last_name || '';
-//     this.survey_area_name = surveyDetailsData?.location_name || '';
-//     this.geometry = (surveyDetailsData?.geometry?.length && surveyDetailsData.geometry) || [];
-//     this.permit_number = surveyDetailsData?.number || '';
-//     this.permit_type = surveyDetailsData?.type || '';
-//     this.funding_sources = surveyDetailsData?.funding_sources || [];
-//     this.revision_count = surveyDetailsData?.revision_count ?? null;
-//     this.completion_status =
-//       (surveyDetailsData &&
-//         surveyDetailsData.end_date &&
-//         moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
-//         COMPLETION_STATUS.COMPLETED) ||
-//       COMPLETION_STATUS.ACTIVE;
-//     this.publish_date = String(surveyDetailsData?.publish_date || '');
-//   }
-// }
-
 export class GetSpeciesData {
   species: number[];
   species_names: string[];
