@@ -126,10 +126,6 @@ export function publishSurveyAndOccurrences(): RequestHandler {
 
       await connection.open();
 
-      if (!publish) {
-        await deleteOccurrences(surveyId, connection);
-      }
-
       await publishSurvey(surveyId, publish, connection);
 
       await connection.commit();
@@ -144,28 +140,6 @@ export function publishSurveyAndOccurrences(): RequestHandler {
     }
   };
 }
-
-/**
- * Delete all occurrences for a survey.
- *
- * @param {number} surveyId
- * @param {IDBConnection} connection
- */
-export const deleteOccurrences = async (surveyId: number, connection: IDBConnection) => {
-  const occurrenceSubmission = await getSurveyOccurrenceSubmission(surveyId, connection);
-
-  const sqlStatement = queries.survey.deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build delete survey occurrences SQL statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response) {
-    throw new HTTP500('Failed to delete survey occurrences');
-  }
-};
 
 /**
  * Update a survey, marking it as published/unpublished.
@@ -188,27 +162,4 @@ export const publishSurvey = async (surveyId: number, publish: boolean, connecti
   if (!result) {
     throw new HTTP500('Failed to update survey publish status');
   }
-};
-
-/**
- * Get the latest survey occurrence submission.
- *
- * @param {number} surveyId
- * @param {IDBConnection} connection
- * @return {*}
- */
-export const getSurveyOccurrenceSubmission = async (surveyId: number, connection: IDBConnection) => {
-  const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build get survey occurrence submission SQL statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rows.length) {
-    throw new HTTP500('Failed to get survey occurrence submissions');
-  }
-
-  return response.rows[0];
 };
