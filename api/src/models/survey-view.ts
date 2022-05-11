@@ -58,6 +58,7 @@ export class GetSurveyFundingSourcesForView {
   }
 }
 
+//TODO: need to combine this model with GetSurveyFundingSourcesForView.  We shouldn't need both.
 export class GetSurveyFundingSources {
   funding_sources: any[];
 

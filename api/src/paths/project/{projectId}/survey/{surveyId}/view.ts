@@ -185,7 +185,7 @@ GET.apiDoc = {
                 type: 'array',
                 items: {
                   type: 'object',
-                  //required: ['pfs_id', 'agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
+                  required: ['pfs_id', 'agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
                   properties: {
                     pfs_id: {
                       type: 'number',
@@ -215,16 +215,16 @@ GET.apiDoc = {
               purpose_and_methodology: {
                 description: 'Survey Details',
                 type: 'object',
-                // required: [
-                //   'id',
-                //   'field_method_id',
-                //   'additional_details',
-                //   'intended_outcome_id',
-                //   'ecological_season_id',
-                //   'vantage_code_ids',
-                //   'surveyed_all_areas',
-                //   'revision_count'
-                // ],
+                required: [
+                  'id',
+                  'field_method_id',
+                  'additional_details',
+                  'intended_outcome_id',
+                  'ecological_season_id',
+                  'vantage_code_ids',
+                  'surveyed_all_areas',
+                  'revision_count'
+                ],
                 properties: {
                   id: {
                     type: 'number'
@@ -260,21 +260,29 @@ GET.apiDoc = {
                 }
               },
               proprietor: {
-                description: 'Survey Details',
+                description: 'Survey Proprietor Details',
                 type: 'object',
                 nullable: true,
+                required: [
+                  'id',
+                  'category_rationale',
+                  'disa_required',
+                  'first_nations_id',
+                  'first_nations_name',
+                  'proprietor_name',
+                  'proprietor_type_id',
+                  'proprietor_type_name',
+                  'revision_count'
+                ],
                 properties: {
-                  survey_data_proprietary: {
-                    type: 'string'
-                  },
                   id: {
                     type: 'number'
                   },
                   category_rationale: {
                     type: 'string'
                   },
-                  data_sharing_agreement_required: {
-                    type: 'string'
+                  disa_required: {
+                    type: 'boolean'
                   },
                   first_nations_id: {
                     type: 'number',
@@ -284,10 +292,13 @@ GET.apiDoc = {
                     type: 'string',
                     nullable: true
                   },
-                  proprietary_data_category: {
+                  proprietor_name: {
+                    type: 'string'
+                  },
+                  proprietor_type_id: {
                     type: 'number'
                   },
-                  proprietary_data_category_name: {
+                  proprietor_type_name: {
                     type: 'string'
                   },
                   revision_count: {
@@ -299,6 +310,7 @@ GET.apiDoc = {
                 description: 'Occurrence Submission',
                 type: 'object',
                 nullable: true,
+                required: ['id'],
                 properties: {
                   id: {
                     description: 'A survey occurrence submission ID',
@@ -312,6 +324,7 @@ GET.apiDoc = {
                 description: 'Summary Result',
                 type: 'object',
                 nullable: true,
+                required: ['id'],
                 properties: {
                   id: {
                     description: 'A survey summary result ID',
@@ -364,6 +377,8 @@ export function getSurveyForView(): RequestHandler {
 
       const result = await surveyService.getSurveyById(Number(req.params.surveyId));
 
+      console.log('a whole survey: ', result);
+
       await connection.commit();
 
       return res.status(200).json(result);
@@ -375,22 +390,3 @@ export function getSurveyForView(): RequestHandler {
     }
   };
 }
-
-// export const getSurveyFundingSourcesDataForView = async (
-//   surveyId: number,
-//   connection: IDBConnection
-// ): Promise<any[]> => {
-//   const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
-
-//   if (!sqlStatement) {
-//     throw new HTTP400('Failed to build SQL get statement');
-//   }
-
-//   const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-//   if (!response) {
-//     throw new HTTP400('Failed to get survey funding sources data');
-//   }
-
-//   return (response && response.rows) || [];
-// };
