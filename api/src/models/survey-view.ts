@@ -37,6 +37,27 @@ export class GetPermitData {
  * @export
  * @class GetSurveyFundingSources
  */
+export class GetSurveyFundingSourcesForView {
+  constructor(responseData?: any) {
+    defaultLog.debug({ label: 'GetSurveyFundingSourcesForView', message: 'params', responseData });
+
+    const obj = {};
+
+    responseData.forEach((item: any) => {
+      if (!obj[item.pfs_id]) {
+        obj[item.id] = {
+          pfs_id: item.pfs_id,
+          funding_amount: item.funding_amount,
+          funding_start_date: item.funding_start_date,
+          funding_end_date: item.funding_end_date,
+          agency_name: item.agency_name
+        };
+      }
+    });
+    return Object.values(obj);
+  }
+}
+
 export class GetSurveyFundingSources {
   funding_sources: any[];
 
@@ -100,7 +121,7 @@ export type SurveyObject = {
   species: GetFocalSpeciesData & GetAncillarySpeciesData;
   permit: GetPermitData;
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
-  funding_sources: any[];
+  funding_sources: GetSurveyFundingSourcesForView;
   proprietor: any;
   occurrence_submission: number;
   summary_result: number;

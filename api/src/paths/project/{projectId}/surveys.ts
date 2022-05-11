@@ -129,8 +129,6 @@ export function getSurveyList(): RequestHandler {
 
       const surveys = await surveyService.getSurveysByIds(surveyIds);
 
-      console.log('list of surveys: ', surveys);
-
       await connection.commit();
 
       return res.status(200).json(surveys);

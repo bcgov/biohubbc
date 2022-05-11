@@ -6,7 +6,8 @@ import {
   GetSurveyData,
   SurveyObject,
   GetFocalSpeciesData,
-  GetAncillarySpeciesData
+  GetAncillarySpeciesData,
+  GetSurveyFundingSourcesForView
 } from '../models/survey-view';
 import { GetSurveyPurposeAndMethodologyData } from '../models/survey-view-update';
 import { queries } from '../queries/queries';
@@ -132,8 +133,6 @@ export class SurveyService extends DBService {
 
     const result = (response && response.rows[0]) || null;
 
-    console.log('permit result : ', result);
-
     if (!result) {
       throw new HTTP400('Failed to get permit data');
     }
@@ -157,7 +156,7 @@ export class SurveyService extends DBService {
     return (response && response.rows && new GetSurveyPurposeAndMethodologyData(response.rows)[0]) || null;
   }
 
-  async getSurveyFundingSourcesData(surveyId: number): Promise<any[]> {
+  async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSourcesForView> {
     const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
 
     if (!sqlStatement) {
@@ -166,11 +165,13 @@ export class SurveyService extends DBService {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!response) {
+    const result = (response && response.rows) || null;
+
+    if (!result) {
       throw new HTTP400('Failed to get survey funding sources data');
     }
 
-    return (response && response.rows) || null;
+    return new GetSurveyFundingSourcesForView(result);
   }
 
   async getSurveyProprietorDataForView(surveyId: number) {

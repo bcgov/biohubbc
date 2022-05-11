@@ -105,8 +105,6 @@ export function getSurveyPermits(): RequestHandler {
 
       const getSurveyPermitsData = new GetPermitData(result);
 
-      console.log('getSurveyPermitsData: ', getSurveyPermitsData);
-
       if (!getSurveyPermitsData) {
         return res.status(200).json(null);
       }

@@ -65,61 +65,31 @@ GET.apiDoc = {
               'permit',
               'funding_sources',
               'purpose_and_methodology',
-              'proprietor'
+              'proprietor',
+              'occurrence_submission',
+              'summary_result'
             ],
             properties: {
               survey_details: {
                 description: 'Survey Details',
                 type: 'object',
-                // required: [
-                //   'id',
-                //   'occurrence_submission_id',
-                //   'focal_species',
-                //   'focal_species_names',
-                //   'ancillary_species',
-                //   'ancillary_species_names',
-                //   'biologist_first_name',
-                //   'biologist_last_name',
-                //   'completion_status',
-                //   'start_date',
-                //   'end_date',
-                //   'funding_sources',
-                //   'geometry',
-                //   'permit_number',
-                //   'permit_type',
-                //   'publish_date',
-                //   'revision_count',
-                //   'survey_area_name',
-                //   'survey_name'
-                // ],
+                required: [
+                  'id',
+                  'biologist_first_name',
+                  'biologist_last_name',
+                  'completion_status',
+                  'start_date',
+                  'end_date',
+                  'geometry',
+                  'publish_date',
+                  'publish_status',
+                  'survey_area_name',
+                  'survey_name'
+                ],
                 properties: {
                   id: {
                     description: 'Survey id',
                     type: 'number'
-                  },
-                  ancillary_species: {
-                    type: 'array',
-                    items: {
-                      type: 'number'
-                    }
-                  },
-                  ancillary_species_names: {
-                    type: 'array',
-                    items: {
-                      type: 'string'
-                    }
-                  },
-                  focal_species: {
-                    type: 'array',
-                    items: {
-                      type: 'number'
-                    }
-                  },
-                  focal_species_names: {
-                    type: 'array',
-                    items: {
-                      type: 'string'
-                    }
                   },
                   biologist_first_name: {
                     type: 'string'
@@ -140,32 +110,19 @@ GET.apiDoc = {
                     format: 'date',
                     description: 'ISO 8601 date string for the funding end_date'
                   },
-
                   geometry: {
                     type: 'array',
                     items: {
                       ...(geoJsonFeature as object)
                     }
                   },
-                  occurrence_submission_id: {
-                    description: 'A survey occurrence submission ID',
-                    type: 'number',
-                    nullable: true,
-                    example: 1
-                  },
-                  permit_number: {
-                    type: 'string'
-                  },
-                  permit_type: {
-                    type: 'string'
-                  },
                   publish_date: {
                     oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                     nullable: true,
                     description: 'Determines if the record has been published'
                   },
-                  revision_count: {
-                    type: 'number'
+                  publish_status: {
+                    type: 'string'
                   },
                   survey_area_name: {
                     type: 'string'
@@ -176,41 +133,19 @@ GET.apiDoc = {
                 }
               },
               species: {
-                description: 'Survey Details',
+                description: 'Survey Species',
                 type: 'object',
-                // required: [
-                //   'id',
-                //   'occurrence_submission_id',
-                //   'focal_species',
-                //   'focal_species_names',
-                //   'ancillary_species',
-                //   'ancillary_species_names',
-                //   'biologist_first_name',
-                //   'biologist_last_name',
-                //   'completion_status',
-                //   'start_date',
-                //   'end_date',
-                //   'funding_sources',
-                //   'geometry',
-                //   'permit_number',
-                //   'permit_type',
-                //   'publish_date',
-                //   'revision_count',
-                //   'survey_area_name',
-                //   'survey_name'
-                // ],
+                required: ['focal_species', 'focal_species_names', 'ancillary_species', 'ancillary_species_names'],
                 properties: {
-                  id: {
-                    description: 'Survey id',
-                    type: 'number'
-                  },
                   ancillary_species: {
+                    nullable: true,
                     type: 'array',
                     items: {
                       type: 'number'
                     }
                   },
                   ancillary_species_names: {
+                    nullable: true,
                     type: 'array',
                     items: {
                       type: 'string'
@@ -227,117 +162,13 @@ GET.apiDoc = {
                     items: {
                       type: 'string'
                     }
-                  },
-                  biologist_first_name: {
-                    type: 'string'
-                  },
-                  biologist_last_name: {
-                    type: 'string'
-                  },
-                  completion_status: {
-                    type: 'string'
-                  },
-                  start_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the funding end_date'
-                  },
-                  end_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the funding end_date'
-                  },
-                  funding_sources: {
-                    type: 'array',
-                    items: {
-                      title: 'survey funding agency',
-                      type: 'object',
-                      required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
-                      properties: {
-                        pfs_id: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        agency_name: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        funding_amount: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        funding_start_date: {
-                          type: 'string',
-                          nullable: true,
-                          description: 'ISO 8601 date string'
-                        },
-                        funding_end_date: {
-                          type: 'string',
-                          nullable: true,
-                          description: 'ISO 8601 date string'
-                        }
-                      }
-                    }
-                  },
-
-                  geometry: {
-                    type: 'array',
-                    items: {
-                      ...(geoJsonFeature as object)
-                    }
-                  },
-                  occurrence_submission_id: {
-                    description: 'A survey occurrence submission ID',
-                    type: 'number',
-                    nullable: true,
-                    example: 1
-                  },
-                  permit_number: {
-                    type: 'string'
-                  },
-                  permit_type: {
-                    type: 'string'
-                  },
-                  publish_date: {
-                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                    nullable: true,
-                    description: 'Determines if the record has been published'
-                  },
-                  revision_count: {
-                    type: 'number'
-                  },
-                  survey_area_name: {
-                    type: 'string'
-                  },
-                  survey_name: {
-                    type: 'string'
                   }
                 }
               },
               permit: {
-                description: 'Survey Details',
+                description: 'Survey Permit',
                 type: 'object',
-                // required: [
-                //   'id',
-                //   'occurrence_submission_id',
-                //   'focal_species',
-                //   'focal_species_names',
-                //   'ancillary_species',
-                //   'ancillary_species_names',
-                //   'biologist_first_name',
-                //   'biologist_last_name',
-                //   'completion_status',
-                //   'start_date',
-                //   'end_date',
-                //   'funding_sources',
-                //   'geometry',
-                //   'permit_number',
-                //   'permit_type',
-                //   'publish_date',
-                //   'revision_count',
-                //   'survey_area_name',
-                //   'survey_name'
-                // ],
+                required: ['permit_number', 'permit_type'],
                 properties: {
                   permit_number: {
                     type: 'string',
@@ -350,10 +181,11 @@ GET.apiDoc = {
                 }
               },
               funding_sources: {
-                description: 'Survey Details',
+                description: 'Survey Funding Sources',
                 type: 'array',
-                nullable: true,
                 items: {
+                  type: 'object',
+                  //required: ['pfs_id', 'agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
                   properties: {
                     pfs_id: {
                       type: 'number',
@@ -377,141 +209,6 @@ GET.apiDoc = {
                       nullable: true,
                       description: 'ISO 8601 date string'
                     }
-                  }
-                },
-                // required: [
-                //   'id',
-                //   'occurrence_submission_id',
-                //   'focal_species',
-                //   'focal_species_names',
-                //   'ancillary_species',
-                //   'ancillary_species_names',
-                //   'biologist_first_name',
-                //   'biologist_last_name',
-                //   'completion_status',
-                //   'start_date',
-                //   'end_date',
-                //   'funding_sources',
-                //   'geometry',
-                //   'permit_number',
-                //   'permit_type',
-                //   'publish_date',
-                //   'revision_count',
-                //   'survey_area_name',
-                //   'survey_name'
-                // ],
-                properties: {
-                  id: {
-                    description: 'Survey id',
-                    type: 'number'
-                  },
-                  ancillary_species: {
-                    type: 'array',
-                    items: {
-                      type: 'number'
-                    }
-                  },
-                  ancillary_species_names: {
-                    type: 'array',
-                    items: {
-                      type: 'string'
-                    }
-                  },
-                  focal_species: {
-                    type: 'array',
-                    items: {
-                      type: 'number'
-                    }
-                  },
-                  focal_species_names: {
-                    type: 'array',
-                    items: {
-                      type: 'string'
-                    }
-                  },
-                  biologist_first_name: {
-                    type: 'string'
-                  },
-                  biologist_last_name: {
-                    type: 'string'
-                  },
-                  completion_status: {
-                    type: 'string'
-                  },
-                  start_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the funding end_date'
-                  },
-                  end_date: {
-                    type: 'string',
-                    format: 'date',
-                    description: 'ISO 8601 date string for the funding end_date'
-                  },
-                  funding_sources: {
-                    type: 'array',
-                    items: {
-                      title: 'survey funding agency',
-                      type: 'object',
-                      required: ['agency_name', 'funding_amount', 'funding_start_date', 'funding_end_date'],
-                      properties: {
-                        pfs_id: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        agency_name: {
-                          type: 'string',
-                          nullable: true
-                        },
-                        funding_amount: {
-                          type: 'number',
-                          nullable: true
-                        },
-                        funding_start_date: {
-                          type: 'string',
-                          nullable: true,
-                          description: 'ISO 8601 date string'
-                        },
-                        funding_end_date: {
-                          type: 'string',
-                          nullable: true,
-                          description: 'ISO 8601 date string'
-                        }
-                      }
-                    }
-                  },
-
-                  geometry: {
-                    type: 'array',
-                    items: {
-                      ...(geoJsonFeature as object)
-                    }
-                  },
-                  occurrence_submission_id: {
-                    description: 'A survey occurrence submission ID',
-                    type: 'number',
-                    nullable: true,
-                    example: 1
-                  },
-                  permit_number: {
-                    type: 'string'
-                  },
-                  permit_type: {
-                    type: 'string'
-                  },
-                  publish_date: {
-                    oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                    nullable: true,
-                    description: 'Determines if the record has been published'
-                  },
-                  revision_count: {
-                    type: 'number'
-                  },
-                  survey_area_name: {
-                    type: 'string'
-                  },
-                  survey_name: {
-                    type: 'string'
                   }
                 }
               },
@@ -595,6 +292,32 @@ GET.apiDoc = {
                   },
                   revision_count: {
                     type: 'number'
+                  }
+                }
+              },
+              occurrence_submission: {
+                description: 'Occurrence Submission',
+                type: 'object',
+                nullable: true,
+                properties: {
+                  id: {
+                    description: 'A survey occurrence submission ID',
+                    type: 'number',
+                    nullable: true,
+                    example: 1
+                  }
+                }
+              },
+              summary_result: {
+                description: 'Summary Result',
+                type: 'object',
+                nullable: true,
+                properties: {
+                  id: {
+                    description: 'A survey summary result ID',
+                    type: 'number',
+                    nullable: true,
+                    example: 1
                   }
                 }
               }

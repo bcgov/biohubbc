@@ -28,8 +28,6 @@ import React, { useContext } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
-
-
 const useStyles = makeStyles((theme: Theme) => ({
   surveyNav: {
     minWidth: '15rem',
