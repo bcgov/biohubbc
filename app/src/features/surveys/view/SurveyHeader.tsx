@@ -90,8 +90,6 @@ export interface ISurveyHeaderProps {
 const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   const { projectWithDetails, surveyWithDetails, refresh } = props;
 
-  console.log('surveywithDetails :', surveyWithDetails);
-
   const classes = useStyles();
   const history = useHistory();
   const urlParams = useParams();

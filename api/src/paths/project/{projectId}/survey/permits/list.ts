@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
+import { GetPermitData } from '../../../../../models/project-view';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
 import { getLogger } from '../../../../../utils/logger';
@@ -53,10 +54,10 @@ GET.apiDoc = {
               title: 'Survey permit Get Response Object',
               type: 'object',
               properties: {
-                number: {
+                permit_number: {
                   type: 'string'
                 },
-                type: {
+                permit_type: {
                   type: 'string'
                 }
               }
@@ -96,16 +97,21 @@ export function getSurveyPermits(): RequestHandler {
 
       await connection.open();
 
-      const surveyPermitsData = await connection.query(
-        getSurveyPermitsSQLStatement.text,
-        getSurveyPermitsSQLStatement.values
-      );
+      const response = await connection.query(getSurveyPermitsSQLStatement.text, getSurveyPermitsSQLStatement.values);
 
       await connection.commit();
 
-      const getSurveyPermitsData = (surveyPermitsData && surveyPermitsData.rows) || null;
+      const result = (response && response.rows) || null;
 
-      return res.status(200).json(getSurveyPermitsData);
+      const getSurveyPermitsData = new GetPermitData(result);
+
+      console.log('getSurveyPermitsData: ', getSurveyPermitsData);
+
+      if (!getSurveyPermitsData) {
+        return res.status(200).json(null);
+      }
+
+      return res.status(200).json(getSurveyPermitsData.permits);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyPermits', message: 'error', error });
       await connection.rollback();
