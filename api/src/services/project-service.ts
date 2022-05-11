@@ -1,5 +1,4 @@
 import moment from 'moment';
-//import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { HTTP400, HTTP409, HTTP500 } from '../errors/custom-error';
