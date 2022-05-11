@@ -196,23 +196,6 @@ export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatem
   `;
 };
 
-// export const getSurveyAncillarySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
-//   if (!surveyId) {
-//     return null;
-//   }
-
-//   return SQL`
-//     SELECT
-//       wldtaxonomic_units_id
-//     FROM
-//       study_species
-//     WHERE
-//       survey_id = ${surveyId}
-//     AND
-//       is_focal = FALSE;
-//     `;
-// };
-
 export const getLatestOccurrenceSubmissionIdSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;

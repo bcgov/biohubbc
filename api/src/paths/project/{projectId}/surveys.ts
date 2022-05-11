@@ -3,6 +3,7 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../constants/roles';
 import { getDBConnection } from '../../../database/db';
 import { HTTP400 } from '../../../errors/custom-error';
+import { survey200GetResponseObject } from '../../../openapi/schemas/survey';
 import { authorizeRequestHandler } from '../../../request-handlers/security/authorization';
 import { SurveyService } from '../../../services/survey-service';
 import { getLogger } from '../../../utils/logger';
@@ -44,45 +45,13 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Survey response object.',
+      description: 'Survey list response object.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
-              title: 'Survey Response Object',
-              type: 'object',
-              properties: {
-                // survey: {
-                //   type: 'object',
-                //   properties: {
-                //     id: {
-                //       type: 'number'
-                //     },
-                //     name: {
-                //       type: 'string'
-                //     },
-                //     publish_status: {
-                //       type: 'string'
-                //     },
-                //     completion_status: {
-                //       type: 'string'
-                //     },
-                //     start_date: {
-                //       type: 'string',
-                //       description: 'ISO 8601 date string'
-                //     },
-                //     end_date: {
-                //       type: 'string',
-                //       description: 'ISO 8601 date string',
-                //       nullable: true
-                //     }
-                //   }
-                // },
-                // species: {
-                //   type: 'object'
-                // }
-              }
+              ...(survey200GetResponseObject as object)
             }
           }
         }

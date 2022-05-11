@@ -66,7 +66,7 @@ GET.apiDoc = {
                 funding_end_date: {
                   type: 'string'
                 },
-                agency_ame: {
+                agency_name: {
                   type: 'string'
                 }
               }
