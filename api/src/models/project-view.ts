@@ -52,7 +52,7 @@ export class GetProjectData {
     this.completion_status =
       (projectData &&
         projectData.end_date &&
-        DateTime.fromObject(projectData.end_date).endOf('day') < DateTime.now() &&
+        DateTime.fromJSDate(new Date(projectData.end_date)).endOf('day') < DateTime.now() &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
     this.publish_date = String(projectData?.publish_date || '');

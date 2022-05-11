@@ -59,7 +59,7 @@ export class GetUpdateSurveyDetailsData {
     this.completion_status =
       (surveyDetailsData &&
         surveyDetailsData.end_date &&
-        DateTime.fromObject(surveyDetailsData.end_date).endOf('day') < DateTime.now() &&
+        DateTime.fromJSDate(new Date(surveyDetailsData.end_date)).endOf('day') < DateTime.now() &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
     this.publish_date = String(surveyDetailsData?.publish_date || '');
