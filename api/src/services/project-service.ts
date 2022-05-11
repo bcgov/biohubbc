@@ -1,4 +1,4 @@
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import SQL from 'sql-template-strings';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
@@ -166,7 +166,7 @@ export class ProjectService extends DBService {
       end_date: row.end_date,
       coordinator_agency: row.coordinator_agency,
       completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
+        (row.end_date && DateTime.fromObject(row.end_date).endOf('day') < DateTime.now() && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
       project_type: row.project_type,
       permits_list: row.permits_list
@@ -228,7 +228,7 @@ export class ProjectService extends DBService {
       coordinator_agency: row.coordinator_agency_name,
       publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
       completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
+        (row.end_date && DateTime.fromObject(row.end_date).endOf('day') < DateTime.now() && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
       project_type: row.project_type,
       permits_list: row.permits_list

@@ -1,5 +1,6 @@
 import { Feature } from 'geojson';
-import moment from 'moment';
+import { DateTime } from 'luxon';
+
 import { COMPLETION_STATUS } from '../constants/status';
 import { getLogger } from '../utils/logger';
 
@@ -51,7 +52,7 @@ export class GetProjectData {
     this.completion_status =
       (projectData &&
         projectData.end_date &&
-        moment(projectData.end_date).endOf('day').isBefore(moment()) &&
+        DateTime.fromObject(projectData.end_date).endOf('day') < DateTime.now() &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
     this.publish_date = String(projectData?.publish_date || '');

@@ -1,5 +1,6 @@
 import { Feature } from 'geojson';
-import moment from 'moment';
+import { DateTime } from 'luxon';
+
 import { COMPLETION_STATUS } from '../constants/status';
 import { getLogger } from '../utils/logger';
 
@@ -64,7 +65,7 @@ export class GetViewSurveyDetailsData {
     this.completion_status =
       (surveyDetailsData &&
         surveyDetailsData.end_date &&
-        moment(surveyDetailsData.end_date).endOf('day').isBefore(moment()) &&
+        DateTime.fromObject(surveyDetailsData.end_date).endOf('day') < DateTime.now() &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
     this.publish_date = String(surveyDetailsData?.publish_date || '');
@@ -168,7 +169,7 @@ export class GetSurveyData {
     this.publish_status = surveyData?.publish_timestamp ? 'Published' : 'Unpublished';
     this.completion_status =
       (surveyData.end_date &&
-        moment(surveyData.end_date).endOf('day').isBefore(moment()) &&
+        DateTime.fromObject(surveyData.end_date).endOf('day') < DateTime.now() &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
   }
