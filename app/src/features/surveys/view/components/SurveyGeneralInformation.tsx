@@ -32,7 +32,7 @@ import {
   SurveyPermits,
   UPDATE_GET_SURVEY_ENTITIES
 } from 'interfaces/useSurveyApi.interface';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
 import yup from 'utils/YupSchema';
@@ -203,7 +203,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 )}`
               )
               .isAfterDate(
-                moment(DATE_LIMIT.min).toISOString(),
+                DateTime.fromFormat(DATE_LIMIT.min, 'yyyy-MM-dd').toISO(),
                 DATE_FORMAT.ShortDateFormat,
                 `Survey start date cannot be before ${getFormattedDate(
                   DATE_FORMAT.ShortMediumDateFormat,
@@ -224,7 +224,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                 )}`
               )
               .isBeforeDate(
-                moment(DATE_LIMIT.max).toISOString(),
+                DateTime.fromFormat(DATE_LIMIT.max, 'yyyy-MM-dd').toISO(),
                 DATE_FORMAT.ShortDateFormat,
                 `Survey end date cannot be after ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.max)}`
               )

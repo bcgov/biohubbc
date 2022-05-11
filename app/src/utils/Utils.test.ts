@@ -54,7 +54,7 @@ describe('getFormattedAmount', () => {
 
 describe('getFormattedDate', () => {
   beforeAll(() => {
-    // ignore warning about invalid date string being passed to moment
+    // ignore warning about invalid date string being passed to luxon
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 
@@ -73,7 +73,7 @@ describe('getFormattedDate', () => {
 
 describe('getFormattedDateRangeString', () => {
   beforeAll(() => {
-    // ignore warning about invalid date string being passed to moment
+    // ignore warning about invalid date string being passed to luxon
     jest.spyOn(console, 'warn').mockImplementation(() => {});
   });
 

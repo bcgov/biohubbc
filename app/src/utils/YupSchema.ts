@@ -4,7 +4,7 @@
  */
 
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import * as yup from 'yup';
 
 yup.addMethod(yup.array, 'isUniquePermitNumber', function (message: string) {
@@ -68,7 +68,7 @@ yup.addMethod(
         return true;
       }
 
-      return moment(value, dateFormat, true).isValid();
+      return DateTime.fromFormat(value, dateFormat).isValid;
     });
   }
 );
@@ -83,11 +83,11 @@ yup.addMethod(
         return true;
       }
 
-      const endDateTime = moment(`2020-10-20 ${this.parent.end_time}`, DATE_FORMAT.ShortDateTimeFormat);
-      const startDateTime = moment(`2020-10-20 ${this.parent[startTimeName]}`, DATE_FORMAT.ShortDateTimeFormat);
+      const endDateTime = DateTime.fromFormat(`2020-10-20 ${this.parent.end_time}`, DATE_FORMAT.ShortDateTimeFormat);
+      const startDateTime = DateTime.fromFormat(`2020-10-20 ${this.parent[startTimeName]}`, DATE_FORMAT.ShortDateTimeFormat);
 
       // compare valid start and end times
-      return startDateTime.isBefore(endDateTime);
+      return startDateTime < endDateTime;
     });
   }
 );
@@ -106,13 +106,13 @@ yup.addMethod(
         return true;
       }
 
-      if (!moment(this.parent[startDateName], dateFormat, true).isValid()) {
+      if (!DateTime.fromFormat(this.parent[startDateName], dateFormat).isValid) {
         // don't validate start_date if it is invalid
         return true;
       }
 
       // compare valid start and end dates
-      return moment(this.parent.start_date, dateFormat, true).isBefore(moment(value, dateFormat, true));
+      return DateTime.fromFormat(this.parent.start_date, dateFormat) < DateTime.fromFormat(value, dateFormat);
     });
   }
 );
@@ -131,13 +131,13 @@ yup.addMethod(
         return true;
       }
 
-      if (!moment(this.parent[startDateName], dateFormat, true).isValid()) {
+      if (!DateTime.fromFormat(this.parent[startDateName], dateFormat).isValid) {
         // don't validate start_date if it is invalid
         return true;
       }
 
       // compare valid start and end dates
-      return moment(this.parent.start_date, dateFormat, true).isSameOrBefore(moment(value, dateFormat, true));
+      return DateTime.fromFormat(this.parent.start_date, dateFormat) <= DateTime.fromFormat(value, dateFormat);
     });
   }
 );
@@ -152,7 +152,7 @@ yup.addMethod(
         return true;
       }
 
-      if (moment(value, dateFormat).isAfter(moment(maxDate))) {
+      if (DateTime.fromFormat(value, dateFormat) > DateTime.fromJSDate(new Date(maxDate))) {
         return false;
       }
 
@@ -171,7 +171,7 @@ yup.addMethod(
         return true;
       }
 
-      if (moment(value, dateFormat).isBefore(moment(minDate))) {
+      if (DateTime.fromFormat(value, dateFormat) < DateTime.fromJSDate(new Date(minDate))) {
         return false;
       }
 

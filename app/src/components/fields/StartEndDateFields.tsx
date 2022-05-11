@@ -2,7 +2,7 @@ import Grid from '@material-ui/core/Grid';
 import TextField from '@material-ui/core/TextField';
 import { DATE_FORMAT, DATE_LIMIT } from 'constants/dateTimeFormats';
 import get from 'lodash-es/get';
-import moment from 'moment';
+import { DateTime } from 'luxon';
 import React from 'react';
 
 interface IStartEndDateFieldsProps {
@@ -33,16 +33,20 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
   const rawStartDateValue = get(values, startName);
   const rawEndDateValue = get(values, endName);
 
+  // console.log('$rawStartDateValue:', rawStartDateValue)
+  // console.log('$fromiso:', DateTime.fromISO(rawStartDateValue))
+
   const formattedStartDateValue =
     (rawStartDateValue &&
-      moment(rawStartDateValue).isValid() &&
-      moment(rawStartDateValue).format(DATE_FORMAT.ShortDateFormat)) ||
+      DateTime.fromJSDate(new Date(rawStartDateValue), { zone: 'utc' }).isValid &&
+      DateTime.fromJSDate(new Date(rawStartDateValue), { zone: 'utc' }).toFormat(DATE_FORMAT.ShortDateFormat)) ||
     '';
+  // console.log('$formatted:', formattedStartDateValue)
 
   const formattedEndDateValue =
     (rawEndDateValue &&
-      moment(rawEndDateValue).isValid() &&
-      moment(rawEndDateValue).format(DATE_FORMAT.ShortDateFormat)) ||
+       DateTime.fromJSDate(new Date(rawEndDateValue), { zone: 'utc' }).isValid &&
+      DateTime.fromJSDate(new Date(rawEndDateValue), { zone: 'utc' }).toFormat(DATE_FORMAT.ShortDateFormat)) ||
     '';
 
   return (

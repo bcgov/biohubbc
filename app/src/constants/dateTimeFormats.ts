@@ -4,17 +4,18 @@
  * See BC Gov standards: https://www2.gov.bc.ca/gov/content/governments/services-for-government/policies-procedures/web-content-development-guides/writing-for-the-web/web-style-guide/numbers
  */
 export enum DATE_FORMAT {
-  ShortDateFormat = 'YYYY-MM-DD', //2020-01-05
-  ShortDateFormatMonthFirst = 'MM/DD/YYYY', //01/05/2020
-  ShortDateTimeFormat = 'YYYY-MM-DD, h:mm a', //2020-01-05, 3:30 pm
-  ShortMediumDateFormat = 'MMM D, YYYY', //Jan 5, 2020
-  ShortMediumDateFormat2 = 'MMMM DD, YYYY', //Jan 05, 2020
-  ShortMediumDateTimeFormat = 'MMM D, YYYY, h:mm a', //Jan 5, 2020, 3:30 pm
-  MediumDateFormat = 'MMMM D, YYYY', //January 5, 2020
-  MediumDateFormat2 = 'MMMM-DD-YYYY', //January-5-2020
-  MediumDateTimeFormat = 'MMMM D, YYYY, h:mm a', //January 5, 2020, 3:30 pm
-  LongDateFormat = 'dddd, MMMM D, YYYY, h:mm a', //Monday, January 5, 2020, 3:30 pm
-  LongDateTimeFormat = 'dddd, MMMM D, YYYY, h:mm a' //Monday, January 5, 2020, 3:30 pm
+  ShortDateFormat = 'yyyy-MM-dd', //2020-01-05
+  ShortDateFormatMonthFirst = 'MM/dd/yyyy', //01/05/2020
+  ShortDateTimeFormat = 'yyyy-MM-dd, h:mm a', //2020-01-05, 3:30 pm
+  ShortMediumDateFormat = 'MMM d, yyyy', //Jan 5, 2020
+  /* Incorrect representation */
+  ShortMediumDateFormat2 = 'MMMM dd, yyyy', //Jan 05, 2020
+  ShortMediumDateTimeFormat = 'MMM d, yyyy, h:mm a', //Jan 5, 2020, 3:30 pm
+  MediumDateFormat = 'MMMM d, yyyy', //January 5, 2020
+  MediumDateFormat2 = 'MMMM-dd-yyyy', //January-5-2020
+  MediumDateTimeFormat = 'MMMM d, yyyy, h:mm a', //January 5, 2020, 3:30 pm
+  LongDateFormat = 'EEEE, MMMM d, yyyy, h:mm a', //Monday, January 5, 2020, 3:30 pm
+  LongDateTimeFormat = 'EEEE, MMMM d, yyyy, h:mm a' //Monday, January 5, 2020, 3:30 pm
 }
 
 /**
