@@ -51,8 +51,8 @@ export const getFormattedDateRangeString = (
  * @return {string} formatted date string, or an empty string if unable to parse the date
  */
 export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string => {
-  // console.log(`${date} => $${dateFormat}$`)
-  const dateTime = DateTime.fromJSDate(new Date(date), { zone: 'utc' });
+  const dateTime = DateTime.fromJSDate(new Date(date), { zone: 'utc' }).toLocal();
+  console.log(`${date} => $${dateFormat}$ =>`, dateTime)
 
   if (!dateTime.isValid) {
     return '';
@@ -69,7 +69,7 @@ export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string 
  * @return {string} formatted time string, or an empty string if unable to parse the date
  */
 export const getFormattedTime = (timeFormat: TIME_FORMAT, date: string): string => {
-  const dateTime = DateTime.fromJSDate(new Date(date), { zone: 'utc' });
+  const dateTime = DateTime.fromJSDate(new Date(date), { zone: 'utc' }).toLocal();
 
   if (!dateTime.isValid) {
     return '';
