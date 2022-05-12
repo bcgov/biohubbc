@@ -12,8 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     env:
       BUILD_ID: ${{ github.event.number }}
-    needs:
-      - checkEnv
     steps:
       # Log in to OpenShift.
       # Note: The secrets needed to log in are NOT available if the PR comes from a FORK.
