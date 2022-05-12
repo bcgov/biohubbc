@@ -31,6 +31,14 @@ export class GetPermitData {
   }
 }
 
+interface IGetSurveyFundingSource {
+  pfs_id: number;
+  agency_name: string;
+  funding_amount: number;
+  funding_start_date: string;
+  funding_end_date: string;
+}
+
 /**
  * Pre-processes GET survey funding sources list data
  *
@@ -38,23 +46,26 @@ export class GetPermitData {
  * @class GetSurveyFundingSources
  */
 export class GetSurveyFundingSourcesForView {
-  constructor(responseData?: any) {
-    defaultLog.debug({ label: 'GetSurveyFundingSourcesForView', message: 'params', responseData });
+  funding_sources: IGetSurveyFundingSource[];
 
-    const obj = {};
+  constructor(fundingData?: any[]) {
+    defaultLog.debug({ label: 'GetSurveyFundingSources', message: 'params', fundingData });
 
-    responseData.forEach((item: any) => {
-      if (!obj[item.pfs_id]) {
-        obj[item.id] = {
-          pfs_id: item.pfs_id,
-          funding_amount: item.funding_amount,
-          funding_start_date: item.funding_start_date,
-          funding_end_date: item.funding_end_date,
-          agency_name: item.agency_name
-        };
-      }
-    });
-    return Object.values(obj);
+    console.log('fundingData is: ', fundingData);
+
+    this.funding_sources =
+      (fundingData &&
+        fundingData.map((item: any) => {
+          return {
+            pfs_id: item.pfs_id,
+            funding_amount: item.funding_amount,
+            funding_start_date: item.funding_start_date,
+            funding_end_date: item.funding_end_date,
+            agency_name: item.agency_name
+          };
+        })) ||
+      [];
+    console.log('funding_sources is: ', this.funding_sources);
   }
 }
 

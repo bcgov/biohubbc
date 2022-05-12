@@ -173,7 +173,7 @@ export class SurveyService extends DBService {
       throw new HTTP400('Failed to get survey funding sources data');
     }
 
-    return new GetSurveyFundingSourcesForView(result);
+    return new GetSurveyFundingSourcesForView(result).funding_sources;
   }
 
   async getSurveyProprietorDataForView(surveyId: number) {
