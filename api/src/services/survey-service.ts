@@ -140,7 +140,7 @@ export class SurveyService extends DBService {
     return new GetPermitData(result);
   }
 
-  async getSurveyPurposeAndMethodology(surveyId: number): Promise<object> {
+  async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
 
     if (!sqlStatement) {
@@ -149,11 +149,13 @@ export class SurveyService extends DBService {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    if (!response || !response?.rows?.[0]) {
+    const result = (response && response.rows[0]) || null;
+
+    if (!result) {
       throw new HTTP400('Failed to get survey purpose and methodology data');
     }
 
-    return (response && response.rows && new GetSurveyPurposeAndMethodologyData(response.rows)[0]) || null;
+    return new GetSurveyPurposeAndMethodologyData(result);
   }
 
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSourcesForView> {

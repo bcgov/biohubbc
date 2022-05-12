@@ -112,6 +112,7 @@ export const survey200GetResponseObject = {
     permit: {
       description: 'Survey Permit',
       type: 'object',
+      nullable: true,
       required: ['permit_number', 'permit_type'],
       properties: {
         permit_number: {

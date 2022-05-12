@@ -41,6 +41,15 @@ export class GetSurveyProprietorData {
 }
 
 export class GetSurveyPurposeAndMethodologyData {
+  id: number;
+  intended_outcome_id: number;
+  additional_details: string;
+  field_method_id: number;
+  ecological_season_id: number;
+  revision_count: number;
+  vantage_code_ids: number[];
+  surveyed_all_areas: string;
+
   constructor(responseData?: any) {
     defaultLog.debug({
       label: 'GetSurveyPurposeAndMethodologyData',
@@ -48,24 +57,13 @@ export class GetSurveyPurposeAndMethodologyData {
       data: responseData
     });
 
-    const obj = {};
-
-    responseData.forEach((item: any) => {
-      if (!obj[item.id]) {
-        obj[item.id] = {
-          id: item.id,
-          intended_outcome_id: item.intended_outcome_id,
-          additional_details: item.additional_details,
-          field_method_id: item.field_method_id,
-          ecological_season_id: item.ecological_season_id,
-          revision_count: item.revision_count,
-          vantage_code_ids: (item.vantage_id && [item.vantage_id]) || [],
-          surveyed_all_areas: (item.surveyed_all_areas && 'true') || 'false'
-        };
-      } else {
-        obj[item.id].vantage_code_ids.push(item.vantage_id);
-      }
-    });
-    return Object.values(obj);
+    this.id = responseData.id ?? null;
+    this.intended_outcome_id = responseData.intended_outcome_id ?? null;
+    this.additional_details = responseData.additional_details;
+    this.field_method_id = responseData.field_method_id ?? null;
+    this.ecological_season_id = responseData.ecological_season_id ?? null;
+    this.revision_count = responseData.revision_count ?? 0;
+    this.vantage_code_ids = (responseData?.vantage_ids?.length && responseData.vantage_code_ids) || [];
+    this.surveyed_all_areas = (responseData.surveyed_all_areas && 'true') || 'false';
   }
 }
