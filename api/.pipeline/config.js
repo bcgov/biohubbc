@@ -82,6 +82,7 @@ const phases = {
     appHost:
     (isStaticDeployment && (staticUrls.dev || defaultHostAPP)) ||
       `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
+    backboneApiHost: 'https://api-dev-platform.apps.silver.devops.gov.bc.ca/api',
     env: 'dev',
     elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
@@ -101,6 +102,8 @@ const phases = {
     version: `${version}`,
     tag: `test-${version}`,
     host: staticUrlsAPI.test,
+    appHost: staticUrls.test,
+    backboneApiHost: 'https://api-dev-platform.apps.silver.devops.gov.bc.ca/api',
     env: 'test',
     elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
@@ -120,6 +123,8 @@ const phases = {
     version: `${version}`,
     tag: `prod-${version}`,
     host: staticUrlsAPI.prod,
+    appHost: staticUrls.prod,
+    backboneApiHost: 'https://api-dev-platform.apps.silver.devops.gov.bc.ca/api',
     env: 'prod',
     elasticsearchURL: 'http://es01:9200',
     tz: config.timezone.api,
