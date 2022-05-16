@@ -350,7 +350,7 @@ objects:
       wildcardPolicy: None
     status:
       ingress: null
-  - apiVersion: autoscaling/v1
+  - apiVersion: autoscaling/v2beta2
     kind: HorizontalPodAutoscaler
     metadata:
       annotations: {}
@@ -358,11 +358,22 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
-      maxReplicas: '${{REPLICA_MAX}}'
-      minReplicas: '${{REPLICAS}}'
       scaleTargetRef:
-        apiVersion: v1
         kind: DeploymentConfig
         name: ${NAME}${SUFFIX}
-      cpuUtilization:
-        targetPercentage: 95
+        apiVersion: apps.openshift.io/v1
+      minReplicas: '${{REPLICAS}}'
+      maxReplicas: '${{REPLICA_MAX}}'
+      metrics:
+        - type: Resource
+          resource:
+            name: memory
+            target:
+              type: Utilization
+              averageUtilization: 90
+        - type: Resource
+          resource:
+            name: cpu
+            target:
+              type: Utilization
+              averageUtilization: 95
