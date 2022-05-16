@@ -87,7 +87,7 @@ const phases = {
     tz: config.timezone.api,
     certificateURL: config.certificateURL.dev,
     replicas: 1,
-    maxReplicas: 2,
+    maxReplicas: 1,
     logLevel: isStaticDeployment && 'info' || 'debug'
   },
   test: {
@@ -102,7 +102,7 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrlsAPI.test,
     env: 'test',
-    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
+    elasticsearchURL: 'http://es01:9200',
     tz: config.timezone.api,
     certificateURL: config.certificateURL.test,
     replicas: 3,
