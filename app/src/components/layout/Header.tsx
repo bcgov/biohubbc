@@ -244,10 +244,10 @@ const Header: React.FC = () => {
               <Link to="/admin/search" id="menu_search">
                 Map
               </Link>
-              <Link to="/admin/resources" id="menu_resources">
-                Resources
-              </Link>
             </AuthGuard>
+            <Link to="/resources" id="menu_resources">
+              Resources
+            </Link>
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
               <Link to="/admin/users" id="menu_admin_users">
                 Manage Users
