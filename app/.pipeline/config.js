@@ -89,7 +89,7 @@ const phases = {
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
-    maxReplicas: 2
+    maxReplicas: 1
   },
   test: {
     namespace: 'af2668-test',
