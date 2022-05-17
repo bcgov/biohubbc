@@ -88,7 +88,7 @@ const phases = {
     tz: config.timezone.api,
     certificateURL: config.certificateURL.dev,
     replicas: 1,
-    maxReplicas: 2,
+    maxReplicas: 1,
     logLevel: isStaticDeployment && 'info' || 'debug'
   },
   test: {
@@ -105,7 +105,7 @@ const phases = {
     appHost: staticUrls.test,
     backboneApiHost: 'https://api-dev-platform.apps.silver.devops.gov.bc.ca/api',
     env: 'test',
-    elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
+    elasticsearchURL: 'http://es01:9200',
     tz: config.timezone.api,
     certificateURL: config.certificateURL.test,
     replicas: 3,

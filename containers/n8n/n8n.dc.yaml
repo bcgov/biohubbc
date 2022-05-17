@@ -1,11 +1,11 @@
 ---
 kind: Template
-apiVersion: v1
+apiVersion: template.openshift.io/v1
 labels:
   app: "${NAME}"
   template: "${NAME}-dc-template"
 metadata:
-  name: "${NAME}"
+  name: n8n-deploy
 objects:
   - kind: Secret
     apiVersion: v1
@@ -144,7 +144,7 @@ objects:
       - ReadWriteMany
       resources:
         requests:
-          storage: 2Gi
+          storage: 1Gi
       storageClassName: netapp-file-standard
       volumeMode: Filesystem
   - kind: PersistentVolumeClaim
@@ -322,7 +322,7 @@ objects:
                   key: database-name
                   name: "postgresql-${NAME}"
             imagePullPolicy: IfNotPresent
-            image: image-registry.openshift-image-registry.svc:5000/openshift/postgresql:latest
+            image: artifacts.developer.gov.bc.ca/docker-remote/postgres:13.6
             livenessProbe:
               exec:
                 command:
@@ -473,6 +473,15 @@ objects:
                   name: "${NAME}"
             - name: WEBHOOK_TUNNEL_URL
               value: "https://${NAME}-${NAMESPACE}.apps.silver.devops.gov.bc.ca/"
+            - name: EXECUTIONS_MODE
+              value: queue
+            - name: POD_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  apiVersion: v1
+                  fieldPath: metadata.namespace
+            - name: GENERIC_TIMEZONE
+              value: America/Vancouver
             image: "image-registry.openshift-image-registry.svc:5000/${N8N_IMAGE_NAMESPACE}/${NAME}:latest"
             imagePullPolicy: IfNotPresent
             name: n8n
@@ -540,7 +549,7 @@ parameters:
     description: Amount of disk space needed for persistence
     displayName: PVC Size
     required: true
-    value: 2Gi
+    value: 1Gi
   - name: N8N_USER
     displayName: N8N User name
     description: The name associated with the n8n basic user
