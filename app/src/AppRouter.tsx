@@ -8,7 +8,7 @@ import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import PermitsRouter from 'features/permits/PermitsRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import PublicProjectsRouter from 'features/projects/PublicProjectsRouter';
-import ResourcesRouter from 'features/resources/ResourcesRouter';
+import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
 import PublicLayout from 'layouts/PublicLayout';
 import RequestSubmitted from 'pages/200/RequestSubmitted';
@@ -43,6 +43,10 @@ const AppRouter: React.FC = () => {
         <UnAuthenticatedRouteGuard>
           <SearchPage />
         </UnAuthenticatedRouteGuard>
+      </AppRoute>
+
+      <AppRoute path="/resources" title={getTitle('Resources')} layout={PublicLayout}>
+        <ResourcesPage />
       </AppRoute>
 
       <AppRoute path="/page-not-found" title={getTitle('Page Not Found')} layout={PublicLayout}>
@@ -90,12 +94,6 @@ const AppRouter: React.FC = () => {
       <AppRoute path="/admin/search" title={getTitle('Search')} layout={PublicLayout}>
         <AuthenticatedRouteGuard>
           <SearchPage />
-        </AuthenticatedRouteGuard>
-      </AppRoute>
-
-      <AppRoute path="/admin/resources" title={getTitle('Resources')} layout={PublicLayout}>
-        <AuthenticatedRouteGuard>
-          <ResourcesRouter />
         </AuthenticatedRouteGuard>
       </AppRoute>
 
