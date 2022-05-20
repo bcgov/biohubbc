@@ -35,7 +35,7 @@ afterEach(() => {
 });
 
 var n = 0;
-while (n < 1) {
+while (n < 100) {
   /* for future iterations */
   it("CreateProject", function () {
     /* ==== Open Create Project ==== */
