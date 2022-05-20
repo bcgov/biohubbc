@@ -57,10 +57,10 @@ parameters:
     value: 35r1iman
   - name: KEYCLOAK_ADMIN_USERNAME
     description: keycloak host admin username
-    value: biohubbc-svc
-  - name: KEYCLOAK_ADMIN_PASSWORD
-    description: keycloak host url
-    value: 'keycloak-admin-password'
+  - name: KEYCLOAK_SECRET
+    description: The name of the keycloak secret
+  - name: KEYCLOAK_SECRET_ADMIN_PASSWORD
+    description: The key of the admin password in the keycloak secret
   - name: API_PORT_DEFAULT
     value: '6100'
   - name: API_PORT_DEFAULT_NAME
@@ -197,8 +197,8 @@ objects:
                 - name: KEYCLOAK_ADMIN_PASSWORD
                   valueFrom:
                     secretKeyRef:
-                      key: keycloak_admin_password
-                      name: ${KEYCLOAK_ADMIN_PASSWORD}
+                      name: ${KEYCLOAK_SECRET}
+                      key: ${KEYCLOAK_SECRET_ADMIN_PASSWORD}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
                 - name: NODE_ENV

@@ -26,7 +26,7 @@ services:
       - POSTGRES_DB=${DB_DATABASE}
       - PORT=${DB_PORT}
     networks:
-      - local-network
+      - sims-network
     volumes:
       - postgres:/var/lib/postgresql/data
 
@@ -79,7 +79,7 @@ services:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - db
       - db_setup
@@ -89,11 +89,9 @@ services:
     image: mkodockx/docker-clamav:latest
     container_name: ${DOCKER_PROJECT_NAME}-clamav-${DOCKER_NAMESPACE}-container
     ports:
-      - ${CLAMAV_PORT}:${CLAMAV_PORT}
+      - ${CLAMAV_PORT}:3310
     networks:
-      - local-network
-    depends_on:
-      - api
+      - sims-network
 
   # Build the n8n nginx proxy docker image
   n8n_nginx:
@@ -104,9 +102,9 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - 5100:5100
+      - ${N8N_PROXY_PORT}:5100
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - n8n
 
@@ -114,13 +112,13 @@ services:
   n8n:
     image: n8nio/n8n:0.144.0
     container_name: ${DOCKER_PROJECT_NAME}-n8n-${DOCKER_NAMESPACE}-container
-    ports:
-      - ${N8N_PORT}:${N8N_PORT}
+    expose:
+      - 5678
     environment:
       - NODE_ENV=${NODE_ENV}
       - N8N_HOST=${N8N_HOST}
       - N8N_PROTOCOL=${N8N_PROTOCOL}
-      - N8N_PORT=${N8N_PORT}
+      - N8N_PORT=5678
       - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL}
       - DB_TYPE=${N8N_DB_TYPE}
       - DB_POSTGRESDB_HOST=${DB_HOST}
@@ -136,7 +134,7 @@ services:
       - N8N_API_HOST=${N8N_API_HOST}
       - N8N_API_PORT=${API_PORT}
     networks:
-      - local-network
+      - sims-network
     volumes:
       - ./n8n/.n8n:/home/node/.n8n
     depends_on:
@@ -166,7 +164,7 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
       - ./n8n:/opt/app-root/src
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - n8n
 
@@ -191,7 +189,7 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
       - ./n8n:/opt/app-root/src
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - n8n
 
@@ -220,7 +218,7 @@ services:
       - ./app:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
 
   ## Run the database migrations and seeding
   db_setup:
@@ -243,7 +241,7 @@ services:
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       db:
         condition: service_healthy
@@ -270,7 +268,7 @@ services:
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       db:
         condition: service_healthy
@@ -297,14 +295,14 @@ services:
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       db:
         condition: service_healthy
     command: ["npm", "run", "migrate:rollback"]
 
 networks:
-  local-network:
+  sims-network:
     driver: bridge
 
 volumes:
