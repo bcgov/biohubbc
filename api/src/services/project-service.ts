@@ -166,7 +166,9 @@ export class ProjectService extends DBService {
       end_date: row.end_date,
       coordinator_agency: row.coordinator_agency,
       completion_status:
-        (row.end_date && DateTime.fromJSDate(new Date(row.end_date)).endOf('day') < DateTime.now() && COMPLETION_STATUS.COMPLETED) ||
+        (row.end_date &&
+          DateTime.fromJSDate(new Date(row.end_date)).endOf('day') < DateTime.now() &&
+          COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
       project_type: row.project_type,
       permits_list: row.permits_list
@@ -228,7 +230,9 @@ export class ProjectService extends DBService {
       coordinator_agency: row.coordinator_agency_name,
       publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
       completion_status:
-        (row.end_date && DateTime.fromJSDate(new Date(row.end_date)).endOf('day') < DateTime.now() && COMPLETION_STATUS.COMPLETED) ||
+        (row.end_date &&
+          DateTime.fromJSDate(new Date(row.end_date)).endOf('day') < DateTime.now() &&
+          COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
       project_type: row.project_type,
       permits_list: row.permits_list

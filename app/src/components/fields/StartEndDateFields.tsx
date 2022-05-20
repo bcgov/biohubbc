@@ -45,7 +45,7 @@ const StartEndDateFields: React.FC<IStartEndDateFieldsProps> = (props) => {
 
   const formattedEndDateValue =
     (rawEndDateValue &&
-       DateTime.fromJSDate(new Date(rawEndDateValue), { zone: 'utc' }).isValid &&
+      DateTime.fromJSDate(new Date(rawEndDateValue), { zone: 'utc' }).isValid &&
       DateTime.fromJSDate(new Date(rawEndDateValue), { zone: 'utc' }).toFormat(DATE_FORMAT.ShortDateFormat)) ||
     '';
 

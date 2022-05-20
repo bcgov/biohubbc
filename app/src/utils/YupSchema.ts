@@ -84,7 +84,10 @@ yup.addMethod(
       }
 
       const endDateTime = DateTime.fromFormat(`2020-10-20 ${this.parent.end_time}`, DATE_FORMAT.ShortDateTimeFormat);
-      const startDateTime = DateTime.fromFormat(`2020-10-20 ${this.parent[startTimeName]}`, DATE_FORMAT.ShortDateTimeFormat);
+      const startDateTime = DateTime.fromFormat(
+        `2020-10-20 ${this.parent[startTimeName]}`,
+        DATE_FORMAT.ShortDateTimeFormat
+      );
 
       // compare valid start and end times
       return startDateTime < endDateTime;

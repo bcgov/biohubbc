@@ -1,6 +1,6 @@
 import { DATE_FORMAT, TIME_FORMAT } from 'constants/dateTimeFormats';
 import { IConfig } from 'contexts/configContext';
-import { DateTime } from 'luxon'
+import { DateTime } from 'luxon';
 
 /**
  * Checks if a url string starts with an `http(s)://` protocol, and adds `https://` if it does not.
@@ -52,7 +52,7 @@ export const getFormattedDateRangeString = (
  */
 export const getFormattedDate = (dateFormat: DATE_FORMAT, date: string): string => {
   const dateTime = DateTime.fromISO(new Date(date).toISOString());
-  console.log(`${date} => $${dateFormat}$ =>`, dateTime)
+  console.log(`${date} => $${dateFormat}$ =>`, dateTime);
 
   if (!dateTime.isValid) {
     return '';

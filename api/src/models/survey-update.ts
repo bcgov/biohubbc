@@ -1,6 +1,5 @@
 import { Feature } from 'geojson';
 import { DateTime } from 'luxon';
-
 import { COMPLETION_STATUS } from '../constants/status';
 import { getLogger } from '../utils/logger';
 
