@@ -10,7 +10,7 @@ parameters:
   - name: CLAMAV_HOST
     value: 'clamav'
   - name: CLAMAV_PORT
-    value: 3310
+    value: '3310'
   - name: NAME
     value: biohubbc-api
   - name: SUFFIX
