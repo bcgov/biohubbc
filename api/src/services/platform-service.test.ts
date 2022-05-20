@@ -19,7 +19,7 @@ describe('PlatformService', () => {
     it('makes an axios post to the BioHub Platform Backbone API', async () => {
       const mockDBConnection = getMockDBConnection();
 
-      process.env.BACKBONE_API_HOST = 'backbone.com/api';
+      process.env.BACKBONE_API_HOST = 'backbone.com';
 
       const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
 

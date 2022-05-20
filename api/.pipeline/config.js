@@ -64,7 +64,7 @@ const phases = {
     elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
     branch: branch,
-    logLevel: isStaticDeployment && 'info' || 'debug'
+    logLevel: (isStaticDeployment && 'info') || 'debug'
   },
   dev: {
     namespace: 'af2668-dev',
@@ -80,16 +80,16 @@ const phases = {
       (isStaticDeployment && (staticUrlsAPI.dev || defaultHost)) ||
       `${name}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     appHost:
-    (isStaticDeployment && (staticUrls.dev || defaultHostAPP)) ||
+      (isStaticDeployment && (staticUrls.dev || defaultHostAPP)) ||
       `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
-    backboneApiHost: 'https://api-dev-platform.apps.silver.devops.gov.bc.ca/api',
+    backboneApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
     env: 'dev',
     elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
     certificateURL: config.certificateURL.dev,
     replicas: 1,
     maxReplicas: 1,
-    logLevel: isStaticDeployment && 'info' || 'debug'
+    logLevel: (isStaticDeployment && 'info') || 'debug'
   },
   test: {
     namespace: 'af2668-test',
@@ -103,7 +103,7 @@ const phases = {
     tag: `test-${version}`,
     host: staticUrlsAPI.test,
     appHost: staticUrls.test,
-    backboneApiHost: 'https://api-dev-platform.apps.silver.devops.gov.bc.ca/api',
+    backboneApiHost: 'https://api-test-biohub-platform.apps.silver.devops.gov.bc.ca',
     env: 'test',
     elasticsearchURL: 'http://es01:9200',
     tz: config.timezone.api,
@@ -124,7 +124,7 @@ const phases = {
     tag: `prod-${version}`,
     host: staticUrlsAPI.prod,
     appHost: staticUrls.prod,
-    backboneApiHost: 'https://api-dev-platform.apps.silver.devops.gov.bc.ca/api',
+    backboneApiHost: 'https://api-biohub-platform.apps.silver.devops.gov.bc.ca',
     env: 'prod',
     elasticsearchURL: 'http://es01:9200',
     tz: config.timezone.api,
