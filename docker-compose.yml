@@ -24,7 +24,7 @@ services:
       - POSTGRES_USER=${DB_ADMIN}
       - POSTGRES_PASSWORD=${DB_ADMIN_PASS}
       - POSTGRES_DB=${DB_DATABASE}
-      - PORT=${DB_PORT}
+      - PORT=5432
     networks:
       - sims-network
     volumes:
@@ -48,7 +48,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_USER_API=${DB_USER_API}
       - DB_USER_API_PASS=${DB_USER_API_PASS}
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
       - KEYCLOAK_URL=${KEYCLOAK_URL}
