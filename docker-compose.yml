@@ -132,13 +132,16 @@ services:
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_API_HOST=${N8N_API_HOST}
       - N8N_API_PORT=${API_PORT}
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - EXECUTIONS_PROCESS=main
     networks:
       - sims-network
     volumes:
       - ./n8n/.n8n:/home/node/.n8n
     depends_on:
-      - api
-      - app
+      db:
+        condition: service_healthy
+
     restart: always # n8n doesnt always start after db_setup is done, and can fail. Always restart to help resolve this.
     command: ["n8n", "start"]
 

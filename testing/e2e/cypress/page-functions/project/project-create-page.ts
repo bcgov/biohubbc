@@ -266,7 +266,7 @@ export function attach_file() {
 
 export function add_survey() {
   cy.get("#h2-button-toolbar-CreateSurvey").click();
-
+  cy.wait(15000);
   cy.get("h1").contains("Create Survey").should("be.visible");
 
   cy.get("#start_date-helper-text").then(($help) => {
