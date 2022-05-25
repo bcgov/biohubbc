@@ -3,98 +3,61 @@ kind: Template
 metadata:
   resourceVersion: ''
   selfLink: ''
-  name: biohubbc-api-dc
+  name: biohubbc-app-dc
 parameters:
-  - name: ENABLE_FILE_VIRUS_SCAN
-    value: 'true'
-  - name: CLAMAV_HOST
-    value: 'clamav'
-  - name: CLAMAV_PORT
-    value: '3310'
   - name: NAME
-    value: biohubbc-api
+    value: biohubbc-app
   - name: SUFFIX
-    value: '-dev'
-  - name: VERSION
-    description: Version of the application
-    value: '1.0.0'
-  - name: HOST
-    description: Host name of the application
-    required: true
-  - name: APP_HOST
-    description: APP host for application frontend
-    value: ''
-  - name: BACKBONE_API_HOST
-    description: API host for BioHub Platform Backbone
-  - name: CHANGE_ID
-    description: Change id of the project. This will help to pull image stream
-    required: true
-    value: '0'
-  - name: DB_SERVICE_NAME
-    description: 'Database service name associated with deployment'
-    required: true
-  - name: NODE_ENV
-    description: Application Environment type variable
-    required: true
     value: 'dev'
-  - name: ELASTICSEARCH_URL
-    description: Platform Elasticsearch URL
-    required: true
-    value: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca'
-  - name: TZ
-    description: Application timezone
-    required: false
-    value: 'America/Vancouver'
-  - name: CERTIFICATE_URL
-    description: Authentication certificate urls
-    required: true
-    value: 'https://oidc.gov.bc.ca/auth/realms/35r1iman/protocol/openid-connect/certs'
-  - name: KEYCLOAK_HOST
-    description: keycloak host url
-    value: https://dev.oidc.gov.bc.ca
-  - name: KEYCLOAK_REALM
-    description: keycloak realm definition
+  - name: VERSION
+    value: '1.0'
+  - name: HOST
+  - name: CHANGE_ID
+    value: '0'
+  - name: REACT_APP_API_HOST
+    description: API host for application backend
+    value: ''
+  - name: REACT_APP_N8N_HOST
+    description: N8N host for application backend
+    value: ''
+  - name: REACT_APP_SITEMINDER_LOGOUT_URL
+    description: Siteminder URL to log out and clear the session for the logged in user
+    value: ''
+  - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+    description: Default maximum number of files that can be uploaded at a time vai the upload component UI.
+    value: '10'
+  - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+    description: Default maximum size of a single file that can be uploaded by the upload component UI.
+    value: '52428800'
+  - name: NODE_ENV
+    description: NODE_ENV specification variable
+    value: 'dev'
+  - name: REACT_APP_NODE_ENV
+    description: NODE_ENV specification variable for React app
+    value: 'dev'
+  - name: APP_PORT_DEFAULT
+    description: Application default port
+    value: '7100'
+  - name: APP_PORT_DEFAULT_NAME
+    description: Default port resource name
+    value: '7100-tcp'
+  - name: SSO_URL
+    description: Key clock login url
+    value: 'https://oidc.gov.bc.ca/auth'
+  - name: SSO_CLIENT_ID
+    description: Client Id for application
+    value: 'lucy'
+  - name: SSO_REALM
+    description: Realm identifier or name
     value: 35r1iman
-  - name: KEYCLOAK_ADMIN_USERNAME
-    description: keycloak host admin username
-  - name: KEYCLOAK_SECRET
-    description: The name of the keycloak secret
-  - name: KEYCLOAK_SECRET_ADMIN_PASSWORD
-    description: The key of the admin password in the keycloak secret
-  - name: API_PORT_DEFAULT
-    value: '6100'
-  - name: API_PORT_DEFAULT_NAME
-    description: Api default port name
-    value: '6100-tcp'
-  - name: OBJECT_STORE_SECRETS
-    description: Secrets used to read and write to the S3 storage
-    value: 'biohubbc-object-store'
-  - name: LOG_LEVEL
-    value: 'info'
-  - name: GCNOTIFY_API_SECRET
-    description: Secret for gcnotify api key
-    value: 'gcnotify-api-key'
-  - name: GCNOTIFY_ADMIN_EMAIL
-    description: admin email for gcnotify api
-    value: biohub@gov.bc.ca
-  - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
-    description: gcnotify email template id
-    value: 7779a104-b863-40ac-902f-1aa607d2071a
-  - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
-    description: gcnotify sms template id
-    value: af2f1e40-bd72-4612-9c5a-567ee5b26ca5
-  - name: GCNOTIFY_EMAIL_URL
-    value: https://api.notification.canada.ca/v2/notifications/email
-  - name: GCNOTIFY_SMS_URL
-    value: https://api.notification.canada.ca/v2/notifications/sms
   - name: CPU_REQUEST
-    value: '100m'
+    value: '10m'
   - name: CPU_LIMIT
-    value: '500m'
+    value: '200m'
   - name: MEMORY_REQUEST
-    value: '512Mi'
+    value: '50Mi'
   - name: MEMORY_LIMIT
-    value: '2Gi'
+    value: '200Mi'
   - name: REPLICAS
     value: '1'
   - name: REPLICA_MAX
@@ -124,7 +87,7 @@ objects:
       creationTimestamp: null
       generation: 0
       labels:
-        role: api
+        role: app
       name: ${NAME}${SUFFIX}
     spec:
       replicas: '${{REPLICAS}}'
@@ -149,108 +112,39 @@ objects:
           creationTimestamp: null
           labels:
             deploymentConfig: ${NAME}${SUFFIX}
-            role: api
+            role: app
         spec:
           containers:
             - env:
-                - name: API_HOST
-                  value: ${HOST}
-                - name: API_PORT
-                  value: ${API_PORT_DEFAULT}
-                - name: APP_HOST
-                  value: ${APP_HOST}
-                - name: BACKBONE_API_HOST
-                  value: ${BACKBONE_API_HOST}
-                - name: ENABLE_FILE_VIRUS_SCAN
-                  value: ${ENABLE_FILE_VIRUS_SCAN}
-                - name: CLAMAV_HOST
-                  value: ${CLAMAV_HOST}
-                - name: CLAMAV_PORT
-                  value: ${CLAMAV_PORT}
-                - name: DB_HOST
-                  value: ${DB_SERVICE_NAME}
-                - name: DB_USER_API
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user-api
-                      name: ${DB_SERVICE_NAME}
-                - name: DB_USER_API_PASS
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-user-api-password
-                      name: ${DB_SERVICE_NAME}
-                - name: DB_DATABASE
-                  valueFrom:
-                    secretKeyRef:
-                      key: database-name
-                      name: ${DB_SERVICE_NAME}
-                - name: DB_PORT
-                  value: '5432'
-                - name: KEYCLOAK_URL
-                  value: ${CERTIFICATE_URL}
-                - name: KEYCLOAK_HOST
-                  value: ${KEYCLOAK_HOST}
-                - name: KEYCLOAK_REALM
-                  value: ${KEYCLOAK_REALM}
-                - name: KEYCLOAK_ADMIN_USERNAME
-                  value: ${KEYCLOAK_ADMIN_USERNAME}
-                - name: KEYCLOAK_ADMIN_PASSWORD
-                  valueFrom:
-                    secretKeyRef:
-                      name: ${KEYCLOAK_SECRET}
-                      key: ${KEYCLOAK_SECRET_ADMIN_PASSWORD}
                 - name: CHANGE_VERSION
                   value: ${CHANGE_ID}
+                - name: REACT_APP_API_HOST
+                  value: ${REACT_APP_API_HOST}
+                - name: REACT_APP_N8N_HOST
+                  value: ${REACT_APP_N8N_HOST}
+                - name: REACT_APP_SITEMINDER_LOGOUT_URL
+                  value: ${REACT_APP_SITEMINDER_LOGOUT_URL}
+                - name: REACT_APP_MAX_UPLOAD_NUM_FILES
+                  value: ${REACT_APP_MAX_UPLOAD_NUM_FILES}
+                - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
+                  value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
-                - name: ELASTICSEARCH_URL
-                  value: ${ELASTICSEARCH_URL}
-                - name: TZ
-                  value: ${TZ}
+                - name: REACT_APP_NODE_ENV
+                  value: ${REACT_APP_NODE_ENV}
                 - name: VERSION
                   value: ${VERSION}
-                - name: OBJECT_STORE_URL
-                  valueFrom:
-                    secretKeyRef:
-                      key: object_store_url
-                      name: ${OBJECT_STORE_SECRETS}
-                - name: OBJECT_STORE_ACCESS_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      key: object_store_access_key_id
-                      name: ${OBJECT_STORE_SECRETS}
-                - name: OBJECT_STORE_SECRET_KEY_ID
-                  valueFrom:
-                    secretKeyRef:
-                      key: object_store_secret_key_id
-                      name: ${OBJECT_STORE_SECRETS}
-                - name: OBJECT_STORE_BUCKET_NAME
-                  valueFrom:
-                    secretKeyRef:
-                      key: object_store_bucket_name
-                      name: ${OBJECT_STORE_SECRETS}
-                - name: LOG_LEVEL
-                  value: ${LOG_LEVEL}
-                - name: GCNOTIFY_SECRET_API_KEY
-                  valueFrom:
-                    secretKeyRef:
-                      key: key
-                      name: ${GCNOTIFY_API_SECRET}
-                - name: GCNOTIFY_ADMIN_EMAIL
-                  value: ${GCNOTIFY_ADMIN_EMAIL}
-                - name: GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE
-                  value: ${GCNOTIFY_ONBOARDING_REQUEST_EMAIL_TEMPLATE}
-                - name: GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE
-                  value: ${GCNOTIFY_ONBOARDING_REQUEST_SMS_TEMPLATE}
-                - name: GCNOTIFY_EMAIL_URL
-                  value: ${GCNOTIFY_EMAIL_URL}
-                - name: GCNOTIFY_SMS_URL
-                  value: ${GCNOTIFY_SMS_URL}
+                - name: SSO_URL
+                  value: ${SSO_URL}
+                - name: SSO_CLIENT_ID
+                  value: ${SSO_CLIENT_ID}
+                - name: SSO_REALM
+                  value: ${SSO_REALM}
               image: ' '
               imagePullPolicy: Always
-              name: api
+              name: app
               ports:
-                - containerPort: ${{API_PORT_DEFAULT}}
+                - containerPort: ${{APP_PORT_DEFAULT}}
                   protocol: TCP
               resources:
                 limits:
@@ -262,28 +156,25 @@ objects:
               readinessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/version
-                  port: ${{API_PORT_DEFAULT}}
+                  path: /
+                  port: ${{APP_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 100
-                periodSeconds: 30
+                initialDelaySeconds: 65
+                periodSeconds: 20
                 successThreshold: 1
                 timeoutSeconds: 20
               livenessProbe:
                 failureThreshold: 10
                 httpGet:
-                  path: /api/version
-                  port: ${{API_PORT_DEFAULT}}
+                  path: /
+                  port: ${{APP_PORT_DEFAULT}}
                   scheme: HTTP
-                initialDelaySeconds: 80
+                initialDelaySeconds: 65
                 periodSeconds: 30
                 successThreshold: 1
                 timeoutSeconds: 20
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
-              volumeMounts:
-                - mountPath: /opt/app-root/app
-                  name: ${NAME}${SUFFIX}
           dnsPolicy: ClusterFirst
           restartPolicy: Always
           schedulerName: default-scheduler
@@ -297,24 +188,12 @@ objects:
         - imageChangeParams:
             automatic: true
             containerNames:
-              - api
+              - app
             from:
               kind: ImageStreamTag
               name: ${NAME}:${VERSION}
           type: ImageChange
         - type: ConfigChange
-  - apiVersion: v1
-    stringData:
-      database-name: ''
-      database-user-api-password: ''
-      database-user-api: ''
-    kind: Secret
-    metadata:
-      annotations:
-        as-copy-of: ${DB_SERVICE_NAME}
-      creationTimestamp: null
-      name: ${NAME}${SUFFIX}
-    type: Opaque
   - apiVersion: v1
     kind: Service
     metadata:
@@ -324,10 +203,10 @@ objects:
       name: ${NAME}${SUFFIX}
     spec:
       ports:
-        - name: ${NAME}-${API_PORT_DEFAULT_NAME}
-          port: ${{API_PORT_DEFAULT}}
+        - name: ${NAME}-${APP_PORT_DEFAULT_NAME}
+          port: ${{APP_PORT_DEFAULT}}
           protocol: TCP
-          targetPort: ${{API_PORT_DEFAULT}}
+          targetPort: ${{APP_PORT_DEFAULT}}
       selector:
         deploymentconfig: ${NAME}${SUFFIX}
       sessionAffinity: None
@@ -347,7 +226,7 @@ objects:
         insecureEdgeTerminationPolicy: Redirect
         termination: edge
       port:
-        targetPort: ${NAME}-${API_PORT_DEFAULT_NAME}
+        targetPort: ${NAME}-${APP_PORT_DEFAULT_NAME}
       to:
         kind: Service
         name: ${NAME}${SUFFIX}
@@ -375,10 +254,10 @@ objects:
             name: memory
             target:
               type: Utilization
-              averageUtilization: 200
+              averageUtilization: 90
         - type: Resource
           resource:
             name: cpu
             target:
               type: Utilization
-              averageUtilization: 200
+              averageUtilization: 95
