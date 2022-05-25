@@ -5,7 +5,9 @@ import { S3_ROLE } from '../constants/roles';
 
 const ClamAVScanner =
   (process.env.ENABLE_FILE_VIRUS_SCAN === 'true' &&
-    clamd.createScanner(process.env.CLAMAV_HOST || 'clamav', Number(process.env.CLAMAV_PORT))) ||
+    process.env.CLAMAV_HOST &&
+    process.env.CLAMAV_PORT &&
+    clamd.createScanner(process.env.CLAMAV_HOST, Number(process.env.CLAMAV_PORT))) ||
   null;
 
 const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || '';

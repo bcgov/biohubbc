@@ -30,6 +30,7 @@ module.exports = (settings) => {
         HOST: phases[phase].host,
         CHANGE_ID: phases.build.changeId || changeId,
         APP_HOST: phases[phase].appHost,
+        BACKBONE_API_HOST: phases[phase].backboneApiHost,
         NODE_ENV: phases[phase].env || 'dev',
         ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
         TZ: phases[phase].tz,
