@@ -1,10 +1,8 @@
 import axios from 'axios';
 import chai, { expect } from 'chai';
-import FormData from 'form-data';
 import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
-import { getMockDBConnection } from '../__mocks__/db';
 import { KeycloakService } from './keycloak-service';
 import { IDwCADataset, PlatformService } from './platform-service';
 
@@ -17,8 +15,6 @@ describe('PlatformService', () => {
     });
 
     it('makes an axios post to the BioHub Platform Backbone API', async () => {
-      const mockDBConnection = getMockDBConnection();
-
       process.env.BACKBONE_API_HOST = 'backbone.com';
 
       const keycloakServiceStub = sinon.stub(KeycloakService.prototype, 'getKeycloakToken').resolves('token');
@@ -34,7 +30,7 @@ describe('PlatformService', () => {
         dataPackageId: '123-456-789'
       };
 
-      const platformService = new PlatformService(mockDBConnection);
+      const platformService = new PlatformService();
 
       await platformService.submitNewDataPackage(dwcaDataset);
 
@@ -42,10 +38,11 @@ describe('PlatformService', () => {
 
       expect(axiosStub).to.have.been.calledOnceWith(
         'backbone.com/api/dwc/dataset/create',
-        sinon.match.instanceOf(FormData),
+        sinon.match.instanceOf(Buffer),
         {
           headers: {
-            authorization: `Bearer token`
+            authorization: `Bearer token`,
+            'content-type': sinon.match(new RegExp(/^multipart\/form-data; boundary=[-]*[0-9]*$/))
           }
         }
       );

@@ -44,10 +44,11 @@ export class PlatformService {
 
     const { data } = await axios.post<{ data_package_id: string }>(
       `${this.BACKBONE_API_HOST}${this.BACKBONE_API_INGEST_PATH}`,
-      formData,
+      formData.getBuffer(),
       {
         headers: {
-          authorization: `Bearer ${token}`
+          authorization: `Bearer ${token}`,
+          ...formData.getHeaders()
         }
       }
     );
