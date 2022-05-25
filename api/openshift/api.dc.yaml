@@ -7,6 +7,10 @@ metadata:
 parameters:
   - name: ENABLE_FILE_VIRUS_SCAN
     value: 'true'
+  - name: CLAMAV_HOST
+    value: 'clamav'
+  - name: CLAMAV_PORT
+    value: '3310'
   - name: NAME
     value: biohubbc-api
   - name: SUFFIX
@@ -20,6 +24,8 @@ parameters:
   - name: APP_HOST
     description: APP host for application frontend
     value: ''
+  - name: BACKBONE_API_HOST
+    description: API host for BioHub Platform Backbone
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true
@@ -153,8 +159,14 @@ objects:
                   value: ${API_PORT_DEFAULT}
                 - name: APP_HOST
                   value: ${APP_HOST}
+                - name: BACKBONE_API_HOST
+                  value: ${BACKBONE_API_HOST}
                 - name: ENABLE_FILE_VIRUS_SCAN
                   value: ${ENABLE_FILE_VIRUS_SCAN}
+                - name: CLAMAV_HOST
+                  value: ${CLAMAV_HOST}
+                - name: CLAMAV_PORT
+                  value: ${CLAMAV_PORT}
                 - name: DB_HOST
                   value: ${DB_SERVICE_NAME}
                 - name: DB_USER_API
