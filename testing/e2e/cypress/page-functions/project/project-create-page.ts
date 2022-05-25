@@ -266,7 +266,7 @@ export function attach_file() {
 
 export function add_survey() {
   cy.get("#h2-button-toolbar-CreateSurvey").click();
-
+  cy.wait(15000);
   cy.get("h1").contains("Create Survey").should("be.visible");
 
   cy.get("#start_date-helper-text").then(($help) => {
@@ -299,23 +299,27 @@ export function add_survey() {
     });
   });
 
-  cy.get("#focal_species").focus().click().type("{downArrow}{enter}");
+  cy.get("#focal_species").focus().type("killer");
+  cy.wait(2000);
+  cy.get('#focal_species-option-0').click();
+  cy.get("#funding_sources").click()
 
-  cy.get("#ancillary_species")
-    .focus()
-    .click()
-    .type("{downArrow}{downArrow}{enter}");
-  cy.get("#common_survey_methodology_id")
-    .focus()
-    .type("{enter}{downArrow}{enter}");
-  cy.get("#survey_purpose").type(faker.lorem.text());
-  cy.get("#permit_number").click().type("{downArrow}{enter}");
+  cy.get("#ancillary_species").click().type("grey whale");
+  cy.get('#ancillary_species-option-0').click();
+  cy.get("#funding_sources").click()
 
-  cy.get("#funding_sources").click().type("{enter}");
   cy.get("#biologist_first_name").type(faker.name.firstName());
   cy.get("#biologist_last_name").type(faker.name.lastName());
-
+  cy.get("#permit_number").click().type("{downArrow}{enter}");
+  cy.get("#funding_sources").click().type("{enter}");
+  cy.get("#mui-component-select-intended_outcome_id").focus().type("{downArrow}{enter}");
+  cy.get("#additional_details").type(faker.lorem.text());
+  cy.get("#mui-component-select-field_method_id").focus().type("{downArrow}{enter}");
+  cy.get("#mui-component-select-ecological_season_id").focus().type("{downArrow}{enter}");
+  cy.get("#vantage_code_ids").focus().type("{downArrow}{enter}");
+  cy.get('input[name="surveyed_all_areas"]').first().click({force: true});
   cy.get("#survey_area_name").clear().type(faker.lorem.words());
+
   cy.get('[data-testid="boundary_file-upload"]').click();
   cy.get('[data-testid="drop-zone-input"]').attachFile(
     "shapes/" + faker.random.number({ min: 1, max: 9 }) + ".kml"
