@@ -1,7 +1,6 @@
 import axios from 'axios';
 import FormData from 'form-data';
 import { KeycloakService } from './keycloak-service';
-import { DBService } from './service';
 
 export interface IDwCADataset {
   archiveFile: {
@@ -18,7 +17,7 @@ export interface IDwCADataset {
   dataPackageId: string;
 }
 
-export class PlatformService extends DBService {
+export class PlatformService {
   BACKBONE_API_HOST = process.env.BACKBONE_API_HOST;
   BACKBONE_API_INGEST_PATH = '/api/dwc/dataset/create';
 
