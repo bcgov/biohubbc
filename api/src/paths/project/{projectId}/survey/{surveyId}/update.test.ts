@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
@@ -17,6 +18,73 @@ describe('getSurveyForUpdate', () => {
   afterEach(() => {
     sinon.restore();
   });
+
+  describe('response validation', () => {
+    const responseValidator = new OpenAPIResponseValidator((update.GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
+
+    /*
+    const basicRequest = {
+      headers: {
+        'content-type': 'application/json'
+      },
+      body: {},
+      params: {}
+    };
+    */
+
+    describe.only('should succeed when', () => {
+      it('has valid values', async () => {
+        const survey_details = {
+          id: 1,
+          name: 'name',
+          focal_species: [1],
+          ancillary_species: [3],
+          additional_details: 'details',
+          start_date: '2020-04-04',
+          end_date: '2020-05-05',
+          lead_first_name: 'first',
+          lead_last_name: 'last',
+          location_name: 'location',
+          revision_count: 1,
+          geometry: [],
+          publish_timestamp: null,
+          number: '123',
+          type: 'scientific',
+          pfs_id: [1]
+        };
+        const survey_proprietor = {
+          category_rationale: '',
+          data_sharing_agreement_required: 'false',
+          first_nations_id: null,
+          first_nations_name: '',
+          id: 1,
+          proprietary_data_category: null,
+          proprietary_data_category_name: '',
+          proprietor_name: '',
+          survey_data_proprietary: 'true',
+          revision_count: 1
+        };
+
+        const apiResponse = {
+          survey_details,
+          survey_purpose_and_methodology: {
+            id: 1,
+            intended_outcome_id: 8,
+            field_method_id: 1,
+            additional_details: 'details',
+            ecological_season_id: 1,
+            vantage_code_ids: [2],
+            surveyed_all_areas: 'true',
+            revision_count: 0
+          },
+          survey_proprietor
+        }
+        const response = responseValidator.validateResponse(200, apiResponse);
+        console.log('response:', response)
+        expect(response).to.equal(undefined);
+      });
+    });
+  })
 
   it('should throw a 400 error when no survey id path param', async () => {
     const dbConnectionObj = getMockDBConnection();
