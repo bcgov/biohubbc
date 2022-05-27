@@ -275,7 +275,8 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   proprietary_data_category: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   proprietary_data_category_name: {
                     type: 'string'

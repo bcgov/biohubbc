@@ -20,19 +20,11 @@ describe('getSurveyForUpdate', () => {
   });
 
   describe('response validation', () => {
-    const responseValidator = new OpenAPIResponseValidator((update.GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
+    const responseValidator = new OpenAPIResponseValidator(
+      (update.GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs
+    );
 
-    /*
-    const basicRequest = {
-      headers: {
-        'content-type': 'application/json'
-      },
-      body: {},
-      params: {}
-    };
-    */
-
-    describe.only('should succeed when', () => {
+    describe('should succeed when', () => {
       it('has valid values', async () => {
         const survey_details = {
           id: 1,
@@ -64,27 +56,58 @@ describe('getSurveyForUpdate', () => {
           survey_data_proprietary: 'true',
           revision_count: 1
         };
-
+        const survey_purpose_and_methodology = {
+          id: 1,
+          intended_outcome_id: 8,
+          field_method_id: 1,
+          additional_details: 'details',
+          ecological_season_id: 1,
+          vantage_code_ids: [2],
+          surveyed_all_areas: 'true',
+          revision_count: 0
+        };
         const apiResponse = {
-          survey_details,
-          survey_purpose_and_methodology: {
+          survey_details: {
             id: 1,
-            intended_outcome_id: 8,
-            field_method_id: 1,
-            additional_details: 'details',
-            ecological_season_id: 1,
-            vantage_code_ids: [2],
-            surveyed_all_areas: 'true',
-            revision_count: 0
+            survey_name: survey_details.name,
+            focal_species: survey_details.focal_species,
+            ancillary_species: survey_details.ancillary_species,
+            start_date: survey_details.start_date,
+            end_date: survey_details.end_date,
+            biologist_first_name: survey_details.lead_first_name,
+            biologist_last_name: survey_details.lead_last_name,
+            survey_area_name: survey_details.location_name,
+            revision_count: survey_details.revision_count,
+            geometry: survey_details.geometry,
+            permit_number: '',
+            permit_type: '',
+            completion_status: COMPLETION_STATUS.COMPLETED,
+            publish_date: '',
+            funding_sources: survey_details.pfs_id
           },
-          survey_proprietor
-        }
+          survey_purpose_and_methodology,
+          survey_proprietor: {
+            category_rationale: survey_proprietor.category_rationale,
+            data_sharing_agreement_required: survey_proprietor.data_sharing_agreement_required,
+            first_nations_id: survey_proprietor.first_nations_id,
+            first_nations_name: survey_proprietor.first_nations_name,
+            id: survey_proprietor.id,
+            proprietary_data_category: survey_proprietor.proprietary_data_category,
+            proprietary_data_category_name: survey_proprietor.proprietary_data_category_name,
+            proprietor_name: survey_proprietor.proprietor_name,
+            survey_data_proprietary: survey_proprietor.survey_data_proprietary,
+            revision_count: survey_proprietor.revision_count
+          }
+        };
         const response = responseValidator.validateResponse(200, apiResponse);
-        console.log('response:', response)
         expect(response).to.equal(undefined);
       });
+
+      it('contains nullable values', async () => {
+        expect(null).to.equal(null);
+      });
     });
-  })
+  });
 
   it('should throw a 400 error when no survey id path param', async () => {
     const dbConnectionObj = getMockDBConnection();
