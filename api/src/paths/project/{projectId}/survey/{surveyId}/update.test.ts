@@ -26,85 +26,107 @@ describe('getSurveyForUpdate', () => {
 
     describe('should succeed when', () => {
       it('has valid values', async () => {
-        const survey_details = {
-          id: 1,
-          name: 'name',
-          focal_species: [1],
-          ancillary_species: [3],
-          additional_details: 'details',
-          start_date: '2020-04-04',
-          end_date: '2020-05-05',
-          lead_first_name: 'first',
-          lead_last_name: 'last',
-          location_name: 'location',
-          revision_count: 1,
-          geometry: [],
-          publish_timestamp: null,
-          number: '123',
-          type: 'scientific',
-          pfs_id: [1]
-        };
-        const survey_proprietor = {
-          category_rationale: '',
-          data_sharing_agreement_required: 'false',
-          first_nations_id: null,
-          first_nations_name: '',
-          id: 1,
-          proprietary_data_category: null,
-          proprietary_data_category_name: '',
-          proprietor_name: '',
-          survey_data_proprietary: 'true',
-          revision_count: 1
-        };
-        const survey_purpose_and_methodology = {
-          id: 1,
-          intended_outcome_id: 8,
-          field_method_id: 1,
-          additional_details: 'details',
-          ecological_season_id: 1,
-          vantage_code_ids: [2],
-          surveyed_all_areas: 'true',
-          revision_count: 0
-        };
         const apiResponse = {
           survey_details: {
             id: 1,
-            survey_name: survey_details.name,
-            focal_species: survey_details.focal_species,
-            ancillary_species: survey_details.ancillary_species,
-            start_date: survey_details.start_date,
-            end_date: survey_details.end_date,
-            biologist_first_name: survey_details.lead_first_name,
-            biologist_last_name: survey_details.lead_last_name,
-            survey_area_name: survey_details.location_name,
-            revision_count: survey_details.revision_count,
-            geometry: survey_details.geometry,
+            survey_name: 'name',
+            focal_species: [1],
+            ancillary_species: [3],
+            start_date: '2020-04-04',
+            end_date: '2020-05-05',
+            biologist_first_name: 'first',
+            biologist_last_name: 'last',
+            survey_area_name: 'location',
+            revision_count: 1,
+            geometry: [],
             permit_number: '',
             permit_type: '',
             completion_status: COMPLETION_STATUS.COMPLETED,
             publish_date: '',
-            funding_sources: survey_details.pfs_id
+            funding_sources: [1]
           },
-          survey_purpose_and_methodology,
+          survey_purpose_and_methodology: {
+            id: 1,
+            intended_outcome_id: 8,
+            field_method_id: 1,
+            additional_details: 'details',
+            ecological_season_id: 1,
+            vantage_code_ids: [2],
+            surveyed_all_areas: 'true',
+            revision_count: 0
+          },
           survey_proprietor: {
-            category_rationale: survey_proprietor.category_rationale,
-            data_sharing_agreement_required: survey_proprietor.data_sharing_agreement_required,
-            first_nations_id: survey_proprietor.first_nations_id,
-            first_nations_name: survey_proprietor.first_nations_name,
-            id: survey_proprietor.id,
-            proprietary_data_category: survey_proprietor.proprietary_data_category,
-            proprietary_data_category_name: survey_proprietor.proprietary_data_category_name,
-            proprietor_name: survey_proprietor.proprietor_name,
-            survey_data_proprietary: survey_proprietor.survey_data_proprietary,
-            revision_count: survey_proprietor.revision_count
+            category_rationale: '',
+            data_sharing_agreement_required: 'false',
+            first_nations_id: null,
+            first_nations_name: '',
+            id: 1,
+            proprietary_data_category: null,
+            proprietary_data_category_name: '',
+            proprietor_name: '',
+            survey_data_proprietary: 'true',
+            revision_count: 1
           }
         };
         const response = responseValidator.validateResponse(200, apiResponse);
         expect(response).to.equal(undefined);
       });
 
-      it('contains nullable values', async () => {
-        expect(null).to.equal(null);
+      it('consists of an empty response', async () => {
+        const apiResponse = {
+          survey_details: null,
+          survey_purpose_and_methodology: null,
+          survey_proprietor: null
+        };
+        const response = responseValidator.validateResponse(200, apiResponse);
+        expect(response).to.equal(undefined);
+      });
+
+      it('contains nullable values where applicable', async () => {
+        const apiResponse = {
+          survey_details: {
+            id: 1,
+            survey_name: 'name',
+            focal_species: [1],
+            ancillary_species: [3],
+            start_date: '2020-04-04',
+            end_date: null,
+            biologist_first_name: 'first',
+            biologist_last_name: 'last',
+            survey_area_name: 'location',
+            revision_count: 1,
+            geometry: [],
+            permit_number: '',
+            permit_type: '',
+            completion_status: COMPLETION_STATUS.COMPLETED,
+            publish_date: '',
+            funding_sources: [1]
+          },
+          survey_purpose_and_methodology: {
+            id: 1,
+            intended_outcome_id: null,
+            field_method_id: 1,
+            additional_details: null,
+            ecological_season_id: null,
+            vantage_code_ids: [],
+            surveyed_all_areas: 'true',
+            revision_count: 0
+          },
+          survey_proprietor: {
+            category_rationale: '',
+            data_sharing_agreement_required: 'false',
+            first_nations_id: null,
+            first_nations_name: '',
+            id: 1,
+            proprietary_data_category: null,
+            proprietary_data_category_name: '',
+            proprietor_name: '',
+            survey_data_proprietary: 'true',
+            revision_count: 1
+          }
+        };
+        const response = responseValidator.validateResponse(200, apiResponse);
+        expect(response).to.equal(undefined);
       });
     });
   });
