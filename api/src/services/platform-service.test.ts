@@ -37,7 +37,7 @@ describe('PlatformService', () => {
       expect(keycloakServiceStub).to.have.been.calledOnce;
 
       expect(axiosStub).to.have.been.calledOnceWith(
-        'backbone.com/api/dwc/dataset/create',
+        'backbone.com/api/dwc/submission/create',
         sinon.match.instanceOf(Buffer),
         {
           headers: {
