@@ -8,7 +8,7 @@ export class TaxonomyService {
   private async elasticSearch(searchRequest: SearchRequest) {
     try {
       const client = new Client({ node: process.env.ELASTICSEARCH_URL });
-      return await client.search({
+      return client.search({
         index: 'taxonomy',
         ...searchRequest
       });

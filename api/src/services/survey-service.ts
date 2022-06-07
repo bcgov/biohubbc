@@ -483,13 +483,13 @@ export class SurveyService extends DBService {
       promises.push(this.insertAncillarySpecies(ancillarySpeciesId, surveyId))
     );
 
-    return await Promise.all(promises);
+    return Promise.all(promises);
   }
 
   async deleteSurveySpeciesData(surveyId: number) {
     const sqlStatement = queries.survey.deleteAllSurveySpeciesSQL(surveyId);
 
-    return await this.connection.sql(sqlStatement);
+    return this.connection.sql(sqlStatement);
   }
 
   /**
@@ -511,7 +511,7 @@ export class SurveyService extends DBService {
       return;
     }
 
-    return await this.insertOrAssociatePermitToSurvey(
+    return this.insertOrAssociatePermitToSurvey(
       this.connection.systemUserId() as number,
       projectId,
       surveyId,
@@ -523,7 +523,7 @@ export class SurveyService extends DBService {
   async unassociatePermitFromSurvey(surveyId: number) {
     const sqlStatement = queries.survey.unassociatePermitFromSurveySQL(surveyId);
 
-    return await this.connection.sql(sqlStatement);
+    return this.connection.sql(sqlStatement);
   }
 
   async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
@@ -535,13 +535,13 @@ export class SurveyService extends DBService {
       promises.push(this.insertSurveyFundingSource(fsId, surveyId))
     );
 
-    return await Promise.all(promises);
+    return Promise.all(promises);
   }
 
   async deleteSurveyFundingSourcesData(surveyId: number) {
     const sqlStatement = queries.survey.deleteSurveyFundingSourcesBySurveyIdSQL(surveyId);
 
-    return await this.connection.sql(sqlStatement);
+    return this.connection.sql(sqlStatement);
   }
 
   async updateSurveyProprietorData(surveyId: number, surveyData: PutSurveyObject) {
@@ -551,13 +551,13 @@ export class SurveyService extends DBService {
       return;
     }
 
-    return await this.insertSurveyProprietor(surveyData.proprietor, surveyId);
+    return this.insertSurveyProprietor(surveyData.proprietor, surveyId);
   }
 
   async deleteSurveyProprietorData(surveyId: number) {
     const sqlStatement = queries.survey.deleteSurveyProprietorSQL(surveyId);
 
-    return await this.connection.sql(sqlStatement);
+    return this.connection.sql(sqlStatement);
   }
 
   async updateSurveyVantageCodesData(surveyId: number, surveyData: PutSurveyObject) {
@@ -566,12 +566,12 @@ export class SurveyService extends DBService {
     const promises: Promise<number>[] = [];
 
     if (surveyData.purpose_and_methodology.vantage_code_ids) {
-      surveyData.purpose_and_methodology.vantage_code_ids.map((vantageCodeId: number) =>
+      surveyData.purpose_and_methodology.vantage_code_ids.forEach((vantageCodeId: number) =>
         promises.push(this.insertVantageCodes(vantageCodeId, surveyId))
       );
     }
 
-    return await Promise.all(promises);
+    return Promise.all(promises);
   }
 
   async deleteSurveyVantageCodes(surveyId: number) {
