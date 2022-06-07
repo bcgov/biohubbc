@@ -3,7 +3,6 @@ import { describe } from 'mocha';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
-import { COMPLETION_STATUS } from '../../../../../constants/status';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/custom-error';
 import survey_queries from '../../../../../queries/survey';
@@ -64,7 +63,6 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -114,7 +112,6 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -142,7 +139,6 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(null);
     sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -170,7 +166,6 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(null);
-    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(null);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -216,7 +211,6 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
     try {
@@ -244,7 +238,6 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(null);
 
     try {
@@ -354,7 +347,6 @@ describe('getSurveyForView', () => {
     sinon.stub(survey_queries, 'getSurveyBasicDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFundingSourcesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyFocalSpeciesDataForViewSQL').returns(SQL`valid sql`);
-    sinon.stub(survey_queries, 'getSurveyAncillarySpeciesDataForViewSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyPurposeAndMethodologyForUpdateSQL').returns(SQL`valid sql`);
     sinon.stub(survey_queries, 'getSurveyProprietorForUpdateSQL').returns(SQL`valid sql`);
 
@@ -380,7 +372,6 @@ describe('getSurveyForView', () => {
       geometry: survey_basic_data.geometry,
       permit_number: survey_basic_data.number,
       permit_type: survey_basic_data.type,
-      completion_status: COMPLETION_STATUS.COMPLETED,
       publish_date: '',
       funding_sources: [
         {
@@ -401,7 +392,7 @@ describe('getSurveyForView', () => {
       category_rationale: survey_proprietor_data.category_rationale,
       proprietor_name: survey_proprietor_data.proprietor_name,
       survey_data_proprietary: survey_proprietor_data.survey_data_proprietary,
-      data_sharing_agreement_required: 'true',
+      disa_required: 'true',
       revision_count: survey_proprietor_data.revision_count
     });
 

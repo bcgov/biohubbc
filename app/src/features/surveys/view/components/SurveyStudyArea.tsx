@@ -23,11 +23,7 @@ import { Feature } from 'geojson';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  IGetSurveyForViewResponse,
-  IUpdateSurveyRequest,
-  UPDATE_GET_SURVEY_ENTITIES
-} from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useCallback, useEffect, useState } from 'react';
 import { calculateUpdatedMapBounds } from 'utils/mapBoundaryUploadHelpers';
 
@@ -64,14 +60,17 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details, occurrence_submission },
+    surveyForViewData: {
+      surveyData: { survey_details },
+      surveySupplementaryData: { occurrence_submission }
+    },
     refresh
   } = props;
 
   const surveyGeometry = survey_details?.geometry || [];
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDetailsDataForUpdate, setSurveyDetailsDataForUpdate] = useState<IUpdateSurveyRequest>(null as any);
+  // const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForViewResponse>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
   const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
@@ -114,31 +113,30 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   };
 
   const handleDialogEditOpen = async () => {
-    let studyAreaResponseData;
+    let surveyResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
-        UPDATE_GET_SURVEY_ENTITIES.survey_details
-      ]);
+      const surveyResponse = await biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details?.id);
 
-      if (!response) {
+      if (!surveyResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
-      studyAreaResponseData = response;
+      surveyResponseData = surveyResponse;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setSurveyDetailsDataForUpdate(studyAreaResponseData);
+    // setSurveyDataForUpdate(surveyResponseData);
+
     setStudyAreaFormData({
-      ...StudyAreaInitialValues,
-      survey_area_name:
-        (studyAreaResponseData.survey_details && studyAreaResponseData.survey_details.survey_area_name) || '',
-      geometry: studyAreaResponseData.survey_details?.geometry || []
+      location: {
+        survey_area_name: surveyResponseData.surveyData.survey_details.survey_area_name,
+        geometry: surveyResponseData.surveyData.survey_details.geometry
+      }
     });
 
     setOpenEditDialog(true);
@@ -146,18 +144,15 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
 
   const handleDialogEditSave = async (values: IStudyAreaForm) => {
     try {
-      if (surveyDetailsDataForUpdate.survey_details) {
-        const surveyData = {
-          survey_details: {
-            ...surveyDetailsDataForUpdate.survey_details,
-            permit_type: '', // TODO 20211108: currently permit insert vs update is dictated by permit_type (needs fixing/updating)
-            survey_area_name: values.survey_area_name,
-            geometry: values.geometry
-          }
-        };
+      const surveyData = {
+        location: {
+          survey_area_name: values.location.survey_area_name,
+          geometry: values.location.geometry,
+          revision_count: survey_details.revision_count
+        }
+      };
 
-        await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
-      }
+      await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });

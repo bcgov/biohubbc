@@ -101,7 +101,7 @@ describe('PostSurveyObject', () => {
       first_nations_id: null,
       category_rationale: null,
       proprietor_name: null,
-      data_sharing_agreement_required: 'false',
+      disa_required: 'false',
       surveyed_all_areas: 'true'
     };
 
@@ -187,7 +187,7 @@ describe('PostSurveyObject', () => {
       first_nations_id: null,
       category_rationale: 'rationale',
       proprietor_name: 'name',
-      data_sharing_agreement_required: 'true',
+      disa_required: 'true',
       surveyed_all_areas: 'true'
     };
 
@@ -292,7 +292,7 @@ describe('PostSurveyProprietorData', () => {
       first_nations_id: null,
       category_rationale: 'rationale',
       proprietor_name: 'name',
-      data_sharing_agreement_required: 'true'
+      disa_required: 'true'
     };
 
     before(() => {
@@ -328,7 +328,7 @@ describe('PostSurveyProprietorData', () => {
       first_nations_id: 2,
       category_rationale: 'rationale',
       proprietor_name: 'name',
-      data_sharing_agreement_required: 'true'
+      disa_required: 'true'
     };
 
     before(() => {

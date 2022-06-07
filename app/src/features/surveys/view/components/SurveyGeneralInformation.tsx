@@ -25,11 +25,10 @@ import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
-  IGetSurveyForUpdateResponseDetails,
   IGetSurveyForViewResponse,
+  ISurveyAvailableFundingSources,
   ISurveyFundingSourceForView,
-  ISurveyPermits,
-  UPDATE_GET_SURVEY_ENTITIES
+  ISurveyPermits
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
@@ -53,17 +52,19 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details, species, permit, funding_sources },
+    surveyForViewData: {
+      surveyData: { survey_details, species, permit, funding }
+    },
     refresh
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForUpdateResponseDetails>(null as any);
+  // const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForViewResponse>(null as any);
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
   const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
-  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyFundingSourceForView[]>([]);
+  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
     dialogTitle: EditSurveyGeneralInformationI18N.editErrorTitle,
@@ -82,27 +83,25 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   };
 
   const handleDialogEditOpen = async () => {
-    let surveyDetailsResponseData;
+    let surveyResponseData;
     let surveyPermitsResponseData;
     let surveyFundingSourcesResponseData;
 
     try {
-      const [surveyForUpdateResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
-        biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
-          UPDATE_GET_SURVEY_ENTITIES.survey_details
-        ]),
+      const [surveyResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
+        biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details.id),
         biohubApi.survey.getSurveyPermits(projectForViewData.id),
         biohubApi.survey.getAvailableSurveyFundingSources(projectForViewData.id)
       ]);
 
-      if (!surveyForUpdateResponse?.survey_details || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
+      if (!surveyResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
       surveyFundingSourcesResponseData = surveyFundingSourcesResponse;
       surveyPermitsResponseData = surveyPermitsResponse;
-      surveyDetailsResponseData = surveyForUpdateResponse.survey_details;
+      surveyResponseData = surveyResponse;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
@@ -113,9 +112,12 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       If a permit number/type already exists for the record we are updating, we need to include it in the
       list of applicable permits for the survey to be associated with
     */
-    if (surveyDetailsResponseData.permit_number && surveyDetailsResponseData.permit_type) {
+    if (surveyResponseData.surveyData.permit.permit_number && surveyResponseData.surveyData.permit.permit_type) {
       setSurveyPermits([
-        { permit_number: surveyDetailsResponseData.permit_number, permit_type: surveyDetailsResponseData.permit_type },
+        {
+          permit_number: surveyResponseData.surveyData.permit.permit_number,
+          permit_type: surveyResponseData.surveyData.permit.permit_type
+        },
         ...surveyPermitsResponseData
       ]);
     } else {
@@ -123,31 +125,36 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     }
 
     setSurveyFundingSources(surveyFundingSourcesResponseData);
-    setSurveyDataForUpdate(surveyDetailsResponseData);
+    // setSurveyDataForUpdate(surveyResponseData);
     setGeneralInformationFormData({
-      ...surveyDetailsResponseData,
-      permit_type: '',
-      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.start_date),
-      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyDetailsResponseData.end_date)
+      survey_details: {
+        ...surveyResponseData.surveyData.survey_details,
+        start_date: getFormattedDate(
+          DATE_FORMAT.ShortDateFormat,
+          surveyResponseData.surveyData.survey_details.start_date
+        ),
+        end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyResponseData.surveyData.survey_details.end_date)
+      },
+      species: surveyResponseData.surveyData.species,
+      permit: surveyResponseData.surveyData.permit,
+      funding: {
+        funding_sources: surveyResponseData.surveyData.funding.funding_sources.map((item) => item.pfs_id)
+      }
     });
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IGeneralInformationForm) => {
     try {
-      if (surveyDataForUpdate) {
-        const surveyDetailsData = {
-          survey_details: {
-            ...values,
-            id: surveyDataForUpdate.id,
-            revision_count: surveyDataForUpdate.revision_count,
-            survey_area_name: surveyDataForUpdate.survey_area_name,
-            geometry: surveyDataForUpdate.geometry
-          }
-        };
+      const surveyDetailsData = {
+        ...values,
+        survey_details: {
+          ...values.survey_details,
+          revision_count: survey_details.revision_count
+        }
+      };
 
-        await biohubApi.survey.updateSurvey(projectForViewData.id, surveyDataForUpdate.id, surveyDetailsData);
-      }
+      await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyDetailsData);
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, dialogErrorDetails: apiError.errors, open: true });
@@ -175,13 +182,13 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               funding_sources={
                 surveyFundingSources?.map((item) => {
                   return {
-                    value: item.pfs_id,
-                    label: `${item.agency_name} | ${getFormattedAmount(
-                      item.funding_amount
-                    )} | ${getFormattedDateRangeString(
+                    value: item.id,
+                    label: `${
+                      props.codes.funding_source.find((fundingCode) => fundingCode.id === item.agency_id)?.name
+                    } | ${getFormattedAmount(item.funding_amount)} | ${getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
-                      item.funding_start_date,
-                      item.funding_end_date
+                      item.start_date,
+                      item.end_date
                     )}`
                   };
                 }) || []
@@ -368,27 +375,26 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               </TableRow>
             </TableHead>
             <TableBody>
-              {(!funding_sources || funding_sources.length === 0) && (
+              {!funding.funding_sources.length && (
                 <TableRow>
                   <TableCell colSpan={3}>No Funding Sources</TableCell>
                 </TableRow>
               )}
-              {funding_sources &&
-                funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
-                  return (
-                    <TableRow key={index}>
-                      <TableCell>{fundingSource.agency_name}</TableCell>
-                      <TableCell>{getFormattedAmount(fundingSource.funding_amount)}</TableCell>
-                      <TableCell>
-                        {getFormattedDateRangeString(
-                          DATE_FORMAT.ShortMediumDateFormat,
-                          fundingSource.funding_start_date,
-                          fundingSource.funding_end_date
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+              {funding.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{fundingSource.agency_name}</TableCell>
+                    <TableCell>{getFormattedAmount(fundingSource.funding_amount)}</TableCell>
+                    <TableCell>
+                      {getFormattedDateRangeString(
+                        DATE_FORMAT.ShortMediumDateFormat,
+                        fundingSource.funding_start_date,
+                        fundingSource.funding_end_date
+                      )}
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>

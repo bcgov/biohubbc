@@ -12,7 +12,8 @@ import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyStatusType } from 'constants/misc';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveysListProps {
-  surveysList: IGetSurveyForViewResponse[];
+  surveysList: SurveyViewObject[];
   projectId: number;
 }
 
@@ -44,6 +45,25 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+
+  const getSurveyCompletionStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
+    if (
+      surveyObject.survey_details.end_date &&
+      moment(surveyObject.survey_details.end_date).endOf('day').isBefore(moment())
+    ) {
+      return SurveyStatusType.COMPLETED;
+    }
+
+    return SurveyStatusType.ACTIVE;
+  };
+
+  const getSurveyPublishStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
+    if (surveyObject.survey_details.publish_date) {
+      return SurveyStatusType.PUBLISHED;
+    }
+
+    return SurveyStatusType.UNPUBLISHED;
+  };
 
   const getChipIcon = (status_name: string) => {
     let chipLabel;
@@ -95,9 +115,7 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                     </Link>
                   </TableCell>
                   <TableCell>
-                    {row.species?.focal_species_names?.join(', ')}
-                    {', '}
-                    {row.species?.ancillary_species_names?.join(', ')}
+                    {[...row.species?.focal_species_names, ...row.species?.ancillary_species_names].join(', ')}
                   </TableCell>
                   <TableCell>
                     {getFormattedDateRangeString(
@@ -106,8 +124,8 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                       row.survey_details.end_date
                     )}
                   </TableCell>
-                  <TableCell>{getChipIcon(row.survey_details.completion_status)}</TableCell>
-                  <TableCell>{getChipIcon(row.survey_details.publish_status)}</TableCell>
+                  <TableCell>{getChipIcon(getSurveyCompletionStatusType(row))}</TableCell>
+                  <TableCell>{getChipIcon(getSurveyPublishStatusType(row))}</TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (

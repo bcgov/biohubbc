@@ -1,10 +1,9 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutSurveyDetailsData, PutSurveyProprietorData } from '../../models/survey-update';
+import { PutSurveyDetailsData } from '../../models/survey-update';
 import {
   putNewSurveyPermitNumberSQL,
   putSurveyDetailsSQL,
-  putSurveyProprietorSQL,
   unassociatePermitFromSurveySQL,
   updateSurveyPublishStatusSQL
 } from './survey-update-queries';
@@ -45,32 +44,26 @@ describe('putSurveyDetailsSQL', () => {
     ]
   };
 
-  it('returns null when null project id param provided', () => {
-    const response = putSurveyDetailsSQL((null as unknown) as number, 1, surveyData, 1);
-
-    expect(response).to.be.null;
-  });
-
   it('returns null when null survey id param provided', () => {
-    const response = putSurveyDetailsSQL(1, (null as unknown) as number, surveyData, 1);
+    const response = putSurveyDetailsSQL((null as unknown) as number, surveyData);
 
     expect(response).to.be.null;
   });
 
   it('returns null when null survey data param provided', () => {
-    const response = putSurveyDetailsSQL((null as unknown) as number, (null as unknown) as number, null, 1);
+    const response = putSurveyDetailsSQL((null as unknown) as number, null);
 
     expect(response).to.be.null;
   });
 
   it('returns non null response when valid params provided with geometry', () => {
-    const response = putSurveyDetailsSQL(1, 2, surveyData, 1);
+    const response = putSurveyDetailsSQL(2, surveyData);
 
     expect(response).to.not.be.null;
   });
 
   it('returns non null response when valid params provided without geometry', () => {
-    const response = putSurveyDetailsSQL(1, 2, { ...surveyData, geometry: null as any }, 1);
+    const response = putSurveyDetailsSQL(2, { ...surveyData, geometry: null as any });
 
     expect(response).to.not.be.null;
   });
@@ -105,26 +98,6 @@ describe('putNewSurveyPermitNumberSQL', () => {
 
   it('returns sql statement when valid params provided', () => {
     const response = putNewSurveyPermitNumberSQL(1, '123');
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('putSurveyProprietorSQL', () => {
-  it('returns null when surveyId is falsey value not equal to 0', () => {
-    const response = putSurveyProprietorSQL((null as unknown) as number, { prt_id: 1 } as PutSurveyProprietorData);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when survey proprietor id is falsey value not equal to 0', () => {
-    const response = putSurveyProprietorSQL(1, (null as unknown) as PutSurveyProprietorData);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns a non null when valid params passed in', () => {
-    const response = putSurveyProprietorSQL(1, { prt_id: 1 } as PutSurveyProprietorData);
 
     expect(response).to.not.be.null;
   });

@@ -24,7 +24,7 @@ describe('createSurvey', () => {
       biologist_first_name: 'Roanna',
       biologist_last_name: 'Brown',
       category_rationale: 'rationale',
-      data_sharing_agreement_required: 'false',
+      disa_required: 'false',
       end_date: '2080-12-30',
       first_nations_id: 0,
       foippa_requirements_accepted: true,

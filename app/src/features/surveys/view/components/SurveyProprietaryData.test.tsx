@@ -10,7 +10,7 @@ import SurveyProprietaryData from './SurveyProprietaryData';
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   survey: {
-    getSurveyForUpdate: jest.fn(),
+    getSurveyForView: jest.fn(),
     updateSurvey: jest.fn()
   }
 };
@@ -35,7 +35,7 @@ const renderContainer = () => {
 describe('SurveyProprietaryData', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().survey.getSurveyForUpdate.mockClear();
+    mockBiohubApi().survey.getSurveyForView.mockClear();
     mockBiohubApi().survey.updateSurvey.mockClear();
     mockRefresh.mockClear();
   });
@@ -51,7 +51,7 @@ describe('SurveyProprietaryData', () => {
   });
 
   it('editing the survey proprietary data works in the dialog (not proprietary data)', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
       survey_proprietor: {
         id: 23,
         revision_count: 1
@@ -67,7 +67,7 @@ describe('SurveyProprietaryData', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
+      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
       ]);
     });
@@ -96,7 +96,7 @@ describe('SurveyProprietaryData', () => {
           id: 23,
           revision_count: 1,
           category_rationale: '',
-          data_sharing_agreement_required: 'false',
+          disa_required: 'false',
           first_nations_id: 0,
           proprietary_data_category: 0,
           proprietor_name: '',
@@ -109,7 +109,7 @@ describe('SurveyProprietaryData', () => {
   });
 
   it('editing the survey proprietary data works in the dialog (proprietary data)', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
       survey_proprietor: {
         id: 23,
         revision_count: 1,
@@ -117,7 +117,7 @@ describe('SurveyProprietaryData', () => {
         first_nations_id: 0,
         category_rationale: 'rationale',
         proprietor_name: 'prop name',
-        data_sharing_agreement_required: 'true',
+        disa_required: 'true',
         survey_data_proprietary: 'true'
       }
     });
@@ -131,7 +131,7 @@ describe('SurveyProprietaryData', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
+      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
       ]);
     });
@@ -163,7 +163,7 @@ describe('SurveyProprietaryData', () => {
           first_nations_id: 0,
           category_rationale: 'rationale',
           proprietor_name: 'prop name',
-          data_sharing_agreement_required: 'true',
+          disa_required: 'true',
           survey_data_proprietary: 'true'
         }
       });
@@ -173,7 +173,7 @@ describe('SurveyProprietaryData', () => {
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue(null);
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(null);
 
     const { getByText, queryByText } = renderContainer();
 
@@ -195,7 +195,7 @@ describe('SurveyProprietaryData', () => {
   });
 
   it('shows error dialog with API error message when getting survey proprietor data for update fails', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockBiohubApi().survey.getSurveyForView = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, queryByText, getAllByRole } = renderContainer();
 
@@ -219,7 +219,7 @@ describe('SurveyProprietaryData', () => {
   });
 
   it('shows error dialog with API error message when updating survey proprietor data fails', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
       survey_proprietor: {
         id: 23,
         revision_count: 1,
@@ -227,7 +227,7 @@ describe('SurveyProprietaryData', () => {
         first_nations_id: 0,
         category_rationale: 'rationale',
         proprietor_name: 'prop name',
-        data_sharing_agreement_required: 'true',
+        disa_required: 'true',
         survey_data_proprietary: 'true'
       }
     });
@@ -242,7 +242,7 @@ describe('SurveyProprietaryData', () => {
     fireEvent.click(getByText('Edit'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
+      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
         UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
       ]);
     });

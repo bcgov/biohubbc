@@ -95,7 +95,7 @@ describe('postSurveyProprietarySQL', () => {
       first_nations_id: 8,
       category_rationale: 'rationale',
       proprietor_name: 'a name',
-      data_sharing_agreement_required: false
+      disa_required: false
     };
 
     const postSurveyProprietorData = new PostSurveyProprietorData(surveyProprietorData);

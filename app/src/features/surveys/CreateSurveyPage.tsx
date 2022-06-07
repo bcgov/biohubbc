@@ -21,7 +21,11 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { ICreateSurveyRequest, ISurveyFundingSourceForView, ISurveyPermits } from 'interfaces/useSurveyApi.interface';
+import {
+  ICreateSurveyRequest,
+  ISurveyAvailableFundingSources,
+  ISurveyPermits
+} from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -93,7 +97,7 @@ const CreateSurveyPage = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
   const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
-  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyFundingSourceForView[]>([]);
+  const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
@@ -336,13 +340,13 @@ const CreateSurveyPage = () => {
                       funding_sources={
                         surveyFundingSources?.map((item) => {
                           return {
-                            value: item.pfs_id,
-                            label: `${item.agency_name} | ${getFormattedAmount(
-                              item.funding_amount
-                            )} | ${getFormattedDateRangeString(
+                            value: item.id,
+                            label: `${
+                              codes.funding_source.find((fundingCode) => fundingCode.id === item.agency_id)?.name
+                            } | ${getFormattedAmount(item.funding_amount)} | ${getFormattedDateRangeString(
                               DATE_FORMAT.ShortMediumDateFormat,
-                              item.funding_start_date,
-                              item.funding_end_date
+                              item.start_date,
+                              item.end_date
                             )}`
                           };
                         }) || []

@@ -9,7 +9,7 @@ import SurveyGeneralInformation from './SurveyGeneralInformation';
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   survey: {
-    getSurveyForUpdate: jest.fn(),
+    getSurveyForView: jest.fn(),
     updateSurvey: jest.fn(),
     getSurveyPermits: jest.fn(),
     getSurveyFundingSources: jest.fn()
@@ -39,7 +39,7 @@ const renderContainer = () => {
 describe('SurveyGeneralInformation', () => {
   beforeEach(() => {
     // clear mocks before each test
-    mockBiohubApi().survey.getSurveyForUpdate.mockClear();
+    mockBiohubApi().survey.getSurveyForView.mockClear();
     mockBiohubApi().survey.updateSurvey.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
     mockBiohubApi().survey.getSurveyFundingSources.mockClear();
@@ -78,7 +78,7 @@ describe('SurveyGeneralInformation', () => {
   });
 
   it('editing the survey details works in the dialog', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
       survey_details: {
         id: 1,
         survey_name: 'survey name is this',
@@ -123,7 +123,7 @@ describe('SurveyGeneralInformation', () => {
     fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
+      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
         'survey_details'
       ]);
     });
@@ -183,7 +183,7 @@ describe('SurveyGeneralInformation', () => {
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue(null);
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(null);
 
     const { getByText, getByTestId, queryByText } = renderContainer();
 
@@ -205,7 +205,7 @@ describe('SurveyGeneralInformation', () => {
   });
 
   it('shows error dialog with API error message when getting survey data for update fails', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate = jest.fn(() => Promise.reject(new Error('API Error is Here')));
+    mockBiohubApi().survey.getSurveyForView = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, getByTestId, queryByText, getAllByRole } = renderContainer();
 
@@ -229,7 +229,7 @@ describe('SurveyGeneralInformation', () => {
   });
 
   it('shows error dialog with API error message when updating survey data fails', async () => {
-    mockBiohubApi().survey.getSurveyForUpdate.mockResolvedValue({
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
       survey_details: {
         id: 1,
         survey_name: 'survey name is this',
@@ -263,7 +263,7 @@ describe('SurveyGeneralInformation', () => {
     fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForUpdate).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
+      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
         'survey_details'
       ]);
     });

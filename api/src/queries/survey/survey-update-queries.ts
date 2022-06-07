@@ -1,9 +1,7 @@
+import { Knex } from 'knex';
 import { SQL, SQLStatement } from 'sql-template-strings';
-import {
-  PutSurveyDetailsData,
-  PutSurveyProprietorData,
-  PutSurveyPurposeAndMethodologyData
-} from '../../models/survey-update';
+import { getKnex } from '../../database/db';
+import { PutSurveyObject } from '../../models/survey-update';
 import { queries } from '../queries';
 
 /**
@@ -13,13 +11,10 @@ import { queries } from '../queries';
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
+export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement => {
   return SQL`
-    UPDATE permit
+    UPDATE
+      permit
     SET
       survey_id = ${null}
     WHERE
@@ -28,123 +23,111 @@ export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement |
 };
 
 /**
- * SQL query to update a permit row based on a new survey association.
+ * Attempt to insert a new permit record and associate the survey to it. On permit number conflict (record with that
+ * permit number already exists) update that existing record by associating the survey to it.
  *
- * @param {number} surveyId
- * @param {string} permitNumber
- * @returns {SQLStatement} sql query object
- */
-export const putNewSurveyPermitNumberSQL = (surveyId: number, permitNumber: string): SQLStatement | null => {
-  if (!surveyId || !permitNumber) {
-    return null;
-  }
-
-  return SQL`
-    UPDATE permit
-    SET
-      survey_id = ${surveyId}
-    WHERE
-      number = ${permitNumber}
-    AND
-      survey_id IS NULL;
-  `;
-};
-
-/**
- * SQL query to update a survey row.
- *
+ * @param {number} systemUserId
  * @param {number} projectId
  * @param {number} surveyId
- * @param {PutSurveyDetailsData} data
- * @returns {SQLStatement} sql query object
+ * @param {string} permitNumber
+ * @param {string} permitType
+ * @return {*}  {(QLStatement}
  */
-export const putSurveyDetailsSQL = (
+export const upsertSurveyPermitSQL = (
+  systemUserId: number,
   projectId: number,
   surveyId: number,
-  data: PutSurveyDetailsData | null,
-  revision_count: number
-): SQLStatement | null => {
-  if (!projectId || !surveyId || !data) {
-    return null;
-  }
-
-  const geometrySqlStatement = SQL``;
-
-  if (data.geometry && data.geometry.length) {
-    const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(data.geometry);
-
-    geometrySqlStatement.append(SQL`
-      public.geography(
-        public.ST_Force2D(
-          public.ST_SetSRID(
-    `);
-
-    geometrySqlStatement.append(geometryCollectionSQL);
-
-    geometrySqlStatement.append(SQL`
-      , 4326)))
-    `);
-  } else {
-    geometrySqlStatement.append(SQL`
-      null
-    `);
-  }
-
-  const sqlStatement = SQL`
-    UPDATE survey
-    SET
-      name = ${data.name},
-      start_date = ${data.start_date},
-      end_date = ${data.end_date},
-      lead_first_name = ${data.lead_first_name},
-      lead_last_name = ${data.lead_last_name},
-      location_name = ${data.location_name},
-      geojson = ${JSON.stringify(data.geometry)},
-      geography =
+  permitNumber: string,
+  permitType: string
+): SQLStatement => {
+  return SQL`
+    INSERT INTO permit (
+      system_user_id,
+      project_id,
+      survey_id,
+      number,
+      type
+    ) VALUES (
+      ${systemUserId},
+      ${projectId},
+      ${surveyId},
+      ${permitNumber},
+      ${permitType}
+    )
+    ON CONFLICT (number) DO
+    UPDATE SET
+      survey_id = ${surveyId};
   `;
-
-  sqlStatement.append(geometrySqlStatement);
-
-  sqlStatement.append(SQL`
-    WHERE
-      project_id = ${projectId}
-    AND
-      survey_id = ${surveyId}
-    AND
-      revision_count = ${revision_count};
-  `);
-
-  return sqlStatement;
 };
 
 /**
- * SQL query to update a survey row.
+ * Knex query builder to update a survey row.
  *
  * @param {number} surveyId
- * @param {number} surveyProprietorId
- * @param {PutSurveyProprietorData} data
- * @returns {SQLStatement} sql query object
+ * @param {PutSurveyObject} data
+ * @returns {Knex.QueryBuilder<any, number>} knex query builder
  */
-export const putSurveyProprietorSQL = (surveyId: number, data: PutSurveyProprietorData | null): SQLStatement | null => {
-  if (!surveyId || !data) {
-    return null;
+export const putSurveyDetailsSQL = (surveyId: number, data: PutSurveyObject): Knex.QueryBuilder<any, number> => {
+  const knex = getKnex();
+
+  let fieldsToUpdate = {};
+
+  if (data.survey_details) {
+    fieldsToUpdate = {
+      ...fieldsToUpdate,
+      name: data.survey_details.name,
+      start_date: data.survey_details.start_date,
+      end_date: data.survey_details.end_date,
+      lead_first_name: data.survey_details.lead_first_name,
+      lead_last_name: data.survey_details.lead_last_name,
+      revision_count: data.survey_details.revision_count
+    };
   }
 
-  return SQL`
-    UPDATE
-      survey_proprietor
-    SET
-      proprietor_type_id = ${data.prt_id},
-      first_nations_id = ${data.fn_id},
-      rationale = ${data.rationale},
-      proprietor_name = ${data.proprietor_name},
-      disa_required = ${data.disa_required},
-      revision_count = ${data.revision_count}
-    WHERE
-      survey_proprietor_id = ${data.id}
-    AND
-      survey_id = ${surveyId}
-  `;
+  if (data.purpose_and_methodology) {
+    fieldsToUpdate = {
+      ...fieldsToUpdate,
+      field_method_id: data.purpose_and_methodology.field_method_id,
+      additional_details: data.purpose_and_methodology.additional_details,
+      ecological_season_id: data.purpose_and_methodology.ecological_season_id,
+      intended_outcome_id: data.purpose_and_methodology.intended_outcome_id,
+      surveyed_all_areas: data.purpose_and_methodology.surveyed_all_areas,
+      revision_count: data.purpose_and_methodology.revision_count
+    };
+  }
+
+  if (data.location) {
+    const geometrySqlStatement = SQL``;
+
+    if (data.location.geometry && data.location.geometry.length) {
+      geometrySqlStatement.append(SQL`
+        public.geography(
+          public.ST_Force2D(
+            public.ST_SetSRID(
+      `);
+
+      const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(data.location.geometry);
+      geometrySqlStatement.append(geometryCollectionSQL);
+
+      geometrySqlStatement.append(SQL`
+        , 4326)))
+      `);
+    } else {
+      geometrySqlStatement.append(SQL`
+        null
+      `);
+    }
+
+    fieldsToUpdate = {
+      ...fieldsToUpdate,
+      location_name: data.location.survey_area_name,
+      geojson: JSON.stringify(data.location.geometry),
+      geography: knex.raw(geometrySqlStatement.sql, geometrySqlStatement.values),
+      revision_count: data.location.revision_count
+    };
+  }
+
+  return knex('survey').update(fieldsToUpdate).where('survey_id', surveyId);
 };
 
 /**
@@ -189,37 +172,4 @@ export const updateSurveyPublishStatusSQL = (surveyId: number, publish: boolean)
   `);
 
   return sqlStatement;
-};
-
-/**
- * SQL query to update a survey row.
- *
- * @param {number} projectId
- * @param {number} surveyId
- * @param {PutSurveyPurposeAndMethodologyData} data
- * @returns {SQLStatement} sql query object
- */
-export const putSurveyPurposeAndMethodologySQL = (
-  surveyId: number,
-  data: PutSurveyPurposeAndMethodologyData | null,
-  revision_count: number
-): SQLStatement | null => {
-  if (!surveyId || !data) {
-    return null;
-  }
-
-  return SQL`
-    UPDATE
-      survey
-    SET
-      field_method_id = ${data.field_method_id},
-     additional_details = ${data.additional_details},
-      ecological_season_id = ${data.ecological_season_id},
-      intended_outcome_id = ${data.intended_outcome_id},
-      surveyed_all_areas = ${data.surveyed_all_areas}
-    WHERE
-      survey_id = ${surveyId}
-    AND
-      revision_count = ${revision_count};
-  `;
 };

@@ -3,9 +3,8 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
-import { GetSurveyFundingSources } from '../../../../../models/survey-view';
-import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('/api/project/{projectId}/survey/funding-sources/list');
@@ -50,28 +49,47 @@ GET.apiDoc = {
         'application/json': {
           schema: {
             type: 'array',
+            description: 'Funding sources applicable for the survey',
             items: {
-              title: 'Funding Sources Get Response Object',
               type: 'object',
               properties: {
-                pfs_id: {
+                id: {
                   type: 'number'
                 },
-                funding_amount: {
+                agency_id: {
                   type: 'number'
                 },
-                funding_start_date: {
-                  type: 'string'
+                investment_action_category: {
+                  type: 'number'
                 },
-                funding_end_date: {
+                investment_action_category_name: {
                   type: 'string'
                 },
                 agency_name: {
                   type: 'string'
+                },
+                funding_amount: {
+                  type: 'number'
+                },
+                start_date: {
+                  type: 'string',
+                  format: 'date',
+                  description: 'ISO 8601 date string for the funding start date'
+                },
+                end_date: {
+                  type: 'string',
+                  format: 'date',
+                  description: 'ISO 8601 date string for the funding end_date'
+                },
+                agency_project_id: {
+                  type: 'string',
+                  nullable: true
+                },
+                revision_count: {
+                  type: 'number'
                 }
               }
-            },
-            description: 'Funding sources applicable for the survey'
+            }
           }
         }
       }
@@ -96,34 +114,13 @@ export function getSurveyFundingSources(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const getSurveyFundingSourcesSQLStatement = queries.project.getFundingSourceByProjectSQL(
-        Number(req.params.projectId)
-      );
-
-      if (!getSurveyFundingSourcesSQLStatement) {
-        throw new HTTP400('Failed to build SQL get statement');
-      }
-
       await connection.open();
 
-      const surveyFundingSourcesData = await connection.query(
-        getSurveyFundingSourcesSQLStatement.text,
-        getSurveyFundingSourcesSQLStatement.values
-      );
+      const projectService = new ProjectService(connection);
 
-      await connection.commit();
+      const response = await projectService.getFundingData(Number(req.params.projectId));
 
-      const getSurveyFundingSourcesData =
-        (surveyFundingSourcesData &&
-          surveyFundingSourcesData.rows &&
-          new GetSurveyFundingSources(surveyFundingSourcesData.rows)) ||
-        null;
-
-      if (!getSurveyFundingSourcesData) {
-        return res.status(200).json(null);
-      }
-
-      return res.status(200).json(getSurveyFundingSourcesData.funding_sources);
+      return res.status(200).json(response.fundingSources);
     } catch (error) {
       defaultLog.error({ label: 'getSurveyFundingSources', message: 'error', error });
       await connection.rollback();

@@ -1,6 +1,10 @@
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyForViewResponse,
+  SurveySupplementaryData,
+  SurveyViewObject
+} from 'interfaces/useSurveyApi.interface';
 
-export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
+export const surveyObject: SurveyViewObject = {
   survey_details: {
     id: 1,
     survey_name: 'survey name',
@@ -30,12 +34,10 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
         }
       }
     ],
-    completion_status: 'Active',
     publish_date: (null as unknown) as string,
-    publish_status: 'Unpublished'
+    revision_count: 0
   },
   purpose_and_methodology: {
-    id: 1,
     intended_outcome_id: 1,
     additional_details: 'details',
     field_method_id: 1,
@@ -44,22 +46,23 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     surveyed_all_areas: 'true'
   },
   proprietor: {
-    id: 23,
     proprietary_data_category_name: 'proprietor type',
     first_nations_name: 'first nations name',
     category_rationale: 'rationale',
     proprietor_name: 'prop name',
-    disa_required: 'true'
+    disa_required: true
   },
-  funding_sources: [
-    {
-      pfs_id: 1,
-      funding_amount: 100,
-      funding_start_date: '2000-04-09 11:53:53',
-      funding_end_date: '2000-05-10 11:53:53',
-      agency_name: 'Funding Agency Blah'
-    }
-  ],
+  funding: {
+    funding_sources: [
+      {
+        pfs_id: 1,
+        funding_amount: 100,
+        funding_start_date: '2000-04-09 11:53:53',
+        funding_end_date: '2000-05-10 11:53:53',
+        agency_name: 'Funding Agency Blah'
+      }
+    ]
+  },
   permit: {
     permit_number: '123',
     permit_type: 'Scientific'
@@ -69,11 +72,19 @@ export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
     focal_species_names: ['focal species 1'],
     ancillary_species: [2],
     ancillary_species_names: ['ancillary species 2']
-  },
+  }
+};
+
+export const surveySupplementaryData: SurveySupplementaryData = {
   occurrence_submission: {
     id: null
   },
   summary_result: {
     id: null
   }
+};
+
+export const getSurveyForViewResponse: IGetSurveyForViewResponse = {
+  surveyData: surveyObject,
+  surveySupplementaryData: surveySupplementaryData
 };

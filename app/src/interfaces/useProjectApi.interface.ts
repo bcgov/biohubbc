@@ -180,7 +180,7 @@ export interface IGetProjectForUpdateResponseIUCN {
   classificationDetails: IGetProjectForUpdateResponseIUCNArrayItem[];
 }
 
-interface IGetProjectForUpdateResponseFundingSource {
+export interface IGetProjectForUpdateResponseFundingSource {
   id: number;
   agency_id: number;
   investment_action_category: number;

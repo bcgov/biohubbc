@@ -574,7 +574,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                   >
                     <input
                       class="PrivateSwitchBase-input-19"
-                      name="data_sharing_agreement_required"
+                      name="disa_required"
                       required=""
                       type="radio"
                       value="false"
@@ -627,7 +627,7 @@ exports[`Proprietary Data Form renders correctly the filled component correctly 
                     <input
                       checked=""
                       class="PrivateSwitchBase-input-19"
-                      name="data_sharing_agreement_required"
+                      name="disa_required"
                       required=""
                       type="radio"
                       value="true"
@@ -1113,7 +1113,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                   >
                     <input
                       class="PrivateSwitchBase-input-51"
-                      name="data_sharing_agreement_required"
+                      name="disa_required"
                       required=""
                       type="radio"
                       value="false"
@@ -1166,7 +1166,7 @@ exports[`Proprietary Data Form renders correctly when errors exist when survey d
                     <input
                       checked=""
                       class="PrivateSwitchBase-input-51"
-                      name="data_sharing_agreement_required"
+                      name="disa_required"
                       required=""
                       type="radio"
                       value="true"

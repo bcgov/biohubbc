@@ -14,7 +14,7 @@ const proprietaryDataFilledValues = {
   proprietor_name: 'name',
   category_rationale: 'rationale is cause it is true',
   survey_data_proprietary: 'true',
-  data_sharing_agreement_required: 'true'
+  disa_required: 'true'
 };
 
 describe('Proprietary Data Form', () => {
@@ -141,14 +141,14 @@ describe('Proprietary Data Form', () => {
           proprietary_data_category: 'error on proprietary data category field',
           proprietor_name: 'error on proprietor name field',
           category_rationale: 'error on category rationale field',
-          data_sharing_agreement_required: 'error on data sharing agreement required field'
+          disa_required: 'error on data sharing agreement required field'
         }}
         initialTouched={{
           survey_data_proprietary: true,
           proprietary_data_category: true,
           proprietor_name: true,
           category_rationale: true,
-          data_sharing_agreement_required: true
+          disa_required: true
         }}
         validateOnChange={false}
         onSubmit={async (values) => {

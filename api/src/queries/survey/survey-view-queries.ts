@@ -33,11 +33,7 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getSurveyIdsSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       survey_id as id
@@ -45,27 +41,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
       survey
     WHERE
       project_id = ${projectId};
-  `;
-};
-
-/**
- * SQL query to get all surveys for list view.
- *
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveySQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      *
-    FROM
-      survey
-    WHERE
-      survey_id = ${surveyId};
   `;
 };
 

@@ -24,41 +24,63 @@ import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
 export interface IGeneralInformationForm {
-  survey_name: string;
-  start_date: string;
-  end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  permit_number: string;
-  permit_type: string;
-  funding_sources: number[];
-  focal_species: number[];
-  ancillary_species: number[];
+  survey_details: {
+    survey_name: string;
+    start_date: string;
+    end_date: string;
+    biologist_first_name: string;
+    biologist_last_name: string;
+  };
+  species: {
+    focal_species: number[];
+    ancillary_species: number[];
+  };
+  permit: {
+    permit_number: string;
+    permit_type: string;
+  };
+  funding: {
+    funding_sources: number[];
+  };
 }
 
 export const GeneralInformationInitialValues: IGeneralInformationForm = {
-  survey_name: '',
-  start_date: '',
-  end_date: '',
-  biologist_first_name: '',
-  biologist_last_name: '',
-  permit_number: '',
-  permit_type: '',
-  funding_sources: [],
-  focal_species: [],
-  ancillary_species: []
+  survey_details: {
+    survey_name: '',
+    start_date: '',
+    end_date: '',
+    biologist_first_name: '',
+    biologist_last_name: ''
+  },
+  species: {
+    focal_species: [],
+    ancillary_species: []
+  },
+  permit: {
+    permit_number: '',
+    permit_type: ''
+  },
+  funding: {
+    funding_sources: []
+  }
 };
 
 export const GeneralInformationYupSchema = (customYupRules?: any) => {
   return yup.object().shape({
-    survey_name: yup.string().required('Required'),
-    biologist_first_name: yup.string().required('Required'),
-    biologist_last_name: yup.string().required('Required'),
-    start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
-    end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date'),
-    permit_number: yup.string().max(100, 'Cannot exceed 100 characters'),
-    focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
-    ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
+    survey_details: yup.object().shape({
+      survey_name: yup.string().required('Required'),
+      biologist_first_name: yup.string().required('Required'),
+      biologist_last_name: yup.string().required('Required'),
+      start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
+      end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+    }),
+    species: yup.object().shape({
+      focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
+      ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
+    }),
+    permit: yup.object().shape({
+      permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
+    })
   });
 };
 
@@ -99,7 +121,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
       ) => {
         const response = await biohubApi.taxonomy.searchSpecies(inputValue);
         const newOptions = convertOptions(response.searchResponse).filter(
-          (item: any) => !existingValues.includes(item.value)
+          (item: any) => !existingValues?.includes(item.value)
         );
         callback(newOptions);
       },
@@ -116,8 +138,8 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         startIcon={<Icon path={mdiPlus} size={1} />}
         aria-label="add-permit"
         onClick={() => {
-          formikProps.setFieldValue('permit_number', '');
-          formikProps.setFieldValue('permit_type', '');
+          formikProps.setFieldValue('permit.permit_number', '');
+          formikProps.setFieldValue('permit.permit_type', '');
           setShowAddPermitRow(true);
         }}>
         <strong>Add Permit</strong>
@@ -130,7 +152,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <CustomTextField
-            name="survey_name"
+            name="survey_details.survey_name"
             label="Survey Name"
             other={{
               required: true
@@ -139,8 +161,8 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <StartEndDateFields
           formikProps={formikProps}
-          startName="start_date"
-          endName="end_date"
+          startName="survey_details.start_date"
+          endName="survey_details.end_date"
           startRequired={true}
           endRequired={false}
           startDateHelperText={`Start date must be on or after project start date ${getFormattedDate(
@@ -159,7 +181,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <Grid item xs={12}>
           <Typography component="legend">Species</Typography>
           <MultiAutocompleteFieldVariableSize
-            id="focal_species"
+            id="species.focal_species"
             label="Focal Species"
             required={true}
             type="api-search"
@@ -169,7 +191,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
-            id="ancillary_species"
+            id="species.ancillary_species"
             label="Ancillary Species"
             required={false}
             type="api-search"
@@ -184,7 +206,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <CustomTextField
-              name="biologist_first_name"
+              name="survey_details.biologist_first_name"
               label="First Name"
               other={{
                 required: true
@@ -193,7 +215,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           </Grid>
           <Grid item xs={12} md={6}>
             <CustomTextField
-              name="biologist_last_name"
+              name="survey_details.biologist_last_name"
               label="Last Name"
               other={{
                 required: true
@@ -215,14 +237,14 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
               <Box flex="1 1 auto">
                 <AutocompleteField
                   id="permit_number"
-                  name="permit_number"
+                  name="permit.permit_number"
                   label="Select Permit"
                   options={props.permit_numbers}
                   onChange={(event, option) => {
                     if (!option) {
-                      formikProps.setFieldValue('permit_number', '');
+                      formikProps.setFieldValue('permit.permit_number', '');
                     } else {
-                      formikProps.setFieldValue('permit_number', option.value);
+                      formikProps.setFieldValue('permit.permit_number', option.value);
                     }
                   }}
                 />
@@ -246,13 +268,13 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           <Box display="flex">
             <Box flexBasis="50%" pr={1}>
               <CustomTextField
-                name="permit_number"
+                name="permit.permit_number"
                 label="Permit Number"
                 other={{
                   required: false,
-                  value: formikProps.values.permit_number,
-                  error: formikProps.touched.permit_number && Boolean(formikProps.errors.permit_number),
-                  helperText: formikProps.touched.permit_number && formikProps.errors.permit_number
+                  value: formikProps.values.permit.permit_number,
+                  error: formikProps.touched.permit?.permit_number && Boolean(formikProps.errors.permit?.permit_number),
+                  helperText: formikProps.touched.permit?.permit_number && formikProps.errors.permit?.permit_number
                 }}
               />
             </Box>
@@ -261,12 +283,12 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                 <InputLabel id="permit_type">Permit Type</InputLabel>
                 <Select
                   id="permit_type"
-                  name="permit_type"
+                  name="permit.permit_type"
                   labelId="permit_type"
                   label="Permit Type"
-                  value={formikProps.values.permit_type}
+                  value={formikProps.values.permit.permit_type}
                   onChange={formikProps.handleChange}
-                  error={formikProps.touched.permit_type && Boolean(formikProps.errors.permit_type)}
+                  error={formikProps.touched.permit?.permit_type && Boolean(formikProps.errors.permit?.permit_type)}
                   displayEmpty
                   inputProps={{ 'aria-label': 'Permit Type' }}>
                   <MenuItem key={1} value="Park Use Permit">
@@ -279,7 +301,9 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
                     Scientific Fish Collection Permit
                   </MenuItem>
                 </Select>
-                <FormHelperText>{formikProps.touched.permit_type && formikProps.errors.permit_type}</FormHelperText>
+                <FormHelperText>
+                  {formikProps.touched.permit?.permit_type && formikProps.errors.permit?.permit_type}
+                </FormHelperText>
               </FormControl>
             </Box>
             <Box pt={0.5} pl={1}>
@@ -298,7 +322,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Funding Sources</Typography>
         <MultiAutocompleteFieldVariableSize
-          id="funding_sources"
+          id="funding.funding_sources"
           label="Select Funding Sources"
           options={props.funding_sources}
           required={false}
