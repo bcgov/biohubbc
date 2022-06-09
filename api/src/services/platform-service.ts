@@ -19,7 +19,7 @@ export interface IDwCADataset {
 
 export class PlatformService {
   BACKBONE_API_HOST = process.env.BACKBONE_API_HOST;
-  BACKBONE_API_INGEST_PATH = '/api/dwc/dataset/create';
+  BACKBONE_API_INGEST_PATH = '/api/dwc/submission/create';
 
   /**
    * Submit a new Darwin Core Archive (DwCA) data package to the BioHub Platform Backbone.

@@ -242,19 +242,13 @@ objects:
       labels: {}
       name: ${NAME}${SUFFIX}
     spec:
+      maxReplicas: '${{REPLICA_MAX}}'
+      minReplicas: '${{REPLICAS}}'
       scaleTargetRef:
+        apiVersion: apps.openshift.io/v1
         kind: DeploymentConfig
         name: ${NAME}${SUFFIX}
-        apiVersion: apps.openshift.io/v1
-      minReplicas: '${{REPLICAS}}'
-      maxReplicas: '${{REPLICA_MAX}}'
       metrics:
-        - type: Resource
-          resource:
-            name: memory
-            target:
-              type: Utilization
-              averageUtilization: 90
         - type: Resource
           resource:
             name: cpu
