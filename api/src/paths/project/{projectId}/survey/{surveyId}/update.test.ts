@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import OpenAPIResponseValidator, { OpenAPIResponseValidatorArgs } from 'openapi-response-validator';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import SQL from 'sql-template-strings';
@@ -16,6 +17,118 @@ chai.use(sinonChai);
 describe('getSurveyForUpdate', () => {
   afterEach(() => {
     sinon.restore();
+  });
+
+  describe('response validation', () => {
+    const responseValidator = new OpenAPIResponseValidator(
+      (update.GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs
+    );
+
+    describe('should succeed when', () => {
+      it('has valid values', async () => {
+        const apiResponse = {
+          survey_details: {
+            id: 1,
+            survey_name: 'name',
+            focal_species: [1],
+            ancillary_species: [3],
+            start_date: '2020-04-04',
+            end_date: '2020-05-05',
+            biologist_first_name: 'first',
+            biologist_last_name: 'last',
+            survey_area_name: 'location',
+            revision_count: 1,
+            geometry: [],
+            permit_number: '',
+            permit_type: '',
+            completion_status: COMPLETION_STATUS.COMPLETED,
+            publish_date: '',
+            funding_sources: [1]
+          },
+          survey_purpose_and_methodology: {
+            id: 1,
+            intended_outcome_id: 8,
+            field_method_id: 1,
+            additional_details: 'details',
+            ecological_season_id: 1,
+            vantage_code_ids: [2],
+            surveyed_all_areas: 'true',
+            revision_count: 0
+          },
+          survey_proprietor: {
+            category_rationale: '',
+            data_sharing_agreement_required: 'false',
+            first_nations_id: null,
+            first_nations_name: '',
+            id: 1,
+            proprietary_data_category: null,
+            proprietary_data_category_name: '',
+            proprietor_name: '',
+            survey_data_proprietary: 'true',
+            revision_count: 1
+          }
+        };
+        const response = responseValidator.validateResponse(200, apiResponse);
+        expect(response).to.equal(undefined);
+      });
+
+      it('consists of an empty response', async () => {
+        const apiResponse = {
+          survey_details: null,
+          survey_purpose_and_methodology: null,
+          survey_proprietor: null
+        };
+        const response = responseValidator.validateResponse(200, apiResponse);
+        expect(response).to.equal(undefined);
+      });
+
+      it('contains nullable values where applicable', async () => {
+        const apiResponse = {
+          survey_details: {
+            id: 1,
+            survey_name: 'name',
+            focal_species: [1],
+            ancillary_species: [3],
+            start_date: '2020-04-04',
+            end_date: null,
+            biologist_first_name: 'first',
+            biologist_last_name: 'last',
+            survey_area_name: 'location',
+            revision_count: 1,
+            geometry: [],
+            permit_number: '',
+            permit_type: '',
+            completion_status: COMPLETION_STATUS.COMPLETED,
+            publish_date: '',
+            funding_sources: [1]
+          },
+          survey_purpose_and_methodology: {
+            id: 1,
+            intended_outcome_id: null,
+            field_method_id: 1,
+            additional_details: null,
+            ecological_season_id: null,
+            vantage_code_ids: [],
+            surveyed_all_areas: 'true',
+            revision_count: 0
+          },
+          survey_proprietor: {
+            category_rationale: '',
+            data_sharing_agreement_required: 'false',
+            first_nations_id: null,
+            first_nations_name: '',
+            id: 1,
+            proprietary_data_category: null,
+            proprietary_data_category_name: '',
+            proprietor_name: '',
+            survey_data_proprietary: 'true',
+            revision_count: 1
+          }
+        };
+        const response = responseValidator.validateResponse(200, apiResponse);
+        expect(response).to.equal(undefined);
+      });
+    });
   });
 
   it('should throw a 400 error when no survey id path param', async () => {
