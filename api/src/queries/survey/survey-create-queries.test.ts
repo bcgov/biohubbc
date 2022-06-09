@@ -1,6 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
+import { PostProprietorData, PostSurveyObject } from '../../models/survey-create';
 import {
   insertSurveyFundingSourceSQL,
   postAncillarySpeciesSQL,
@@ -81,9 +81,9 @@ describe('postSurveySQL', () => {
   });
 });
 
-describe('postSurveyProprietarySQL', () => {
+describe('postSurveyProprietorSQL', () => {
   it('returns null when null surveyId provided', () => {
-    const survey_proprietor = new PostSurveyProprietorData();
+    const survey_proprietor = new PostProprietorData();
     const response = postSurveyProprietorSQL((null as unknown) as number, survey_proprietor);
 
     expect(response).to.be.null;
@@ -98,7 +98,7 @@ describe('postSurveyProprietarySQL', () => {
       disa_required: false
     };
 
-    const postSurveyProprietorData = new PostSurveyProprietorData(surveyProprietorData);
+    const postSurveyProprietorData = new PostProprietorData(surveyProprietorData);
     const response = postSurveyProprietorSQL(1, postSurveyProprietorData);
 
     expect(response).to.not.be.null;

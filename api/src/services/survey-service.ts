@@ -373,7 +373,11 @@ export class SurveyService extends DBService {
     return result.id;
   }
 
-  async insertSurveyProprietor(survey_proprietor: PostProprietorData, surveyId: number): Promise<number> {
+  async insertSurveyProprietor(survey_proprietor: PostProprietorData, surveyId: number): Promise<number | undefined> {
+    if (!survey_proprietor.survey_data_proprietary) {
+      return;
+    }
+
     const sqlStatement = queries.survey.postSurveyProprietorSQL(surveyId, survey_proprietor);
 
     if (!sqlStatement) {
@@ -426,7 +430,7 @@ export class SurveyService extends DBService {
     }
   }
 
-  async updateSurvey(projectId: number, surveyId: number, putSurveyData: PutSurveyObject) {
+  async updateSurvey(projectId: number, surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
 
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {

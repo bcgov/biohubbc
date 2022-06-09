@@ -162,8 +162,6 @@ describe('publishSurveyAndOccurrences', () => {
       }
     });
 
-    sinon.stub(publish, 'getSurveyOccurrenceSubmission').resolves({ occurrence_submission_id: 1 });
-
     sinon.stub(survey_queries, 'deleteSurveyOccurrencesSQL').returns(null);
 
     try {
@@ -188,8 +186,6 @@ describe('publishSurveyAndOccurrences', () => {
       },
       query: mockQuery
     });
-
-    sinon.stub(publish, 'getSurveyOccurrenceSubmission').resolves({ occurrence_submission_id: 1 });
 
     sinon.stub(survey_queries, 'deleteSurveyOccurrencesSQL').returns(SQL`some query`);
 

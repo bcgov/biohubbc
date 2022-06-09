@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import sinon from 'sinon';
 import {
   GetAttachmentsData,
   GetReportAttachmentAuthor,
@@ -44,7 +45,7 @@ describe('GetAttachmentsData', () => {
         {
           id: 1,
           fileName: 'filename',
-          lastModified: '2020/04/04',
+          lastModified: sinon.match('2020/04/04'),
           size: 24,
           fileType: 'Video',
           securityToken: 'token123'

@@ -74,14 +74,8 @@ export const deleteSurveyProprietorSQL = (surveyId: number): SQLStatement => {
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveySQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`call api_delete_survey(${surveyId})`;
-
-  return sqlStatement;
+export const deleteSurveySQL = (surveyId: number): SQLStatement => {
+  return SQL`call api_delete_survey(${surveyId})`;
 };
 
 /**

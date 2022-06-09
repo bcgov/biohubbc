@@ -1,69 +1,60 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutSurveyDetailsData } from '../../models/survey-update';
 import {
-  putNewSurveyPermitNumberSQL,
+  PutSurveyDetailsData,
+  PutSurveyFundingData,
+  PutSurveyLocationData,
+  PutSurveyObject,
+  PutSurveyPermitData,
+  PutSurveyProprietorData,
+  PutSurveyPurposeAndMethodologyData,
+  PutSurveySpeciesData
+} from '../../models/survey-update';
+import {
   putSurveyDetailsSQL,
   unassociatePermitFromSurveySQL,
-  updateSurveyPublishStatusSQL
+  updateSurveyPublishStatusSQL,
+  upsertSurveyPermitSQL
 } from './survey-update-queries';
 
 describe('putSurveyDetailsSQL', () => {
-  const surveyData: PutSurveyDetailsData = {
-    name: 'test',
-    focal_species: [1, 2],
-    ancillary_species: [3, 4],
-    start_date: '2020/04/04',
-    end_date: '2020/05/05',
-    lead_first_name: 'first',
-    lead_last_name: 'last',
-    revision_count: 1,
-    location_name: 'location',
-    permit_number: '12',
-    permit_type: 'scientific',
-    funding_sources: [1, 2],
-    geometry: [
-      {
-        type: 'Feature',
-        geometry: {
-          type: 'Polygon',
-          coordinates: [
-            [
-              [-128, 55],
-              [-128, 55.5],
-              [-128, 56],
-              [-126, 58],
-              [-128, 55]
-            ]
-          ]
-        },
-        properties: {
-          name: 'Biohub Islands'
-        }
-      }
-    ]
-  };
-
-  it('returns null when null survey id param provided', () => {
-    const response = putSurveyDetailsSQL((null as unknown) as number, surveyData);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null survey data param provided', () => {
-    const response = putSurveyDetailsSQL((null as unknown) as number, null);
-
-    expect(response).to.be.null;
-  });
-
   it('returns non null response when valid params provided with geometry', () => {
-    const response = putSurveyDetailsSQL(2, surveyData);
+    const response = putSurveyDetailsSQL(2, ({
+      survey_details: new PutSurveyDetailsData(null),
+      species: new PutSurveySpeciesData(null),
+      permit: new PutSurveyPermitData(null),
+      funding: new PutSurveyFundingData(null),
+      proprietor: new PutSurveyProprietorData(null),
+      purpose_and_methodology: new PutSurveyPurposeAndMethodologyData(null),
+      location: new PutSurveyLocationData(null)
+    } as unknown) as PutSurveyObject);
 
     expect(response).to.not.be.null;
   });
 
   it('returns non null response when valid params provided without geometry', () => {
-    const response = putSurveyDetailsSQL(2, { ...surveyData, geometry: null as any });
+    const response = putSurveyDetailsSQL(2, ({
+      survey_details: new PutSurveyDetailsData(null),
+      species: new PutSurveySpeciesData(null),
+      permit: new PutSurveyPermitData(null),
+      funding: new PutSurveyFundingData(null),
+      proprietor: new PutSurveyProprietorData(null),
+      purpose_and_methodology: new PutSurveyPurposeAndMethodologyData(null),
+      location: new PutSurveyLocationData({
+        survey_area_name: 'name',
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Polygon',
+              coordinates: []
+            },
+            properties: {}
+          }
+        ],
+        revision_count: 0
+      })
+    } as unknown) as PutSurveyObject);
 
     expect(response).to.not.be.null;
   });
@@ -83,23 +74,11 @@ describe('unassociatePermitFromSurveySQL', () => {
   });
 });
 
-describe('putNewSurveyPermitNumberSQL', () => {
-  it('returns null when no surveyId provided', () => {
-    const response = putNewSurveyPermitNumberSQL((null as unknown) as number, '123');
+describe('upsertSurveyPermitSQL', () => {
+  it('returns a sql statement', () => {
+    const response = upsertSurveyPermitSQL(1, 2, 3, '4', 'type');
 
     expect(response).to.be.null;
-  });
-
-  it('returns null when no permit number provided', () => {
-    const response = putNewSurveyPermitNumberSQL(1, (null as unknown) as string);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns sql statement when valid params provided', () => {
-    const response = putNewSurveyPermitNumberSQL(1, '123');
-
-    expect(response).to.not.be.null;
   });
 });
 

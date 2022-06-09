@@ -7,14 +7,7 @@ import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { HTTPError } from '../errors/custom-error';
 import { setSystemUserContextSQL } from '../queries/database/user-context-queries';
 import * as db from './db';
-import {
-  getAPIUserDBConnection,
-  getDBConnection,
-  getDBPool,
-  getKnexQueryBuilder,
-  IDBConnection,
-  initDBPool
-} from './db';
+import { getAPIUserDBConnection, getDBConnection, getDBPool, getKnex, IDBConnection, initDBPool } from './db';
 
 describe('db', () => {
   beforeEach(() => {
@@ -341,11 +334,11 @@ describe('db', () => {
     });
   });
 
-  describe('getKnexQueryBuilder', () => {
-    it('returns a Knex query builder', () => {
-      const queryBuilder = getKnexQueryBuilder();
+  describe('getKnex', () => {
+    it('returns a Knex instance', () => {
+      const knex = getKnex();
 
-      expect(queryBuilder.client.config).to.eql({ client: 'pg' });
+      expect(knex.queryBuilder().client.config).to.eql({ client: 'pg' });
     });
   });
 });

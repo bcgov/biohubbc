@@ -1,8 +1,102 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { PutSurveyDetailsData, PutSurveyPurposeAndMethodologyData } from './survey-update';
+import {
+  PutSurveyDetailsData,
+  PutSurveyFundingData,
+  PutSurveyLocationData,
+  PutSurveyObject,
+  PutSurveyPermitData,
+  PutSurveyProprietorData,
+  PutSurveyPurposeAndMethodologyData,
+  PutSurveySpeciesData
+} from './survey-update';
 
-describe('PutSurveyData', () => {
+describe('PutSurveyObject', () => {
+  describe('No values provided', () => {
+    let data: PutSurveyObject;
+
+    before(() => {
+      data = new PutSurveyObject(null);
+    });
+
+    it('sets survey_details', () => {
+      expect(data.survey_details).to.equal(null);
+    });
+
+    it('sets species', () => {
+      expect(data.species).to.equal(null);
+    });
+
+    it('sets permit', () => {
+      expect(data.permit).to.equal(null);
+    });
+
+    it('sets funding', () => {
+      expect(data.funding).to.equal(null);
+    });
+
+    it('sets proprietor', () => {
+      expect(data.proprietor).to.equal(null);
+    });
+
+    it('sets purpose_and_methodology', () => {
+      expect(data.purpose_and_methodology).to.equal(null);
+    });
+
+    it('sets location', () => {
+      expect(data.location).to.equal(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PutSurveyObject;
+
+    const surveyObj = {
+      survey_details: {},
+      species: {},
+      permit: {},
+      funding: {},
+      proprietor: {},
+      purpose_and_methodology: {},
+      location: {},
+      agreements: {}
+    };
+
+    before(() => {
+      data = new PutSurveyObject(surveyObj);
+    });
+
+    it('sets survey_details', () => {
+      expect(data.survey_details).to.be.instanceOf(PutSurveyDetailsData);
+    });
+
+    it('sets species', () => {
+      expect(data.species).to.instanceOf(PutSurveySpeciesData);
+    });
+
+    it('sets permit', () => {
+      expect(data.permit).to.instanceOf(PutSurveyPermitData);
+    });
+
+    it('sets funding', () => {
+      expect(data.funding).to.instanceOf(PutSurveyFundingData);
+    });
+
+    it('sets proprietor', () => {
+      expect(data.proprietor).to.instanceOf(PutSurveyProprietorData);
+    });
+
+    it('sets purpose_and_methodology', () => {
+      expect(data.purpose_and_methodology).to.instanceOf(PutSurveyPurposeAndMethodologyData);
+    });
+
+    it('sets location', () => {
+      expect(data.location).to.instanceOf(PutSurveyLocationData);
+    });
+  });
+});
+
+describe('PutSurveyDetailsData', () => {
   describe('No values provided', () => {
     let data: PutSurveyDetailsData;
 
@@ -14,24 +108,12 @@ describe('PutSurveyData', () => {
       expect(data.name).to.equal(null);
     });
 
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql([]);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql([]);
-    });
-
-    it('sets geometry', () => {
-      expect(data.geometry).to.equal(null);
+    it('sets end_date', () => {
+      expect(data.end_date).to.equal(null);
     });
 
     it('sets start_date', () => {
       expect(data.start_date).to.equal(null);
-    });
-
-    it('sets end_date', () => {
-      expect(data.end_date).to.equal(null);
     });
 
     it('sets lead_first_name', () => {
@@ -42,10 +124,6 @@ describe('PutSurveyData', () => {
       expect(data.lead_last_name).to.equal(null);
     });
 
-    it('sets location_name', () => {
-      expect(data.location_name).to.equal(null);
-    });
-
     it('sets revision_count', () => {
       expect(data.revision_count).to.equal(null);
     });
@@ -54,86 +132,256 @@ describe('PutSurveyData', () => {
   describe('All values provided', () => {
     let data: PutSurveyDetailsData;
 
-    const surveyData = {
-      survey_details: {
-        survey_name: 'survey name',
-        survey_purpose: 'survey purpose',
-        focal_species: [1, 2],
-        ancillary_species: [3, 4],
-        common_survey_methodology_id: 1,
-        start_date: '2020/04/04',
-        end_date: '2020/05/05',
-        biologist_first_name: 'first',
-        biologist_last_name: 'last',
-        survey_area_name: 'survey area name',
-        geometry: [
-          {
-            type: 'Polygon',
-            coordinates: [
-              [
-                [-128, 55],
-                [-128, 55.5],
-                [-128, 56],
-                [-126, 58],
-                [-128, 55]
-              ]
-            ],
-            properties: {
-              name: 'Biohub Islands'
-            }
-          }
-        ],
-        revision_count: 1
-      }
+    const surveyObj = {
+      survey_name: 'survey name',
+      end_date: '2020/04/04',
+      start_date: '2020/03/03',
+      biologist_first_name: 'first',
+      biologist_last_name: 'last',
+      revision_count: 0
     };
 
     before(() => {
-      data = new PutSurveyDetailsData(surveyData);
+      data = new PutSurveyDetailsData(surveyObj);
     });
 
     it('sets name', () => {
-      expect(data.name).to.equal(surveyData.survey_details.survey_name);
-    });
-
-    it('sets focal_species', () => {
-      expect(data.focal_species).to.eql(surveyData.survey_details.focal_species);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.ancillary_species).to.eql(surveyData.survey_details.ancillary_species);
-    });
-
-    it('sets start_date', () => {
-      expect(data.start_date).to.equal(surveyData.survey_details.start_date);
+      expect(data.name).to.equal(surveyObj.survey_name);
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal(surveyData.survey_details.end_date);
+      expect(data.end_date).to.equal(surveyObj.end_date);
+    });
+
+    it('sets start_date', () => {
+      expect(data.start_date).to.equal(surveyObj.start_date);
     });
 
     it('sets lead_first_name', () => {
-      expect(data.lead_first_name).to.equal(surveyData.survey_details.biologist_first_name);
+      expect(data.lead_first_name).to.equal(surveyObj.biologist_first_name);
     });
 
     it('sets lead_last_name', () => {
-      expect(data.lead_last_name).to.equal(surveyData.survey_details.biologist_last_name);
-    });
-
-    it('sets geometry', () => {
-      expect(data.geometry).to.eql(surveyData.survey_details.geometry);
-    });
-
-    it('sets location_name', () => {
-      expect(data.location_name).to.equal(surveyData.survey_details.survey_area_name);
+      expect(data.lead_last_name).to.equal(surveyObj.biologist_last_name);
     });
 
     it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(surveyData.survey_details.revision_count);
+      expect(data.revision_count).to.equal(surveyObj.revision_count);
     });
   });
 });
 
-describe('PutSurveyPurposeAndMethodologyData', () => {
+describe('PutSpeciesData', () => {
+  describe('No values provided', () => {
+    let data: PutSurveySpeciesData;
+
+    before(() => {
+      data = new PutSurveySpeciesData(null);
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PutSurveySpeciesData;
+
+    const surveyObj = {
+      focal_species: [1, 2],
+      ancillary_species: [3]
+    };
+
+    before(() => {
+      data = new PutSurveySpeciesData(surveyObj);
+    });
+
+    it('sets focal_species', () => {
+      expect(data.focal_species).to.eql([1, 2]);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.ancillary_species).to.eql([3]);
+    });
+  });
+});
+
+describe('PutPermitData', () => {
+  describe('No values provided', () => {
+    let data: PutSurveyPermitData;
+
+    before(() => {
+      data = new PutSurveyPermitData(null);
+    });
+
+    it('sets permit_number', () => {
+      expect(data.permit_number).to.eql(null);
+    });
+
+    it('sets ancillary_species', () => {
+      expect(data.permit_type).to.eql(null);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PutSurveyPermitData;
+
+    const surveyObj = {
+      permit_number: '12345',
+      permit_type: 'permit_type'
+    };
+
+    before(() => {
+      data = new PutSurveyPermitData(surveyObj);
+    });
+
+    it('sets permit_number', () => {
+      expect(data.permit_number).to.equal('12345');
+    });
+
+    it('sets permit_type', () => {
+      expect(data.permit_type).to.equal('permit_type');
+    });
+  });
+});
+
+describe('PutFundingData', () => {
+  describe('No values provided', () => {
+    let data: PutSurveyFundingData;
+
+    before(() => {
+      data = new PutSurveyFundingData(null);
+    });
+
+    it('sets permit_number', () => {
+      expect(data.funding_sources).to.eql([]);
+    });
+  });
+
+  describe('All values provided', () => {
+    let data: PutSurveyFundingData;
+
+    const surveyObj = {
+      funding_sources: [1, 2]
+    };
+
+    before(() => {
+      data = new PutSurveyFundingData(surveyObj);
+    });
+
+    it('sets funding_sources', () => {
+      expect(data.funding_sources).to.eql([1, 2]);
+    });
+  });
+});
+
+describe('PutProprietorData', () => {
+  describe('No values provided', () => {
+    let data: PutSurveyProprietorData;
+
+    before(() => {
+      data = new PutSurveyProprietorData(null);
+    });
+
+    it('sets prt_id', () => {
+      expect(data.prt_id).to.equal(null);
+    });
+
+    it('sets fn_id', () => {
+      expect(data.fn_id).to.equal(null);
+    });
+
+    it('sets rationale', () => {
+      expect(data.rationale).to.equal(null);
+    });
+
+    it('sets proprietor_name', () => {
+      expect(data.proprietor_name).to.equal(null);
+    });
+
+    it('sets disa_required', () => {
+      expect(data.disa_required).to.equal(null);
+    });
+  });
+
+  describe('All values provided with first nations id', () => {
+    let data: PutSurveyProprietorData;
+
+    const surveyObj = {
+      proprietary_data_category: 'survey name',
+      first_nations_id: '2020/04/04',
+      category_rationale: '2020/03/03',
+      proprietor_name: 'first',
+      disa_required: 'last'
+    };
+
+    before(() => {
+      data = new PutSurveyProprietorData(surveyObj);
+    });
+
+    it('sets prt_id', () => {
+      expect(data.prt_id).to.equal(surveyObj.proprietary_data_category);
+    });
+
+    it('sets fn_id', () => {
+      expect(data.fn_id).to.equal(surveyObj.first_nations_id);
+    });
+
+    it('sets rationale', () => {
+      expect(data.rationale).to.equal(surveyObj.category_rationale);
+    });
+
+    it('sets proprietor_name', () => {
+      expect(data.proprietor_name).to.equal(surveyObj.first_nations_id);
+    });
+
+    it('sets disa_required', () => {
+      expect(data.disa_required).to.equal(surveyObj.disa_required);
+    });
+  });
+
+  describe('All values provided without first nations id', () => {
+    let data: PutSurveyProprietorData;
+
+    const surveyObj = {
+      proprietary_data_category: 'survey name',
+      first_nations_id: null,
+      category_rationale: '2020/03/03',
+      proprietor_name: 'first',
+      disa_required: 'last'
+    };
+
+    before(() => {
+      data = new PutSurveyProprietorData(surveyObj);
+    });
+
+    it('sets prt_id', () => {
+      expect(data.prt_id).to.equal(surveyObj.proprietary_data_category);
+    });
+
+    it('sets fn_id', () => {
+      expect(data.fn_id).to.equal(surveyObj.first_nations_id);
+    });
+
+    it('sets rationale', () => {
+      expect(data.rationale).to.equal(surveyObj.category_rationale);
+    });
+
+    it('sets proprietor_name', () => {
+      expect(data.proprietor_name).to.equal(surveyObj.proprietor_name);
+    });
+
+    it('sets disa_required', () => {
+      expect(data.disa_required).to.equal(surveyObj.disa_required);
+    });
+  });
+});
+
+describe('PutPurposeAndMethodologyData', () => {
   describe('No values provided', () => {
     let data: PutSurveyPurposeAndMethodologyData;
 
@@ -141,20 +389,16 @@ describe('PutSurveyPurposeAndMethodologyData', () => {
       data = new PutSurveyPurposeAndMethodologyData(null);
     });
 
-    it('sets id', () => {
-      expect(data.id).to.equal(null);
-    });
-
-    it('sets intended_outcomes_id', () => {
-      expect(data.intended_outcome_id).to.eql(null);
-    });
-
-    it('sets field_method_id', () => {
-      expect(data.field_method_id).to.eql(null);
+    it('sets intended_outcome_id', () => {
+      expect(data.intended_outcome_id).to.equal(null);
     });
 
     it('sets additional_details', () => {
       expect(data.additional_details).to.equal(null);
+    });
+
+    it('sets field_method_id', () => {
+      expect(data.field_method_id).to.equal(null);
     });
 
     it('sets ecological_season_id', () => {
@@ -166,7 +410,7 @@ describe('PutSurveyPurposeAndMethodologyData', () => {
     });
 
     it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal(false);
+      expect(data.surveyed_all_areas).to.equal(null);
     });
 
     it('sets revision_count', () => {
@@ -174,54 +418,97 @@ describe('PutSurveyPurposeAndMethodologyData', () => {
     });
   });
 
-  describe('All values provided', () => {
+  describe('All values provided with first nations id', () => {
     let data: PutSurveyPurposeAndMethodologyData;
 
-    const purposeAndMethodologyData = {
-      id: 1,
-      field_method_id: 1,
-      additional_details: 'additional details',
-      vantage_code_ids: [1, 2],
-      ecological_season_id: 1,
+    const surveyObj = {
       intended_outcome_id: 1,
-      surveyed_all_areas: 'true',
-      revision_count: 1
+      additional_details: 'additional_detail',
+      field_method_id: 2,
+      ecological_season_id: 3,
+      vantage_code_ids: [4, 5],
+      surveyed_all_areas: true,
+      revision_count: 0
     };
 
     before(() => {
-      data = new PutSurveyPurposeAndMethodologyData(purposeAndMethodologyData);
+      data = new PutSurveyPurposeAndMethodologyData(surveyObj);
     });
 
-    it('sets id', () => {
-      expect(data.id).to.equal(purposeAndMethodologyData.id);
-    });
-
-    it('sets intended_outcomes_id', () => {
-      expect(data.intended_outcome_id).to.eql(purposeAndMethodologyData.intended_outcome_id);
+    it('sets intended_outcome_id', () => {
+      expect(data.intended_outcome_id).to.equal(surveyObj.intended_outcome_id);
     });
 
     it('sets additional_details', () => {
-      expect(data.additional_details).to.eql(purposeAndMethodologyData.additional_details);
+      expect(data.additional_details).to.equal(surveyObj.additional_details);
     });
 
     it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(purposeAndMethodologyData.field_method_id);
+      expect(data.field_method_id).to.equal(surveyObj.field_method_id);
     });
 
     it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.equal(purposeAndMethodologyData.ecological_season_id);
+      expect(data.ecological_season_id).to.equal(surveyObj.ecological_season_id);
     });
 
     it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.equal(purposeAndMethodologyData.vantage_code_ids);
+      expect(data.vantage_code_ids).to.eql(surveyObj.vantage_code_ids);
     });
 
     it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal(true);
+      expect(data.surveyed_all_areas).to.equal(surveyObj.surveyed_all_areas);
     });
 
     it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(purposeAndMethodologyData.revision_count);
+      expect(data.revision_count).to.equal(surveyObj.revision_count);
+    });
+  });
+});
+
+describe('PutLocationData', () => {
+  describe('No values provided', () => {
+    let data: PutSurveyLocationData;
+
+    before(() => {
+      data = new PutSurveyLocationData(null);
+    });
+
+    it('sets survey_area_name', () => {
+      expect(data.survey_area_name).to.equal(null);
+    });
+
+    it('sets geometry', () => {
+      expect(data.geometry).to.eql([]);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(null);
+    });
+  });
+
+  describe('All values provided with first nations id', () => {
+    let data: PutSurveyLocationData;
+
+    const surveyObj = {
+      survey_area_name: 'area_name',
+      geometry: [{}],
+      revision_count: 0
+    };
+
+    before(() => {
+      data = new PutSurveyLocationData(surveyObj);
+    });
+
+    it('sets survey_area_name', () => {
+      expect(data.survey_area_name).to.equal(surveyObj.survey_area_name);
+    });
+
+    it('sets geometry', () => {
+      expect(data.geometry).to.eql(surveyObj.geometry);
+    });
+
+    it('sets revision_count', () => {
+      expect(data.revision_count).to.equal(surveyObj.revision_count);
     });
   });
 });
