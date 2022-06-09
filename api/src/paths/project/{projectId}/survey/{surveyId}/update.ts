@@ -228,10 +228,12 @@ GET.apiDoc = {
                     nullable: true
                   },
                   intended_outcome_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   ecological_season_id: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   vantage_code_ids: {
                     type: 'array',
@@ -273,7 +275,8 @@ GET.apiDoc = {
                     type: 'string'
                   },
                   proprietary_data_category: {
-                    type: 'number'
+                    type: 'number',
+                    nullable: true
                   },
                   proprietary_data_category_name: {
                     type: 'string'
