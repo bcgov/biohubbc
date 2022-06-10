@@ -25,7 +25,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Fetches a list of funding sources for a survey based on a project.',
+  description: 'Fetches a list of project funding sources available for use by a survey.',
   tags: ['funding_sources'],
   security: [
     {

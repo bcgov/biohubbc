@@ -18,32 +18,32 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
     INSERT INTO survey (
       project_id,
       name,
-      additional_details,
-      ecological_season_id,
-      intended_outcome_id,
       start_date,
       end_date,
       lead_first_name,
       lead_last_name,
+      field_method_id,
+      additional_details,
+      ecological_season_id,
+      intended_outcome_id,
+      surveyed_all_areas,
       location_name,
       geojson,
-      field_method_id,
-      surveyed_all_areas,
       geography
     ) VALUES (
       ${projectId},
       ${survey.survey_details.survey_name},
-      ${survey.purpose_and_methodology.additional_details},
-      ${survey.purpose_and_methodology.ecological_season_id},
-      ${survey.purpose_and_methodology.intended_outcome_id},
       ${survey.survey_details.start_date},
       ${survey.survey_details.end_date},
       ${survey.survey_details.biologist_first_name},
       ${survey.survey_details.biologist_last_name},
+      ${survey.purpose_and_methodology.field_method_id},
+      ${survey.purpose_and_methodology.additional_details},
+      ${survey.purpose_and_methodology.ecological_season_id},
+      ${survey.purpose_and_methodology.intended_outcome_id},
+      ${survey.purpose_and_methodology.surveyed_all_areas}
       ${survey.location.survey_area_name},
       ${JSON.stringify(survey.location.geometry)},
-      ${survey.purpose_and_methodology.field_method_id},
-      ${survey.purpose_and_methodology.surveyed_all_areas}
   `;
 
   if (survey.location.geometry && survey.location.geometry.length) {
@@ -82,10 +82,7 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
  * @param {PostProprietorData} surveyProprietor
  * @returns {SQLStatement} sql query object
  */
-export const postSurveyProprietorSQL = (
-  surveyId: number,
-  survey_proprietor: PostProprietorData
-): SQLStatement | null => {
+export const postSurveyProprietorSQL = (surveyId: number, survey_proprietor: PostProprietorData): SQLStatement => {
   return SQL`
     INSERT INTO survey_proprietor (
       survey_id,

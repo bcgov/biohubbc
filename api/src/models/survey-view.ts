@@ -87,12 +87,12 @@ export class GetSurveyPurposeAndMethodologyData {
   surveyed_all_areas: string;
 
   constructor(obj?: any) {
-    this.intended_outcome_id = obj?.intended_outcome_id ?? null;
-    this.additional_details = obj?.additional_details;
-    this.field_method_id = obj?.field_method_id ?? null;
-    this.ecological_season_id = obj?.ecological_season_id ?? null;
+    this.intended_outcome_id = obj?.intended_outcome_id || null;
+    this.additional_details = obj?.additional_details || null;
+    this.field_method_id = obj?.field_method_id || null;
+    this.ecological_season_id = obj?.ecological_season_id || null;
     this.vantage_code_ids = (obj?.vantage_ids?.length && obj.vantage_ids) || [];
-    this.surveyed_all_areas = (obj.surveyed_all_areas && 'true') || 'false';
+    this.surveyed_all_areas = (obj?.surveyed_all_areas && 'true') || 'false';
     this.revision_count = obj?.revision_count ?? 0;
   }
 }

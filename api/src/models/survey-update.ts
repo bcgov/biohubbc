@@ -111,7 +111,7 @@ export class PutSurveyLocationData {
 
   constructor(obj?: any) {
     this.survey_area_name = obj?.survey_area_name || null;
-    this.geometry = obj?.geometry || null;
+    this.geometry = (obj?.geometry?.length && obj.geometry) || [];
     this.revision_count = obj?.revision_count ?? null;
   }
 }

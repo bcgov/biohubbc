@@ -61,13 +61,7 @@ describe('putSurveyDetailsSQL', () => {
 });
 
 describe('unassociatePermitFromSurveySQL', () => {
-  it('returns null when no surveyId provided', () => {
-    const response = unassociatePermitFromSurveySQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns sql statement when valid params provided', () => {
+  it('returns a sql statement', () => {
     const response = unassociatePermitFromSurveySQL(1);
 
     expect(response).to.not.be.null;
@@ -78,7 +72,7 @@ describe('upsertSurveyPermitSQL', () => {
   it('returns a sql statement', () => {
     const response = upsertSurveyPermitSQL(1, 2, 3, '4', 'type');
 
-    expect(response).to.be.null;
+    expect(response).not.to.be.null;
   });
 });
 

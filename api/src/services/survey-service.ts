@@ -1,5 +1,5 @@
 import SQL from 'sql-template-strings';
-import { ApiGeneralError, HTTP400, HTTP500 } from '../errors/custom-error';
+import { ApiGeneralError } from '../errors/custom-error';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
@@ -84,7 +84,7 @@ export class SurveyService extends DBService {
     const result = response.rows?.[0] || null;
 
     if (!result) {
-      throw new HTTP400('Failed to get project survey details data');
+      throw new ApiGeneralError('Failed to get project survey details data');
     }
 
     return new GetSurveyData(result);
@@ -109,7 +109,7 @@ export class SurveyService extends DBService {
     const result = (response && response.rows) || null;
 
     if (!result) {
-      throw new HTTP400('Failed to get survey species data');
+      throw new ApiGeneralError('Failed to get survey species data');
     }
 
     const focalSpeciesIds = response.rows.filter((item) => item.is_focal).map((item) => item.wldtaxonomic_units_id);
@@ -154,7 +154,7 @@ export class SurveyService extends DBService {
     const result = (response && response.rows[0]) || null;
 
     if (!result) {
-      throw new HTTP400('Failed to get survey purpose and methodology data');
+      throw new ApiGeneralError('Failed to get survey purpose and methodology data');
     }
 
     return new GetSurveyPurposeAndMethodologyData(result);
@@ -164,7 +164,7 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
+      throw new ApiGeneralError('Failed to build SQL get statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
@@ -172,7 +172,7 @@ export class SurveyService extends DBService {
     const result = (response && response.rows) || null;
 
     if (!result) {
-      throw new HTTP400('Failed to get survey funding sources data');
+      throw new ApiGeneralError('Failed to get survey funding sources data');
     }
 
     return new GetSurveyFundingSources(result);
@@ -205,7 +205,7 @@ export class SurveyService extends DBService {
     const result = response.rows?.[0] || null;
 
     if (!result) {
-      throw new HTTP400('Failed to get project survey details data');
+      throw new ApiGeneralError('Failed to get project survey details data');
     }
 
     return new GetSurveyLocationData(result);
@@ -215,7 +215,7 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.getLatestOccurrenceSubmissionIdSQL(surveyId);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
+      throw new ApiGeneralError('Failed to build SQL get statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
@@ -227,7 +227,7 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.getLatestSummaryResultIdSQL(surveyId);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
+      throw new ApiGeneralError('Failed to build SQL get statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
@@ -308,7 +308,7 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.postSurveySQL(projectId, surveyData);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build survey SQL insert statement');
+      throw new ApiGeneralError('Failed to build survey SQL insert statement');
     }
 
     const response = await this.connection.sql(sqlStatement);
@@ -316,7 +316,7 @@ export class SurveyService extends DBService {
     const result = response.rows[0] || null;
 
     if (!result) {
-      throw new HTTP400('Failed to insert survey data');
+      throw new ApiGeneralError('Failed to insert survey data');
     }
 
     return result.id;
@@ -326,14 +326,14 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.postFocalSpeciesSQL(focal_species_id, surveyId);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
+      throw new ApiGeneralError('Failed to build SQL insert statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result || !result.id) {
-      throw new HTTP400('Failed to insert focal species data');
+      throw new ApiGeneralError('Failed to insert focal species data');
     }
 
     return result.id;
@@ -343,14 +343,14 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.postAncillarySpeciesSQL(ancillary_species_id, surveyId);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
+      throw new ApiGeneralError('Failed to build SQL insert statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result || !result.id) {
-      throw new HTTP400('Failed to insert ancillary species data');
+      throw new ApiGeneralError('Failed to insert ancillary species data');
     }
 
     return result.id;
@@ -360,14 +360,14 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.postVantageCodesSQL(vantage_code_id, surveyId);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
+      throw new ApiGeneralError('Failed to build SQL insert statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result || !result.id) {
-      throw new HTTP400('Failed to insert ancillary species data');
+      throw new ApiGeneralError('Failed to insert ancillary species data');
     }
 
     return result.id;
@@ -381,14 +381,14 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.postSurveyProprietorSQL(surveyId, survey_proprietor);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
+      throw new ApiGeneralError('Failed to build SQL insert statement');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result || !result.id) {
-      throw new HTTP400('Failed to insert survey proprietor data');
+      throw new ApiGeneralError('Failed to insert survey proprietor data');
     }
 
     return result.id;
@@ -412,7 +412,7 @@ export class SurveyService extends DBService {
     const response = await this.connection.sql(sqlStatement);
 
     if (!response.rowCount) {
-      throw new HTTP400('Failed to upsert survey permit record');
+      throw new ApiGeneralError('Failed to upsert survey permit record');
     }
   }
 
@@ -420,13 +420,13 @@ export class SurveyService extends DBService {
     const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, funding_source_id);
 
     if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL statement for insertSurveyFundingSource');
+      throw new ApiGeneralError('Failed to build SQL statement for insertSurveyFundingSource');
     }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!response) {
-      throw new HTTP400('Failed to insert survey funding source data');
+      throw new ApiGeneralError('Failed to insert survey funding source data');
     }
   }
 
@@ -464,7 +464,7 @@ export class SurveyService extends DBService {
     const updateSurveyQueryBuilder = queries.survey.putSurveyDetailsSQL(surveyId, surveyData);
 
     if (!updateSurveyQueryBuilder) {
-      throw new HTTP400('Failed to build SQL update statement');
+      throw new ApiGeneralError('Failed to build SQL update statement');
     }
 
     const result = await this.connection.knex(updateSurveyQueryBuilder);
@@ -584,7 +584,27 @@ export class SurveyService extends DBService {
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     if (!response) {
-      throw new HTTP500('Failed to delete survey vantage codes');
+      throw new ApiGeneralError('Failed to delete survey vantage codes');
     }
+  }
+
+  /**
+   * Update a survey, marking it as published/unpublished.
+   *
+   * @param {number} surveyId
+   * @param {boolean} publish
+   * @return {*}  {(Promise<{ id: number } | null>)}
+   * @memberof SurveyService
+   */
+  async publishSurvey(surveyId: number, publish: boolean): Promise<{ id: number } | null> {
+    const sqlStatement = queries.survey.updateSurveyPublishStatusSQL(surveyId, publish);
+
+    if (!sqlStatement) {
+      throw new ApiGeneralError('Failed to build survey publish SQL statement');
+    }
+
+    const response = await this.connection.sql<{ id: number }>(sqlStatement);
+
+    return (response && response.rows && response.rows[0]) || null;
   }
 }

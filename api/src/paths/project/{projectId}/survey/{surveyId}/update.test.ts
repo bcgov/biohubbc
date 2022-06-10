@@ -40,7 +40,7 @@ describe('updateSurvey', () => {
     }
 
     expect(mockRes.statusValue).to.equal(200);
-    expect(mockRes.jsonValue).to.equal({ id: 2 });
+    expect(mockRes.jsonValue).to.eql({ id: 2 });
   });
 
   it('catches and re-throws error', async () => {

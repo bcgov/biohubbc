@@ -23,13 +23,7 @@ describe('getAllAssignablePermitsForASurveySQL', () => {
 });
 
 describe('getSurveyIdsSQL', () => {
-  it('returns null when null project id param provided', () => {
-    const response = getSurveyIdsSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns a non null response when valid params passed in', () => {
+  it('returns a sql statement', () => {
     const response = getSurveyIdsSQL(1);
 
     expect(response).to.not.be.null;

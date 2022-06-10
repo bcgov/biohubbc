@@ -5,13 +5,14 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/custom-error';
+import { SurveyObject } from '../../../../../models/survey-view';
 import { SurveyService } from '../../../../../services/survey-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import { GET, getSurvey } from './view';
 
 chai.use(sinonChai);
 
-describe('survey/view', () => {
+describe('survey/{surveyId}/view', () => {
   describe('response validation', () => {
     const responseValidator = new OpenAPIResponseValidator((GET.apiDoc as unknown) as OpenAPIResponseValidatorArgs);
 
@@ -55,7 +56,8 @@ describe('survey/view', () => {
               intended_outcome_id: 8,
               ecological_season_id: 1,
               vantage_code_ids: [1, 2],
-              surveyed_all_areas: 'true'
+              surveyed_all_areas: 'true',
+              revision_count: 0
             },
             proprietor: {
               category_rationale: 'rationale',
@@ -125,7 +127,8 @@ describe('survey/view', () => {
               intended_outcome_id: null,
               ecological_season_id: null,
               vantage_code_ids: [],
-              surveyed_all_areas: 'false'
+              surveyed_all_areas: 'false',
+              revision_count: 0
             },
             proprietor: null,
             location: {
@@ -141,6 +144,7 @@ describe('survey/view', () => {
 
         const response = responseValidator.validateResponse(200, apiResponse);
 
+        console.log(response);
         expect(response).to.equal(undefined);
       });
     });
@@ -156,8 +160,10 @@ describe('survey/view', () => {
 
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
-      sinon.stub(SurveyService.prototype, 'getSurveyById').resolves();
-      sinon.stub(SurveyService.prototype, 'getSurveySupplementaryDataById').resolves();
+      sinon.stub(SurveyService.prototype, 'getSurveyById').resolves(({ id: 2 } as unknown) as SurveyObject);
+      sinon
+        .stub(SurveyService.prototype, 'getSurveySupplementaryDataById')
+        .resolves({ occurrence_submission: 1, summary_result: 2 });
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 
@@ -177,7 +183,10 @@ describe('survey/view', () => {
       }
 
       expect(mockRes.statusValue).to.equal(200);
-      expect(mockRes.jsonValue).to.equal({ id: 2 });
+      expect(mockRes.jsonValue).to.eql({
+        surveyData: { id: 2 },
+        surveySupplementaryData: { occurrence_submission: 1, summary_result: 2 }
+      });
     });
 
     it('catches and re-throws error', async () => {

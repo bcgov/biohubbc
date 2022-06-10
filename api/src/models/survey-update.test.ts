@@ -51,7 +51,7 @@ describe('PutSurveyObject', () => {
   describe('All values provided', () => {
     let data: PutSurveyObject;
 
-    const surveyObj = {
+    const obj = {
       survey_details: {},
       species: {},
       permit: {},
@@ -63,7 +63,7 @@ describe('PutSurveyObject', () => {
     };
 
     before(() => {
-      data = new PutSurveyObject(surveyObj);
+      data = new PutSurveyObject(obj);
     });
 
     it('sets survey_details', () => {
@@ -132,7 +132,7 @@ describe('PutSurveyDetailsData', () => {
   describe('All values provided', () => {
     let data: PutSurveyDetailsData;
 
-    const surveyObj = {
+    const obj = {
       survey_name: 'survey name',
       end_date: '2020/04/04',
       start_date: '2020/03/03',
@@ -142,31 +142,31 @@ describe('PutSurveyDetailsData', () => {
     };
 
     before(() => {
-      data = new PutSurveyDetailsData(surveyObj);
+      data = new PutSurveyDetailsData(obj);
     });
 
     it('sets name', () => {
-      expect(data.name).to.equal(surveyObj.survey_name);
+      expect(data.name).to.equal(obj.survey_name);
     });
 
     it('sets end_date', () => {
-      expect(data.end_date).to.equal(surveyObj.end_date);
+      expect(data.end_date).to.equal(obj.end_date);
     });
 
     it('sets start_date', () => {
-      expect(data.start_date).to.equal(surveyObj.start_date);
+      expect(data.start_date).to.equal(obj.start_date);
     });
 
     it('sets lead_first_name', () => {
-      expect(data.lead_first_name).to.equal(surveyObj.biologist_first_name);
+      expect(data.lead_first_name).to.equal(obj.biologist_first_name);
     });
 
     it('sets lead_last_name', () => {
-      expect(data.lead_last_name).to.equal(surveyObj.biologist_last_name);
+      expect(data.lead_last_name).to.equal(obj.biologist_last_name);
     });
 
     it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(surveyObj.revision_count);
+      expect(data.revision_count).to.equal(obj.revision_count);
     });
   });
 });
@@ -191,13 +191,13 @@ describe('PutSpeciesData', () => {
   describe('All values provided', () => {
     let data: PutSurveySpeciesData;
 
-    const surveyObj = {
+    const obj = {
       focal_species: [1, 2],
       ancillary_species: [3]
     };
 
     before(() => {
-      data = new PutSurveySpeciesData(surveyObj);
+      data = new PutSurveySpeciesData(obj);
     });
 
     it('sets focal_species', () => {
@@ -230,13 +230,13 @@ describe('PutPermitData', () => {
   describe('All values provided', () => {
     let data: PutSurveyPermitData;
 
-    const surveyObj = {
+    const obj = {
       permit_number: '12345',
       permit_type: 'permit_type'
     };
 
     before(() => {
-      data = new PutSurveyPermitData(surveyObj);
+      data = new PutSurveyPermitData(obj);
     });
 
     it('sets permit_number', () => {
@@ -265,12 +265,12 @@ describe('PutFundingData', () => {
   describe('All values provided', () => {
     let data: PutSurveyFundingData;
 
-    const surveyObj = {
+    const obj = {
       funding_sources: [1, 2]
     };
 
     before(() => {
-      data = new PutSurveyFundingData(surveyObj);
+      data = new PutSurveyFundingData(obj);
     });
 
     it('sets funding_sources', () => {
@@ -304,79 +304,79 @@ describe('PutProprietorData', () => {
     });
 
     it('sets disa_required', () => {
-      expect(data.disa_required).to.equal(null);
+      expect(data.disa_required).to.equal(false);
     });
   });
 
   describe('All values provided with first nations id', () => {
     let data: PutSurveyProprietorData;
 
-    const surveyObj = {
+    const obj = {
       proprietary_data_category: 'survey name',
-      first_nations_id: '2020/04/04',
-      category_rationale: '2020/03/03',
-      proprietor_name: 'first',
-      disa_required: 'last'
+      first_nations_id: 1,
+      category_rationale: 2,
+      proprietor_name: 'name',
+      disa_required: 'true'
     };
 
     before(() => {
-      data = new PutSurveyProprietorData(surveyObj);
+      data = new PutSurveyProprietorData(obj);
     });
 
     it('sets prt_id', () => {
-      expect(data.prt_id).to.equal(surveyObj.proprietary_data_category);
+      expect(data.prt_id).to.equal(obj.proprietary_data_category);
     });
 
     it('sets fn_id', () => {
-      expect(data.fn_id).to.equal(surveyObj.first_nations_id);
+      expect(data.fn_id).to.equal(obj.first_nations_id);
     });
 
     it('sets rationale', () => {
-      expect(data.rationale).to.equal(surveyObj.category_rationale);
+      expect(data.rationale).to.equal(obj.category_rationale);
     });
 
     it('sets proprietor_name', () => {
-      expect(data.proprietor_name).to.equal(surveyObj.first_nations_id);
+      expect(data.proprietor_name).to.equal(null);
     });
 
     it('sets disa_required', () => {
-      expect(data.disa_required).to.equal(surveyObj.disa_required);
+      expect(data.disa_required).to.equal(true);
     });
   });
 
   describe('All values provided without first nations id', () => {
     let data: PutSurveyProprietorData;
 
-    const surveyObj = {
+    const obj = {
       proprietary_data_category: 'survey name',
       first_nations_id: null,
-      category_rationale: '2020/03/03',
-      proprietor_name: 'first',
-      disa_required: 'last'
+      category_rationale: 2,
+      proprietor_name: 'name',
+      disa_required: 'true'
     };
 
     before(() => {
-      data = new PutSurveyProprietorData(surveyObj);
+      data = new PutSurveyProprietorData(obj);
     });
 
     it('sets prt_id', () => {
-      expect(data.prt_id).to.equal(surveyObj.proprietary_data_category);
+      expect(data.prt_id).to.equal(obj.proprietary_data_category);
     });
 
     it('sets fn_id', () => {
-      expect(data.fn_id).to.equal(surveyObj.first_nations_id);
+      expect(data.fn_id).to.equal(obj.first_nations_id);
     });
 
     it('sets rationale', () => {
-      expect(data.rationale).to.equal(surveyObj.category_rationale);
+      expect(data.rationale).to.equal(obj.category_rationale);
     });
 
     it('sets proprietor_name', () => {
-      expect(data.proprietor_name).to.equal(surveyObj.proprietor_name);
+      expect(data.proprietor_name).to.equal(obj.proprietor_name);
     });
 
     it('sets disa_required', () => {
-      expect(data.disa_required).to.equal(surveyObj.disa_required);
+      expect(data.disa_required).to.equal(true);
     });
   });
 });
@@ -410,7 +410,7 @@ describe('PutPurposeAndMethodologyData', () => {
     });
 
     it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal(null);
+      expect(data.surveyed_all_areas).to.equal(false);
     });
 
     it('sets revision_count', () => {
@@ -421,46 +421,46 @@ describe('PutPurposeAndMethodologyData', () => {
   describe('All values provided with first nations id', () => {
     let data: PutSurveyPurposeAndMethodologyData;
 
-    const surveyObj = {
+    const obj = {
       intended_outcome_id: 1,
       additional_details: 'additional_detail',
       field_method_id: 2,
       ecological_season_id: 3,
       vantage_code_ids: [4, 5],
-      surveyed_all_areas: true,
+      surveyed_all_areas: 'true',
       revision_count: 0
     };
 
     before(() => {
-      data = new PutSurveyPurposeAndMethodologyData(surveyObj);
+      data = new PutSurveyPurposeAndMethodologyData(obj);
     });
 
     it('sets intended_outcome_id', () => {
-      expect(data.intended_outcome_id).to.equal(surveyObj.intended_outcome_id);
+      expect(data.intended_outcome_id).to.equal(obj.intended_outcome_id);
     });
 
     it('sets additional_details', () => {
-      expect(data.additional_details).to.equal(surveyObj.additional_details);
+      expect(data.additional_details).to.equal(obj.additional_details);
     });
 
     it('sets field_method_id', () => {
-      expect(data.field_method_id).to.equal(surveyObj.field_method_id);
+      expect(data.field_method_id).to.equal(obj.field_method_id);
     });
 
     it('sets ecological_season_id', () => {
-      expect(data.ecological_season_id).to.equal(surveyObj.ecological_season_id);
+      expect(data.ecological_season_id).to.equal(obj.ecological_season_id);
     });
 
     it('sets vantage_code_ids', () => {
-      expect(data.vantage_code_ids).to.eql(surveyObj.vantage_code_ids);
+      expect(data.vantage_code_ids).to.eql(obj.vantage_code_ids);
     });
 
     it('sets surveyed_all_areas', () => {
-      expect(data.surveyed_all_areas).to.equal(surveyObj.surveyed_all_areas);
+      expect(data.surveyed_all_areas).to.equal(true);
     });
 
     it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(surveyObj.revision_count);
+      expect(data.revision_count).to.equal(obj.revision_count);
     });
   });
 });
@@ -489,26 +489,26 @@ describe('PutLocationData', () => {
   describe('All values provided with first nations id', () => {
     let data: PutSurveyLocationData;
 
-    const surveyObj = {
+    const obj = {
       survey_area_name: 'area_name',
       geometry: [{}],
       revision_count: 0
     };
 
     before(() => {
-      data = new PutSurveyLocationData(surveyObj);
+      data = new PutSurveyLocationData(obj);
     });
 
     it('sets survey_area_name', () => {
-      expect(data.survey_area_name).to.equal(surveyObj.survey_area_name);
+      expect(data.survey_area_name).to.equal(obj.survey_area_name);
     });
 
     it('sets geometry', () => {
-      expect(data.geometry).to.eql(surveyObj.geometry);
+      expect(data.geometry).to.eql(obj.geometry);
     });
 
     it('sets revision_count', () => {
-      expect(data.revision_count).to.equal(surveyObj.revision_count);
+      expect(data.revision_count).to.equal(obj.revision_count);
     });
   });
 });
