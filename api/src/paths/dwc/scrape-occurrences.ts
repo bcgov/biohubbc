@@ -63,7 +63,22 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Successfully scraped and uploaded occurrence information.'
+      description: 'Successfully scraped and uploaded occurrence information.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string'
+              },
+              reason: {
+                type: 'string'
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
@@ -125,6 +140,8 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         vernacularNameHeader
       } = getHeadersAndRowsFromFile(dwcArchive);
 
+      console.log('eventVerbatimCoordinatesHeader is ', eventVerbatimCoordinatesHeader);
+
       const scrapedOccurrences = occurrenceRows?.map((row: any) => {
         const occurrenceId = row[occurrenceIdHeader];
         const associatedTaxa = row[associatedTaxaHeader];
@@ -138,6 +155,8 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
         let verbatimCoordinates;
         let eventDate;
+
+        console.log('eventRows are: ', eventRows);
 
         eventRows?.forEach((eventRow: any) => {
           if (eventRow[eventIdHeader] === occurrenceId) {

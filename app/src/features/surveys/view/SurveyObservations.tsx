@@ -22,7 +22,6 @@ import FileUpload from 'components/attachments/FileUpload';
 import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
-import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
 import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -60,7 +59,6 @@ const finalStatus = ['Rejected', 'Darwin Core Validated', 'Template Validated', 
 const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
   const biohubApi = useBiohubApi();
   const urlParams = useParams();
-  const config = useContext(ConfigContext);
 
   const projectId = Number(urlParams['id']);
   const surveyId = Number(urlParams['survey_id']);
@@ -75,11 +73,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
         .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .then((result) => {
           if (!result || !result.submissionId) {
-            return;
-          }
-
-          if (config?.N8N_HOST) {
-            biohubApi.n8n.initiateOccurrenceSubmissionProcessing(projectId, result.submissionId, file.type);
             return;
           }
 
