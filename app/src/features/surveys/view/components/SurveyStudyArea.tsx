@@ -70,7 +70,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
   const surveyGeometry = survey_details?.geometry || [];
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  // const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForViewResponse>(null as any);
   const [studyAreaFormData, setStudyAreaFormData] = useState<IStudyAreaForm>(StudyAreaInitialValues);
   const [inferredLayersInfo, setInferredLayersInfo] = useState<IInferredLayers>({
     parks: [],
@@ -129,8 +128,6 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
-
-    // setSurveyDataForUpdate(surveyResponseData);
 
     setStudyAreaFormData({
       location: {

@@ -102,10 +102,15 @@ export const EditDialog = <T extends FormikValues>(props: PropsWithChildren<IEdi
           <DialogTitle id="edit-dialog-title">{props.dialogTitle}</DialogTitle>
           <DialogContent>{props.component.element}</DialogContent>
           <DialogActions>
-            <Button onClick={formikProps.submitForm} color="primary" variant="contained" autoFocus>
+            <Button
+              onClick={formikProps.submitForm}
+              color="primary"
+              variant="contained"
+              autoFocus
+              data-testid="edit-dialog-save">
               {props.dialogSaveButtonLabel || 'Save Changes'}
             </Button>
-            <Button onClick={props.onCancel} color="primary" variant="outlined">
+            <Button onClick={props.onCancel} color="primary" variant="outlined" data-testid="edit-dialog-cancel">
               Cancel
             </Button>
           </DialogActions>

@@ -185,7 +185,7 @@ export interface IGetProjectForUpdateResponseFundingSource {
   agency_id: number;
   investment_action_category: number;
   investment_action_category_name: string;
-  agency_project_id: string;
+  agency_project_id: string | null;
   funding_amount: number;
   start_date: string;
   end_date: string;

@@ -1,18 +1,19 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
+import { getSurveyForViewResponse, surveyObject, surveySupplementaryData } from 'test-helpers/survey-helpers';
 import SurveyGeneralInformation from './SurveyGeneralInformation';
 
 jest.mock('../../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   survey: {
-    getSurveyForView: jest.fn(),
-    updateSurvey: jest.fn(),
+    getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
+    updateSurvey: jest.fn<Promise<any>, []>(),
     getSurveyPermits: jest.fn(),
-    getSurveyFundingSources: jest.fn()
+    getAvailableSurveyFundingSources: jest.fn()
   },
   taxonomy: {
     getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })
@@ -42,7 +43,7 @@ describe('SurveyGeneralInformation', () => {
     mockBiohubApi().survey.getSurveyForView.mockClear();
     mockBiohubApi().survey.updateSurvey.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
-    mockBiohubApi().survey.getSurveyFundingSources.mockClear();
+    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockClear();
     mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
   });
 
@@ -55,11 +56,18 @@ describe('SurveyGeneralInformation', () => {
       <SurveyGeneralInformation
         surveyForViewData={{
           ...getSurveyForViewResponse,
-          survey_details: {
-            ...getSurveyForViewResponse.survey_details,
-            end_date: (null as unknown) as string,
-            focal_species: [1],
-            ancillary_species: [2]
+          surveyData: {
+            ...getSurveyForViewResponse.surveyData,
+            survey_details: {
+              ...getSurveyForViewResponse.surveyData.survey_details,
+              end_date: (null as unknown) as string
+            },
+            species: {
+              focal_species: [1],
+              focal_species_names: ['name1'],
+              ancillary_species: [2],
+              ancillary_species_names: ['name2']
+            }
           }
         }}
         codes={codes}
@@ -79,39 +87,64 @@ describe('SurveyGeneralInformation', () => {
 
   it('editing the survey details works in the dialog', async () => {
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
-      survey_details: {
-        id: 1,
-        survey_name: 'survey name is this',
-        survey_purpose: 'survey purpose is this',
-        focal_species: [1],
-        focal_species_names: ['focal species 1'],
-        ancillary_species: [2],
-        ancillary_species_names: ['ancillary species 2'],
-        common_survey_methodology_id: 1,
-        start_date: '1999-09-09',
-        end_date: '2021-01-25',
-        biologist_first_name: 'firstttt',
-        biologist_last_name: 'lastttt',
-        survey_area_name: 'study area is this',
-        geometry: {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [125.6, 10.1]
-          },
-          properties: {
-            name: 'Dinagat Islands'
-          }
+      surveyData: {
+        survey_details: {
+          id: 1,
+          survey_name: 'survey name is this',
+          start_date: '1999-09-09',
+          end_date: '2021-01-25',
+          biologist_first_name: 'firstttt',
+          biologist_last_name: 'lastttt',
+          publish_date: '',
+          survey_area_name: 'study area is this',
+          geometry: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [125.6, 10.1]
+              },
+              properties: {
+                name: 'Dinagat Islands'
+              }
+            }
+          ],
+          revision_count: 0
         },
-        revision_count: 1
-      }
+        species: {
+          focal_species: [1],
+          focal_species_names: ['focal species 1'],
+          ancillary_species: [2],
+          ancillary_species_names: ['ancillary species 2']
+        },
+        permit: {
+          permit_number: '123',
+          permit_type: 'Scientific'
+        },
+        funding: {
+          funding_sources: []
+        },
+        purpose_and_methodology: surveyObject.purpose_and_methodology,
+        proprietor: surveyObject.proprietor
+      },
+      surveySupplementaryData: surveySupplementaryData
     });
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-      { number: '123', type: 'Scientific' },
-      { number: '456', type: 'Wildlife' }
+      { permit_number: '123', permit_type: 'Scientific' },
+      { permit_number: '456', permit_type: 'Wildlife' }
     ]);
-    mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
-      { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
+    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
+      {
+        id: 1,
+        agency_id: 2,
+        investment_action_category: 3,
+        investment_action_category_name: 'category name',
+        agency_project_id: '4',
+        funding_amount: 100,
+        start_date: '2000-04-09 11:53:53',
+        end_date: '2000-05-10 11:53:53',
+        revision_count: 0
+      }
     ]);
 
     const { getByText, getByTestId, queryByText } = renderContainer();
@@ -123,16 +156,17 @@ describe('SurveyGeneralInformation', () => {
     fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
-        'survey_details'
-      ]);
+      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(
+        1,
+        getSurveyForViewResponse.surveyData.survey_details.id
+      );
     });
 
     await waitFor(() => {
       expect(getByText('Edit Survey General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Cancel'));
+    fireEvent.click(getByTestId('edit-dialog-cancel'));
 
     await waitFor(() => {
       expect(queryByText('Edit Survey General Information')).not.toBeInTheDocument();
@@ -144,46 +178,44 @@ describe('SurveyGeneralInformation', () => {
       expect(getByText('Edit Survey General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Save Changes'));
+    fireEvent.click(getByTestId('edit-dialog-save'));
 
     await waitFor(() => {
       expect(mockBiohubApi().survey.updateSurvey).toHaveBeenCalledTimes(1);
-      expect(mockBiohubApi().survey.updateSurvey).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, {
-        survey_details: {
-          id: 1,
-          survey_name: 'survey name is this',
-          survey_purpose: 'survey purpose is this',
-          focal_species: [1],
-          focal_species_names: ['focal species 1'],
-          ancillary_species: [2],
-          ancillary_species_names: ['ancillary species 2'],
-          common_survey_methodology_id: 1,
-          start_date: '1999-09-09',
-          end_date: '2021-01-25',
-          biologist_first_name: 'firstttt',
-          biologist_last_name: 'lastttt',
-          survey_area_name: 'study area is this',
-          revision_count: 1,
-          geometry: {
-            type: 'Feature',
-            geometry: {
-              type: 'Point',
-              coordinates: [125.6, 10.1]
-            },
-            properties: {
-              name: 'Dinagat Islands'
-            }
+      expect(mockBiohubApi().survey.updateSurvey).toBeCalledWith(
+        1,
+        getSurveyForViewResponse.surveyData.survey_details.id,
+        {
+          survey_details: {
+            survey_name: 'survey name is this',
+            start_date: '1999-09-09',
+            end_date: '2021-01-25',
+            biologist_first_name: 'firstttt',
+            biologist_last_name: 'lastttt',
+            revision_count: 0
           },
-          permit_type: ''
+          species: {
+            focal_species: [1],
+            focal_species_names: ['focal species 1'],
+            ancillary_species: [2],
+            ancillary_species_names: ['ancillary species 2']
+          },
+          permit: {
+            permit_number: '123',
+            permit_type: 'Scientific'
+          },
+          funding: {
+            funding_sources: []
+          }
         }
-      });
+      );
 
       expect(mockRefresh).toBeCalledTimes(1);
     });
   });
 
   it('displays an error dialog when fetching the update data fails', async () => {
-    mockBiohubApi().survey.getSurveyForView.mockResolvedValue(null);
+    mockBiohubApi().survey.getSurveyForView.mockResolvedValue((null as unknown) as any);
 
     const { getByText, getByTestId, queryByText } = renderContainer();
 
@@ -230,28 +262,66 @@ describe('SurveyGeneralInformation', () => {
 
   it('shows error dialog with API error message when updating survey data fails', async () => {
     mockBiohubApi().survey.getSurveyForView.mockResolvedValue({
-      survey_details: {
-        id: 1,
-        survey_name: 'survey name is this',
-        survey_purpose: 'survey purpose is this',
-        focal_species: ['species 1'],
-        ancillary_species: ['ancillary species'],
-        common_survey_methodology_id: 1,
-        start_date: '1999-09-09',
-        end_date: '2021-01-25',
-        biologist_first_name: 'firstttt',
-        biologist_last_name: 'lastttt',
-        survey_area_name: 'study area is this',
-        revision_count: 1
-      }
+      surveyData: {
+        survey_details: {
+          id: 1,
+          survey_name: 'survey name is this',
+          start_date: '1999-09-09',
+          end_date: '2021-01-25',
+          biologist_first_name: 'firstttt',
+          biologist_last_name: 'lastttt',
+          publish_date: '',
+          survey_area_name: 'study area is this',
+          geometry: [
+            {
+              type: 'Feature',
+              geometry: {
+                type: 'Point',
+                coordinates: [125.6, 10.1]
+              },
+              properties: {
+                name: 'Dinagat Islands'
+              }
+            }
+          ],
+          revision_count: 0
+        },
+        species: {
+          focal_species: [1],
+          focal_species_names: ['focal species 1'],
+          ancillary_species: [2],
+          ancillary_species_names: ['ancillary species 2']
+        },
+        permit: {
+          permit_number: '123',
+          permit_type: 'Scientific'
+        },
+        funding: {
+          funding_sources: []
+        },
+        purpose_and_methodology: surveyObject.purpose_and_methodology,
+        proprietor: surveyObject.proprietor
+      },
+      surveySupplementaryData: surveySupplementaryData
     });
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-      { number: '123', type: 'Scientific' },
-      { number: '456', type: 'Wildlife' }
+      { permit_number: '123', permit_type: 'Scientific' },
+      { permit_number: '456', permit_type: 'Wildlife' }
     ]);
-    mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
-      { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
+    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
+      {
+        id: 1,
+        agency_id: 2,
+        investment_action_category: 3,
+        investment_action_category_name: 'category name',
+        agency_project_id: '4',
+        funding_amount: 100,
+        start_date: '2000-04-09 11:53:53',
+        end_date: '2000-05-10 11:53:53',
+        revision_count: 0
+      }
     ]);
+
     mockBiohubApi().survey.updateSurvey = jest.fn(() => Promise.reject(new Error('API Error is Here')));
 
     const { getByText, getByTestId, queryByText } = renderContainer();
@@ -263,16 +333,17 @@ describe('SurveyGeneralInformation', () => {
     fireEvent.click(getByTestId('edit-general-info'));
 
     await waitFor(() => {
-      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(1, getSurveyForViewResponse.survey_details.id, [
-        'survey_details'
-      ]);
+      expect(mockBiohubApi().survey.getSurveyForView).toBeCalledWith(
+        1,
+        getSurveyForViewResponse.surveyData.survey_details.id
+      );
     });
 
     await waitFor(() => {
       expect(getByText('Edit Survey General Information')).toBeVisible();
     });
 
-    fireEvent.click(getByText('Save Changes'));
+    fireEvent.click(getByTestId('edit-dialog-save'));
 
     await waitFor(() => {
       expect(queryByText('API Error is Here')).toBeInTheDocument();

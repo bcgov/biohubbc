@@ -56,7 +56,7 @@ describe('useSurveyApi', () => {
     mock.onGet(`/api/project/${projectId}/survey/permits/list`).reply(200, [
       {
         permit_number: '123',
-        permit_typeF: 'wildlife'
+        permit_type: 'wildlife'
       }
     ]);
 
@@ -66,7 +66,7 @@ describe('useSurveyApi', () => {
     expect(result[0].permit_type).toEqual('wildlife');
   });
 
-  it('getSurveyFundingSources works as expected', async () => {
+  it('getAvailableSurveyFundingSources works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/survey/funding-sources/list`).reply(200, [
       {
         id: 1,
@@ -88,7 +88,9 @@ describe('useSurveyApi', () => {
     });
 
     const result = await useSurveyApi(axios).createSurvey(projectId, {
-      survey_name: 'survey name'
+      survey_details: {
+        survey_name: 'survey name'
+      }
     } as ICreateSurveyRequest);
 
     expect(result).toEqual({ id: 1 });
@@ -121,8 +123,8 @@ describe('useSurveyApi', () => {
 
     const result = await useSurveyApi(axios).getSurveyForView(projectId, surveyId);
 
-    expect(result.survey_details.id).toEqual(1);
-    expect(result.survey_details.survey_name).toEqual('survey name');
+    expect(result.surveyData.survey_details.id).toEqual(1);
+    expect(result.surveyData.survey_details.survey_name).toEqual('survey name');
   });
 
   it('getSurveysList works as expected', async () => {
@@ -239,7 +241,7 @@ describe('useSurveyApi', () => {
         permit_number: '123',
         permit_type: 'Scientific'
       },
-      survey_proprietor: null
+      proprietor: null
     };
 
     mock.onPut(`api/project/${projectId}/survey/${surveyId}/update`).reply(200, true);

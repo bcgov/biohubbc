@@ -59,7 +59,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  // const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForViewResponse>(null as any);
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
@@ -125,15 +124,17 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     }
 
     setSurveyFundingSources(surveyFundingSourcesResponseData);
-    // setSurveyDataForUpdate(surveyResponseData);
+
     setGeneralInformationFormData({
       survey_details: {
-        ...surveyResponseData.surveyData.survey_details,
+        survey_name: surveyResponseData.surveyData.survey_details.survey_name,
         start_date: getFormattedDate(
           DATE_FORMAT.ShortDateFormat,
           surveyResponseData.surveyData.survey_details.start_date
         ),
-        end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyResponseData.surveyData.survey_details.end_date)
+        end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, surveyResponseData.surveyData.survey_details.end_date),
+        biologist_first_name: surveyResponseData.surveyData.survey_details.biologist_first_name,
+        biologist_last_name: surveyResponseData.surveyData.survey_details.biologist_last_name
       },
       species: surveyResponseData.surveyData.species,
       permit: surveyResponseData.surveyData.permit,

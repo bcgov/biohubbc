@@ -45,7 +45,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  // const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForViewResponse>(null as any);
   const [surveyProprietorFormData, setSurveyProprietorFormData] = useState<IProprietaryDataForm>(
     ProprietaryDataInitialValues
   );
@@ -89,8 +88,6 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
-
-    // setSurveyDataForUpdate(surveyResponseData);
 
     setSurveyProprietorFormData({
       proprietor: {

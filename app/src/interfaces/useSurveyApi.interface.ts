@@ -77,63 +77,13 @@ export interface IGetSurveyForViewResponseProprietor {
   proprietor_type_name?: string;
 }
 
-export interface IGetSurveyForUpdateResponseDetails {
-  survey_name: string;
-  focal_species: number[];
-  ancillary_species: number[];
-  start_date: string;
-  end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
-  revision_count: number;
-  permit_number: string;
-  permit_type: string;
-  funding_sources: number[];
-}
-
-export interface IGetSurveyForUpdateResponsePurposeAndMethodology {
-  intended_outcome_id: number;
-  additional_details: string;
-  field_method_id: number;
-  ecological_season_id: number;
-  vantage_code_ids: number[];
-  surveyed_all_areas: StringBoolean;
-  revision_count?: number;
-}
-
-export interface IGetSurveyForUpdateResponseProprietor {
-  proprietary_data_category_name?: string;
-  first_nations_name?: string;
-  proprietary_data_category?: number;
-  first_nations_id?: number;
-  category_rationale?: string;
-  proprietor_name?: string;
-  survey_data_proprietary?: string;
-  disa_required?: string;
-  revision_count?: number;
-}
-
-/**
- * An interface for a single instance of survey metadata, for update-only use cases.
- *
- * @export
- * @interface IGetSurveyForUpdateResponse
- */
-export interface IGetSurveyForUpdateResponse {
-  survey_details?: IGetSurveyForUpdateResponseDetails;
-  survey_purpose_and_methodology?: IGetSurveyForUpdateResponsePurposeAndMethodology | null;
-  survey_proprietor?: IGetSurveyForUpdateResponseProprietor | null;
-}
-
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
   permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
-  proprietor: IGetSurveyForViewResponseProprietor;
+  proprietor: IGetSurveyForViewResponseProprietor | null;
 }
 
 export interface SurveyUpdateObject {
@@ -207,12 +157,6 @@ export interface IGetSpecies {
   focal_species_names: string[];
   ancillary_species: number[];
   ancillary_species_names: string[];
-}
-
-export enum UPDATE_GET_SURVEY_ENTITIES {
-  survey_details = 'survey_details',
-  survey_purpose_and_methodology = 'survey_purpose_and_methodology',
-  survey_proprietor = 'survey_proprietor'
 }
 
 export interface IGetSurveyAttachment {

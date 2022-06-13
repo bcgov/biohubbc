@@ -24,7 +24,7 @@ const mockUseBiohubApi = {
   },
   survey: {
     getSurveyPermits: jest.fn(),
-    getSurveyFundingSources: jest.fn(),
+    getAvailableSurveyFundingSources: jest.fn(),
     createSurvey: jest.fn()
   },
   taxonomy: {
@@ -53,7 +53,7 @@ describe('CreateSurveyPage', () => {
     mockBiohubApi().project.getProjectForView.mockClear();
     mockBiohubApi().codes.getAllCodeSets.mockClear();
     mockBiohubApi().survey.getSurveyPermits.mockClear();
-    mockBiohubApi().survey.getSurveyFundingSources.mockClear();
+    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockClear();
     mockBiohubApi().survey.createSurvey.mockClear();
     mockBiohubApi().taxonomy.getSpeciesFromIds.mockClear();
     mockBiohubApi().taxonomy.searchSpecies.mockClear();
@@ -69,8 +69,8 @@ describe('CreateSurveyPage', () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([{ number: 'abcd1', type: 'Wildlife permit' }]);
-    mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue(
-      getSurveyForViewResponse.survey_details.funding_sources
+    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue(
+      getSurveyForViewResponse.surveyData.funding.funding_sources
     );
 
     const { getByText } = renderContainer();
@@ -123,7 +123,7 @@ describe('CreateSurveyPage', () => {
       ]
     });
 
-    mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+    mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
       { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
     ]);
 
@@ -147,7 +147,7 @@ describe('CreateSurveyPage', () => {
         { number: '123', type: 'Scientific' },
         { number: '456', type: 'Wildlife' }
       ]);
-      mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+      mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
           pfsId: 1,
           amount: 100,
@@ -199,7 +199,7 @@ describe('CreateSurveyPage', () => {
         { number: '123', type: 'Scientific' },
         { number: '456', type: 'Wildlife' }
       ]);
-      mockBiohubApi().survey.getSurveyFundingSources.mockResolvedValue([
+      mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
           pfsId: 1,
           amount: 100,

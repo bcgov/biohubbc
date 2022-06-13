@@ -1,10 +1,11 @@
 import { cleanup, render, waitFor } from '@testing-library/react';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { SurveyObject } from 'interfaces/useSurveyApi.interface';
+import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { Router } from 'react-router';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
+import { surveyObject } from 'test-helpers/survey-helpers';
 import SurveysListPage from './SurveysListPage';
 
 const history = createMemoryHistory();
@@ -46,9 +47,11 @@ describe('SurveysListPage', () => {
   });
 
   it('renders correctly with a populated list of surveys', async () => {
-    const surveysList: SurveyObject[] = [
+    const surveysList: SurveyViewObject[] = [
       {
+        ...surveyObject,
         survey_details: {
+          ...surveyObject.survey_details,
           id: 1,
           survey_name: 'Moose Survey 1',
           start_date: '2021-04-09 11:53:53',
@@ -62,7 +65,9 @@ describe('SurveysListPage', () => {
         }
       },
       {
+        ...surveyObject,
         survey_details: {
+          ...surveyObject.survey_details,
           id: 2,
           survey_name: 'Moose Survey 2',
           start_date: '2021-04-09 11:53:53',

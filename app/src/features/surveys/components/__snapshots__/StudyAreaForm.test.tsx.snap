@@ -8,13 +8,13 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        data-testid="survey_area_name"
+        data-testid="location.survey_area_name"
       >
         <label
           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
           data-shrink="false"
-          for="survey_area_name"
-          id="survey_area_name-label"
+          for="location.survey_area_name"
+          id="location.survey_area_name-label"
         >
           Survey Area Name
           <span
@@ -30,8 +30,8 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
           <input
             aria-invalid="false"
             class="MuiInputBase-input MuiOutlinedInput-input"
-            id="survey_area_name"
-            name="survey_area_name"
+            id="location.survey_area_name"
+            name="location.survey_area_name"
             required=""
             type="text"
             value=""
@@ -453,13 +453,13 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        data-testid="survey_area_name"
+        data-testid="location.survey_area_name"
       >
         <label
           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
           data-shrink="true"
-          for="survey_area_name"
-          id="survey_area_name-label"
+          for="location.survey_area_name"
+          id="location.survey_area_name-label"
         >
           Survey Area Name
           <span
@@ -475,8 +475,8 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           <input
             aria-invalid="false"
             class="MuiInputBase-input MuiOutlinedInput-input"
-            id="survey_area_name"
-            name="survey_area_name"
+            id="location.survey_area_name"
+            name="location.survey_area_name"
             required=""
             type="text"
             value="Study area name"
@@ -942,13 +942,13 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        data-testid="survey_area_name"
+        data-testid="location.survey_area_name"
       >
         <label
           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-error Mui-error MuiFormLabel-filled Mui-required Mui-required"
           data-shrink="true"
-          for="survey_area_name"
-          id="survey_area_name-label"
+          for="location.survey_area_name"
+          id="location.survey_area_name-label"
         >
           Survey Area Name
           <span
@@ -962,11 +962,11 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           class="MuiInputBase-root MuiOutlinedInput-root Mui-error Mui-error MuiInputBase-fullWidth MuiInputBase-formControl"
         >
           <input
-            aria-describedby="survey_area_name-helper-text"
+            aria-describedby="location.survey_area_name-helper-text"
             aria-invalid="true"
             class="MuiInputBase-input MuiOutlinedInput-input"
-            id="survey_area_name"
-            name="survey_area_name"
+            id="location.survey_area_name"
+            name="location.survey_area_name"
             required=""
             type="text"
             value="Study area name"
@@ -986,7 +986,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         </div>
         <p
           class="MuiFormHelperText-root MuiFormHelperText-contained Mui-error MuiFormHelperText-filled Mui-required"
-          id="survey_area_name-helper-text"
+          id="location.survey_area_name-helper-text"
         >
           error on survey area name field
         </p>

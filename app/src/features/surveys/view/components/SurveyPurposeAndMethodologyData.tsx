@@ -46,7 +46,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  // const [surveyDataForUpdate, setSurveyDataForUpdate] = useState<IGetSurveyForViewResponse>(null as any);
   const [purposeAndMethodologyFormData, setPurposeAndMethodologyFormData] = useState<IPurposeAndMethodologyForm>(
     PurposeAndMethodologyInitialValues
   );
@@ -90,8 +89,6 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
-
-    // setSurveyDataForUpdate(surveyResponseData);
 
     setPurposeAndMethodologyFormData({
       purpose_and_methodology: {
