@@ -20,7 +20,7 @@ export class PostProjectObject {
   partnerships: PostPartnershipsData;
 
   constructor(obj?: any) {
-    defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
+    //defaultLog.debug({ label: 'PostProjectObject', message: 'params', obj });
 
     this.coordinator = (obj?.coordinator && new PostCoordinatorData(obj.coordinator)) || null;
     this.permit = (obj?.permit && new PostPermitData(obj.permit)) || null;

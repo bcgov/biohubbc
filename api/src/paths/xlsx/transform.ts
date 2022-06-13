@@ -204,7 +204,10 @@ function transformXLSX(): RequestHandler {
 
       const xlsxTransformation = new XLSXTransformation(transformationSchemaParser, xlsxCsv);
 
+      console.log('1. before the transform');
+
       const transformedData = xlsxTransformation.transform();
+      console.log('2. after the transform');
 
       const worksheets = xlsxTransformation.dataToSheet(transformedData);
 

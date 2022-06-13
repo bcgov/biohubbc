@@ -45,15 +45,25 @@ export class XLSXTransformation {
    * @memberof XLSXTransformation
    */
   transform(): RowsObjectsByFileName {
+    console.log('inside the transform');
     const flattenedData = this._flattenData();
+    console.log('flattening data');
 
     const mergedFlattenedData = this._mergedFlattenedRows(flattenedData);
+    console.log('mergedFlattenedData done');
 
     const transformedMergedFlattenedData = this._transformFlattenedData(mergedFlattenedData);
 
+    console.log('transformedMergedFlattenedData done');
+
     const parsedTransformedMergedFlattenedData = this._parseTransformedData(transformedMergedFlattenedData);
 
-    return this._mergeParsedData(parsedTransformedMergedFlattenedData);
+    console.log('parsedTransformedMergedFlattenedData done');
+
+    const merge_data = this._mergeParsedData(parsedTransformedMergedFlattenedData);
+    console.log('mergeParsedData');
+
+    return merge_data;
   }
 
   /**
@@ -593,6 +603,11 @@ export class XLSXTransformation {
    */
   _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): RowsObjectsByFileName {
     // For each entry (based on fileName), do a deep equality check on each of its row objects, removing any duplicates.
+
+    console.log('size of this object: ', Object.keys(parsedTransformedMergedFlattenedData).length);
+
+    //console.log('printing the object: ', parsedTransformedMergedFlattenedData);
+
     Object.entries(parsedTransformedMergedFlattenedData).forEach(([fileName, rowObjects]) => {
       parsedTransformedMergedFlattenedData[fileName] = uniqWith(rowObjects, isEqual);
     });
