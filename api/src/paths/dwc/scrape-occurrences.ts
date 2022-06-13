@@ -140,8 +140,6 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
         vernacularNameHeader
       } = getHeadersAndRowsFromFile(dwcArchive);
 
-      console.log('eventVerbatimCoordinatesHeader is ', eventVerbatimCoordinatesHeader);
-
       const scrapedOccurrences = occurrenceRows?.map((row: any) => {
         const occurrenceId = row[occurrenceIdHeader];
         const associatedTaxa = row[associatedTaxaHeader];
@@ -155,8 +153,6 @@ export function scrapeAndUploadOccurrences(): RequestHandler {
 
         let verbatimCoordinates;
         let eventDate;
-
-        console.log('eventRows are: ', eventRows);
 
         eventRows?.forEach((eventRow: any) => {
           if (eventRow[eventIdHeader] === occurrenceId) {
