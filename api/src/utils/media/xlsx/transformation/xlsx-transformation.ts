@@ -1,4 +1,5 @@
-import { isEqual, uniqWith } from 'lodash';
+import equal from 'fast-deep-equal';
+import { uniqWith } from 'lodash';
 import xlsx from 'xlsx';
 import { CSVWorksheet } from '../../csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
@@ -44,12 +45,12 @@ export class XLSXTransformation {
    * @return {*}  {RowsObjectsByFileName}
    * @memberof XLSXTransformation
    */
-  transform(): RowsObjectsByFileName {
+  async transform(): Promise<RowsObjectsByFileName> {
     console.log('inside the transform');
     console.log('1', new Date());
     const flattenedData = this._flattenData();
     console.log('flattening data');
-    console.log('1', new Date());
+    console.log('2', new Date());
 
     const mergedFlattenedData = this._mergedFlattenedRows(flattenedData);
     console.log('mergedFlattenedData done');
@@ -65,7 +66,7 @@ export class XLSXTransformation {
     console.log('parsedTransformedMergedFlattenedData done');
     console.log('5', new Date());
 
-    const merge_data = this._mergeParsedData(parsedTransformedMergedFlattenedData);
+    const merge_data = await this._mergeParsedData(parsedTransformedMergedFlattenedData);
     console.log('mergeParsedData');
     console.log('6', new Date());
 
@@ -607,16 +608,29 @@ export class XLSXTransformation {
    * @return {*}  {RowsObjectsByFileName}
    * @memberof XLSXTransformation
    */
-  _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): RowsObjectsByFileName {
+  async _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): Promise<RowsObjectsByFileName> {
     // For each entry (based on fileName), do a deep equality check on each of its row objects, removing any duplicates.
 
     console.log('size of this object: ', Object.keys(parsedTransformedMergedFlattenedData).length);
 
     //console.log('printing the object: ', parsedTransformedMergedFlattenedData);
 
-    Object.entries(parsedTransformedMergedFlattenedData).forEach(([fileName, rowObjects]) => {
-      parsedTransformedMergedFlattenedData[fileName] = uniqWith(rowObjects, isEqual);
-    });
+    //capture the current time
+
+    //need a regualr forloop
+    // when time diff =
+
+    const entries = Object.entries(parsedTransformedMergedFlattenedData);
+
+    const breathSpace = async (delaySeconds: number) =>
+      new Promise<void>((resolve) => setTimeout(() => resolve(), delaySeconds * 1000));
+
+    for (let iter = 0; iter < entries.length; iter++) {
+      const [fileName, rowObjects] = entries[iter];
+
+      parsedTransformedMergedFlattenedData[fileName] = uniqWith(rowObjects, equal);
+      await breathSpace(1);
+    }
 
     return parsedTransformedMergedFlattenedData;
   }

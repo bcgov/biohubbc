@@ -206,7 +206,7 @@ function transformXLSX(): RequestHandler {
 
       console.log('1. before the transform', new Date());
 
-      const transformedData = xlsxTransformation.transform();
+      const transformedData = await xlsxTransformation.transform();
       console.log('2. after the transform', new Date());
 
       const worksheets = xlsxTransformation.dataToSheet(transformedData);
