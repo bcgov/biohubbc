@@ -204,12 +204,14 @@ function transformXLSX(): RequestHandler {
 
       const xlsxTransformation = new XLSXTransformation(transformationSchemaParser, xlsxCsv);
 
-      console.log('1. before the transform');
+      console.log('1. before the transform', new Date());
 
       const transformedData = xlsxTransformation.transform();
-      console.log('2. after the transform');
+      console.log('2. after the transform', new Date());
 
       const worksheets = xlsxTransformation.dataToSheet(transformedData);
+
+      console.log('3. worksheets are built', new Date());
 
       const fileBuffers = Object.entries(worksheets).map(([fileName, worksheet]) => {
         return {
@@ -217,6 +219,8 @@ function transformXLSX(): RequestHandler {
           buffer: xlsxCsv.worksheetToBuffer(worksheet)
         };
       });
+
+      console.log('4. fileBuffers are built', new Date());
 
       req['fileBuffers'] = fileBuffers;
 
@@ -234,7 +238,6 @@ export function persistTransformationResults(): RequestHandler {
   return async (req, res, next) => {
     try {
       defaultLog.debug({ label: 'top of function - persistTransformationResults', message: 'xlsx transform' });
-
       const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
 
       // Build the archive zip file
@@ -257,6 +260,8 @@ export function persistTransformationResults(): RequestHandler {
       await uploadBufferToS3(dwcArchiveZip.toBuffer(), 'application/zip', outputS3Key);
 
       const connection = getDBConnection(req['keycloak_token']);
+
+      console.log('persist the data', new Date());
 
       try {
         await connection.open();
