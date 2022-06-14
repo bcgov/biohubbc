@@ -270,15 +270,15 @@ objects:
                 successThreshold: 1
                 timeoutSeconds: 20
               livenessProbe:
-                failureThreshold: 10
+                failureThreshold: 1000
                 httpGet:
                   path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 80
-                periodSeconds: 30
+                periodSeconds: 90
                 successThreshold: 1
-                timeoutSeconds: 20
+                timeoutSeconds: 80
               terminationMessagePath: /dev/termination-log
               terminationMessagePolicy: File
               volumeMounts:
