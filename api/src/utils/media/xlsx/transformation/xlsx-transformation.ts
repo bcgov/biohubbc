@@ -46,22 +46,28 @@ export class XLSXTransformation {
    */
   transform(): RowsObjectsByFileName {
     console.log('inside the transform');
+    console.log('1', new Date());
     const flattenedData = this._flattenData();
     console.log('flattening data');
+    console.log('1', new Date());
 
     const mergedFlattenedData = this._mergedFlattenedRows(flattenedData);
     console.log('mergedFlattenedData done');
+    console.log('3', new Date());
 
     const transformedMergedFlattenedData = this._transformFlattenedData(mergedFlattenedData);
 
     console.log('transformedMergedFlattenedData done');
+    console.log('4', new Date());
 
     const parsedTransformedMergedFlattenedData = this._parseTransformedData(transformedMergedFlattenedData);
 
     console.log('parsedTransformedMergedFlattenedData done');
+    console.log('5', new Date());
 
     const merge_data = this._mergeParsedData(parsedTransformedMergedFlattenedData);
     console.log('mergeParsedData');
+    console.log('6', new Date());
 
     return merge_data;
   }
