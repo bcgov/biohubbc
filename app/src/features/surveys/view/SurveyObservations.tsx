@@ -87,21 +87,22 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               });
             });
           } else {
+            setIsLoading(false);
             biohubApi.observation.initiateXLSXSubmissionValidation(projectId, result.submissionId).then(() => {
               console.log('about to transform');
-              setIsLoading(false);
+
               biohubApi.observation.initiateXLSXSubmissionTransform(projectId, result.submissionId).then(() => {
                 console.log('about to scrape xlsx occurrences');
-                setIsLoading(false);
 
                 biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
                   console.log('done scraping dwc xlsx occurrences');
                   setIsLoading(true);
+                  props.refresh();
                 });
               });
             });
+            setIsLoading(true);
           }
-          props.refresh();
         });
     };
   };
