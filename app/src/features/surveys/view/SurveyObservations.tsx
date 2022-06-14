@@ -87,7 +87,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               });
             });
           } else {
-            setIsLoading(false);
             biohubApi.observation.initiateXLSXSubmissionValidation(projectId, result.submissionId).then(() => {
               console.log('about to transform');
 
@@ -96,12 +95,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
 
                 biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
                   console.log('done scraping dwc xlsx occurrences');
-                  setIsLoading(true);
+
                   props.refresh();
                 });
               });
             });
-            setIsLoading(true);
           }
         });
     };
@@ -138,7 +136,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   }, [biohubApi.observation, projectId, surveyId]);
 
-  useInterval(fetchObservationSubmission, pollingTime, 100000);
+  useInterval(fetchObservationSubmission, pollingTime, 60000);
 
   useEffect(() => {
     if (isLoading) {

@@ -260,15 +260,15 @@ objects:
                   cpu: ${CPU_REQUEST}
                   memory: ${MEMORY_REQUEST}
               readinessProbe:
-                failureThreshold: 1000
+                failureThreshold: 10
                 httpGet:
                   path: /api/version
                   port: ${{API_PORT_DEFAULT}}
                   scheme: HTTP
                 initialDelaySeconds: 100
-                periodSeconds: 90
+                periodSeconds: 30
                 successThreshold: 1
-                timeoutSeconds: 100
+                timeoutSeconds: 20
               livenessProbe:
                 failureThreshold: 1000
                 httpGet:
