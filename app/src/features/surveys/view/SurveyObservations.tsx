@@ -97,11 +97,11 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
                 biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
                   console.log('done scraping dwc xlsx occurrences');
                   setIsLoading(true);
-                  props.refresh();
                 });
               });
             });
           }
+          props.refresh();
         });
     };
   };
