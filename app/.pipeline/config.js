@@ -90,7 +90,7 @@ const phases = {
     sso: sso.dev,
     replicas: 1,
     maxReplicas: 1,
-    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/gblhvt'
+    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/gblhvt_test'
   },
   test: {
     namespace: 'af2668-test',

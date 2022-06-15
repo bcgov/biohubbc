@@ -29,6 +29,9 @@ parameters:
   - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
     description: Default maximum size of a single file that can be uploaded by the upload component UI.
     value: '52428800'
+  - name: REACT_APP_S3_PUBLIC_HOST_URL
+    description: Description.
+    value: ''
   - name: NODE_ENV
     description: NODE_ENV specification variable
     value: 'dev'
@@ -128,6 +131,8 @@ objects:
                   value: ${REACT_APP_MAX_UPLOAD_NUM_FILES}
                 - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
                   value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
+                - name: REACT_APP_S3_PUBLIC_HOST_URL
+                  value: ${REACT_APP_S3_PUBLIC_HOST_URL}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: REACT_APP_NODE_ENV
