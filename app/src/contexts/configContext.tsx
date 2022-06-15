@@ -65,7 +65,7 @@ const getLocalConfig = (): IConfig => {
       process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi',
     MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
     MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
-    S3_PUBLIC_HOST_URL: process.env.REACT_APP_S3_PUBLIC_HOST_URL || 'test1'
+    S3_PUBLIC_HOST_URL: process.env.REACT_APP_S3_PUBLIC_HOST_URL || 'https://nrs.objectstore.gov.bc.ca/gblhvt'
   };
 };
 
