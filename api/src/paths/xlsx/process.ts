@@ -131,7 +131,7 @@ POST.apiDoc = {
 };
 
 export function sendResponse(): RequestHandler {
-  return async (req, res, next) => {
+  return async (_req, res, next) => {
     res.status(200).json({ status: 'success' });
     defaultLog.info({ label: 'xlsx process', message: `success sent` });
     next();

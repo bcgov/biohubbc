@@ -100,15 +100,19 @@ build-web: ## Builds all backend+web containers
 	@echo "==============================================="
 	@echo "Make: build-web - building web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx n8n_setup
+	@docker-compose -f docker-compose.yml build db db_setup api app
+## @docker-compose -f docker-compose.yml build db db_setup api app n8n n8n_nginx n8n_setup
 
 run-web: ## Runs all backend+web containers
 	@echo "==============================================="
 	@echo "Make: run-web - running web images"
 	@echo "==============================================="
-	@docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup
-  ## Restart n8n as a workaround to resolve this known issue: https://github.com/n8n-io/n8n/issues/2155
-	@docker-compose restart n8n
+	@docker-compose -f docker-compose.yml up -d db db_setup api app
+## @docker-compose -f docker-compose.yml up -d db db_setup api app n8n n8n_nginx n8n_setup
+
+## Restart n8n as a workaround to resolve this known issue: https://github.com/n8n-io/n8n/issues/2155
+## @docker-compose restart n8n
+
 
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container

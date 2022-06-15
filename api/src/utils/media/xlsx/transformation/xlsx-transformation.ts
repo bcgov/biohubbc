@@ -595,13 +595,13 @@ export class XLSXTransformation {
   async _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): Promise<RowsObjectsByFileName> {
     // For each entry (based on fileName), do a deep equality check on each of its row objects, removing any duplicates.
 
-    const entries = Object.entries(parsedTransformedMergedFlattenedData);
-
     const breathSpace = async (delaySeconds: number) =>
       new Promise<void>((resolve) => setTimeout(() => resolve(), delaySeconds * 1000));
 
-    for (let iter = 0; iter < entries.length; iter++) {
-      const [fileName, rowObjects] = entries[iter];
+    const entries = Object.entries(parsedTransformedMergedFlattenedData);
+
+    for (const entry of entries) {
+      const [fileName, rowObjects] = entry;
 
       parsedTransformedMergedFlattenedData[fileName] = uniqWith(rowObjects, equal);
       await breathSpace(1);
