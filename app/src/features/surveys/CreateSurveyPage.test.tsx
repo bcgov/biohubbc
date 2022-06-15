@@ -4,11 +4,15 @@ import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
+import {
+  ICreateSurveyResponse,
+  ISurveyAvailableFundingSources,
+  ISurveyPermits
+} from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
-import { getSurveyForViewResponse } from 'test-helpers/survey-helpers';
 import CreateSurveyPage from './CreateSurveyPage';
 
 const history = createMemoryHistory();
@@ -23,9 +27,9 @@ const mockUseBiohubApi = {
     getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
   survey: {
-    getSurveyPermits: jest.fn(),
-    getAvailableSurveyFundingSources: jest.fn(),
-    createSurvey: jest.fn()
+    getSurveyPermits: jest.fn<Promise<ISurveyPermits[]>, []>(),
+    getAvailableSurveyFundingSources: jest.fn<Promise<ISurveyAvailableFundingSources[]>, []>(),
+    createSurvey: jest.fn<Promise<ICreateSurveyResponse>, []>()
   },
   taxonomy: {
     searchSpecies: jest.fn().mockResolvedValue({ searchResponse: [] }),
@@ -68,9 +72,11 @@ describe('CreateSurveyPage', () => {
   it('renders the initial default page correctly', async () => {
     mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
-    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([{ number: 'abcd1', type: 'Wildlife permit' }]);
+    mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
+      { permit_number: 'abcd1', permit_type: 'Wildlife permit' }
+    ]);
     mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue(
-      getSurveyForViewResponse.surveyData.funding.funding_sources
+      getProjectForViewResponse.funding.fundingSources
     );
 
     const { getByText } = renderContainer();
@@ -106,8 +112,8 @@ describe('CreateSurveyPage', () => {
     mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
 
     mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-      { number: '123', type: 'Scientific' },
-      { number: '456', type: 'Wildlife' }
+      { permit_number: '123', permit_type: 'Scientific' },
+      { permit_number: '456', permit_type: 'Wildlife' }
     ]);
 
     mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
@@ -124,7 +130,13 @@ describe('CreateSurveyPage', () => {
     });
 
     mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
-      { pfsId: 1, amount: 100, startDate: '2000-04-09 11:53:53', endDate: '2000-05-10 11:53:53', agencyName: 'agency' }
+      {
+        ...getProjectForViewResponse.funding.fundingSources[0],
+        funding_amount: 100,
+        start_date: '2000-04-09 11:53:53',
+        end_date: '2000-05-10 11:53:53',
+        agency_project_id: 'agency'
+      }
     ]);
 
     const { asFragment, getAllByText } = render(
@@ -144,16 +156,16 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-        { number: '123', type: 'Scientific' },
-        { number: '456', type: 'Wildlife' }
+        { permit_number: '123', permit_type: 'Scientific' },
+        { permit_number: '456', permit_type: 'Wildlife' }
       ]);
       mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
-          pfsId: 1,
-          amount: 100,
-          startDate: '2000-04-09 11:53:53',
-          endDate: '2000-05-10 11:53:53',
-          agencyName: 'agency'
+          ...getProjectForViewResponse.funding.fundingSources[0],
+          funding_amount: 100,
+          start_date: '2000-04-09 11:53:53',
+          end_date: '2000-05-10 11:53:53',
+          agency_project_id: 'agency'
         }
       ]);
       mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({
@@ -196,16 +208,16 @@ describe('CreateSurveyPage', () => {
       mockBiohubApi().project.getProjectForView.mockResolvedValue(getProjectForViewResponse);
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(codes);
       mockBiohubApi().survey.getSurveyPermits.mockResolvedValue([
-        { number: '123', type: 'Scientific' },
-        { number: '456', type: 'Wildlife' }
+        { permit_number: '123', permit_type: 'Scientific' },
+        { permit_number: '456', permit_type: 'Wildlife' }
       ]);
       mockBiohubApi().survey.getAvailableSurveyFundingSources.mockResolvedValue([
         {
-          pfsId: 1,
-          amount: 100,
-          startDate: '2000-04-09 11:53:53',
-          endDate: '2000-05-10 11:53:53',
-          agencyName: 'agency'
+          ...getProjectForViewResponse.funding.fundingSources[0],
+          funding_amount: 100,
+          start_date: '2000-04-09 11:53:53',
+          end_date: '2000-05-10 11:53:53',
+          agency_project_id: 'agency'
         }
       ]);
       mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({

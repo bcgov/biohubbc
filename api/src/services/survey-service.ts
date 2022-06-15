@@ -401,13 +401,13 @@ export class SurveyService extends DBService {
     permitNumber: string,
     permitType: string
   ) {
-    const sqlStatement = queries.survey.upsertSurveyPermitSQL(
-      systemUserId,
-      projectId,
-      surveyId,
-      permitNumber,
-      permitType
-    );
+    let sqlStatement;
+
+    if (!permitType) {
+      sqlStatement = queries.survey.associateSurveyToPermitSQL(projectId, surveyId, permitNumber);
+    } else {
+      sqlStatement = queries.survey.insertSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
+    }
 
     const response = await this.connection.sql(sqlStatement);
 
@@ -511,7 +511,7 @@ export class SurveyService extends DBService {
   async updateSurveyPermitData(projectId: number, surveyId: number, surveyData: PutSurveyObject) {
     await this.unassociatePermitFromSurvey(surveyId);
 
-    if (!surveyData.permit.permit_number || !surveyData.permit.permit_type) {
+    if (!surveyData.permit.permit_number) {
       return;
     }
 

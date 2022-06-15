@@ -12,6 +12,7 @@ export type SurveyObject = {
 
 export class GetSurveyData {
   id: number;
+  uuid: string;
   survey_name: string;
   start_date: string;
   end_date: string;
@@ -24,6 +25,7 @@ export class GetSurveyData {
 
   constructor(obj?: any) {
     this.id = obj?.survey_id || null;
+    this.uuid = obj?.uuid || null;
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
@@ -99,25 +101,33 @@ export class GetSurveyPurposeAndMethodologyData {
 
 interface IGetSurveyFundingSource {
   pfs_id: number;
-  agency_name: string;
   funding_amount: number;
+  funding_source_id: number;
   funding_start_date: string;
   funding_end_date: string;
+  investment_action_category_id: number;
+  investment_action_category_name: string;
+  agency_name: string;
+  funding_source_project_id: string;
 }
 
 export class GetSurveyFundingSources {
   funding_sources: IGetSurveyFundingSource[];
 
-  constructor(obj?: any) {
+  constructor(obj?: any[]) {
     this.funding_sources =
       (obj &&
         obj.map((item: any) => {
           return {
-            pfs_id: item.pfs_id,
+            pfs_id: item.project_funding_source_id,
             funding_amount: item.funding_amount,
+            funding_source_id: item.funding_source_id,
             funding_start_date: item.funding_start_date,
             funding_end_date: item.funding_end_date,
-            agency_name: item.agency_name
+            investment_action_category_id: item.investment_action_category_id,
+            investment_action_category_name: item.investment_action_category_name,
+            agency_name: item.agency_name,
+            funding_source_project_id: item.funding_source_project_id
           };
         })) ||
       [];

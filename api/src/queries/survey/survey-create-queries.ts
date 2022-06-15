@@ -41,9 +41,9 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
       ${survey.purpose_and_methodology.additional_details},
       ${survey.purpose_and_methodology.ecological_season_id},
       ${survey.purpose_and_methodology.intended_outcome_id},
-      ${survey.purpose_and_methodology.surveyed_all_areas}
+      ${survey.purpose_and_methodology.surveyed_all_areas},
       ${survey.location.survey_area_name},
-      ${JSON.stringify(survey.location.geometry)},
+      ${JSON.stringify(survey.location.geometry)}
   `;
 
   if (survey.location.geometry && survey.location.geometry.length) {

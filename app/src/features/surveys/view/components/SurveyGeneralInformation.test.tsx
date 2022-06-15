@@ -1,6 +1,10 @@
 import { cleanup, fireEvent, render, waitFor } from '@testing-library/react';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import {
+  IGetSurveyForViewResponse,
+  ISurveyAvailableFundingSources,
+  ISurveyPermits
+} from 'interfaces/useSurveyApi.interface';
 import React from 'react';
 import { codes } from 'test-helpers/code-helpers';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
@@ -12,8 +16,8 @@ const mockUseBiohubApi = {
   survey: {
     getSurveyForView: jest.fn<Promise<IGetSurveyForViewResponse>, []>(),
     updateSurvey: jest.fn<Promise<any>, []>(),
-    getSurveyPermits: jest.fn(),
-    getAvailableSurveyFundingSources: jest.fn()
+    getSurveyPermits: jest.fn<Promise<ISurveyPermits[]>, []>(),
+    getAvailableSurveyFundingSources: jest.fn<Promise<ISurveyAvailableFundingSources[]>, []>()
   },
   taxonomy: {
     getSpeciesFromIds: jest.fn().mockResolvedValue({ searchResponse: [] })

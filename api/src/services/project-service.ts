@@ -266,17 +266,20 @@ export class ProjectService extends DBService {
     };
   }
 
-  async getProjectEntitiesById(projectId: number, entities: string[]): Promise<IGetProject> {
-    const results: IGetProject = {
+  async getProjectEntitiesById(
+    projectId: number,
+    entities: string[]
+  ): Promise<Pick<IGetProject, 'id'> & Partial<Omit<IGetProject, 'id'>>> {
+    const results: Pick<IGetProject, 'id'> & Partial<Omit<IGetProject, 'id'>> = {
       id: projectId,
-      coordinator: null,
-      permit: null,
-      project: null,
-      objectives: null,
-      location: null,
-      iucn: null,
-      funding: null,
-      partnerships: null
+      coordinator: undefined,
+      permit: undefined,
+      project: undefined,
+      objectives: undefined,
+      location: undefined,
+      iucn: undefined,
+      funding: undefined,
+      partnerships: undefined
     };
 
     const promises: Promise<any>[] = [];

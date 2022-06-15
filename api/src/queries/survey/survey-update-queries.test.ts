@@ -11,10 +11,11 @@ import {
   PutSurveySpeciesData
 } from '../../models/survey-update';
 import {
+  associateSurveyToPermitSQL,
+  insertSurveyPermitSQL,
   putSurveyDetailsSQL,
   unassociatePermitFromSurveySQL,
-  updateSurveyPublishStatusSQL,
-  upsertSurveyPermitSQL
+  updateSurveyPublishStatusSQL
 } from './survey-update-queries';
 
 describe('putSurveyDetailsSQL', () => {
@@ -68,9 +69,17 @@ describe('unassociatePermitFromSurveySQL', () => {
   });
 });
 
-describe('upsertSurveyPermitSQL', () => {
+describe('insertSurveyPermitSQL', () => {
   it('returns a sql statement', () => {
-    const response = upsertSurveyPermitSQL(1, 2, 3, '4', 'type');
+    const response = insertSurveyPermitSQL(1, 2, 3, '4', 'type');
+
+    expect(response).not.to.be.null;
+  });
+});
+
+describe('associateSurveyToPermitSQL', () => {
+  it('returns a sql statement', () => {
+    const response = associateSurveyToPermitSQL(1, 2, '4');
 
     expect(response).not.to.be.null;
   });

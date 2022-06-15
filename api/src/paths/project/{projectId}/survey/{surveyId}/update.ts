@@ -134,8 +134,7 @@ PUT.apiDoc = {
                 funding_sources: {
                   type: 'array',
                   items: {
-                    type: 'integer',
-                    minimum: 1
+                    type: 'integer'
                   }
                 }
               }

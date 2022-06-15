@@ -108,7 +108,7 @@ const ProprietaryDataForm: React.FC<IProprietaryDataFormProps> = (props) => {
 
   const resetField = (name: string) => {
     setFieldValue(name, get(ProprietaryDataInitialValues, name));
-    setFieldTouched(name, false);
+    setFieldTouched(name, false, false);
     setFieldError(name, undefined);
   };
 

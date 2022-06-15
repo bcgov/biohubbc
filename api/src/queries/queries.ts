@@ -2,6 +2,7 @@ import administrativeActivity from './administrative-activity';
 import codes from './codes';
 import database from './database';
 import dwc from './dwc';
+import eml from './eml';
 import occurrence from './occurrence';
 import permit from './permit';
 import project from './project';
@@ -18,6 +19,7 @@ export const queries = {
   codes,
   database,
   dwc,
+  eml,
   occurrence,
   permit,
   project,

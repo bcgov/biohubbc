@@ -345,14 +345,17 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               </TableRow>
             </TableHead>
             <TableBody>
-              <TableRow>
-                <TableCell>{permit.permit_number}</TableCell>
-                <TableCell>{permit.permit_type}</TableCell>
-              </TableRow>
+              {(permit.permit_number && (
+                <TableRow>
+                  <TableCell>{permit.permit_number}</TableCell>
+                  <TableCell>{permit.permit_type}</TableCell>
+                </TableRow>
+              )) || (
+                <TableRow>
+                  <TableCell colSpan={2}>No Permits</TableCell>
+                </TableRow>
+              )}
             </TableBody>
-            {/* <Typography variant="body1">
-              {(survey_details.permit_number && `${survey_details.permit_number} - ${survey_details.permit_type}`) || 'No Permit'}
-            </Typography> */}
           </Table>
         </TableContainer>
       </Box>

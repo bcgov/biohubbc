@@ -118,26 +118,30 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
 
   return SQL`
     SELECT
-      sfs.project_funding_source_id as pfs_id,
+      sfs.project_funding_source_id,
+      fs.funding_source_id,
+      pfs.funding_source_project_id,
       pfs.funding_amount::numeric::int,
       pfs.funding_start_date,
       pfs.funding_end_date,
+      iac.investment_action_category_id,
+      iac.name as investment_action_category_name,
       fs.name as agency_name
     FROM
       survey as s
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       survey_funding_source as sfs
     ON
       sfs.survey_id = s.survey_id
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       project_funding_source as pfs
     ON
       pfs.project_funding_source_id = sfs.project_funding_source_id
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       investment_action_category as iac
     ON
       pfs.investment_action_category_id = iac.investment_action_category_id
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       funding_source as fs
     ON
       iac.funding_source_id = fs.funding_source_id
@@ -145,11 +149,15 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
       s.survey_id = ${surveyId}
     GROUP BY
       sfs.project_funding_source_id,
-      pfs.funding_amount::numeric::int,
+      fs.funding_source_id,
+      pfs.funding_source_project_id,
+      pfs.funding_amount,
       pfs.funding_start_date,
       pfs.funding_end_date,
+      iac.investment_action_category_id,
+      iac.name,
       fs.name
-    order by
+    ORDER BY
       pfs.funding_start_date;
   `;
 };
@@ -180,7 +188,7 @@ export const getLatestOccurrenceSubmissionIdSQL = (surveyId: number): SQLStateme
     SELECT
       max(occurrence_submission_id) as id
     FROM
-    occurrence_submission
+      occurrence_submission
     WHERE
       survey_id = ${surveyId};
     `;

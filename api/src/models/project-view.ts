@@ -4,14 +4,14 @@ import { COMPLETION_STATUS } from '../constants/status';
 
 export interface IGetProject {
   id: number;
-  coordinator: GetCoordinatorData | null;
-  permit: GetPermitData | null;
-  project: GetProjectData | null;
-  objectives: GetObjectivesData | null;
-  location: GetLocationData | null;
-  iucn: GetIUCNClassificationData | null;
-  funding: GetFundingData | null;
-  partnerships: GetPartnershipsData | null;
+  coordinator: GetCoordinatorData;
+  permit: GetPermitData;
+  project: GetProjectData;
+  objectives: GetObjectivesData;
+  location: GetLocationData;
+  iucn: GetIUCNClassificationData;
+  funding: GetFundingData;
+  partnerships: GetPartnershipsData;
 }
 
 /**
@@ -21,6 +21,7 @@ export interface IGetProject {
  * @class GetProjectData
  */
 export class GetProjectData {
+  uuid: string;
   project_name: string;
   project_type: number;
   project_activities: number[];
@@ -32,6 +33,7 @@ export class GetProjectData {
   revision_count: number;
 
   constructor(projectData?: any, activityData?: any[]) {
+    this.uuid = projectData?.uuid || '';
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.pt_id || -1;
     this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];

@@ -23,17 +23,19 @@ export const unassociatePermitFromSurveySQL = (surveyId: number): SQLStatement =
 };
 
 /**
- * Attempt to insert a new permit record and associate the survey to it. On permit number conflict (record with that
- * permit number already exists) update that existing record by associating the survey to it.
+ * Attempt to insert a new permit and associate the project and survey to it.
+ *
+ * On conflict (if the permit already exists and belongs to the project), update the permit and associate the survey
+ * to it.
  *
  * @param {number} systemUserId
  * @param {number} projectId
  * @param {number} surveyId
  * @param {string} permitNumber
  * @param {string} permitType
- * @return {*}  {(QLStatement}
+ * @return {*}  {SQLStatement}
  */
-export const upsertSurveyPermitSQL = (
+export const insertSurveyPermitSQL = (
   systemUserId: number,
   projectId: number,
   surveyId: number,
@@ -56,7 +58,32 @@ export const upsertSurveyPermitSQL = (
     )
     ON CONFLICT (number) DO
     UPDATE SET
-      survey_id = ${surveyId};
+      survey_id = ${surveyId}
+    WHERE
+      permit.project_id = ${projectId}
+    AND
+      permit.survey_id is NULL;
+  `;
+};
+
+/**
+ * Update an existing permit by associatingF the survey to it.
+ *
+ * @param {number} projectId
+ * @param {number} surveyId
+ * @param {string} permitNumber
+ * @return {*}  {(SQLStatement}
+ */
+export const associateSurveyToPermitSQL = (projectId: number, surveyId: number, permitNumber: string): SQLStatement => {
+  return SQL`
+    UPDATE
+      permit
+    SET
+      survey_id = ${surveyId}
+    WHERE
+      project_id = ${projectId}
+    AND
+      number = ${permitNumber};
   `;
 };
 
