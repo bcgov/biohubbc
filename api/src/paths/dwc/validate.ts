@@ -193,7 +193,7 @@ export function getS3File(): RequestHandler {
 
 export function prepDWCArchive(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'ƒ', message: 's3File' });
+    defaultLog.debug({ label: 'prepDWCArchive', message: 's3File' });
 
     try {
       const s3File = req['s3File'];

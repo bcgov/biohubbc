@@ -54,9 +54,7 @@ export class XLSXTransformation {
 
     const parsedTransformedMergedFlattenedData = this._parseTransformedData(transformedMergedFlattenedData);
 
-    const merge_data = await this._mergeParsedData(parsedTransformedMergedFlattenedData);
-
-    return merge_data;
+    return await this._mergeParsedData(parsedTransformedMergedFlattenedData);
   }
 
   /**

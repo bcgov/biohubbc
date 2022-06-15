@@ -175,7 +175,7 @@ export function getTransformationSchema(): RequestHandler {
 
 export function getTransformationRules(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'top of function - getTransformationRules', message: 'xlsx transform' });
+    defaultLog.debug({ label: 'getTransformationRules', message: 'xlsx transform' });
 
     try {
       const transformationSchema: JSON = req['transformationSchema'];
@@ -183,7 +183,6 @@ export function getTransformationRules(): RequestHandler {
       const transformationSchemaParser = new TransformationSchemaParser(transformationSchema);
 
       req['transformationSchemaParser'] = transformationSchemaParser;
-      defaultLog.debug({ label: 'bottom of function - getTransformationRules', message: 'xlsx transform' });
 
       next();
     } catch (error) {
@@ -195,7 +194,7 @@ export function getTransformationRules(): RequestHandler {
 
 export function transformXLSX(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'top of function - transformXLSX', message: 'xlsx transform' });
+    defaultLog.debug({ label: 'transformXLSX', message: 'xlsx transform' });
 
     try {
       const xlsxCsv: XLSXCSV = req['xlsx'];
@@ -217,8 +216,6 @@ export function transformXLSX(): RequestHandler {
 
       req['fileBuffers'] = fileBuffers;
 
-      defaultLog.debug({ label: 'bottom of function - transformXLSX', message: 'xlsx transform' });
-
       next();
     } catch (error) {
       defaultLog.debug({ label: 'transformXLSX', message: 'error', error });
@@ -230,7 +227,7 @@ export function transformXLSX(): RequestHandler {
 export function persistTransformationResults(): RequestHandler {
   return async (req, res, next) => {
     try {
-      defaultLog.debug({ label: 'top of function - persistTransformationResults', message: 'xlsx transform' });
+      defaultLog.debug({ label: 'persistTransformationResults', message: 'xlsx transform' });
       const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
 
       // Build the archive zip file
@@ -272,8 +269,6 @@ export function persistTransformationResults(): RequestHandler {
         );
 
         await connection.commit();
-
-        defaultLog.debug({ label: 'bottom of function - persistTransformationResults', message: 'xlsx transform' });
 
         next();
       } catch (error) {
