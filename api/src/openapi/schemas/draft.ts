@@ -4,14 +4,21 @@
 export const draftResponseObject = {
   title: 'Draft Response Object',
   type: 'object',
-  required: ['id', 'date'],
+  required: ['id', 'name', 'date'],
   properties: {
     id: {
       type: 'number'
     },
-    date: {
+    name: {
       type: 'string',
-      description: 'The date this draft was last updated or created'
+      description: 'The name of the draft'
+    },
+    date: {
+      description: 'The date this draft was last updated or created',
+      oneOf: [
+        { type: 'string', format: 'date' },
+        { type: 'object' }
+      ]
     }
   }
 };
@@ -32,8 +39,8 @@ export const draftGetResponseObject = {
       description: 'The name of the draft'
     },
     data: {
-      type: 'string',
-      description: 'The data associated with this draft'
+      title: 'JSON data associated with the draft',
+      type: 'object'
     }
   }
 };

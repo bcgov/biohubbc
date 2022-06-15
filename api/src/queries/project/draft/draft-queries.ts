@@ -25,6 +25,7 @@ export const postDraftSQL = (systemUserId: number, name: string, data: unknown):
     )
     RETURNING
       webform_draft_id as id,
+      name,
       create_date::timestamptz,
       update_date::timestamptz;
   `;
@@ -55,6 +56,7 @@ export const putDraftSQL = (id: number, name: string, data: unknown): SQLStateme
       webform_draft_id = ${id}
     RETURNING
       webform_draft_id as id,
+      name,
       create_date::timestamptz,
       update_date::timestamptz;
   `;
@@ -76,7 +78,9 @@ export const getDraftsSQL = (systemUserId: number): SQLStatement | null => {
   const sqlStatement: SQLStatement = SQL`
     SELECT
       webform_draft_id as id,
-      name
+      name,
+      create_date::timestamptz,
+      update_date::timestamptz
     FROM
       webform_draft
     WHERE

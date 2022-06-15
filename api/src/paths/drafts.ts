@@ -88,7 +88,7 @@ export function getDraftList(): RequestHandler {
 
       const getDraftsResponse = await connection.query(getDraftsSQLStatement.text, getDraftsSQLStatement.values);
 
-      const draftResult = (getDraftsResponse && getDraftsResponse.rows) || null;
+      const draftResult: { name: string, id: string, update_date: string, create_date: string}[] | null = (getDraftsResponse && getDraftsResponse.rows) || null;
 
       if (!draftResult) {
         throw new HTTP400('Failed to get drafts');
@@ -96,7 +96,11 @@ export function getDraftList(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(draftResult);
+      return res.status(200).json(draftResult.map(result => ({
+        id: result.id,
+        name: result.name,
+        date: result.update_date || result.create_date
+      })));
     } catch (error) {
       defaultLog.error({ label: 'getDraftsList', message: 'error', error });
       await connection.rollback();
