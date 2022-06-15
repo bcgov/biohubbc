@@ -55,7 +55,7 @@ GET.apiDoc = {
           minimum: 1
         }
       },
-      description: 'Specify which surveys to incldue in the EML. Defaults to all surveys if none specified.'
+      description: 'Specify which surveys to include in the EML. Defaults to all surveys if none specified.'
     }
   ],
   responses: {
@@ -103,7 +103,7 @@ export function getProjectEml(): RequestHandler {
   return async (req, res) => {
     const projectId = Number(req.query.projectId);
 
-    const surveyIds = (req.query.surveyIds as string[] | undefined)?.map((item) => Number(item));
+    const surveyIds = (req.query.surveyId as string[] | undefined)?.map((item) => Number(item));
 
     const connection = getDBConnection(req['keycloak_token']);
 
