@@ -21,14 +21,13 @@ import React, { useContext } from 'react';
  */
 const ResourcesPage: React.FC = () => {
   const config = useContext(ConfigContext);
-  const s3PublicHostURL = config?.S3_PUBLIC_HOST_URL
+  const s3PublicHostURL = config?.S3_PUBLIC_HOST_URL;
 
   const resources = [
     {
       id: '1',
       name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.5',
-      url:
-        `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx`,
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '115 KB'
@@ -44,8 +43,7 @@ const ResourcesPage: React.FC = () => {
     {
       id: '3',
       name: 'Goat Aerial Population Composition Recruitment Survey 1.4',
-      url:
-        `${s3PublicHostURL}/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx`,
+      url: `${s3PublicHostURL}/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '165 KB'
@@ -53,8 +51,7 @@ const ResourcesPage: React.FC = () => {
     {
       id: '4',
       name: 'Sheep Aerial Population Composition Recruitment Survey 1.2',
-      url:
-        `${s3PublicHostURL}/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx`,
+      url: `${s3PublicHostURL}/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '109 KB'

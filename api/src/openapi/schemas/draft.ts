@@ -15,10 +15,7 @@ export const draftResponseObject = {
     },
     date: {
       description: 'The date this draft was last updated or created',
-      oneOf: [
-        { type: 'string', format: 'date' },
-        { type: 'object' }
-      ]
+      oneOf: [{ type: 'string', format: 'date' }, { type: 'object' }]
     }
   }
 };
