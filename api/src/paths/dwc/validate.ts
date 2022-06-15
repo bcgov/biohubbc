@@ -193,7 +193,7 @@ export function getS3File(): RequestHandler {
 
 export function prepDWCArchive(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'prepDWCArchive', message: 's3File' });
+    defaultLog.debug({ label: 'ƒ', message: 's3File' });
 
     try {
       const s3File = req['s3File'];
@@ -405,7 +405,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
   };
 }
 
-function updateOccurrenceSubmission(): RequestHandler {
+export function updateOccurrenceSubmission(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'updateOccurrenceSubmission', message: 'Update output file name and output key' });
 

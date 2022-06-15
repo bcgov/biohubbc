@@ -215,9 +215,7 @@ export const uploadScrapedOccurrence = async (
   scrapedOccurrence: PostOccurrence,
   connection: IDBConnection
 ) => {
-  console.log('Start - inserting occurrences in the occurrence table', new Date());
   const sqlStatement = queries.occurrence.postOccurrenceSQL(occurrenceSubmissionId, scrapedOccurrence);
-  console.log('End - inserting occurrences in the occurrence table', new Date());
 
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL post statement');

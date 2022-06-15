@@ -46,29 +46,15 @@ export class XLSXTransformation {
    * @memberof XLSXTransformation
    */
   async transform(): Promise<RowsObjectsByFileName> {
-    console.log('inside the transform');
-    console.log('1', new Date());
     const flattenedData = this._flattenData();
-    console.log('flattening data');
-    console.log('2', new Date());
 
     const mergedFlattenedData = this._mergedFlattenedRows(flattenedData);
-    console.log('mergedFlattenedData done');
-    console.log('3', new Date());
 
     const transformedMergedFlattenedData = this._transformFlattenedData(mergedFlattenedData);
 
-    console.log('transformedMergedFlattenedData done');
-    console.log('4', new Date());
-
     const parsedTransformedMergedFlattenedData = this._parseTransformedData(transformedMergedFlattenedData);
 
-    console.log('parsedTransformedMergedFlattenedData done');
-    console.log('5', new Date());
-
     const merge_data = await this._mergeParsedData(parsedTransformedMergedFlattenedData);
-    console.log('mergeParsedData');
-    console.log('6', new Date());
 
     return merge_data;
   }
@@ -610,15 +596,6 @@ export class XLSXTransformation {
    */
   async _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): Promise<RowsObjectsByFileName> {
     // For each entry (based on fileName), do a deep equality check on each of its row objects, removing any duplicates.
-
-    console.log('size of this object: ', Object.keys(parsedTransformedMergedFlattenedData).length);
-
-    //console.log('printing the object: ', parsedTransformedMergedFlattenedData);
-
-    //capture the current time
-
-    //need a regualr forloop
-    // when time diff =
 
     const entries = Object.entries(parsedTransformedMergedFlattenedData);
 

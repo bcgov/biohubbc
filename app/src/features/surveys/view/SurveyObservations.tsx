@@ -72,34 +72,18 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
       return biohubApi.observation
         .uploadObservationSubmission(projectId, surveyId, file, cancelToken, handleFileUploadProgress)
         .then((result) => {
-          //console.log('got the upload result');
           if (!result || !result.submissionId) {
             return;
           }
 
           if (file.type === 'application/x-zip-compressed' || file.type === 'application/zip') {
-            //console.log('about to initiate validation');
             biohubApi.observation.initiateDwCSubmissionValidation(projectId, result.submissionId).then(() => {
-              //console.log('about to scrape dwc zip occurrences');
               biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
-                //console.log('done scraping dwc zip occurrences');
                 props.refresh();
               });
             });
           } else {
-            biohubApi.observation.initiateXLSXSubmissionValidation(projectId, result.submissionId).then(() => {
-              console.log('about to transform');
-
-              biohubApi.observation.initiateXLSXSubmissionTransform(projectId, result.submissionId).then(() => {
-                console.log('about to scrape xlsx occurrences');
-
-                biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
-                  console.log('done scraping dwc xlsx occurrences');
-
-                  props.refresh();
-                });
-              });
-            });
+            biohubApi.observation.processOccurrences(projectId, result.submissionId);
           }
         });
     };
