@@ -216,7 +216,8 @@ objects:
   - apiVersion: route.openshift.io/v1
     kind: Route
     metadata:
-      annotations: {}
+      annotations:
+        haproxy.router.openshift.io/timeout: 120s
       creationTimestamp: null
       labels: {}
       name: ${NAME}${SUFFIX}
