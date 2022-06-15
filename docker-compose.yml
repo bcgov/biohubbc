@@ -217,6 +217,7 @@ services:
       - REACT_APP_SITEMINDER_LOGOUT_URL=${SITEMINDER_LOGOUT_URL}
       - REACT_APP_N8N_HOST=${N8N_HOST}
       - REACT_APP_N8N_PORT=${N8N_PROXY_PORT}
+      - REACT_APP_S3_PUBLIC_HOST_URL=${S3_PUBLIC_HOST_URL}
     volumes:
       - ./app:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
