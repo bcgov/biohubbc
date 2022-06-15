@@ -110,7 +110,6 @@ run-web: ## Runs all backend+web containers
   ## Restart n8n as a workaround to resolve this known issue: https://github.com/n8n-io/n8n/issues/2155
 	@docker-compose restart n8n
 
-
 ## ------------------------------------------------------------------------------
 ## Commands to shell into the target container
 ## ------------------------------------------------------------------------------

@@ -165,4 +165,13 @@ describe('useObservationApi', () => {
 
     expect(result).toEqual(data);
   });
+  it('processOccurrences works as expected', async () => {
+    const projectId = 1;
+    const submissionId = 2;
+    mock.onPost(`/api/xlsx/process`).reply(200, true);
+
+    const result = await useObservationApi(axios).processOccurrences(projectId, submissionId);
+
+    expect(result).toEqual(true);
+  });
 });
