@@ -11,7 +11,8 @@ import TableRow from '@material-ui/core/TableRow';
 import Typography from '@material-ui/core/Typography';
 import { mdiFileExcelOutline } from '@mdi/js';
 import Icon from '@mdi/react';
-import React from 'react';
+import { ConfigContext } from 'contexts/configContext';
+import React, { useContext } from 'react';
 
 /**
  * Page to display a list of resources.
@@ -19,12 +20,15 @@ import React from 'react';
  * @return {*}
  */
 const ResourcesPage: React.FC = () => {
+  const config = useContext(ConfigContext);
+  const s3PublicHostURL = config?.S3_PUBLIC_HOST_URL
+
   const resources = [
     {
       id: '1',
       name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.5',
       url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx',
+        `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '115 KB'
@@ -32,7 +36,7 @@ const ResourcesPage: React.FC = () => {
     {
       id: '2',
       name: 'Moose Recruitment Using Telemetry Survey 1.0',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Recruitment_Using_Telemetry_Survey_1.0.xlsx',
+      url: `${s3PublicHostURL}/templates/Moose_Recruitment_Using_Telemetry_Survey_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '93 KB'
@@ -41,7 +45,7 @@ const ResourcesPage: React.FC = () => {
       id: '3',
       name: 'Goat Aerial Population Composition Recruitment Survey 1.4',
       url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx',
+        `${s3PublicHostURL}/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '165 KB'
@@ -50,7 +54,7 @@ const ResourcesPage: React.FC = () => {
       id: '4',
       name: 'Sheep Aerial Population Composition Recruitment Survey 1.2',
       url:
-        'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx',
+        `${s3PublicHostURL}/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '109 KB'
@@ -58,7 +62,7 @@ const ResourcesPage: React.FC = () => {
     {
       id: '5',
       name: 'Moose Summary Statistics',
-      url: 'https://nrs.objectstore.gov.bc.ca/gblhvt/templates/Moose_Summary_Statistics.xlsx',
+      url: `${s3PublicHostURL}/templates/Moose_Summary_Statistics.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '10 KB'

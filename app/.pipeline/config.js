@@ -89,7 +89,8 @@ const phases = {
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
-    maxReplicas: 1
+    maxReplicas: 1,
+    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/gblhvt'
   },
   test: {
     namespace: 'af2668-test',
@@ -109,7 +110,8 @@ const phases = {
     env: 'test',
     sso: sso.test,
     replicas: 3,
-    maxReplicas: 5
+    maxReplicas: 5,
+    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/tskidu'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -129,7 +131,8 @@ const phases = {
     env: 'prod',
     sso: sso.prod,
     replicas: 3,
-    maxReplicas: 6
+    maxReplicas: 6,
+    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/locsch'
   }
 };
 
