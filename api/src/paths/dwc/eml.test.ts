@@ -11,29 +11,21 @@ import { getProjectEml } from './eml';
 chai.use(sinonChai);
 
 describe('getProjectEml', () => {
-  const dbConnectionObj = getMockDBConnection();
-
-  const sampleReq = {
-    keycloak_token: {},
-    body: {},
-    params: {
-      projectId: 1
-    }
-  } as any;
-
   afterEach(() => {
     sinon.restore();
   });
 
   it('should throw a 400 error when no projectId is provided', async () => {
+    const dbConnectionObj = getMockDBConnection();
+
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
+    const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
+
+    mockReq.query = { projectId: undefined };
+
     try {
-      await getProjectEml()(
-        { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
-        (null as unknown) as any,
-        (null as unknown) as any
-      );
+      await getProjectEml()(mockReq, mockRes, mockNext);
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);

@@ -18,7 +18,7 @@ export const GET: Operation = [
         },
         {
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR],
-          projectId: Number(req.body.project_id),
+          projectId: Number(req.query.projectId),
           discriminator: 'ProjectRole'
         }
       ]
@@ -37,13 +37,25 @@ GET.apiDoc = {
   ],
   parameters: [
     {
-      in: 'path',
+      in: 'query',
       name: 'projectId',
       schema: {
-        type: 'number',
+        type: 'integer',
         minimum: 1
       },
       required: true
+    },
+    {
+      in: 'query',
+      name: 'surveyId',
+      schema: {
+        type: 'array',
+        items: {
+          type: 'integer',
+          minimum: 1
+        }
+      },
+      description: 'Specify which surveys to incldue in the EML. Defaults to all surveys if none specified.'
     }
   ],
   responses: {
@@ -89,9 +101,9 @@ GET.apiDoc = {
 
 export function getProjectEml(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'getProjectEml', message: 'params', files: req.params });
+    const projectId = Number(req.query.projectId);
 
-    const projectId = Number(req.params.projectId);
+    const surveyIds = (req.query.surveyIds as string[] | undefined)?.map((item) => Number(item));
 
     const connection = getDBConnection(req['keycloak_token']);
 
@@ -102,7 +114,10 @@ export function getProjectEml(): RequestHandler {
 
       const emlService = new EmlService({ projectId: projectId }, connection);
 
-      const xmlData = await emlService.buildProjectEml(isAuthorizedForSensitiveEMLData);
+      const xmlData = await emlService.buildProjectEml({
+        includeSensitiveData: isAuthorizedForSensitiveEMLData,
+        surveyIds: surveyIds
+      });
 
       await connection.commit();
 

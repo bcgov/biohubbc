@@ -42,6 +42,26 @@ type Cache = {
   surveyData?: SurveyObject[];
 };
 
+type BuildProjectEMLOptions = {
+  /**
+   * Whether or not to include typically non-public data in the EML. Defaults to `false`.
+   *
+   * @type {boolean}
+   */
+  includeSensitiveData?: boolean;
+  /**
+   * Specify which surveys to include in the EML. Defaults to undefined (all surveys).
+   *
+   * Usage:
+   * - If left unset (undefined), all surveys will be included (default).
+   * - If set to an array, then only those surveys will be included. An empty array indicates no surveys should be
+   * included.
+   *
+   * @type {number[]}
+   */
+  surveyIds?: number[];
+};
+
 /**
  * Service to produce EML data for a project.
  *
@@ -51,17 +71,19 @@ type Cache = {
  * @extends {DBService}
  */
 export class EmlService extends DBService {
-  private data: Record<string, unknown>;
+  private data: Record<string, unknown> = {};
 
   private projectId: number;
   private packageId: string;
 
+  private surveyIds: number[] | undefined = undefined;
+
   private projectService: ProjectService;
   private surveyService: SurveyService;
 
-  private cache: Cache;
+  private cache: Cache = {};
 
-  private constants: EMLDBConstants;
+  private constants: EMLDBConstants = DEFAULT_DB_CONSTANTS;
 
   private xml2jsBuilder: xml2js.Builder;
 
@@ -70,8 +92,6 @@ export class EmlService extends DBService {
   constructor(options: { projectId: number; packageId?: string }, connection: IDBConnection) {
     super(connection);
 
-    this.data = {};
-
     this.projectId = options.projectId;
 
     this.packageId = options.packageId || uuidv4();
@@ -79,22 +99,20 @@ export class EmlService extends DBService {
     this.projectService = new ProjectService(this.connection);
     this.surveyService = new SurveyService(this.connection);
 
-    this.cache = {};
-
-    this.constants = DEFAULT_DB_CONSTANTS;
-
     this.xml2jsBuilder = new xml2js.Builder();
   }
 
   /**
    * Compiles and returns the project metadata as an Ecological Metadata Language (EML) compliant XML string.
    *
-   * @param {boolean} [includeSensitiveData=false] Whether or not to include typically non-public data in the EML.
+   * @param {BuildProjectEMLOptions} options
    * @return {*}
    * @memberof EmlService
    */
-  async buildProjectEml(includeSensitiveData = false) {
-    this.includeSensitiveData = includeSensitiveData;
+  async buildProjectEml(options: BuildProjectEMLOptions) {
+    this.includeSensitiveData = options.includeSensitiveData || false;
+
+    this.surveyIds = options.surveyIds;
 
     await this.loadProjectData();
     await this.loadSurveyData();
@@ -159,8 +177,14 @@ export class EmlService extends DBService {
   }
 
   private async loadSurveyData() {
-    const surveyIds = await this.surveyService.getSurveyIdsByProjectId(this.projectId);
-    const surveyData = await this.surveyService.getSurveysByIds(surveyIds.map((item) => item.id));
+    const response = await this.surveyService.getSurveyIdsByProjectId(this.projectId);
+
+    const allSurveyIds = response.map((item) => item.id);
+
+    // if `BuildProjectEMLOptions.surveyIds` was provided then filter out any ids not in the list
+    const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds || this.surveyIds?.includes(item));
+
+    const surveyData = await this.surveyService.getSurveysByIds(includedSurveyIds);
 
     this.cache.surveyData = surveyData;
   }
@@ -503,7 +527,7 @@ export class EmlService extends DBService {
       promises.push(this.getSurveyEML(item));
     });
 
-    return promises;
+    return Promise.all(promises);
   }
 
   private async getSurveyEML(surveyData: SurveyObject): Promise<Record<any, any>> {

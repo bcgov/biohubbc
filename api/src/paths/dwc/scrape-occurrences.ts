@@ -63,7 +63,20 @@ POST.apiDoc = {
   },
   responses: {
     200: {
-      description: 'Successfully scraped and uploaded occurrence information.'
+      description: 'Successfully scraped and uploaded occurrence information.',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              status: {
+                type: 'string',
+                enum: ['success', 'failed']
+              }
+            }
+          }
+        }
+      }
     },
     400: {
       $ref: '#/components/responses/400'
