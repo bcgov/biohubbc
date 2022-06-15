@@ -47,7 +47,7 @@ export const POST: Operation = [
   getValidationSchema(),
   getValidationRules(),
   validateXLSX(),
-  persistValidationResults({ initialSubmissionStatusType: 'Template Validated' }), // this doesn't add to the req.body
+  persistValidationResults({ initialSubmissionStatusType: 'Template Validated' }),
 
   //xlsx transform functions
   getTransformationSchema(),
