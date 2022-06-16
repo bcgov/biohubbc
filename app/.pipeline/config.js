@@ -28,6 +28,8 @@ const staticUrlsN8N = config.staticUrlsN8N || {};
 const maxUploadNumFiles = 10;
 const maxUploadFileSize = 52428800; // (bytes)
 
+const objectStoreUrl = 'nrs.objectstore.gov.bc.ca'
+
 const sso = config.sso;
 
 const processOptions = (options) => {
@@ -90,7 +92,8 @@ const phases = {
     sso: sso.dev,
     replicas: 1,
     maxReplicas: 1,
-    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/gblhvt'
+    objectStoreUrl,
+    objectStoreBucketName: 'gblhvt'
   },
   test: {
     namespace: 'af2668-test',
@@ -110,8 +113,8 @@ const phases = {
     env: 'test',
     sso: sso.test,
     replicas: 3,
-    maxReplicas: 5,
-    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/tskidu'
+    objectStoreUrl,
+    objectStoreBucketName: 'tskidu'
   },
   prod: {
     namespace: 'af2668-prod',
@@ -131,8 +134,8 @@ const phases = {
     env: 'prod',
     sso: sso.prod,
     replicas: 3,
-    maxReplicas: 6,
-    s3PublicHostURL: 'https://nrs.objectstore.gov.bc.ca/locsch'
+    objectStoreUrl,
+    objectStoreBucketName: 'locsch'
   }
 };
 

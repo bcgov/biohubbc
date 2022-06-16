@@ -35,7 +35,8 @@ module.exports = (settings) => {
         SSO_REALM: phases[phase].sso.realm,
         REPLICAS: phases[phase].replicas || 1,
         REPLICA_MAX: phases[phase].maxReplicas || 1,
-        REACT_APP_S3_PUBLIC_HOST_URL: phases[phase].s3PublicHostURL
+        OBJECT_STORE_URL: phases[phase].objectStoreUrl,
+        OBJECT_STORE_BUCKET_NAME: phases[phase].objectStoreBucketName
       }
     })
   );

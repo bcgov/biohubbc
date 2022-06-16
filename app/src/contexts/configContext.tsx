@@ -49,6 +49,9 @@ const getLocalConfig = (): IConfig => {
   const API_URL = (API_PORT && `${API_HOST}:${API_PORT}`) || API_HOST || 'localhost';
   const N8N_URL = (N8N_PORT && `${N8N_HOST}:${N8N_PORT}`) || N8N_HOST || 'localhost';
 
+  const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
+  const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
+
   return {
     API_HOST: ensureProtocol(API_URL, 'http://'),
     N8N_HOST: ensureProtocol(N8N_URL, 'http://'),
@@ -65,7 +68,7 @@ const getLocalConfig = (): IConfig => {
       process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi',
     MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
     MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
-    S3_PUBLIC_HOST_URL: process.env.REACT_APP_S3_PUBLIC_HOST_URL || 'https://nrs.objectstore.gov.bc.ca/gblhvt'
+    S3_PUBLIC_HOST_URL: ensureProtocol(`${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`, 'https://')
   };
 };
 
