@@ -504,7 +504,7 @@ export class EmlService extends DBService {
   }
 
   private getSurveyGeographicCoverageEML(surveyData: SurveyObject): Record<any, any> {
-    if (!surveyData.location.geometry) {
+    if (!surveyData.location.geometry?.length) {
       return {};
     }
 
@@ -515,18 +515,6 @@ export class EmlService extends DBService {
 
       return item;
     });
-
-    const projectBoundingBox = bbox(featureCollection(polygonFeatures));
-
-    const geographicCoverage = {
-      geographicDescription: surveyData.location.survey_area_name,
-      boundingCoordinates: {
-        westBoundingCoordinate: projectBoundingBox[0],
-        eastBoundingCoordinate: projectBoundingBox[2],
-        northBoundingCoordinate: projectBoundingBox[3],
-        southBoundingCoordinate: projectBoundingBox[1]
-      }
-    };
 
     const datasetGPolygons: Record<any, any>[] = [];
 
@@ -548,7 +536,20 @@ export class EmlService extends DBService {
       });
     });
 
-    return { ...geographicCoverage, datasetGPolygon: datasetGPolygons };
+    const projectBoundingBox = bbox(featureCollection(polygonFeatures));
+
+    return {
+      geographicCoverage: {
+        geographicDescription: surveyData.location.survey_area_name,
+        boundingCoordinates: {
+          westBoundingCoordinate: projectBoundingBox[0],
+          eastBoundingCoordinate: projectBoundingBox[2],
+          northBoundingCoordinate: projectBoundingBox[3],
+          southBoundingCoordinate: projectBoundingBox[1]
+        },
+        datasetGPolygon: datasetGPolygons
+      }
+    };
   }
 
   private async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<any, any>> {
@@ -599,7 +600,7 @@ export class EmlService extends DBService {
         //   descriptorValue: ''
         // },
         coverage: {
-          geographicCoverage: this.getSurveyGeographicCoverageEML(surveyData),
+          ...this.getSurveyGeographicCoverageEML(surveyData),
           temporalCoverage: this.getSurveyTemporalCoverageEML(surveyData),
           taxonomicCoverage: await this.getSurveyFocalTaxonomicCoverage(surveyData)
         }
