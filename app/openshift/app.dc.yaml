@@ -29,12 +29,6 @@ parameters:
   - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
     description: Default maximum size of a single file that can be uploaded by the upload component UI.
     value: '52428800'
-  - name: OBJECT_STORE_URL
-    description: URL for the object store
-    value: ''
-  - name: OBJECT_STORE_BUCKET_NAME
-    description: Object Store Bucket Name
-    value: ''
   - name: NODE_ENV
     description: NODE_ENV specification variable
     value: 'dev'
