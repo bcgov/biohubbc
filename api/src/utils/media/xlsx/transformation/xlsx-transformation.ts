@@ -54,7 +54,7 @@ export class XLSXTransformation {
 
     const parsedTransformedMergedFlattenedData = this._parseTransformedData(transformedMergedFlattenedData);
 
-    return await this._mergeParsedData(parsedTransformedMergedFlattenedData);
+    return this._mergeParsedData(parsedTransformedMergedFlattenedData);
   }
 
   /**
@@ -600,14 +600,16 @@ export class XLSXTransformation {
 
     const entries = Object.entries(parsedTransformedMergedFlattenedData);
 
+    const duplicatesRemovedResponse = parsedTransformedMergedFlattenedData;
+
     for (const entry of entries) {
       const [fileName, rowObjects] = entry;
 
-      parsedTransformedMergedFlattenedData[fileName] = uniqWith(rowObjects, equal);
+      duplicatesRemovedResponse[fileName] = uniqWith(rowObjects, equal);
       await breathSpace(1);
     }
 
-    return parsedTransformedMergedFlattenedData;
+    return duplicatesRemovedResponse;
   }
 
   /**
