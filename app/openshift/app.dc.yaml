@@ -135,9 +135,15 @@ objects:
                 - name: REACT_APP_MAX_UPLOAD_FILE_SIZE
                   value: ${REACT_APP_MAX_UPLOAD_FILE_SIZE}
                 - name: OBJECT_STORE_URL
-                  value: ${OBJECT_STORE_URL}
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_url
+                      name: ${OBJECT_STORE_SECRETS}
                 - name: OBJECT_STORE_BUCKET_NAME
-                  value: ${OBJECT_STORE_BUCKET_NAME}
+                  valueFrom:
+                    secretKeyRef:
+                      key: object_store_bucket_name
+                      name: ${OBJECT_STORE_SECRETS}
                 - name: NODE_ENV
                   value: ${NODE_ENV}
                 - name: REACT_APP_NODE_ENV
