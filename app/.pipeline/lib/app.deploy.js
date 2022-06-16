@@ -34,9 +34,7 @@ module.exports = (settings) => {
         SSO_CLIENT_ID: phases[phase].sso.clientId,
         SSO_REALM: phases[phase].sso.realm,
         REPLICAS: phases[phase].replicas || 1,
-        REPLICA_MAX: phases[phase].maxReplicas || 1,
-        OBJECT_STORE_URL: phases[phase].objectStoreUrl,
-        OBJECT_STORE_BUCKET_NAME: phases[phase].objectStoreBucketName
+        REPLICA_MAX: phases[phase].maxReplicas || 1
       }
     })
   );

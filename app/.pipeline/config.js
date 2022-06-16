@@ -91,9 +91,7 @@ const phases = {
     env: 'dev',
     sso: sso.dev,
     replicas: 1,
-    maxReplicas: 1,
-    objectStoreUrl,
-    objectStoreBucketName: 'gblhvt'
+    maxReplicas: 1
   },
   test: {
     namespace: 'af2668-test',
@@ -112,9 +110,7 @@ const phases = {
     maxUploadFileSize,
     env: 'test',
     sso: sso.test,
-    replicas: 3,
-    objectStoreUrl,
-    objectStoreBucketName: 'tskidu'
+    replicas: 3
   },
   prod: {
     namespace: 'af2668-prod',
@@ -133,9 +129,7 @@ const phases = {
     maxUploadFileSize,
     env: 'prod',
     sso: sso.prod,
-    replicas: 3,
-    objectStoreUrl,
-    objectStoreBucketName: 'locsch'
+    replicas: 3
   }
 };
 
