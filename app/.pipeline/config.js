@@ -28,8 +28,6 @@ const staticUrlsN8N = config.staticUrlsN8N || {};
 const maxUploadNumFiles = 10;
 const maxUploadFileSize = 52428800; // (bytes)
 
-const objectStoreUrl = 'nrs.objectstore.gov.bc.ca'
-
 const sso = config.sso;
 
 const processOptions = (options) => {
@@ -110,7 +108,8 @@ const phases = {
     maxUploadFileSize,
     env: 'test',
     sso: sso.test,
-    replicas: 3
+    replicas: 3,
+    maxReplicas: 5
   },
   prod: {
     namespace: 'af2668-prod',
@@ -129,7 +128,8 @@ const phases = {
     maxUploadFileSize,
     env: 'prod',
     sso: sso.prod,
-    replicas: 3
+    replicas: 3,
+    maxReplicas: 6
   }
 };
 
