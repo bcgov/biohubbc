@@ -68,6 +68,7 @@ POST.apiDoc = {
         'application/json': {
           schema: {
             type: 'object',
+            required: ['status', 'reason'],
             properties: {
               status: {
                 type: 'string'
