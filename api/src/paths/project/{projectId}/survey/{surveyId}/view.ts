@@ -80,7 +80,6 @@ GET.apiDoc = {
                     required: [
                       'survey_name',
                       'start_date',
-                      'end_date',
                       'biologist_first_name',
                       'biologist_last_name',
                       'publish_date',
@@ -91,13 +90,12 @@ GET.apiDoc = {
                         type: 'string'
                       },
                       start_date: {
-                        type: 'string',
-                        format: 'date',
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
                         description: 'ISO 8601 date string for the funding end_date'
                       },
                       end_date: {
-                        type: 'string',
-                        format: 'date',
+                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                        nullable: true,
                         description: 'ISO 8601 date string for the funding end_date'
                       },
                       biologist_first_name: {
