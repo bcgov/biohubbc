@@ -66,6 +66,7 @@ type BuildProjectEMLOptions = {
  * Service to produce EML data for a project.
  *
  * @see https://eml.ecoinformatics.org for EML specification
+ * @see https://knb.ecoinformatics.org/emlparser/ for an online EML validator.
  * @export
  * @class EmlService
  * @extends {DBService}
@@ -192,7 +193,7 @@ export class EmlService extends DBService {
   private buildEMLSection() {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
-      path: '/eml',
+      path: '/eml:eml',
       value: {
         $: {
           packageId: `urn:uuid:${this.packageId}`,
@@ -209,7 +210,7 @@ export class EmlService extends DBService {
   private buildAccessSection() {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
-      path: '/eml/access',
+      path: '/eml:eml/access',
       value: {
         $: { authSystem: this.constants.EML_SECURITY_PROVIDER_URL, order: 'allowFirst' },
         allow: { principal: 'public', permission: 'read' }
@@ -220,17 +221,17 @@ export class EmlService extends DBService {
   private async buildDatasetSection(options?: { datasetTitle?: string }) {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
-      path: '/eml/dataset',
+      path: '/eml:eml/dataset',
       value: {
         $: { system: this.constants.EML_PROVIDER_URL, id: this.packageId },
         title: options?.datasetTitle || this.packageId,
-        pubDate: this.projectData.project.publish_date,
-        language: 'english',
+        creator: this.getDatasetCreator(),
+        ...(this.projectData.project.publish_date && { pubDate: this.projectData.project.publish_date }),
         metadataProvider: {
           organizationName: this.constants.EML_ORGANIZATION_NAME,
           onlineUrl: this.constants.EML_ORGANIZATION_URL
         },
-        intellectualRights: { para: this.constants.EML_INTELLECTUAL_RIGHTS },
+        language: 'English',
         contact: this.getProjectContact(),
         project: {
           $: { id: this.projectData.project.uuid, system: this.constants.EML_PROVIDER_URL },
@@ -242,17 +243,16 @@ export class EmlService extends DBService {
               { title: 'Caveats', para: this.projectData.objectives.caveats }
             ]
           },
+          ...this.getProjectFundingSources(),
           studyAreaDescription: {
             // descriptor: {  // TODO required node? https://eml.ecoinformatics.org/schema/eml-project_xsd.html#ResearchProjectType_studyAreaDescription
             //   descriptorValue: ''
             // },
             coverage: {
-              geographicCoverage: await this.getGeographicCoverageEML(),
+              geographicCoverage: this.getGeographicCoverageEML(),
               temporalCoverage: this.getTemporalCoverageEML()
-              // taxonomicCoverage: await this.getFocalTaxonomicCoverage()
             }
           },
-          funding: this.getProjectFundingSources(),
           relatedProject: await this.getSurveysEML()
         }
       }
@@ -320,20 +320,24 @@ export class EmlService extends DBService {
 
     jsonpatch.applyOperation(this.data, {
       op: 'add',
-      path: '/eml/additionalMetadata',
+      path: '/eml:eml/additionalMetadata',
       value: data
     });
   }
 
-  /**
-   * Get all contacts for the project.
-   *
-   * @private
-   * @return {*}  {Record<any, any>[]}
-   * @memberof EmlService
-   */
-  private getProjectPersonnel(): Record<any, any>[] {
-    return [this.getProjectContact()];
+  private getDatasetCreator(): Record<any, any> {
+    const primaryContact = this.projectData.coordinator;
+
+    if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
+      // return full details of the primary contact if it is public or sensitive data is enabled.
+      return {
+        organizationName: primaryContact.coordinator_agency,
+        electronicMailAddress: primaryContact.email_address
+      };
+    }
+
+    // return partial details of the primary contact
+    return { organizationName: primaryContact.coordinator_agency };
   }
 
   /**
@@ -359,38 +363,78 @@ export class EmlService extends DBService {
     return { organizationName: primaryContact.coordinator_agency };
   }
 
-  private getProjectFundingSources(): Record<any, any>[] {
-    return this.projectData.funding.fundingSources.map((item) => {
-      return {
-        section: {
-          title: item.agency_name,
-          section: [
-            { title: 'Funding Agency Project ID', para: item.agency_project_id },
-            { title: 'Investment Action/Category', para: item.investment_action_category_name },
-            { title: 'Funding Amount', para: item.funding_amount },
-            { title: 'Funding Start Date', para: new Date(item.start_date).toISOString().split('T')[0] },
-            { title: 'Funding End Date', para: new Date(item.end_date).toISOString().split('T')[0] }
-          ]
+  /**
+   * Get all contacts for the project.
+   *
+   * @private
+   * @return {*}  {Record<any, any>[]}
+   * @memberof EmlService
+   */
+  private getProjectPersonnel(): Record<any, any>[] {
+    const primaryContact = this.projectData.coordinator;
+
+    if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
+      // return full details of the primary contact if it is public or sensitive data is enabled.
+      return [
+        {
+          individualName: { givenName: primaryContact.first_name, surName: primaryContact.last_name },
+          organizationName: primaryContact.coordinator_agency,
+          electronicMailAddress: primaryContact.email_address,
+          role: 'pointOfContact'
         }
-      };
-    });
+      ];
+    }
+
+    // return partial details of the primary contact
+    return [{ organizationName: primaryContact.coordinator_agency }];
   }
 
-  private getSurveyFundingSources(surveyData: SurveyObject): Record<any, any>[] {
-    return surveyData.funding.funding_sources.map((item) => {
-      return {
-        section: {
-          title: item.agency_name,
-          section: [
-            { title: 'Funding Agency Project ID', para: item.funding_source_project_id },
-            { title: 'Investment Action/Category', para: item.investment_action_category_name },
-            { title: 'Funding Amount', para: item.funding_amount },
-            { title: 'Funding Start Date', para: new Date(item.funding_start_date).toISOString().split('T')[0] },
-            { title: 'Funding End Date', para: new Date(item.funding_end_date).toISOString().split('T')[0] }
-          ]
-        }
-      };
-    });
+  private getProjectFundingSources(): Record<any, any> {
+    if (!this.projectData.funding.fundingSources.length) {
+      return {};
+    }
+
+    return {
+      funding: {
+        section: this.projectData.funding.fundingSources.map((item) => {
+          return {
+            title: 'Agency Name',
+            para: item.agency_name,
+            section: [
+              { title: 'Funding Agency Project ID', para: item.agency_project_id },
+              { title: 'Investment Action/Category', para: item.investment_action_category_name },
+              { title: 'Funding Amount', para: item.funding_amount },
+              { title: 'Funding Start Date', para: new Date(item.start_date).toISOString().split('T')[0] },
+              { title: 'Funding End Date', para: new Date(item.end_date).toISOString().split('T')[0] }
+            ]
+          };
+        })
+      }
+    };
+  }
+
+  private getSurveyFundingSources(surveyData: SurveyObject): Record<any, any> {
+    if (!surveyData.funding.funding_sources.length) {
+      return {};
+    }
+
+    return {
+      funding: {
+        section: surveyData.funding.funding_sources.map((item) => {
+          return {
+            title: 'Agency Name',
+            para: item.agency_name,
+            section: [
+              { title: 'Funding Agency Project ID', para: item.funding_source_project_id },
+              { title: 'Investment Action/Category', para: item.investment_action_category_name },
+              { title: 'Funding Amount', para: item.funding_amount },
+              { title: 'Funding Start Date', para: new Date(item.funding_start_date).toISOString().split('T')[0] },
+              { title: 'Funding End Date', para: new Date(item.funding_end_date).toISOString().split('T')[0] }
+            ]
+          };
+        })
+      }
+    };
   }
 
   private getTemporalCoverageEML(): Record<any, any> {
@@ -411,7 +455,7 @@ export class EmlService extends DBService {
     };
   }
 
-  private async getGeographicCoverageEML(): Promise<Record<any, any>> {
+  private getGeographicCoverageEML(): Record<any, any> {
     if (!this.projectData.location.geometry) {
       return {};
     }
@@ -430,9 +474,9 @@ export class EmlService extends DBService {
       geographicDescription: this.projectData.location.location_description,
       boundingCoordinates: {
         westBoundingCoordinate: projectBoundingBox[0],
-        southBoundingCoordinate: projectBoundingBox[1],
         eastBoundingCoordinate: projectBoundingBox[2],
-        northBoundingCoordinate: projectBoundingBox[3]
+        northBoundingCoordinate: projectBoundingBox[3],
+        southBoundingCoordinate: projectBoundingBox[1]
       }
     };
 
@@ -446,16 +490,20 @@ export class EmlService extends DBService {
       });
 
       datasetGPolygons.push({
-        datasetGPolygonOuterGRing: featureCoords.map((coords) => {
-          return { gRingPoint: { gRingLongitude: coords[0], gRingLatitude: coords[1] } };
-        })
+        datasetGPolygonOuterGRing: [
+          {
+            gRingPoint: featureCoords.map((coords) => {
+              return { gRingLatitude: coords[1], gRingLongitude: coords[0] };
+            })
+          }
+        ]
       });
     });
 
     return { ...geographicCoverage, datasetGPolygon: datasetGPolygons };
   }
 
-  private async getSurveyGeographicCoverageEML(surveyData: SurveyObject): Promise<Record<any, any>> {
+  private getSurveyGeographicCoverageEML(surveyData: SurveyObject): Record<any, any> {
     if (!surveyData.location.geometry) {
       return {};
     }
@@ -474,9 +522,9 @@ export class EmlService extends DBService {
       geographicDescription: surveyData.location.survey_area_name,
       boundingCoordinates: {
         westBoundingCoordinate: projectBoundingBox[0],
-        southBoundingCoordinate: projectBoundingBox[1],
         eastBoundingCoordinate: projectBoundingBox[2],
-        northBoundingCoordinate: projectBoundingBox[3]
+        northBoundingCoordinate: projectBoundingBox[3],
+        southBoundingCoordinate: projectBoundingBox[1]
       }
     };
 
@@ -490,9 +538,13 @@ export class EmlService extends DBService {
       });
 
       datasetGPolygons.push({
-        datasetGPolygonOuterGRing: featureCoords.map((coords) => {
-          return { gRingPoint: { gRingLongitude: coords[0], gRingLatitude: coords[1] } };
-        })
+        datasetGPolygonOuterGRing: [
+          {
+            gRingPoint: featureCoords.map((coords) => {
+              return { gRingLatitude: coords[1], gRingLongitude: coords[0] };
+            })
+          }
+        ]
       });
     });
 
@@ -534,23 +586,24 @@ export class EmlService extends DBService {
     return {
       $: { id: surveyData.survey_details.uuid, system: this.constants.EML_PROVIDER_URL },
       title: surveyData.survey_details.survey_name,
+      personnel: this.getProjectPersonnel(),
       abstract: {
         section: [
           { title: 'Objectives', para: this.projectData.objectives.objectives },
           { title: 'Caveats', para: this.projectData.objectives.caveats }
         ]
       },
+      ...this.getSurveyFundingSources(surveyData),
       studyAreaDescription: {
         // descriptor: {  // TODO required node? https://eml.ecoinformatics.org/schema/eml-project_xsd.html#ResearchProjectType_studyAreaDescription
         //   descriptorValue: ''
         // },
         coverage: {
-          geographicCoverage: await this.getSurveyGeographicCoverageEML(surveyData),
+          geographicCoverage: this.getSurveyGeographicCoverageEML(surveyData),
           temporalCoverage: this.getSurveyTemporalCoverageEML(surveyData),
           taxonomicCoverage: await this.getSurveyFocalTaxonomicCoverage(surveyData)
         }
-      },
-      funding: this.getSurveyFundingSources(surveyData)
+      }
     };
   }
 }
