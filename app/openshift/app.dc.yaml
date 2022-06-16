@@ -35,6 +35,9 @@ parameters:
   - name: REACT_APP_NODE_ENV
     description: NODE_ENV specification variable for React app
     value: 'dev'
+  - name: OBJECT_STORE_SECRETS
+    description: Secrets used to read and write to the S3 storage
+    value: 'biohubbc-object-store'
   - name: APP_PORT_DEFAULT
     description: Application default port
     value: '7100'
