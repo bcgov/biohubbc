@@ -3,13 +3,12 @@ import circle from '@turf/circle';
 import { AllGeoJSON, featureCollection } from '@turf/helpers';
 import { coordEach } from '@turf/meta';
 import jsonpatch from 'fast-json-patch';
-import { v4 as uuidv4 } from 'uuid';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
 import { IGetProject } from '../models/project-view';
 import { SurveyObject } from '../models/survey-view';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
-import { queries } from '../queries/queries';
+import { CodeService, IAllCodeSets } from './code-service';
 import { ProjectService } from './project-service';
 import { DBService } from './service';
 import { SurveyService } from './survey-service';
@@ -40,6 +39,7 @@ type EMLDBConstants = {
 type Cache = {
   projectData?: IGetProject;
   surveyData?: SurveyObject[];
+  codes?: IAllCodeSets;
 };
 
 type BuildProjectEMLOptions = {
@@ -72,33 +72,35 @@ type BuildProjectEMLOptions = {
  * @extends {DBService}
  */
 export class EmlService extends DBService {
-  private data: Record<string, unknown> = {};
+  data: Record<string, unknown> = {};
 
-  private projectId: number;
-  private packageId: string;
+  _packageId: string | undefined;
 
-  private surveyIds: number[] | undefined = undefined;
+  projectId: number;
+  surveyIds: number[] | undefined = undefined;
 
-  private projectService: ProjectService;
-  private surveyService: SurveyService;
+  projectService: ProjectService;
+  surveyService: SurveyService;
+  codeService: CodeService;
 
-  private cache: Cache = {};
+  cache: Cache = {};
 
-  private constants: EMLDBConstants = DEFAULT_DB_CONSTANTS;
+  constants: EMLDBConstants = DEFAULT_DB_CONSTANTS;
 
-  private xml2jsBuilder: xml2js.Builder;
+  xml2jsBuilder: xml2js.Builder;
 
-  private includeSensitiveData = false;
+  includeSensitiveData = false;
 
   constructor(options: { projectId: number; packageId?: string }, connection: IDBConnection) {
     super(connection);
 
-    this.projectId = options.projectId;
+    this._packageId = options.packageId;
 
-    this.packageId = options.packageId || uuidv4();
+    this.projectId = options.projectId;
 
     this.projectService = new ProjectService(this.connection);
     this.surveyService = new SurveyService(this.connection);
+    this.codeService = new CodeService(this.connection);
 
     this.xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
   }
@@ -118,6 +120,7 @@ export class EmlService extends DBService {
     await this.loadProjectData();
     await this.loadSurveyData();
     await this.loadEMLDBConstants();
+    await this.loadCodes();
 
     this.buildEMLSection();
     this.buildAccessSection();
@@ -127,7 +130,7 @@ export class EmlService extends DBService {
     return this.xml2jsBuilder.buildObject(this.data);
   }
 
-  private async loadEMLDBConstants() {
+  async loadEMLDBConstants() {
     const [
       organizationUrl,
       organizationName,
@@ -155,7 +158,29 @@ export class EmlService extends DBService {
     this.constants.EML_TAXONOMIC_PROVIDER_URL = taxonomicProviderURL.rows[0].constant || NOT_SUPPLIED_CONSTANT;
   }
 
-  private get projectData(): IGetProject {
+  get packageId(): string {
+    if (!this._packageId) {
+      return this.projectData.project.uuid;
+    }
+
+    return this._packageId;
+  }
+
+  get codes(): IAllCodeSets {
+    if (!this.cache.codes) {
+      throw Error('Codes data was not loaded');
+    }
+
+    return this.cache.codes;
+  }
+
+  async loadCodes() {
+    const allCodeSets = await this.codeService.getAllCodeSets();
+
+    this.cache.codes = allCodeSets;
+  }
+
+  get projectData(): IGetProject {
     if (!this.cache.projectData) {
       throw Error('Project data was not loaded');
     }
@@ -163,13 +188,13 @@ export class EmlService extends DBService {
     return this.cache.projectData;
   }
 
-  private async loadProjectData() {
+  async loadProjectData() {
     const projectData = await this.projectService.getProjectById(this.projectId);
 
     this.cache.projectData = projectData;
   }
 
-  private get surveyData(): SurveyObject[] {
+  get surveyData(): SurveyObject[] {
     if (!this.cache.surveyData) {
       throw Error('Survey data was not loaded');
     }
@@ -177,7 +202,7 @@ export class EmlService extends DBService {
     return this.cache.surveyData;
   }
 
-  private async loadSurveyData() {
+  async loadSurveyData() {
     const response = await this.surveyService.getSurveyIdsByProjectId(this.projectId);
 
     const allSurveyIds = response.map((item) => item.id);
@@ -190,7 +215,7 @@ export class EmlService extends DBService {
     this.cache.surveyData = surveyData;
   }
 
-  private buildEMLSection() {
+  buildEMLSection() {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
       path: '/eml:eml',
@@ -207,7 +232,7 @@ export class EmlService extends DBService {
     });
   }
 
-  private buildAccessSection() {
+  buildAccessSection() {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
       path: '/eml:eml/access',
@@ -218,13 +243,13 @@ export class EmlService extends DBService {
     });
   }
 
-  private async buildDatasetSection(options?: { datasetTitle?: string }) {
+  async buildDatasetSection(options?: { datasetTitle?: string }) {
     jsonpatch.applyOperation(this.data, {
       op: 'add',
       path: '/eml:eml/dataset',
       value: {
         $: { system: this.constants.EML_PROVIDER_URL, id: this.packageId },
-        title: options?.datasetTitle || this.packageId,
+        title: options?.datasetTitle || this.projectData.project.project_name,
         creator: this.getDatasetCreator(),
         ...(this.projectData.project.publish_date && { pubDate: this.projectData.project.publish_date }),
         metadataProvider: {
@@ -245,9 +270,6 @@ export class EmlService extends DBService {
           },
           ...this.getProjectFundingSources(),
           studyAreaDescription: {
-            // descriptor: {  // TODO required node? https://eml.ecoinformatics.org/schema/eml-project_xsd.html#ResearchProjectType_studyAreaDescription
-            //   descriptorValue: ''
-            // },
             coverage: {
               ...this.getGeographicCoverageEML(),
               temporalCoverage: this.getTemporalCoverageEML()
@@ -259,22 +281,57 @@ export class EmlService extends DBService {
     });
   }
 
-  private async buildAdditionalMetadataSection() {
-    const [firstNationsData, iucnClassificationDetailsData] = await Promise.all([
-      this.connection.sql<{ name: string }>(queries.eml.getProjectFirstNationsSQL(this.projectId)),
-      this.connection.sql<{ level_1_name: string; level_2_name: string; level_3_name: string }>(
-        queries.eml.getIUCNClassificationsDetailsSQL(this.projectId)
-      )
-    ]);
-
+  async buildAdditionalMetadataSection() {
     const data: { describes: any; metadata: any }[] = [];
 
-    if (iucnClassificationDetailsData.rows?.length) {
+    if (this.projectData.project.project_type) {
       data.push({
-        describes: this.packageId,
+        describes: this.projectData.project.uuid,
+        metadata: {
+          projectTypes: {
+            projectType: this.codes.project_type.find((code) => this.projectData.project.project_type === code.id)?.name
+          }
+        }
+      });
+    }
+
+    if (this.projectData.project.project_activities.length) {
+      const names = this.codes.activity
+        .filter((item) => this.projectData.project.project_activities.includes(item.id))
+        .map((item) => item.name);
+
+      data.push({
+        describes: this.projectData.project.uuid,
+        metadata: {
+          projectActivities: {
+            projectActivity: names.map((item) => {
+              return { name: item };
+            })
+          }
+        }
+      });
+    }
+
+    if (this.projectData.iucn.classificationDetails.length) {
+      const iucnNames = this.projectData.iucn.classificationDetails.map((iucnItem) => {
+        return {
+          level_1_name: this.codes.iucn_conservation_action_level_1_classification.find(
+            (code) => iucnItem.classification === code.id
+          )?.name,
+          level_2_name: this.codes.iucn_conservation_action_level_2_subclassification.find(
+            (code) => iucnItem.subClassification1 === code.id
+          )?.name,
+          level_3_name: this.codes.iucn_conservation_action_level_3_subclassification.find(
+            (code) => iucnItem.subClassification2 === code.id
+          )?.name
+        };
+      });
+
+      data.push({
+        describes: this.projectData.project.uuid,
         metadata: {
           IUCNConservationActions: {
-            IUCNConservationAction: iucnClassificationDetailsData.rows.map((item) => {
+            IUCNConservationAction: iucnNames.map((item) => {
               return {
                 IUCNConservationActionLevel1Classification: item.level_1_name,
                 IUCNConservationActionLevel2SubClassification: item.level_2_name,
@@ -288,7 +345,7 @@ export class EmlService extends DBService {
 
     if (this.projectData.partnerships.stakeholder_partnerships?.length) {
       data.push({
-        describes: this.packageId,
+        describes: this.projectData.project.uuid,
         metadata: {
           stakeholderPartnerships: {
             stakeholderPartnership: this.projectData.partnerships.stakeholder_partnerships.map((item) => {
@@ -299,13 +356,17 @@ export class EmlService extends DBService {
       });
     }
 
-    if (firstNationsData.rows?.length) {
+    if (this.projectData.partnerships.indigenous_partnerships.length) {
+      const names = this.codes.first_nations
+        .filter((item) => this.projectData.partnerships.indigenous_partnerships.includes(item.id))
+        .map((item) => item.name);
+
       data.push({
-        describes: this.packageId,
+        describes: this.projectData.project.uuid,
         metadata: {
           firstNationPartnerships: {
-            firstNationPartnership: firstNationsData.rows.map((item) => {
-              return { name: item.name };
+            firstNationPartnership: names.map((item) => {
+              return { name: item };
             })
           }
         }
@@ -316,7 +377,7 @@ export class EmlService extends DBService {
       if (this.projectData.permit.permits?.length) {
         // only include permits if sensitive data is enabled
         data.push({
-          describes: this.packageId,
+          describes: this.projectData.project.uuid,
           metadata: {
             permits: {
               permit: this.projectData.permit.permits.map((item) => {
@@ -328,6 +389,17 @@ export class EmlService extends DBService {
       }
     }
 
+    if (this.surveyData.length) {
+      this.surveyData.forEach((item) => {
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            surveyedAllAreas: item.purpose_and_methodology.surveyed_all_areas === 'true' || false
+          }
+        });
+      });
+    }
+
     jsonpatch.applyOperation(this.data, {
       op: 'add',
       path: '/eml:eml/additionalMetadata',
@@ -335,7 +407,7 @@ export class EmlService extends DBService {
     });
   }
 
-  private getDatasetCreator(): Record<any, any> {
+  getDatasetCreator(): Record<any, any> {
     const primaryContact = this.projectData.coordinator;
 
     if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
@@ -353,11 +425,11 @@ export class EmlService extends DBService {
   /**
    * Get a primary contact for the project.
    *
-   * @private
+   * @
    * @return {*}  {Record<any, any>}
    * @memberof EmlService
    */
-  private getProjectContact(): Record<any, any> {
+  getProjectContact(): Record<any, any> {
     const primaryContact = this.projectData.coordinator;
 
     if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
@@ -376,11 +448,11 @@ export class EmlService extends DBService {
   /**
    * Get all contacts for the project.
    *
-   * @private
+   * @
    * @return {*}  {Record<any, any>[]}
    * @memberof EmlService
    */
-  private getProjectPersonnel(): Record<any, any>[] {
+  getProjectPersonnel(): Record<any, any>[] {
     const primaryContact = this.projectData.coordinator;
 
     if (JSON.parse(primaryContact.share_contact_details) || this.includeSensitiveData) {
@@ -399,7 +471,27 @@ export class EmlService extends DBService {
     return [{ organizationName: primaryContact.coordinator_agency }];
   }
 
-  private getProjectFundingSources(): Record<any, any> {
+  /**
+   * Get all contacts for the survey.
+   *
+   * @
+   * @param {SurveyObject} surveyData
+   * @return {*}  {Record<any, any>[]}
+   * @memberof EmlService
+   */
+  getSurveyPersonnel(surveyData: SurveyObject): Record<any, any>[] {
+    return [
+      {
+        individualName: {
+          givenName: surveyData.survey_details.biologist_first_name,
+          surName: surveyData.survey_details.biologist_last_name
+        },
+        role: 'pointOfContact'
+      }
+    ];
+  }
+
+  getProjectFundingSources(): Record<any, any> {
     if (!this.projectData.funding.fundingSources.length) {
       return {};
     }
@@ -423,7 +515,7 @@ export class EmlService extends DBService {
     };
   }
 
-  private getSurveyFundingSources(surveyData: SurveyObject): Record<any, any> {
+  getSurveyFundingSources(surveyData: SurveyObject): Record<any, any> {
     if (!surveyData.funding.funding_sources.length) {
       return {};
     }
@@ -447,7 +539,7 @@ export class EmlService extends DBService {
     };
   }
 
-  private getTemporalCoverageEML(): Record<any, any> {
+  getTemporalCoverageEML(): Record<any, any> {
     if (!this.projectData.project.end_date) {
       // no end date
       return {
@@ -465,7 +557,7 @@ export class EmlService extends DBService {
     };
   }
 
-  private getSurveyTemporalCoverageEML(surveyData: SurveyObject): Record<any, any> {
+  getSurveyTemporalCoverageEML(surveyData: SurveyObject): Record<any, any> {
     if (!surveyData.survey_details.end_date) {
       // no end date
       return {
@@ -483,7 +575,7 @@ export class EmlService extends DBService {
     };
   }
 
-  private getGeographicCoverageEML(): Record<any, any> {
+  getGeographicCoverageEML(): Record<any, any> {
     if (!this.projectData.location.geometry) {
       return {};
     }
@@ -532,7 +624,7 @@ export class EmlService extends DBService {
     };
   }
 
-  private getSurveyGeographicCoverageEML(surveyData: SurveyObject): Record<any, any> {
+  getSurveyGeographicCoverageEML(surveyData: SurveyObject): Record<any, any> {
     if (!surveyData.location.geometry?.length) {
       return {};
     }
@@ -581,7 +673,7 @@ export class EmlService extends DBService {
     };
   }
 
-  private async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<any, any>> {
     const taxonomySearchService = new TaxonomyService();
 
     const response = await taxonomySearchService.getTaxonomyFromIds(surveyData.species.focal_species);
@@ -602,7 +694,40 @@ export class EmlService extends DBService {
     return { taxonomicClassification: taxonomicClassifications };
   }
 
-  private async getSurveysEML(): Promise<Record<any, any>[]> {
+  async getSurveyDesignDescription(surveyData: SurveyObject): Promise<Record<any, any>> {
+    return {
+      description: {
+        section: [
+          {
+            title: 'Field Method',
+            para: this.codes.field_methods.find(
+              (code) => code.id === surveyData.purpose_and_methodology.field_method_id
+            )?.name
+          },
+          {
+            title: 'Ecological Season',
+            para: this.codes.ecological_seasons.find(
+              (code) => code.id === surveyData.purpose_and_methodology.ecological_season_id
+            )?.name
+          },
+          {
+            title: 'Vantage Codes',
+            para: {
+              itemizedlist: {
+                listitem: this.codes.ecological_seasons
+                  .filter((code) => surveyData.purpose_and_methodology.vantage_code_ids.includes(code.id))
+                  .map((item) => {
+                    return { para: item.name };
+                  })
+              }
+            }
+          }
+        ]
+      }
+    };
+  }
+
+  async getSurveysEML(): Promise<Record<any, any>[]> {
     const promises: Promise<Record<any, any>>[] = [];
 
     this.surveyData.forEach((item) => {
@@ -612,31 +737,34 @@ export class EmlService extends DBService {
     return Promise.all(promises);
   }
 
-  private async getSurveyEML(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyEML(surveyData: SurveyObject): Promise<Record<any, any>> {
     return {
       $: { id: surveyData.survey_details.uuid, system: this.constants.EML_PROVIDER_URL },
       title: surveyData.survey_details.survey_name,
-      personnel: this.getProjectPersonnel(),
-      // abstract: {
-      //   section: [
-      //     { title: 'Objectives', para: this.projectData.objectives.objectives },
-      //     ...((this.projectData.objectives.caveats && [
-      //       { title: 'Caveats', para: this.projectData.objectives.caveats }
-      //     ]) ||
-      //       [])
-      //   ]
-      // },
+      personnel: this.getSurveyPersonnel(surveyData),
+      abstract: {
+        section: [
+          {
+            title: 'Intended Outcomes',
+            para: this.codes.intended_outcomes.find(
+              (code) => code.id === surveyData.purpose_and_methodology.intended_outcome_id
+            )?.name
+          },
+          {
+            title: 'Additional Details',
+            para: surveyData.purpose_and_methodology.additional_details || NOT_SUPPLIED_CONSTANT
+          }
+        ]
+      },
       ...this.getSurveyFundingSources(surveyData),
       studyAreaDescription: {
-        // descriptor: {  // TODO required node? https://eml.ecoinformatics.org/schema/eml-project_xsd.html#ResearchProjectType_studyAreaDescription
-        //   descriptorValue: ''
-        // },
         coverage: {
           ...this.getSurveyGeographicCoverageEML(surveyData),
           temporalCoverage: this.getSurveyTemporalCoverageEML(surveyData),
           taxonomicCoverage: await this.getSurveyFocalTaxonomicCoverage(surveyData)
         }
-      }
+      },
+      designDescription: await this.getSurveyDesignDescription(surveyData)
     };
   }
 }
