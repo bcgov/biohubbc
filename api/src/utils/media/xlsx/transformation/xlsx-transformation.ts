@@ -1,4 +1,5 @@
-import { isEqual, uniqWith } from 'lodash';
+import equal from 'fast-deep-equal';
+import { uniqWith } from 'lodash';
 import xlsx from 'xlsx';
 import { CSVWorksheet } from '../../csv/csv-file';
 import { XLSXCSV } from '../xlsx-file';
@@ -44,7 +45,7 @@ export class XLSXTransformation {
    * @return {*}  {RowsObjectsByFileName}
    * @memberof XLSXTransformation
    */
-  transform(): RowsObjectsByFileName {
+  async transform(): Promise<RowsObjectsByFileName> {
     const flattenedData = this._flattenData();
 
     const mergedFlattenedData = this._mergedFlattenedRows(flattenedData);
@@ -591,13 +592,24 @@ export class XLSXTransformation {
    * @return {*}  {RowsObjectsByFileName}
    * @memberof XLSXTransformation
    */
-  _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): RowsObjectsByFileName {
+  async _mergeParsedData(parsedTransformedMergedFlattenedData: RowsObjectsByFileName): Promise<RowsObjectsByFileName> {
     // For each entry (based on fileName), do a deep equality check on each of its row objects, removing any duplicates.
-    Object.entries(parsedTransformedMergedFlattenedData).forEach(([fileName, rowObjects]) => {
-      parsedTransformedMergedFlattenedData[fileName] = uniqWith(rowObjects, isEqual);
-    });
 
-    return parsedTransformedMergedFlattenedData;
+    const breathSpace = async (delaySeconds: number) =>
+      new Promise<void>((resolve) => setTimeout(() => resolve(), delaySeconds * 1000));
+
+    const entries = Object.entries(parsedTransformedMergedFlattenedData);
+
+    const duplicatesRemovedResponse = parsedTransformedMergedFlattenedData;
+
+    for (const entry of entries) {
+      const [fileName, rowObjects] = entry;
+
+      duplicatesRemovedResponse[fileName] = uniqWith(rowObjects, equal);
+      await breathSpace(1);
+    }
+
+    return duplicatesRemovedResponse;
   }
 
   /**
