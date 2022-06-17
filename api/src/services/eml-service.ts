@@ -240,7 +240,7 @@ export class EmlService extends DBService {
           abstract: {
             section: [
               { title: 'Objectives', para: this.projectData.objectives.objectives },
-              { title: 'Caveats', para: this.projectData.objectives.caveats }
+              { title: 'Caveats', para: this.projectData.objectives.caveats || NOT_SUPPLIED_CONSTANT }
             ]
           },
           ...this.getProjectFundingSources(),
@@ -249,7 +249,7 @@ export class EmlService extends DBService {
             //   descriptorValue: ''
             // },
             coverage: {
-              geographicCoverage: this.getGeographicCoverageEML(),
+              ...this.getGeographicCoverageEML(),
               temporalCoverage: this.getTemporalCoverageEML()
             }
           },
@@ -267,8 +267,10 @@ export class EmlService extends DBService {
       )
     ]);
 
-    const data: { describes: any; metadata: any }[] = [
-      {
+    const data: { describes: any; metadata: any }[] = [];
+
+    if (iucnClassificationDetailsData.rows?.length) {
+      data.push({
         describes: this.packageId,
         metadata: {
           IUCNConservationActions: {
@@ -281,8 +283,11 @@ export class EmlService extends DBService {
             })
           }
         }
-      },
-      {
+      });
+    }
+
+    if (this.projectData.partnerships.stakeholder_partnerships?.length) {
+      data.push({
         describes: this.packageId,
         metadata: {
           stakeholderPartnerships: {
@@ -291,8 +296,11 @@ export class EmlService extends DBService {
             })
           }
         }
-      },
-      {
+      });
+    }
+
+    if (firstNationsData.rows?.length) {
+      data.push({
         describes: this.packageId,
         metadata: {
           firstNationPartnerships: {
@@ -301,21 +309,23 @@ export class EmlService extends DBService {
             })
           }
         }
-      }
-    ];
+      });
+    }
 
     if (this.includeSensitiveData) {
-      // only include permits if sensitive data is enabled
-      data.push({
-        describes: this.packageId,
-        metadata: {
-          permits: {
-            permit: this.projectData.permit.permits.map((item) => {
-              return { permitType: item.permit_type, permitNumber: item.permit_number };
-            })
+      if (this.projectData.permit.permits?.length) {
+        // only include permits if sensitive data is enabled
+        data.push({
+          describes: this.packageId,
+          metadata: {
+            permits: {
+              permit: this.projectData.permit.permits.map((item) => {
+                return { permitType: item.permit_type, permitNumber: item.permit_number };
+              })
+            }
           }
-        }
-      });
+        });
+      }
     }
 
     jsonpatch.applyOperation(this.data, {
@@ -438,6 +448,15 @@ export class EmlService extends DBService {
   }
 
   private getTemporalCoverageEML(): Record<any, any> {
+    if (!this.projectData.project.end_date) {
+      // no end date
+      return {
+        singleDateTime: {
+          calendarDate: this.projectData.project.start_date
+        }
+      };
+    }
+
     return {
       rangeOfDates: {
         beginDate: { calendarDate: this.projectData.project.start_date },
@@ -447,6 +466,15 @@ export class EmlService extends DBService {
   }
 
   private getSurveyTemporalCoverageEML(surveyData: SurveyObject): Record<any, any> {
+    if (!surveyData.survey_details.end_date) {
+      // no end date
+      return {
+        singleDateTime: {
+          calendarDate: surveyData.survey_details.start_date
+        }
+      };
+    }
+
     return {
       rangeOfDates: {
         beginDate: { calendarDate: surveyData.survey_details.start_date },
@@ -470,16 +498,6 @@ export class EmlService extends DBService {
 
     const projectBoundingBox = bbox(featureCollection(polygonFeatures));
 
-    const geographicCoverage = {
-      geographicDescription: this.projectData.location.location_description,
-      boundingCoordinates: {
-        westBoundingCoordinate: projectBoundingBox[0],
-        eastBoundingCoordinate: projectBoundingBox[2],
-        northBoundingCoordinate: projectBoundingBox[3],
-        southBoundingCoordinate: projectBoundingBox[1]
-      }
-    };
-
     const datasetGPolygons: Record<any, any>[] = [];
 
     polygonFeatures.forEach((feature) => {
@@ -500,7 +518,18 @@ export class EmlService extends DBService {
       });
     });
 
-    return { ...geographicCoverage, datasetGPolygon: datasetGPolygons };
+    return {
+      geographicCoverage: {
+        geographicDescription: this.projectData.location.location_description || NOT_SUPPLIED_CONSTANT,
+        boundingCoordinates: {
+          westBoundingCoordinate: projectBoundingBox[0],
+          eastBoundingCoordinate: projectBoundingBox[2],
+          northBoundingCoordinate: projectBoundingBox[3],
+          southBoundingCoordinate: projectBoundingBox[1]
+        },
+        datasetGPolygon: datasetGPolygons
+      }
+    };
   }
 
   private getSurveyGeographicCoverageEML(surveyData: SurveyObject): Record<any, any> {
@@ -588,12 +617,15 @@ export class EmlService extends DBService {
       $: { id: surveyData.survey_details.uuid, system: this.constants.EML_PROVIDER_URL },
       title: surveyData.survey_details.survey_name,
       personnel: this.getProjectPersonnel(),
-      abstract: {
-        section: [
-          { title: 'Objectives', para: this.projectData.objectives.objectives },
-          { title: 'Caveats', para: this.projectData.objectives.caveats }
-        ]
-      },
+      // abstract: {
+      //   section: [
+      //     { title: 'Objectives', para: this.projectData.objectives.objectives },
+      //     ...((this.projectData.objectives.caveats && [
+      //       { title: 'Caveats', para: this.projectData.objectives.caveats }
+      //     ]) ||
+      //       [])
+      //   ]
+      // },
       ...this.getSurveyFundingSources(surveyData),
       studyAreaDescription: {
         // descriptor: {  // TODO required node? https://eml.ecoinformatics.org/schema/eml-project_xsd.html#ResearchProjectType_studyAreaDescription
