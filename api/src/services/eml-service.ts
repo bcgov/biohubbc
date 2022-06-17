@@ -100,7 +100,7 @@ export class EmlService extends DBService {
     this.projectService = new ProjectService(this.connection);
     this.surveyService = new SurveyService(this.connection);
 
-    this.xml2jsBuilder = new xml2js.Builder();
+    this.xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
   }
 
   /**

@@ -125,7 +125,7 @@ export function getProjectEml(): RequestHandler {
       res.attachment(`project_${projectId}_eml.xml`);
       res.contentType('application/xml');
 
-      return res.status(200).send({ eml: xmlData });
+      return res.status(200).json({ eml: xmlData });
     } catch (error) {
       defaultLog.error({ label: 'getProjectEml', message: 'error', error });
       await connection.rollback();
