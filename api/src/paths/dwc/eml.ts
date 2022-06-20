@@ -56,6 +56,16 @@ GET.apiDoc = {
         }
       },
       description: 'Specify which surveys to include in the EML. Defaults to all surveys if none specified.'
+    },
+    {
+      in: 'query',
+      name: 'includeSensitive',
+      schema: {
+        type: 'string',
+        enum: ['true', 'false'],
+        default: 'false'
+      },
+      description: 'Specify if sensitive metadata should be included in the EML. Defaults to false if not specified.'
     }
   ],
   responses: {
@@ -110,12 +120,10 @@ export function getProjectEml(): RequestHandler {
     try {
       await connection.open();
 
-      const isAuthorizedForSensitiveEMLData = true;
-
       const emlService = new EmlService({ projectId: projectId }, connection);
 
       const xmlData = await emlService.buildProjectEml({
-        includeSensitiveData: isAuthorizedForSensitiveEMLData,
+        includeSensitiveData: req.query.includeSensitive === 'true' || false,
         surveyIds: surveyIds
       });
 
