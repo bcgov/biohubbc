@@ -202,6 +202,16 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
+            additionalLayers={
+              survey_details.occurrence_submission_id
+                ? [
+                    <OccurrenceFeatureGroup
+                      projectId={projectForViewData.id}
+                      occurrenceSubmissionId={survey_details.occurrence_submission_id}
+                    />
+                  ]
+                : undefined
+            }
           />
         }
         description={survey_details.survey_area_name}
