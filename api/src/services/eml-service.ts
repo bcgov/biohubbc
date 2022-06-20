@@ -387,6 +387,20 @@ export class EmlService extends DBService {
           }
         });
       }
+
+      if (this.surveyData.length) {
+        this.surveyData.forEach((item) => {
+          // only include permits if sensitive data is enabled
+          data.push({
+            describes: item.survey_details.uuid,
+            metadata: {
+              permits: {
+                permit: { permitType: item.permit.permit_type, permitNumber: item.permit.permit_number }
+              }
+            }
+          });
+        });
+      }
     }
 
     if (this.surveyData.length) {
