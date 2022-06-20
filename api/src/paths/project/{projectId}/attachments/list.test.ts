@@ -105,26 +105,25 @@ describe('lists the project attachments', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.be.eql({
-      attachmentsList: [
-        {
-          fileName: 'name1',
-          fileType: 'type',
-          id: 13,
-          lastModified: '2020-01-01',
-          size: 50,
-          securityToken: 'token123'
-        },
-        {
-          fileName: 'name2',
-          fileType: 'Report',
-          id: 134,
-          lastModified: '2020-01-01',
-          size: 50,
-          securityToken: 'token123'
-        }
-      ]
-    });
+    expect(actualResult).to.be.an('object');
+    expect(actualResult).to.have.property('attachmentsList');
+
+    expect(actualResult.attachmentsList).to.be.an('array');
+    expect(actualResult.attachmentsList).to.have.length(2);
+
+    expect(actualResult.attachmentsList[0].fileName).to.equal('name1');
+    expect(actualResult.attachmentsList[0].fileType).to.equal('type');
+    expect(actualResult.attachmentsList[0].id).to.equal(13);
+    expect(actualResult.attachmentsList[0].lastModified).to.match(new RegExp('2020-01-01T.*'));
+    expect(actualResult.attachmentsList[0].size).to.equal(50);
+    expect(actualResult.attachmentsList[0].securityToken).to.equal('token123');
+
+    expect(actualResult.attachmentsList[1].fileName).to.equal('name2');
+    expect(actualResult.attachmentsList[1].fileType).to.equal('Report');
+    expect(actualResult.attachmentsList[1].id).to.equal(134);
+    expect(actualResult.attachmentsList[1].lastModified).to.match(new RegExp('2020-01-01T.*'));
+    expect(actualResult.attachmentsList[1].size).to.equal(50);
+    expect(actualResult.attachmentsList[1].securityToken).to.equal('token123');
   });
 
   it('should return a list of project attachments where the lastModified is the update_date', async () => {
@@ -173,26 +172,25 @@ describe('lists the project attachments', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.be.eql({
-      attachmentsList: [
-        {
-          fileName: 'name1',
-          fileType: 'type',
-          id: 13,
-          lastModified: '2020-01-02',
-          size: 50,
-          securityToken: 'token123'
-        },
-        {
-          fileName: 'name2',
-          fileType: 'Report',
-          id: 134,
-          lastModified: '2020-01-02',
-          size: 50,
-          securityToken: 'token123'
-        }
-      ]
-    });
+    expect(actualResult).to.be.an('object');
+    expect(actualResult).to.have.property('attachmentsList');
+
+    expect(actualResult.attachmentsList).to.be.an('array');
+    expect(actualResult.attachmentsList).to.have.length(2);
+
+    expect(actualResult.attachmentsList[0].fileName).to.equal('name1');
+    expect(actualResult.attachmentsList[0].fileType).to.equal('type');
+    expect(actualResult.attachmentsList[0].id).to.equal(13);
+    expect(actualResult.attachmentsList[0].lastModified).to.match(new RegExp('2020-01-02T.*'));
+    expect(actualResult.attachmentsList[0].size).to.equal(50);
+    expect(actualResult.attachmentsList[0].securityToken).to.equal('token123');
+
+    expect(actualResult.attachmentsList[1].fileName).to.equal('name2');
+    expect(actualResult.attachmentsList[1].fileType).to.equal('Report');
+    expect(actualResult.attachmentsList[1].id).to.equal(134);
+    expect(actualResult.attachmentsList[1].lastModified).to.match(new RegExp('2020-01-02T.*'));
+    expect(actualResult.attachmentsList[1].size).to.equal(50);
+    expect(actualResult.attachmentsList[1].securityToken).to.equal('token123');
   });
 
   it('should return null if the project has no attachments, on success', async () => {

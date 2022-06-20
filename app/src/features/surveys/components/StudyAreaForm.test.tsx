@@ -1,24 +1,30 @@
 import { render, waitFor } from '@testing-library/react';
-import StudyAreaForm, { StudyAreaInitialValues, StudyAreaYupSchema } from 'features/surveys/components/StudyAreaForm';
+import StudyAreaForm, {
+  IStudyAreaForm,
+  StudyAreaInitialValues,
+  StudyAreaYupSchema
+} from 'features/surveys/components/StudyAreaForm';
 import { Formik } from 'formik';
 import React from 'react';
 
 const handleSaveAndNext = jest.fn();
 
-const studyAreaFilledValues = {
-  survey_area_name: 'Study area name',
-  geometry: [
-    {
-      type: 'Feature',
-      geometry: {
-        type: 'Point',
-        coordinates: [125.6, 10.1]
-      },
-      properties: {
-        name: 'Dinagat Islands'
+const studyAreaFilledValues: IStudyAreaForm = {
+  location: {
+    survey_area_name: 'Study area name',
+    geometry: [
+      {
+        type: 'Feature',
+        geometry: {
+          type: 'Point',
+          coordinates: [125.6, 10.1]
+        },
+        properties: {
+          name: 'Dinagat Islands'
+        }
       }
-    }
-  ]
+    ]
+  }
 };
 
 jest.spyOn(console, 'debug').mockImplementation(() => {});
@@ -68,10 +74,14 @@ describe('Study Area Form', () => {
         initialValues={studyAreaFilledValues}
         validationSchema={StudyAreaYupSchema}
         initialErrors={{
-          survey_area_name: 'error on survey area name field'
+          location: {
+            survey_area_name: 'error on survey area name field'
+          }
         }}
         initialTouched={{
-          survey_area_name: true
+          location: {
+            survey_area_name: true
+          }
         }}
         validateOnBlur={true}
         validateOnChange={false}

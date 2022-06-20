@@ -76,7 +76,6 @@ GET.apiDoc = {
           schema: {
             title: 'Project get response object, for update purposes',
             type: 'object',
-            required: ['project', 'permit', 'coordinator', 'objectives', 'location', 'iucn', 'funding', 'partnerships'],
             properties: {
               project: {
                 description: 'Basic project metadata',

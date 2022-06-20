@@ -190,6 +190,15 @@ const buildWFSURL = (typeName: string, wfsParams: IWFSParams = defaultWFSParams)
   return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}`;
 };
 
+type DrawControls = {
+  rectangle: boolean;
+  circle: boolean;
+  polygon: boolean;
+  polyline: boolean;
+  circlemarker: boolean;
+  marker: boolean;
+};
+
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
@@ -199,6 +208,7 @@ export interface IMapContainerProps {
   clusteredPointGeometries?: IClusteredPointGeometries[];
   bounds?: any;
   zoom?: number;
+  showDrawControls?: Partial<DrawControls>;
   hideDrawControls?: boolean;
   selectedLayer?: string;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
@@ -214,6 +224,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     clusteredPointGeometries,
     bounds,
     zoom,
+    showDrawControls,
     hideDrawControls,
     scrollWheelZoom,
     selectedLayer,
@@ -251,8 +262,14 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geometryState?.geometry, nonEditableGeometries]);
 
-  const shownDrawControls: any = {};
-  const showEditControls: any = {};
+  const shownDrawControls: any = {
+    circle: false,
+    polyline: false,
+    circlemarker: false,
+    marker: false,
+    ...showDrawControls
+  };
+  const shownEditControls: any = {};
 
   if (hideDrawControls) {
     shownDrawControls.rectangle = false;
@@ -262,8 +279,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     shownDrawControls.circlemarker = false;
     shownDrawControls.marker = false;
 
-    showEditControls.edit = false;
-    showEditControls.remove = false;
+    shownEditControls.edit = false;
+    shownEditControls.remove = false;
   }
 
   /**
@@ -449,8 +466,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       <FeatureGroup>
         <MapEditControls
           position="topright"
-          draw={hideDrawControls ? shownDrawControls : { circle: false }}
-          edit={hideDrawControls ? showEditControls : undefined}
+          draw={shownDrawControls}
+          edit={hideDrawControls ? shownEditControls : undefined}
           geometry={geometryState?.geometry}
           setGeometry={geometryState?.setGeometry}
         />

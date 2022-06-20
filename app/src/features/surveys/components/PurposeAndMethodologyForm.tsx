@@ -17,30 +17,39 @@ import { StringBoolean } from 'types/misc';
 import yup from 'utils/YupSchema';
 
 export interface IPurposeAndMethodologyForm {
-  intended_outcome_id: number;
-  additional_details: string;
-  field_method_id: number;
-  ecological_season_id: number;
-  vantage_code_ids: number[];
-  surveyed_all_areas: StringBoolean;
+  purpose_and_methodology: {
+    intended_outcome_id: number;
+    additional_details: string;
+    field_method_id: number;
+    ecological_season_id: number;
+    vantage_code_ids: number[];
+    surveyed_all_areas: StringBoolean;
+  };
 }
 
 export const PurposeAndMethodologyInitialValues: IPurposeAndMethodologyForm = {
-  intended_outcome_id: ('' as unknown) as number,
-  additional_details: '',
-  field_method_id: ('' as unknown) as number,
-  ecological_season_id: ('' as unknown) as number,
-  vantage_code_ids: [],
-  surveyed_all_areas: ('' as unknown) as StringBoolean
+  purpose_and_methodology: {
+    intended_outcome_id: ('' as unknown) as number,
+    additional_details: '',
+    field_method_id: ('' as unknown) as number,
+    ecological_season_id: ('' as unknown) as number,
+    vantage_code_ids: [],
+    surveyed_all_areas: ('' as unknown) as StringBoolean
+  }
 };
 
 export const PurposeAndMethodologyYupSchema = yup.object().shape({
-  field_method_id: yup.number().required('You must provide a field method'),
-  additional_details: yup.string(),
-  intended_outcome_id: yup.number().required('You must provide intended outcomes for the survey'),
-  ecological_season_id: yup.number().required('You must provide an ecological season for the survey'),
-  vantage_code_ids: yup.array().min(1, 'You must one or more vantage codes').required('Required'),
-  surveyed_all_areas: yup.string().oneOf(['true', 'false'], 'This field is required').required('This field is required')
+  purpose_and_methodology: yup.object().shape({
+    field_method_id: yup.number().required('You must provide a field method'),
+    additional_details: yup.string(),
+    intended_outcome_id: yup.number().required('You must provide intended outcomes for the survey'),
+    ecological_season_id: yup.number().required('You must provide an ecological season for the survey'),
+    vantage_code_ids: yup.array().min(1, 'You must one or more vantage codes').required('Required'),
+    surveyed_all_areas: yup
+      .string()
+      .oneOf(['true', 'false'], 'This field is required')
+      .required('This field is required')
+  })
 });
 
 export interface IPurposeAndMethodologyFormProps {
@@ -66,7 +75,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           <Grid item xs={12}>
             <SelectWithSubtextField
               id="intended_outcome_id"
-              name="intended_outcome_id"
+              name="purpose_and_methodology.intended_outcome_id"
               label="Intended Outcomes"
               options={props.intended_outcomes}
               required={true}
@@ -74,7 +83,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           </Grid>
           <Grid item xs={12}>
             <CustomTextField
-              name="additional_details"
+              name="purpose_and_methodology.additional_details"
               label="Additional Details"
               other={{ multiline: true, rows: 2 }}
             />
@@ -87,7 +96,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           <Grid item xs={12}>
             <SelectWithSubtextField
               id="field_method_id"
-              name="field_method_id"
+              name="purpose_and_methodology.field_method_id"
               label="Field Method"
               options={props.field_methods}
               required={true}
@@ -96,7 +105,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           <Grid item xs={12}>
             <SelectWithSubtextField
               id="ecological_season_id"
-              name="ecological_season_id"
+              name="purpose_and_methodology.ecological_season_id"
               label="Ecological Season"
               options={props.ecological_seasons}
               required={true}
@@ -104,7 +113,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
           </Grid>
           <Grid item xs={12}>
             <MultiAutocompleteFieldVariableSize
-              id="vantage_code_ids"
+              id="purpose_and_methodology.vantage_code_ids"
               label="Vantage Code"
               options={props.vantage_codes}
               required={true}
@@ -115,13 +124,16 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
             <FormControl
               required={true}
               component="fieldset"
-              error={touched.surveyed_all_areas && Boolean(errors.surveyed_all_areas)}>
+              error={
+                touched.purpose_and_methodology?.surveyed_all_areas &&
+                Boolean(errors.purpose_and_methodology?.surveyed_all_areas)
+              }>
               <Typography>Did you survey all areas that include your population of interest?</Typography>
               <Box mt={2}>
                 <RadioGroup
-                  name="surveyed_all_areas"
+                  name="purpose_and_methodology.surveyed_all_areas"
                   aria-label="Data and Information Sharing Agreement"
-                  value={values.surveyed_all_areas}
+                  value={values.purpose_and_methodology?.surveyed_all_areas}
                   onChange={handleChange}>
                   <FormControlLabel
                     value="true"
@@ -133,7 +145,7 @@ const PurposeAndMethodologyForm: React.FC<IPurposeAndMethodologyFormProps> = (pr
                     control={<Radio required={true} color="primary" />}
                     label="No - only some areas were surveyed"
                   />
-                  <FormHelperText>{errors.surveyed_all_areas}</FormHelperText>
+                  <FormHelperText>{errors.purpose_and_methodology?.surveyed_all_areas}</FormHelperText>
                 </RadioGroup>
               </Box>
             </FormControl>

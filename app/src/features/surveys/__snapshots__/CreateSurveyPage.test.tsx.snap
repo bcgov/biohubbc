@@ -112,13 +112,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="survey_name"
+                    data-testid="survey_details.survey_name"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                       data-shrink="false"
-                      for="survey_name"
-                      id="survey_name-label"
+                      for="survey_details.survey_name"
+                      id="survey_details.survey_name-label"
                     >
                       Survey Name
                       <span
@@ -134,8 +134,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
-                        id="survey_name"
-                        name="survey_name"
+                        id="survey_details.survey_name"
+                        name="survey_details.survey_name"
                         required=""
                         type="text"
                         value=""
@@ -189,7 +189,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           id="start_date"
                           max="2100-12-31"
                           min="1900-01-01"
-                          name="start_date"
+                          name="survey_details.start_date"
                           required=""
                           type="date"
                           value=""
@@ -240,7 +240,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           id="end_date"
                           max="2100-12-31"
                           min="1900-01-01"
-                          name="end_date"
+                          name="survey_details.end_date"
                           type="date"
                           value=""
                         />
@@ -277,7 +277,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   <div
                     aria-expanded="false"
                     class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                    data-testid="focal_species"
+                    data-testid="species.focal_species"
                     role="combobox"
                   >
                     <div
@@ -286,8 +286,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="false"
-                        for="focal_species"
-                        id="focal_species-label"
+                        for="species.focal_species"
+                        id="species.focal_species-label"
                       >
                         Focal Species
                         <span
@@ -306,8 +306,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           autocapitalize="none"
                           autocomplete="off"
                           class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                          id="focal_species"
-                          name="focal_species"
+                          id="species.focal_species"
+                          name="species.focal_species"
                           required=""
                           spellcheck="false"
                           type="text"
@@ -389,7 +389,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   <div
                     aria-expanded="false"
                     class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                    data-testid="ancillary_species"
+                    data-testid="species.ancillary_species"
                     role="combobox"
                   >
                     <div
@@ -398,8 +398,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
                         data-shrink="false"
-                        for="ancillary_species"
-                        id="ancillary_species-label"
+                        for="species.ancillary_species"
+                        id="species.ancillary_species-label"
                       >
                         Ancillary Species
                       </label>
@@ -412,8 +412,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           autocapitalize="none"
                           autocomplete="off"
                           class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                          id="ancillary_species"
-                          name="ancillary_species"
+                          id="species.ancillary_species"
+                          name="species.ancillary_species"
                           spellcheck="false"
                           type="text"
                           value=""
@@ -505,13 +505,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                      data-testid="biologist_first_name"
+                      data-testid="survey_details.biologist_first_name"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="false"
-                        for="biologist_first_name"
-                        id="biologist_first_name-label"
+                        for="survey_details.biologist_first_name"
+                        id="survey_details.biologist_first_name-label"
                       >
                         First Name
                         <span
@@ -527,8 +527,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <input
                           aria-invalid="false"
                           class="MuiInputBase-input MuiOutlinedInput-input"
-                          id="biologist_first_name"
-                          name="biologist_first_name"
+                          id="survey_details.biologist_first_name"
+                          name="survey_details.biologist_first_name"
                           required=""
                           type="text"
                           value=""
@@ -553,13 +553,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                      data-testid="biologist_last_name"
+                      data-testid="survey_details.biologist_last_name"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="false"
-                        for="biologist_last_name"
-                        id="biologist_last_name-label"
+                        for="survey_details.biologist_last_name"
+                        id="survey_details.biologist_last_name-label"
                       >
                         Last Name
                         <span
@@ -575,8 +575,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <input
                           aria-invalid="false"
                           class="MuiInputBase-input MuiOutlinedInput-input"
-                          id="biologist_last_name"
-                          name="biologist_last_name"
+                          id="survey_details.biologist_last_name"
+                          name="survey_details.biologist_last_name"
                           required=""
                           type="text"
                           value=""
@@ -775,7 +775,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 <div
                   aria-expanded="false"
                   class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                  data-testid="funding_sources"
+                  data-testid="funding.funding_sources"
                   role="combobox"
                 >
                   <div
@@ -784,8 +784,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
                       data-shrink="false"
-                      for="funding_sources"
-                      id="funding_sources-label"
+                      for="funding.funding_sources"
+                      id="funding.funding_sources-label"
                     >
                       Select Funding Sources
                     </label>
@@ -798,8 +798,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         autocapitalize="none"
                         autocomplete="off"
                         class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                        id="funding_sources"
-                        name="funding_sources"
+                        id="funding.funding_sources"
+                        name="funding.funding_sources"
                         spellcheck="false"
                         type="text"
                         value=""
@@ -923,7 +923,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="false"
-                        id="intended_outcome_id-label"
+                        id="purpose_and_methodology.intended_outcome_id-label"
                       >
                         Intended Outcomes
                         <span
@@ -939,9 +939,9 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <div
                           aria-haspopup="listbox"
                           aria-label="Intended Outcomes"
-                          aria-labelledby="intended_outcome_id-label mui-component-select-intended_outcome_id"
+                          aria-labelledby="purpose_and_methodology.intended_outcome_id-label mui-component-select-purpose_and_methodology.intended_outcome_id"
                           class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                          id="mui-component-select-intended_outcome_id"
+                          id="mui-component-select-purpose_and_methodology.intended_outcome_id"
                           role="button"
                           tabindex="0"
                         />
@@ -949,7 +949,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           aria-hidden="true"
                           class="MuiSelect-nativeInput"
                           id="intended_outcome_id"
-                          name="intended_outcome_id"
+                          name="purpose_and_methodology.intended_outcome_id"
                           required=""
                           tabindex="-1"
                           value=""
@@ -987,13 +987,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   >
                     <div
                       class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                      data-testid="additional_details"
+                      data-testid="purpose_and_methodology.additional_details"
                     >
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
                         data-shrink="false"
-                        for="additional_details"
-                        id="additional_details-label"
+                        for="purpose_and_methodology.additional_details"
+                        id="purpose_and_methodology.additional_details-label"
                       >
                         Additional Details
                       </label>
@@ -1003,8 +1003,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <textarea
                           aria-invalid="false"
                           class="MuiInputBase-input MuiOutlinedInput-input MuiInputBase-inputMultiline MuiOutlinedInput-inputMultiline"
-                          id="additional_details"
-                          name="additional_details"
+                          id="purpose_and_methodology.additional_details"
+                          name="purpose_and_methodology.additional_details"
                           rows="2"
                         />
                         <fieldset
@@ -1044,7 +1044,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="false"
-                        id="field_method_id-label"
+                        id="purpose_and_methodology.field_method_id-label"
                       >
                         Field Method
                         <span
@@ -1060,9 +1060,9 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <div
                           aria-haspopup="listbox"
                           aria-label="Field Method"
-                          aria-labelledby="field_method_id-label mui-component-select-field_method_id"
+                          aria-labelledby="purpose_and_methodology.field_method_id-label mui-component-select-purpose_and_methodology.field_method_id"
                           class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                          id="mui-component-select-field_method_id"
+                          id="mui-component-select-purpose_and_methodology.field_method_id"
                           role="button"
                           tabindex="0"
                         />
@@ -1070,7 +1070,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           aria-hidden="true"
                           class="MuiSelect-nativeInput"
                           id="field_method_id"
-                          name="field_method_id"
+                          name="purpose_and_methodology.field_method_id"
                           required=""
                           tabindex="-1"
                           value=""
@@ -1112,7 +1112,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       <label
                         class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                         data-shrink="false"
-                        id="ecological_season_id-label"
+                        id="purpose_and_methodology.ecological_season_id-label"
                       >
                         Ecological Season
                         <span
@@ -1128,9 +1128,9 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <div
                           aria-haspopup="listbox"
                           aria-label="Ecological Season"
-                          aria-labelledby="ecological_season_id-label mui-component-select-ecological_season_id"
+                          aria-labelledby="purpose_and_methodology.ecological_season_id-label mui-component-select-purpose_and_methodology.ecological_season_id"
                           class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                          id="mui-component-select-ecological_season_id"
+                          id="mui-component-select-purpose_and_methodology.ecological_season_id"
                           role="button"
                           tabindex="0"
                         />
@@ -1138,7 +1138,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           aria-hidden="true"
                           class="MuiSelect-nativeInput"
                           id="ecological_season_id"
-                          name="ecological_season_id"
+                          name="purpose_and_methodology.ecological_season_id"
                           required=""
                           tabindex="-1"
                           value=""
@@ -1177,7 +1177,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     <div
                       aria-expanded="false"
                       class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                      data-testid="vantage_code_ids"
+                      data-testid="purpose_and_methodology.vantage_code_ids"
                       role="combobox"
                     >
                       <div
@@ -1186,8 +1186,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         <label
                           class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                           data-shrink="false"
-                          for="vantage_code_ids"
-                          id="vantage_code_ids-label"
+                          for="purpose_and_methodology.vantage_code_ids"
+                          id="purpose_and_methodology.vantage_code_ids-label"
                         >
                           Vantage Code
                           <span
@@ -1206,8 +1206,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                             autocapitalize="none"
                             autocomplete="off"
                             class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                            id="vantage_code_ids"
-                            name="vantage_code_ids"
+                            id="purpose_and_methodology.vantage_code_ids"
+                            name="purpose_and_methodology.vantage_code_ids"
                             required=""
                             spellcheck="false"
                             type="text"
@@ -1319,7 +1319,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               >
                                 <input
                                   class="PrivateSwitchBase-input-189"
-                                  name="surveyed_all_areas"
+                                  name="purpose_and_methodology.surveyed_all_areas"
                                   required=""
                                   type="radio"
                                   value="true"
@@ -1371,7 +1371,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               >
                                 <input
                                   class="PrivateSwitchBase-input-189"
-                                  name="surveyed_all_areas"
+                                  name="purpose_and_methodology.surveyed_all_areas"
                                   required=""
                                   type="radio"
                                   value="false"
@@ -1454,13 +1454,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               >
                 <div
                   class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                  data-testid="survey_area_name"
+                  data-testid="location.survey_area_name"
                 >
                   <label
                     class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                     data-shrink="false"
-                    for="survey_area_name"
-                    id="survey_area_name-label"
+                    for="location.survey_area_name"
+                    id="location.survey_area_name-label"
                   >
                     Survey Area Name
                     <span
@@ -1476,8 +1476,8 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     <input
                       aria-invalid="false"
                       class="MuiInputBase-input MuiOutlinedInput-input"
-                      id="survey_area_name"
-                      name="survey_area_name"
+                      id="location.survey_area_name"
+                      name="location.survey_area_name"
                       required=""
                       type="text"
                       value=""
@@ -1722,17 +1722,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
                             >
                               <a
-                                class="leaflet-draw-draw-polyline"
-                                href="#"
-                                title="Draw a polyline"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a polyline
-                                </span>
-                              </a>
-                              <a
                                 class="leaflet-draw-draw-polygon"
                                 href="#"
                                 title="Draw a polygon"
@@ -1752,28 +1741,6 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                   class="sr-only"
                                 >
                                   Draw a rectangle
-                                </span>
-                              </a>
-                              <a
-                                class="leaflet-draw-draw-marker"
-                                href="#"
-                                title="Draw a marker"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a marker
-                                </span>
-                              </a>
-                              <a
-                                class="leaflet-draw-draw-circlemarker"
-                                href="#"
-                                title="Draw a circlemarker"
-                              >
-                                <span
-                                  class="sr-only"
-                                >
-                                  Draw a circlemarker
                                 </span>
                               </a>
                             </div>
@@ -1842,7 +1809,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                   <input
                                     checked="checked"
                                     class="leaflet-control-layers-selector"
-                                    name="leaflet-base-layers_91"
+                                    name="leaflet-base-layers_82"
                                     type="radio"
                                   />
                                   <span>
@@ -1854,7 +1821,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                                 <div>
                                   <input
                                     class="leaflet-control-layers-selector"
-                                    name="leaflet-base-layers_91"
+                                    name="leaflet-base-layers_82"
                                     type="radio"
                                   />
                                   <span>
@@ -1972,7 +1939,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                               <input
                                 checked=""
                                 class="PrivateSwitchBase-input-189"
-                                name="survey_data_proprietary"
+                                name="proprietor.survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="false"
@@ -2024,7 +1991,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                             >
                               <input
                                 class="PrivateSwitchBase-input-189"
-                                name="survey_data_proprietary"
+                                name="proprietor.survey_data_proprietary"
                                 required=""
                                 type="radio"
                                 value="true"
@@ -2132,7 +2099,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           <input
                             class="PrivateSwitchBase-input-189"
                             data-indeterminate="false"
-                            name="sedis_procedures_accepted"
+                            name="agreements.sedis_procedures_accepted"
                             type="checkbox"
                             value=""
                           />
@@ -2194,7 +2161,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           <input
                             class="PrivateSwitchBase-input-189"
                             data-indeterminate="false"
-                            name="foippa_requirements_accepted"
+                            name="agreements.foippa_requirements_accepted"
                             type="checkbox"
                             value=""
                           />

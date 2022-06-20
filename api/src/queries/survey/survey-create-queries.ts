@@ -1,5 +1,5 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
-import { PostSurveyObject, PostSurveyProprietorData } from '../../models/survey-create';
+import { PostProprietorData, PostSurveyObject } from '../../models/survey-create';
 import { queries } from '../queries';
 
 /**
@@ -18,36 +18,36 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
     INSERT INTO survey (
       project_id,
       name,
-      additional_details,
-      ecological_season_id,
-      intended_outcome_id,
       start_date,
       end_date,
       lead_first_name,
       lead_last_name,
+      field_method_id,
+      additional_details,
+      ecological_season_id,
+      intended_outcome_id,
+      surveyed_all_areas,
       location_name,
       geojson,
-      field_method_id,
-      surveyed_all_areas,
       geography
     ) VALUES (
       ${projectId},
-      ${survey.survey_name},
-      ${survey.additional_details},
-      ${survey.ecological_season_id},
-      ${survey.intended_outcome_id},
-      ${survey.start_date},
-      ${survey.end_date},
-      ${survey.biologist_first_name},
-      ${survey.biologist_last_name},
-      ${survey.survey_area_name},
-      ${JSON.stringify(survey.geometry)},
-      ${survey.field_method_id},
-      ${survey.surveyed_all_areas}
+      ${survey.survey_details.survey_name},
+      ${survey.survey_details.start_date},
+      ${survey.survey_details.end_date},
+      ${survey.survey_details.biologist_first_name},
+      ${survey.survey_details.biologist_last_name},
+      ${survey.purpose_and_methodology.field_method_id},
+      ${survey.purpose_and_methodology.additional_details},
+      ${survey.purpose_and_methodology.ecological_season_id},
+      ${survey.purpose_and_methodology.intended_outcome_id},
+      ${survey.purpose_and_methodology.surveyed_all_areas},
+      ${survey.location.survey_area_name},
+      ${JSON.stringify(survey.location.geometry)}
   `;
 
-  if (survey.geometry && survey.geometry.length) {
-    const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(survey.geometry);
+  if (survey.location.geometry && survey.location.geometry.length) {
+    const geometryCollectionSQL = queries.spatial.generateGeometryCollectionSQL(survey.location.geometry);
 
     sqlStatement.append(SQL`
       ,public.geography(
@@ -79,38 +79,29 @@ export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLS
  * SQL query to insert a survey_proprietor row.
  *
  * @param {number} surveyId
- * @param {PostSurveyProprietorData} surveyProprietor
+ * @param {PostProprietorData} surveyProprietor
  * @returns {SQLStatement} sql query object
  */
-export const postSurveyProprietorSQL = (
-  surveyId: number,
-  survey_proprietor: PostSurveyProprietorData
-): SQLStatement | null => {
-  if (!surveyId || !survey_proprietor) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-  INSERT INTO survey_proprietor (
-    survey_id,
-    proprietor_type_id,
-    first_nations_id,
-    rationale,
-    proprietor_name,
-    disa_required
-  ) VALUES (
-    ${surveyId},
-    ${survey_proprietor.prt_id},
-    ${survey_proprietor.fn_id},
-    ${survey_proprietor.rationale},
-    ${survey_proprietor.proprietor_name},
-    ${survey_proprietor.disa_required}
-  )
-  RETURNING
-    survey_proprietor_id as id;
-`;
-
-  return sqlStatement;
+export const postSurveyProprietorSQL = (surveyId: number, survey_proprietor: PostProprietorData): SQLStatement => {
+  return SQL`
+    INSERT INTO survey_proprietor (
+      survey_id,
+      proprietor_type_id,
+      first_nations_id,
+      rationale,
+      proprietor_name,
+      disa_required
+    ) VALUES (
+      ${surveyId},
+      ${survey_proprietor.prt_id},
+      ${survey_proprietor.fn_id},
+      ${survey_proprietor.rationale},
+      ${survey_proprietor.proprietor_name},
+      ${survey_proprietor.disa_required}
+    )
+    RETURNING
+      survey_proprietor_id as id;
+  `;
 };
 
 /**

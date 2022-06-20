@@ -1,7 +1,8 @@
 import { render, waitFor } from '@testing-library/react';
 import GeneralInformationForm, {
   GeneralInformationInitialValues,
-  GeneralInformationYupSchema
+  GeneralInformationYupSchema,
+  IGeneralInformationForm
 } from 'features/surveys/components/GeneralInformationForm';
 import { Formik } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -22,20 +23,32 @@ const mockBiohubApi = ((useBiohubApi as unknown) as jest.Mock<typeof mockUseBioh
 
 const handleSaveAndNext = jest.fn();
 
-const generalInformationFilledValues = {
-  survey_name: 'survey name',
-  start_date: '2000-04-09 11:53:53',
-  end_date: '2020-05-10 11:53:53',
-  species: [1],
-  survey_purpose: 'purpose',
-  biologist_first_name: 'first',
-  biologist_last_name: 'last',
-  common_survey_methodology_id: 1
+const generalInformationFilledValues: IGeneralInformationForm = {
+  survey_details: {
+    survey_name: 'survey name',
+    start_date: '2000-04-09 11:53:53',
+    end_date: '2020-05-10 11:53:53',
+    biologist_first_name: 'first',
+    biologist_last_name: 'last'
+  },
+  species: {
+    focal_species: [1],
+    ancillary_species: [2]
+  },
+  permit: {
+    permit_number: '123',
+    permit_type: '123 - Scientific'
+  },
+  funding: {
+    funding_sources: [1]
+  }
 };
 
 describe('General Information Form', () => {
-  mockBiohubApi().taxonomy.searchSpecies.mockResolvedValue({ searchResponse: [] });
-  mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({ searchResponse: [] });
+  beforeEach(() => {
+    mockBiohubApi().taxonomy.searchSpecies.mockResolvedValue({ searchResponse: [] });
+    mockBiohubApi().taxonomy.getSpeciesFromIds.mockResolvedValue({ searchResponse: [] });
+  });
 
   it('renders correctly the empty component correctly', async () => {
     const { asFragment } = render(
@@ -111,22 +124,28 @@ describe('General Information Form', () => {
         validationSchema={GeneralInformationYupSchema()}
         validateOnBlur={true}
         initialErrors={{
-          survey_name: 'error on survey name field',
-          start_date: 'error on start date field',
-          end_date: 'error on end date field',
-          species: 'error on species field',
-          survey_purpose: 'error on survey purpose field',
-          biologist_first_name: 'error on biologist first name field',
-          biologist_last_name: 'error on biologist last name field'
+          survey_details: {
+            survey_name: 'error on survey name field',
+            start_date: 'error on start date field',
+            end_date: 'error on end date field',
+            biologist_first_name: 'error on biologist first name field',
+            biologist_last_name: 'error on biologist last name field'
+          },
+          species: {
+            focal_species: 'error on species field'
+          }
         }}
         initialTouched={{
-          survey_name: true,
-          start_date: true,
-          end_date: true,
-          species: true,
-          survey_purpose: true,
-          biologist_first_name: true,
-          biologist_last_name: true
+          survey_details: {
+            survey_name: true,
+            start_date: true,
+            end_date: true,
+            biologist_first_name: true,
+            biologist_last_name: true
+          },
+          species: {
+            focal_species: true
+          }
         }}
         validateOnChange={false}
         onSubmit={async (values) => {

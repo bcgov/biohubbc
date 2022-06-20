@@ -46,14 +46,14 @@ describe('update', () => {
 
       const sampleResponse = {
         id: 1,
-        coordinator: null,
+        coordinator: undefined,
         permit: new GetPermitData(),
-        project: null,
-        objectives: null,
-        location: null,
-        iucn: null,
-        funding: null,
-        partnerships: null
+        project: undefined,
+        objectives: undefined,
+        location: undefined,
+        iucn: undefined,
+        funding: undefined,
+        partnerships: undefined
       };
 
       mockReq.params = {

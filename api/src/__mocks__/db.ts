@@ -29,6 +29,12 @@ export const getMockDBConnection = (config?: Partial<IDBConnection>): IDBConnect
     query: async () => {
       return (undefined as unknown) as QueryResult<any>;
     },
+    sql: async () => {
+      return (undefined as unknown) as QueryResult<any>;
+    },
+    knex: async () => {
+      return (undefined as unknown) as QueryResult<any>;
+    },
     ...config
   };
 };

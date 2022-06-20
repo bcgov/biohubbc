@@ -3,22 +3,16 @@ import { SQL, SQLStatement } from 'sql-template-strings';
 /**
  * SQL query to delete survey funding sources rows based on survey id.
  *
- * @param {number} surveyId
+ * @param {number} surveyIdF
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveyFundingSourcesBySurveyIdSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
+export const deleteSurveyFundingSourcesBySurveyIdSQL = (surveyId: number): SQLStatement => {
+  return SQL`
     DELETE
       from survey_funding_source
     WHERE
       survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -45,73 +39,33 @@ export const deleteSurveyFundingSourceByProjectFundingSourceIdSQL = (
 };
 
 /**
- * SQL query to delete survey focal species rows.
+ * SQL query to delete all survey species rows.
  *
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const deleteFocalSpeciesSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
+export const deleteAllSurveySpeciesSQL = (surveyId: number): SQLStatement => {
+  return SQL`
     DELETE
       from study_species
     WHERE
-      survey_id = ${surveyId}
-    AND
-      is_focal;
+      survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
-};
-
-/**
- * SQL query to delete survey ancillary species rows.
- *
- * @param {number} surveyId
- * @returns {SQLStatement} sql query object
- */
-export const deleteAncillarySpeciesSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
-    DELETE
-      from study_species
-    WHERE
-      survey_id = ${surveyId}
-    AND
-      is_focal is FALSE;
-  `;
-
-  return sqlStatement;
 };
 
 /**
  * SQL query to delete survey proprietor rows.
  *
  * @param {number} surveyId
- * @param {number} surveyProprietorId
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: number): SQLStatement | null => {
-  if ((!surveyId && surveyId !== 0) || (!surveyProprietorId && surveyProprietorId !== 0)) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
+export const deleteSurveyProprietorSQL = (surveyId: number): SQLStatement => {
+  return SQL`
     DELETE
       from survey_proprietor
     WHERE
-      survey_proprietor_id = ${surveyProprietorId}
-    AND
-      survey_id = ${surveyId}
+      survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };
 
 /**
@@ -120,14 +74,8 @@ export const deleteSurveyProprietorSQL = (surveyId: number, surveyProprietorId: 
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveySQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`call api_delete_survey(${surveyId})`;
-
-  return sqlStatement;
+export const deleteSurveySQL = (surveyId: number): SQLStatement => {
+  return SQL`call api_delete_survey(${surveyId})`;
 };
 
 /**
@@ -137,17 +85,11 @@ export const deleteSurveySQL = (surveyId: number): SQLStatement | null => {
  * @param {number} surveyProprietorId
  * @returns {SQLStatement} sql query object
  */
-export const deleteSurveyVantageCodesSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId && surveyId !== 0) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`
+export const deleteSurveyVantageCodesSQL = (surveyId: number): SQLStatement => {
+  return SQL`
     DELETE
       from survey_vantage
     WHERE
-      survey_id = ${surveyId}
+      survey_id = ${surveyId};
   `;
-
-  return sqlStatement;
 };

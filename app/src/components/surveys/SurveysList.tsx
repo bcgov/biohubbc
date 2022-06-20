@@ -12,7 +12,8 @@ import TableRow from '@material-ui/core/TableRow';
 import clsx from 'clsx';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { SurveyStatusType } from 'constants/misc';
-import { IGetSurveysListResponse } from 'interfaces/useSurveyApi.interface';
+import { SurveyViewObject } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
 import React, { useState } from 'react';
 import { useHistory } from 'react-router';
 import { handleChangePage, handleChangeRowsPerPage } from 'utils/tablePaginationUtils';
@@ -34,7 +35,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 export interface ISurveysListProps {
-  surveysList: IGetSurveysListResponse[];
+  surveysList: SurveyViewObject[];
   projectId: number;
 }
 
@@ -44,6 +45,25 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
 
   const [rowsPerPage, setRowsPerPage] = useState(5);
   const [page, setPage] = useState(0);
+
+  const getSurveyCompletionStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
+    if (
+      surveyObject.survey_details.end_date &&
+      moment(surveyObject.survey_details.end_date).endOf('day').isBefore(moment())
+    ) {
+      return SurveyStatusType.COMPLETED;
+    }
+
+    return SurveyStatusType.ACTIVE;
+  };
+
+  const getSurveyPublishStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
+    if (surveyObject.survey_details.publish_date) {
+      return SurveyStatusType.PUBLISHED;
+    }
+
+    return SurveyStatusType.UNPUBLISHED;
+  };
 
   const getChipIcon = (status_name: string) => {
     let chipLabel;
@@ -82,28 +102,30 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
           <TableBody>
             {props.surveysList.length > 0 &&
               props.surveysList.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage).map((row, index) => (
-                <TableRow key={row.id}>
+                <TableRow key={index}>
                   <TableCell component="th" scope="row">
                     <Link
                       underline="always"
                       component="button"
                       variant="body2"
                       onClick={() =>
-                        history.push(`/admin/projects/${props.projectId}/surveys/${row.survey.id}/details`)
+                        history.push(`/admin/projects/${props.projectId}/surveys/${row.survey_details.id}/details`)
                       }>
-                      {row.survey.name}
+                      {row.survey_details.survey_name}
                     </Link>
                   </TableCell>
-                  <TableCell>{row.species?.species_names?.join(', ')}</TableCell>
+                  <TableCell>
+                    {[...row.species?.focal_species_names, ...row.species?.ancillary_species_names].join(', ')}
+                  </TableCell>
                   <TableCell>
                     {getFormattedDateRangeString(
                       DATE_FORMAT.ShortMediumDateFormat,
-                      row.survey.start_date,
-                      row.survey.end_date
+                      row.survey_details.start_date,
+                      row.survey_details.end_date
                     )}
                   </TableCell>
-                  <TableCell>{getChipIcon(row.survey.completion_status)}</TableCell>
-                  <TableCell>{getChipIcon(row.survey.publish_status)}</TableCell>
+                  <TableCell>{getChipIcon(getSurveyCompletionStatusType(row))}</TableCell>
+                  <TableCell>{getChipIcon(getSurveyPublishStatusType(row))}</TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (

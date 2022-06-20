@@ -106,7 +106,7 @@ const PublicProjectPage = () => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
-  if (!projectWithDetails || !codes.isReady || !codes.codes) {
+  if (!projectWithDetails || !codes.isReady || !codes.data) {
     return <CircularProgress className="pageProgress" data-testid="loading_spinner" size={40} />;
   }
 
@@ -172,7 +172,7 @@ const PublicProjectPage = () => {
           </Box>
           <Box component="article" flex="1 1 auto">
             {location.pathname.includes('/details') && (
-              <PublicProjectDetails projectForViewData={projectWithDetails} codes={codes.codes} refresh={getProject} />
+              <PublicProjectDetails projectForViewData={projectWithDetails} codes={codes.data} refresh={getProject} />
             )}
             {location.pathname.includes('/attachments') && (
               <PublicProjectAttachments projectForViewData={projectWithDetails} />

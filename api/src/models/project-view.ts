@@ -1,20 +1,17 @@
 import { Feature } from 'geojson';
 import moment from 'moment';
 import { COMPLETION_STATUS } from '../constants/status';
-import { getLogger } from '../utils/logger';
-
-const defaultLog = getLogger('models/project-view');
 
 export interface IGetProject {
   id: number;
-  coordinator: GetCoordinatorData | null;
-  permit: GetPermitData | null;
-  project: GetProjectData | null;
-  objectives: GetObjectivesData | null;
-  location: GetLocationData | null;
-  iucn: GetIUCNClassificationData | null;
-  funding: GetFundingData | null;
-  partnerships: GetPartnershipsData | null;
+  coordinator: GetCoordinatorData;
+  permit: GetPermitData;
+  project: GetProjectData;
+  objectives: GetObjectivesData;
+  location: GetLocationData;
+  iucn: GetIUCNClassificationData;
+  funding: GetFundingData;
+  partnerships: GetPartnershipsData;
 }
 
 /**
@@ -24,6 +21,7 @@ export interface IGetProject {
  * @class GetProjectData
  */
 export class GetProjectData {
+  uuid: string;
   project_name: string;
   project_type: number;
   project_activities: number[];
@@ -35,13 +33,7 @@ export class GetProjectData {
   revision_count: number;
 
   constructor(projectData?: any, activityData?: any[]) {
-    defaultLog.debug({
-      label: 'GetProjectData',
-      message: 'params',
-      projectData: { ...projectData, geometry: 'Too big to print' },
-      activityData
-    });
-
+    this.uuid = projectData?.uuid || '';
     this.project_name = projectData?.name || '';
     this.project_type = projectData?.pt_id || -1;
     this.project_activities = (activityData?.length && activityData.map((item) => item.activity_id)) || [];
@@ -71,12 +63,6 @@ export class GetObjectivesData {
   revision_count: number;
 
   constructor(objectivesData?: any) {
-    defaultLog.debug({
-      label: 'GetObjectivesData',
-      message: 'params',
-      objectivesData: { ...objectivesData, geometry: 'Too big to print' }
-    });
-
     this.objectives = objectivesData?.objectives || '';
     this.caveats = objectivesData?.caveats || '';
     this.revision_count = objectivesData?.revision_count ?? null;
@@ -98,12 +84,6 @@ export class GetCoordinatorData {
   revision_count: number;
 
   constructor(coordinatorData?: any) {
-    defaultLog.debug({
-      label: 'GetCoordinatorData',
-      message: 'params',
-      coordinatorData: { ...coordinatorData, geometry: 'Too big to print' }
-    });
-
     this.first_name = coordinatorData?.coordinator_first_name || '';
     this.last_name = coordinatorData?.coordinator_last_name || '';
     this.email_address = coordinatorData?.coordinator_email_address || '';
@@ -128,12 +108,6 @@ export class GetPermitData {
   permits: IGetPermit[];
 
   constructor(permitData?: any[]) {
-    defaultLog.debug({
-      label: 'GetPermitData',
-      message: 'params',
-      permitData: permitData
-    });
-
     this.permits =
       (permitData?.length &&
         permitData.map((item: any) => {
@@ -158,14 +132,6 @@ export class GetLocationData {
   revision_count: number;
 
   constructor(locationData?: any) {
-    defaultLog.debug({
-      label: 'GetLocationData',
-      message: 'params',
-      locationData: locationData?.map((item: any) => {
-        return { ...item, geometry: 'Too big to print' };
-      })
-    });
-
     const locationDataItem = locationData && locationData.length && locationData[0];
 
     this.location_description = locationDataItem?.location_description || '';
@@ -190,12 +156,6 @@ export class GetIUCNClassificationData {
   classificationDetails: IGetIUCN[];
 
   constructor(iucnClassificationData?: any[]) {
-    defaultLog.debug({
-      label: 'GetIUCNClassificationData',
-      message: 'params',
-      iucnClassificationData: iucnClassificationData
-    });
-
     this.classificationDetails =
       (iucnClassificationData &&
         iucnClassificationData.map((item: any) => {
@@ -226,12 +186,6 @@ export class GetFundingData {
   fundingSources: IGetFundingSource[];
 
   constructor(fundingData?: any[]) {
-    defaultLog.debug({
-      label: 'GetFundingData',
-      message: 'params',
-      fundingData: fundingData
-    });
-
     this.fundingSources =
       (fundingData &&
         fundingData.map((item: any) => {
@@ -263,31 +217,9 @@ export class GetPartnershipsData {
   stakeholder_partnerships: string[];
 
   constructor(indigenous_partnerships?: any[], stakeholder_partnerships?: any[]) {
-    defaultLog.debug({
-      label: 'GetPartnershipsData',
-      message: 'params',
-      indigenous_partnerships,
-      stakeholder_partnerships
-    });
-
     this.indigenous_partnerships =
       (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.id)) || [];
     this.stakeholder_partnerships =
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.partnership_name)) || [];
-  }
-}
-
-export class GetSpeciesData {
-  focal_species: number[];
-  focal_species_names: string[];
-
-  constructor(input?: any[]) {
-    this.focal_species = [];
-    this.focal_species_names = [];
-    input?.length &&
-      input.forEach((item: any) => {
-        this.focal_species.push(Number(item.id));
-        this.focal_species_names.push(item.label);
-      });
   }
 }
