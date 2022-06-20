@@ -91,9 +91,8 @@ POST.apiDoc = {
               type: 'string'
             },
             data: {
-              title: 'Draft json data',
-              type: 'object',
-              properties: {}
+              title: 'JSON data associated with the draft',
+              type: 'object'
             }
           }
         }
@@ -132,8 +131,7 @@ PUT.apiDoc = {
             },
             data: {
               title: 'Draft json data',
-              type: 'object',
-              properties: {}
+              type: 'object'
             }
           }
         }
@@ -187,7 +185,11 @@ export function createDraft(): RequestHandler {
         throw new HTTP400('Failed to save draft');
       }
 
-      return res.status(200).json({ id: draftResult.id, date: draftResult.update_date || draftResult.create_date });
+      return res.status(200).json({
+        id: draftResult.id,
+        name: draftResult.name,
+        date: draftResult.update_date || draftResult.create_date
+      });
     } catch (error) {
       defaultLog.error({ label: 'createProject', message: 'error', error });
       await connection.rollback();
@@ -231,14 +233,17 @@ export function updateDraft(): RequestHandler {
       const updateDraftResponse = await connection.query(putDraftSQLStatement.text, putDraftSQLStatement.values);
 
       const draftResult = (updateDraftResponse && updateDraftResponse.rows && updateDraftResponse.rows[0]) || null;
-
       if (!draftResult || !draftResult.id) {
         throw new HTTP400('Failed to update draft');
       }
 
       await connection.commit();
 
-      return res.status(200).json({ id: draftResult.id, date: draftResult.update_date || draftResult.create_date });
+      return res.status(200).json({
+        id: draftResult.id,
+        name: draftResult.name,
+        date: draftResult.update_date || draftResult.create_date
+      });
     } catch (error) {
       defaultLog.error({ label: 'createProject', message: 'error', error });
       await connection.rollback();

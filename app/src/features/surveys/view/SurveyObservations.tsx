@@ -90,13 +90,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               });
             });
           } else {
-            biohubApi.observation.initiateXLSXSubmissionValidation(projectId, result.submissionId).then(() => {
-              biohubApi.observation.initiateXLSXSubmissionTransform(projectId, result.submissionId).then(() => {
-                biohubApi.observation.initiateScrapeOccurrences(projectId, result.submissionId).then(() => {
-                  props.refresh();
-                });
-              });
-            });
+            biohubApi.observation.processOccurrences(projectId, result.submissionId);
           }
         });
     };
