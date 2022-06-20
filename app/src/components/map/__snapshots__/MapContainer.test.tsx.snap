@@ -120,7 +120,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_124"
+                    name="leaflet-base-layers_115"
                     type="radio"
                   />
                   <span>
@@ -132,7 +132,7 @@ exports[`MapContainer matches the snapshot with draw controls hidden 1`] = `
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_124"
+                    name="leaflet-base-layers_115"
                     type="radio"
                   />
                   <span>
@@ -304,17 +304,6 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
               class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
             >
               <a
-                class="leaflet-draw-draw-polyline"
-                href="#"
-                title="Draw a polyline"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a polyline
-                </span>
-              </a>
-              <a
                 class="leaflet-draw-draw-polygon"
                 href="#"
                 title="Draw a polygon"
@@ -334,28 +323,6 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
                   class="sr-only"
                 >
                   Draw a rectangle
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-marker"
-                href="#"
-                title="Draw a marker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a marker
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-circlemarker"
-                href="#"
-                title="Draw a circlemarker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a circlemarker
                 </span>
               </a>
             </div>
@@ -424,7 +391,7 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_109"
+                    name="leaflet-base-layers_100"
                     type="radio"
                   />
                   <span>
@@ -436,7 +403,7 @@ exports[`MapContainer matches the snapshot with feature popup 1`] = `
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_109"
+                    name="leaflet-base-layers_100"
                     type="radio"
                   />
                   <span>
@@ -593,17 +560,6 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
               class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
             >
               <a
-                class="leaflet-draw-draw-polyline"
-                href="#"
-                title="Draw a polyline"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a polyline
-                </span>
-              </a>
-              <a
                 class="leaflet-draw-draw-polygon"
                 href="#"
                 title="Draw a polygon"
@@ -623,28 +579,6 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                   class="sr-only"
                 >
                   Draw a rectangle
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-marker"
-                href="#"
-                title="Draw a marker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a marker
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-circlemarker"
-                href="#"
-                title="Draw a circlemarker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a circlemarker
                 </span>
               </a>
             </div>
@@ -713,7 +647,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_49"
+                    name="leaflet-base-layers_46"
                     type="radio"
                   />
                   <span>
@@ -725,7 +659,7 @@ exports[`MapContainer matches the snapshot with geometries being passed in 1`] =
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_49"
+                    name="leaflet-base-layers_46"
                     type="radio"
                   />
                   <span>
@@ -897,17 +831,6 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
               class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
             >
               <a
-                class="leaflet-draw-draw-polyline"
-                href="#"
-                title="Draw a polyline"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a polyline
-                </span>
-              </a>
-              <a
                 class="leaflet-draw-draw-polygon"
                 href="#"
                 title="Draw a polygon"
@@ -927,28 +850,6 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   class="sr-only"
                 >
                   Draw a rectangle
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-marker"
-                href="#"
-                title="Draw a marker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a marker
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-circlemarker"
-                href="#"
-                title="Draw a circlemarker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a circlemarker
                 </span>
               </a>
             </div>
@@ -1017,7 +918,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_80"
+                    name="leaflet-base-layers_74"
                     type="radio"
                   />
                   <span>
@@ -1029,7 +930,7 @@ exports[`MapContainer matches the snapshot with non editable geos being passed i
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_80"
+                    name="leaflet-base-layers_74"
                     type="radio"
                   />
                   <span>
@@ -1186,17 +1087,6 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
               class="leaflet-draw-toolbar leaflet-bar leaflet-draw-toolbar-top"
             >
               <a
-                class="leaflet-draw-draw-polyline"
-                href="#"
-                title="Draw a polyline"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a polyline
-                </span>
-              </a>
-              <a
                 class="leaflet-draw-draw-polygon"
                 href="#"
                 title="Draw a polygon"
@@ -1216,28 +1106,6 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   class="sr-only"
                 >
                   Draw a rectangle
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-marker"
-                href="#"
-                title="Draw a marker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a marker
-                </span>
-              </a>
-              <a
-                class="leaflet-draw-draw-circlemarker"
-                href="#"
-                title="Draw a circlemarker"
-              >
-                <span
-                  class="sr-only"
-                >
-                  Draw a circlemarker
                 </span>
               </a>
             </div>
@@ -1306,7 +1174,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                   <input
                     checked="checked"
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_191"
+                    name="leaflet-base-layers_177"
                     type="radio"
                   />
                   <span>
@@ -1318,7 +1186,7 @@ exports[`MapContainer sets the bounds of the geo being passed in successfully 1`
                 <div>
                   <input
                     class="leaflet-control-layers-selector"
-                    name="leaflet-base-layers_191"
+                    name="leaflet-base-layers_177"
                     type="radio"
                   />
                   <span>
