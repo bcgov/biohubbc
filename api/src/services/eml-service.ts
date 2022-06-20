@@ -374,8 +374,8 @@ export class EmlService extends DBService {
     }
 
     if (this.includeSensitiveData) {
+      // only include permits if sensitive data is enabled
       if (this.projectData.permit.permits?.length) {
-        // only include permits if sensitive data is enabled
         data.push({
           describes: this.projectData.project.uuid,
           metadata: {
@@ -387,10 +387,12 @@ export class EmlService extends DBService {
           }
         });
       }
+    }
 
-      if (this.surveyData.length) {
-        this.surveyData.forEach((item) => {
-          // only include permits if sensitive data is enabled
+    if (this.includeSensitiveData) {
+      // only include permits if sensitive data is enabled
+      this.surveyData.forEach((item) => {
+        if (item.permit.permit_number && item.permit.permit_type) {
           data.push({
             describes: item.survey_details.uuid,
             metadata: {
@@ -399,20 +401,50 @@ export class EmlService extends DBService {
               }
             }
           });
-        });
-      }
+        }
+      });
     }
 
-    if (this.surveyData.length) {
-      this.surveyData.forEach((item) => {
+    this.surveyData.forEach((item) => {
+      if (item.proprietor) {
         data.push({
           describes: item.survey_details.uuid,
           metadata: {
-            surveyedAllAreas: item.purpose_and_methodology.surveyed_all_areas === 'true' || false
+            proprietaryDataCategory: item.proprietor.proprietor_type_name
           }
         });
+
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            proprietorName: item.proprietor.proprietor_name
+          }
+        });
+
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            proprietaryDataCategoryRationale: item.proprietor.category_rationale
+          }
+        });
+
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            dataSharingAgreementRequired: item.proprietor.disa_required
+          }
+        });
+      }
+    });
+
+    this.surveyData.forEach((item) => {
+      data.push({
+        describes: item.survey_details.uuid,
+        metadata: {
+          surveyedAllAreas: item.purpose_and_methodology.surveyed_all_areas === 'true' || false
+        }
       });
-    }
+    });
 
     jsonpatch.applyOperation(this.data, {
       op: 'add',
@@ -690,6 +722,7 @@ export class EmlService extends DBService {
   async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<any, any>> {
     const taxonomySearchService = new TaxonomyService();
 
+    // TODO include ancillary_species alongside focal_species?
     const response = await taxonomySearchService.getTaxonomyFromIds(surveyData.species.focal_species);
 
     const taxonomicClassifications: Record<string, any>[] = [];
@@ -728,7 +761,7 @@ export class EmlService extends DBService {
             title: 'Vantage Codes',
             para: {
               itemizedlist: {
-                listitem: this.codes.ecological_seasons
+                listitem: this.codes.vantage_codes
                   .filter((code) => surveyData.purpose_and_methodology.vantage_code_ids.includes(code.id))
                   .map((item) => {
                     return { para: item.name };
