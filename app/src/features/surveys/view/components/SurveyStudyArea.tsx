@@ -195,11 +195,11 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}
             additionalLayers={
-              survey_details.occurrence_submission_id
+              occurrence_submission.id
                 ? [
                     <OccurrenceFeatureGroup
                       projectId={projectForViewData.id}
-                      occurrenceSubmissionId={survey_details.occurrence_submission_id}
+                      occurrenceSubmissionId={occurrence_submission.id}
                     />
                   ]
                 : undefined
