@@ -46,7 +46,7 @@ export const getSurveyPurposeAndMethodologyForUpdateSQL = (surveyId: number): SQ
       s.ecological_season_id,
       s.intended_outcome_id,
       s.surveyed_all_areas,
-      array_agg(sv.vantage_id) as vantage_ids
+      array_remove(array_agg(sv.vantage_id), NULL) as vantage_ids
     FROM
       survey s
     LEFT OUTER JOIN
