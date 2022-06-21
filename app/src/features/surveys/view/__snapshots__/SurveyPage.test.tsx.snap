@@ -827,9 +827,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                       </dt>
                       <dd
                         class="MuiTypography-root MuiTypography-body1"
-                      >
-                        proprietor type
-                      </dd>
+                      />
                     </div>
                     <div
                       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"
@@ -1546,12 +1544,12 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             class="MuiBox-root MuiBox-root-135"
           >
             <div
-              class="MuiChip-root makeStyles-chip-125 makeStyles-chipActive-126 MuiChip-sizeSmall"
+              class="MuiChip-root makeStyles-chip-125 makeStyles-chipCompleted-127 MuiChip-sizeSmall"
             >
               <span
                 class="MuiChip-label MuiChip-labelSmall"
               >
-                Active
+                Completed
               </span>
             </div>
               
@@ -2205,9 +2203,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                       </dt>
                       <dd
                         class="MuiTypography-root MuiTypography-body1"
-                      >
-                        proprietor type
-                      </dd>
+                      />
                     </div>
                     <div
                       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-4"

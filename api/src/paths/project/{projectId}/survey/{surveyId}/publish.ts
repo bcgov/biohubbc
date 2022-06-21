@@ -1,10 +1,9 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';
-import { getDBConnection, IDBConnection } from '../../../../../database/db';
-import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
-import { queries } from '../../../../../queries/queries';
+import { getDBConnection } from '../../../../../database/db';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { SurveyService } from '../../../../../services/survey-service';
 import { getLogger } from '../../../../../utils/logger';
 
 const defaultLog = getLogger('paths/project/{projectId}/survey/{surveyId}/publish');
@@ -21,8 +20,7 @@ export const PUT: Operation = [
       ]
     };
   }),
-
-  publishSurveyAndOccurrences()
+  publishSurvey()
 ];
 
 PUT.apiDoc = {
@@ -36,9 +34,19 @@ PUT.apiDoc = {
   parameters: [
     {
       in: 'path',
+      name: 'projectId',
+      schema: {
+        type: 'integer',
+        minimum: 1
+      },
+      required: true
+    },
+    {
+      in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -53,7 +61,7 @@ PUT.apiDoc = {
           required: ['publish'],
           properties: {
             publish: {
-              title: 'publish?',
+              description: 'Set to `true` to publish the survey, `false` to unpublish the survey',
               type: 'boolean'
             }
           }
@@ -99,44 +107,28 @@ PUT.apiDoc = {
 };
 
 /**
- * Publish survey and occurrences.
+ * Publish survey.
  *
  * @returns {RequestHandler}
  */
-export function publishSurveyAndOccurrences(): RequestHandler {
+export function publishSurvey(): RequestHandler {
   return async (req, res) => {
+    const surveyId = Number(req.params.surveyId);
+    const publish: boolean = req.body.publish;
+
     const connection = getDBConnection(req['keycloak_token']);
-
     try {
-      const surveyId = Number(req.params.surveyId);
-
-      if (!surveyId) {
-        throw new HTTP400('Missing required path parameter: surveyId');
-      }
-
-      if (!req.body) {
-        throw new HTTP400('Missing request body');
-      }
-
-      const publish: boolean = req.body.publish;
-
-      if (publish === undefined) {
-        throw new HTTP400('Missing publish flag in request body');
-      }
-
       await connection.open();
 
-      if (!publish) {
-        await deleteOccurrences(surveyId, connection);
-      }
+      const surveyService = new SurveyService(connection);
 
-      await publishSurvey(surveyId, publish, connection);
+      await surveyService.publishSurvey(surveyId, publish);
 
       await connection.commit();
 
       return res.status(200).send();
     } catch (error) {
-      defaultLog.error({ label: 'publishSurveyAndOccurrences', message: 'error', error });
+      defaultLog.error({ label: 'publishSurvey', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
@@ -144,69 +136,3 @@ export function publishSurveyAndOccurrences(): RequestHandler {
     }
   };
 }
-
-/**
- * Delete all occurrences for a survey.
- *
- * @param {number} surveyId
- * @param {IDBConnection} connection
- */
-export const deleteOccurrences = async (surveyId: number, connection: IDBConnection) => {
-  const occurrenceSubmission = await getSurveyOccurrenceSubmission(surveyId, connection);
-
-  const sqlStatement = queries.survey.deleteSurveyOccurrencesSQL(occurrenceSubmission.id);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build delete survey occurrences SQL statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response) {
-    throw new HTTP500('Failed to delete survey occurrences');
-  }
-};
-
-/**
- * Update a survey, marking it as published/unpublished.
- *
- * @returns {RequestHandler}
- */
-export const publishSurvey = async (surveyId: number, publish: boolean, connection: IDBConnection) => {
-  const sqlStatement = queries.survey.updateSurveyPublishStatusSQL(surveyId, publish);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build survey publish SQL statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  const result = (response && response.rows && response.rows[0]) || null;
-
-  if (!result) {
-    throw new HTTP500('Failed to update survey publish status');
-  }
-};
-
-/**
- * Get the latest survey occurrence submission.
- *
- * @param {number} surveyId
- * @param {IDBConnection} connection
- * @return {*}
- */
-export const getSurveyOccurrenceSubmission = async (surveyId: number, connection: IDBConnection) => {
-  const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
-
-  if (!sqlStatement) {
-    throw new HTTP400('Failed to build get survey occurrence submission SQL statement');
-  }
-
-  const response = await connection.query(sqlStatement.text, sqlStatement.values);
-
-  if (!response || !response.rows.length) {
-    throw new HTTP500('Failed to get survey occurrence submissions');
-  }
-
-  return response.rows[0];
-};

@@ -191,21 +191,21 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
           <MapContainer
             mapId={mapId}
             geometryState={{
-              geometry: values.geometry,
+              geometry: get(values, name),
               setGeometry: (newGeo: Feature[]) => setFieldValue(name, newGeo)
             }}
             bounds={(shouldUpdateBounds && updatedBounds) || bounds}
             selectedLayer={selectedLayer}
             setInferredLayersInfo={setInferredLayersInfo}
           />
-          {values.geometry && values.geometry.length > 0 && (
+          {get(values, name) && get(values, name).length > 0 && (
             <Box position="absolute" top="126px" left="10px" zIndex="999">
               <IconButton
                 aria-label="zoom to initial extent"
                 title="Zoom to initial extent"
                 className={classes.zoomToBoundaryExtentBtn}
                 onClick={() => {
-                  setUpdatedBounds(calculateUpdatedMapBounds(values.geometry));
+                  setUpdatedBounds(calculateUpdatedMapBounds(get(values, name)));
                   setShouldUpdateBounds(true);
                 }}>
                 <Icon size={1} path={mdiRefresh} />

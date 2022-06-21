@@ -471,6 +471,12 @@ jobs:
           timeout: 120000
           interval: 500
 
+      # Install Node - for `node` and `npm` commands
+      - name: Setup Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: 16
+
       - name: E2E Smoke tests
         uses: cypress-io/github-action@v2
         # let's give this action an ID so we can refer

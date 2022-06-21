@@ -4,6 +4,7 @@ import { IProprietaryDataForm } from 'features/surveys/components/ProprietaryDat
 import { IPurposeAndMethodologyForm } from 'features/surveys/components/PurposeAndMethodologyForm';
 import { IStudyAreaForm } from 'features/surveys/components/StudyAreaForm';
 import { Feature } from 'geojson';
+import { IGetProjectForUpdateResponseFundingSource } from 'interfaces/useProjectApi.interface';
 import { StringBoolean } from 'types/misc';
 
 /**
@@ -29,6 +30,10 @@ export interface ICreateSurveyResponse {
   id: number;
 }
 
+export interface ISurveyFundingSources {
+  funding_sources: ISurveyFundingSourceForView[];
+}
+
 export interface ISurveyFundingSourceForView {
   pfs_id: number;
   funding_amount: number;
@@ -37,29 +42,22 @@ export interface ISurveyFundingSourceForView {
   agency_name: string;
 }
 
+export type ISurveyAvailableFundingSources = IGetProjectForUpdateResponseFundingSource;
+
 export interface IGetSurveyForViewResponseDetails {
   id: number;
   survey_name: string;
-  focal_species: number[];
-  focal_species_names: string[];
-  ancillary_species: number[];
-  ancillary_species_names: string[];
   start_date: string;
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
   survey_area_name: string;
-  permit_number: string;
-  permit_type: string;
-  funding_sources: ISurveyFundingSourceForView[];
   geometry: Feature[];
-  completion_status: string;
   publish_date: string;
-  occurrence_submission_id: number | null;
+  revision_count: number;
 }
 
 export interface IGetSurveyForViewResponsePurposeAndMethodology {
-  id: number;
   intended_outcome_id: number;
   additional_details: string;
   field_method_id: number;
@@ -69,65 +67,69 @@ export interface IGetSurveyForViewResponsePurposeAndMethodology {
 }
 
 export interface IGetSurveyForViewResponseProprietor {
-  id: number;
   proprietary_data_category_name: string;
   first_nations_name: string;
   category_rationale: string;
   proprietor_name: string;
-  data_sharing_agreement_required: string;
-}
-
-export interface IGetSurveyForUpdateResponseDetails {
-  id: number;
-  survey_name: string;
-  focal_species: number[];
-  ancillary_species: number[];
-  start_date: string;
-  end_date: string;
-  biologist_first_name: string;
-  biologist_last_name: string;
-  survey_area_name: string;
-  geometry: Feature[];
-  revision_count: number;
-  permit_number: string;
-  permit_type: string;
-  funding_sources: number[];
-}
-
-export interface IGetSurveyForUpdateResponsePurposeAndMethodology {
-  id?: number;
-  intended_outcome_id: number;
-  additional_details: string;
-  field_method_id: number;
-  ecological_season_id: number;
-  vantage_code_ids: number[];
-  surveyed_all_areas: StringBoolean;
-  revision_count?: number;
-}
-
-export interface IGetSurveyForUpdateResponseProprietor {
-  id?: number;
-  proprietary_data_category_name?: string;
-  first_nations_name?: string;
-  proprietary_data_category?: number;
+  disa_required: boolean;
   first_nations_id?: number;
-  category_rationale?: string;
-  proprietor_name?: string;
-  survey_data_proprietary?: string;
-  data_sharing_agreement_required?: string;
-  revision_count?: number;
+  proprietor_type_id?: number;
+  proprietor_type_name?: string;
 }
 
-/**
- * An interface for a single instance of survey metadata, for update-only use cases.
- *
- * @export
- * @interface IGetSurveyForUpdateResponse
- */
-export interface IGetSurveyForUpdateResponse {
-  survey_details?: IGetSurveyForUpdateResponseDetails;
-  survey_purpose_and_methodology?: IGetSurveyForUpdateResponsePurposeAndMethodology | null;
-  survey_proprietor?: IGetSurveyForUpdateResponseProprietor | null;
+export interface SurveyViewObject {
+  survey_details: IGetSurveyForViewResponseDetails;
+  species: IGetSpecies;
+  permit: ISurveyPermits;
+  purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
+  funding: ISurveyFundingSources;
+  proprietor: IGetSurveyForViewResponseProprietor | null;
+}
+
+export interface SurveyUpdateObject {
+  survey_details?: {
+    survey_name: string;
+    start_date: string;
+    end_date: string;
+    biologist_first_name: string;
+    biologist_last_name: string;
+    revision_count: number;
+  };
+  species?: {
+    focal_species: number[];
+    ancillary_species: number[];
+  };
+  permit?: ISurveyPermits;
+  purpose_and_methodology?: {
+    intended_outcome_id: number;
+    additional_details: string;
+    field_method_id: number;
+    ecological_season_id: number;
+    vantage_code_ids: number[];
+    surveyed_all_areas: StringBoolean;
+    revision_count: number;
+  };
+  funding?: {
+    funding_sources: number[];
+  };
+  proprietor?: {
+    survey_data_proprietary: StringBoolean;
+    proprietary_data_category: number;
+    proprietor_name: string;
+    first_nations_id: number;
+    category_rationale: string;
+    disa_required: StringBoolean;
+  };
+  location?: {
+    survey_area_name: string;
+    geometry: Feature[];
+    revision_count: number;
+  };
+}
+
+export interface SurveySupplementaryData {
+  occurrence_submission: { id: number | null };
+  summary_result: { id: number | null };
 }
 
 /**
@@ -137,30 +139,8 @@ export interface IGetSurveyForUpdateResponse {
  * @interface IGetSurveyForViewResponse
  */
 export interface IGetSurveyForViewResponse {
-  survey_details: IGetSurveyForViewResponseDetails;
-  survey_purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
-  survey_proprietor: IGetSurveyForViewResponseProprietor;
-}
-
-/**
- * An interface for a single instance of survey metadata, for update-only use cases.
- *
- * @export
- * @interface IUpdateSurveyRequest
- * @extends {IGetSurveyForUpdateResponse}
- */
-export type IUpdateSurveyRequest = IGetSurveyForUpdateResponse;
-
-/**
- * Get surveys list response object.
- *
- * @export
- * @interface IGetSurveysListResponse
- */
-export interface IGetSurveysListResponse {
-  id: number;
-  survey: IGetSurveyDetailsResponse;
-  species: IGetSpeciesList;
+  surveyData: SurveyViewObject;
+  surveySupplementaryData: SurveySupplementaryData;
 }
 
 export interface IGetSurveyDetailsResponse {
@@ -172,15 +152,11 @@ export interface IGetSurveyDetailsResponse {
   completion_status: string;
 }
 
-export interface IGetSpeciesList {
-  species: number[];
-  species_names: string[];
-}
-
-export enum UPDATE_GET_SURVEY_ENTITIES {
-  survey_details = 'survey_details',
-  survey_purpose_and_methodology = 'survey_purpose_and_methodology',
-  survey_proprietor = 'survey_proprietor'
+export interface IGetSpecies {
+  focal_species: number[];
+  focal_species_names: string[];
+  ancillary_species: number[];
+  ancillary_species_names: string[];
 }
 
 export interface IGetSurveyAttachment {
@@ -203,15 +179,7 @@ export interface IGetSurveyAttachmentsResponse {
   attachmentsList: IGetSurveyAttachment[];
 }
 
-export interface SurveyPermits {
-  number: string;
-  type: string;
-}
-
-export interface SurveyFundingSources {
-  pfsId: number;
-  amount: number;
-  startDate: string;
-  endDate: string;
-  agencyName: string;
+export interface ISurveyPermits {
+  permit_number: string;
+  permit_type: string;
 }

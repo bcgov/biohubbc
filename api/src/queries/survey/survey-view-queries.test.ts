@@ -1,9 +1,7 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
-import { getSurveySQL } from '../../queries/survey/survey-view-queries';
 import {
   getAllAssignablePermitsForASurveySQL,
-  getSurveyAncillarySpeciesDataForViewSQL,
   getSurveyBasicDataForViewSQL,
   getSurveyFocalSpeciesDataForViewSQL,
   getSurveyFundingSourcesDataForViewSQL,
@@ -25,28 +23,8 @@ describe('getAllAssignablePermitsForASurveySQL', () => {
 });
 
 describe('getSurveyIdsSQL', () => {
-  it('returns null when null project id param provided', () => {
-    const response = getSurveyIdsSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns a non null response when valid params passed in', () => {
+  it('returns a sql statement', () => {
     const response = getSurveyIdsSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getSurveyListSQL', () => {
-  it('returns a null response when null project id param provided', () => {
-    const response = getSurveySQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns a non null response when valid params passed in', () => {
-    const response = getSurveySQL(1);
 
     expect(response).to.not.be.null;
   });
@@ -89,20 +67,6 @@ describe('getSurveyFocalSpeciesDataForViewSQL', () => {
 
   it('returns a non null response when valid params passed in', () => {
     const response = getSurveyFocalSpeciesDataForViewSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getSurveyAncillarySpeciesDataForViewSQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getSurveyAncillarySpeciesDataForViewSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns a non null response when valid params passed in', () => {
-    const response = getSurveyAncillarySpeciesDataForViewSQL(1);
 
     expect(response).to.not.be.null;
   });

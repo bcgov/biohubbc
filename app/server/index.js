@@ -38,6 +38,9 @@ const request = require('request');
 
   // App config
   app.use('/config', (_, resp) => {
+    const OBJECT_STORE_URL = process.env.OBJECT_STORE_URL || 'nrs.objectstore.gov.bc.ca';
+    const OBJECT_STORE_BUCKET_NAME = process.env.OBJECT_STORE_BUCKET_NAME || 'gblhvt';
+
     const config = {
       API_HOST: process.env.REACT_APP_API_HOST || 'localhost',
       N8N_HOST: process.env.REACT_APP_N8N_HOST,
@@ -53,7 +56,8 @@ const request = require('request');
       SITEMINDER_LOGOUT_URL:
         process.env.REACT_APP_SITEMINDER_LOGOUT_URL || 'https://logontest7.gov.bc.ca/clp-cgi/logoff.cgi',
       MAX_UPLOAD_NUM_FILES: Number(process.env.REACT_APP_MAX_UPLOAD_NUM_FILES) || 10,
-      MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800
+      MAX_UPLOAD_FILE_SIZE: Number(process.env.REACT_APP_MAX_UPLOAD_FILE_SIZE) || 52428800,
+      S3_PUBLIC_HOST_URL: `https://${OBJECT_STORE_URL}/${OBJECT_STORE_BUCKET_NAME}`
     };
     resp.status(200).json(config);
   });

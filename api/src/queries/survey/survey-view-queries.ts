@@ -33,11 +33,7 @@ export const getAllAssignablePermitsForASurveySQL = (projectId: number): SQLStat
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getSurveyIdsSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       survey_id as id
@@ -45,27 +41,6 @@ export const getSurveyIdsSQL = (projectId: number): SQLStatement | null => {
       survey
     WHERE
       project_id = ${projectId};
-  `;
-};
-
-/**
- * SQL query to get all surveys for list view.
- *
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getSurveySQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      *
-    FROM
-      survey
-    WHERE
-      survey_id = ${surveyId};
   `;
 };
 
@@ -143,26 +118,30 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
 
   return SQL`
     SELECT
-      sfs.project_funding_source_id as pfs_id,
+      sfs.project_funding_source_id,
+      fs.funding_source_id,
+      pfs.funding_source_project_id,
       pfs.funding_amount::numeric::int,
       pfs.funding_start_date,
       pfs.funding_end_date,
+      iac.investment_action_category_id,
+      iac.name as investment_action_category_name,
       fs.name as agency_name
     FROM
       survey as s
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       survey_funding_source as sfs
     ON
       sfs.survey_id = s.survey_id
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       project_funding_source as pfs
     ON
       pfs.project_funding_source_id = sfs.project_funding_source_id
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       investment_action_category as iac
     ON
       pfs.investment_action_category_id = iac.investment_action_category_id
-    LEFT OUTER JOIN
+    RIGHT OUTER JOIN
       funding_source as fs
     ON
       iac.funding_source_id = fs.funding_source_id
@@ -170,11 +149,15 @@ export const getSurveyFundingSourcesDataForViewSQL = (surveyId: number): SQLStat
       s.survey_id = ${surveyId}
     GROUP BY
       sfs.project_funding_source_id,
-      pfs.funding_amount::numeric::int,
+      fs.funding_source_id,
+      pfs.funding_source_project_id,
+      pfs.funding_amount,
       pfs.funding_start_date,
       pfs.funding_end_date,
+      iac.investment_action_category_id,
+      iac.name,
       fs.name
-    order by
+    ORDER BY
       pfs.funding_start_date;
   `;
 };
@@ -186,7 +169,7 @@ export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatem
 
   return SQL`
     SELECT
-      wldtaxonomic_units_id
+      wldtaxonomic_units_id, is_focal
     FROM
       study_species
     WHERE
@@ -196,19 +179,32 @@ export const getSurveyFocalSpeciesDataForViewSQL = (surveyId: number): SQLStatem
   `;
 };
 
-export const getSurveyAncillarySpeciesDataForViewSQL = (surveyId: number): SQLStatement | null => {
+export const getLatestOccurrenceSubmissionIdSQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }
 
   return SQL`
     SELECT
-      wldtaxonomic_units_id
+      max(occurrence_submission_id) as id
     FROM
-      study_species
+      occurrence_submission
     WHERE
-      survey_id = ${surveyId}
-    AND
-      is_focal = FALSE;
+      survey_id = ${surveyId};
+    `;
+};
+
+export const getLatestSummaryResultIdSQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
+    return null;
+  }
+
+  return SQL`
+    SELECT
+      max(survey_summary_submission_id) as id
+    FROM
+      survey_summary_submission
+    WHERE
+      survey_id = ${surveyId};
     `;
 };

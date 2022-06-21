@@ -11,7 +11,7 @@ N8N: https://docs.n8n.io/
 Within the n8n directory, there is a folder `credentials` which contains the encrypted credential details for webhook HTTP requests to use.
 There is also the `workflows` directory which contains the workflow file(s). When a `make clean web` is run, these credentials and workflows are imported into n8n and can be called from within our app.
 
-If a change needs to be made to the existing credentials/workflows or a new one needs to be added, this can be done from the browser in the local instance of n8n which is running at `http://localhost:5678`. When the changes have been made, make sure to save and then run the following command from the terminal/cmd line:
+If a change needs to be made to the existing credentials/workflows or a new one needs to be added, this can be done from the browser in the local instance of n8n which is running at `http://localhost:5100`. When the changes have been made, make sure to save and then run the following command from the terminal/cmd line:
 
 ```
 make n8n-export

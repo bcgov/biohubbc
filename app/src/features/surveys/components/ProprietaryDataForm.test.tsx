@@ -1,5 +1,6 @@
 import { fireEvent, render, screen, waitFor, within } from '@testing-library/react';
 import ProprietaryDataForm, {
+  IProprietaryDataForm,
   ProprietaryDataInitialValues,
   ProprietaryDataYupSchema
 } from 'features/surveys/components/ProprietaryDataForm';
@@ -9,12 +10,15 @@ import { codes } from 'test-helpers/code-helpers';
 
 const handleSaveAndNext = jest.fn();
 
-const proprietaryDataFilledValues = {
-  proprietary_data_category: 'Proprietor code 1',
-  proprietor_name: 'name',
-  category_rationale: 'rationale is cause it is true',
-  survey_data_proprietary: 'true',
-  data_sharing_agreement_required: 'true'
+const proprietaryDataFilledValues: IProprietaryDataForm = {
+  proprietor: {
+    proprietary_data_category: 123,
+    proprietor_name: 'name',
+    first_nations_id: 0,
+    survey_data_proprietary: 'true',
+    category_rationale: 'rationale is cause it is true',
+    disa_required: 'true'
+  }
 };
 
 describe('Proprietary Data Form', () => {
@@ -137,18 +141,22 @@ describe('Proprietary Data Form', () => {
         validationSchema={ProprietaryDataYupSchema}
         validateOnBlur={true}
         initialErrors={{
-          survey_data_proprietary: 'error on survey data proprietary field',
-          proprietary_data_category: 'error on proprietary data category field',
-          proprietor_name: 'error on proprietor name field',
-          category_rationale: 'error on category rationale field',
-          data_sharing_agreement_required: 'error on data sharing agreement required field'
+          proprietor: {
+            survey_data_proprietary: 'error on survey data proprietary field',
+            proprietary_data_category: 'error on proprietary data category field',
+            proprietor_name: 'error on proprietor name field',
+            category_rationale: 'error on category rationale field',
+            disa_required: 'error on data sharing agreement required field'
+          }
         }}
         initialTouched={{
-          survey_data_proprietary: true,
-          proprietary_data_category: true,
-          proprietor_name: true,
-          category_rationale: true,
-          data_sharing_agreement_required: true
+          proprietor: {
+            survey_data_proprietary: true,
+            proprietary_data_category: true,
+            proprietor_name: true,
+            category_rationale: true,
+            disa_required: true
+          }
         }}
         validateOnChange={false}
         onSubmit={async (values) => {

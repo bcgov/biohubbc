@@ -105,33 +105,6 @@ describe('deleteSurvey', () => {
     }
   });
 
-  it('should throw a 400 error when failed to build delete sql statement', async () => {
-    const mockQuery = sinon.stub();
-
-    mockQuery.resolves({ rows: [] });
-
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: mockQuery
-    });
-
-    sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
-    sinon.stub(survey_queries, 'deleteSurveySQL').returns(null);
-
-    try {
-      const result = delete_survey.deleteSurvey();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL delete statement');
-    }
-  });
-
   it('should return null when deleting file from S3 fails', async () => {
     const mockQuery = sinon.stub();
 

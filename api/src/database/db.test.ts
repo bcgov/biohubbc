@@ -2,11 +2,12 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import * as pg from 'pg';
 import Sinon from 'sinon';
+import SQL from 'sql-template-strings';
 import { SYSTEM_IDENTITY_SOURCE } from '../constants/database';
 import { HTTPError } from '../errors/custom-error';
 import { setSystemUserContextSQL } from '../queries/database/user-context-queries';
 import * as db from './db';
-import { getAPIUserDBConnection, getDBConnection, getDBPool, IDBConnection, initDBPool } from './db';
+import { getAPIUserDBConnection, getDBConnection, getDBPool, getKnex, IDBConnection, initDBPool } from './db';
 
 describe('db', () => {
   beforeEach(() => {
@@ -277,6 +278,41 @@ describe('db', () => {
           });
         });
       });
+
+      describe('sql', () => {
+        describe('when a connection is open', () => {
+          it('sends a sql statement', async () => {
+            sinonSandbox.stub(db, 'getDBPool').returns((mockPool as unknown) as pg.Pool);
+
+            await connection.open();
+
+            const sqlStatement = SQL`sql query ${123}`;
+
+            await connection.sql(sqlStatement);
+
+            expect(queryStub).to.have.been.calledWith('sql query $1', [123]);
+          });
+        });
+
+        describe('when a connection is not open', () => {
+          it('throws an error', async () => {
+            sinonSandbox.stub(db, 'getDBPool').returns((mockPool as unknown) as pg.Pool);
+
+            let expectedError: Error;
+            try {
+              const sqlStatement = SQL`sql query ${123}`;
+
+              await connection.sql(sqlStatement);
+
+              expect.fail('Expected an error to be thrown');
+            } catch (error) {
+              expectedError = error as Error;
+            }
+
+            expect(expectedError.message).to.equal('DBConnection is not open');
+          });
+        });
+      });
     });
   });
 
@@ -295,6 +331,14 @@ describe('db', () => {
       expect(getDBConnectionStub).to.have.been.calledWith({
         preferred_username: 'biohub_api@database'
       });
+    });
+  });
+
+  describe('getKnex', () => {
+    it('returns a Knex instance', () => {
+      const knex = getKnex();
+
+      expect(knex.queryBuilder().client.config).to.eql({ client: 'pg' });
     });
   });
 });

@@ -105,6 +105,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
+            data-testid="edit-dialog-save"
             tabindex="0"
             type="button"
           >
@@ -128,6 +129,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
           </button>
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="edit-dialog-cancel"
             tabindex="0"
             type="button"
           >
@@ -271,6 +273,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary Mui-focusVisible Mui-focusVisible"
+            data-testid="edit-dialog-save"
             tabindex="0"
             type="button"
           >
@@ -294,6 +297,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
           </button>
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+            data-testid="edit-dialog-cancel"
             tabindex="0"
             type="button"
           >

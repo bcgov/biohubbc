@@ -34,7 +34,7 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
                 <input
                   class="PrivateSwitchBase-input-5"
                   data-indeterminate="false"
-                  name="sedis_procedures_accepted"
+                  name="agreements.sedis_procedures_accepted"
                   type="checkbox"
                   value=""
                 />
@@ -96,7 +96,7 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
                 <input
                   class="PrivateSwitchBase-input-5"
                   data-indeterminate="false"
-                  name="foippa_requirements_accepted"
+                  name="agreements.foippa_requirements_accepted"
                   type="checkbox"
                   value=""
                 />
@@ -166,7 +166,7 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
                   checked=""
                   class="PrivateSwitchBase-input-11"
                   data-indeterminate="false"
-                  name="sedis_procedures_accepted"
+                  name="agreements.sedis_procedures_accepted"
                   type="checkbox"
                   value=""
                 />
@@ -229,7 +229,7 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
                   checked=""
                   class="PrivateSwitchBase-input-11"
                   data-indeterminate="false"
-                  name="foippa_requirements_accepted"
+                  name="agreements.foippa_requirements_accepted"
                   type="checkbox"
                   value=""
                 />
@@ -299,7 +299,7 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
                   checked=""
                   class="PrivateSwitchBase-input-17"
                   data-indeterminate="false"
-                  name="sedis_procedures_accepted"
+                  name="agreements.sedis_procedures_accepted"
                   type="checkbox"
                   value=""
                 />
@@ -364,7 +364,7 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
                   checked=""
                   class="PrivateSwitchBase-input-17"
                   data-indeterminate="false"
-                  name="foippa_requirements_accepted"
+                  name="agreements.foippa_requirements_accepted"
                   type="checkbox"
                   value=""
                 />

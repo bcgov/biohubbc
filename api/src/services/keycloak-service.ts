@@ -50,6 +50,9 @@ export type KeycloakUser = {
 /**
  * Service for calling the keycloak admin API.
  *
+ * Keycloak Documentation (select version and see `Administration REST API` section):
+ * - https://www.keycloak.org/documentation-archive.html
+ *
  * @export
  * @class KeycloakService
  */

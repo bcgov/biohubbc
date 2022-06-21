@@ -1,16 +1,19 @@
 import { render } from '@testing-library/react';
 import AgreementsForm, {
   AgreementsInitialValues,
-  AgreementsYupSchema
+  AgreementsYupSchema,
+  IAgreementsForm
 } from 'features/surveys/components/AgreementsForm';
 import { Formik } from 'formik';
 import React from 'react';
 
 const handleSaveAndNext = jest.fn();
 
-const agreementsFilledValues = {
-  sedis_procedures_accepted: true,
-  foippa_requirements_accepted: true
+const agreementsFilledValues: IAgreementsForm = {
+  agreements: {
+    sedis_procedures_accepted: true,
+    foippa_requirements_accepted: true
+  }
 };
 
 describe('Agreements Form', () => {
@@ -56,12 +59,16 @@ describe('Agreements Form', () => {
         validateOnBlur={true}
         validateOnChange={false}
         initialErrors={{
-          sedis_procedures_accepted: 'error on sedis field',
-          foippa_requirements_accepted: 'error on foippa field'
+          agreements: {
+            sedis_procedures_accepted: 'error on sedis field',
+            foippa_requirements_accepted: 'error on foippa field'
+          }
         }}
         initialTouched={{
-          sedis_procedures_accepted: true,
-          foippa_requirements_accepted: true
+          agreements: {
+            sedis_procedures_accepted: true,
+            foippa_requirements_accepted: true
+          }
         }}
         onSubmit={async (values) => {
           handleSaveAndNext(values);
