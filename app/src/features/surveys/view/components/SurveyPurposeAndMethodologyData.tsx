@@ -17,11 +17,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  IGetSurveyForUpdateResponsePurposeAndMethodology,
-  IGetSurveyForViewResponse,
-  UPDATE_GET_SURVEY_ENTITIES
-} from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 import { StringBoolean } from 'types/misc';
 
@@ -42,16 +38,14 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details, survey_purpose_and_methodology },
+    surveyForViewData: {
+      surveyData: { survey_details, purpose_and_methodology }
+    },
     codes,
     refresh
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [
-    surveyPurposeAndMethodologyForUpdate,
-    setSurveyPurposeAndMethodologyForUpdate
-  ] = useState<IGetSurveyForUpdateResponsePurposeAndMethodology | null>(null);
   const [purposeAndMethodologyFormData, setPurposeAndMethodologyFormData] = useState<IPurposeAndMethodologyForm>(
     PurposeAndMethodologyInitialValues
   );
@@ -73,51 +67,50 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
   };
 
   const handleDialogEditOpen = async () => {
-    if (!survey_purpose_and_methodology) {
-      setSurveyPurposeAndMethodologyForUpdate(null);
+    if (!purpose_and_methodology) {
       setPurposeAndMethodologyFormData(PurposeAndMethodologyInitialValues);
       setOpenEditDialog(true);
       return;
     }
 
-    let surveyPurposeAndMethodologyResponseData;
+    let surveyResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
-        UPDATE_GET_SURVEY_ENTITIES.survey_purpose_and_methodology
-      ]);
+      const surveyResponse = await biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details.id);
 
-      if (!response) {
+      if (!surveyResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
-      surveyPurposeAndMethodologyResponseData = response?.survey_purpose_and_methodology || null;
+      surveyResponseData = surveyResponse;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setSurveyPurposeAndMethodologyForUpdate(surveyPurposeAndMethodologyResponseData);
-
     setPurposeAndMethodologyFormData({
-      intended_outcome_id:
-        surveyPurposeAndMethodologyResponseData?.intended_outcome_id ||
-        PurposeAndMethodologyInitialValues.intended_outcome_id,
-      additional_details:
-        surveyPurposeAndMethodologyResponseData?.additional_details ||
-        PurposeAndMethodologyInitialValues.additional_details,
-      field_method_id:
-        surveyPurposeAndMethodologyResponseData?.field_method_id || PurposeAndMethodologyInitialValues.field_method_id,
-      ecological_season_id:
-        surveyPurposeAndMethodologyResponseData?.ecological_season_id ||
-        PurposeAndMethodologyInitialValues.ecological_season_id,
-      vantage_code_ids:
-        surveyPurposeAndMethodologyResponseData?.vantage_code_ids ||
-        PurposeAndMethodologyInitialValues.vantage_code_ids,
-      surveyed_all_areas:
-        surveyPurposeAndMethodologyResponseData?.surveyed_all_areas || (('' as unknown) as StringBoolean)
+      purpose_and_methodology: {
+        intended_outcome_id:
+          surveyResponseData.surveyData.purpose_and_methodology?.intended_outcome_id ||
+          PurposeAndMethodologyInitialValues.purpose_and_methodology.intended_outcome_id,
+        additional_details:
+          surveyResponseData.surveyData.purpose_and_methodology?.additional_details ||
+          PurposeAndMethodologyInitialValues.purpose_and_methodology.additional_details,
+        field_method_id:
+          surveyResponseData.surveyData.purpose_and_methodology?.field_method_id ||
+          PurposeAndMethodologyInitialValues.purpose_and_methodology.field_method_id,
+        ecological_season_id:
+          surveyResponseData.surveyData.purpose_and_methodology?.ecological_season_id ||
+          PurposeAndMethodologyInitialValues.purpose_and_methodology.ecological_season_id,
+        vantage_code_ids:
+          surveyResponseData.surveyData.purpose_and_methodology?.vantage_code_ids ||
+          PurposeAndMethodologyInitialValues.purpose_and_methodology.vantage_code_ids,
+        surveyed_all_areas:
+          surveyResponseData.surveyData.purpose_and_methodology?.surveyed_all_areas ||
+          (('' as unknown) as StringBoolean)
+      }
     });
 
     setOpenEditDialog(true);
@@ -125,10 +118,9 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
 
   const handleDialogEditSave = async (values: IPurposeAndMethodologyForm) => {
     const surveyData = {
-      survey_purpose_and_methodology: {
-        ...values,
-        id: surveyPurposeAndMethodologyForUpdate?.id,
-        revision_count: surveyPurposeAndMethodologyForUpdate?.revision_count
+      purpose_and_methodology: {
+        ...values.purpose_and_methodology,
+        revision_count: survey_details.revision_count
       }
     };
 
@@ -193,7 +185,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
         />
         <Divider></Divider>
         <dl>
-          {!survey_purpose_and_methodology && (
+          {!purpose_and_methodology && (
             <Grid container spacing={2}>
               <Grid item>
                 <Typography>
@@ -202,16 +194,16 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
               </Grid>
             </Grid>
           )}
-          {survey_purpose_and_methodology && (
+          {purpose_and_methodology && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Intended Outcome
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.intended_outcome_id &&
+                  {purpose_and_methodology.intended_outcome_id &&
                     codes?.intended_outcomes?.find(
-                      (item: any) => item.id === survey_purpose_and_methodology.intended_outcome_id
+                      (item: any) => item.id === purpose_and_methodology.intended_outcome_id
                     )?.name}
                 </Typography>
               </Grid>
@@ -220,7 +212,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Additional Details
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.additional_details}
+                  {purpose_and_methodology.additional_details}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -229,10 +221,9 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 </Typography>
 
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.field_method_id &&
-                    codes?.field_methods?.find(
-                      (item: any) => item.id === survey_purpose_and_methodology.field_method_id
-                    )?.name}
+                  {purpose_and_methodology.field_method_id &&
+                    codes?.field_methods?.find((item: any) => item.id === purpose_and_methodology.field_method_id)
+                      ?.name}
                 </Typography>
                 <Typography component="dd" variant="body1"></Typography>
               </Grid>
@@ -241,9 +232,9 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Ecological Season
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_purpose_and_methodology.ecological_season_id &&
+                  {purpose_and_methodology.ecological_season_id &&
                     codes?.ecological_seasons?.find(
-                      (item: any) => item.id === survey_purpose_and_methodology.ecological_season_id
+                      (item: any) => item.id === purpose_and_methodology.ecological_season_id
                     )?.name}
                 </Typography>
               </Grid>
@@ -251,7 +242,7 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Vantage Code
                 </Typography>
-                {survey_purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
+                {purpose_and_methodology.vantage_code_ids?.map((vc_id: number, index: number) => {
                   return (
                     <Typography component="dd" variant="body1" key={index}>
                       {codes?.vantage_codes?.find((item: any) => item.id === vc_id)?.name}
@@ -264,9 +255,8 @@ const SurveyPurposeAndMethodologyData: React.FC<ISurveyPurposeAndMethodologyData
                   Surveyed all areas?
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {(survey_purpose_and_methodology.surveyed_all_areas === 'true' && 'Yes - all areas were surveyed') ||
-                    (survey_purpose_and_methodology.surveyed_all_areas === 'false' &&
-                      'No - only some areas were surveyed')}
+                  {(purpose_and_methodology.surveyed_all_areas === 'true' && 'Yes - all areas were surveyed') ||
+                    (purpose_and_methodology.surveyed_all_areas === 'false' && 'No - only some areas were surveyed')}
                 </Typography>
               </Grid>
             </Grid>

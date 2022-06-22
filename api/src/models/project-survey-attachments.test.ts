@@ -16,7 +16,7 @@ describe('GetAttachmentsData', () => {
       getAttachmentsData = new GetAttachmentsData(null);
     });
 
-    it('sets attachmentsList', function () {
+    it('sets attachmentsList', () => {
       expect(getAttachmentsData.attachmentsList).to.eql([]);
     });
   });
@@ -39,17 +39,19 @@ describe('GetAttachmentsData', () => {
       getAttachmentsData = new GetAttachmentsData(attachmentsData);
     });
 
-    it('sets attachmentsList', function () {
-      expect(getAttachmentsData.attachmentsList).to.eql([
-        {
-          id: 1,
-          fileName: 'filename',
-          lastModified: '2020/04/04',
-          size: 24,
-          fileType: 'Video',
-          securityToken: 'token123'
-        }
-      ]);
+    it('sets attachmentsList', () => {
+      expect(getAttachmentsData).to.be.an('object');
+      expect(getAttachmentsData).to.have.property('attachmentsList');
+
+      expect(getAttachmentsData.attachmentsList).to.be.an('array');
+      expect(getAttachmentsData.attachmentsList).to.have.length(1);
+
+      expect(getAttachmentsData.attachmentsList[0].fileName).to.equal('filename');
+      expect(getAttachmentsData.attachmentsList[0].fileType).to.equal('Video');
+      expect(getAttachmentsData.attachmentsList[0].id).to.equal(1);
+      expect(getAttachmentsData.attachmentsList[0].lastModified).to.match(new RegExp('2020-04-04T.*'));
+      expect(getAttachmentsData.attachmentsList[0].size).to.equal(24);
+      expect(getAttachmentsData.attachmentsList[0].securityToken).to.equal('token123');
     });
   });
 });
@@ -62,7 +64,7 @@ describe('PostReportAttachmentsMetaData', () => {
       postReportAttachmentsData = new PostReportAttachmentMetadata(null);
     });
 
-    it('sets attachmentsData', function () {
+    it('sets attachmentsData', () => {
       expect(postReportAttachmentsData).to.eql({ title: null, year_published: 0, authors: [], description: null });
     });
   });
@@ -81,7 +83,7 @@ describe('PostReportAttachmentsMetaData', () => {
       postReportAttachmentsData = new PostReportAttachmentMetadata(input);
     });
 
-    it('sets the report metadata', function () {
+    it('sets the report metadata', () => {
       expect(postReportAttachmentsData).to.eql({
         title: 'Report 1',
         year_published: 2000,
@@ -94,7 +96,7 @@ describe('PostReportAttachmentsMetaData', () => {
 
 describe('PutReportAttachmentMetaData', () => {
   describe('No values provided', () => {
-    it('sets attachmentsData', function () {
+    it('sets attachmentsData', () => {
       const putReportAttachmentData = new PutReportAttachmentMetadata(null);
 
       expect(putReportAttachmentData.title).to.equal(null);
@@ -114,7 +116,7 @@ describe('PutReportAttachmentMetaData', () => {
       revision_count: 1
     };
 
-    it('sets the report metadata', function () {
+    it('sets the report metadata', () => {
       const putReportAttachmentData = new PutReportAttachmentMetadata(input);
       expect(putReportAttachmentData.title).to.equal(input.title);
       expect(putReportAttachmentData.year_published).to.equal(input.year_published);
@@ -127,7 +129,7 @@ describe('PutReportAttachmentMetaData', () => {
 
 describe('GetReportAttachmentMetaData', () => {
   describe('No values provided', () => {
-    it('sets the report metadata', function () {
+    it('sets the report metadata', () => {
       const getReportAttachmentData = new GetReportAttachmentMetadata(null);
 
       expect(getReportAttachmentData).to.eql({
@@ -153,7 +155,7 @@ describe('GetReportAttachmentMetaData', () => {
       authors: [{ first_name: 'John', last_name: 'Smith' }]
     };
 
-    it('sets the report metadata', function () {
+    it('sets the report metadata', () => {
       const getReportAttachmentData = new GetReportAttachmentMetadata(input);
 
       expect(getReportAttachmentData.title).to.equal(input.title);
@@ -167,7 +169,7 @@ describe('GetReportAttachmentMetaData', () => {
 
 describe('GetReportAttachmentAuthor', () => {
   describe('No values provided', () => {
-    it('sets the authors', function () {
+    it('sets the authors', () => {
       const getReportAttachmentAuthor = new GetReportAttachmentAuthor(null);
       expect(getReportAttachmentAuthor).to.eql({
         first_name: null,
@@ -182,7 +184,7 @@ describe('GetReportAttachmentAuthor', () => {
       last_name: 'Smith'
     };
 
-    it('sets the report metadata', function () {
+    it('sets the report metadata', () => {
       const getReportAttachmentAuthor = new GetReportAttachmentAuthor(input);
 
       expect(getReportAttachmentAuthor.first_name).to.equal(input.first_name);

@@ -17,11 +17,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  IGetSurveyForUpdateResponseProprietor,
-  IGetSurveyForViewResponse,
-  UPDATE_GET_SURVEY_ENTITIES
-} from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React, { useState } from 'react';
 
 export interface ISurveyProprietaryDataProps {
@@ -41,16 +37,14 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
 
   const {
     projectForViewData,
-    surveyForViewData: { survey_details, survey_proprietor },
+    surveyForViewData: {
+      surveyData: { survey_details, proprietor }
+    },
     codes,
     refresh
   } = props;
 
   const [openEditDialog, setOpenEditDialog] = useState(false);
-  const [
-    surveyProprietorDataForUpdate,
-    setSurveyDataForUpdate
-  ] = useState<IGetSurveyForUpdateResponseProprietor | null>(null);
   const [surveyProprietorFormData, setSurveyProprietorFormData] = useState<IProprietaryDataForm>(
     ProprietaryDataInitialValues
   );
@@ -72,62 +66,61 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
   };
 
   const handleDialogEditOpen = async () => {
-    if (!survey_proprietor) {
-      setSurveyDataForUpdate(null);
+    if (!proprietor) {
       setSurveyProprietorFormData(ProprietaryDataInitialValues);
       setOpenEditDialog(true);
       return;
     }
 
-    let surveyProprietorResponseData;
+    let surveyResponseData;
 
     try {
-      const response = await biohubApi.survey.getSurveyForUpdate(projectForViewData.id, survey_details?.id, [
-        UPDATE_GET_SURVEY_ENTITIES.survey_proprietor
-      ]);
+      const surveyResponse = await biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details?.id);
 
-      if (!response) {
+      if (!surveyResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
-      surveyProprietorResponseData = response?.survey_proprietor || null;
+      surveyResponseData = surveyResponse;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
     }
 
-    setSurveyDataForUpdate(surveyProprietorResponseData);
-
     setSurveyProprietorFormData({
-      survey_data_proprietary:
-        surveyProprietorResponseData?.survey_data_proprietary || ProprietaryDataInitialValues.survey_data_proprietary,
-      proprietary_data_category:
-        surveyProprietorResponseData?.proprietary_data_category ||
-        ProprietaryDataInitialValues.proprietary_data_category,
-      proprietor_name: surveyProprietorResponseData?.proprietor_name || ProprietaryDataInitialValues.proprietor_name,
-      first_nations_id: surveyProprietorResponseData?.first_nations_id || ProprietaryDataInitialValues.first_nations_id,
-      category_rationale:
-        surveyProprietorResponseData?.category_rationale || ProprietaryDataInitialValues.category_rationale,
-      data_sharing_agreement_required:
-        surveyProprietorResponseData?.data_sharing_agreement_required ||
-        ProprietaryDataInitialValues.data_sharing_agreement_required
+      proprietor: {
+        survey_data_proprietary:
+          (!!surveyResponseData.surveyData.proprietor && 'true') ||
+          ProprietaryDataInitialValues.proprietor.survey_data_proprietary,
+        proprietary_data_category:
+          surveyResponseData.surveyData.proprietor?.proprietor_type_id ||
+          ProprietaryDataInitialValues.proprietor.proprietary_data_category,
+        proprietor_name:
+          surveyResponseData.surveyData.proprietor?.proprietor_name ||
+          ProprietaryDataInitialValues.proprietor.proprietor_name,
+        first_nations_id:
+          surveyResponseData.surveyData.proprietor?.first_nations_id ||
+          ProprietaryDataInitialValues.proprietor.first_nations_id,
+        category_rationale:
+          surveyResponseData.surveyData.proprietor?.category_rationale ||
+          ProprietaryDataInitialValues.proprietor.category_rationale,
+        disa_required:
+          (!!surveyResponseData.surveyData.proprietor?.disa_required && 'true') ||
+          ProprietaryDataInitialValues.proprietor.disa_required
+      }
     });
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IProprietaryDataForm) => {
-    const surveyData = {
-      survey_proprietor: {
-        ...values,
-        id: surveyProprietorDataForUpdate?.id,
-        revision_count: surveyProprietorDataForUpdate?.revision_count
-      }
-    };
-
     try {
+      const surveyData = {
+        proprietor: values.proprietor
+      };
+
       await biohubApi.survey.updateSurvey(projectForViewData.id, survey_details.id, surveyData);
     } catch (error) {
       const apiError = error as APIError;
@@ -178,21 +171,21 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
         />
         <Divider></Divider>
         <dl>
-          {!survey_proprietor && (
+          {!proprietor && (
             <Grid container spacing={2}>
               <Grid item>
                 <Typography>The data captured in this survey is not proprietary.</Typography>
               </Grid>
             </Grid>
           )}
-          {survey_proprietor && (
+          {proprietor && (
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={4}>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Proprietor Name
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_proprietor.proprietor_name}
+                  {proprietor.proprietor_name}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -200,7 +193,7 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                   Data Category
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_proprietor.proprietary_data_category_name}
+                  {proprietor.proprietor_type_name}
                 </Typography>
               </Grid>
               <Grid item xs={12} sm={6} md={4}>
@@ -208,14 +201,14 @@ const SurveyProprietaryData: React.FC<ISurveyProprietaryDataProps> = (props) => 
                   DISA Required
                 </Typography>
                 <Typography component="dd" variant="body1">
-                  {survey_proprietor.data_sharing_agreement_required === 'true' ? 'Yes' : 'No'}
+                  {proprietor.disa_required ? 'Yes' : 'No'}
                 </Typography>
               </Grid>
               <Grid item>
                 <Typography component="dt" variant="subtitle2" color="textSecondary">
                   Category Rationale
                 </Typography>
-                <Typography style={{ wordBreak: 'break-all' }}>{survey_proprietor.category_rationale}</Typography>
+                <Typography style={{ wordBreak: 'break-all' }}>{proprietor.category_rationale}</Typography>
               </Grid>
             </Grid>
           )}

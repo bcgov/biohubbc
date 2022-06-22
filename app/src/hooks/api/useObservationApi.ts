@@ -180,6 +180,22 @@ const useObservationApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Processes an xlsx submission : validates, transforms and scrapes occurrences
+   *
+   * @param {number} projectId
+   * @param {number} submissionId
+   * @return {*}
+   */
+  const processOccurrences = async (projectId: number, submissionId: number) => {
+    const { data } = await axios.post(`/api/xlsx/process`, {
+      project_id: projectId,
+      occurrence_submission_id: submissionId
+    });
+
+    return data;
+  };
+
   return {
     uploadObservationSubmission,
     getSubmissionCSVForView,
@@ -189,7 +205,8 @@ const useObservationApi = (axios: AxiosInstance) => {
     initiateXLSXSubmissionValidation,
     initiateXLSXSubmissionTransform,
     initiateScrapeOccurrences,
-    getOccurrencesForView
+    getOccurrencesForView,
+    processOccurrences
   };
 };
 

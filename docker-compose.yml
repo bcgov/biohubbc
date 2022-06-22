@@ -24,9 +24,9 @@ services:
       - POSTGRES_USER=${DB_ADMIN}
       - POSTGRES_PASSWORD=${DB_ADMIN_PASS}
       - POSTGRES_DB=${DB_DATABASE}
-      - PORT=${DB_PORT}
+      - PORT=5432
     networks:
-      - local-network
+      - sims-network
     volumes:
       - postgres:/var/lib/postgresql/data
 
@@ -48,7 +48,7 @@ services:
       - DB_HOST=${DB_HOST}
       - DB_USER_API=${DB_USER_API}
       - DB_USER_API_PASS=${DB_USER_API_PASS}
-      - DB_PORT=${DB_PORT}
+      - DB_PORT=5432
       - DB_DATABASE=${DB_DATABASE}
       - DB_SCHEMA=${DB_SCHEMA}
       - KEYCLOAK_URL=${KEYCLOAK_URL}
@@ -74,11 +74,12 @@ services:
       - GCNOTIFY_EMAIL_URL=${GCNOTIFY_EMAIL_URL}
       - GCNOTIFY_SMS_URL=${GCNOTIFY_SMS_URL}
       - APP_HOST=${APP_HOST}
+      - BACKBONE_API_HOST=${BACKBONE_API_HOST}
     volumes:
       - ./api:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - db
       - db_setup
@@ -88,11 +89,9 @@ services:
     image: mkodockx/docker-clamav:latest
     container_name: ${DOCKER_PROJECT_NAME}-clamav-${DOCKER_NAMESPACE}-container
     ports:
-      - ${CLAMAV_PORT}:${CLAMAV_PORT}
+      - ${CLAMAV_PORT}:3310
     networks:
-      - local-network
-    depends_on:
-      - api
+      - sims-network
 
   # Build the n8n nginx proxy docker image
   n8n_nginx:
@@ -103,23 +102,23 @@ services:
       dockerfile: Dockerfile
     restart: always
     ports:
-      - 5100:5100
+      - ${N8N_PROXY_PORT}:5100
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - n8n
 
   ## Build the n8n workflow automation image
   n8n:
-    image: n8nio/n8n:0.144.0
+    image: n8nio/n8n:latest
     container_name: ${DOCKER_PROJECT_NAME}-n8n-${DOCKER_NAMESPACE}-container
-    ports:
-      - ${N8N_PORT}:${N8N_PORT}
+    expose:
+      - 5678
     environment:
       - NODE_ENV=${NODE_ENV}
       - N8N_HOST=${N8N_HOST}
       - N8N_PROTOCOL=${N8N_PROTOCOL}
-      - N8N_PORT=${N8N_PORT}
+      - N8N_PORT=5678
       - WEBHOOK_TUNNEL_URL=${WEBHOOK_TUNNEL_URL}
       - DB_TYPE=${N8N_DB_TYPE}
       - DB_POSTGRESDB_HOST=${DB_HOST}
@@ -134,13 +133,16 @@ services:
       - N8N_ENCRYPTION_KEY=${N8N_ENCRYPTION_KEY}
       - N8N_API_HOST=${N8N_API_HOST}
       - N8N_API_PORT=${API_PORT}
+      - N8N_USER_MANAGEMENT_DISABLED=true
+      - EXECUTIONS_PROCESS=main
     networks:
-      - local-network
+      - sims-network
     volumes:
       - ./n8n/.n8n:/home/node/.n8n
     depends_on:
-      - api
-      - app
+      db:
+        condition: service_healthy
+
     restart: always # n8n doesnt always start after db_setup is done, and can fail. Always restart to help resolve this.
     command: ["n8n", "start"]
 
@@ -165,7 +167,7 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
       - ./n8n:/opt/app-root/src
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - n8n
 
@@ -190,7 +192,7 @@ services:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
       - ./n8n:/opt/app-root/src
     networks:
-      - local-network
+      - sims-network
     depends_on:
       - n8n
 
@@ -215,11 +217,13 @@ services:
       - REACT_APP_SITEMINDER_LOGOUT_URL=${SITEMINDER_LOGOUT_URL}
       - REACT_APP_N8N_HOST=${N8N_HOST}
       - REACT_APP_N8N_PORT=${N8N_PROXY_PORT}
+      - OBJECT_STORE_URL=${OBJECT_STORE_URL}
+      - OBJECT_STORE_BUCKET_NAME=${OBJECT_STORE_BUCKET_NAME}
     volumes:
       - ./app:/opt/app-root/src
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
 
   ## Run the database migrations and seeding
   db_setup:
@@ -242,7 +246,7 @@ services:
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       db:
         condition: service_healthy
@@ -269,7 +273,7 @@ services:
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       db:
         condition: service_healthy
@@ -296,14 +300,14 @@ services:
     volumes:
       - /opt/app-root/src/node_modules # prevents local node_modules overriding container node_modules
     networks:
-      - local-network
+      - sims-network
     depends_on:
       db:
         condition: service_healthy
     command: ["npm", "run", "migrate:rollback"]
 
 networks:
-  local-network:
+  sims-network:
     driver: bridge
 
 volumes:

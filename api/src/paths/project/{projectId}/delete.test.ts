@@ -176,38 +176,6 @@ describe('deleteProject', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getSurveyIdsSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      },
-      query: async () => {
-        return {
-          rowCount: 1,
-          rows: [
-            {
-              id: 1
-            }
-          ]
-        } as QueryResult<any>;
-      }
-    });
-
-    sinon.stub(project_queries, 'getProjectAttachmentsSQL').returns(SQL`some nice query`);
-    sinon.stub(survey_queries, 'getSurveyIdsSQL').returns(null);
-
-    try {
-      const result = delete_project.deleteProject();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
   it('should throw a 400 error when failed to get result for project attachments', async () => {
     const mockQuery = sinon.stub();
 

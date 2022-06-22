@@ -76,7 +76,7 @@ const ProjectAdvancedFilters: React.FC<IProjectAdvancedFiltersProps> = (props) =
       ) => {
         const response = await biohubApi.taxonomy.searchSpecies(inputValue.toLowerCase());
         const newOptions = convertOptions(response.searchResponse).filter(
-          (item) => !existingValues.includes(item.value)
+          (item) => !existingValues?.includes(item.value)
         );
         callback(newOptions);
       },

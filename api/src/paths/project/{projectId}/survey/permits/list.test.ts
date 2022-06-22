@@ -111,10 +111,19 @@ describe('getSurveyPermits', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.eql(surveyPermits);
+    expect(actualResult).to.eql([
+      {
+        permit_number: '123',
+        permit_type: 'scientific'
+      },
+      {
+        permit_number: '12345',
+        permit_type: 'wildlife'
+      }
+    ]);
   });
 
-  it('should return null when survey permits response has no rows', async () => {
+  it('should return an empty array when survey permits response has no rows', async () => {
     const mockQuery = sinon.stub();
 
     mockQuery.resolves({ rows: null });
@@ -133,6 +142,6 @@ describe('getSurveyPermits', () => {
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
-    expect(actualResult).to.be.null;
+    expect(actualResult).to.be.eql([]);
   });
 });

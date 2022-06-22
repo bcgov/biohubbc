@@ -38,7 +38,8 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -46,7 +47,8 @@ DELETE.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -96,10 +98,6 @@ export function deleteSurvey(): RequestHandler {
        * Delete the survey and all associated records/resources from our DB
        */
       const deleteSurveySQLStatement = queries.survey.deleteSurveySQL(Number(req.params.surveyId));
-
-      if (!deleteSurveySQLStatement) {
-        throw new HTTP400('Failed to build SQL delete statement');
-      }
 
       await connection.query(deleteSurveySQLStatement.text, deleteSurveySQLStatement.values);
 

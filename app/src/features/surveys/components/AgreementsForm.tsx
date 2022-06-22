@@ -17,18 +17,24 @@ const useStyles = makeStyles({
 });
 
 export interface IAgreementsForm {
-  sedis_procedures_accepted: boolean;
-  foippa_requirements_accepted: boolean;
+  agreements: {
+    sedis_procedures_accepted: boolean;
+    foippa_requirements_accepted: boolean;
+  };
 }
 
 export const AgreementsInitialValues: IAgreementsForm = {
-  sedis_procedures_accepted: false,
-  foippa_requirements_accepted: false
+  agreements: {
+    sedis_procedures_accepted: false,
+    foippa_requirements_accepted: false
+  }
 };
 
 export const AgreementsYupSchema = yup.object().shape({
-  sedis_procedures_accepted: yup.bool().oneOf([true], 'You must agree to the SEDIS procedures'),
-  foippa_requirements_accepted: yup.bool().oneOf([true], 'You must agree to the FOIPPA requirements')
+  agreements: yup.object().shape({
+    sedis_procedures_accepted: yup.bool().oneOf([true], 'You must agree to the SEDIS procedures'),
+    foippa_requirements_accepted: yup.bool().oneOf([true], 'You must agree to the FOIPPA requirements')
+  })
 });
 
 /**
@@ -53,19 +59,21 @@ const AgreementsForm = () => {
           <FormControl
             required={true}
             component="fieldset"
-            error={touched.sedis_procedures_accepted && Boolean(errors.sedis_procedures_accepted)}>
+            error={
+              touched.agreements?.sedis_procedures_accepted && Boolean(errors.agreements?.sedis_procedures_accepted)
+            }>
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={values.sedis_procedures_accepted}
+                  checked={values.agreements?.sedis_procedures_accepted}
                   onChange={handleChange}
-                  name="sedis_procedures_accepted"
+                  name="agreements.sedis_procedures_accepted"
                   color="primary"
                 />
               }
               label="All data and information for this survey will be collected legally, and in accordance with Section 1 of the Species and Ecosystems Data and Information Security (SEDIS) procedures."
             />
-            <FormHelperText>{errors.sedis_procedures_accepted}</FormHelperText>
+            <FormHelperText>{errors.agreements?.sedis_procedures_accepted}</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
@@ -79,19 +87,22 @@ const AgreementsForm = () => {
           <FormControl
             required={true}
             component="fieldset"
-            error={touched.foippa_requirements_accepted && Boolean(errors.foippa_requirements_accepted)}>
+            error={
+              touched.agreements?.foippa_requirements_accepted &&
+              Boolean(errors.agreements?.foippa_requirements_accepted)
+            }>
             <FormControlLabel
               control={
                 <Checkbox
-                  checked={values.foippa_requirements_accepted}
+                  checked={values.agreements?.foippa_requirements_accepted}
                   onChange={handleChange}
-                  name="foippa_requirements_accepted"
+                  name="agreements.foippa_requirements_accepted"
                   color="primary"
                 />
               }
               label="All data submitted in this survey will meet or exceed the Freedom of Information and Protection of Privacy Act (FOIPPA) requirements."
             />
-            <FormHelperText>{errors.foippa_requirements_accepted}</FormHelperText>
+            <FormHelperText>{errors.agreements?.foippa_requirements_accepted}</FormHelperText>
           </FormControl>
         </Grid>
       </Grid>

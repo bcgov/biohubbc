@@ -160,7 +160,12 @@ describe('MapContainer', () => {
 
   test('draws a marker successfully on the map and updates the geometry', () => {
     const { getByText, getByRole } = render(
-      <MapContainer mapId="myMap" classes={classes} geometryState={{ geometry, setGeometry }} />
+      <MapContainer
+        mapId="myMap"
+        classes={classes}
+        geometryState={{ geometry, setGeometry }}
+        showDrawControls={{ marker: true }}
+      />
     );
 
     fireEvent.click(getByText('Draw a marker'));

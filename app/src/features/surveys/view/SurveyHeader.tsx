@@ -23,7 +23,8 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse, SurveyViewObject } from 'interfaces/useSurveyApi.interface';
+import moment from 'moment';
 import React, { useContext } from 'react';
 import { useHistory, useParams } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
@@ -119,9 +120,15 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     }
   };
 
-  const publishSurvey = async (publish: boolean) => {
+  const togglePublishSurvey = async () => {
     if (!projectWithDetails || !surveyWithDetails) {
       return;
+    }
+
+    let publish = true;
+
+    if (surveyWithDetails.surveyData.survey_details.publish_date) {
+      publish = false;
     }
 
     try {
@@ -157,7 +164,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.survey.deleteSurvey(projectWithDetails.id, surveyWithDetails.survey_details.id);
+      const response = await biohubApi.survey.deleteSurvey(
+        projectWithDetails.id,
+        surveyWithDetails.surveyData.survey_details.id
+      );
 
       if (!response) {
         showDeleteErrorDialog({ open: true });
@@ -186,14 +196,25 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     dialogContext.setErrorDialog({ ...publishErrorDialogProps, ...textDialogProps, open: true });
   };
 
-  const getChipIcon = (status_name: string) => {
+  const getSurveyCompletionStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
+    if (
+      surveyObject.survey_details.end_date &&
+      moment(surveyObject.survey_details.end_date).endOf('day').isBefore(moment())
+    ) {
+      return SurveyStatusType.COMPLETED;
+    }
+
+    return SurveyStatusType.ACTIVE;
+  };
+
+  const getChipIcon = (statusType: string) => {
     let chipLabel;
     let chipStatusClass;
 
-    if (SurveyStatusType.ACTIVE === status_name) {
+    if (SurveyStatusType.ACTIVE === statusType) {
       chipLabel = 'Active';
       chipStatusClass = classes.chipActive;
-    } else if (SurveyStatusType.COMPLETED === status_name) {
+    } else if (SurveyStatusType.COMPLETED === statusType) {
       chipLabel = 'Completed';
       chipStatusClass = classes.chipCompleted;
     }
@@ -209,7 +230,8 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   // Enable delete button if you a system admin OR a project admin and the survey is not published
   const enableDeleteSurveyButton =
     keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
-    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]) && !surveyWithDetails.survey_details.publish_date);
+    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]) &&
+      !surveyWithDetails.surveyData.survey_details.publish_date);
 
   return (
     <>
@@ -231,7 +253,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 className={classes.breadCrumbLink}>
                 <Typography variant="body2">{projectWithDetails.project.project_name}</Typography>
               </Link>
-              <Typography variant="body2">{surveyWithDetails.survey_details.survey_name}</Typography>
+              <Typography variant="body2">{surveyWithDetails.surveyData.survey_details.survey_name}</Typography>
             </Breadcrumbs>
           </Box>
 
@@ -239,18 +261,19 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
             <Box pb={3}>
               <Box mb={1.5} display="flex">
                 <Typography className={classes.spacingRight} variant="h1">
-                  Survey - <span className={classes.surveyTitle}>{surveyWithDetails.survey_details.survey_name}</span>
+                  Survey -{' '}
+                  <span className={classes.surveyTitle}>{surveyWithDetails.surveyData.survey_details.survey_name}</span>
                 </Typography>
               </Box>
               <Box mb={0.75} display="flex" alignItems="center">
-                {getChipIcon(surveyWithDetails.survey_details.completion_status)}
+                {getChipIcon(getSurveyCompletionStatusType(surveyWithDetails.surveyData))}
                 &nbsp;&nbsp;
                 <Typography component="span" variant="subtitle1" color="textSecondary">
                   <span>Timeline:</span>{' '}
                   {getFormattedDateRangeString(
                     DATE_FORMAT.ShortMediumDateFormat,
-                    surveyWithDetails.survey_details.start_date,
-                    surveyWithDetails.survey_details.end_date
+                    surveyWithDetails.surveyData.survey_details.start_date,
+                    surveyWithDetails.surveyData.survey_details.end_date
                   )}
                 </Typography>
               </Box>
@@ -261,8 +284,8 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 color="primary"
                 className={classes.actionButton}
                 data-testid="publish-survey-button"
-                onClick={() => publishSurvey(!surveyWithDetails.survey_details.publish_date)}>
-                {surveyWithDetails.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
+                onClick={() => togglePublishSurvey()}>
+                {surveyWithDetails.surveyData.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
               </Button>
               {showDeleteSurveyButton && (
                 <Tooltip

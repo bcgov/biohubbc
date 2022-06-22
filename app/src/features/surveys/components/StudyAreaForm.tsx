@@ -7,17 +7,24 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IStudyAreaForm {
-  survey_area_name: string;
-  geometry: Feature[];
+  location: {
+    survey_area_name: string;
+    geometry: Feature[];
+  };
 }
 
 export const StudyAreaInitialValues: IStudyAreaForm = {
-  survey_area_name: '',
-  geometry: []
+  location: {
+    survey_area_name: '',
+    geometry: []
+  }
 };
 
 export const StudyAreaYupSchema = yup.object().shape({
-  survey_area_name: yup.string().required('Required')
+  location: yup.object().shape({
+    survey_area_name: yup.string().required('Required'),
+    geometry: yup.mixed()
+  })
 });
 
 /**
@@ -34,7 +41,7 @@ const StudyAreaForm = () => {
     <form onSubmit={handleSubmit}>
       <Box mb={4}>
         <CustomTextField
-          name="survey_area_name"
+          name="location.survey_area_name"
           label="Survey Area Name"
           other={{
             required: true
@@ -42,7 +49,7 @@ const StudyAreaForm = () => {
         />
       </Box>
       <MapBoundary
-        name="geometry"
+        name="location.geometry"
         title="Study Area Boundary"
         mapId="study_area_form_map"
         bounds={[]}

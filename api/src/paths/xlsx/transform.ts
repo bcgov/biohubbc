@@ -192,7 +192,7 @@ export function getTransformationRules(): RequestHandler {
   };
 }
 
-function transformXLSX(): RequestHandler {
+export function transformXLSX(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'transformXLSX', message: 'xlsx transform' });
 
@@ -203,7 +203,7 @@ function transformXLSX(): RequestHandler {
 
       const xlsxTransformation = new XLSXTransformation(transformationSchemaParser, xlsxCsv);
 
-      const transformedData = xlsxTransformation.transform();
+      const transformedData = await xlsxTransformation.transform();
 
       const worksheets = xlsxTransformation.dataToSheet(transformedData);
 
@@ -228,7 +228,6 @@ export function persistTransformationResults(): RequestHandler {
   return async (req, res, next) => {
     try {
       defaultLog.debug({ label: 'persistTransformationResults', message: 'xlsx transform' });
-
       const fileBuffers: { name: string; buffer: Buffer }[] = req['fileBuffers'];
 
       // Build the archive zip file

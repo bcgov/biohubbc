@@ -405,7 +405,7 @@ export function persistValidationResults(statusTypeObject: any): RequestHandler 
   };
 }
 
-function updateOccurrenceSubmission(): RequestHandler {
+export function updateOccurrenceSubmission(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'updateOccurrenceSubmission', message: 'Update output file name and output key' });
 

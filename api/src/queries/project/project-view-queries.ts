@@ -14,6 +14,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
   return SQL`
     SELECT
       project.project_id as id,
+      project.uuid,
       project.project_type_id as pt_id,
       project_type.name as type,
       project.name,
