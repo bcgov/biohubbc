@@ -156,6 +156,13 @@ function validateAllResponses(req: Request, res: Response, next: NextFunction) {
       if (!isStrictValidation || !validationResult?.errors) {
         return json.apply(res, args);
       } else {
+        defaultLog.debug({
+          label: 'validateAllResponses',
+          message: validationMessage,
+          responseBody: body,
+          errors: errorList
+        });
+
         return res.status(500).json({
           name: HTTPErrorType.INTERNAL_SERVER_ERROR,
           status: 500,

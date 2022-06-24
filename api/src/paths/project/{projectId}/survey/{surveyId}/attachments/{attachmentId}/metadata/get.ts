@@ -38,7 +38,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'projectId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -46,7 +47,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'surveyId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     },
@@ -54,7 +56,8 @@ GET.apiDoc = {
       in: 'path',
       name: 'attachmentId',
       schema: {
-        type: 'number'
+        type: 'integer',
+        minimum: 1
       },
       required: true
     }
@@ -157,7 +160,7 @@ export function getSurveyReportMetaData(): RequestHandler {
 
     try {
       const getProjectReportAttachmentSQLStatement = queries.survey.getSurveyReportAttachmentSQL(
-        Number(req.params.projectId),
+        Number(req.params.surveyId),
         Number(req.params.attachmentId)
       );
 
