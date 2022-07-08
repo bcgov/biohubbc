@@ -4,6 +4,7 @@ import { PROJECT_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../../services/platform-service';
 import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
 import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
@@ -91,17 +92,19 @@ PUT.apiDoc = {
 
 export function updateProjectParticipantRole(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'updateProjectParticipantRole', message: 'params', req_params: req.params });
+    const projectId = Number(req.params.projectId);
+    const projectParticipationId = Number(req.params.projectParticipationId);
+    const roleId = Number(req.body.roleId);
 
-    if (!req.params.projectId) {
+    if (!projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    if (!req.params.projectParticipationId) {
+    if (!projectParticipationId) {
       throw new HTTP400('Missing required path param `projectParticipationId`');
     }
 
-    if (!req.body.roleId) {
+    if (!roleId) {
       throw new HTTP400('Missing required body param `roleId`');
     }
 
@@ -117,7 +120,7 @@ export function updateProjectParticipantRole(): RequestHandler {
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
       // Delete the user's old participation record, returning the old record
-      const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+      const result = await deleteProjectParticipationRecord(projectParticipationId, connection);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -125,9 +128,9 @@ export function updateProjectParticipantRole(): RequestHandler {
       }
 
       await projectService.addProjectParticipant(
-        Number(req.params.projectId),
+        projectId,
         Number(result.system_user_id), // get the user's system id from the old participation record
-        Number(req.body.roleId)
+        roleId
       );
 
       // If Project Lead roles are invalid skip check to prevent removal of only Project Lead of project
@@ -139,6 +142,14 @@ export function updateProjectParticipantRole(): RequestHandler {
         if (!projectHasLeadResponse2) {
           throw new HTTP400('Cannot update project user. User is the only Project Lead for the project.');
         }
+      }
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'createProjectParticipants->submitDwCAMetadataPackage', message: 'error', error });
       }
 
       await connection.commit();

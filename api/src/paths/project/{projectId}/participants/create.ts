@@ -5,6 +5,7 @@ import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../services/platform-service';
 import { ProjectService } from '../../../../services/project-service';
 import { UserService } from '../../../../services/user-service';
 import { getLogger } from '../../../../utils/logger';
@@ -101,7 +102,9 @@ POST.apiDoc = {
 
 export function createProjectParticipants(): RequestHandler {
   return async (req, res) => {
-    if (!req.params.projectId) {
+    const projectId = Number(req.params.projectId);
+
+    if (!projectId) {
       throw new HTTP400('Missing required param `projectId`');
     }
 
@@ -112,8 +115,6 @@ export function createProjectParticipants(): RequestHandler {
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const projectId = Number(req.params.projectId);
-
       const participants: { userIdentifier: string; identitySource: string; roleId: number }[] = req.body.participants;
 
       await connection.open();
@@ -125,6 +126,14 @@ export function createProjectParticipants(): RequestHandler {
       );
 
       await Promise.all(promises);
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'createProjectParticipants->submitDwCAMetadataPackage', message: 'error', error });
+      }
 
       await connection.commit();
 

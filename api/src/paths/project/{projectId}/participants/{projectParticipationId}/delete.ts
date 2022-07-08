@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400, HTTP500 } from '../../../../../errors/custom-error';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../../services/platform-service';
 import { ProjectService } from '../../../../../services/project-service';
 import { getLogger } from '../../../../../utils/logger';
 import { doAllProjectsHaveAProjectLead } from '../../../../user/{userId}/delete';
@@ -76,13 +77,14 @@ DELETE.apiDoc = {
 
 export function deleteProjectParticipant(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'deleteProjectParticipant', message: 'params', req_params: req.params });
+    const projectId = Number(req.params.projectId);
+    const projectParticipationId = Number(req.params.projectParticipationId);
 
-    if (!req.params.projectId) {
+    if (!projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    if (!req.params.projectParticipationId) {
+    if (!projectParticipationId) {
       throw new HTTP400('Missing required path param `projectParticipationId`');
     }
 
@@ -94,10 +96,10 @@ export function deleteProjectParticipant(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       // Check project lead roles before deleting user
-      const projectParticipantsResponse1 = await projectService.getProjectParticipants(Number(req.params.projectId));
+      const projectParticipantsResponse1 = await projectService.getProjectParticipants(projectId);
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
-      const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+      const result = await deleteProjectParticipationRecord(projectParticipationId, connection);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necesary data, fail the request
@@ -107,12 +109,20 @@ export function deleteProjectParticipant(): RequestHandler {
       // If Project Lead roles are invalide skip check to prevent removal of only Project Lead of project
       // (Project is already missing Project Lead and is in a bad state)
       if (projectHasLeadResponse1) {
-        const projectParticipantsResponse2 = await projectService.getProjectParticipants(Number(req.params.projectId));
+        const projectParticipantsResponse2 = await projectService.getProjectParticipants(projectId);
         const projectHasLeadResponse2 = doAllProjectsHaveAProjectLead(projectParticipantsResponse2);
 
         if (!projectHasLeadResponse2) {
           throw new HTTP400('Cannot delete project user. User is the only Project Lead for the project.');
         }
+      }
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'deleteProjectParticipant->submitDwCAMetadataPackage', message: 'error', error });
       }
 
       await connection.commit();

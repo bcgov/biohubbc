@@ -82,7 +82,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => handleDeleteDialogYes()
+    onYes: () => {}
   };
 
   const showYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
@@ -152,18 +152,12 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
   };
 
   const handleDeleteDialogOpen = async (itemIndex: number) => {
-    setFundingFormData({
-      index: itemIndex,
-      values: funding.fundingSources[fundingFormData.index]
-    });
-    showYesNoDialog({ open: true });
+    showYesNoDialog({ open: true, onYes: () => handleDeleteDialogYes(funding.fundingSources[itemIndex].id) });
   };
 
-  const handleDeleteDialogYes = async () => {
-    const fundingSource = funding.fundingSources[fundingFormData.index];
-
+  const handleDeleteDialogYes = async (fundingSourceId: number) => {
     try {
-      await biohubApi.project.deleteFundingSource(id, fundingSource.id);
+      await biohubApi.project.deleteFundingSource(id, fundingSourceId);
       showYesNoDialog({ open: false });
     } catch (error) {
       const apiError = error as APIError;

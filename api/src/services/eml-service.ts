@@ -42,7 +42,7 @@ type Cache = {
   codes?: IAllCodeSets;
 };
 
-type BuildProjectEMLOptions = {
+export type BuildProjectEMLOptions = {
   /**
    * Whether or not to include typically non-public data in the EML. Defaults to `false`.
    *
@@ -108,14 +108,14 @@ export class EmlService extends DBService {
   /**
    * Compiles and returns the project metadata as an Ecological Metadata Language (EML) compliant XML string.
    *
-   * @param {BuildProjectEMLOptions} options
-   * @return {*}
+   * @param {BuildProjectEMLOptions} [options]
+   * @return {*}  {Promise<string>}
    * @memberof EmlService
    */
-  async buildProjectEml(options: BuildProjectEMLOptions) {
-    this.includeSensitiveData = options.includeSensitiveData || false;
+  async buildProjectEml(options?: BuildProjectEMLOptions): Promise<string> {
+    this.includeSensitiveData = options?.includeSensitiveData || false;
 
-    this.surveyIds = options.surveyIds;
+    this.surveyIds = options?.surveyIds || [];
 
     await this.loadProjectData();
     await this.loadSurveyData();

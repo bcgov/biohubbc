@@ -5,6 +5,7 @@ import { getDBConnection } from '../../database/db';
 import { PostProjectObject } from '../../models/project-create';
 import { projectCreatePostRequestObject, projectIdResponseObject } from '../../openapi/schemas/project';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
+import { PlatformService } from '../../services/platform-service';
 import { ProjectService } from '../../services/project-service';
 import { getLogger } from '../../utils/logger';
 
@@ -88,6 +89,14 @@ export function createProject(): RequestHandler {
       const projectService = new ProjectService(connection);
 
       const projectId = await projectService.createProject(sanitizedProjectPostData);
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'createProject->submitDwCAMetadataPackage', message: 'error', error });
+      }
 
       await connection.commit();
 
