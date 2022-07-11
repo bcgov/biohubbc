@@ -97,7 +97,7 @@ describe('getOccurrenceSubmission', () => {
     }
   });
 
-  // TODO update this test as teh s3 key is not part of the `getOccurrenceSubmission` step now
+  // TODO update this test as the s3 key is not part of the `getOccurrenceSubmission` step now
   it('should set occurrence_submission in the request on success', async () => {
     const nextSpy = sinon.spy();
     const mockQuery = sinon.stub();

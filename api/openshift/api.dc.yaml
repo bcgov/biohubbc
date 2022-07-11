@@ -26,13 +26,13 @@ parameters:
     value: ''
   - name: BACKBONE_API_HOST
     required: true
-    description: API host for BioHub Platform Backbone
+    description: API host for BioHub Platform Backbone. Example "https://platform.com".
   - name: BACKBONE_INTAKE_PATH
     required: true
-    description: API path for BioHub Platform Backbone DwCA submission intake endpoint
+    description: API path for BioHub Platform Backbone DwCA submission intake endpoint. Example "/api/path/to/intake".
   - name: BACKBONE_INTAKE_ENABLED
     required: true
-    description: Controls whether or not SIMS will submit DwCA datasets to teh BioHub Platform Backbone
+    description: Controls whether or not SIMS will submit DwCA datasets to the BioHub Platform Backbone. Set to "true" to enable it, will be disabled by default otherwise.
   - name: CHANGE_ID
     description: Change id of the project. This will help to pull image stream
     required: true

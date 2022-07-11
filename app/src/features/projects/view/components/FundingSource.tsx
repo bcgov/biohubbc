@@ -82,7 +82,7 @@ const FundingSource: React.FC<IProjectFundingProps> = (props) => {
     open: false,
     onClose: () => dialogContext.setYesNoDialog({ open: false }),
     onNo: () => dialogContext.setYesNoDialog({ open: false }),
-    onYes: () => {}
+    onYes: () => undefined
   };
 
   const showYesNoDialog = (yesNoDialogProps?: Partial<IYesNoDialogProps>) => {
