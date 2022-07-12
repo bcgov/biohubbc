@@ -189,8 +189,10 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
   // Enable delete button if you a system admin or a project admin
-  const enableDeleteSurveyButton =
-    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR])
+  const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
+    SYSTEM_ROLE.SYSTEM_ADMIN,
+    SYSTEM_ROLE.PROJECT_CREATOR
+  ]);
 
   return (
     <>

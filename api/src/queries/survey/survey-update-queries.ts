@@ -156,4 +156,3 @@ export const putSurveyDetailsSQL = (surveyId: number, data: PutSurveyObject): Kn
 
   return knex('survey').update(fieldsToUpdate).where('survey_id', surveyId);
 };
-

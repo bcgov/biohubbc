@@ -8,7 +8,6 @@ import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -232,10 +231,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               Manage Project Team
             </Button>
             {showDeleteProjectButton && (
-              <IconButton
-                data-testid="delete-project-button"
-                onClick={showDeleteProjectDialog}
-              >
+              <IconButton data-testid="delete-project-button" onClick={showDeleteProjectDialog}>
                 <Icon path={mdiTrashCanOutline} size={1} />
               </IconButton>
             )}
