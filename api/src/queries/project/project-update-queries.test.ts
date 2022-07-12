@@ -15,8 +15,7 @@ import {
   getPermitsByProjectSQL,
   getProjectByProjectSQL,
   putProjectFundingSourceSQL,
-  putProjectSQL,
-  updateProjectPublishStatusSQL
+  putProjectSQL
 } from './project-update-queries';
 
 describe('getIndigenousPartnershipsByProjectSQL', () => {
@@ -273,28 +272,3 @@ describe('putProjectFundingSourceSQL', () => {
   });
 });
 
-describe('updateProjectPublishStatusSQL', () => {
-  describe('with invalid parameters', () => {
-    it('returns null when project is null', () => {
-      const response = updateProjectPublishStatusSQL((null as unknown) as number, true);
-
-      expect(response).to.be.null;
-    });
-  });
-
-  describe('with valid parameters', () => {
-    it('returns a SQLStatement when there is a real date value', () => {
-      const response = updateProjectPublishStatusSQL(1, true);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include(1);
-    });
-
-    it('returns a SQLStatement when the date value is null', () => {
-      const response = updateProjectPublishStatusSQL(1, false);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include(1);
-    });
-  });
-});

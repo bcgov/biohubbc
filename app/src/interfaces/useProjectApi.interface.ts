@@ -72,7 +72,6 @@ export interface IGetProjectsListResponse {
   coordinator_agency: string;
   project_type: string;
   permits_list: string;
-  publish_status: string;
   completion_status: string;
 }
 
@@ -235,7 +234,6 @@ export interface IGetProjectForViewResponseDetails {
   start_date: string;
   end_date: string;
   completion_status: string;
-  publish_date: string;
 }
 
 interface IGetProjectForViewResponsePermitArrayItem {

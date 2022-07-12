@@ -1,5 +1,5 @@
 import moment from 'moment';
-import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
+import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { HTTP400, HTTP409 } from '../errors/custom-error';
 import {
@@ -34,7 +34,6 @@ import {
 import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
 import { GET_ENTITIES, IUpdateProject } from '../paths/project/{projectId}/update';
 import { queries } from '../queries/queries';
-import { userHasValidRole } from '../request-handlers/security/authorization';
 import { deleteFileFromS3 } from '../utils/file-utils';
 import { DBService } from './service';
 
@@ -223,7 +222,6 @@ export class ProjectService extends DBService {
       start_date: row.start_date,
       end_date: row.end_date,
       coordinator_agency: row.coordinator_agency_name,
-      publish_status: row.publish_timestamp ? 'Published' : 'Unpublished',
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
@@ -1017,8 +1015,7 @@ export class ProjectService extends DBService {
   async deleteProject(projectId: number, userRoles: string | string[]): Promise<boolean | null> {
     /**
      * PART 1
-     * Check that user is a system administrator - can delete a project (published or not)
-     * Check that user is a project administrator - can delete a project (unpublished only)
+     * Check that user is a system administrator - can delete a project
      *
      */
     const getProjectSQLStatement = queries.project.getProjectSQL(projectId);
@@ -1033,10 +1030,6 @@ export class ProjectService extends DBService {
 
     if (!projectResult || !projectResult.id) {
       throw new HTTP400('Failed to get the project');
-    }
-
-    if (projectResult.publish_date && userHasValidRole([SYSTEM_ROLE.PROJECT_CREATOR], userRoles)) {
-      throw new HTTP400('Cannot delete a published project if you are not a system administrator.');
     }
 
     /**

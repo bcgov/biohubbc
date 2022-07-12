@@ -14,8 +14,7 @@ import {
   associateSurveyToPermitSQL,
   insertSurveyPermitSQL,
   putSurveyDetailsSQL,
-  unassociatePermitFromSurveySQL,
-  updateSurveyPublishStatusSQL
+  unassociatePermitFromSurveySQL
 } from './survey-update-queries';
 
 describe('putSurveyDetailsSQL', () => {
@@ -82,31 +81,5 @@ describe('associateSurveyToPermitSQL', () => {
     const response = associateSurveyToPermitSQL(1, 2, '4');
 
     expect(response).not.to.be.null;
-  });
-});
-
-describe('updateSurveyPublishStatusSQL', () => {
-  describe('with invalid parameters', () => {
-    it('returns null when survey is null', () => {
-      const response = updateSurveyPublishStatusSQL((null as unknown) as number, true);
-
-      expect(response).to.be.null;
-    });
-  });
-
-  describe('with valid parameters', () => {
-    it('returns a SQLStatement when there is a real date value', () => {
-      const response = updateSurveyPublishStatusSQL(1, true);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include(1);
-    });
-
-    it('returns a SQLStatement when the date value is null', () => {
-      const response = updateSurveyPublishStatusSQL(1, false);
-
-      expect(response).to.not.be.null;
-      expect(response?.values).to.deep.include(1);
-    });
   });
 });

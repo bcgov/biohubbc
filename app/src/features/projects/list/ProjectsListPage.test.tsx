@@ -89,7 +89,7 @@ describe('ProjectsListPage', () => {
     });
   });
 
-  test('renders with a proper list of projects when published and completed', async () => {
+  test('renders with a proper list of projects when completed', async () => {
     mockBiohubApi().project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -99,7 +99,6 @@ describe('ProjectsListPage', () => {
         coordinator_agency: 'contact agency',
         project_type: 'project type',
         permits_list: '1, 2, 3',
-        publish_status: 'Published',
         completion_status: 'Completed'
       }
     ]);
@@ -112,12 +111,11 @@ describe('ProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(getByText('Published')).toBeInTheDocument();
       expect(getByText('Completed')).toBeInTheDocument();
     });
   });
 
-  test('renders with a proper list of projects when Unpublished and active', async () => {
+  test('renders with a proper list of projects when active', async () => {
     mockBiohubApi().project.getProjectsList.mockResolvedValue([
       {
         id: 1,
@@ -127,7 +125,6 @@ describe('ProjectsListPage', () => {
         coordinator_agency: 'contact agency',
         project_type: 'project type',
         permits_list: '1, 2, 3',
-        publish_status: 'Unpublished',
         completion_status: 'Active'
       }
     ]);
@@ -140,7 +137,6 @@ describe('ProjectsListPage', () => {
 
     await waitFor(() => {
       expect(getByTestId('project-table')).toBeInTheDocument();
-      expect(getByText('Unpublished')).toBeInTheDocument();
       expect(getByText('Active')).toBeInTheDocument();
     });
   });
@@ -244,7 +240,6 @@ describe('ProjectsListPage', () => {
         coordinator_agency: 'contact agency',
         project_type: 'project type',
         permits_list: '1, 2, 3',
-        publish_status: 'Published',
         completion_status: 'Completed'
       }
     ]);

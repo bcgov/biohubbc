@@ -136,7 +136,6 @@ describe('useSurveyApi', () => {
           species: ['species 1', 'species 2'],
           start_date: '2020/04/04',
           end_date: '2020/05/05',
-          publish_status: 'Published',
           completion_status: 'Completed'
         }
       }
@@ -282,14 +281,6 @@ describe('useSurveyApi', () => {
     const result = await useSurveyApi(axios).getSubmissionCSVForView(projectId, surveyId, summaryId);
 
     expect(result).toEqual(resultData);
-  });
-
-  it('publishSurvey works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/survey/${surveyId}/publish`).reply(200, true);
-
-    const result = await useSurveyApi(axios).publishSurvey(projectId, surveyId, true);
-
-    expect(result).toEqual(true);
   });
 
   it('deleteSummarySubmission works as expected', async () => {

@@ -86,7 +86,6 @@ GET.apiDoc = {
                   'project_activities',
                   'start_date',
                   'end_date',
-                  'publish_date',
                   'revision_count'
                 ],
                 nullable: true,
@@ -112,11 +111,6 @@ GET.apiDoc = {
                     type: 'string',
                     format: 'date',
                     description: 'ISO 8601 date string for the project end date'
-                  },
-                  publish_date: {
-                    description: 'Status of the project being published/unpublished',
-                    format: 'date',
-                    type: 'string'
                   },
                   revision_count: {
                     type: 'number'

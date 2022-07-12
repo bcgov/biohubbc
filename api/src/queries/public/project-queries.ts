@@ -22,8 +22,7 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
       project.end_date,
       project.caveats,
       project.comments,
-      project.geojson as geometry,
-      project.publish_timestamp as publish_date
+      project.geojson as geometry
     from
       project
     left outer join

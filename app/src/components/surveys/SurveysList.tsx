@@ -23,9 +23,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   chip: {
     color: '#ffffff'
   },
-  chipUnpublished: {
-    backgroundColor: theme.palette.text.disabled
-  },
   chipActive: {
     backgroundColor: theme.palette.success.main
   },
@@ -57,25 +54,11 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
     return SurveyStatusType.ACTIVE;
   };
 
-  const getSurveyPublishStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
-    if (surveyObject.survey_details.publish_date) {
-      return SurveyStatusType.PUBLISHED;
-    }
-
-    return SurveyStatusType.UNPUBLISHED;
-  };
-
   const getChipIcon = (status_name: string) => {
     let chipLabel;
     let chipStatusClass;
 
-    if (SurveyStatusType.UNPUBLISHED === status_name) {
-      chipLabel = 'Unpublished';
-      chipStatusClass = classes.chipUnpublished;
-    } else if (SurveyStatusType.PUBLISHED === status_name) {
-      chipLabel = 'Published';
-      chipStatusClass = classes.chipPublishedCompleted;
-    } else if (SurveyStatusType.ACTIVE === status_name) {
+    if (SurveyStatusType.ACTIVE === status_name) {
       chipLabel = 'Active';
       chipStatusClass = classes.chipActive;
     } else if (SurveyStatusType.COMPLETED === status_name) {
@@ -96,7 +79,6 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
               <TableCell>Species</TableCell>
               <TableCell>Timeline</TableCell>
               <TableCell>Status</TableCell>
-              <TableCell>Published</TableCell>
             </TableRow>
           </TableHead>
           <TableBody>
@@ -125,7 +107,6 @@ const SurveysList: React.FC<ISurveysListProps> = (props) => {
                     )}
                   </TableCell>
                   <TableCell>{getChipIcon(getSurveyCompletionStatusType(row))}</TableCell>
-                  <TableCell>{getChipIcon(getSurveyPublishStatusType(row))}</TableCell>
                 </TableRow>
               ))}
             {!props.surveysList.length && (

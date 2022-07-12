@@ -56,8 +56,7 @@ GET.apiDoc = {
                   'start_date',
                   'end_date',
                   'comments',
-                  'completion_status',
-                  'publish_date'
+                  'completion_status'
                 ],
                 properties: {
                   project_name: {
@@ -88,11 +87,6 @@ GET.apiDoc = {
                   },
                   completion_status: {
                     description: 'Status of the project being active/completed',
-                    type: 'string'
-                  },
-                  publish_date: {
-                    description: 'Status of the project being published/unpublished',
-                    format: 'date',
                     type: 'string'
                   }
                 }

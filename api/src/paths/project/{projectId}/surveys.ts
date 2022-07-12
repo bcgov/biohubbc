@@ -64,7 +64,6 @@ GET.apiDoc = {
                     'biologist_last_name',
                     'start_date',
                     'geometry',
-                    'publish_date',
                     'survey_area_name',
                     'survey_name',
                     'revision_count'
@@ -94,11 +93,6 @@ GET.apiDoc = {
                       items: {
                         ...(geoJsonFeature as object)
                       }
-                    },
-                    publish_date: {
-                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                      nullable: true,
-                      description: 'Determines if the record has been published'
                     },
                     survey_area_name: {
                       type: 'string'

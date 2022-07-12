@@ -1014,7 +1014,7 @@ COMMENT ON COLUMN project.coordinator_agency_name IS 'Name of agency the project
 ;
 COMMENT ON COLUMN project.coordinator_public IS 'A flag that determines whether personal coordinator details are public. A value of "Y" provides that personal details are public.'
 ;
-COMMENT ON COLUMN project.publish_timestamp IS 'A timestamp that indicates that the project metadata has been approved for discovery. If the timestamp is not null then project metadata is public. If the timestamp is null the project metadata is not yet public.'
+COMMENT ON COLUMN project.publish_timestamp IS '(Depricated) A timestamp that indicates that the project metadata has been approved for discovery. If the timestamp is not null then project metadata is public. If the timestamp is null the project metadata is not yet public.'
 ;
 COMMENT ON COLUMN project.geometry IS 'The containing geometry of the record.'
 ;
@@ -2198,7 +2198,7 @@ COMMENT ON COLUMN survey.location_description IS 'The location description.'
 ;
 COMMENT ON COLUMN survey.location_name IS 'The name of the survey location.'
 ;
-COMMENT ON COLUMN survey.publish_timestamp IS 'A timestamp that indicates that the survey metadata has been approved for discovery. If the timestamp is not null then project metadata is public. If the timestamp is null the survey metadata is not yet public.'
+COMMENT ON COLUMN survey.publish_timestamp IS '(Depricated) A timestamp that indicates that the survey metadata has been approved for discovery. If the timestamp is not null then project metadata is public. If the timestamp is null the survey metadata is not yet public.'
 ;
 COMMENT ON COLUMN survey.geometry IS 'The containing geometry of the record.'
 ;

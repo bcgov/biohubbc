@@ -412,7 +412,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2200-10-10',
           coordinator_agency: 'Agency 1',
-          publish_timestamp: '2010-01-01',
           permits_list: '3, 100',
           project_type: 'Aquatic Habitat'
         },
@@ -422,7 +421,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2000-12-31',
           coordinator_agency: 'Agency 2',
-          publish_timestamp: '',
           permits_list: '1, 4',
           project_type: 'Terrestrial Habitat'
         }
@@ -439,12 +437,10 @@ describe('ProjectService', () => {
       expect(result[0].id).to.equal(123);
       expect(result[0].name).to.equal('Project 1');
       expect(result[0].completion_status).to.equal('Active');
-      expect(result[0].publish_status).to.equal('Published');
 
       expect(result[1].id).to.equal(456);
       expect(result[1].name).to.equal('Project 2');
       expect(result[1].completion_status).to.equal('Completed');
-      expect(result[1].publish_status).to.equal('Unpublished');
     });
   });
 

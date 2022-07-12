@@ -12,6 +12,9 @@ export const getSpatialSearchResultsSQL = (isUserAdmin: boolean, systemUserId: n
     return null;
   }
 
+  /**
+   * @TODO Remove WHERE clause?
+   */
   const sqlStatement = SQL`
     SELECT
       p.project_id as id,

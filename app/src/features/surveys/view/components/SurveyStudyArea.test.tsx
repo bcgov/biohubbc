@@ -93,7 +93,6 @@ describe('SurveyStudyArea', () => {
           end_date: '2021-01-25',
           biologist_first_name: 'firstttt',
           biologist_last_name: 'lastttt',
-          publish_date: '',
           survey_area_name: 'study area is this',
           geometry,
           revision_count: 0
@@ -210,7 +209,6 @@ describe('SurveyStudyArea', () => {
           biologist_first_name: 'firstttt',
           biologist_last_name: 'lastttt',
           survey_area_name: 'study area is this',
-          publish_date: '',
           geometry,
           revision_count: 0
         }

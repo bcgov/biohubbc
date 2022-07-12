@@ -34,7 +34,6 @@ export const surveyObject: SurveyViewObject = {
         }
       }
     ],
-    publish_date: (null as unknown) as string,
     revision_count: 0
   },
   purpose_and_methodology: {

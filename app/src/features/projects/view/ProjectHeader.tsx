@@ -172,10 +172,9 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     SYSTEM_ROLE.SYSTEM_ADMIN,
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
-  // Enable delete button if you a system admin OR a project admin and the project is not published
+  // Enable delete button if you a system admin OR a project admin
   const enableDeleteProjectButton =
-    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
-    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]) && !projectWithDetails.project.publish_date);
+    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR]);
 
   return (
     <Paper square={true}>
@@ -239,7 +238,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               <Tooltip
                 arrow
                 color="secondary"
-                title={!enableDeleteProjectButton ? 'Cannot delete a published project' : ''}>
+              >
                 <>
                   <IconButton
                     data-testid="delete-project-button"

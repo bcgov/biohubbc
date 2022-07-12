@@ -29,7 +29,6 @@ export class GetProjectData {
   end_date: string;
   comments: string;
   completion_status: string;
-  publish_date: string;
   revision_count: number;
 
   constructor(projectData?: any, activityData?: any[]) {
@@ -46,7 +45,6 @@ export class GetProjectData {
         moment(projectData.end_date).endOf('day').isBefore(moment()) &&
         COMPLETION_STATUS.COMPLETED) ||
       COMPLETION_STATUS.ACTIVE;
-    this.publish_date = String(projectData?.publish_date || '');
     this.revision_count = projectData?.revision_count ?? null;
   }
 }
