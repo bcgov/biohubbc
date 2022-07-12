@@ -188,21 +188,6 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
           class="MuiBox-root MuiBox-root-197"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-190 MuiButton-outlinedPrimary"
-            data-testid="publish-survey-button"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Publish Survey
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-          <button
             class="MuiButtonBase-root MuiIconButton-root"
             data-testid="delete-survey-button"
             tabindex="0"
@@ -1566,21 +1551,6 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
         <div
           class="MuiBox-root MuiBox-root-136"
         >
-          <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-129 MuiButton-outlinedPrimary"
-            data-testid="publish-survey-button"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
-            >
-              Publish Survey
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
           <button
             class="MuiButtonBase-root MuiIconButton-root"
             data-testid="delete-survey-button"

@@ -235,19 +235,12 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               Manage Project Team
             </Button>
             {showDeleteProjectButton && (
-              <Tooltip
-                arrow
-                color="secondary"
-              >
-                <>
-                  <IconButton
-                    data-testid="delete-project-button"
-                    onClick={showDeleteProjectDialog}
-                    disabled={!enableDeleteProjectButton}>
-                    <Icon path={mdiTrashCanOutline} size={1} />
-                  </IconButton>
-                </>
-              </Tooltip>
+              <IconButton
+                data-testid="delete-project-button"
+                onClick={showDeleteProjectDialog}
+                disabled={!enableDeleteProjectButton}>
+                <Icon path={mdiTrashCanOutline} size={1} />
+              </IconButton>
             )}
           </Box>
         </Box>
