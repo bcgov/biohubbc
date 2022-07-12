@@ -12,18 +12,13 @@ export const getSpatialSearchResultsSQL = (isUserAdmin: boolean, systemUserId: n
     return null;
   }
 
-  /**
-   * @TODO Remove WHERE clause?
-   */
   const sqlStatement = SQL`
     SELECT
       p.project_id as id,
       p.name,
       public.ST_asGeoJSON(p.geography) as geometry
     from
-      project as p
-    where
-      p.publish_timestamp is not null
+      project as p;
   `;
 
   if (!isUserAdmin) {

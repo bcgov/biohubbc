@@ -104,7 +104,6 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson,
       s.revision_count,
-      s.publish_timestamp,
       per.number,
       per.type;
   `;

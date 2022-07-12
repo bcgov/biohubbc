@@ -1012,7 +1012,7 @@ export class ProjectService extends DBService {
     }
   }
 
-  async deleteProject(projectId: number, userRoles: string | string[]): Promise<boolean | null> {
+  async deleteProject(projectId: number): Promise<boolean | null> {
     /**
      * PART 1
      * Check that user is a system administrator - can delete a project
