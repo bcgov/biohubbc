@@ -587,24 +587,4 @@ export class SurveyService extends DBService {
       throw new ApiGeneralError('Failed to delete survey vantage codes');
     }
   }
-
-  /**
-   * Update a survey, marking it as published/unpublished.
-   *
-   * @param {number} surveyId
-   * @param {boolean} publish
-   * @return {*}  {(Promise<{ id: number } | null>)}
-   * @memberof SurveyService
-   */
-  async publishSurvey(surveyId: number, publish: boolean): Promise<{ id: number } | null> {
-    const sqlStatement = queries.survey.updateSurveyPublishStatusSQL(surveyId, publish);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build survey publish SQL statement');
-    }
-
-    const response = await this.connection.sql<{ id: number }>(sqlStatement);
-
-    return (response && response.rows && response.rows[0]) || null;
-  }
 }

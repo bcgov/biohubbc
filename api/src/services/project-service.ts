@@ -1,7 +1,7 @@
 import moment from 'moment';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
-import { HTTP400, HTTP409, HTTP500 } from '../errors/custom-error';
+import { HTTP400, HTTP409 } from '../errors/custom-error';
 import {
   IPostExistingPermit,
   IPostIUCN,
@@ -1012,23 +1012,6 @@ export class ProjectService extends DBService {
     if (!insertResult) {
       throw new HTTP409('Failed to put (insert) project funding source with incremented revision count');
     }
-  }
-
-  async updatePublishStatus(projectId: number, publish: boolean): Promise<number> {
-    const sqlStatement = queries.project.updateProjectPublishStatusSQL(projectId, publish);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!response || !result) {
-      throw new HTTP500('Failed to update project publish status');
-    }
-
-    return result.id;
   }
 
   async deleteProject(projectId: number, userRoles: string | string[]): Promise<boolean | null> {

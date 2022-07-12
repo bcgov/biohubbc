@@ -354,18 +354,6 @@ const useProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Publish/unpublish a project.
-   *
-   * @param {number} projectId the project id
-   * @param {boolean} publish set to `true` to publish the project, `false` to unpublish the project.
-   * @return {*}  {Promise<any>}
-   */
-  const publishProject = async (projectId: number, publish: boolean): Promise<any> => {
-    const { data } = await axios.put(`/api/project/${projectId}/publish`, { publish: publish });
-    return data;
-  };
-
-  /**
    * Get project report metadata based on project ID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -461,7 +449,6 @@ const useProjectApi = (axios: AxiosInstance) => {
     deleteFundingSource,
     addFundingSource,
     deleteProject,
-    publishProject,
     makeAttachmentSecure,
     makeAttachmentUnsecure,
     getProjectReportMetadata,

@@ -30,8 +30,7 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
       project_type
         on project.project_type_id = project_type.project_type_id
     where
-      project.project_id = ${projectId}
-    and project.publish_timestamp is not null;
+      project.project_id = ${projectId};
   `;
 };
 
@@ -57,9 +56,7 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
     ON
       p.project_id = pa.project_id
     WHERE
-      pa.project_id = ${projectId}
-    AND
-      p.publish_timestamp is not null;
+      pa.project_id = ${projectId};
   `;
 };
 
@@ -84,8 +81,6 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       on p.project_type_id = pt.project_type_id
     left outer join permit as pp
       on p.project_id = pp.project_id
-    where
-      p.publish_timestamp is not null
     group by
       p.project_id,
       p.name,
@@ -123,9 +118,7 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
     on
       p.project_id = pa.project_id
     where
-      pa.project_id = ${projectId}
-    and
-      p.publish_timestamp is not null;
+      pa.project_id = ${projectId};
   `;
 };
 
@@ -155,9 +148,7 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
     on
       p.project_id = pa.project_id
     where
-      pa.project_id = ${projectId}
-    and
-      p.publish_timestamp is not null;
+      pa.project_id = ${projectId};
   `;
 };
 

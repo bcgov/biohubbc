@@ -400,20 +400,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Publish/unpublish a survey.
-   *
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {boolean} publish set to `true` to publish the survey, `false` to unpublish the survey.
-   * @return {*}  {Promise<boolean>} `true` if the request was successful, false otherwise.
-   */
-  const publishSurvey = async (projectId: number, surveyId: number, publish: boolean): Promise<boolean> => {
-    const { status } = await axios.put(`/api/project/${projectId}/survey/${surveyId}/publish`, { publish: publish });
-
-    return status === 200;
-  };
-
-  /**
    * Upload survey summary results.
    *
    * @param {number} projectId
@@ -525,7 +511,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyPermits,
     getAvailableSurveyFundingSources,
-    publishSurvey,
     getSubmissionCSVForView,
     makeAttachmentUnsecure,
     makeAttachmentSecure,
