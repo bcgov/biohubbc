@@ -172,9 +172,6 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
     SYSTEM_ROLE.SYSTEM_ADMIN,
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
-  // Enable delete button if you a system admin OR a project admin
-  const enableDeleteProjectButton =
-    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.PROJECT_CREATOR]);
 
   return (
     <Paper square={true}>
@@ -238,7 +235,7 @@ const ProjectHeader: React.FC<IProjectHeaderProps> = (props) => {
               <IconButton
                 data-testid="delete-project-button"
                 onClick={showDeleteProjectDialog}
-                disabled={!enableDeleteProjectButton}>
+              >
                 <Icon path={mdiTrashCanOutline} size={1} />
               </IconButton>
             )}
