@@ -73,14 +73,13 @@ export function deleteProject(): RequestHandler {
 
     const connection = getDBConnection(req['keycloak_token']);
     const projectId = Number(req.params.projectId);
-    const userRoles = req['system_user']['role_names'];
 
     try {
       await connection.open();
 
       const projectService = new ProjectService(connection);
 
-      const resp = await projectService.deleteProject(projectId, userRoles);
+      const resp = await projectService.deleteProject(projectId);
 
       await connection.commit();
 
