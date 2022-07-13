@@ -6,7 +6,6 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/custom-error';
 import { queries } from '../../../../../queries/queries';
-import { PlatformService } from '../../../../../services/platform-service';
 import { ProjectService } from '../../../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import * as doAllProjectsHaveAProjectLead from '../../../../user/{userId}/delete';
@@ -188,8 +187,6 @@ describe('Delete a project participant.', () => {
     sinon.stub(queries.projectParticipation, 'deleteProjectParticipationSQL').returns(SQL`some query`);
     const getProjectParticipant = sinon.stub(ProjectService.prototype, 'getProjectParticipants');
     const doAllProjectsHaveLead = sinon.stub(doAllProjectsHaveAProjectLead, 'doAllProjectsHaveAProjectLead');
-
-    sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
 
     getProjectParticipant.onCall(0).resolves([{ id: 1 }]);
     doAllProjectsHaveLead.onCall(0).returns(true);

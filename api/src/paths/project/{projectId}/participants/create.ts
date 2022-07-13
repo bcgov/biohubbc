@@ -5,7 +5,6 @@ import { PROJECT_ROLE } from '../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../database/db';
 import { HTTP400 } from '../../../../errors/custom-error';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
-import { PlatformService } from '../../../../services/platform-service';
 import { ProjectService } from '../../../../services/project-service';
 import { UserService } from '../../../../services/user-service';
 import { getLogger } from '../../../../utils/logger';
@@ -126,14 +125,6 @@ export function createProjectParticipants(): RequestHandler {
       );
 
       await Promise.all(promises);
-
-      try {
-        const platformService = new PlatformService(connection);
-        await platformService.submitDwCAMetadataPackage(projectId);
-      } catch (error) {
-        // Don't fail the rest of the endpoint if submitting metadata fails
-        defaultLog.error({ label: 'createProjectParticipants->submitDwCAMetadataPackage', message: 'error', error });
-      }
 
       await connection.commit();
 
