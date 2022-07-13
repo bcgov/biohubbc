@@ -208,7 +208,7 @@ export class EmlService extends DBService {
     const allSurveyIds = response.map((item) => item.id);
 
     // if `BuildProjectEMLOptions.surveyIds` was provided then filter out any ids not in the list
-    const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds || this.surveyIds?.includes(item));
+    const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds?.length || this.surveyIds?.includes(item));
 
     const surveyData = await this.surveyService.getSurveysByIds(includedSurveyIds);
 
