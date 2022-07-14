@@ -6,6 +6,7 @@ import { HTTP400 } from '../../../../errors/custom-error';
 import { PostFundingSource } from '../../../../models/project-create';
 import { queries } from '../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../services/platform-service';
 import { getLogger } from '../../../../utils/logger';
 import { addFundingSourceApiDocObject } from '../../../../utils/shared-api-docs';
 
@@ -30,14 +31,9 @@ POST.apiDoc = addFundingSourceApiDocObject('Add a funding source of a project.',
 
 export function addFundingSource(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({
-      label: 'Add project funding source',
-      message: 'params and body',
-      'req.params': req.params,
-      'req.body': req.body
-    });
+    const projectId = Number(req.params.projectId);
 
-    if (!req.params.projectId) {
+    if (!projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
@@ -54,7 +50,7 @@ export function addFundingSource(): RequestHandler {
 
       const addFundingSourceSQLStatement = queries.project.postProjectFundingSourceSQL(
         sanitizedPostFundingSource,
-        Number(req.params.projectId)
+        projectId
       );
 
       if (!addFundingSourceSQLStatement) {
@@ -67,6 +63,14 @@ export function addFundingSource(): RequestHandler {
 
       if (!result || !result.id) {
         throw new HTTP400('Failed to insert project funding source data');
+      }
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'addFundingSource->submitDwCAMetadataPackage', message: 'error', error });
       }
 
       await connection.commit();

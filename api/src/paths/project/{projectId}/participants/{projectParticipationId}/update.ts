@@ -91,17 +91,19 @@ PUT.apiDoc = {
 
 export function updateProjectParticipantRole(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'updateProjectParticipantRole', message: 'params', req_params: req.params });
+    const projectId = Number(req.params.projectId);
+    const projectParticipationId = Number(req.params.projectParticipationId);
+    const roleId = Number(req.body.roleId);
 
-    if (!req.params.projectId) {
+    if (!projectId) {
       throw new HTTP400('Missing required path param `projectId`');
     }
 
-    if (!req.params.projectParticipationId) {
+    if (!projectParticipationId) {
       throw new HTTP400('Missing required path param `projectParticipationId`');
     }
 
-    if (!req.body.roleId) {
+    if (!roleId) {
       throw new HTTP400('Missing required body param `roleId`');
     }
 
@@ -117,7 +119,7 @@ export function updateProjectParticipantRole(): RequestHandler {
       const projectHasLeadResponse1 = doAllProjectsHaveAProjectLead(projectParticipantsResponse1);
 
       // Delete the user's old participation record, returning the old record
-      const result = await deleteProjectParticipationRecord(Number(req.params.projectParticipationId), connection);
+      const result = await deleteProjectParticipationRecord(projectParticipationId, connection);
 
       if (!result || !result.system_user_id) {
         // The delete result is missing necessary data, fail the request
@@ -125,9 +127,9 @@ export function updateProjectParticipantRole(): RequestHandler {
       }
 
       await projectService.addProjectParticipant(
-        Number(req.params.projectId),
+        projectId,
         Number(result.system_user_id), // get the user's system id from the old participation record
-        Number(req.body.roleId)
+        roleId
       );
 
       // If Project Lead roles are invalid skip check to prevent removal of only Project Lead of project
