@@ -7,6 +7,7 @@ import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/custom-error';
 import project_queries from '../../../../../queries/project';
 import survey_queries from '../../../../../queries/survey';
+import { PlatformService } from '../../../../../services/platform-service';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
 import * as deleteFundingSource from './delete';
 
@@ -133,6 +134,8 @@ describe('delete a funding source', () => {
 
     sinon.stub(survey_queries, 'deleteSurveyFundingSourceByProjectFundingSourceIdSQL').returns(SQL`some`);
     sinon.stub(project_queries, 'deleteProjectFundingSourceSQL').returns(SQL`something`);
+
+    sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
 
     const result = deleteFundingSource.deleteFundingSource();
 

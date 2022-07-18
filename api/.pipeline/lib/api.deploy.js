@@ -31,6 +31,8 @@ module.exports = (settings) => {
         CHANGE_ID: phases.build.changeId || changeId,
         APP_HOST: phases[phase].appHost,
         BACKBONE_API_HOST: phases[phase].backboneApiHost,
+        BACKBONE_INTAKE_PATH: phases[phase].backboneIntakePath,
+        BACKBONE_INTAKE_ENABLED: phases[phase].backboneIntakeEnabled,
         NODE_ENV: phases[phase].env || 'dev',
         ELASTICSEARCH_URL: phases[phase].elasticsearchURL,
         TZ: phases[phase].tz,

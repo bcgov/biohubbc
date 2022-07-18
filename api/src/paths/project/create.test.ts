@@ -5,6 +5,7 @@ import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import * as db from '../../database/db';
 import { HTTPError } from '../../errors/custom-error';
+import { PlatformService } from '../../services/platform-service';
 import { ProjectService } from '../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../__mocks__/db';
 import { createProject, POST } from './create';
@@ -31,6 +32,8 @@ describe('create', () => {
       sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
       sinon.stub(ProjectService.prototype, 'createProject').resolves(1);
+
+      sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
 
       const { mockReq, mockRes, mockNext } = getRequestHandlerMocks();
 

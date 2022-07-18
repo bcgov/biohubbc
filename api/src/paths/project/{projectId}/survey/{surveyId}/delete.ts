@@ -5,6 +5,7 @@ import { getDBConnection, IDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
 import { queries } from '../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { PlatformService } from '../../../../../services/platform-service';
 import { deleteFileFromS3 } from '../../../../../utils/file-utils';
 import { getLogger } from '../../../../../utils/logger';
 
@@ -76,9 +77,10 @@ DELETE.apiDoc = {
 
 export function deleteSurvey(): RequestHandler {
   return async (req, res) => {
-    defaultLog.debug({ label: 'Delete survey', message: 'params', req_params: req.params });
+    const projectId = Number(req.params.projectId);
+    const surveyId = Number(req.params.surveyId);
 
-    if (!req.params.surveyId) {
+    if (!surveyId) {
       throw new HTTP400('Missing required path param `surveyId`');
     }
 
@@ -91,13 +93,13 @@ export function deleteSurvey(): RequestHandler {
        * Get the attachment S3 keys for all attachments associated to this survey
        * Used to delete them from S3 separately later
        */
-      const surveyAttachmentS3Keys: string[] = await getSurveyAttachmentS3Keys(Number(req.params.surveyId), connection);
+      const surveyAttachmentS3Keys: string[] = await getSurveyAttachmentS3Keys(surveyId, connection);
 
       /**
        * PART 2
        * Delete the survey and all associated records/resources from our DB
        */
-      const deleteSurveySQLStatement = queries.survey.deleteSurveySQL(Number(req.params.surveyId));
+      const deleteSurveySQLStatement = queries.survey.deleteSurveySQL(surveyId);
 
       await connection.query(deleteSurveySQLStatement.text, deleteSurveySQLStatement.values);
 
@@ -109,6 +111,14 @@ export function deleteSurvey(): RequestHandler {
 
       if (deleteResult.some((deleteResult) => !deleteResult)) {
         return res.status(200).json(null);
+      }
+
+      try {
+        const platformService = new PlatformService(connection);
+        await platformService.submitDwCAMetadataPackage(projectId);
+      } catch (error) {
+        // Don't fail the rest of the endpoint if submitting metadata fails
+        defaultLog.error({ label: 'deleteSurvey->submitDwCAMetadataPackage', message: 'error', error });
       }
 
       await connection.commit();

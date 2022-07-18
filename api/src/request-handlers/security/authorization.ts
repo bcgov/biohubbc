@@ -1,5 +1,4 @@
-import { Request } from 'express';
-import { RequestHandler } from 'express-serve-static-core';
+import { Request, RequestHandler } from 'express';
 import { PROJECT_ROLE, SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../database/db';
 import { HTTP403, HTTP500 } from '../../errors/custom-error';

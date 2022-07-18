@@ -10,6 +10,7 @@ import { ProjectService } from '../../../../../services/project-service';
 import { getMockDBConnection, getRequestHandlerMocks } from '../../../../../__mocks__/db';
 import * as doAllProjectsHaveAProjectLead from '../../../../user/{userId}/delete';
 import * as delete_project_participant from './delete';
+
 chai.use(sinonChai);
 
 describe('Delete a project participant.', () => {

@@ -7,6 +7,7 @@ import SQL from 'sql-template-strings';
 import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/custom-error';
 import survey_queries from '../../../../../queries/survey';
+import { PlatformService } from '../../../../../services/platform-service';
 import * as file_utils from '../../../../../utils/file-utils';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
 import * as delete_survey from './delete';
@@ -145,6 +146,8 @@ describe('deleteSurvey', () => {
     sinon.stub(survey_queries, 'getSurveyAttachmentsSQL').returns(SQL`something`);
     sinon.stub(survey_queries, 'deleteSurveySQL').returns(SQL`something`);
     sinon.stub(file_utils, 'deleteFileFromS3').resolves('non null response' as DeleteObjectOutput);
+
+    sinon.stub(PlatformService.prototype, 'submitDwCAMetadataPackage').resolves();
 
     const result = delete_survey.deleteSurvey();
 
