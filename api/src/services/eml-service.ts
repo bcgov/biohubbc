@@ -251,6 +251,7 @@ export class EmlService extends DBService {
         $: { system: this.constants.EML_PROVIDER_URL, id: this.packageId },
         title: options?.datasetTitle || this.projectData.project.project_name,
         creator: this.getDatasetCreator(),
+        pubDate: new Date().toISOString(),
         metadataProvider: {
           organizationName: this.constants.EML_ORGANIZATION_NAME,
           onlineUrl: this.constants.EML_ORGANIZATION_URL

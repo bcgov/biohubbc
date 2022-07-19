@@ -7,7 +7,6 @@ import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
@@ -241,19 +240,12 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
             </Box>
             <Box ml={4} mb={4}>
               {showDeleteSurveyButton && (
-                <Tooltip
-                  arrow
-                  color="secondary"
-                  title={!enableDeleteSurveyButton ? 'Cannot delete a published survey' : ''}>
-                  <>
-                    <IconButton
-                      data-testid="delete-survey-button"
-                      onClick={showDeleteSurveyDialog}
-                      disabled={!enableDeleteSurveyButton}>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </IconButton>
-                  </>
-                </Tooltip>
+                <IconButton
+                  data-testid="delete-survey-button"
+                  onClick={showDeleteSurveyDialog}
+                  disabled={!enableDeleteSurveyButton}>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </IconButton>
               )}
             </Box>
           </Box>
