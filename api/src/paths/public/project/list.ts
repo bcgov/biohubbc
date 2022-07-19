@@ -10,7 +10,7 @@ const defaultLog = getLogger('paths/public/projects');
 export const GET: Operation = [getPublicProjectsList()];
 
 GET.apiDoc = {
-  description: 'Gets a list of public facing (published) projects.',
+  description: 'Gets a list of public facing projects.',
   tags: ['public', 'projects'],
   responses: {
     200: {
@@ -42,7 +42,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get all public facing (published) projects.
+ * Get all public facing projects.
  *
  * @returns {RequestHandler}
  */

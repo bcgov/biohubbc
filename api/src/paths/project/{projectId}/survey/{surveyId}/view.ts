@@ -82,7 +82,6 @@ GET.apiDoc = {
                       'start_date',
                       'biologist_first_name',
                       'biologist_last_name',
-                      'publish_date',
                       'revision_count'
                     ],
                     properties: {
@@ -103,11 +102,6 @@ GET.apiDoc = {
                       },
                       biologist_last_name: {
                         type: 'string'
-                      },
-                      publish_date: {
-                        oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                        nullable: true,
-                        description: 'Determines if the record has been published'
                       },
                       revision_count: {
                         type: 'number'

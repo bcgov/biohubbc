@@ -65,7 +65,6 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson as geometry,
       s.revision_count,
-      s.publish_timestamp as publish_date,
       per.number,
       per.type,
       max(os.occurrence_submission_id) as occurrence_submission_id,
@@ -105,7 +104,6 @@ export const getSurveyBasicDataForViewSQL = (surveyId: number): SQLStatement | n
       s.location_name,
       s.geojson,
       s.revision_count,
-      s.publish_timestamp,
       per.number,
       per.type;
   `;

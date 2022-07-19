@@ -200,6 +200,8 @@ export class UserService extends DBService {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
+    console.log(response);
+
     if (!response.rowCount) {
       throw new ApiExecuteSQLError('Failed to delete user system roles');
     }

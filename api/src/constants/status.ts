@@ -25,7 +25,6 @@ export enum SUBMISSION_STATUS_TYPE {
   'SUBMISSION_DATA_INGESTED' = 'Submission Data Ingested',
   'SECURED' = 'Secured',
   'AWAITING CURRATION' = 'Awaiting Curration',
-  'PUBLISHED' = 'Published',
   'REJECTED' = 'Rejected',
   'ON HOLD' = 'On Hold',
   'SYSTEM_ERROR' = 'System Error'

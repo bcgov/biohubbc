@@ -34,8 +34,7 @@ export const getProjectSQL = (projectId: number): SQLStatement | null => {
       project.create_user,
       project.update_date,
       project.update_user,
-      project.revision_count,
-      project.publish_timestamp as publish_date
+      project.revision_count
     from
       project
     left outer join
@@ -70,7 +69,6 @@ export const getProjectListSQL = (
       p.start_date,
       p.end_date,
       p.coordinator_agency_name as coordinator_agency,
-      p.publish_timestamp,
       pt.name as project_type,
       string_agg(DISTINCT pp.number, ', ') as permits_list
     from
@@ -164,7 +162,6 @@ export const getProjectListSQL = (
       p.start_date,
       p.end_date,
       p.coordinator_agency_name,
-      p.publish_timestamp,
       pt.name;
   `);
 

@@ -10,7 +10,7 @@ const defaultLog = getLogger('paths/public/project/{projectId}/view');
 export const GET: Operation = [getPublicProjectForView()];
 
 GET.apiDoc = {
-  description: 'Get a public (published) project, for view-only purposes.',
+  description: 'Get a public project, for view-only purposes.',
   tags: ['project'],
   parameters: [
     {
@@ -56,8 +56,7 @@ GET.apiDoc = {
                   'start_date',
                   'end_date',
                   'comments',
-                  'completion_status',
-                  'publish_date'
+                  'completion_status'
                 ],
                 properties: {
                   project_name: {
@@ -88,11 +87,6 @@ GET.apiDoc = {
                   },
                   completion_status: {
                     description: 'Status of the project being active/completed',
-                    type: 'string'
-                  },
-                  publish_date: {
-                    description: 'Status of the project being published/unpublished',
-                    format: 'date',
                     type: 'string'
                   }
                 }
@@ -287,7 +281,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get a public (published) project by its id.
+ * Get a public project by its id.
  *
  * @returns {RequestHandler}
  */

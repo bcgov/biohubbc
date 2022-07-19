@@ -18,7 +18,6 @@ export class GetSurveyData {
   end_date: string;
   biologist_first_name: string;
   biologist_last_name: string;
-  publish_date: string;
   survey_area_name: string;
   geometry: Feature[];
   revision_count: number;
@@ -29,7 +28,6 @@ export class GetSurveyData {
     this.survey_name = obj?.name || '';
     this.start_date = obj?.start_date || null;
     this.end_date = obj?.end_date || null;
-    this.publish_date = String(obj?.publish_date || '');
     this.geometry = (obj?.geojson?.length && obj.geojson) || [];
     this.biologist_first_name = obj?.lead_first_name || '';
     this.biologist_last_name = obj?.lead_last_name || '';

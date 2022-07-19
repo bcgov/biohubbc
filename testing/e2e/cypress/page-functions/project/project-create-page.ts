@@ -234,18 +234,6 @@ export function add_partnerships() {
   cy.wait(5000);
 }
 
-export function publish_project() {
-  cy.get('button[data-testid="publish-project-button"]')
-    .contains("Publish")
-    .should("be.visible");
-  cy.get('button[data-testid="publish-project-button"]').click();
-  cy.wait(10000);
-  cy.get('button[data-testid="publish-project-button"]')
-    .contains("Unpublish")
-    .should("be.visible");
-  cy.wait(2000);
-}
-
 export function attach_file() {
   cy.get("#custom-menu-button-Upload").focus().click();
   cy.wait(1000);

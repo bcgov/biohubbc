@@ -53,7 +53,6 @@ export interface IGetSurveyForViewResponseDetails {
   biologist_last_name: string;
   survey_area_name: string;
   geometry: Feature[];
-  publish_date: string;
   revision_count: number;
 }
 
@@ -148,7 +147,6 @@ export interface IGetSurveyDetailsResponse {
   name: string;
   start_date: string;
   end_date: string;
-  publish_status: string;
   completion_status: string;
 }
 

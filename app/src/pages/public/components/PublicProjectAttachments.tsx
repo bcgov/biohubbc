@@ -11,7 +11,7 @@ export interface IPublicProjectAttachmentsProps {
 }
 
 /**
- * Project attachments content for a public (published) project.
+ * Project attachments content for a public project.
  *
  * @return {*}
  */

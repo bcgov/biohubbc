@@ -289,31 +289,3 @@ export const putProjectFundingSourceSQL = (
         project_funding_source_id as id;
     `;
 };
-
-/**
- * SQL query to update the publish status of a project.
- *
- * @param {number} projectId
- * @param {boolean} publish
- * @returns {SQLStatement} sql query object
- */
-export const updateProjectPublishStatusSQL = (projectId: number, publish: boolean): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
-  const sqlStatement: SQLStatement = SQL`UPDATE project SET publish_timestamp = `;
-
-  if (publish === true) {
-    sqlStatement.append(SQL`
-    now() WHERE publish_timestamp IS NULL AND project_id = ${projectId}
-    `);
-  } else {
-    sqlStatement.append(SQL`
-      null WHERE project_id = ${projectId}
-    `);
-  }
-  sqlStatement.append(SQL` RETURNING project_id as id;`);
-
-  return sqlStatement;
-};

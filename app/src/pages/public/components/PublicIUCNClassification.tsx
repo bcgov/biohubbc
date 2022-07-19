@@ -26,7 +26,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * IUCN Classification content for a public (published) project.
+ * IUCN Classification content for a public project.
  *
  * @return {*}
  */

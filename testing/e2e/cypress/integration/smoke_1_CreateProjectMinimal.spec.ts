@@ -18,7 +18,6 @@ import {
   add_classification,
   add_funding,
   add_partnerships,
-  publish_project,
   attach_file,
   add_survey,
 } from "../page-functions/project/project-create-page";
@@ -67,8 +66,6 @@ while (n < 1) {
     add_partnerships();
     submit_project();
     cy.wait(10000);
-
-    publish_project();
 
     attach_file();
 

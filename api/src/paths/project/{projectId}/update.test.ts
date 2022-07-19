@@ -146,7 +146,6 @@ describe('update', () => {
           start_date: '2022-02-02',
           end_date: '2022-02-30',
           objectives: 'my objectives',
-          publish_date: '2022-02-02',
           revision_count: 0
         },
         iucn: {},

@@ -59,7 +59,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * Page to display a single Public (published) Project.
+ * Page to display a single Public Project.
  *
  * @return {*}
  */

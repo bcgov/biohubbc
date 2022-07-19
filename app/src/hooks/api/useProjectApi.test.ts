@@ -285,16 +285,6 @@ describe('useProjectApi', () => {
     expect(result).toEqual({ id: 1 });
   });
 
-  it('publishProject works as expected', async () => {
-    mock.onPut(`/api/project/${projectId}/publish`).reply(200, {
-      id: 1
-    });
-
-    const result = await useProjectApi(axios).publishProject(projectId, true);
-
-    expect(result).toEqual({ id: 1 });
-  });
-
   it('getAttachmentSignedURL works as expected for public access', async () => {
     mock
       .onGet(`/api/public/project/${projectId}/attachments/${attachmentId}/getSignedUrl`, {

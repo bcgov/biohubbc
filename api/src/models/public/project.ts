@@ -4,7 +4,7 @@ import { getLogger } from '../../utils/logger';
 const defaultLog = getLogger('models/public/project');
 
 /**
- * Pre-processes GET /projects/{id} coordinator data for public (published) projects
+ * Pre-processes GET /projects/{id} coordinator data for public projects
  *
  * @export
  * @class GetPublicCoordinatorData
@@ -30,7 +30,7 @@ export class GetPublicCoordinatorData {
 }
 
 /**
- * Pre-processes GET public (published) project attachments data
+ * Pre-processes GET public project attachments data
  *
  * @export
  * @class GetPublicAttachmentsData

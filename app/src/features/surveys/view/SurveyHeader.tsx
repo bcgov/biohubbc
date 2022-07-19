@@ -1,6 +1,5 @@
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
-import Button from '@material-ui/core/Button';
 import Chip from '@material-ui/core/Chip';
 import Container from '@material-ui/core/Container';
 import IconButton from '@material-ui/core/IconButton';
@@ -8,14 +7,13 @@ import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Tooltip from '@material-ui/core/Tooltip';
 import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
-import { DeleteSurveyI18N, PublishSurveyI18N } from 'constants/i18n';
+import { DeleteSurveyI18N } from 'constants/i18n';
 import { SurveyStatusType } from 'constants/misc';
 import { SYSTEM_ROLE } from 'constants/roles';
 import { AuthStateContext } from 'contexts/authStateContext';
@@ -26,7 +24,7 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse, SurveyViewObject } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useContext } from 'react';
-import { useHistory, useParams } from 'react-router';
+import { useHistory } from 'react-router';
 import { getFormattedDateRangeString } from 'utils/Utils';
 
 const useStyles = makeStyles((theme: Theme) => ({
@@ -77,7 +75,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 export interface ISurveyHeaderProps {
   projectWithDetails: IGetProjectForViewResponse;
   surveyWithDetails: IGetSurveyForViewResponse;
-  refresh: () => void;
+  refresh?: () => void;
 }
 
 /**
@@ -87,11 +85,10 @@ export interface ISurveyHeaderProps {
  * @return {*}
  */
 const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
-  const { projectWithDetails, surveyWithDetails, refresh } = props;
+  const { projectWithDetails, surveyWithDetails } = props;
 
   const classes = useStyles();
   const history = useHistory();
-  const urlParams = useParams();
 
   const biohubApi = useBiohubApi();
 
@@ -117,33 +114,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     },
     onOk: () => {
       dialogContext.setErrorDialog({ open: false });
-    }
-  };
-
-  const togglePublishSurvey = async () => {
-    if (!projectWithDetails || !surveyWithDetails) {
-      return;
-    }
-
-    let publish = true;
-
-    if (surveyWithDetails.surveyData.survey_details.publish_date) {
-      publish = false;
-    }
-
-    try {
-      const response = await biohubApi.survey.publishSurvey(urlParams['id'], urlParams['survey_id'], publish);
-
-      if (!response) {
-        showPublishErrorDialog({ open: true });
-        return;
-      }
-
-      await refresh();
-    } catch (error) {
-      const apiError = error as APIError;
-      showPublishErrorDialog({ dialogText: apiError.message, open: true });
-      return error;
     }
   };
 
@@ -182,18 +152,8 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     }
   };
 
-  const publishErrorDialogProps = {
-    ...deleteErrorDialogProps,
-    dialogTitle: PublishSurveyI18N.publishErrorTitle,
-    dialogText: PublishSurveyI18N.publishErrorText
-  };
-
   const showDeleteErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({ ...deleteErrorDialogProps, ...textDialogProps, open: true });
-  };
-
-  const showPublishErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({ ...publishErrorDialogProps, ...textDialogProps, open: true });
   };
 
   const getSurveyCompletionStatusType = (surveyObject: SurveyViewObject): SurveyStatusType => {
@@ -227,11 +187,11 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     SYSTEM_ROLE.SYSTEM_ADMIN,
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
-  // Enable delete button if you a system admin OR a project admin and the survey is not published
-  const enableDeleteSurveyButton =
-    keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.SYSTEM_ADMIN]) ||
-    (keycloakWrapper?.hasSystemRole([SYSTEM_ROLE.PROJECT_CREATOR]) &&
-      !surveyWithDetails.surveyData.survey_details.publish_date);
+  // Enable delete button if you a system admin or a project admin
+  const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
+    SYSTEM_ROLE.SYSTEM_ADMIN,
+    SYSTEM_ROLE.PROJECT_CREATOR
+  ]);
 
   return (
     <>
@@ -279,28 +239,13 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               </Box>
             </Box>
             <Box ml={4} mb={4}>
-              <Button
-                variant="outlined"
-                color="primary"
-                className={classes.actionButton}
-                data-testid="publish-survey-button"
-                onClick={() => togglePublishSurvey()}>
-                {surveyWithDetails.surveyData.survey_details.publish_date ? 'Unpublish Survey' : 'Publish Survey'}
-              </Button>
               {showDeleteSurveyButton && (
-                <Tooltip
-                  arrow
-                  color="secondary"
-                  title={!enableDeleteSurveyButton ? 'Cannot delete a published survey' : ''}>
-                  <>
-                    <IconButton
-                      data-testid="delete-survey-button"
-                      onClick={showDeleteSurveyDialog}
-                      disabled={!enableDeleteSurveyButton}>
-                      <Icon path={mdiTrashCanOutline} size={1} />
-                    </IconButton>
-                  </>
-                </Tooltip>
+                <IconButton
+                  data-testid="delete-survey-button"
+                  onClick={showDeleteSurveyDialog}
+                  disabled={!enableDeleteSurveyButton}>
+                  <Icon path={mdiTrashCanOutline} size={1} />
+                </IconButton>
               )}
             </Box>
           </Box>

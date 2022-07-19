@@ -14,7 +14,7 @@ export interface IPublicProjectDetailsProps {
 }
 
 /**
- * General information content for a public (published) project.
+ * General information content for a public project.
  *
  * @return {*}
  */
