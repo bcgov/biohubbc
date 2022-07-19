@@ -1,7 +1,7 @@
 import { SQL, SQLStatement } from 'sql-template-strings';
 
 /**
- * SQL query to get a single public (published) project.
+ * SQL query to get a single public project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -34,7 +34,7 @@ export const getPublicProjectSQL = (projectId: number): SQLStatement | null => {
 };
 
 /**
- * SQL query to get public (published) project activities.
+ * SQL query to get public project activities.
  *
  * @param {string} projectId
  * @returns {SQLStatement} sql query object
@@ -60,7 +60,7 @@ export const getActivitiesByPublicProjectSQL = (projectId: number): SQLStatement
 };
 
 /**
- * SQL query to get all public facing (published) projects.
+ * SQL query to get all public facing projects.
  *
  * @returns {SQLStatement} sql query object
  */
@@ -91,7 +91,7 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
 };
 
 /**
- * SQL query to get attachments for a single public (published) project.
+ * SQL query to get attachments for a single public project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -122,7 +122,7 @@ export const getPublicProjectAttachmentsSQL = (projectId: number): SQLStatement 
 };
 
 /**
- * SQL query to get report attachments for a single public (published) project.
+ * SQL query to get report attachments for a single public project.
  *
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
@@ -152,7 +152,7 @@ export const getPublicProjectReportAttachmentsSQL = (projectId: number): SQLStat
 };
 
 /**
- * SQL query to get S3 key of an attachment for a single public (published) project.
+ * SQL query to get S3 key of an attachment for a single public project.
  *
  * @param {number} projectId
  * @param {number} attachmentId
@@ -177,7 +177,7 @@ export const getPublicProjectAttachmentS3KeySQL = (projectId: number, attachment
 };
 
 /**
- * SQL query to get S3 key of a report attachment for a single public (published) project.
+ * SQL query to get S3 key of a report attachment for a single public project.
  *
  * @param {number} projectId
  * @param {number} attachmentId

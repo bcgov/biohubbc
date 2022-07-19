@@ -24,7 +24,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Gets a list of published project geometries for given systemUserId',
+  description: 'Gets a list of project geometries for given systemUserId',
   tags: ['projects'],
   security: [
     {

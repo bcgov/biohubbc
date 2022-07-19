@@ -12,7 +12,7 @@ export interface IPublicPartnershipsProps {
 }
 
 /**
- * Partnerships content for a public (published) project.
+ * Partnerships content for a public project.
  *
  * @return {*}
  */

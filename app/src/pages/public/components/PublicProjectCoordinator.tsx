@@ -10,7 +10,7 @@ export interface IPublicProjectCoordinatorProps {
 }
 
 /**
- * Project coordinator content for a public (published) project.
+ * Project coordinator content for a public project.
  *
  * @return {*}
  */

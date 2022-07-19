@@ -12,7 +12,7 @@ const defaultLog = getLogger('paths/public/search');
 export const GET: Operation = [getSearchResults()];
 
 GET.apiDoc = {
-  description: 'Gets a list of published project geometries for public view',
+  description: 'Gets a list of project geometries for public view',
   tags: ['projects'],
   responses: {
     200: {

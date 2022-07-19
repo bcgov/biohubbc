@@ -10,7 +10,7 @@ const defaultLog = getLogger('paths/public/project/{projectId}/view');
 export const GET: Operation = [getPublicProjectForView()];
 
 GET.apiDoc = {
-  description: 'Get a public (published) project, for view-only purposes.',
+  description: 'Get a public project, for view-only purposes.',
   tags: ['project'],
   parameters: [
     {
@@ -281,7 +281,7 @@ GET.apiDoc = {
 };
 
 /**
- * Get a public (published) project by its id.
+ * Get a public project by its id.
  *
  * @returns {RequestHandler}
  */

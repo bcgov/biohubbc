@@ -11,7 +11,7 @@ export interface IPublicProjectObjectivesProps {
 }
 
 /**
- * Project objectives content for a public (published) project.
+ * Project objectives content for a public project.
  *
  * @return {*}
  */

@@ -14,7 +14,7 @@ export interface IPublicLocationBoundaryProps {
 }
 
 /**
- * Location boundary content for a public (published) project.
+ * Location boundary content for a public project.
  *
  * @return {*}
  */

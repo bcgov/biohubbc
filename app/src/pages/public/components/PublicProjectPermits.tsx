@@ -28,7 +28,7 @@ export interface IPublicProjectPermitsProps {
 }
 
 /**
- * Permits content for a public (published) project.
+ * Permits content for a public project.
  *
  * @return {*}
  */

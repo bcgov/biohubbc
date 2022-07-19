@@ -462,14 +462,14 @@ const useProjectApi = (axios: AxiosInstance) => {
 export default useProjectApi;
 
 /**
- * Returns a set of supported api methods for working with public (published) project records.
+ * Returns a set of supported api methods for working with public project records.
  *
  * @param {AxiosInstance} axios
  * @return {*} object whose properties are supported api methods.
  */
 export const usePublicProjectApi = (axios: AxiosInstance) => {
   /**
-   * Get public facing (published) projects list.
+   * Get public facing projects list.
    *
    * @return {*}  {Promise<IGetProjectsListResponse[]>}
    */
@@ -480,7 +480,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public (published) project details based on its ID for viewing purposes.
+   * Get public project details based on its ID for viewing purposes.
    *
    * @param {number} projectId
    * @return {*} {Promise<IGetProjectForViewResponse>}
@@ -492,7 +492,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public (published) project attachments based on project ID
+   * Get public project attachments based on project ID
    *
    * @param {number} projectId
    * @returns {*} {Promise<IGetProjectAttachmentsResponse>}
@@ -504,7 +504,7 @@ export const usePublicProjectApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get public (published) project attachment S3 url based on project and attachment ID
+   * Get public project attachment S3 url based on project and attachment ID
    *
    * @param {number} projectId
    * @param {number} attachmentId

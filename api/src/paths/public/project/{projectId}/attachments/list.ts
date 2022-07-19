@@ -11,7 +11,7 @@ const defaultLog = getLogger('/api/public/project/{projectId}/attachments/list')
 export const GET: Operation = [getPublicProjectAttachments()];
 
 GET.apiDoc = {
-  description: 'Fetches a list of attachments of a public (published) project.',
+  description: 'Fetches a list of attachments of a public project.',
   tags: ['attachments'],
   parameters: [
     {

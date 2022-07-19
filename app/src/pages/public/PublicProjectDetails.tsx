@@ -34,7 +34,7 @@ const useStyles = makeStyles((theme: Theme) => ({
 }));
 
 /**
- * Project details content for a public (published) project.
+ * Project details content for a public project.
  *
  * @return {*}
  */
