@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
@@ -128,6 +129,42 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     });
   };
 
+  const showUploadSurveyDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Upload Survey to Backbone',
+      dialogText: 'Are you sure you want to upload this survey, its attachments and associated observations?',
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      open: true,
+      onYes: () => {
+        uploadSurvey();
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const uploadSurvey = async () => {
+    if (!projectWithDetails || !surveyWithDetails) {
+      return;
+    }
+
+    try {
+      const response = await biohubApi.survey.uploadSurveyDataToBackbone(
+        projectWithDetails.id,
+        surveyWithDetails.surveyData.survey_details.id
+      );
+
+      if (!response) {
+        showDeleteErrorDialog({ open: true });
+        return;
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      return error;
+    }
+  };
+
   const deleteSurvey = async () => {
     if (!projectWithDetails || !surveyWithDetails) {
       return;
@@ -225,6 +262,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                   <span className={classes.surveyTitle}>{surveyWithDetails.surveyData.survey_details.survey_name}</span>
                 </Typography>
               </Box>
+
               <Box mb={0.75} display="flex" alignItems="center">
                 {getChipIcon(getSurveyCompletionStatusType(surveyWithDetails.surveyData))}
                 &nbsp;&nbsp;
@@ -238,7 +276,14 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 </Typography>
               </Box>
             </Box>
-            <Box ml={4} mb={4}>
+            <Box ml={4}>
+              {showDeleteSurveyButton && (
+                <Button size="small" color="primary" variant="outlined" onClick={showUploadSurveyDialog}>
+                  Publish to Backbone
+                </Button>
+              )}
+            </Box>
+            <Box ml={0.5} mb={4}>
               {showDeleteSurveyButton && (
                 <IconButton
                   data-testid="delete-survey-button"

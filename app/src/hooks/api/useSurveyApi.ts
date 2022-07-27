@@ -493,6 +493,10 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  const uploadSurveyDataToBackbone = async (projectId: number, surveyId: number): Promise<boolean> => {
+    return axios.post(`/api/project/${projectId}/survey/${surveyId}/upload`);
+  };
+
   return {
     createSurvey,
     getSurveyForView,
@@ -515,7 +519,8 @@ const useSurveyApi = (axios: AxiosInstance) => {
     makeAttachmentUnsecure,
     makeAttachmentSecure,
     getSummarySubmissionSignedURL,
-    deleteSummarySubmission
+    deleteSummarySubmission,
+    uploadSurveyDataToBackbone
   };
 };
 

@@ -2,9 +2,14 @@ import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
+import xml2js from 'xml2js';
+import { HTTP400 } from '../errors/custom-error';
+import { queries } from '../queries/queries';
+import { getFileFromS3 } from '../utils/file-utils';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
 import { DBService } from './service';
+import { SurveyService } from './survey-service';
 
 export interface IDwCADataset {
   archiveFile: {
@@ -137,4 +142,71 @@ export class PlatformService extends DBService {
 
     return data;
   }
+
+  async submitSurveyToBackbone(projectId: number, surveyId: number) {
+    if (!this.BACKBONE_INTAKE_ENABLED) {
+      return;
+    }
+
+    const xml2jsBuilder = new xml2js.Builder({ renderOpts: { pretty: false } });
+
+    console.log('xml2jsBuilder:', xml2jsBuilder);
+
+    const emlService = new EmlService({ projectId: projectId }, this.connection);
+    const surveyService = new SurveyService(this.connection);
+
+    const surveyData = await surveyService.getSurveyById(surveyId);
+
+    console.log('surveyData:', surveyData);
+
+    await emlService.loadCodes();
+
+    const emlRecord = await emlService.getSurveyEML(surveyData);
+
+    console.log('emlRecord:', emlRecord);
+
+    const surveyZip = new AdmZip();
+    surveyZip.addFile('eml.xml', Buffer.from(xml2jsBuilder.buildObject(emlRecord)));
+
+    const surveyAttachmentS3Keys: string[] = await this.getSurveyAttachmentS3Keys(surveyId);
+    console.log('surveyAttachmentS3Keys:', surveyAttachmentS3Keys);
+
+    if (surveyAttachmentS3Keys.length == 1) {
+      const s3File = await getFileFromS3(surveyAttachmentS3Keys[0]);
+
+      console.log('s3File:', s3File);
+    }
+
+    const dwCADataset = {
+      archiveFile: {
+        data: surveyZip.toBuffer(),
+        fileName: 'survey.zip',
+        mimeType: 'application/zip'
+      },
+      dataPackageId: emlService.packageId
+    };
+
+    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
+  }
+
+  getSurveyAttachmentS3Keys = async (surveyId: number) => {
+    const getSurveyAttachmentSQLStatement = queries.survey.getSurveyAttachmentsSQL(surveyId);
+
+    if (!getSurveyAttachmentSQLStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const getResult = await this.connection.query(
+      getSurveyAttachmentSQLStatement.text,
+      getSurveyAttachmentSQLStatement.values
+    );
+
+    console.log('getResult:', getResult);
+
+    if (!getResult || !getResult.rows) {
+      throw new HTTP400('Failed to get survey attachments');
+    }
+
+    return getResult.rows.map((attachment: any) => attachment.key);
+  };
 }
