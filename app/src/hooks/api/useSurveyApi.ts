@@ -493,6 +493,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
     return data;
   };
 
+  /**
+   * Upload Survey/Project/Observation data to Backbone
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}  {Promise<boolean>}
+   */
   const uploadSurveyDataToBackbone = async (projectId: number, surveyId: number): Promise<boolean> => {
     return axios.post(`/api/project/${projectId}/survey/${surveyId}/upload`);
   };

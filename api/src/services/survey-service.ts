@@ -223,6 +223,13 @@ export class SurveyService extends DBService {
     return (response && response.rows?.[0]) || null;
   }
 
+  /**
+   * Get latest survey data submission from id
+   *
+   * @param {number} surveyId
+   * @return {*}
+   * @memberof SurveyService
+   */
   async getLatestSurveyOccurrenceSubmission(surveyId: number) {
     const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
 

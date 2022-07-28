@@ -220,7 +220,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
   };
 
   // Show delete button if you are a system admin or a project admin
-  const showDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
+  const showServerAdminButtons = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
     SYSTEM_ROLE.PROJECT_CREATOR
   ]);
@@ -277,14 +277,14 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
               </Box>
             </Box>
             <Box ml={4}>
-              {showDeleteSurveyButton && (
+              {showServerAdminButtons && (
                 <Button size="small" color="primary" variant="outlined" onClick={showUploadSurveyDialog}>
-                  Publish to Backbone
+                  Submit Data
                 </Button>
               )}
             </Box>
             <Box ml={0.5} mb={4}>
-              {showDeleteSurveyButton && (
+              {showServerAdminButtons && (
                 <IconButton
                   data-testid="delete-survey-button"
                   onClick={showDeleteSurveyDialog}

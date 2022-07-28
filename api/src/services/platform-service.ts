@@ -141,7 +141,15 @@ export class PlatformService extends DBService {
     return data;
   }
 
-  async submitSurvey(projectId: number, surveyId: number) {
+  /**
+   * Upload Survey/Project/Observation data to Backbone
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}
+   * @memberof PlatformService
+   */
+  async uploadSurveyDataToBackbone(projectId: number, surveyId: number) {
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }
