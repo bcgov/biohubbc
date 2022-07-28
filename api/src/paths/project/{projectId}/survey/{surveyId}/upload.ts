@@ -89,10 +89,10 @@ export function uploadSurveyToBackbone(): RequestHandler {
 
       try {
         const platformService = new PlatformService(connection);
-        await platformService.submitSurveyToBackbone(projectId, surveyId);
+        await platformService.submitSurvey(projectId, surveyId);
       } catch (error) {
         // Don't fail the rest of the endpoint if submitting data fails
-        defaultLog.error({ label: 'uploadSurveyToBackbone->submitSurveyToBackbone', message: 'error', error });
+        defaultLog.error({ label: 'uploadSurveyToBackbone->submitSurvey', message: 'error', error });
       }
 
       await connection.commit();
