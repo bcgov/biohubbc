@@ -10,12 +10,11 @@ import { getLogger } from '../../../../../utils/logger';
 const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/upload');
 
 export const POST: Operation = [
-  authorizeRequestHandler((req) => {
+  authorizeRequestHandler(() => {
     return {
       and: [
         {
           validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
-          projectId: Number(req.params.projectId),
           discriminator: 'SystemRole'
         }
       ]
@@ -25,7 +24,7 @@ export const POST: Operation = [
 ];
 
 POST.apiDoc = {
-  description: 'upload survey/observation data to BioHub.',
+  description: 'Upload survey/observation data to BioHub.',
   tags: ['survey'],
   security: [
     {
@@ -54,15 +53,7 @@ POST.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Boolean true value representing successful deletion.',
-      content: {
-        'application/json': {
-          schema: {
-            title: 'Survey delete response',
-            type: 'boolean'
-          }
-        }
-      }
+      description: 'Upload survey/observation data to BioHub OK.'
     },
     401: {
       $ref: '#/components/responses/401'
@@ -92,7 +83,7 @@ export function uploadSurveyDataToBioHub(): RequestHandler {
 
       await connection.commit();
 
-      return res.status(200).json(true);
+      return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'uploadSurveyDataToBioHub', message: 'error', error });
       await connection.rollback();
