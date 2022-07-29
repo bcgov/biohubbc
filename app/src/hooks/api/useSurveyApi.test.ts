@@ -355,4 +355,14 @@ describe('useSurveyApi', () => {
 
     expect(result).toEqual('result 1');
   });
+
+  it('uploadSurveyDataToBackbone works as expected', async () => {
+
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/upload`).reply(200, true);
+
+    const result = await useSurveyApi(axios).uploadSurveyDataToBackbone(projectId, surveyId);
+
+    console.log('result:', result);
+    expect(result).toEqual(true);
+  });
 });
