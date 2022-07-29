@@ -132,7 +132,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
   const showUploadSurveyDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Upload Survey to Biohub',
+      dialogTitle: 'Upload Survey to BioHub',
       dialogText: 'Are you sure you want to upload this survey, its attachments and associated observations?',
       onClose: () => dialogContext.setYesNoDialog({ open: false }),
       onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -272,21 +272,21 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 </Typography>
               </Box>
             </Box>
-            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
-              <Box ml={4}>
+            <Box ml={0.5} mb={4} display="flex" justifyContent="space-between" alignItems="center">
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
                 <Button size="small" color="primary" variant="outlined" onClick={showUploadSurveyDialog}>
                   Submit Data
                 </Button>
-              </Box>
-            </SystemRoleGuard>
-            <Box ml={0.5} mb={4}>
+              </SystemRoleGuard>
               {enableDeleteSurveyButton && (
-                <IconButton
-                  data-testid="delete-survey-button"
-                  onClick={showDeleteSurveyDialog}
-                  disabled={!enableDeleteSurveyButton}>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </IconButton>
+                <Box ml={0.5}>
+                  <IconButton
+                    data-testid="delete-survey-button"
+                    onClick={showDeleteSurveyDialog}
+                    disabled={!enableDeleteSurveyButton}>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </IconButton>
+                </Box>
               )}
             </Box>
           </Box>
