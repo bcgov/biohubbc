@@ -21,11 +21,11 @@ export const POST: Operation = [
       ]
     };
   }),
-  uploadSurveyDataToBackbone()
+  uploadSurveyDataToBioHub()
 ];
 
 POST.apiDoc = {
-  description: 'upload survey/observation data to backbone.',
+  description: 'upload survey/observation data to BioHub.',
   tags: ['survey'],
   security: [
     {
@@ -73,7 +73,7 @@ POST.apiDoc = {
   }
 };
 
-export function uploadSurveyDataToBackbone(): RequestHandler {
+export function uploadSurveyDataToBioHub(): RequestHandler {
   return async (req, res) => {
     const projectId = Number(req.params.projectId);
     const surveyId = Number(req.params.surveyId);
@@ -87,19 +87,14 @@ export function uploadSurveyDataToBackbone(): RequestHandler {
     try {
       await connection.open();
 
-      try {
-        const platformService = new PlatformService(connection);
-        await platformService.uploadSurveyDataToBackbone(projectId, surveyId);
-      } catch (error) {
-        // Don't fail the rest of the endpoint if submitting data fails
-        defaultLog.error({ label: 'uploadSurveyDataToBackbone->uploadSurveyDataToBackbone', message: 'error', error });
-      }
+      const platformService = new PlatformService(connection);
+      await platformService.uploadSurveyDataToBioHub(projectId, surveyId);
 
       await connection.commit();
 
       return res.status(200).json(true);
     } catch (error) {
-      defaultLog.error({ label: 'uploadSurveyDataToBackbone', message: 'error', error });
+      defaultLog.error({ label: 'uploadSurveyDataToBioHub', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {

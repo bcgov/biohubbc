@@ -149,7 +149,7 @@ export class PlatformService extends DBService {
    * @return {*}
    * @memberof PlatformService
    */
-  async uploadSurveyDataToBackbone(projectId: number, surveyId: number) {
+  async uploadSurveyDataToBioHub(projectId: number, surveyId: number) {
     if (!this.BACKBONE_INTAKE_ENABLED) {
       return;
     }

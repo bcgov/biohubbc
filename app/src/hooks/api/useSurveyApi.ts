@@ -494,13 +494,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Upload Survey/Project/Observation data to Backbone
+   * Upload Survey/Project/Observation data to BioHub
    *
    * @param {number} projectId
    * @param {number} surveyId
    * @return {*}  {Promise<boolean>}
    */
-  const uploadSurveyDataToBackbone = async (projectId: number, surveyId: number): Promise<boolean> => {
+  const uploadSurveyDataToBioHub = async (projectId: number, surveyId: number): Promise<boolean> => {
     const response = await axios.post(`/api/project/${projectId}/survey/${surveyId}/upload`);
 
     return response.data;
@@ -529,7 +529,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     makeAttachmentSecure,
     getSummarySubmissionSignedURL,
     deleteSummarySubmission,
-    uploadSurveyDataToBackbone
+    uploadSurveyDataToBioHub
   };
 };
 
