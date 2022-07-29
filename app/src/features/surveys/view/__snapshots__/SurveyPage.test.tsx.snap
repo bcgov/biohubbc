@@ -201,34 +201,34 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
               class="MuiTouchRipple-root"
             />
           </button>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-201"
-        >
-          <button
-            class="MuiButtonBase-root MuiIconButton-root"
-            data-testid="delete-survey-button"
-            tabindex="0"
-            type="button"
+          <div
+            class="MuiBox-root MuiBox-root-201"
           >
-            <span
-              class="MuiIconButton-label"
+            <button
+              class="MuiButtonBase-root MuiIconButton-root"
+              data-testid="delete-survey-button"
+              tabindex="0"
+              type="button"
             >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
+              <span
+                class="MuiIconButton-label"
               >
-                <path
-                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
         </div>
       </div>
     </div>
@@ -1583,34 +1583,34 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
               class="MuiTouchRipple-root"
             />
           </button>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-139"
-        >
-          <button
-            class="MuiButtonBase-root MuiIconButton-root"
-            data-testid="delete-survey-button"
-            tabindex="0"
-            type="button"
+          <div
+            class="MuiBox-root MuiBox-root-139"
           >
-            <span
-              class="MuiIconButton-label"
+            <button
+              class="MuiButtonBase-root MuiIconButton-root"
+              data-testid="delete-survey-button"
+              tabindex="0"
+              type="button"
             >
-              <svg
-                role="presentation"
-                style="width: 1.5rem; height: 1.5rem;"
-                viewBox="0 0 24 24"
+              <span
+                class="MuiIconButton-label"
               >
-                <path
-                  d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                  style="fill: currentColor;"
-                />
-              </svg>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
+                <svg
+                  role="presentation"
+                  style="width: 1.5rem; height: 1.5rem;"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                    style="fill: currentColor;"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+          </div>
         </div>
       </div>
     </div>
