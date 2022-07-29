@@ -13,6 +13,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { SurveyStatusType } from 'constants/misc';
@@ -131,7 +132,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
 
   const showUploadSurveyDialog = () => {
     dialogContext.setYesNoDialog({
-      dialogTitle: 'Upload Survey to Backbone',
+      dialogTitle: 'Upload Survey to Biohub',
       dialogText: 'Are you sure you want to upload this survey, its attachments and associated observations?',
       onClose: () => dialogContext.setYesNoDialog({ open: false }),
       onNo: () => dialogContext.setYesNoDialog({ open: false }),
@@ -149,7 +150,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.survey.uploadSurveyDataToBackbone(
+      const response = await biohubApi.survey.uploadSurveyDataToBioHub(
         projectWithDetails.id,
         surveyWithDetails.surveyData.survey_details.id
       );
@@ -219,11 +220,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
-  // Show delete button if you are a system admin or a project admin
-  const showServerAdminButtons = keycloakWrapper?.hasSystemRole([
-    SYSTEM_ROLE.SYSTEM_ADMIN,
-    SYSTEM_ROLE.PROJECT_CREATOR
-  ]);
   // Enable delete button if you a system admin or a project admin
   const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
@@ -276,15 +272,15 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 </Typography>
               </Box>
             </Box>
-            <Box ml={4}>
-              {showServerAdminButtons && (
+            <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+              <Box ml={4}>
                 <Button size="small" color="primary" variant="outlined" onClick={showUploadSurveyDialog}>
                   Submit Data
                 </Button>
-              )}
-            </Box>
+              </Box>
+            </SystemRoleGuard>
             <Box ml={0.5} mb={4}>
-              {showServerAdminButtons && (
+              {enableDeleteSurveyButton && (
                 <IconButton
                   data-testid="delete-survey-button"
                   onClick={showDeleteSurveyDialog}

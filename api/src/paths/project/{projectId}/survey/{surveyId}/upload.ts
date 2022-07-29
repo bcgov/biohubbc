@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../constants/roles';
+import { SYSTEM_ROLE } from '../../../../../constants/roles';
 import { getDBConnection } from '../../../../../database/db';
 import { HTTP400 } from '../../../../../errors/custom-error';
 import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
@@ -14,9 +14,9 @@ export const POST: Operation = [
     return {
       and: [
         {
-          validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD],
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN],
           projectId: Number(req.params.projectId),
-          discriminator: 'ProjectRole'
+          discriminator: 'SystemRole'
         }
       ]
     };
