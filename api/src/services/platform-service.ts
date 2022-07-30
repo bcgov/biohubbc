@@ -2,9 +2,12 @@ import AdmZip from 'adm-zip';
 import axios from 'axios';
 import FormData from 'form-data';
 import { URL } from 'url';
+import { HTTP400 } from '../errors/custom-error';
+import { getFileFromS3 } from '../utils/file-utils';
 import { EmlService } from './eml-service';
 import { KeycloakService } from './keycloak-service';
 import { DBService } from './service';
+import { SurveyService } from './survey-service';
 
 export interface IDwCADataset {
   archiveFile: {
@@ -136,5 +139,52 @@ export class PlatformService extends DBService {
     });
 
     return data;
+  }
+
+  /**
+   * Upload Survey/Project/Observation data to Backbone
+   *
+   * @param {number} projectId
+   * @param {number} surveyId
+   * @return {*}
+   * @memberof PlatformService
+   */
+  async uploadSurveyDataToBioHub(projectId: number, surveyId: number) {
+    if (!this.BACKBONE_INTAKE_ENABLED) {
+      return;
+    }
+
+    const surveyService = new SurveyService(this.connection);
+    const surveyData = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+
+    if (!surveyData.output_key) {
+      throw new HTTP400('no s3Key found');
+    }
+    const s3File = await getFileFromS3(surveyData.output_key);
+
+    if (!s3File) {
+      throw new HTTP400('no s3File found');
+    }
+    const dwcArchiveZip = new AdmZip(s3File.Body as Buffer);
+
+    const emlService = new EmlService({ projectId: projectId }, this.connection);
+    const emlString = await emlService.buildProjectEml();
+
+    if (!emlString) {
+      throw new HTTP400('emlString failed to build');
+    }
+
+    dwcArchiveZip.addFile('eml.xml', Buffer.from(emlString));
+
+    const dwCADataset = {
+      archiveFile: {
+        data: dwcArchiveZip.toBuffer(),
+        fileName: 'DwCA.zip',
+        mimeType: 'application/zip'
+      },
+      dataPackageId: emlService.packageId
+    };
+
+    return this._submitDwCADatasetToBioHubBackbone(dwCADataset);
   }
 }

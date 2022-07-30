@@ -355,4 +355,12 @@ describe('useSurveyApi', () => {
 
     expect(result).toEqual('result 1');
   });
+
+  it('uploadSurveyDataToBioHub works as expected', async () => {
+    mock.onPost(`/api/project/${projectId}/survey/${surveyId}/upload`).reply(200, true);
+
+    const result = await useSurveyApi(axios).uploadSurveyDataToBioHub(projectId, surveyId);
+
+    expect(result).toEqual(true);
+  });
 });

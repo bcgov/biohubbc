@@ -1,5 +1,6 @@
 import chai, { expect } from 'chai';
 import { describe } from 'mocha';
+import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { PutSurveyObject } from '../models/survey-update';
@@ -80,6 +81,27 @@ describe('SurveyService', () => {
       expect(updateSurveyPermitDataStub).to.have.been.calledOnce;
       expect(updateSurveyFundingDataStub).to.have.been.calledOnce;
       expect(updateSurveyProprietorDataStub).to.have.been.calledOnce;
+    });
+  });
+
+  describe('getLatestSurveyOccurrenceSubmission', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('Gets latest survey submission', async () => {
+      const mockRowObj = { id: 123 };
+      const mockQueryResponse = ({ rows: [mockRowObj] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+
+      const surveyId = 1;
+
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getLatestSurveyOccurrenceSubmission(surveyId);
+
+      expect(response).to.eql({ id: 123 });
     });
   });
 });

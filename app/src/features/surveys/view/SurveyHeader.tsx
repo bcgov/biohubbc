@@ -1,3 +1,4 @@
+import { Button } from '@material-ui/core';
 import Box from '@material-ui/core/Box';
 import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Chip from '@material-ui/core/Chip';
@@ -12,6 +13,7 @@ import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import clsx from 'clsx';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
+import { SystemRoleGuard } from 'components/security/Guards';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { DeleteSurveyI18N } from 'constants/i18n';
 import { SurveyStatusType } from 'constants/misc';
@@ -128,6 +130,42 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     });
   };
 
+  const showUploadSurveyDialog = () => {
+    dialogContext.setYesNoDialog({
+      dialogTitle: 'Upload Survey to BioHub',
+      dialogText: 'Are you sure you want to upload this survey, its attachments and associated observations?',
+      onClose: () => dialogContext.setYesNoDialog({ open: false }),
+      onNo: () => dialogContext.setYesNoDialog({ open: false }),
+      open: true,
+      onYes: () => {
+        uploadSurvey();
+        dialogContext.setYesNoDialog({ open: false });
+      }
+    });
+  };
+
+  const uploadSurvey = async () => {
+    if (!projectWithDetails || !surveyWithDetails) {
+      return;
+    }
+
+    try {
+      const response = await biohubApi.survey.uploadSurveyDataToBioHub(
+        projectWithDetails.id,
+        surveyWithDetails.surveyData.survey_details.id
+      );
+
+      if (!response) {
+        showDeleteErrorDialog({ open: true });
+        return;
+      }
+    } catch (error) {
+      const apiError = error as APIError;
+      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      return error;
+    }
+  };
+
   const deleteSurvey = async () => {
     if (!projectWithDetails || !surveyWithDetails) {
       return;
@@ -182,11 +220,6 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     return <Chip size="small" className={clsx(classes.chip, chipStatusClass)} label={chipLabel} />;
   };
 
-  // Show delete button if you are a system admin or a project admin
-  const showDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
-    SYSTEM_ROLE.SYSTEM_ADMIN,
-    SYSTEM_ROLE.PROJECT_CREATOR
-  ]);
   // Enable delete button if you a system admin or a project admin
   const enableDeleteSurveyButton = keycloakWrapper?.hasSystemRole([
     SYSTEM_ROLE.SYSTEM_ADMIN,
@@ -225,6 +258,7 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                   <span className={classes.surveyTitle}>{surveyWithDetails.surveyData.survey_details.survey_name}</span>
                 </Typography>
               </Box>
+
               <Box mb={0.75} display="flex" alignItems="center">
                 {getChipIcon(getSurveyCompletionStatusType(surveyWithDetails.surveyData))}
                 &nbsp;&nbsp;
@@ -238,14 +272,21 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
                 </Typography>
               </Box>
             </Box>
-            <Box ml={4} mb={4}>
-              {showDeleteSurveyButton && (
-                <IconButton
-                  data-testid="delete-survey-button"
-                  onClick={showDeleteSurveyDialog}
-                  disabled={!enableDeleteSurveyButton}>
-                  <Icon path={mdiTrashCanOutline} size={1} />
-                </IconButton>
+            <Box ml={0.5} mb={4} display="flex" justifyContent="space-between" alignItems="center">
+              <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
+                <Button size="small" color="primary" variant="outlined" onClick={showUploadSurveyDialog}>
+                  Submit Data
+                </Button>
+              </SystemRoleGuard>
+              {enableDeleteSurveyButton && (
+                <Box ml={0.5}>
+                  <IconButton
+                    data-testid="delete-survey-button"
+                    onClick={showDeleteSurveyDialog}
+                    disabled={!enableDeleteSurveyButton}>
+                    <Icon path={mdiTrashCanOutline} size={1} />
+                  </IconButton>
+                </Box>
               )}
             </Box>
           </Box>

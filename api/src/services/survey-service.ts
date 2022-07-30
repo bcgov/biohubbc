@@ -223,6 +223,25 @@ export class SurveyService extends DBService {
     return (response && response.rows?.[0]) || null;
   }
 
+  /**
+   * Get latest survey data submission from id
+   *
+   * @param {number} surveyId
+   * @return {*}
+   * @memberof SurveyService
+   */
+  async getLatestSurveyOccurrenceSubmission(surveyId: number) {
+    const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new ApiGeneralError('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    return (response && response.rows?.[0]) || null;
+  }
+
   async getSummaryResultId(surveyId: number) {
     const sqlStatement = queries.survey.getLatestSummaryResultIdSQL(surveyId);
 

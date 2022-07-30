@@ -159,6 +159,8 @@ export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLSta
       os.event_timestamp,
       os.input_key,
       os.input_file_name,
+      os.output_key,
+      os.output_file_name,
       ss.submission_status_id,
       ss.submission_status_type_id,
       sst.name as submission_status_type_name,
