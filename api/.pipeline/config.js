@@ -84,7 +84,7 @@ const phases = {
       `${appName}-${changeId}-af2668-dev.apps.silver.devops.gov.bc.ca`,
     backboneApiHost: 'https://api-dev-biohub-platform.apps.silver.devops.gov.bc.ca',
     backboneIntakePath: '/api/dwc/submission/intake',
-    backboneIntakeEnabled: false,
+    backboneIntakeEnabled: true,
     env: 'dev',
     elasticsearchURL: 'https://elasticsearch-af2668-dev.apps.silver.devops.gov.bc.ca',
     tz: config.timezone.api,
