@@ -150,18 +150,20 @@ const SurveyHeader: React.FC<ISurveyHeaderProps> = (props) => {
     }
 
     try {
-      const response = await biohubApi.survey.uploadSurveyDataToBioHub(
+      await biohubApi.survey.uploadSurveyDataToBioHub(
         projectWithDetails.id,
         surveyWithDetails.surveyData.survey_details.id
       );
-
-      if (!response) {
-        showDeleteErrorDialog({ open: true });
-        return;
-      }
     } catch (error) {
       const apiError = error as APIError;
-      showDeleteErrorDialog({ dialogText: apiError.message, open: true });
+      dialogContext.setErrorDialog({
+        open: true,
+        dialogTitle: 'Failed to Upload to BioHub',
+        dialogText: 'Failed to Upload to BioHub',
+        dialogError: apiError.message,
+        onClose: () => dialogContext.setErrorDialog({ open: false }),
+        onOk: () => dialogContext.setErrorDialog({ open: false })
+      });
       return error;
     }
   };
