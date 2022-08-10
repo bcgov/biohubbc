@@ -222,7 +222,6 @@ export const mooseSRBOrCompositionJSON = {
               'Lat',
               'Long',
               'Lat/Long Units',
-              'GPS Unit Name',
               'Species',
               'Yearling Bulls',
               'Adult Bulls - Unclassified',

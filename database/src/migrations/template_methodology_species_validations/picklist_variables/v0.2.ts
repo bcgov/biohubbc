@@ -1,14 +1,3 @@
-const YNcodes = [
-  { name: 'Y', description: 'Yes' },
-  { name: 'N', description: 'No' }
-];
-
-const YNDcodes = [
-  { name: 'Y', description: 'Yes' },
-  { name: 'N', description: 'No' },
-  { name: "Didn''t Listen", description: "Didn''t Listen" }
-];
-
 const AircraftType = [
   { name: 'Bell JetRanger', description: '' },
   { name: 'Bell LongRanger', description: '' },
@@ -209,7 +198,7 @@ const FeatureType = [
   { name: 'Described in Comments' }
 ];
 
-const DefaultSignType = [
+const SignType = [
   { name: 'Antler' },
   { name: 'Body Parts' },
   { name: 'Cache' },
@@ -229,53 +218,6 @@ const DefaultSignType = [
   { name: 'Described in Comments' }
 ];
 
-const Habitat = [
-  { name: 'Alpine' },
-  { name: 'Alpine Barren' },
-  { name: 'Alpine Heath Meadows' },
-  { name: 'Avalanche Path' },
-  { name: 'Broken Cliffs' },
-  { name: 'Broken Cliffs in Timber' },
-  { name: 'Burn' },
-  { name: 'Caves' },
-  { name: 'Clearout' },
-  { name: 'Cliff' },
-  { name: 'Cliff in Forest' },
-  { name: 'Coniferous' },
-  { name: 'Deciduous' },
-  { name: 'Dissected Cliffs' },
-  { name: 'Flat or Open Slopes' },
-  { name: 'Glacier' },
-  { name: 'Grass' },
-  { name: 'Krummholtz' },
-  { name: 'Mixed Wood' },
-  { name: 'Moraine' },
-  { name: 'Ridge' },
-  { name: 'Riparian' },
-  { name: 'Rock/Talus' },
-  { name: 'Scree' },
-  { name: 'Shrub' },
-  { name: 'Snow' },
-  { name: 'Sub-Alpine' },
-  { name: 'Talus/Slope' },
-  { name: 'Terraces' },
-  { name: 'Timber' },
-  { name: 'Wetland/Meadow' },
-  { name: 'Willow/Shrub' }
-];
-
-const HabitatSlope = [
-  { name: 'Flat (0%)', description: 'Flat (0%)' },
-  { name: 'Minimum (5-20%)', description: 'Minimum (5-20%)' },
-  { name: 'Moderate (20-50%', description: 'Moderate (20-50%' },
-  { name: 'Steep (>50%)', description: 'Steep (>50%)' }
-];
-
-const SignAge = [
-  { name: 'Fresh', description: 'Fresh' },
-  { name: 'Old', description: 'Old' }
-];
-
 const SheepSpecies = [
   { name: 'Bighorn Sheep' },
   { name: 'Ovis canadensis' },
@@ -289,18 +231,6 @@ const SheepSpecies = [
   { name: 'M-OVDA' }
 ];
 
-const SheepSignType = [
-  { name: 'Bed' },
-  { name: 'Body Parts' },
-  { name: 'Carcass' },
-  { name: 'Described in Comments' },
-  { name: 'Feeding' },
-  { name: 'Hair' },
-  { name: 'Pellet Group' },
-  { name: 'Trail' },
-  { name: 'Tracks' }
-];
-
 const MooseSpecies = [
   { name: 'Moose' },
   { name: 'Alces Alces' },
@@ -309,40 +239,7 @@ const MooseSpecies = [
   { name: 'M-ALAM' }
 ];
 
-const MooseSignType = [
-  { name: 'Antler' },
-  { name: 'Body Parts' },
-  { name: 'Cache' },
-  { name: 'Carcass' },
-  { name: 'Described in Comments' },
-  { name: 'Egg Shell' },
-  { name: 'Excrement' },
-  { name: 'Feeding' },
-  { name: 'Feather' },
-  { name: 'Hair' },
-  { name: 'Pellet Group' },
-  { name: 'Scratchings' },
-  { name: 'Regurgitated Pellet' },
-  { name: 'Shed Skin' },
-  { name: 'Trail' },
-  { name: 'Tracks' },
-  { name: 'Whitewash' }
-];
-
 const GoatSpecies = [{ name: 'Mountain Goat' }, { name: 'Oreamnos americanus' }, { name: 'M-ORAM' }, { name: 'ORAM' }];
-
-const GoatSignType = [
-  { name: 'Bed' },
-  { name: 'Body Parts' },
-  { name: 'Carcass' },
-  { name: 'Described in Comments' },
-  { name: 'Feeding' },
-  { name: 'Hair' },
-  { name: 'Pellet Group' },
-  { name: 'Trail' },
-  { name: 'Tracks' }
-];
-
 interface objectNameDescription {
   name: string;
   description?: string;
@@ -372,8 +269,6 @@ export function basicCodeValidator(codeValues: objectNameDescription[]) {
 }
 
 export const defaultPicklist = {
-  yN: YNcodes,
-  yNDidnt: YNDcodes,
   aircraftType: AircraftType,
   light: Light,
   uTMZone: UTMZone,
@@ -391,26 +286,20 @@ export const defaultPicklist = {
   speciesOccurrenceStatus: SpeciesOccurrenceStatus,
   activityIncidentalObservation: ActivityIncidentalObservation,
   featureType: FeatureType,
-  signType: DefaultSignType,
-  habitat: Habitat,
-  habitatSlope: HabitatSlope,
-  signAge: SignAge
+  signType: SignType
 };
 
 export const SheepItems = {
   ...defaultPicklist,
-  species: SheepSpecies,
-  speciesSignType: SheepSignType
+  species: SheepSpecies
 };
 
 export const GoatItems = {
   ...defaultPicklist,
-  species: GoatSpecies,
-  speciesSignType: GoatSignType
+  species: GoatSpecies
 };
 
 export const MooseItems = {
   ...defaultPicklist,
-  species: MooseSpecies,
-  speciesSignType: MooseSignType
+  species: MooseSpecies
 };

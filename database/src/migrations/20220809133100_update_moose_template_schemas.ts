@@ -17,10 +17,6 @@ enum COMMON_SURVEY_METHODOLOGY {
   STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block'
 }
 
-enum SPECIES_NAME {
-  MOOSE = 'Moose'
-}
-
 enum TEMPLATE_NAME {
   MOOSE_SRB_OR_COMPOSITION_SURVEY = 'Moose SRB or Composition Survey'
 }
@@ -30,8 +26,7 @@ const transformationAndValidationSchemas = [
   {
     v_schema: JSON.stringify(moose_srb_or_composition_validation),
     t_schema: moose_srb_or_composition_transformation.toString(),
-    cms: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
-    species: SPECIES_NAME.MOOSE,
+    field_method: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
     template: TEMPLATE_NAME.MOOSE_SRB_OR_COMPOSITION_SURVEY
   }
 ];
@@ -53,8 +48,7 @@ export async function up(knex: Knex): Promise<void> {
       ${updateValidationAndTransformation(
         v_t_schema.v_schema,
         v_t_schema.t_schema,
-        v_t_schema.cms,
-        v_t_schema.species,
+        v_t_schema.field_method,
         v_t_schema.template
       )}
     `);
@@ -74,15 +68,14 @@ export async function down(knex: Knex): Promise<void> {
  * 3) template name
  *
  * @param {string} transformationSchema validation rules config
- * @param {string} csm common survey methodology needed for the query
+ * @param {string} field_method field methodology needed for the query
  * @param {string} species species `english name` from the wldtaxonomic_units table needed for the query
  * @param {string} template name of the template
  */
 const updateValidationAndTransformation = (
   validationSchema: string,
   transformationSchema: string,
-  csm: string,
-  species: string,
+  field_method: string,
   template: string
 ) => `
   UPDATE
@@ -97,23 +90,15 @@ const updateValidationAndTransformation = (
     FROM
       template_methodology_species tms
     LEFT JOIN
-      common_survey_methodology csm
+      field_method fm
     ON
-      tms.common_survey_methodology_id = csm.common_survey_methodology_id
-    LEFT JOIN
-      wldtaxonomic_units wu
-    ON
-      tms.wldtaxonomic_units_id = wu.wldtaxonomic_units_id
+      tms.field_method_id = fm.field_method_id
     LEFT JOIN
       template t
     ON
       tms.template_id = t.template_id
     WHERE
-      csm.name = '${csm}'
-    AND
-      wu.english_name = '${species}'
-    AND
-      wu.end_date isnull
+      fm.name = '${field_method}'
     AND
       t.name = '${template}'
     );
