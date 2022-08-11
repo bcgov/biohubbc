@@ -1,5 +1,7 @@
 const AircraftType = [
   { name: 'Bell JetRanger', description: '' },
+  { name: 'Bell JetRanger with bubble window', description: '' },
+  { name: 'Bell JetRanger without bubble window', description: '' },
   { name: 'Bell LongRanger', description: '' },
   { name: 'Hiller 12E4', description: '' },
   { name: 'Hughes 500D', description: '' },
@@ -11,7 +13,9 @@ const AircraftType = [
   { name: 'SuperCub', description: '' },
   { name: 'Beaver', description: '' },
   { name: 'Single Otter', description: '' },
-  { name: 'Twin Otter', description: '' }
+  { name: 'Twin Otter', description: '' },
+  { name: 'Bell 406', description: '' },
+  { name: 'A-Star', description: '' }
 ];
 
 const Light = [
@@ -23,6 +27,7 @@ const Light = [
 const UTMZone = [
   { name: '7', description: '' },
   { name: '8', description: '' },
+  { name: '9', description: '' },
   { name: '10', description: '' },
   { name: '11', description: '' }
 ];
@@ -40,8 +45,8 @@ const LatLongUnits = [
 ];
 
 const ActivityObservation = [
-  { name: 'Bedding' },
   { name: 'Standing' },
+  { name: 'Bedding' },
   { name: 'Running' },
   { name: 'Walking' },
   { name: 'Moving' }
@@ -133,11 +138,11 @@ const SpeciesOccurrenceStatus = [
 
 const ActivityIncidentalObservation = [
   { name: 'Alert' },
-  { name: 'Avoiding' },
   { name: 'Avoiding Pests' },
   { name: 'Basking' },
   { name: 'Bedding' },
   { name: 'Building' },
+  { name: 'Cashing' },
   { name: 'Casting' },
   { name: 'Courting' },
   { name: 'Denning' },
@@ -148,6 +153,7 @@ const ActivityIncidentalObservation = [
   { name: 'Fleeing' },
   { name: 'Feeding salmonid' },
   { name: 'Grooming' },
+  { name: 'Habitat' },
   { name: 'Hibernating' },
   { name: 'Hunting' },
   { name: 'Ingesting Minerals' },
@@ -159,15 +165,23 @@ const ActivityIncidentalObservation = [
   { name: 'Reproducing eggs' },
   { name: 'Rearing' },
   { name: 'Standing' },
+  { name: 'Security' },
+  { name: 'Security and/or Thermal' },
+  { name: 'Thermal' },
   { name: 'Territoriality' },
-  { name: 'Traveling flying' },
-  { name: 'Traveling other' },
-  { name: 'Traveling running' },
-  { name: 'Traveling swimming' },
-  { name: 'Traveling unclassified' },
-  { name: 'Traveling walking' },
+  { name: 'Traveling, Flying' },
+  { name: 'Traveling, Unclassified' },
+  { name: 'Traveling, Walking' },
+  { name: 'Traveling on a Path' },
+  { name: 'Traveling, Running' },
+  { name: 'Traveling, Swimming' },
+  { name: 'Traveling, Heli-Skiing' },
+  { name: 'Traveling, Skiing' },
+  { name: 'Traveling, Snowmobiling' },
+  { name: 'Traveling, Snowshoeing' },
+  { name: 'Traveling, Snow Cat' },
   { name: 'Urinating' },
-  { name: 'Activity described in comments' }
+  { name: 'Described in comments' }
 ];
 
 const FeatureType = [
