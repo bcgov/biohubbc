@@ -1,3 +1,8 @@
+const yN = [
+  { name: 'Y', description: '' },
+  { name: 'N', description: '' }
+];
+
 const AircraftType = [
   { name: 'Bell JetRanger', description: '' },
   { name: 'Bell JetRanger with bubble window', description: '' },
@@ -283,6 +288,7 @@ export function basicCodeValidator(codeValues: objectNameDescription[]) {
 }
 
 export const defaultPicklist = {
+  yN: yN,
   aircraftType: AircraftType,
   light: Light,
   uTMZone: UTMZone,

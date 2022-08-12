@@ -1,5 +1,5 @@
 import { basicCodeValidator, basicNumericValidator, MooseItems } from './picklist_variables/v0.2';
-export const mooseSRBOrCompositionJSON = {
+export const mooseCompositionJSON = {
   name: '',
   description: '',
   files: [
@@ -349,7 +349,7 @@ export const mooseSRBOrCompositionJSON = {
       ]
     },
     {
-      name: 'NonTargeted Observations',
+      name: 'Incidental Observations',
       description: '',
       columns: [
         {
