@@ -1,22 +1,22 @@
-import { useCallback, useEffect, useState } from 'react';
-import { useAsync } from './useAsync';
+import { useState } from 'react';
+import { AsyncFunction, useAsync } from './useAsync';
 import useIsMounted from './useIsMounted';
 
-export type DataLoader<T = unknown, R = unknown> = {
+export type DataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unknown> = {
   /**
-   * Set to the response of the `fetchData` call.
+   * The response of the `fetchData` call.
    *
-   * @type {(T | undefined)}
+   * @type {(AFResponse | undefined)}
    */
-  data: T | undefined;
+  data: AFResponse | undefined;
   /**
    * The error caught if the `fetchData` call throws.
    *
-   * @type {(R | unknown)}
+   * @type {(AFError | unknown)}
    */
-  error: R | unknown;
+  error: AFError | unknown;
   /**
-   *`true` if the `fetchData` function is currently executing.
+   * `true` if the `fetchData` function is currently executing.
    *
    * @type {boolean}
    */
@@ -28,42 +28,56 @@ export type DataLoader<T = unknown, R = unknown> = {
    */
   isReady: boolean;
   /**
-   * Manually execute the `fetchData` function again.
-   *
+   * Executes the `fetchData` function once, only if it has never been called before. Does nothing if called again.
    */
-  refresh: () => void;
+  load: (...args: AFArgs) => void;
+  /**
+   * Executes the `fetchData` function again.
+   */
+  refresh: (...args: AFArgs) => void;
+  /**
+   * Clears any errors caught from a failed `fetchData` call.
+   */
+  clear: () => void;
 };
 
 /**
- * Hook for fetching data.
+ * Hook that wraps an async function.
  *
- * Note: This hook will prevent subsequent calls to `fetchData` if an existing call is in progress.
+ * Note: Runs each time `refresh` is called.
+ *
+ * Note: This hook will prevent additional calls to `fetchData` if an existing call is in progress.
  *
  * @export
- * @template T
- * @template R
- * @param {() => Promise<T>} fetchData
- * @param {((error: R | unknown) => void)} [onError]
- * @return {*}  {DataLoader<T, R>}
+ * @template AFArgs `AsyncFunction` argument types.
+ * @template AFResponse `AsyncFunction` response type.
+ * @template AFError `AsyncFunction` error type.
+ * @param {AsyncFunction<AFArgs, AFResponse>} fetchData An async function.
+ * @param {((error: AFError | unknown) => void)} [onError] An optional error handler function that will be called if the
+ * `fetchData` function throws an error.
+ * - If set to `true`, the `fetchData` function will run on initial load, and each time `refresh` is called.
+ * - If set to `false` the `fetchData` function will run each time `refresh` is called.
+ * @return {*}  {DataLoader<AFArgs, AFResponse, AFError>}
  */
-export default function useDataLoader<T = unknown, R = unknown>(
-  fetchData: () => Promise<T>,
-  onError?: (error: R | unknown) => void
-): DataLoader<T, R> {
-  const [data, setData] = useState<T>();
-  const [error, setError] = useState<R | unknown>();
+export default function useDataLoader<AFArgs extends any[], AFResponse = unknown, AFError = unknown>(
+  fetchData: AsyncFunction<AFArgs, AFResponse>,
+  onError?: (error: AFError | unknown) => void
+): DataLoader<AFArgs, AFResponse, AFError> {
+  const [data, setData] = useState<AFResponse>();
+  const [error, setError] = useState<AFError | unknown>();
   const [isLoading, setIsLoading] = useState(false);
   const [isReady, setIsReady] = useState(false);
+  const [isOneTimeLoad, setOneTimeLoad] = useState(false);
 
   const isMounted = useIsMounted();
 
   const getData = useAsync(fetchData);
 
-  const loadData = useCallback(async () => {
+  const loadData = async (...args: AFArgs) => {
     try {
       setIsLoading(true);
 
-      const response = await getData();
+      const response = await getData(...args);
 
       if (!isMounted) {
         return;
@@ -82,22 +96,27 @@ export default function useDataLoader<T = unknown, R = unknown>(
       setIsLoading(false);
       setIsReady(true);
     }
-  }, [getData, onError, isMounted]);
+  };
 
-  useEffect(() => {
-    if (data || error) {
+  const load = (...args: AFArgs) => {
+    if (isOneTimeLoad) {
       return;
     }
 
-    loadData();
-  }, [data, error, getData, loadData]);
+    setOneTimeLoad(true);
+    loadData(...args);
+  };
 
-  const refresh = () => {
+  const refresh = (...args: AFArgs) => {
     setError(undefined);
     setIsLoading(false);
     setIsReady(false);
-    loadData();
+    loadData(...args);
   };
 
-  return { data, error, isLoading, isReady, refresh };
+  const clear = () => {
+    setError(undefined);
+  };
+
+  return { data, error, isLoading, isReady, load, refresh, clear };
 }
