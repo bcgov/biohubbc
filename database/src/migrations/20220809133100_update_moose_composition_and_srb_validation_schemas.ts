@@ -7,9 +7,6 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const moose_composition_validation = mooseCompositionJSON;
 const moose_srb_validation = mooseSrbJSON;
 
-console.log('moose_composition_validation:', JSON.stringify(moose_composition_validation));
-console.log('moose_srb_validation:', JSON.stringify(moose_srb_validation));
-
 enum COMMON_SURVEY_METHODOLOGY {
   COMPOSITION = 'Composition',
   STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block'
