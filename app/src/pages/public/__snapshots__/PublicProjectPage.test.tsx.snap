@@ -9,21 +9,21 @@ exports[`PublicProjectPage renders correctly with no end date 1`] = `
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-35"
+        class="MuiBox-root MuiBox-root-20"
       >
         <div
-          class="MuiBox-root MuiBox-root-36"
+          class="MuiBox-root MuiBox-root-21"
         >
           <div
-            class="MuiBox-root MuiBox-root-37"
+            class="MuiBox-root MuiBox-root-22"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-34 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-5 MuiTypography-h1"
             >
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-31 makeStyles-chipActive-32 MuiChip-sizeSmall"
+              class="MuiChip-root makeStyles-chip-2 makeStyles-chipActive-3 MuiChip-sizeSmall"
             >
               <span
                 class="MuiChip-label MuiChip-labelSmall"
@@ -33,7 +33,7 @@ exports[`PublicProjectPage renders correctly with no end date 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-38"
+            class="MuiBox-root MuiBox-root-23"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -54,17 +54,17 @@ exports[`PublicProjectPage renders correctly with no end date 1`] = `
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-39"
+      class="MuiBox-root MuiBox-root-24"
     >
       <aside
-        class="MuiBox-root MuiBox-root-40"
+        class="MuiBox-root MuiBox-root-25"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-30 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-1 MuiList-padding"
             role="navigation"
           >
             <a
@@ -127,7 +127,7 @@ exports[`PublicProjectPage renders correctly with no end date 1`] = `
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-41"
+        class="MuiBox-root MuiBox-root-26"
       />
     </div>
   </div>
@@ -143,21 +143,21 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-11"
+        class="MuiBox-root MuiBox-root-6"
       >
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiBox-root MuiBox-root-7"
         >
           <div
-            class="MuiBox-root MuiBox-root-13"
+            class="MuiBox-root MuiBox-root-8"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-10 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-5 MuiTypography-h1"
             >
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-7 makeStyles-chipActive-8 MuiChip-sizeSmall"
+              class="MuiChip-root makeStyles-chip-2 makeStyles-chipActive-3 MuiChip-sizeSmall"
             >
               <span
                 class="MuiChip-label MuiChip-labelSmall"
@@ -167,7 +167,7 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-14"
+            class="MuiBox-root MuiBox-root-9"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -185,17 +185,17 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-15"
+      class="MuiBox-root MuiBox-root-10"
     >
       <aside
-        class="MuiBox-root MuiBox-root-16"
+        class="MuiBox-root MuiBox-root-11"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-6 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-1 MuiList-padding"
             role="navigation"
           >
             <a
@@ -258,7 +258,7 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-17"
+        class="MuiBox-root MuiBox-root-12"
       />
     </div>
   </div>
@@ -274,21 +274,21 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-23"
+        class="MuiBox-root MuiBox-root-13"
       >
         <div
-          class="MuiBox-root MuiBox-root-24"
+          class="MuiBox-root MuiBox-root-14"
         >
           <div
-            class="MuiBox-root MuiBox-root-25"
+            class="MuiBox-root MuiBox-root-15"
           >
             <h1
-              class="MuiTypography-root makeStyles-spacingRight-22 MuiTypography-h1"
+              class="MuiTypography-root makeStyles-spacingRight-5 MuiTypography-h1"
             >
               Test Project Name
             </h1>
             <div
-              class="MuiChip-root makeStyles-chip-19 makeStyles-chipCompleted-21 MuiChip-sizeSmall"
+              class="MuiChip-root makeStyles-chip-2 makeStyles-chipCompleted-4 MuiChip-sizeSmall"
             >
               <span
                 class="MuiChip-label MuiChip-labelSmall"
@@ -298,7 +298,7 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-26"
+            class="MuiBox-root MuiBox-root-16"
           >
             <h6
               class="MuiTypography-root MuiTypography-subtitle1 MuiTypography-colorTextSecondary"
@@ -316,17 +316,17 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
     class="MuiContainer-root MuiContainer-maxWidthXl"
   >
     <div
-      class="MuiBox-root MuiBox-root-27"
+      class="MuiBox-root MuiBox-root-17"
     >
       <aside
-        class="MuiBox-root MuiBox-root-28"
+        class="MuiBox-root MuiBox-root-18"
       >
         <div
           class="MuiPaper-root MuiPaper-elevation1 MuiPaper-rounded"
         >
           <nav
             aria-label="Project Navigation"
-            class="MuiList-root makeStyles-projectNav-18 MuiList-padding"
+            class="MuiList-root makeStyles-projectNav-1 MuiList-padding"
             role="navigation"
           >
             <a
@@ -389,7 +389,7 @@ exports[`PublicProjectPage renders public project page when project is loaded (p
         </div>
       </aside>
       <article
-        class="MuiBox-root MuiBox-root-29"
+        class="MuiBox-root MuiBox-root-19"
       />
     </div>
   </div>
