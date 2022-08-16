@@ -26,7 +26,7 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose Aerial Recruitment Composition Survey 2.6',
+      name: 'Moose Aerial Recruitment Composition Survey with Telemetry 2.6',
       url: `${s3PublicHostURL}/templates/Moose_Aerial_Recruitment_Composition_Survey_w_Telemetry_2.6.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
@@ -34,24 +34,24 @@ const ResourcesPage: React.FC = () => {
     },
     {
       id: '2',
-      name: 'Moose Aerial Recruitment Composition Attribute Descritpion 2.6',
-      url: `${s3PublicHostURL}/templates/Moose_Composition_Recruitment__AttributeDescritpion_2.6.xlsx`,
+      name: 'Moose Aerial Recruitment Composition Survey with Telemetry Attribute Descritpion 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_Recruitment_Composition_Survey_w_Telemetry_Attribute_Descritption_2.6.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '17 KB'
     },
     {
       id: '3',
-      name: 'Moose Aerial StratifiedRandomBlock Survey with Telemetry 2.6',
-      url: `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_w_Telemetry_2.6.xlsx`,
+      name: 'Moose Aerial Stratified Random Block Survey with Telemetry 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_SRB_w_Telemetry_2.6.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '103 KB'
     },
     {
       id: '4',
-      name: 'Moose Aerial StratifiedRandomBlock Attribute Descritpion 2.6',
-      url: `${s3PublicHostURL}/templates/Moose_SRB__AttributeDescritpion_2.6.xlsx`,
+      name: 'Moose Aerial Stratified Random Block Survey with Telemetry Attribute Descritpion 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_SRB_w_Telemetry_Attribute_Description_2.6.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '18 KB'
