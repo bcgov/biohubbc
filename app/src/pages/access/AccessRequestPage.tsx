@@ -12,7 +12,7 @@ import { DialogContext } from 'contexts/dialogContext';
 import { Formik } from 'formik';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
-import useCodes from 'hooks/useCodes';
+import useDataLoader from 'hooks/useDataLoader';
 import { SYSTEM_IDENTITY_SOURCE } from 'hooks/useKeycloakWrapper';
 import { IBCeIDAccessRequestDataObject, IIDIRAccessRequestDataObject } from 'interfaces/useAdminApi.interface';
 import React, { ReactElement, useContext, useState } from 'react';
@@ -57,7 +57,8 @@ export const AccessRequestPage: React.FC = () => {
 
   const [isSubmittingRequest, setIsSubmittingRequest] = useState(false);
 
-  const codes = useCodes();
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
 
   const showAccessRequestErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -128,7 +129,7 @@ export const AccessRequestPage: React.FC = () => {
   } else {
     initialValues = IDIRRequestFormInitialValues;
     validationSchema = IDIRRequestFormYupSchema;
-    requestForm = <IDIRRequestForm codes={codes.data} />;
+    requestForm = <IDIRRequestForm codes={codesDataLoader.data} />;
   }
 
   return (
