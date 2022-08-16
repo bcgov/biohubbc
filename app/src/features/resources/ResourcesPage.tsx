@@ -34,8 +34,8 @@ const ResourcesPage: React.FC = () => {
     },
     {
       id: '2',
-      name: 'Moose Aerial Recruitment Composition Survey with Telemetry Attribute Descritpion 2.6',
-      url: `${s3PublicHostURL}/templates/Moose_Aerial_Recruitment_Composition_Survey_w_Telemetry_Attribute_Descritption_2.6.xlsx`,
+      name: 'Moose Aerial Recruitment Composition Survey with Telemetry Attribute Description 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_Recruitment_Composition_Survey_w_Telemetry_Attribute_Description_2.6.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '17 KB'
@@ -50,7 +50,7 @@ const ResourcesPage: React.FC = () => {
     },
     {
       id: '4',
-      name: 'Moose Aerial Stratified Random Block Survey with Telemetry Attribute Descritpion 2.6',
+      name: 'Moose Aerial Stratified Random Block Survey with Telemetry Attribute Description 2.6',
       url: `${s3PublicHostURL}/templates/Moose_Aerial_SRB_w_Telemetry_Attribute_Description_2.6.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
