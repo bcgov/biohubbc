@@ -82,10 +82,9 @@ export function prepXLSX(): RequestHandler {
       const xlsxCsv = new XLSXCSV(parsedMedia);
 
       const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      const species_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_species_id;
       const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
 
-      if (!template_id || !species_id || !csm_id) {
+      if (!template_id || !csm_id) {
         req['parseError'] = 'Failed to parse submission, template identification properties are missing';
       }
 
