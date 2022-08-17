@@ -26,14 +26,38 @@ const ResourcesPage: React.FC = () => {
   const resources = [
     {
       id: '1',
-      name: 'Moose Aerial StratifiedRandomBlock Composition Survey 2.5',
-      url: `${s3PublicHostURL}/templates/Moose_Aerial_StratifiedRandomBlock_Composition_Recruitment_Survey_2.5.xlsx`,
+      name: 'Moose Aerial Recruitment Composition Survey with Telemetry 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_Recruitment_Composition_Survey_w_Telemetry_2.6.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '115 KB'
+      fileSize: '110 KB'
     },
     {
       id: '2',
+      name: 'Moose Aerial Recruitment Composition Survey with Telemetry Attribute Description 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_Recruitment_Composition_Survey_w_Telemetry_Attribute_Description_2.6.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '17 KB'
+    },
+    {
+      id: '3',
+      name: 'Moose Aerial Stratified Random Block Survey with Telemetry 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_SRB_w_Telemetry_2.6.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '103 KB'
+    },
+    {
+      id: '4',
+      name: 'Moose Aerial Stratified Random Block Survey with Telemetry Attribute Description 2.6',
+      url: `${s3PublicHostURL}/templates/Moose_Aerial_SRB_w_Telemetry_Attribute_Description_2.6.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '18 KB'
+    },
+    {
+      id: '5',
       name: 'Moose Recruitment Using Telemetry Survey 1.0',
       url: `${s3PublicHostURL}/templates/Moose_Recruitment_Using_Telemetry_Survey_1.0.xlsx`,
       type: mdiFileExcelOutline,
@@ -41,7 +65,7 @@ const ResourcesPage: React.FC = () => {
       fileSize: '93 KB'
     },
     {
-      id: '3',
+      id: '6',
       name: 'Goat Aerial Population Composition Recruitment Survey 1.4',
       url: `${s3PublicHostURL}/templates/Goat_Aerial_Population_Composition_Recruitment_Survey_1.4.xlsx`,
       type: mdiFileExcelOutline,
@@ -49,7 +73,7 @@ const ResourcesPage: React.FC = () => {
       fileSize: '165 KB'
     },
     {
-      id: '4',
+      id: '7',
       name: 'Sheep Aerial Population Composition Recruitment Survey 1.2',
       url: `${s3PublicHostURL}/templates/Sheep_Aerial_Population_Composition_Recruitment_Survey_1.2.xlsx`,
       type: mdiFileExcelOutline,
@@ -57,7 +81,7 @@ const ResourcesPage: React.FC = () => {
       fileSize: '109 KB'
     },
     {
-      id: '5',
+      id: '8',
       name: 'Moose Summary Statistics',
       url: `${s3PublicHostURL}/templates/Moose_Summary_Statistics.xlsx`,
       type: mdiFileExcelOutline,
