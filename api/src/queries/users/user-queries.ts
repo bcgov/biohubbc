@@ -99,8 +99,12 @@ export const getUserListSQL = (): SQLStatement | null => {
       system_role sr
     ON
       sur.system_role_id = sr.system_role_id
+    LEFT JOIN
+    	user_identity_source uis
+    ON
+    	su.user_identity_source_id = uis.user_identity_source_id
     WHERE
-      su.record_end_date IS NULL
+      su.record_end_date IS null and uis.name not in('DATABASE')
     GROUP BY
       su.system_user_id,
       su.record_end_date,
