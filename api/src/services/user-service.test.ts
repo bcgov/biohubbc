@@ -543,23 +543,6 @@ describe('UserService', () => {
       }
     });
 
-    it('throws an error if the query response has no rowCount', async function () {
-      const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
-      const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
-
-      const mockUsersByIdSQLResponse = SQL`Test SQL Statement`;
-      sinon.stub(queries.users, 'deleteAllSystemRolesSQL').returns(mockUsersByIdSQLResponse);
-
-      const userService = new UserService(mockDBConnection);
-
-      try {
-        await userService.deleteUserSystemRoles(1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiError).message).to.equal('Failed to delete user system roles');
-      }
-    });
-
     it('returns nothing on success', async function () {
       const mockQueryResponse = ({ rowCount: 1 } as unknown) as QueryResult<any>;
       const mockDBConnection = getMockDBConnection({ systemUserId: () => 1, query: async () => mockQueryResponse });
