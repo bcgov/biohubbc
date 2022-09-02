@@ -2,23 +2,27 @@ import { Knex } from 'knex';
 import { mooseCompositionJSON } from './template_methodology_species_validations/moose_composition_survey_1';
 import { mooseSrbJSON } from './template_methodology_species_validations/moose_srb_survey_1';
 import { mooseTransectDistanceJSON } from './template_methodology_species_validations/moose_transect_distance_survey_1';
+import { sheepRecruitmentCompositionJSON } from './template_methodology_species_validations/sheep_population_recruitment_composition_survey';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
 const moose_composition_validation = mooseCompositionJSON;
 const moose_srb_validation = mooseSrbJSON;
-const moose_transect_distance = mooseTransectDistanceJSON;
+const moose_transect_distance_validation = mooseTransectDistanceJSON;
+const sheep_population_recruitment_compostion_validation = sheepRecruitmentCompositionJSON;
 
 enum COMMON_SURVEY_METHODOLOGY {
   COMPOSITION = 'Composition',
   STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block',
-  TRANSECT = 'Encounter Transects'
+  TRANSECT = 'Encounter Transects',
+  POPULATION_COUNT = 'Total Count'
 }
 
 enum TEMPLATE_NAME {
   MOOSE_COMPOSITION_SURVEY = 'Moose Composition Survey',
   MOOSE_SRB_SURVEY = 'Moose SRB Survey',
-  MOOSE_TRANSECT_DISTANCE_SURVEY = 'Moose Transect Distance Survey'
+  MOOSE_TRANSECT_DISTANCE_SURVEY = 'Moose Transect Distance Survey',
+  SHEEP_POPULATION_TOTAL_COUNT = 'Sheep Population Total Count Recruitment Composition Survey'
 }
 
 const validationSchema = [
@@ -34,14 +38,16 @@ const validationSchema = [
     template: TEMPLATE_NAME.MOOSE_SRB_SURVEY
   },
   {
-    v_schema: JSON.stringify(moose_transect_distance),
+    v_schema: JSON.stringify(moose_transect_distance_validation),
     field_method: COMMON_SURVEY_METHODOLOGY.TRANSECT,
     template: TEMPLATE_NAME.MOOSE_TRANSECT_DISTANCE_SURVEY
+  },
+  {
+    v_schema: JSON.stringify(sheep_population_recruitment_compostion_validation),
+    field_method: COMMON_SURVEY_METHODOLOGY.POPULATION_COUNT,
+    template: TEMPLATE_NAME.SHEEP_POPULATION_TOTAL_COUNT
   }
 ];
-
-console.log('validationSchema', validationSchema);
-console.log('v_schema: JSON.stringify(moose_transect_distance)', JSON.stringify(moose_transect_distance));
 
 /**
  * Populate template validations.
@@ -69,6 +75,11 @@ export async function up(knex: Knex): Promise<void> {
       ${DB_SCHEMA}.template (name, version, record_effective_date, description)
     values
       ('${TEMPLATE_NAME.MOOSE_TRANSECT_DISTANCE_SURVEY}', '1.0', now(), 'Moose Transect Distance Survey');
+
+    insert into
+      ${DB_SCHEMA}.template (name, version, record_effective_date, description)
+    values
+      ('${TEMPLATE_NAME.SHEEP_POPULATION_TOTAL_COUNT}', '1.0', now(), 'Sheep Population Total Count Recruitment Composition Survey');
   `);
 
   for (const v_schema of validationSchema) {
