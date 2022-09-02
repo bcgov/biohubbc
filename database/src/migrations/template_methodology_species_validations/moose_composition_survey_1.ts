@@ -135,6 +135,41 @@ export const mooseCompositionJSON = {
           validations: basicNumericValidator()
         },
         {
+          name: 'RISC Class I Bulls',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'RISC Class II Bulls',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'RISC Class III Bulls',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Oswald (1997) Class I Bulls',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Oswald (1997) Class II Bulls',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Oswald (1997) Class III Bulls',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Adult Bulls - Unclassified',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
           name: 'Bulls - Unclassified',
           description: '',
           validations: basicNumericValidator()
@@ -160,7 +195,12 @@ export const mooseCompositionJSON = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Unclassified',
+          name: 'Adult Unclassified Sex',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Unclassified Age/Sex',
           description: '',
           validations: basicNumericValidator()
         },
@@ -214,7 +254,6 @@ export const mooseCompositionJSON = {
             required_columns: [
               'Study Area',
               'Block ID/SU ID',
-              'Date',
               'UTM Zone',
               'Easting',
               'Northing',
@@ -224,16 +263,23 @@ export const mooseCompositionJSON = {
               'Lat/Long Units',
               'Species',
               'Yearling Bulls',
-              'Adult Bulls - Unclassified',
               'Sub-Prime Bulls',
               'Prime Bulls',
               'Senior Bulls',
+              'RISC Class I Bulls',
+              'RISC Class II Bulls',
+              'RISC Class III Bulls',
+              'Oswald (1997) Class I Bulls',
+              'Oswald (1997) Class II Bulls',
+              'Oswald (1997) Class III Bulls',
+              'Adult Bulls - Unclassified',
               'Bulls - Unclassified',
               'Lone Cows',
               'Cow W/1 calf',
               'Cow W/2 calves',
               'Lone calf',
-              'Unclassified',
+              'Adult Unclassified Sex',
+              'Unclassified Age/Sex',
               'Total Count',
               'Spike/Fork Bulls',
               '3 Brow/10 Points Bulls',
