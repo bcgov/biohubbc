@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const yN = [
   { name: 'Y', description: '' },
   { name: 'N', description: '' }
@@ -277,7 +278,7 @@ const Habitat = [
 const HabitatSlope = [
   { name: 'Flat (0%)', description: 'Flat (0%)' },
   { name: 'Minimum (5-20%)', description: 'Minimum (5-20%)' },
-  { name: 'Moderate (20-50%', description: 'Moderate (20-50%' },
+  { name: 'Moderate (20-50%)', description: 'Moderate (20-50%)' },
   { name: 'Steep (>50%)', description: 'Steep (>50%)' }
 ];
 
@@ -285,9 +286,9 @@ const SheepSpecies = [
   { name: 'Bighorn Sheep' },
   { name: 'Ovis canadensis' },
   { name: 'M-OVCA' },
-  { name: "Dall's Sheep" },
+  { name: "Dall''s Sheep" },
   { name: 'M-OVDA-DA' },
-  { name: "Stone's Sheep" },
+  { name: "Stone''s Sheep" },
   { name: 'M-OVDA-ST' },
   { name: 'Thinhorn Sheep' },
   { name: 'Ovis dalli' },

@@ -74,7 +74,7 @@ export const sheepRecruitmentCompositionJSON = {
               'Snow Depth',
               'Days Since Snowfall',
               'Weather Description',
-              'Habitat Description',
+              'Location Description',
               'Effort & Site Comments'
             ]
           }
