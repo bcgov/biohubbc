@@ -45,7 +45,8 @@ export class XLSXCSV {
 
       const worksheet: CSVWorksheet = this.workbook.worksheets[fileName];
 
-      if (!worksheet) {
+      // need a better way to ignore these
+      if (!worksheet || fileName === 'Look Up Tables') {
         return;
       }
 

@@ -1,5 +1,5 @@
 import { Knex } from 'knex';
-import { COMMON_SURVEY_METHODOLOGY, TEMPLATE_NAME } from './common/common';
+import { COMMON_SURVEY_METHODOLOGY, TEMPLATE_NAME } from './common/template.enum';
 import { mooseSummary } from './template_methodology_species_validations/moose_summary_results_1';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;

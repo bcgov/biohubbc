@@ -112,21 +112,44 @@ POST.apiDoc = {
 };
 
 export enum SUMMARY_CLASS {
-  STUDY_AREA = 'survey area',
-  SUMMARY_STATISTIC = 'statistic',
-  STRATUM = 'stratum',
-  OBSERVED = 'observed',
-  ESTIMATE = 'estimate',
-  STANDARD_ERROR = 'se',
-  COEFFICIENT_VARIATION = 'cv',
-  CONFIDENCE_LEVEL = 'conf.level',
-  LOWER_CONFIDENCE_LIMIT = 'lcl',
-  UPPER_CONFIDENCE_LIMIT = 'ucl',
-  SIGHTABILITY_MODEL = 'sightability.model',
-  AREA = 'area',
-  AREA_FLOWN = 'area.flown',
-  OUTLIER_BLOCKS_REMOVED = 'outlier.blocks.removed',
-  ANALYSIS_METHOD = 'analysis.method'
+  // STUDY_AREA = 'survey area',
+  // SUMMARY_STATISTIC = 'statistic',
+  // STRATUM = 'stratum',
+  // OBSERVED = 'observed',
+  // ESTIMATE = 'estimate',
+  // STANDARD_ERROR = 'se',
+  // COEFFICIENT_VARIATION = 'cv',
+  // CONFIDENCE_LEVEL = 'conf.level',
+  // LOWER_CONFIDENCE_LIMIT = 'lcl',
+  // UPPER_CONFIDENCE_LIMIT = 'ucl',
+  // SIGHTABILITY_MODEL = 'sightability.model',
+  // AREA = 'area',
+  // AREA_FLOWN = 'area.flown',
+  // OUTLIER_BLOCKS_REMOVED = 'outlier.blocks.removed',
+  // ANALYSIS_METHOD = 'analysis.method',
+
+  STUDY_AREA = 'Study Area',
+  POPULATION_UNIT = 'Population Unit',
+  BLOCK_SAMPLE_UNIT_ID = 'Block ID/SU ID',
+  PARAMETER = 'Parameter',
+  STRATUM = 'Stratum',
+  OBSERVED = 'Observed',
+  ESTIMATED = 'Estimated',
+  SIGHTABILITY_MODEL = 'Sightability Model',
+  SIGHTABILITY_CORRECTION_FACTOR = 'Sightability Correction Factor',
+  SE = 'SE',
+  COEFFICIENT_VARIATION = 'Coefficient of Variation (%)',
+  CONFIDENCE_LEVEL = 'Confidence Level (%)',
+  LOWER_CONFIDENCE_LEVEL = 'Lower CL',
+  UPPER_CONFIDENCE_LEVEL = 'Upper CL',
+  TOTAL_SURVEY_AREA = 'Total Suvey Area (km2)',
+  AREA_FLOWN = 'Area Flown (km2)',
+  TOTAL_KILOMETERS_SURVEYED = 'Total Kilometers Surveyed (km)',
+  BEST_PARAMETER_VALUE_FLAG = 'Best Parameter Value Flag',
+  OUTLIER_BLOCKS_REMOVED = 'Outlier Blocks Removed',
+  TOTAL_MARKED_ANIMALS_OBSERVED = 'Total Marked Animals Observed',
+  MARKER_ANIMALS_AVAILABLE = 'Marked Animals Available',
+  PARAMETER_COMMENTS = 'Parameter Comments'
 }
 
 /**
@@ -346,8 +369,11 @@ export function persistSummaryParseErrors(): RequestHandler {
 
 export function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
-    defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
 
+    console.log("____ GET VALIDATION RULES ____")
+
+    defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
+    
     try {
       const validationSchema = {
         name: '',
@@ -471,21 +497,28 @@ export function getValidationRules(): RequestHandler {
             {
               file_required_columns_validator: {
                 required_columns: [
-                  'Survey Area',
-                  'Statistic',
+                  'Study Area',
+                  'Population Unit',
+                  'Block/Sample Unit',
+                  'Parameter',
                   'Stratum',
                   'Observed',
-                  'Estimate',
+                  'Estimated',
+                  'Sightability Model',
+                  'Sightability Correction Factor',
                   'SE',
-                  'CV',
-                  'Conf.Level',
-                  'LCL',
-                  'UCL',
-                  'Sightability.Model',
-                  'Area',
-                  'Area.Flown',
-                  'Outlier.Blocks.Removed',
-                  'Analysis.Method'
+                  'Coefficient of Variation (%)',
+                  'Confidence Level (%)',
+                  'Lower CL',
+                  'Upper CL',
+                  'Total Suvey Area (km2)',
+                  'Area Flown (km2)',
+                  'Total Kilometers Surveyed (km)',
+                  'Best Parameter Value Flag',
+                  'Outlier Blocks Removed',
+                  'Total Marked Animals Observed',
+                  'Marked Animals Available',
+                  'Parameter Comments',
                 ]
               }
             }
@@ -605,49 +638,70 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
 
             switch (columnName.toLowerCase()) {
               case SUMMARY_CLASS.STUDY_AREA:
-                summaryObject.study_area_id = columnValue;
+                summaryObject.study_area_id = columnValue
                 break;
-              case SUMMARY_CLASS.SUMMARY_STATISTIC:
-                summaryObject.parameter = columnValue;
+              case SUMMARY_CLASS.POPULATION_UNIT:
+                summaryObject.population_unit = columnValue
+                break;
+              case SUMMARY_CLASS.BLOCK_SAMPLE_UNIT_ID:
+                summaryObject.block_sample_unit_id = columnValue
+                break;
+              case SUMMARY_CLASS.PARAMETER:
+                summaryObject.parameter = columnValue
                 break;
               case SUMMARY_CLASS.STRATUM:
-                summaryObject.stratum = columnValue;
+                summaryObject.stratum = columnValue
                 break;
               case SUMMARY_CLASS.OBSERVED:
-                summaryObject.parameter_value = columnValue;
+                summaryObject.observed = columnValue
                 break;
-              case SUMMARY_CLASS.ESTIMATE:
-                summaryObject.parameter_estimate = columnValue;
-                break;
-              case SUMMARY_CLASS.STANDARD_ERROR:
-                summaryObject.standard_error = columnValue;
-                break;
-              case SUMMARY_CLASS.COEFFICIENT_VARIATION:
-                summaryObject.coefficient_variation = columnValue;
-                break;
-              case SUMMARY_CLASS.CONFIDENCE_LEVEL:
-                summaryObject.confidence_level_percent = columnValue;
-                break;
-              case SUMMARY_CLASS.UPPER_CONFIDENCE_LIMIT:
-                summaryObject.confidence_limit_upper = columnValue;
-                break;
-              case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
-                summaryObject.confidence_limit_lower = columnValue;
+              case SUMMARY_CLASS.ESTIMATED:
+                summaryObject.estimated = columnValue
                 break;
               case SUMMARY_CLASS.SIGHTABILITY_MODEL:
-                summaryObject.sightability_model = columnValue;
+                summaryObject.sightability_model = columnValue
                 break;
-              case SUMMARY_CLASS.AREA:
-                summaryObject.total_area_survey_sqm = columnValue;
+              case SUMMARY_CLASS.SIGHTABILITY_CORRECTION_FACTOR:
+                summaryObject.sightability_correction_factor = columnValue
+                break;
+              case SUMMARY_CLASS.SE:
+                summaryObject.standard_error = columnValue
+                break;
+              case SUMMARY_CLASS.COEFFICIENT_VARIATION:
+                summaryObject.coefficient_variation = columnValue
+                break;
+              case SUMMARY_CLASS.CONFIDENCE_LEVEL:
+                summaryObject.confidence_level_percent = columnValue
+                break;
+              case SUMMARY_CLASS.LOWER_CONFIDENCE_LEVEL:
+                summaryObject.confidence_limit_lower = columnValue
+                break;
+              case SUMMARY_CLASS.UPPER_CONFIDENCE_LEVEL:
+                summaryObject.confidence_limit_upper = columnValue
+                break;
+              case SUMMARY_CLASS.TOTAL_SURVEY_AREA:
+                summaryObject.total_area_survey_sqm = columnValue
                 break;
               case SUMMARY_CLASS.AREA_FLOWN:
-                summaryObject.kilometres_surveyed = columnValue;
+                summaryObject.area_flown = columnValue
+                break;
+              case SUMMARY_CLASS.TOTAL_KILOMETERS_SURVEYED:
+                summaryObject.total_kilometers_surveyed = columnValue
+                break;
+              case SUMMARY_CLASS.BEST_PARAMETER_VALUE_FLAG:
+                summaryObject.best_parameter_flag = columnValue
                 break;
               case SUMMARY_CLASS.OUTLIER_BLOCKS_REMOVED:
-                summaryObject.outlier_blocks_removed = columnValue;
+                summaryObject.outlier_blocks_removed = columnValue
                 break;
-              case SUMMARY_CLASS.ANALYSIS_METHOD:
-                summaryObject.analysis_method = columnValue;
+              case SUMMARY_CLASS.TOTAL_MARKED_ANIMALS_OBSERVED:
+                summaryObject.total_marked_animals_observed = columnValue
+                break;
+              case SUMMARY_CLASS.MARKER_ANIMALS_AVAILABLE:
+                summaryObject.marked_animals_available = columnValue
+                break;
+              case SUMMARY_CLASS.PARAMETER_COMMENTS:
+                summaryObject.parameter_estimate = columnValue
                 break;
               default:
                 break;
