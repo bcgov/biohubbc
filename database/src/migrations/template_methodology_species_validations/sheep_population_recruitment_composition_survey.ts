@@ -201,12 +201,12 @@ export const sheepRecruitmentCompositionJSON = {
           validations: basicCodeValidator(SheepItems.yN)
         },
         {
-          name: '% Snow Cover',
+          name: 'Veg Cover (%)',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: '% Canopy Cover',
+          name: 'Snow Cover (%)',
           description: '',
           validations: basicNumericValidator()
         },
@@ -263,8 +263,8 @@ export const sheepRecruitmentCompositionJSON = {
               'Habitat',
               'Habitat - Slope',
               'Terrain Obstruction',
-              '% Snow Cover',
-              '% Canopy Cover',
+              'Veg Cover (%)',
+              'Snow Cover (%)',
               'Activity',
               'Number of Marked Animals Observed',
               'Survey or Telemetry Search',

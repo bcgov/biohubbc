@@ -156,6 +156,16 @@ export const goatRecruitmentCompositionJSON = {
           validations: basicCodeValidator(GoatItems.signAge)
         },
         {
+          name: 'Veg Cover (%)',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Snow Cover (%)',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
           name: 'Activity',
           description: '',
           validations: basicCodeValidator(GoatItems.activityObservation)
@@ -218,6 +228,9 @@ export const goatRecruitmentCompositionJSON = {
               'Total Count',
               'Sign Type',
               'Age of Sign',
+              'Veg Cover (%)',
+              'Snow Cover (%)',
+              'Activity',
               'Elevation (m) of Observation',
               'Habitat',
               'Wind Blown',

@@ -55,6 +55,7 @@ const ActivityObservation = [
   { name: 'Bedding' },
   { name: 'Running' },
   { name: 'Walking' },
+  { name: 'Not Moving' },
   { name: 'Moving' }
 ];
 
@@ -251,6 +252,7 @@ const Habitat = [
   { name: 'Caves' },
   { name: 'Clearcut' },
   { name: 'Cliff' },
+  { name: 'Cliff - open' },
   { name: 'Cliff in Forest' },
   { name: 'Coniferous' },
   { name: 'Deciduous' },
@@ -300,7 +302,9 @@ const MooseSpecies = [
   { name: 'Alces Alces' },
   { name: 'Alces Americanus' },
   { name: 'M-ALAL' },
-  { name: 'M-ALAM' }
+  { name: 'M-ALAM' },
+  { name: 'Caribou' },
+  { name: 'Elk' }
 ];
 
 const GoatSpecies = [{ name: 'Mountain Goat' }, { name: 'Oreamnos americanus' }, { name: 'M-ORAM' }, { name: 'ORAM' }];
