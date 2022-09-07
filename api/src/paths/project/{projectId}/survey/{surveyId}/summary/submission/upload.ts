@@ -731,6 +731,7 @@ export const uploadScrapedSummarySubmission = async (
   scrapedSummaryDetail: any,
   connection: IDBConnection
 ) => {
+  console.log("_____ UPLOAD SUMMARY ____")
   const sqlStatement = queries.survey.insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
 
   if (!sqlStatement) {
