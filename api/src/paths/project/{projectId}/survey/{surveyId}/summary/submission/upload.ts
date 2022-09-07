@@ -113,28 +113,28 @@ POST.apiDoc = {
 
 export enum SUMMARY_CLASS {
 
-  STUDY_AREA = 'Study Area',
-  POPULATION_UNIT = 'Population Unit',
-  BLOCK_SAMPLE_UNIT_ID = 'Block ID/SU ID',
-  PARAMETER = 'Parameter',
-  STRATUM = 'Stratum',
-  OBSERVED = 'Observed',
-  ESTIMATED = 'Estimated',
-  SIGHTABILITY_MODEL = 'Sightability Model',
-  SIGHTABILITY_CORRECTION_FACTOR = 'Sightability Correction Factor',
-  SE = 'SE',
-  COEFFICIENT_VARIATION = 'Coefficient of Variation (%)',
-  CONFIDENCE_LEVEL = 'Confidence Level (%)',
-  LOWER_CONFIDENCE_LEVEL = 'Lower CL',
-  UPPER_CONFIDENCE_LEVEL = 'Upper CL',
-  TOTAL_SURVEY_AREA = 'Total Suvey Area (km2)',
-  AREA_FLOWN = 'Area Flown (km2)',
-  TOTAL_KILOMETERS_SURVEYED = 'Total Kilometers Surveyed (km)',
-  BEST_PARAMETER_VALUE_FLAG = 'Best Parameter Value Flag',
-  OUTLIER_BLOCKS_REMOVED = 'Outlier Blocks Removed',
-  TOTAL_MARKED_ANIMALS_OBSERVED = 'Total Marked Animals Observed',
-  MARKER_ANIMALS_AVAILABLE = 'Marked Animals Available',
-  PARAMETER_COMMENTS = 'Parameter Comments'
+  STUDY_AREA = 'study area',
+  POPULATION_UNIT = 'population unit',
+  BLOCK_SAMPLE_UNIT_ID = 'block/sample unit',
+  PARAMETER = 'parameter',
+  STRATUM = 'stratum',
+  OBSERVED = 'observed',
+  ESTIMATED = 'estimated',
+  SIGHTABILITY_MODEL = 'sightability model',
+  SIGHTABILITY_CORRECTION_FACTOR = 'sightability correction factor',
+  SE = 'se',
+  COEFFICIENT_VARIATION = 'coefficient of variation (%)',
+  CONFIDENCE_LEVEL = 'confidence level (%)',
+  LOWER_CONFIDENCE_LEVEL = 'lower cl',
+  UPPER_CONFIDENCE_LEVEL = 'upper cl',
+  TOTAL_SURVEY_AREA = 'total survey area (km2)',
+  AREA_FLOWN = 'area flown (km2)',
+  TOTAL_KILOMETERS_SURVEYED = 'total kilometers surveyed (km)',
+  BEST_PARAMETER_VALUE_FLAG = 'best parameter value flag',
+  OUTLIER_BLOCKS_REMOVED = 'outlier blocks removed',
+  TOTAL_MARKED_ANIMALS_OBSERVED = 'total marked animals observed',
+  MARKER_ANIMALS_AVAILABLE = 'marked animals available',
+  PARAMETER_COMMENTS = 'parameter comments'
 }
 
 /**
@@ -613,14 +613,20 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
       const promises: Promise<any>[] = [];
 
       for (const worksheet of Object.values(worksheets)) {
+        if (worksheet.name === 'Look Up Tables') {
+          continue;
+        }
         const rowObjects = worksheet.getRowObjects();
 
         for (const rowObject of Object.values(rowObjects)) {
           const summaryObject = new PostSummaryDetails();
 
           for (const columnName in rowObject) {
+            console.log("")
+            console.log("___________________")
+            console.log(`COLUMN NAME: ${columnName}`)
+            console.log("")
             const columnValue = rowObject[columnName];
-
             switch (columnName.toLowerCase()) {
               case SUMMARY_CLASS.STUDY_AREA:
                 summaryObject.study_area_id = columnValue
@@ -689,9 +695,11 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
                 summaryObject.parameter_comments = columnValue
                 break;
               default:
+                console.log("DEFAULT IN SWITCH STATEMENT")
                 break;
             }
           }
+          // console.log(summaryObject)
           promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
         }
       }
@@ -732,8 +740,9 @@ export const uploadScrapedSummarySubmission = async (
   connection: IDBConnection
 ) => {
   console.log("_____ UPLOAD SUMMARY ____")
+  console.log(scrapedSummaryDetail)
   const sqlStatement = queries.survey.insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
-
+  console.log(sqlStatement?.sql)
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL post statement');
   }

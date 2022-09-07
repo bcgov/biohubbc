@@ -1,6 +1,7 @@
 import { Knex } from 'knex';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
+const DB_SCHEMA_DAPI_V1 = process.env.DB_SCHEMA_DAPI_V1;
 
 /**
  * Add multiple columns to support new summary templates.
@@ -40,6 +41,10 @@ export async function up(knex: Knex): Promise<void> {
     COMMENT ON COLUMN survey_summary_detail.total_marked_animals_observed IS 'Number of marked animals observed during survey.';
     COMMENT ON COLUMN survey_summary_detail.marked_animals_available IS 'Number of marked animals available in study area.';
     COMMENT ON COLUMN survey_summary_detail.parameter_comments IS 'General comments about the parameter measured.';
+
+    -- Update Survey Summary Detail View
+    SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
+    CREATE OR REPLACE VIEW survey_summary_detail AS SELECT * FROM ${DB_SCHEMA}.survey_summary_detail;
   `);
 }
 
@@ -69,5 +74,8 @@ export async function down(knex: Knex): Promise<void> {
     ALTER TABLE survey_summary_detail DROP COLUMN marked_animals_available;
     ALTER TABLE survey_summary_detail DROP COLUMN parameter_comments;
 
+    -- Update Survey Summary Detail View
+    SET SEARCH_PATH = ${DB_SCHEMA_DAPI_V1};
+    CREATE OR REPLACE VIEW survey_summary_detail AS SELECT * FROM ${DB_SCHEMA}.survey_summary_detail;
   `);
 }
