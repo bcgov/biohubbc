@@ -112,21 +112,6 @@ POST.apiDoc = {
 };
 
 export enum SUMMARY_CLASS {
-  // STUDY_AREA = 'survey area',
-  // SUMMARY_STATISTIC = 'statistic',
-  // STRATUM = 'stratum',
-  // OBSERVED = 'observed',
-  // ESTIMATE = 'estimate',
-  // STANDARD_ERROR = 'se',
-  // COEFFICIENT_VARIATION = 'cv',
-  // CONFIDENCE_LEVEL = 'conf.level',
-  // LOWER_CONFIDENCE_LIMIT = 'lcl',
-  // UPPER_CONFIDENCE_LIMIT = 'ucl',
-  // SIGHTABILITY_MODEL = 'sightability.model',
-  // AREA = 'area',
-  // AREA_FLOWN = 'area.flown',
-  // OUTLIER_BLOCKS_REMOVED = 'outlier.blocks.removed',
-  // ANALYSIS_METHOD = 'analysis.method',
 
   STUDY_AREA = 'Study Area',
   POPULATION_UNIT = 'Population Unit',
@@ -701,7 +686,7 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
                 summaryObject.marked_animals_available = columnValue
                 break;
               case SUMMARY_CLASS.PARAMETER_COMMENTS:
-                summaryObject.parameter_estimate = columnValue
+                summaryObject.parameter_comments = columnValue
                 break;
               default:
                 break;

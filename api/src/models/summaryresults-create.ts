@@ -30,7 +30,7 @@ export class PostSummaryDetails {
   outlier_blocks_removed: string;
   total_marked_animals_observed: number;
   marked_animals_available: number;
-  parameter_estimate: number;
+  parameter_comments: number;
 
 
   constructor(obj?: any) {
@@ -56,6 +56,6 @@ export class PostSummaryDetails {
     this.outlier_blocks_removed = obj?.outlier_blocks_removed || null
     this.total_marked_animals_observed = obj?.total_marked_animals_observed || null
     this.marked_animals_available = obj?.marked_animals_available || null
-    this.parameter_estimate = obj?.parameter_estimate || null
+    this.parameter_comments = obj?.parameter_comments || null
   }
 }
