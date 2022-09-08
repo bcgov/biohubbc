@@ -367,7 +367,7 @@ export function getValidationRules(): RequestHandler {
           description: '',
           columns: [
             {
-              name: 'Observed',
+              name: 'Stratum',
               description: '',
               validations: [
                 {
@@ -379,7 +379,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Estimate',
+              name: 'Sightability Correction Factor', 
               description: '',
               validations: [
                 {
@@ -391,7 +391,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'SE',
+              name: 'SE', 
               description: '',
               validations: [
                 {
@@ -402,78 +402,7 @@ export function getValidationRules(): RequestHandler {
                 }
               ]
             },
-            {
-              name: 'CV',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Conf.Level',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'LCL',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'UCL',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Area',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Area.Flown',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            }
+
           ],
           validations: [
             {
