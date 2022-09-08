@@ -361,7 +361,7 @@ export function persistSummaryParseErrors(): RequestHandler {
 export function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
-    
+
     const connection = getDBConnection(req['keycloak_token']);
 
     try {
