@@ -5,7 +5,7 @@ import { getDBConnection, IDBConnection } from '../../../../../../../database/db
 import { HTTP400 } from '../../../../../../../errors/custom-error';
 import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
 import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
-import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
+import { getTemplateMethodologySpeciesRecord, validateXLSX } from '../../../../../../../paths/xlsx/validate';
 import { queries } from '../../../../../../../queries/queries';
 import { authorizeRequestHandler } from '../../../../../../../request-handlers/security/authorization';
 import { generateS3FileKey, scanFileForVirus, uploadFileToS3 } from '../../../../../../../utils/file-utils';
@@ -250,6 +250,13 @@ export function prepXLSX(): RequestHandler {
 
       const xlsxCsv = new XLSXCSV(parsedMedia);
 
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      if (!template_id || !csm_id) {
+        req['parseError'] = 'Failed to parse submission, template identification properties are missing';
+      }
+
       req['xlsx'] = xlsxCsv;
 
       next();
@@ -354,332 +361,23 @@ export function persistSummaryParseErrors(): RequestHandler {
 export function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
+    
+    const connection = getDBConnection(req['keycloak_token']);
 
     try {
-      const validationSchema = {
-        name: '',
-        description: '',
-        defaultFile: {
-          description: '',
-          columns: [
-            {
-              name: 'Parameter',
-              description: '',
-              validations: [
-                {
-                  column_code_validator: {
-                    name: '',
-                    description: '',
-                    allowed_code_values: [
-                      { name: 'Population', description: '' },
-                      { name: 'Individuals', description: '' },
-                      { name: 'Adults', description: '' },
-                      { name: 'Calves', description: '' },
-                      { name: 'Bulls', description: '' },
-                      { name: 'Sub-Prime Bulls', description: '' },
-                      { name: 'Prime Bulls', description: '' },
-                      { name: 'Senior Bulls', description: '' },
-                      { name: 'RISC Class I Bulls', description: '' },
-                      { name: 'RISC Class II Bulls', description: '' },
-                      { name: 'RISC Class III Bulls', description: '' },
-                      { name: 'Oswald (1997) Class I Bulls', description: '' },
-                      { name: 'Oswald (1997) Class II Bulls', description: '' },
-                      { name: 'Oswald (1997) Class III Bulls', description: '' },
-                      { name: 'Adult Bulls', description: '' },
-                      { name: 'Yearlings Bulls', description: '' },
-                      { name: 'Cows', description: '' },
-                      { name: 'Unclassified Age and Sex', description: '' },
-                      { name: 'Calf:100 Adult Ratio', description: '' },
-                      { name: 'Cow:100 Bull Ratio', description: '' },
-                      { name: 'Calf:100 Cow Ratio', description: '' },
-                      { name: 'Percent Calves', description: '' },
-                      { name: 'Survival Adult', description: '' },
-                      { name: 'Survival Cows', description: '' },
-                      { name: 'Survival Bulls', description: '' },
-                      { name: 'Survival Calves', description: '' },
-                      { name: 'Survival Yearling', description: '' },
-                      { name: 'Mortality Adults', description: '' },
-                      { name: 'Mortality Bulls', description: '' },
-                      { name: 'Mortality Cows', description: '' },
-                      { name: 'Mortality Calves', description: '' },
-                      { name: 'Mortality Yearlings', description: '' },
-                      { name: 'Individuals/km2', description: '' },
-                      { name: 'Individuals/m2', description: '' },
-                      { name: 'Detections', description: '' },
-                      { name: 'Detections/km', description: '' },
-                      { name: 'Detections/100 m', description: '' },
-                      { name: 'Detections/hour', description: '' },
-                      { name: 'Detections/day', description: '' },
-                      { name: 'Detections/100 days', description: '' }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Observed',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Estimated',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Sightability Model',
-              description: '',
-              validations: [
-                {
-                  column_code_validator: {
-                    name: '',
-                    description: '',
-                    allowed_code_values: [
-                      {
-                        name: 'Model or Correction - Sightability Correct Factor',
-                        description: `The parameter value is based on the sampled value but is adjusted via a sightability correction factor and/or detectability correction factor.`
-                      },
-                      {
-                        name: 'Model or Correction - Joint Hypergeometric Estimator',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the Joint Hypergeometric Estimator. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - Lincoln-Peterson',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via Lincoln-Peterson formula. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - MoosePop - Kamloops',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Prince George sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - MoosePop - Prince George',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Kamloops sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - Recruitment-Mortality',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted using the recruitment-mortality equation. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction & Expert Knowledge',
-                        description: `The parameter value is based on the modelled or corrected  value but is adjusted via expert knowledge. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
-                      },
-                      {
-                        name: 'Minimum Number Known Alive',
-                        description: `"The value is based on the sampled value but is adjusted using additional information other than a model or SCF. The adjusted value represents the minimum number of individuals known to be alive in the area of interest.
-                      Examples of situations in which MNKA may be used are:
-                      (1) observed count is adjusted based on pre- or post-survey information.
-                      (2) a Survey uses telemetry to locate additional collared individuals outside of the defined study area."`
-                      },
-                      {
-                        name: 'Peak Count',
-                        description: `The maximum number of individuals counted during the survey period. Usually used for deer spotlight counts, or carry-over counts.`
-                      },
-                      { name: 'None', description: `No sightability model/correction factor was applied.` },
-                      {
-                        name: 'Describe in Comments',
-                        description: `The parameter method is described in comments. Note: Describing the data in comments rather than using a predefined code may reduce the clarity and accessibility of data.`
-                      }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Stratum',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Sightability Correction Factor',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'SE',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Coefficient of Variation (%)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Confidence Level (%)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Area Flown (km2)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Total Suvey Area (km2)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Total Kilometers Surveyed (km)',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Best Parameter Value Flag',
-              description: '',
-              validations: [
-                {
-                  column_code_validator: {
-                    name: '',
-                    description: '',
-                    allowed_code_values: [
-                      { name: 'Yes', description: '' },
-                      { name: 'No', description: '' },
-                      { name: 'Unknown', description: '' },
-                      { name: 'Not Evaluated', description: '' }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Total Marked Animals Observed',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
-              name: 'Marked Animals Available',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            }
-          ],
-          validations: [
-            {
-              file_duplicate_columns_validator: {}
-            },
-            {
-              file_required_columns_validator: {
-                required_columns: [
-                  'Study Area',
-                  'Population Unit',
-                  'Block/Sample Unit',
-                  'Parameter',
-                  'Stratum',
-                  'Observed',
-                  'Estimated',
-                  'Sightability Model',
-                  'Sightability Correction Factor',
-                  'SE',
-                  'Coefficient of Variation (%)',
-                  'Confidence Level (%)',
-                  'Lower CL',
-                  'Upper CL',
-                  'Total Suvey Area (km2)',
-                  'Area Flown (km2)',
-                  'Total Kilometers Surveyed (km)',
-                  'Best Parameter Value Flag',
-                  'Outlier Blocks Removed',
-                  'Total Marked Animals Observed',
-                  'Marked Animals Available',
-                  'Parameter Comments'
-                ]
-              }
-            }
-          ]
-        },
-        validations: [
-          {
-            mimetype_validator: {
-              reg_exps: ['text\\/csv', 'application\\/vnd.*']
-            }
-          }
-        ]
-      };
+      await connection.open();
 
+      const xlsxCsv = req['xlsx'];
+      const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
+      const field_method_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
+
+      const templateMethodologySpeciesRecord = await getTemplateMethodologySpeciesRecord(
+        Number(field_method_id),
+        Number(template_id),
+        connection
+      );
+
+      const validationSchema = templateMethodologySpeciesRecord?.validation;
       const validationSchemaParser = new ValidationSchemaParser(validationSchema);
 
       req['validationSchemaParser'] = validationSchemaParser;
@@ -687,7 +385,10 @@ export function getValidationRules(): RequestHandler {
       next();
     } catch (error) {
       defaultLog.debug({ label: 'getValidationRules', message: 'error', error });
+      await connection.rollback();
       throw error;
+    } finally {
+      connection.release();
     }
   };
 }
