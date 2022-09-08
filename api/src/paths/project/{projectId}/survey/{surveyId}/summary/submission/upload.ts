@@ -355,8 +355,6 @@ export function persistSummaryParseErrors(): RequestHandler {
 export function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
 
-    console.log("____ GET VALIDATION RULES ____")
-
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
     
     try {
@@ -827,7 +825,6 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
                 summaryObject.parameter_comments = columnValue
                 break;
               default:
-                console.log("DEFAULT IN SWITCH STATEMENT")
                 break;
             }
           }
@@ -871,7 +868,6 @@ export const uploadScrapedSummarySubmission = async (
   scrapedSummaryDetail: any,
   connection: IDBConnection
 ) => {
-  console.log("_____ UPLOAD SUMMARY ____")
   const sqlStatement = queries.survey.insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
 
   if (!sqlStatement) {
