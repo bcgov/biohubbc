@@ -367,6 +367,112 @@ export function getValidationRules(): RequestHandler {
           description: '',
           columns: [
             {
+              name: 'Parameter', 
+              description: '',
+              validations: [
+                {
+                  column_code_validator: {
+                    name: '',
+                    description: '',
+                    allowed_code_values: [
+                      { name: "Population", description: ''},
+                      { name: "Individuals", description: ''},
+                      { name: "Adults", description: ''},
+                      { name: "Calves", description: ''},
+                      { name: "Bulls", description: ''},
+                      { name: "Sub-Prime Bulls", description: ''},
+                      { name: "Prime Bulls", description: ''},
+                      { name: "Senior Bulls", description: ''},
+                      { name: "RISC Class I Bulls", description: ''},
+                      { name: "RISC Class II Bulls", description: ''},
+                      { name: "RISC Class III Bulls", description: ''},
+                      { name: "Oswald (1997) Class I Bulls", description: ''},
+                      { name: "Oswald (1997) Class II Bulls", description: ''},
+                      { name: "Oswald (1997) Class III Bulls", description: ''},
+                      { name: "Adult Bulls", description: ''},
+                      { name: "Yearlings Bulls", description: ''},
+                      { name: "Cows", description: ''},
+                      { name: "Unclassified Age and Sex", description: ''},
+                      { name: "Calf:100 Adult Ratio", description: ''},
+                      { name: "Cow:100 Bull Ratio", description: ''},
+                      { name: "Calf:100 Cow Ratio", description: ''},
+                      { name: "Percent Calves", description: ''},
+                      { name: "Survival Adult", description: ''},
+                      { name: "Survival Cows", description: ''},
+                      { name: "Survival Bulls", description: ''},
+                      { name: "Survival Calves", description: ''},
+                      { name: "Survival Yearling", description: ''},
+                      { name: "Mortality Adults", description: ''},
+                      { name: "Mortality Bulls", description: ''},
+                      { name: "Mortality Cows", description: ''},
+                      { name: "Mortality Calves", description: ''},
+                      { name: "Mortality Yearlings", description: ''},
+                      { name: "Individuals/km2", description: ''},
+                      { name: "Individuals/m2", description: ''},
+                      { name: "Detections", description: ''},
+                      { name: "Detections/km", description: ''},
+                      { name: "Detections/100 m", description: ''},
+                      { name: "Detections/hour", description: ''},
+                      { name: "Detections/day", description: ''},
+                      { name: "Detections/100 days", description: ''}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Observed',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Estimated',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Sightability Model', 
+              description: '',
+              validations: [
+                {
+                  column_code_validator: {
+                    name: '',
+                    description: '',
+                    allowed_code_values: [
+                      { name: "Model or Correction - Sightability Correct Factor", description: `The parameter value is based on the sampled value but is adjusted via a sightability correction factor and/or detectability correction factor.`},
+                      { name: "Model or Correction - Joint Hypergeometric Estimator", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the Joint Hypergeometric Estimator. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
+                      { name: "Model or Correction - Lincoln-Peterson", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via Lincoln-Peterson formula. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
+                      { name: "Model or Correction - MoosePop - Kamloops", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Prince George sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
+                      { name: "Model or Correction - MoosePop - Prince George", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Kamloops sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
+                      { name: "Model or Correction - Recruitment-Mortality", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted using the recruitment-mortality equation. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`},
+                      { name: "Model or Correction & Expert Knowledge", description: `The parameter value is based on the modelled or corrected  value but is adjusted via expert knowledge. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`},
+                      { name: "Minimum Number Known Alive", description: `"The value is based on the sampled value but is adjusted using additional information other than a model or SCF. The adjusted value represents the minimum number of individuals known to be alive in the area of interest.
+                      Examples of situations in which MNKA may be used are:
+                      (1) observed count is adjusted based on pre- or post-survey information.
+                      (2) a Survey uses telemetry to locate additional collared individuals outside of the defined study area."`},
+                      { name: "Peak Count", description: `The maximum number of individuals counted during the survey period. Usually used for deer spotlight counts, or carry-over counts.`},
+                      { name: "None", description: `No sightability model/correction factor was applied.`},
+                      { name: "Describe in Comments", description: `The parameter method is described in comments. Note: Describing the data in comments rather than using a predefined code may reduce the clarity and accessibility of data.`}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
               name: 'Stratum',
               description: '',
               validations: [
@@ -402,7 +508,108 @@ export function getValidationRules(): RequestHandler {
                 }
               ]
             },
-
+            {
+              name: 'Coefficient of Variation (%)',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Confidence Level (%)',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Area Flown (km2)',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Total Suvey Area (km2)',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Total Kilometers Surveyed (km)',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Best Parameter Value Flag', 
+              description: '',
+              validations: [
+                {
+                  column_code_validator: {
+                    name: '',
+                    description: '',
+                    allowed_code_values: [
+                      {name: "Yes", description: ''},
+                      {name: "No", description: ''},
+                      {name: "Unknown", description: ''},
+                      {name: "Not Evaluated", description: ''}
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Total Marked Animals Observed',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+                name: 'Marked Animals Available',
+                description: '',
+                validations: [
+                  {
+                    column_numeric_validator: {
+                      name: '',
+                      description: ''
+                    }
+                  }
+                ]
+            },
           ],
           validations: [
             {
