@@ -758,10 +758,6 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
           const summaryObject = new PostSummaryDetails();
 
           for (const columnName in rowObject) {
-            console.log("")
-            console.log("___________________")
-            console.log(`COLUMN NAME: ${columnName}`)
-            console.log("")
             const columnValue = rowObject[columnName];
             switch (columnName.toLowerCase()) {
               case SUMMARY_CLASS.STUDY_AREA:
@@ -835,7 +831,7 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
                 break;
             }
           }
-          // console.log(summaryObject)
+
           promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
         }
       }
@@ -876,9 +872,8 @@ export const uploadScrapedSummarySubmission = async (
   connection: IDBConnection
 ) => {
   console.log("_____ UPLOAD SUMMARY ____")
-  console.log(scrapedSummaryDetail)
   const sqlStatement = queries.survey.insertSurveySummaryDetailsSQL(summarySubmissionId, scrapedSummaryDetail);
-  console.log(sqlStatement?.sql)
+
   if (!sqlStatement) {
     throw new HTTP400('Failed to build SQL post statement');
   }
