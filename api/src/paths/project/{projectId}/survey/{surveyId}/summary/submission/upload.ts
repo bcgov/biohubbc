@@ -112,7 +112,6 @@ POST.apiDoc = {
 };
 
 export enum SUMMARY_CLASS {
-
   STUDY_AREA = 'study area',
   POPULATION_UNIT = 'population unit',
   BLOCK_SAMPLE_UNIT_ID = 'block/sample unit',
@@ -354,9 +353,8 @@ export function persistSummaryParseErrors(): RequestHandler {
 
 export function getValidationRules(): RequestHandler {
   return async (req, res, next) => {
-
     defaultLog.debug({ label: 'getValidationRules', message: 's3File' });
-    
+
     try {
       const validationSchema = {
         name: '',
@@ -365,7 +363,7 @@ export function getValidationRules(): RequestHandler {
           description: '',
           columns: [
             {
-              name: 'Parameter', 
+              name: 'Parameter',
               description: '',
               validations: [
                 {
@@ -373,46 +371,46 @@ export function getValidationRules(): RequestHandler {
                     name: '',
                     description: '',
                     allowed_code_values: [
-                      { name: "Population", description: ''},
-                      { name: "Individuals", description: ''},
-                      { name: "Adults", description: ''},
-                      { name: "Calves", description: ''},
-                      { name: "Bulls", description: ''},
-                      { name: "Sub-Prime Bulls", description: ''},
-                      { name: "Prime Bulls", description: ''},
-                      { name: "Senior Bulls", description: ''},
-                      { name: "RISC Class I Bulls", description: ''},
-                      { name: "RISC Class II Bulls", description: ''},
-                      { name: "RISC Class III Bulls", description: ''},
-                      { name: "Oswald (1997) Class I Bulls", description: ''},
-                      { name: "Oswald (1997) Class II Bulls", description: ''},
-                      { name: "Oswald (1997) Class III Bulls", description: ''},
-                      { name: "Adult Bulls", description: ''},
-                      { name: "Yearlings Bulls", description: ''},
-                      { name: "Cows", description: ''},
-                      { name: "Unclassified Age and Sex", description: ''},
-                      { name: "Calf:100 Adult Ratio", description: ''},
-                      { name: "Cow:100 Bull Ratio", description: ''},
-                      { name: "Calf:100 Cow Ratio", description: ''},
-                      { name: "Percent Calves", description: ''},
-                      { name: "Survival Adult", description: ''},
-                      { name: "Survival Cows", description: ''},
-                      { name: "Survival Bulls", description: ''},
-                      { name: "Survival Calves", description: ''},
-                      { name: "Survival Yearling", description: ''},
-                      { name: "Mortality Adults", description: ''},
-                      { name: "Mortality Bulls", description: ''},
-                      { name: "Mortality Cows", description: ''},
-                      { name: "Mortality Calves", description: ''},
-                      { name: "Mortality Yearlings", description: ''},
-                      { name: "Individuals/km2", description: ''},
-                      { name: "Individuals/m2", description: ''},
-                      { name: "Detections", description: ''},
-                      { name: "Detections/km", description: ''},
-                      { name: "Detections/100 m", description: ''},
-                      { name: "Detections/hour", description: ''},
-                      { name: "Detections/day", description: ''},
-                      { name: "Detections/100 days", description: ''}
+                      { name: 'Population', description: '' },
+                      { name: 'Individuals', description: '' },
+                      { name: 'Adults', description: '' },
+                      { name: 'Calves', description: '' },
+                      { name: 'Bulls', description: '' },
+                      { name: 'Sub-Prime Bulls', description: '' },
+                      { name: 'Prime Bulls', description: '' },
+                      { name: 'Senior Bulls', description: '' },
+                      { name: 'RISC Class I Bulls', description: '' },
+                      { name: 'RISC Class II Bulls', description: '' },
+                      { name: 'RISC Class III Bulls', description: '' },
+                      { name: 'Oswald (1997) Class I Bulls', description: '' },
+                      { name: 'Oswald (1997) Class II Bulls', description: '' },
+                      { name: 'Oswald (1997) Class III Bulls', description: '' },
+                      { name: 'Adult Bulls', description: '' },
+                      { name: 'Yearlings Bulls', description: '' },
+                      { name: 'Cows', description: '' },
+                      { name: 'Unclassified Age and Sex', description: '' },
+                      { name: 'Calf:100 Adult Ratio', description: '' },
+                      { name: 'Cow:100 Bull Ratio', description: '' },
+                      { name: 'Calf:100 Cow Ratio', description: '' },
+                      { name: 'Percent Calves', description: '' },
+                      { name: 'Survival Adult', description: '' },
+                      { name: 'Survival Cows', description: '' },
+                      { name: 'Survival Bulls', description: '' },
+                      { name: 'Survival Calves', description: '' },
+                      { name: 'Survival Yearling', description: '' },
+                      { name: 'Mortality Adults', description: '' },
+                      { name: 'Mortality Bulls', description: '' },
+                      { name: 'Mortality Cows', description: '' },
+                      { name: 'Mortality Calves', description: '' },
+                      { name: 'Mortality Yearlings', description: '' },
+                      { name: 'Individuals/km2', description: '' },
+                      { name: 'Individuals/m2', description: '' },
+                      { name: 'Detections', description: '' },
+                      { name: 'Detections/km', description: '' },
+                      { name: 'Detections/100 m', description: '' },
+                      { name: 'Detections/hour', description: '' },
+                      { name: 'Detections/day', description: '' },
+                      { name: 'Detections/100 days', description: '' }
                     ]
                   }
                 }
@@ -443,7 +441,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Sightability Model', 
+              name: 'Sightability Model',
               description: '',
               validations: [
                 {
@@ -451,20 +449,50 @@ export function getValidationRules(): RequestHandler {
                     name: '',
                     description: '',
                     allowed_code_values: [
-                      { name: "Model or Correction - Sightability Correct Factor", description: `The parameter value is based on the sampled value but is adjusted via a sightability correction factor and/or detectability correction factor.`},
-                      { name: "Model or Correction - Joint Hypergeometric Estimator", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the Joint Hypergeometric Estimator. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
-                      { name: "Model or Correction - Lincoln-Peterson", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via Lincoln-Peterson formula. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
-                      { name: "Model or Correction - MoosePop - Kamloops", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Prince George sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
-                      { name: "Model or Correction - MoosePop - Prince George", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Kamloops sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`},
-                      { name: "Model or Correction - Recruitment-Mortality", description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted using the recruitment-mortality equation. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`},
-                      { name: "Model or Correction & Expert Knowledge", description: `The parameter value is based on the modelled or corrected  value but is adjusted via expert knowledge. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`},
-                      { name: "Minimum Number Known Alive", description: `"The value is based on the sampled value but is adjusted using additional information other than a model or SCF. The adjusted value represents the minimum number of individuals known to be alive in the area of interest.
+                      {
+                        name: 'Model or Correction - Sightability Correct Factor',
+                        description: `The parameter value is based on the sampled value but is adjusted via a sightability correction factor and/or detectability correction factor.`
+                      },
+                      {
+                        name: 'Model or Correction - Joint Hypergeometric Estimator',
+                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the Joint Hypergeometric Estimator. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
+                      },
+                      {
+                        name: 'Model or Correction - Lincoln-Peterson',
+                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via Lincoln-Peterson formula. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
+                      },
+                      {
+                        name: 'Model or Correction - MoosePop - Kamloops',
+                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Prince George sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
+                      },
+                      {
+                        name: 'Model or Correction - MoosePop - Prince George',
+                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Kamloops sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
+                      },
+                      {
+                        name: 'Model or Correction - Recruitment-Mortality',
+                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted using the recruitment-mortality equation. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
+                      },
+                      {
+                        name: 'Model or Correction & Expert Knowledge',
+                        description: `The parameter value is based on the modelled or corrected  value but is adjusted via expert knowledge. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
+                      },
+                      {
+                        name: 'Minimum Number Known Alive',
+                        description: `"The value is based on the sampled value but is adjusted using additional information other than a model or SCF. The adjusted value represents the minimum number of individuals known to be alive in the area of interest.
                       Examples of situations in which MNKA may be used are:
                       (1) observed count is adjusted based on pre- or post-survey information.
-                      (2) a Survey uses telemetry to locate additional collared individuals outside of the defined study area."`},
-                      { name: "Peak Count", description: `The maximum number of individuals counted during the survey period. Usually used for deer spotlight counts, or carry-over counts.`},
-                      { name: "None", description: `No sightability model/correction factor was applied.`},
-                      { name: "Describe in Comments", description: `The parameter method is described in comments. Note: Describing the data in comments rather than using a predefined code may reduce the clarity and accessibility of data.`}
+                      (2) a Survey uses telemetry to locate additional collared individuals outside of the defined study area."`
+                      },
+                      {
+                        name: 'Peak Count',
+                        description: `The maximum number of individuals counted during the survey period. Usually used for deer spotlight counts, or carry-over counts.`
+                      },
+                      { name: 'None', description: `No sightability model/correction factor was applied.` },
+                      {
+                        name: 'Describe in Comments',
+                        description: `The parameter method is described in comments. Note: Describing the data in comments rather than using a predefined code may reduce the clarity and accessibility of data.`
+                      }
                     ]
                   }
                 }
@@ -483,7 +511,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Sightability Correction Factor', 
+              name: 'Sightability Correction Factor',
               description: '',
               validations: [
                 {
@@ -495,7 +523,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'SE', 
+              name: 'SE',
               description: '',
               validations: [
                 {
@@ -567,7 +595,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Best Parameter Value Flag', 
+              name: 'Best Parameter Value Flag',
               description: '',
               validations: [
                 {
@@ -575,10 +603,10 @@ export function getValidationRules(): RequestHandler {
                     name: '',
                     description: '',
                     allowed_code_values: [
-                      {name: "Yes", description: ''},
-                      {name: "No", description: ''},
-                      {name: "Unknown", description: ''},
-                      {name: "Not Evaluated", description: ''}
+                      { name: 'Yes', description: '' },
+                      { name: 'No', description: '' },
+                      { name: 'Unknown', description: '' },
+                      { name: 'Not Evaluated', description: '' }
                     ]
                   }
                 }
@@ -597,17 +625,17 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-                name: 'Marked Animals Available',
-                description: '',
-                validations: [
-                  {
-                    column_numeric_validator: {
-                      name: '',
-                      description: ''
-                    }
+              name: 'Marked Animals Available',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
                   }
-                ]
-            },
+                }
+              ]
+            }
           ],
           validations: [
             {
@@ -637,7 +665,7 @@ export function getValidationRules(): RequestHandler {
                   'Outlier Blocks Removed',
                   'Total Marked Animals Observed',
                   'Marked Animals Available',
-                  'Parameter Comments',
+                  'Parameter Comments'
                 ]
               }
             }
@@ -759,70 +787,70 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
             const columnValue = rowObject[columnName];
             switch (columnName.toLowerCase()) {
               case SUMMARY_CLASS.STUDY_AREA:
-                summaryObject.study_area_id = columnValue
+                summaryObject.study_area_id = columnValue;
                 break;
               case SUMMARY_CLASS.POPULATION_UNIT:
-                summaryObject.population_unit = columnValue
+                summaryObject.population_unit = columnValue;
                 break;
               case SUMMARY_CLASS.BLOCK_SAMPLE_UNIT_ID:
-                summaryObject.block_sample_unit_id = columnValue
+                summaryObject.block_sample_unit_id = columnValue;
                 break;
               case SUMMARY_CLASS.PARAMETER:
-                summaryObject.parameter = columnValue
+                summaryObject.parameter = columnValue;
                 break;
               case SUMMARY_CLASS.STRATUM:
-                summaryObject.stratum = columnValue
+                summaryObject.stratum = columnValue;
                 break;
               case SUMMARY_CLASS.OBSERVED:
-                summaryObject.observed = columnValue
+                summaryObject.observed = columnValue;
                 break;
               case SUMMARY_CLASS.ESTIMATED:
-                summaryObject.estimated = columnValue
+                summaryObject.estimated = columnValue;
                 break;
               case SUMMARY_CLASS.SIGHTABILITY_MODEL:
-                summaryObject.sightability_model = columnValue
+                summaryObject.sightability_model = columnValue;
                 break;
               case SUMMARY_CLASS.SIGHTABILITY_CORRECTION_FACTOR:
-                summaryObject.sightability_correction_factor = columnValue
+                summaryObject.sightability_correction_factor = columnValue;
                 break;
               case SUMMARY_CLASS.SE:
-                summaryObject.standard_error = columnValue
+                summaryObject.standard_error = columnValue;
                 break;
               case SUMMARY_CLASS.COEFFICIENT_VARIATION:
-                summaryObject.coefficient_variation = columnValue
+                summaryObject.coefficient_variation = columnValue;
                 break;
               case SUMMARY_CLASS.CONFIDENCE_LEVEL:
-                summaryObject.confidence_level_percent = columnValue
+                summaryObject.confidence_level_percent = columnValue;
                 break;
               case SUMMARY_CLASS.LOWER_CONFIDENCE_LEVEL:
-                summaryObject.confidence_limit_lower = columnValue
+                summaryObject.confidence_limit_lower = columnValue;
                 break;
               case SUMMARY_CLASS.UPPER_CONFIDENCE_LEVEL:
-                summaryObject.confidence_limit_upper = columnValue
+                summaryObject.confidence_limit_upper = columnValue;
                 break;
               case SUMMARY_CLASS.TOTAL_SURVEY_AREA:
-                summaryObject.total_area_survey_sqm = columnValue
+                summaryObject.total_area_survey_sqm = columnValue;
                 break;
               case SUMMARY_CLASS.AREA_FLOWN:
-                summaryObject.area_flown = columnValue
+                summaryObject.area_flown = columnValue;
                 break;
               case SUMMARY_CLASS.TOTAL_KILOMETERS_SURVEYED:
-                summaryObject.total_kilometers_surveyed = columnValue
+                summaryObject.total_kilometers_surveyed = columnValue;
                 break;
               case SUMMARY_CLASS.BEST_PARAMETER_VALUE_FLAG:
-                summaryObject.best_parameter_flag = columnValue
+                summaryObject.best_parameter_flag = columnValue;
                 break;
               case SUMMARY_CLASS.OUTLIER_BLOCKS_REMOVED:
-                summaryObject.outlier_blocks_removed = columnValue
+                summaryObject.outlier_blocks_removed = columnValue;
                 break;
               case SUMMARY_CLASS.TOTAL_MARKED_ANIMALS_OBSERVED:
-                summaryObject.total_marked_animals_observed = columnValue
+                summaryObject.total_marked_animals_observed = columnValue;
                 break;
               case SUMMARY_CLASS.MARKER_ANIMALS_AVAILABLE:
-                summaryObject.marked_animals_available = columnValue
+                summaryObject.marked_animals_available = columnValue;
                 break;
               case SUMMARY_CLASS.PARAMETER_COMMENTS:
-                summaryObject.parameter_comments = columnValue
+                summaryObject.parameter_comments = columnValue;
                 break;
               default:
                 break;
