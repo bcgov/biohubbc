@@ -134,7 +134,7 @@ export const mooseSummary = {
     },
     {
       mimetype_validator: {
-        reg_exp: ['application\\.vnd.*']
+        reg_exps: ['application\\/vnd.*']
       }
     }
   ]
