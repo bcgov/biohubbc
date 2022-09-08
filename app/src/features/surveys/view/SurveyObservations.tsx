@@ -12,7 +12,6 @@ import {
   mdiAlertCircleOutline,
   mdiClockOutline,
   mdiDownload,
-  mdiFileOutline,
   mdiImport,
   mdiInformationOutline,
   mdiTrashCanOutline
@@ -24,7 +23,6 @@ import ComponentDialog from 'components/dialog/ComponentDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 // import { ConfigContext } from 'contexts/configContext';
 import { DialogContext } from 'contexts/dialogContext';
-import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useInterval } from 'hooks/useInterval';
 import { IGetObservationSubmissionResponse } from 'interfaces/useObservationApi.interface';
@@ -397,21 +395,6 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               </Box>
             </Box>
           )}
-          {!isValidating &&
-            submissionStatus &&
-            (submissionStatus.status === 'Darwin Core Validated' ||
-              submissionStatus.status === 'Template Validated') && (
-              <>
-                <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
-                <Box mt={1} overflow="hidden">
-                  <ObservationSubmissionCSV
-                    getCSVData={() => {
-                      return biohubApi.observation.getSubmissionCSVForView(projectId, surveyId, submissionStatus.id);
-                    }}
-                  />
-                </Box>
-              </>
-            )}
           {isValidating && submissionStatus && (
             <Box px={3} pb={3}>
               {displayAlertBox(
