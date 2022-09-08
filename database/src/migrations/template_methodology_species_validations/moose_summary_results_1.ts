@@ -9,66 +9,88 @@ export const mooseSummary = {
             description: '',
             columns: [
                 {
-                    name: 'Parameter', 
-                    description: '',
-                    validations: basicCodeValidator(MooseSummaryItems.parameter)
+                  name: 'Parameter', 
+                  description: '',
+                  validations: basicCodeValidator(MooseSummaryItems.parameter)
                 },
                 {
-                    name: 'Stratum',
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'Observed',
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Sightability Model', 
-                    description: '',
-                    validations: basicCodeValidator(MooseSummaryItems.sightabilityModel)
+                  name: 'Estimated',
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Sightability Correction Factor', 
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'Sightability Model', 
+                  description: '',
+                  validations: basicCodeValidator(MooseSummaryItems.sightabilityModel)
                 },
                 {
-                    name: 'SE', 
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'Stratum',
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Coefficient of Variation (%)',
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'Sightability Correction Factor', 
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Coefficient of Variation (%)',
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'SE', 
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Area Flown (km2)',
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'Coefficient of Variation (%)',
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Total Kilometers Surveyed (km)',
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'Confidence Level (%)',
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Best Parameter Value Flag', 
-                    description: '',
-                    validations: basicCodeValidator(MooseSummaryItems.bestParameterValueFlag)
+                  name: 'Area Flown (km2)',
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
-                    name: 'Total Marked Animals Observed',
-                    description: '',
-                    validations: basicNumericValidator()
+                  name: 'Total Suvey Area (km2)',
+                  description: '',
+                  validations: basicNumericValidator()
+                },
+                {
+                  name: 'Total Kilometers Surveyed (km)',
+                  description: '',
+                  validations: basicNumericValidator()
+                },
+                {
+                  name: 'Best Parameter Value Flag', 
+                  description: '',
+                  validations: basicCodeValidator(MooseSummaryItems.bestParameterValueFlag)
+                },
+                {
+                  name: 'Total Marked Animals Observed',
+                  description: '',
+                  validations: basicNumericValidator()
                 },
                 {
                     name: 'Marked Animals Available',
                     description: '',
-                    validations: basicNumericValidator()
+                    validations: [
+                      {
+                        column_numeric_validator: {
+                          name: '',
+                          description: ''
+                        }
+                      }
+                    ]
                 },
-            ],
+              ],
             validations: [
                 {
                     file_duplicate_columns_validator: {}
