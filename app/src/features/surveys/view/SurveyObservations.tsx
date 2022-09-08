@@ -12,6 +12,7 @@ import {
   mdiAlertCircleOutline,
   mdiClockOutline,
   mdiDownload,
+  mdiFileOutline,
   mdiImport,
   mdiInformationOutline,
   mdiTrashCanOutline
@@ -346,7 +347,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
           buttonOnClick={() => showUploadDialog()}
         />
 
-        <Box>
+        <Box pb={3}>
           {!submissionStatus && (
             <>
               <Box component={Divider} m={0} />
@@ -395,6 +396,14 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
               </Box>
             </Box>
           )}
+          {!isValidating &&
+            submissionStatus &&
+            (submissionStatus.status === 'Darwin Core Validated' ||
+              submissionStatus.status === 'Template Validated') && (
+              <>
+                <Box px={3}>{displayAlertBox('info', mdiFileOutline, submissionStatus.inputFileName, '')}</Box>
+              </>
+            )}
           {isValidating && submissionStatus && (
             <Box px={3} pb={3}>
               {displayAlertBox(

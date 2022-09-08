@@ -2,7 +2,6 @@ import { AxiosInstance, CancelTokenSource } from 'axios';
 import {
   IGetObservationSubmissionResponse,
   IGetOccurrencesForViewResponseDetails,
-  IGetSubmissionCSVForViewResponse,
   IUploadObservationSubmissionResponse
 } from 'interfaces/useObservationApi.interface';
 
@@ -41,25 +40,6 @@ const useObservationApi = (axios: AxiosInstance) => {
         cancelToken: cancelTokenSource?.token,
         onUploadProgress: onProgress
       }
-    );
-
-    return data;
-  };
-
-  /**
-   * Get observation submission csv data/details by submission id.
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} submissionId
-   * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
-   */
-  const getSubmissionCSVForView = async (
-    projectId: number,
-    surveyId: number,
-    submissionId: number
-  ): Promise<IGetSubmissionCSVForViewResponse> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/observation/submission/${submissionId}/view`
     );
 
     return data;
@@ -198,7 +178,6 @@ const useObservationApi = (axios: AxiosInstance) => {
 
   return {
     uploadObservationSubmission,
-    getSubmissionCSVForView,
     getObservationSubmission,
     deleteObservationSubmission,
     initiateDwCSubmissionValidation,

@@ -22,7 +22,6 @@ import { IUploadHandler } from 'components/attachments/FileUploadItem';
 import ComponentDialog from 'components/dialog/ComponentDialog';
 import { H2ButtonToolbar } from 'components/toolbar/ActionToolbars';
 import { DialogContext } from 'contexts/dialogContext';
-import ObservationSubmissionCSV from 'features/observations/components/ObservationSubmissionCSV';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
@@ -309,7 +308,7 @@ const SurveySummaryResults = () => {
           buttonOnClick={() => showUploadDialog()}
         />
 
-        <Box>
+        <Box pb={3}>
           {!submission && (
             <>
               <Box component={Divider} m={0} />
@@ -343,13 +342,6 @@ const SurveySummaryResults = () => {
           {submission && !hasErrorMessages && (
             <>
               <Box px={3}>{displayAlertBox('info', mdiFileOutline, submission?.fileName, '')}</Box>
-              <Box mt={1} overflow="hidden">
-                <ObservationSubmissionCSV
-                  getCSVData={() => {
-                    return biohubApi.survey.getSubmissionCSVForView(projectId, surveyId, submission.id);
-                  }}
-                />
-              </Box>
             </>
           )}
         </Box>
