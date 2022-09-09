@@ -445,18 +445,6 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Stratum',
-              description: '',
-              validations: [
-                {
-                  column_numeric_validator: {
-                    name: '',
-                    description: ''
-                  }
-                }
-              ]
-            },
-            {
               name: 'Sightability Correction Factor',
               description: '',
               validations: [
