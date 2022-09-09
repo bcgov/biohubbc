@@ -15,7 +15,7 @@ import { ConfigContext } from 'contexts/configContext';
 import React, { useContext } from 'react';
 
 /**
- * Page to display a list of resources.
+ * Page to display a list of resources
  *
  * @return {*}
  */
