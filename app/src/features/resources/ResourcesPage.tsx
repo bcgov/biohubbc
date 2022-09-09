@@ -82,7 +82,7 @@ const ResourcesPage: React.FC = () => {
     },
     {
       id: '8',
-      name: 'Moose Summary Results Template 1.0',
+      name: 'Goat Summary Results Template 1.0',
       url: `${s3PublicHostURL}/templates/Goat_Summary_Results_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
