@@ -1,9 +1,9 @@
 import { Knex } from 'knex';
-import { goatRecruitmentCompositionJSON } from './template_methodology_species_validations/goat_population_recruitment_composition';
+import { goatRecruitmentCompositionJSON } from './template_methodology_species_validations/goat_population_recruitment_composition_survey_1';
 import { mooseCompositionJSON } from './template_methodology_species_validations/moose_composition_survey_1';
 import { mooseSrbJSON } from './template_methodology_species_validations/moose_srb_survey_1';
 import { mooseTransectDistanceJSON } from './template_methodology_species_validations/moose_transect_distance_survey_1';
-import { sheepRecruitmentCompositionJSON } from './template_methodology_species_validations/sheep_population_recruitment_composition_survey';
+import { sheepRecruitmentCompositionJSON } from './template_methodology_species_validations/sheep_population_recruitment_composition_survey_1';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
@@ -29,7 +29,7 @@ enum TEMPLATE_NAME {
 }
 
 const validationSchema = [
-  // Common Survey Methodology: Composition, SRB, Transect
+  // Common Survey Methodology: Composition, SRB, Transect, Population Recruitment
   {
     v_schema: JSON.stringify(moose_composition_validation),
     field_method: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
