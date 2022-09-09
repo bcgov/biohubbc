@@ -250,13 +250,6 @@ export function prepXLSX(): RequestHandler {
 
       const xlsxCsv = new XLSXCSV(parsedMedia);
 
-      // const template_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_template_id;
-      // const csm_id = xlsxCsv.workbook.rawWorkbook.Custprops.sims_csm_id;
-
-      // if (!template_id || !csm_id) {
-      //   req['parseError'] = 'Failed to parse submission, template identification properties are missing';
-      // }
-
       req['xlsx'] = xlsxCsv;
 
       next();
@@ -369,20 +362,6 @@ export function getValidationRules(): RequestHandler {
         defaultFile: {
           description: '',
           columns: [
-            // codes are different for each summary, so this is getting left out
-            // {
-            //   name: 'Parameter',
-            //   description: '',
-            //   validations: [
-            //     {
-            //       column_code_validator: {
-            //         name: '',
-            //         description: '',
-            //         allowed_code_values: []
-            //       }
-            //     }
-            //   ]
-            // },
             {
               name: 'Observed',
               description: '',
@@ -730,8 +709,6 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
   return async (req, res, next) => {
     const xlsxCsv: XLSXCSV = req['xlsx'];
 
-    // const summarySubmissionId = req['summarySubmissionId'];
-
     const connection = getDBConnection(req['keycloak_token']);
 
     const worksheets = xlsxCsv.workbook.worksheets;
@@ -823,8 +800,6 @@ export function parseAndUploadSummarySubmissionInput(): RequestHandler {
                 break;
             }
           }
-
-          // promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
         }
       }
 
