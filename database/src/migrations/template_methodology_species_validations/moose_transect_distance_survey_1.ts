@@ -426,11 +426,6 @@ export const mooseTransectDistanceJSON = {
           validations: basicCodeValidator(MooseItems.latLongUnits)
         },
         {
-          name: 'Species',
-          description: '',
-          validations: basicCodeValidator(MooseItems.species)
-        },
-        {
           name: 'Adult Males',
           description: '',
           validations: basicNumericValidator()
