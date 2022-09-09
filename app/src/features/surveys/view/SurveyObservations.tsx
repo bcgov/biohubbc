@@ -202,7 +202,7 @@ const SurveyObservations: React.FC<ISurveyObservationsProps> = (props) => {
     });
   };
 
-  // Action prop for the Alert MUI component to render the delete icon and associated action
+  // Action prop for the Alert MUI component to render the delete icon and associated actions
   const submissionAlertAction = () => (
     <Box>
       <IconButton aria-label="open" color="inherit" onClick={() => viewFileContents()}>
