@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
 import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
 import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
 import { queries } from '../../../../../../../queries/queries';
@@ -36,7 +35,6 @@ export const POST: Operation = [
   getValidationRules(),
   validateXLSX(),
   persistSummaryValidationResults(),
-  parseAndUploadSummarySubmissionInput(),
   returnSummarySubmissionId()
 ];
 
@@ -627,118 +625,6 @@ export function persistSummaryValidationResults(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export function parseAndUploadSummarySubmissionInput(): RequestHandler {
-  return async (req, res, next) => {
-    const xlsxCsv: XLSXCSV = req['xlsx'];
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const worksheets = xlsxCsv.workbook.worksheets;
-
-    try {
-      await connection.open();
-
-      const promises: Promise<any>[] = [];
-
-      for (const worksheet of Object.values(worksheets)) {
-        if (worksheet.name === 'Picklist Values') {
-          continue;
-        }
-        const rowObjects = worksheet.getRowObjects();
-
-        for (const rowObject of Object.values(rowObjects)) {
-          const summaryObject = new PostSummaryDetails();
-
-          for (const columnName in rowObject) {
-            const columnValue = rowObject[columnName];
-            switch (columnName.toLowerCase()) {
-              case SUMMARY_CLASS.STUDY_AREA:
-                summaryObject.study_area_id = columnValue;
-                break;
-              case SUMMARY_CLASS.POPULATION_UNIT:
-                summaryObject.population_unit = columnValue;
-                break;
-              case SUMMARY_CLASS.BLOCK_SAMPLE_UNIT_ID:
-                summaryObject.block_sample_unit_id = columnValue;
-                break;
-              case SUMMARY_CLASS.PARAMETER:
-                summaryObject.parameter = columnValue;
-                break;
-              case SUMMARY_CLASS.STRATUM:
-                summaryObject.stratum = columnValue;
-                break;
-              case SUMMARY_CLASS.OBSERVED:
-                summaryObject.observed = columnValue;
-                break;
-              case SUMMARY_CLASS.ESTIMATED:
-                summaryObject.estimated = columnValue;
-                break;
-              case SUMMARY_CLASS.SIGHTABILITY_MODEL:
-                summaryObject.sightability_model = columnValue;
-                break;
-              case SUMMARY_CLASS.SIGHTABILITY_CORRECTION_FACTOR:
-                summaryObject.sightability_correction_factor = columnValue;
-                break;
-              case SUMMARY_CLASS.SE:
-                summaryObject.standard_error = columnValue;
-                break;
-              case SUMMARY_CLASS.COEFFICIENT_VARIATION:
-                summaryObject.coefficient_variation = columnValue;
-                break;
-              case SUMMARY_CLASS.CONFIDENCE_LEVEL:
-                summaryObject.confidence_level_percent = columnValue;
-                break;
-              case SUMMARY_CLASS.LOWER_CONFIDENCE_LEVEL:
-                summaryObject.confidence_limit_lower = columnValue;
-                break;
-              case SUMMARY_CLASS.UPPER_CONFIDENCE_LEVEL:
-                summaryObject.confidence_limit_upper = columnValue;
-                break;
-              case SUMMARY_CLASS.TOTAL_SURVEY_AREA:
-                summaryObject.total_area_survey_sqm = columnValue;
-                break;
-              case SUMMARY_CLASS.AREA_FLOWN:
-                summaryObject.area_flown = columnValue;
-                break;
-              case SUMMARY_CLASS.TOTAL_KILOMETERS_SURVEYED:
-                summaryObject.total_kilometers_surveyed = columnValue;
-                break;
-              case SUMMARY_CLASS.BEST_PARAMETER_VALUE_FLAG:
-                summaryObject.best_parameter_flag = columnValue;
-                break;
-              case SUMMARY_CLASS.OUTLIER_BLOCKS_REMOVED:
-                summaryObject.outlier_blocks_removed = columnValue;
-                break;
-              case SUMMARY_CLASS.TOTAL_MARKED_ANIMALS_OBSERVED:
-                summaryObject.total_marked_animals_observed = columnValue;
-                break;
-              case SUMMARY_CLASS.MARKER_ANIMALS_AVAILABLE:
-                summaryObject.marked_animals_available = columnValue;
-                break;
-              case SUMMARY_CLASS.PARAMETER_COMMENTS:
-                summaryObject.parameter_comments = columnValue;
-                break;
-              default:
-                break;
-            }
-          }
-        }
-      }
-
-      await Promise.all(promises);
-
-      await connection.commit();
-      next();
-    } catch (error) {
-      defaultLog.error({ label: 'parseAndUploadSummaryDetails', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
