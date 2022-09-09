@@ -387,64 +387,6 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Sightability Model',
-              description: '',
-              validations: [
-                {
-                  column_code_validator: {
-                    name: '',
-                    description: '',
-                    allowed_code_values: [
-                      {
-                        name: 'Model or Correction - Sightability Correct Factor',
-                        description: `The parameter value is based on the sampled value but is adjusted via a sightability correction factor and/or detectability correction factor.`
-                      },
-                      {
-                        name: 'Model or Correction - Joint Hypergeometric Estimator',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the Joint Hypergeometric Estimator. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - Lincoln-Peterson',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via Lincoln-Peterson formula. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - MoosePop - Kamloops',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Prince George sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - MoosePop - Prince George',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Kamloops sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction - Recruitment-Mortality',
-                        description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted using the recruitment-mortality equation. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
-                      },
-                      {
-                        name: 'Model or Correction & Expert Knowledge',
-                        description: `The parameter value is based on the modelled or corrected  value but is adjusted via expert knowledge. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
-                      },
-                      {
-                        name: 'Minimum Number Known Alive',
-                        description: `"The value is based on the sampled value but is adjusted using additional information other than a model or SCF. The adjusted value represents the minimum number of individuals known to be alive in the area of interest.
-                      Examples of situations in which MNKA may be used are:
-                      (1) observed count is adjusted based on pre- or post-survey information.
-                      (2) a Survey uses telemetry to locate additional collared individuals outside of the defined study area."`
-                      },
-                      {
-                        name: 'Peak Count',
-                        description: `The maximum number of individuals counted during the survey period. Usually used for deer spotlight counts, or carry-over counts.`
-                      },
-                      { name: 'None', description: `No sightability model/correction factor was applied.` },
-                      {
-                        name: 'Describe in Comments',
-                        description: `The parameter method is described in comments. Note: Describing the data in comments rather than using a predefined code may reduce the clarity and accessibility of data.`
-                      }
-                    ]
-                  }
-                }
-              ]
-            },
-            {
               name: 'Sightability Correction Factor',
               description: '',
               validations: [
