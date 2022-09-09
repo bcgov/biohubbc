@@ -29,7 +29,7 @@ enum TEMPLATE_NAME {
 }
 
 const validationSchema = [
-  //Common Survey Methodology: Composition, SRB, Transect, Population Recruitment
+  // Common Survey Methodology: Composition, SRB, Transect, Population Recruitment
   {
     v_schema: JSON.stringify(moose_composition_validation),
     field_method: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
