@@ -66,11 +66,27 @@ const ResourcesPage: React.FC = () => {
     },
     {
       id: '6',
-      name: 'Moose Summary Statistics',
-      url: `${s3PublicHostURL}/templates/Moose_Summary_Statistics.xlsx`,
+      name: 'Moose Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Moose_Summary_Results_1.0.xlsx`,
       type: mdiFileExcelOutline,
       lastModified: 'Today',
-      fileSize: '10 KB'
+      fileSize: '27 KB'
+    },
+    {
+      id: '7',
+      name: 'Sheep Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Sheep_Summary_Results_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '24 KB'
+    },
+    {
+      id: '8',
+      name: 'Moose Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Goat_Summary_Results_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '27 KB'
     }
   ];
 
