@@ -20,14 +20,14 @@ export async function up(knex: Knex): Promise<void> {
  
     ALTER TABLE survey_summary_detail ADD COLUMN population_unit varchar(50);
     ALTER TABLE survey_summary_detail ADD COLUMN block_sample_unit_id varchar(50);
-    ALTER TABLE survey_summary_detail ADD COLUMN observed integer;
-    ALTER TABLE survey_summary_detail ADD COLUMN estimated integer;
-    ALTER TABLE survey_summary_detail ADD COLUMN total_area_survey_sqm integer;
-    ALTER TABLE survey_summary_detail ADD COLUMN area_flown integer;
-    ALTER TABLE survey_summary_detail ADD COLUMN total_kilometers_surveyed integer;
+    ALTER TABLE survey_summary_detail ADD COLUMN observed numeric;
+    ALTER TABLE survey_summary_detail ADD COLUMN estimated numeric;
+    ALTER TABLE survey_summary_detail ADD COLUMN total_area_survey_sqm numeric;
+    ALTER TABLE survey_summary_detail ADD COLUMN area_flown numeric;
+    ALTER TABLE survey_summary_detail ADD COLUMN total_kilometers_surveyed numeric;
     ALTER TABLE survey_summary_detail ADD COLUMN best_parameter_flag varchar(50);
-    ALTER TABLE survey_summary_detail ADD COLUMN total_marked_animals_observed integer;
-    ALTER TABLE survey_summary_detail ADD COLUMN marked_animals_available integer;
+    ALTER TABLE survey_summary_detail ADD COLUMN total_marked_animals_observed numeric;
+    ALTER TABLE survey_summary_detail ADD COLUMN marked_animals_available numeric;
     ALTER TABLE survey_summary_detail ADD COLUMN parameter_comments varchar(500);
 
     COMMENT ON COLUMN survey_summary_detail.population_unit IS 'Name of species population unit/herd unit.';
