@@ -1,17 +1,9 @@
 import { Knex } from 'knex';
-<<<<<<< HEAD:database/src/migrations/20220809133100_update_survey_validation_schemas.ts
-import { goatRecruitmentCompositionJSON } from './template_methodology_species_validations/goat_population_recruitment_composition';
-import { mooseCompositionJSON } from './template_methodology_species_validations/moose_composition_survey_1';
-import { mooseSrbJSON } from './template_methodology_species_validations/moose_srb_survey_1';
-import { mooseTransectDistanceJSON } from './template_methodology_species_validations/moose_transect_distance_survey_1';
-import { sheepRecruitmentCompositionJSON } from './template_methodology_species_validations/sheep_population_recruitment_composition_survey';
-=======
 import { goatRecruitmentCompositionJSON } from './template_methodology_species_validations/goat_population_recruitment_composition_survey_1';
 import { mooseCompositionJSON } from './template_methodology_species_validations/moose_composition_survey_1';
 import { mooseSrbJSON } from './template_methodology_species_validations/moose_srb_survey_1';
 import { mooseTransectDistanceJSON } from './template_methodology_species_validations/moose_transect_distance_survey_1';
 import { sheepRecruitmentCompositionJSON } from './template_methodology_species_validations/sheep_population_recruitment_composition_survey_1';
->>>>>>> 988e4ff436b8dd4f33aa96b6d0f646b50f2b05dd:database/src/migrations/20220901133100_update_survey_validation_schemas.ts
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
@@ -37,11 +29,7 @@ enum TEMPLATE_NAME {
 }
 
 const validationSchema = [
-<<<<<<< HEAD:database/src/migrations/20220809133100_update_survey_validation_schemas.ts
-  // Common Survey Methodology: Composition, SRB, Transect, Population Recruitment
-=======
   //Common Survey Methodology: Composition, SRB, Transect, Population Recruitment
->>>>>>> 988e4ff436b8dd4f33aa96b6d0f646b50f2b05dd:database/src/migrations/20220901133100_update_survey_validation_schemas.ts
   {
     v_schema: JSON.stringify(moose_composition_validation),
     field_method: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
