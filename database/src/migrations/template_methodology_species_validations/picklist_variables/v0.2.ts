@@ -1,3 +1,4 @@
+/* eslint-disable prettier/prettier */
 const yN = [
   { name: 'Y', description: '' },
   { name: 'N', description: '' }
@@ -54,6 +55,7 @@ const ActivityObservation = [
   { name: 'Bedding' },
   { name: 'Running' },
   { name: 'Walking' },
+  { name: 'Not Moving' },
   { name: 'Moving' }
 ];
 
@@ -237,13 +239,58 @@ const SignType = [
   { name: 'Described in Comments' }
 ];
 
+const SignAge = [{ name: 'Fresh' }, { name: 'Old' }];
+
+const Habitat = [
+  { name: 'Alpine' },
+  { name: 'Alpine Barren' },
+  { name: 'Alpine Heath Meadows' },
+  { name: 'Avalanche Path' },
+  { name: 'Broken Cliffs' },
+  { name: 'Broken Cliff in Timber' },
+  { name: 'Burn' },
+  { name: 'Caves' },
+  { name: 'Clearcut' },
+  { name: 'Cliff' },
+  { name: 'Cliff - open' },
+  { name: 'Cliff in Forest' },
+  { name: 'Coniferous' },
+  { name: 'Deciduous' },
+  { name: 'Dissected Cliffs' },
+  { name: 'Flat or Open Slopes' },
+  { name: 'Glacier' },
+  { name: 'Grass' },
+  { name: 'Krummholtz' },
+  { name: 'Mixed Wood' },
+  { name: 'Moraine' },
+  { name: 'Ridge' },
+  { name: 'Riparian' },
+  { name: 'Rock/Talus' },
+  { name: 'Scree' },
+  { name: 'Shrub' },
+  { name: 'Snow' },
+  { name: 'Sub-Alpine' },
+  { name: 'Talus/Slope' },
+  { name: 'Terraces' },
+  { name: 'Timber' },
+  { name: 'Wetland/Meadow' },
+  { name: 'Willow/Shrub' }
+];
+
+const HabitatSlope = [
+  { name: 'Flat (0%)', description: 'Flat (0%)' },
+  { name: 'Minimum (5-20%)', description: 'Minimum (5-20%)' },
+  { name: 'Moderate (20-50%)', description: 'Moderate (20-50%)' },
+  { name: 'Steep (>50%)', description: 'Steep (>50%)' }
+];
+
 const SheepSpecies = [
   { name: 'Bighorn Sheep' },
   { name: 'Ovis canadensis' },
   { name: 'M-OVCA' },
-  { name: "Dall's Sheep" },
+  { name: "Dall''s Sheep" },
   { name: 'M-OVDA-DA' },
-  { name: "Stone's Sheep" },
+  { name: "Stone''s Sheep" },
   { name: 'M-OVDA-ST' },
   { name: 'Thinhorn Sheep' },
   { name: 'Ovis dalli' },
@@ -255,7 +302,9 @@ const MooseSpecies = [
   { name: 'Alces Alces' },
   { name: 'Alces Americanus' },
   { name: 'M-ALAL' },
-  { name: 'M-ALAM' }
+  { name: 'M-ALAM' },
+  { name: 'Caribou' },
+  { name: 'Elk' }
 ];
 
 const ParameterStatistic = [
@@ -403,7 +452,10 @@ export const defaultPicklist = {
   speciesOccurrenceStatus: SpeciesOccurrenceStatus,
   activityIncidentalObservation: ActivityIncidentalObservation,
   featureType: FeatureType,
-  signType: SignType
+  signType: SignType,
+  signAge: SignAge,
+  habitat: Habitat,
+  habitatSlope: HabitatSlope
 };
 
 export const summaryPickList = {
