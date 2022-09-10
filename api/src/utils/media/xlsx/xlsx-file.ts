@@ -45,7 +45,7 @@ export class XLSXCSV {
 
       const worksheet: CSVWorksheet = this.workbook.worksheets[fileName];
 
-      if (!worksheet) {
+      if (!worksheet || fileName === 'Picklist Values') {
         return;
       }
 
