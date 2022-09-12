@@ -258,6 +258,67 @@ export const getStakeholderPartnershipsByProjectSQL = (projectId: number): SQLSt
 };
 
 /**
+ * SQL query to get project attachments.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getAttachmentsByProjectSQL = (projectId: number): SQLStatement | null => {
+  if (!projectId) {
+    return null;
+  }
+
+  return SQL`
+    SELECT
+      *
+    FROM
+      project_attachment
+    WHERE
+      project_id = ${projectId};
+  `;
+};
+
+/**
+ * SQL query to get project reports.
+ *
+ * @param {number} projectId
+ * @returns {SQLStatement} sql query object
+ */
+export const getReportAttachmentsByProjectSQL = (projectId: number): SQLStatement | null => {
+  if (!projectId) {
+    return null;
+  }
+
+  return SQL`
+    SELECT 
+      pra.project_report_attachment_id 
+      , pra.project_id 
+      , pra.file_name 
+      , pra.title 
+      , pra.description 
+      , pra.year
+      , pra."key" 
+      , pra.file_size
+      , pra.security_token
+	    , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
+    FROM 
+    	project_report_attachment pra
+    LEFT JOIN project_report_author pra2 ON pra2.project_report_attachment_id = pra.project_report_attachment_id
+    WHERE pra.project_id = ${projectId}
+    GROUP BY 
+      pra.project_report_attachment_id
+      , pra.project_id 
+      , pra.file_name 
+      , pra.title 
+      , pra.description 
+      , pra.year
+      , pra."key" 
+      , pra.file_size
+      , pra.security_token;
+  `;
+};
+
+/**
  * SQL query to get permits associated to a project.
  *
  * @param {number} projectId

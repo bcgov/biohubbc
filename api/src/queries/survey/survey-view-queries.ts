@@ -206,3 +206,64 @@ export const getLatestSummaryResultIdSQL = (surveyId: number): SQLStatement | nu
       survey_id = ${surveyId};
     `;
 };
+
+/**
+ * SQL query to get survey attachments.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+ export const getAttachmentsBySurveySQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
+    return null;
+  }
+
+  return SQL`
+    SELECT
+      *
+    FROM
+    survey_attachment
+    WHERE
+    survey_id = ${surveyId};
+  `;
+};
+
+/**
+ * SQL query to get survey reports.
+ *
+ * @param {number} surveyId
+ * @returns {SQLStatement} sql query object
+ */
+export const getReportAttachmentsBySurveySQL = (surveyId: number): SQLStatement | null => {
+  if (!surveyId) {
+    return null;
+  }
+
+  return SQL`
+    SELECT 
+      pra.survey_report_attachment_id 
+      , pra.survey_id 
+      , pra.file_name 
+      , pra.title 
+      , pra.description 
+      , pra.year
+      , pra."key" 
+      , pra.file_size
+      , pra.security_token
+	    , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
+    FROM 
+    survey_report_attachment pra
+    LEFT JOIN survey_report_author pra2 ON pra2.survey_report_attachment_id = pra.survey_report_attachment_id
+    WHERE pra.survey_id = ${surveyId}
+    GROUP BY 
+      pra.survey_report_attachment_id
+      , pra.survey_id 
+      , pra.file_name 
+      , pra.title 
+      , pra.description 
+      , pra.year
+      , pra."key" 
+      , pra.file_size
+      , pra.security_token;
+  `;
+};

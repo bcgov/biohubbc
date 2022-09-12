@@ -5,8 +5,16 @@ import { coordEach } from '@turf/meta';
 import jsonpatch from 'fast-json-patch';
 import xml2js from 'xml2js';
 import { IDBConnection } from '../database/db';
-import { IGetProject } from '../models/project-view';
-import { SurveyObject } from '../models/survey-view';
+import {
+  GetAttachmentsData as GetProjectAttachmentsData,
+  GetReportAttachmentsData as GetProjectReportAttachmentsData,
+  IGetProject
+} from '../models/project-view';
+import {
+  GetAttachmentsData as GetSurveyAttachmentsData,
+  GetReportAttachmentsData as GetSurveyReportAttachmentsData,
+  SurveyObject
+} from '../models/survey-view';
 import { getDbCharacterSystemMetaDataConstantSQL } from '../queries/codes/db-constant-queries';
 import { CodeService, IAllCodeSets } from './code-service';
 import { ProjectService } from './project-service';
@@ -39,6 +47,10 @@ type EMLDBConstants = {
 type Cache = {
   projectData?: IGetProject;
   surveyData?: SurveyObject[];
+  projectAttachmentData?: GetProjectAttachmentsData;
+  projectReportAttachmentData?: GetProjectReportAttachmentsData;
+  surveyAttachmentData?: GetSurveyAttachmentsData;
+  surveyReportAttachmentData?: GetSurveyReportAttachmentsData;
   codes?: IAllCodeSets;
 };
 
@@ -188,10 +200,30 @@ export class EmlService extends DBService {
     return this.cache.projectData;
   }
 
+  get projectAttachmentData(): GetProjectAttachmentsData | undefined {
+    return this.cache.projectAttachmentData;
+  }
+
+  get projectReportAttachmentData(): GetProjectReportAttachmentsData | undefined {
+    return this.cache.projectReportAttachmentData;
+  }
+
+  get surveyAttachmentData(): GetSurveyAttachmentsData | undefined {
+    return this.cache.surveyAttachmentData;
+  }
+
+  get surveyReportAttachmentData(): GetSurveyReportAttachmentsData | undefined {
+    return this.cache.surveyReportAttachmentData;
+  }
+
   async loadProjectData() {
     const projectData = await this.projectService.getProjectById(this.projectId);
+    const attachmentData = await this.projectService.getAttachmentsData(this.projectId);
+    const attachmentReportData = await this.projectService.getReportAttachmentsData(this.projectId);
 
     this.cache.projectData = projectData;
+    this.cache.projectAttachmentData = attachmentData;
+    this.cache.projectReportAttachmentData = attachmentReportData;
   }
 
   get surveyData(): SurveyObject[] {
@@ -211,6 +243,14 @@ export class EmlService extends DBService {
     const includedSurveyIds = allSurveyIds.filter((item) => !this.surveyIds?.length || this.surveyIds?.includes(item));
 
     const surveyData = await this.surveyService.getSurveysByIds(includedSurveyIds);
+
+    surveyData.forEach(
+      async (item) => (item.attachments = await this.surveyService.getAttachmentsData(item.survey_details.id))
+    );
+    surveyData.forEach(
+      async (item) =>
+        (item.report_attachments = await this.surveyService.getReportAttachmentsData(item.survey_details.id))
+    );
 
     this.cache.surveyData = surveyData;
   }
@@ -251,11 +291,12 @@ export class EmlService extends DBService {
         $: { system: this.constants.EML_PROVIDER_URL, id: this.packageId },
         title: options?.datasetTitle || this.projectData.project.project_name,
         creator: this.getDatasetCreator(),
-        pubDate: new Date().toISOString(),
         metadataProvider: {
           organizationName: this.constants.EML_ORGANIZATION_NAME,
           onlineUrl: this.constants.EML_ORGANIZATION_URL
         },
+        //EML specification expects short ISO format
+        pubDate: new Date().toISOString().substring(0, 10),
         language: 'English',
         contact: this.getProjectContact(),
         project: {
@@ -444,6 +485,62 @@ export class EmlService extends DBService {
           surveyedAllAreas: item.purpose_and_methodology.surveyed_all_areas === 'true' || false
         }
       });
+    });
+
+    if (this.projectAttachmentData?.attachmentDetails.length) {
+      data.push({
+        describes: this.projectData.project.uuid,
+        metadata: {
+          projectAttachments: {
+            projectAttachment: this.projectAttachmentData.attachmentDetails.map((item) => {
+              return { file_name: item };
+            })
+          }
+        }
+      });
+    }
+
+    if (this.projectReportAttachmentData?.attachmentDetails.length) {
+      data.push({
+        describes: this.projectData.project.uuid,
+        metadata: {
+          projectReportAttachments: {
+            projectReportAttachment: this.projectReportAttachmentData.attachmentDetails.map((item) => {
+              return { file_name: item };
+            })
+          }
+        }
+      });
+    }
+
+    this.surveyData.forEach((item) => {
+      if (item.attachments?.attachmentDetails.length) {
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            surveyAttachments: {
+              surveyAttachment: item.attachments?.attachmentDetails.map((item) => {
+                return { file_name: item };
+              })
+            }
+          }
+        });
+      }
+    });
+
+    this.surveyData.forEach((item) => {
+      if (item.report_attachments?.attachmentDetails.length) {
+        data.push({
+          describes: item.survey_details.uuid,
+          metadata: {
+            surveyReportAttachments: {
+              surveyReportAttachment: item.report_attachments?.attachmentDetails.map((item) => {
+                return { file_name: item };
+              })
+            }
+          }
+        });
+      }
     });
 
     jsonpatch.applyOperation(this.data, {

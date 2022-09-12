@@ -14,6 +14,19 @@ export interface IGetProject {
   partnerships: GetPartnershipsData;
 }
 
+export interface IGetProjectAttachment {
+  project_attachment_id: number;
+  project_id: number;
+  file_name: string;
+  title: string;
+  description: string;
+  year: string;
+  key: string;
+  file_size: number;
+  security_token: string;
+  authors: string[];
+}
+
 /**
  * Pre-processes GET /projects/{id} project data
  *
@@ -219,5 +232,86 @@ export class GetPartnershipsData {
       (indigenous_partnerships?.length && indigenous_partnerships.map((item: any) => item.id)) || [];
     this.stakeholder_partnerships =
       (stakeholder_partnerships?.length && stakeholder_partnerships.map((item: any) => item.partnership_name)) || [];
+  }
+}
+
+interface IGetAttachmentsSource {
+  file_name: string;
+  file_type: string;
+  title: string;
+  description: string;
+  key: string;
+  file_size: string;
+  is_secure: string;
+}
+
+/**
+ * Pre-processes GET /projects/{id} attachments data
+ *
+ * @export
+ * @class GetAttachmentsData
+ */
+export class GetAttachmentsData {
+  attachmentDetails: IGetAttachmentsSource[];
+
+  constructor(attachments?: any[]) {
+    this.attachmentDetails =
+      (attachments?.length &&
+        attachments.map((item: any) => {
+          return {
+            file_name: item.file_name,
+            file_type: item.file_type,
+            title: item.title,
+            description: item.description,
+            key: item.security_token ? '' : item.key,
+            file_size: item.file_size,
+            is_secure: item.security_token ? 'true' : 'false'
+          };
+        })) ||
+      [];
+  }
+}
+
+interface IGetReportAttachmentsSource {
+  file_name: string;
+  title: string;
+  year: string;
+  description: string;
+  key: string;
+  file_size: string;
+  is_secure: string;
+  authors?: { author: string }[];
+}
+
+/**
+ * Pre-processes GET /projects/{id} report attachments data
+ *
+ * @export
+ * @class GetReportAttachmentsData
+ */
+export class GetReportAttachmentsData {
+  attachmentDetails: IGetReportAttachmentsSource[];
+
+  constructor(attachments?: any[]) {
+    this.attachmentDetails =
+      (attachments?.length &&
+        attachments.map((item: any) => {
+          const attachmentItem = {
+            file_name: item.file_name,
+            title: item.title,
+            year: item.year,
+            description: item.description,
+            key: item.security_token ? '' : item.key,
+            file_size: item.file_size,
+            is_secure: item.security_token ? 'true' : 'false'
+          };
+
+          if (item.authors.length) {
+            attachmentItem['authors'] = { author: item.authors };
+          }
+
+          return attachmentItem;
+        })) ||
+      [];
   }
 }

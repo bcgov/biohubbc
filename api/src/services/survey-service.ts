@@ -11,6 +11,8 @@ import {
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
+  GetAttachmentsData,
+  GetReportAttachmentsData,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';
@@ -321,6 +323,34 @@ export class SurveyService extends DBService {
     await Promise.all(promises);
 
     return surveyId;
+  }
+
+  async getAttachmentsData(surveyId: number): Promise<GetAttachmentsData> {
+    const sqlStatement = queries.survey.getAttachmentsBySurveySQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new ApiGeneralError('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = (response && response.rows) || null;
+
+    return new GetAttachmentsData(result);
+  }
+
+  async getReportAttachmentsData(surveyId: number): Promise<GetReportAttachmentsData> {
+    const sqlStatement = queries.survey.getReportAttachmentsBySurveySQL(surveyId);
+
+    if (!sqlStatement) {
+      throw new ApiGeneralError('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = (response && response.rows) || null;
+
+    return new GetReportAttachmentsData(result);
   }
 
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {

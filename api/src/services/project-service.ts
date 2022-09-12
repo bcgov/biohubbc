@@ -27,6 +27,8 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
+  GetAttachmentsData,
+  GetReportAttachmentsData,
   GetPermitData,
   GetProjectData,
   IGetProject
@@ -520,6 +522,34 @@ export class ProjectService extends DBService {
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     return (response && response.rows) || null;
+  }
+
+  async getAttachmentsData(projectId: number): Promise<GetAttachmentsData> {
+    const sqlStatement = queries.project.getAttachmentsByProjectSQL(projectId);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = (response && response.rows) || null;
+
+    return new GetAttachmentsData(result);
+  }
+
+  async getReportAttachmentsData(projectId: number): Promise<GetReportAttachmentsData> {
+    const sqlStatement = queries.project.getReportAttachmentsByProjectSQL(projectId);
+
+    if (!sqlStatement) {
+      throw new HTTP400('Failed to build SQL get statement');
+    }
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+
+    const result = (response && response.rows) || null;
+
+    return new GetReportAttachmentsData(result);
   }
 
   async createProject(postProjectData: PostProjectObject): Promise<number> {
