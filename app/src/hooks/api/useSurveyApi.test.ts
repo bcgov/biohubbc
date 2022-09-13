@@ -264,25 +264,6 @@ describe('useSurveyApi', () => {
     });
   });
 
-  it('getSubmissionCSVForView works as expected', async () => {
-    const summaryId = 2;
-    const resultData = {
-      data: {
-        name: 'name',
-        headers: [],
-        rows: [[]]
-      }
-    };
-
-    mock
-      .onGet(`/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/view`)
-      .reply(200, resultData);
-
-    const result = await useSurveyApi(axios).getSubmissionCSVForView(projectId, surveyId, summaryId);
-
-    expect(result).toEqual(resultData);
-  });
-
   it('deleteSummarySubmission works as expected', async () => {
     const summaryId = 2;
 

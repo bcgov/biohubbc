@@ -2,6 +2,7 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   getActivitiesByProjectSQL,
+  getAttachmentsByProjectSQL,
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
@@ -9,6 +10,7 @@ import {
   getProjectListSQL,
   getProjectPermitsSQL,
   getProjectSQL,
+  getReportAttachmentsByProjectSQL,
   getStakeholderPartnershipsByProjectSQL
 } from './project-view-queries';
 
@@ -210,6 +212,34 @@ describe('getFundingSourceByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getFundingSourceByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getAttachmentsByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getAttachmentsByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getAttachmentsByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getReportAttachmentsByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getReportAttachmentsByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getReportAttachmentsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });
