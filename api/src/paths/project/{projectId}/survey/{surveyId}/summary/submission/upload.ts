@@ -3,7 +3,6 @@ import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../../../constants/roles';
 import { getDBConnection, IDBConnection } from '../../../../../../../database/db';
 import { HTTP400 } from '../../../../../../../errors/custom-error';
-import { PostSummaryDetails } from '../../../../../../../models/summaryresults-create';
 import { generateHeaderErrorMessage, generateRowErrorMessage } from '../../../../../../../paths/dwc/validate';
 import { validateXLSX } from '../../../../../../../paths/xlsx/validate';
 import { queries } from '../../../../../../../queries/queries';
@@ -36,7 +35,6 @@ export const POST: Operation = [
   getValidationRules(),
   validateXLSX(),
   persistSummaryValidationResults(),
-  parseAndUploadSummarySubmissionInput(),
   returnSummarySubmissionId()
 ];
 
@@ -112,21 +110,28 @@ POST.apiDoc = {
 };
 
 export enum SUMMARY_CLASS {
-  STUDY_AREA = 'survey area',
-  SUMMARY_STATISTIC = 'statistic',
+  STUDY_AREA = 'study area',
+  POPULATION_UNIT = 'population unit',
+  BLOCK_SAMPLE_UNIT_ID = 'block/sample unit',
+  PARAMETER = 'parameter',
   STRATUM = 'stratum',
   OBSERVED = 'observed',
-  ESTIMATE = 'estimate',
-  STANDARD_ERROR = 'se',
-  COEFFICIENT_VARIATION = 'cv',
-  CONFIDENCE_LEVEL = 'conf.level',
-  LOWER_CONFIDENCE_LIMIT = 'lcl',
-  UPPER_CONFIDENCE_LIMIT = 'ucl',
-  SIGHTABILITY_MODEL = 'sightability.model',
-  AREA = 'area',
-  AREA_FLOWN = 'area.flown',
-  OUTLIER_BLOCKS_REMOVED = 'outlier.blocks.removed',
-  ANALYSIS_METHOD = 'analysis.method'
+  ESTIMATED = 'estimated',
+  SIGHTABILITY_MODEL = 'sightability model',
+  SIGHTABILITY_CORRECTION_FACTOR = 'sightability correction factor',
+  SE = 'se',
+  COEFFICIENT_VARIATION = 'coefficient of variation (%)',
+  CONFIDENCE_LEVEL = 'confidence level (%)',
+  LOWER_CONFIDENCE_LEVEL = 'lower cl',
+  UPPER_CONFIDENCE_LEVEL = 'upper cl',
+  TOTAL_SURVEY_AREA = 'total survey area (km2)',
+  AREA_FLOWN = 'area flown (km2)',
+  TOTAL_KILOMETERS_SURVEYED = 'total kilometers surveyed (km)',
+  BEST_PARAMETER_VALUE_FLAG = 'best parameter value flag',
+  OUTLIER_BLOCKS_REMOVED = 'outlier blocks removed',
+  TOTAL_MARKED_ANIMALS_OBSERVED = 'total marked animals observed',
+  MARKER_ANIMALS_AVAILABLE = 'marked animals available',
+  PARAMETER_COMMENTS = 'parameter comments'
 }
 
 /**
@@ -368,7 +373,19 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Estimate',
+              name: 'Estimated',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Sightability Correction Factor',
               description: '',
               validations: [
                 {
@@ -392,7 +409,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'CV',
+              name: 'Coefficient of Variation (%)',
               description: '',
               validations: [
                 {
@@ -404,7 +421,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Conf.Level',
+              name: 'Confidence Level (%)',
               description: '',
               validations: [
                 {
@@ -416,7 +433,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'LCL',
+              name: 'Area Flown (km2)',
               description: '',
               validations: [
                 {
@@ -428,7 +445,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'UCL',
+              name: 'Total Survey Area (km2)',
               description: '',
               validations: [
                 {
@@ -440,7 +457,7 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Area',
+              name: 'Total Kilometers Surveyed (km)',
               description: '',
               validations: [
                 {
@@ -452,7 +469,37 @@ export function getValidationRules(): RequestHandler {
               ]
             },
             {
-              name: 'Area.Flown',
+              name: 'Best Parameter Value Flag',
+              description: '',
+              validations: [
+                {
+                  column_code_validator: {
+                    name: '',
+                    description: '',
+                    allowed_code_values: [
+                      { name: 'Yes', description: '' },
+                      { name: 'No', description: '' },
+                      { name: 'Unknown', description: '' },
+                      { name: 'Not Evaluated', description: '' }
+                    ]
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Total Marked Animals Observed',
+              description: '',
+              validations: [
+                {
+                  column_numeric_validator: {
+                    name: '',
+                    description: ''
+                  }
+                }
+              ]
+            },
+            {
+              name: 'Marked Animals Available',
               description: '',
               validations: [
                 {
@@ -471,21 +518,28 @@ export function getValidationRules(): RequestHandler {
             {
               file_required_columns_validator: {
                 required_columns: [
-                  'Survey Area',
-                  'Statistic',
+                  'Study Area',
+                  'Population Unit',
+                  'Block/Sample Unit',
+                  'Parameter',
                   'Stratum',
                   'Observed',
-                  'Estimate',
+                  'Estimated',
+                  'Sightability Model',
+                  'Sightability Correction Factor',
                   'SE',
-                  'CV',
-                  'Conf.Level',
-                  'LCL',
-                  'UCL',
-                  'Sightability.Model',
-                  'Area',
-                  'Area.Flown',
-                  'Outlier.Blocks.Removed',
-                  'Analysis.Method'
+                  'Coefficient of Variation (%)',
+                  'Confidence Level (%)',
+                  'Lower CL',
+                  'Upper CL',
+                  'Total Survey Area (km2)',
+                  'Area Flown (km2)',
+                  'Total Kilometers Surveyed (km)',
+                  'Best Parameter Value Flag',
+                  'Outlier Blocks Removed',
+                  'Total Marked Animals Observed',
+                  'Marked Animals Available',
+                  'Parameter Comments'
                 ]
               }
             }
@@ -571,98 +625,6 @@ export function persistSummaryValidationResults(): RequestHandler {
       return res.status(200).send();
     } catch (error) {
       defaultLog.error({ label: 'persistValidationResults', message: 'error', error });
-      await connection.rollback();
-      throw error;
-    } finally {
-      connection.release();
-    }
-  };
-}
-
-export function parseAndUploadSummarySubmissionInput(): RequestHandler {
-  return async (req, res, next) => {
-    const xlsxCsv: XLSXCSV = req['xlsx'];
-
-    const summarySubmissionId = req['summarySubmissionId'];
-
-    const connection = getDBConnection(req['keycloak_token']);
-
-    const worksheets = xlsxCsv.workbook.worksheets;
-
-    try {
-      await connection.open();
-
-      const promises: Promise<any>[] = [];
-
-      for (const worksheet of Object.values(worksheets)) {
-        const rowObjects = worksheet.getRowObjects();
-
-        for (const rowObject of Object.values(rowObjects)) {
-          const summaryObject = new PostSummaryDetails();
-
-          for (const columnName in rowObject) {
-            const columnValue = rowObject[columnName];
-
-            switch (columnName.toLowerCase()) {
-              case SUMMARY_CLASS.STUDY_AREA:
-                summaryObject.study_area_id = columnValue;
-                break;
-              case SUMMARY_CLASS.SUMMARY_STATISTIC:
-                summaryObject.parameter = columnValue;
-                break;
-              case SUMMARY_CLASS.STRATUM:
-                summaryObject.stratum = columnValue;
-                break;
-              case SUMMARY_CLASS.OBSERVED:
-                summaryObject.parameter_value = columnValue;
-                break;
-              case SUMMARY_CLASS.ESTIMATE:
-                summaryObject.parameter_estimate = columnValue;
-                break;
-              case SUMMARY_CLASS.STANDARD_ERROR:
-                summaryObject.standard_error = columnValue;
-                break;
-              case SUMMARY_CLASS.COEFFICIENT_VARIATION:
-                summaryObject.coefficient_variation = columnValue;
-                break;
-              case SUMMARY_CLASS.CONFIDENCE_LEVEL:
-                summaryObject.confidence_level_percent = columnValue;
-                break;
-              case SUMMARY_CLASS.UPPER_CONFIDENCE_LIMIT:
-                summaryObject.confidence_limit_upper = columnValue;
-                break;
-              case SUMMARY_CLASS.LOWER_CONFIDENCE_LIMIT:
-                summaryObject.confidence_limit_lower = columnValue;
-                break;
-              case SUMMARY_CLASS.SIGHTABILITY_MODEL:
-                summaryObject.sightability_model = columnValue;
-                break;
-              case SUMMARY_CLASS.AREA:
-                summaryObject.total_area_survey_sqm = columnValue;
-                break;
-              case SUMMARY_CLASS.AREA_FLOWN:
-                summaryObject.kilometres_surveyed = columnValue;
-                break;
-              case SUMMARY_CLASS.OUTLIER_BLOCKS_REMOVED:
-                summaryObject.outlier_blocks_removed = columnValue;
-                break;
-              case SUMMARY_CLASS.ANALYSIS_METHOD:
-                summaryObject.analysis_method = columnValue;
-                break;
-              default:
-                break;
-            }
-          }
-          promises.push(uploadScrapedSummarySubmission(summarySubmissionId, summaryObject, connection));
-        }
-      }
-
-      await Promise.all(promises);
-
-      await connection.commit();
-      next();
-    } catch (error) {
-      defaultLog.error({ label: 'parseAndUploadSummaryDetails', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
