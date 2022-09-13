@@ -1,5 +1,5 @@
-import { basicCodeValidator, basicNumericValidator, MooseItems } from './picklist_variables/v0.2';
-export const mooseCompositionJSON = {
+import { basicCodeValidator, basicNumericValidator, GoatItems } from './picklist_variables/v0.2';
+export const goatRecruitmentCompositionJSON = {
   name: '',
   description: '',
   files: [
@@ -25,12 +25,12 @@ export const mooseCompositionJSON = {
         {
           name: 'Aircraft Type',
           description: '',
-          validations: basicCodeValidator(MooseItems.aircraftType)
+          validations: basicCodeValidator(GoatItems.aircraftType)
         },
         {
           name: 'Light',
           description: '',
-          validations: basicCodeValidator(MooseItems.light)
+          validations: basicCodeValidator(GoatItems.light)
         }
       ],
       validations: [
@@ -41,13 +41,18 @@ export const mooseCompositionJSON = {
           file_required_columns_validator: {
             required_columns: [
               'Study Area',
+              'Population Unit',
               'Block ID/SU ID',
-              'Block Area (km2)',
+              'Population Unit/Block Area (km2)',
               'Date',
               'Start Time 1 (24hrs)',
               'End Time 1 (24hrs)',
               'Start Time 2 (24hrs)',
               'End Time 2 (24hrs)',
+              'Start Time 3 (24hrs)',
+              'End Time 3 (24hrs)',
+              'Start Time 4 (24hrs)',
+              'End Time 4 (24hrs)',
               'Total Block Time',
               'Total Time (hours)',
               'Total Time (mins)',
@@ -65,10 +70,11 @@ export const mooseCompositionJSON = {
               'Precipitation',
               'Light',
               'Snow Cover',
+              'Snow Conditions',
               'Snow Depth',
               'Days Since Snowfall',
               'Weather Description',
-              'Habitat Description',
+              'Location Description',
               'Effort & Site Comments'
             ]
           }
@@ -82,7 +88,7 @@ export const mooseCompositionJSON = {
         {
           name: 'UTM Zone',
           description: '',
-          validations: basicCodeValidator(MooseItems.uTMZone)
+          validations: basicCodeValidator(GoatItems.uTMZone)
         },
         {
           name: 'Easting',
@@ -97,100 +103,30 @@ export const mooseCompositionJSON = {
         {
           name: 'Datum',
           description: '',
-          validations: basicCodeValidator(MooseItems.gPSDatum)
+          validations: basicCodeValidator(GoatItems.gPSDatum)
         },
         {
           name: 'Lat/Long Units',
           description: '',
-          validations: basicCodeValidator(MooseItems.latLongUnits)
+          validations: basicCodeValidator(GoatItems.latLongUnits)
         },
         {
           name: 'Species',
           description: '',
-          validations: basicCodeValidator(MooseItems.species)
+          validations: basicCodeValidator(GoatItems.species)
         },
         {
-          name: 'Yearling Bulls',
+          name: 'Nanny',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Adult Bulls - Unclassified',
+          name: 'Billy',
           description: '',
           validations: basicNumericValidator()
         },
         {
-          name: 'Sub-Prime Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Prime Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Senior Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'RISC Class I Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'RISC Class II Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'RISC Class III Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Oswald (1997) Class I Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Oswald (1997) Class II Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Oswald (1997) Class III Bulls',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Adult Bulls - Unclassified',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Bulls - Unclassified',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Lone Cows',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Cow W/1 calf',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Cow W/2 calves',
-          description: '',
-          validations: basicNumericValidator()
-        },
-        {
-          name: 'Lone Calf',
+          name: 'Kid',
           description: '',
           validations: basicNumericValidator()
         },
@@ -210,14 +146,14 @@ export const mooseCompositionJSON = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Spike/Fork Bulls',
+          name: 'Sign Type',
           description: '',
-          validations: basicNumericValidator()
+          validations: basicCodeValidator(GoatItems.signType)
         },
         {
-          name: '3 Brow/10 Points Bulls',
+          name: 'Age of Sign',
           description: '',
-          validations: basicNumericValidator()
+          validations: basicCodeValidator(GoatItems.signAge)
         },
         {
           name: 'Veg Cover (%)',
@@ -232,7 +168,27 @@ export const mooseCompositionJSON = {
         {
           name: 'Activity',
           description: '',
-          validations: basicCodeValidator(MooseItems.activityObservation)
+          validations: basicCodeValidator(GoatItems.activityObservation)
+        },
+        {
+          name: 'Elevation (m) of Observation',
+          description: '',
+          validations: basicNumericValidator()
+        },
+        {
+          name: 'Habitat',
+          description: '',
+          validations: basicCodeValidator(GoatItems.habitat)
+        },
+        {
+          name: 'Wind Blown',
+          description: '',
+          validations: basicCodeValidator(GoatItems.yN)
+        },
+        {
+          name: 'Terrain Obstruction',
+          description: '',
+          validations: basicCodeValidator(GoatItems.yN)
         },
         {
           name: 'Number of Marked Animals Observed',
@@ -242,7 +198,7 @@ export const mooseCompositionJSON = {
         {
           name: 'Survey or Telemetry Search',
           description: '',
-          validations: basicCodeValidator(MooseItems.searchType)
+          validations: basicCodeValidator(GoatItems.searchType)
         }
       ],
       validations: [
@@ -253,7 +209,9 @@ export const mooseCompositionJSON = {
           file_required_columns_validator: {
             required_columns: [
               'Study Area',
+              'Population Unit',
               'Block ID/SU ID',
+              'Date',
               'UTM Zone',
               'Easting',
               'Northing',
@@ -262,30 +220,21 @@ export const mooseCompositionJSON = {
               'Long',
               'Lat/Long Units',
               'Species',
-              'Yearling Bulls',
-              'Sub-Prime Bulls',
-              'Prime Bulls',
-              'Senior Bulls',
-              'RISC Class I Bulls',
-              'RISC Class II Bulls',
-              'RISC Class III Bulls',
-              'Oswald (1997) Class I Bulls',
-              'Oswald (1997) Class II Bulls',
-              'Oswald (1997) Class III Bulls',
-              'Adult Bulls - Unclassified',
-              'Bulls - Unclassified',
-              'Lone Cows',
-              'Cow W/1 calf',
-              'Cow W/2 calves',
-              'Lone calf',
+              'Nanny',
+              'Billy',
+              'Kid',
               'Adult Unclassified Sex',
               'Unclassified Age/Sex',
               'Total Count',
-              'Spike/Fork Bulls',
-              '3 Brow/10 Points Bulls',
+              'Sign Type',
+              'Age of Sign',
               'Veg Cover (%)',
               'Snow Cover (%)',
               'Activity',
+              'Elevation (m) of Observation',
+              'Habitat',
+              'Wind Blown',
+              'Terrain Obstruction',
               'Number of Marked Animals Observed',
               'Survey or Telemetry Search',
               'Photos',
@@ -302,7 +251,7 @@ export const mooseCompositionJSON = {
         {
           name: 'UTM Zone',
           description: '',
-          validations: basicCodeValidator(MooseItems.uTMZone)
+          validations: basicCodeValidator(GoatItems.uTMZone)
         },
         {
           name: 'Easting',
@@ -317,47 +266,47 @@ export const mooseCompositionJSON = {
         {
           name: 'Datum',
           description: '',
-          validations: basicCodeValidator(MooseItems.gPSDatum)
+          validations: basicCodeValidator(GoatItems.gPSDatum)
         },
         {
           name: 'Lat/Long Units',
           description: '',
-          validations: basicCodeValidator(MooseItems.latLongUnits)
+          validations: basicCodeValidator(GoatItems.latLongUnits)
         },
         {
           name: 'Targeted or Non-Targeted',
           description: '',
-          validations: basicCodeValidator(MooseItems.targetType)
+          validations: basicCodeValidator(GoatItems.targetType)
         },
         {
           name: 'Mark Type',
           description: '',
-          validations: basicCodeValidator(MooseItems.markType)
+          validations: basicCodeValidator(GoatItems.markType)
         },
         {
           name: 'Frequency Unit',
           description: '',
-          validations: basicCodeValidator(MooseItems.frequencyUnits)
+          validations: basicCodeValidator(GoatItems.frequencyUnits)
         },
         {
           name: 'Location of Identifier on Individual',
           description: '',
-          validations: basicCodeValidator(MooseItems.locationOfIdentifier)
+          validations: basicCodeValidator(GoatItems.locationOfIdentifier)
         },
         {
           name: 'Shape',
           description: '',
-          validations: basicCodeValidator(MooseItems.shape)
+          validations: basicCodeValidator(GoatItems.shape)
         },
         {
           name: 'Pattern',
           description: '',
-          validations: basicCodeValidator(MooseItems.pattern)
+          validations: basicCodeValidator(GoatItems.pattern)
         },
         {
           name: 'Color',
           description: '',
-          validations: basicCodeValidator(MooseItems.color)
+          validations: basicCodeValidator(GoatItems.color)
         }
       ],
       validations: [
@@ -401,7 +350,7 @@ export const mooseCompositionJSON = {
         {
           name: 'UTM Zone',
           description: '',
-          validations: basicCodeValidator(MooseItems.uTMZone)
+          validations: basicCodeValidator(GoatItems.uTMZone)
         },
         {
           name: 'Easting',
@@ -416,12 +365,12 @@ export const mooseCompositionJSON = {
         {
           name: 'Datum',
           description: '',
-          validations: basicCodeValidator(MooseItems.gPSDatum)
+          validations: basicCodeValidator(GoatItems.gPSDatum)
         },
         {
           name: 'Lat/Long Units',
           description: '',
-          validations: basicCodeValidator(MooseItems.latLongUnits)
+          validations: basicCodeValidator(GoatItems.latLongUnits)
         },
         {
           name: 'Adult Males',
@@ -466,22 +415,22 @@ export const mooseCompositionJSON = {
         {
           name: 'Species Occurrence Status',
           description: '',
-          validations: basicCodeValidator(MooseItems.speciesOccurrenceStatus)
+          validations: basicCodeValidator(GoatItems.speciesOccurrenceStatus)
         },
         {
           name: 'Activity',
           description: '',
-          validations: basicCodeValidator(MooseItems.activityIncidentalObservation)
+          validations: basicCodeValidator(GoatItems.activityIncidentalObservation)
         },
         {
           name: 'Feature Type',
           description: '',
-          validations: basicCodeValidator(MooseItems.featureType)
+          validations: basicCodeValidator(GoatItems.featureType)
         },
         {
           name: 'Sign Type',
           description: '',
-          validations: basicCodeValidator(MooseItems.signType)
+          validations: basicCodeValidator(GoatItems.signType)
         }
       ],
       validations: [
@@ -499,8 +448,8 @@ export const mooseCompositionJSON = {
               'Datum',
               'Lat',
               'Long',
-              'Date',
               'Lat/Long Units',
+              'Date',
               'Species',
               'Adult Males',
               'Adult Females',
