@@ -8,8 +8,6 @@ export type SurveyObject = {
   funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
   location: GetSurveyLocationData;
-  attachments?: GetAttachmentsData;
-  report_attachments?: GetReportAttachmentsData;
 };
 
 export class GetSurveyData {
