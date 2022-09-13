@@ -213,7 +213,7 @@ export const getLatestSummaryResultIdSQL = (surveyId: number): SQLStatement | nu
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
- export const getAttachmentsBySurveySQL = (surveyId: number): SQLStatement | null => {
+export const getAttachmentsBySurveySQL = (surveyId: number): SQLStatement | null => {
   if (!surveyId) {
     return null;
   }

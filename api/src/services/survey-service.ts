@@ -4,15 +4,15 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
+  GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
+  GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyFundingSources,
   GetSurveyLocationData,
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData,
-  GetAttachmentsData,
-  GetReportAttachmentsData,
   SurveyObject,
   SurveySupplementaryData
 } from '../models/survey-view';

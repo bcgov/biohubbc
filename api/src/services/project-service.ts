@@ -21,16 +21,16 @@ import {
   PutProjectData
 } from '../models/project-update';
 import {
+  GetAttachmentsData,
   GetCoordinatorData,
   GetFundingData,
   GetIUCNClassificationData,
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetAttachmentsData,
-  GetReportAttachmentsData,
   GetPermitData,
   GetProjectData,
+  GetReportAttachmentsData,
   IGetProject
 } from '../models/project-view';
 import { getSurveyAttachmentS3Keys } from '../paths/project/{projectId}/survey/{surveyId}/delete';
