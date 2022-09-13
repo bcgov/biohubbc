@@ -240,8 +240,8 @@ export class GetReportAttachmentsData {
             is_secure: item.security_token ? 'true' : 'false'
           };
 
-          if (item.authors.length) {
-            attachmentItem['authors'] = { author: item.authors };
+          if (item.authors?.length) {
+            attachmentItem['authors'] = item.authors;
           }
 
           return attachmentItem;

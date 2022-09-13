@@ -2,6 +2,10 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   getAllAssignablePermitsForASurveySQL,
+  getAttachmentsBySurveySQL,
+  getLatestOccurrenceSubmissionIdSQL,
+  getLatestSummaryResultIdSQL,
+  getReportAttachmentsBySurveySQL,
   getSurveyBasicDataForViewSQL,
   getSurveyFocalSpeciesDataForViewSQL,
   getSurveyFundingSourcesDataForViewSQL,
@@ -67,6 +71,62 @@ describe('getSurveyFocalSpeciesDataForViewSQL', () => {
 
   it('returns a non null response when valid params passed in', () => {
     const response = getSurveyFocalSpeciesDataForViewSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getLatestOccurrenceSubmissionIdSQL', () => {
+  it('returns a null response when null survey id param provided', () => {
+    const response = getLatestOccurrenceSubmissionIdSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null response when valid params passed in', () => {
+    const response = getLatestOccurrenceSubmissionIdSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getLatestSummaryResultIdSQL', () => {
+  it('returns a null response when null survey id param provided', () => {
+    const response = getLatestSummaryResultIdSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null response when valid params passed in', () => {
+    const response = getLatestSummaryResultIdSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getAttachmentsBySurveySQL', () => {
+  it('returns a null response when null survey id param provided', () => {
+    const response = getAttachmentsBySurveySQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null response when valid params passed in', () => {
+    const response = getAttachmentsBySurveySQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getReportAttachmentsBySurveySQL', () => {
+  it('returns a null response when null survey id param provided', () => {
+    const response = getReportAttachmentsBySurveySQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('returns a non null response when valid params passed in', () => {
+    const response = getReportAttachmentsBySurveySQL(1);
 
     expect(response).to.not.be.null;
   });
