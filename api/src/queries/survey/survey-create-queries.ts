@@ -111,11 +111,7 @@ export const postSurveyProprietorSQL = (surveyId: number, survey_proprietor: Pos
  * @param {number} fundingSourceId
  * @returns {SQLStatement} sql query object
  */
-export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: number): SQLStatement | null => {
-  if (!surveyId || !fundingSourceId) {
-    return null;
-  }
-
+export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: number): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey_funding_source (
       survey_id,

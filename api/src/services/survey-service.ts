@@ -429,10 +429,6 @@ export class SurveyService extends DBService {
 
     const sqlStatement = queries.survey.postSurveyProprietorSQL(surveyId, survey_proprietor);
 
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
@@ -467,10 +463,6 @@ export class SurveyService extends DBService {
 
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
     const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, funding_source_id);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL statement for insertSurveyFundingSource');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
