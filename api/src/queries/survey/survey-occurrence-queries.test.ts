@@ -75,12 +75,6 @@ describe('deleteOccurrenceSubmissionSQL', () => {
 });
 
 describe('getLatestSurveyOccurrenceSubmission', () => {
-  it('returns null response when null surveyId provided', () => {
-    const response = getLatestSurveyOccurrenceSubmissionSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns non null response when valid params provided', () => {
     const response = getLatestSurveyOccurrenceSubmissionSQL(1);
 

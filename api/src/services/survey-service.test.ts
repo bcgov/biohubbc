@@ -4,10 +4,12 @@ import { QueryResult } from 'pg';
 import sinon from 'sinon';
 import sinonChai from 'sinon-chai';
 import { ApiGeneralError } from '../errors/custom-error';
-import { PostProprietorData } from '../models/survey-create';
+import { GetReportAttachmentsData } from '../models/project-view';
+import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
+  GetAttachmentsData,
   GetFocalSpeciesData,
   GetPermitData,
   GetSurveyData,
@@ -298,6 +300,421 @@ describe('SurveyService', () => {
     });
   });
 
+  describe('getPermitData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getPermitData(1);
+
+      expect(response).to.eql(new GetPermitData({ id: 1 }));
+    });
+  });
+
+  describe('getSurveyPurposeAndMethodology', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getSurveyPurposeAndMethodology(1);
+
+      expect(response).to.eql(new GetSurveyPurposeAndMethodologyData({ id: 1 }));
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.getSurveyPurposeAndMethodology(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to get survey purpose and methodology data');
+      }
+    });
+  });
+
+  describe('getSurveyFundingSourcesData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getSurveyFundingSourcesData(1);
+
+      expect(response).to.eql(new GetSurveyFundingSources([{ id: 1 }]));
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({} as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.getSurveyFundingSourcesData(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to get survey funding sources data');
+      }
+    });
+  });
+
+  describe('getSurveyProprietorDataForView', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getSurveyProprietorDataForView(1);
+
+      expect(response).to.eql(new GetSurveyProprietorData([{ id: 1 }]));
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.getSurveyProprietorDataForView(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to get survey proprietor data');
+      }
+    });
+  });
+
+  describe('getSurveyLocationData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getSurveyLocationData(1);
+
+      expect(response).to.eql(new GetSurveyLocationData({ id: 1 }));
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.getSurveyLocationData(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to get project survey details data');
+      }
+    });
+  });
+
+  describe('getOccurrenceSubmissionId', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getOccurrenceSubmissionId(1);
+
+      expect(response).to.eql({ id: 1 });
+    });
+
+    it('returns null if response is empty', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getOccurrenceSubmissionId(1);
+
+      expect(response).to.eql(null);
+    });
+  });
+
+  describe('getLatestSurveyOccurrenceSubmission', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getLatestSurveyOccurrenceSubmission(1);
+
+      expect(response).to.eql({ id: 1 });
+    });
+
+    it('returns null if response is empty', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getLatestSurveyOccurrenceSubmission(1);
+
+      expect(response).to.eql(null);
+    });
+  });
+
+  describe('getSummaryResultId', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getSummaryResultId(1);
+
+      expect(response).to.eql({ id: 1 });
+    });
+
+    it('returns null if response is empty', async () => {
+      const mockQueryResponse = ({ rows: [], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getSummaryResultId(1);
+
+      expect(response).to.eql(null);
+    });
+  });
+
+  describe('getAttachmentsData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getAttachmentsData(1);
+
+      expect(response).to.eql(new GetAttachmentsData([{ id: 1 }]));
+    });
+  });
+
+  describe('getReportAttachmentsData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.getReportAttachmentsData(1);
+
+      expect(response).to.eql(new GetReportAttachmentsData([{ id: 1 }]));
+    });
+  });
+
+  describe('insertSurveyData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.insertSurveyData(1, ({
+        survey_details: {
+          survey_name: 'name',
+          start_date: 'date',
+          end_date: 'date',
+          biologist_first_name: 'name',
+          biologist_last_name: 'name'
+        },
+        purpose_and_methodology: {
+          field_method_id: 'name',
+          additional_details: 'date',
+          ecological_season_id: 'date',
+          intended_outcome_id: 'name',
+          surveyed_all_areas: 'name'
+        },
+        location: { survey_area_name: 'name', geometry: [{ stuff: 'geometry' }] }
+      } as unknown) as PostSurveyObject);
+
+      expect(response).to.eql(1);
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.insertSurveyData(1, ({
+          survey_details: {
+            survey_name: 'name',
+            start_date: 'date',
+            end_date: 'date',
+            biologist_first_name: 'name',
+            biologist_last_name: 'name'
+          },
+          purpose_and_methodology: {
+            field_method_id: 'name',
+            additional_details: 'date',
+            ecological_season_id: 'date',
+            intended_outcome_id: 'name',
+            surveyed_all_areas: 'name'
+          },
+          location: { survey_area_name: 'name', geometry: [{ stuff: 'geometry' }] }
+        } as unknown) as PostSurveyObject);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to insert survey data');
+      }
+    });
+  });
+
+  describe('insertFocalSpecies', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.insertFocalSpecies(1, 1);
+
+      expect(response).to.eql(1);
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.insertFocalSpecies(1, 1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to insert focal species data');
+      }
+    });
+  });
+
+  describe('insertAncillarySpecies', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.insertAncillarySpecies(1, 1);
+
+      expect(response).to.eql(1);
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.insertAncillarySpecies(1, 1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to insert ancillary species data');
+      }
+    });
+  });
+
+  describe('insertVantageCodes', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if valid return', async () => {
+      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.insertVantageCodes(1, 1);
+
+      expect(response).to.eql(1);
+    });
+
+    it('throws error if response is invalid', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.insertVantageCodes(1, 1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to insert ancillary species data');
+      }
+    });
+  });
+
   describe('insertSurveyProprietor', () => {
     afterEach(() => {
       sinon.restore();
@@ -401,6 +818,300 @@ describe('SurveyService', () => {
       const surveyService = new SurveyService(mockDBConnection);
 
       const response = await surveyService.insertSurveyFundingSource(1, 1);
+
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveyDetailsData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('throws api error if response is null', async () => {
+      const mockDBConnection = getMockDBConnection({ knex: async () => (undefined as unknown) as any });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.updateSurveyDetailsData(1, ({ survey_details: 'details' } as unknown) as PutSurveyObject);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to update survey data');
+      }
+    });
+
+    it('returns data if response is not null', async () => {
+      const mockQueryResponse = ({ response: 'something', rowCount: 1 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ knex: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyDetailsData(1, ({
+        survey_details: 'details'
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveySpeciesData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if response is not null', async () => {
+      sinon.stub(SurveyService.prototype, 'deleteSurveySpeciesData').resolves();
+      sinon.stub(SurveyService.prototype, 'insertFocalSpecies').resolves(1);
+      sinon.stub(SurveyService.prototype, 'insertAncillarySpecies').resolves(1);
+
+      const mockQueryResponse = ({ response: 'something', rowCount: 1 } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ knex: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveySpeciesData(1, ({
+        survey_details: 'details',
+        species: { focal_species: [1], ancillary_species: [1] }
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql([1, 1]);
+    });
+  });
+
+  describe('deleteSurveySpeciesData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if response is not null', async () => {
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.deleteSurveySpeciesData(1);
+
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveyPermitData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+    it('returns undefined if not permit number is given', async () => {
+      sinon.stub(SurveyService.prototype, 'unassociatePermitFromSurvey').resolves();
+      sinon.stub(SurveyService.prototype, 'insertOrAssociatePermitToSurvey').resolves(undefined);
+
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyPermitData(1, 1, ({
+        permit: {}
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql(undefined);
+    });
+
+    it('returns data if response is not null', async () => {
+      sinon.stub(SurveyService.prototype, 'unassociatePermitFromSurvey').resolves();
+      sinon.stub(SurveyService.prototype, 'insertOrAssociatePermitToSurvey').resolves(undefined);
+
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyPermitData(1, 1, ({
+        permit: { permit_number: '1', permit_type: 'type' }
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('unassociatePermitFromSurvey', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if response is not null', async () => {
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.unassociatePermitFromSurvey(1);
+
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveyFundingData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if response is not null', async () => {
+      sinon.stub(SurveyService.prototype, 'deleteSurveyFundingSourcesData').resolves(undefined);
+      sinon.stub(SurveyService.prototype, 'insertSurveyFundingSource').resolves(undefined);
+
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyFundingData(1, ({
+        permit: { permit_number: '1', permit_type: 'type' },
+        funding: { funding_sources: [1] }
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql([undefined]);
+    });
+  });
+
+  describe('deleteSurveyFundingSourcesData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if response is not null', async () => {
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.deleteSurveyFundingSourcesData(1);
+
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveyProprietorData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns undefined if not survey_data_proprietary is given', async () => {
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyProprietorData(1, ({
+        permit: { permit_number: '1', permit_type: 'type' },
+        funding: { funding_sources: [1] },
+        proprietor: { survey_data_proprietary: undefined }
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql(undefined);
+    });
+
+    it('returns data if response is not null', async () => {
+      sinon.stub(SurveyService.prototype, 'insertSurveyProprietor').resolves(1);
+
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyProprietorData(1, ({
+        permit: { permit_number: '1', permit_type: 'type' },
+        funding: { funding_sources: [1] },
+        proprietor: { survey_data_proprietary: 'asd' }
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql(1);
+    });
+  });
+
+  describe('deleteSurveyProprietorData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns data if response is not null', async () => {
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.deleteSurveyProprietorData(1);
+
+      expect(response).to.eql(undefined);
+    });
+  });
+
+  describe('updateSurveyVantageCodesData', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('returns [] if not vantage_code_ids is given', async () => {
+      sinon.stub(SurveyService.prototype, 'deleteSurveyVantageCodes').resolves();
+
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyVantageCodesData(1, ({
+        permit: { permit_number: '1', permit_type: 'type' },
+        funding: { funding_sources: [1] },
+        purpose_and_methodology: { vantage_code_ids: undefined }
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql([]);
+    });
+
+    it('returns data if response is not null', async () => {
+      sinon.stub(SurveyService.prototype, 'deleteSurveyVantageCodes').resolves();
+      sinon.stub(SurveyService.prototype, 'insertVantageCodes').resolves(1);
+
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.updateSurveyVantageCodesData(1, ({
+        permit: { permit_number: '1', permit_type: 'type' },
+        funding: { funding_sources: [1] },
+        proprietor: { survey_data_proprietary: 'asd' },
+        purpose_and_methodology: { vantage_code_ids: [1] }
+      } as unknown) as PutSurveyObject);
+
+      expect(response).to.eql([1]);
+    });
+  });
+
+  describe('deleteSurveyVantageCodes', () => {
+    afterEach(() => {
+      sinon.restore();
+    });
+
+    it('throws errors if response is empty', async () => {
+      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      try {
+        await surveyService.deleteSurveyVantageCodes(1);
+        expect.fail();
+      } catch (actualError) {
+        expect((actualError as ApiGeneralError).message).to.equal('Failed to delete survey vantage codes');
+      }
+    });
+
+    it('returns data if response is not null', async () => {
+      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
+
+      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const surveyService = new SurveyService(mockDBConnection);
+
+      const response = await surveyService.deleteSurveyVantageCodes(1);
 
       expect(response).to.eql(undefined);
     });

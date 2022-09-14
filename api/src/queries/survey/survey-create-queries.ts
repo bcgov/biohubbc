@@ -9,11 +9,7 @@ import { queries } from '../queries';
  * @param {PostSurveyObject} survey
  * @returns {SQLStatement} sql query object
  */
-export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLStatement | null => {
-  if (!projectId || !survey) {
-    return null;
-  }
-
+export const postSurveySQL = (projectId: number, survey: PostSurveyObject): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey (
       project_id,
@@ -128,7 +124,7 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
 /**
  * SQL query to insert a survey permit row into the permit table.
  *
- * @param {number | null} systemUserId
+ * @param {number } systemUserId
  * @param {number} projectId
  * @param {number} surveyId
  * @param {string} permitNumber
@@ -136,16 +132,12 @@ export const insertSurveyFundingSourceSQL = (surveyId: number, fundingSourceId: 
  * @returns {SQLStatement} sql query object
  */
 export const postNewSurveyPermitSQL = (
-  systemUserId: number | null,
+  systemUserId: number,
   projectId: number,
   surveyId: number,
   permitNumber: string,
   permitType: string
-): SQLStatement | null => {
-  if (!systemUserId || !projectId || !surveyId || !permitNumber || !permitType) {
-    return null;
-  }
-
+): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO permit (
       system_user_id,
@@ -172,11 +164,7 @@ export const postNewSurveyPermitSQL = (
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
-  if (!speciesId || !surveyId) {
-    return null;
-  }
-
+export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO study_species (
       wldtaxonomic_units_id,
@@ -199,11 +187,7 @@ export const postFocalSpeciesSQL = (speciesId: number, surveyId: number): SQLSta
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQLStatement | null => {
-  if (!speciesId || !surveyId) {
-    return null;
-  }
-
+export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO study_species (
       wldtaxonomic_units_id,
@@ -226,11 +210,7 @@ export const postAncillarySpeciesSQL = (speciesId: number, surveyId: number): SQ
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement | null => {
-  if (!vantageCodeId || !surveyId) {
-    return null;
-  }
-
+export const postVantageCodesSQL = (vantageCodeId: number, surveyId: number): SQLStatement => {
   const sqlStatement: SQLStatement = SQL`
     INSERT INTO survey_vantage (
       vantage_id,

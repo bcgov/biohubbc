@@ -13,12 +13,6 @@ import {
 } from './survey-view-queries';
 
 describe('getAllAssignablePermitsForASurveySQL', () => {
-  it('returns null when null project id param provided', () => {
-    const response = getAllAssignablePermitsForASurveySQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getAllAssignablePermitsForASurveySQL(1);
 
@@ -35,12 +29,6 @@ describe('getSurveyIdsSQL', () => {
 });
 
 describe('getSurveyBasicDataForViewSQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getSurveyBasicDataForViewSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getSurveyBasicDataForViewSQL(1);
 
@@ -49,12 +37,6 @@ describe('getSurveyBasicDataForViewSQL', () => {
 });
 
 describe('getSurveyFundingSourcesDataForViewSQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getSurveyFundingSourcesDataForViewSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getSurveyFundingSourcesDataForViewSQL(1);
 
@@ -63,12 +45,6 @@ describe('getSurveyFundingSourcesDataForViewSQL', () => {
 });
 
 describe('getSurveyFocalSpeciesDataForViewSQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getSurveyFocalSpeciesDataForViewSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getSurveyFocalSpeciesDataForViewSQL(1);
 
@@ -77,12 +53,6 @@ describe('getSurveyFocalSpeciesDataForViewSQL', () => {
 });
 
 describe('getLatestOccurrenceSubmissionIdSQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getLatestOccurrenceSubmissionIdSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getLatestOccurrenceSubmissionIdSQL(1);
 
@@ -91,12 +61,6 @@ describe('getLatestOccurrenceSubmissionIdSQL', () => {
 });
 
 describe('getLatestSummaryResultIdSQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getLatestSummaryResultIdSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getLatestSummaryResultIdSQL(1);
 
@@ -105,12 +69,6 @@ describe('getLatestSummaryResultIdSQL', () => {
 });
 
 describe('getAttachmentsBySurveySQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getAttachmentsBySurveySQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getAttachmentsBySurveySQL(1);
 
@@ -119,12 +77,6 @@ describe('getAttachmentsBySurveySQL', () => {
 });
 
 describe('getReportAttachmentsBySurveySQL', () => {
-  it('returns a null response when null survey id param provided', () => {
-    const response = getReportAttachmentsBySurveySQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a non null response when valid params passed in', () => {
     const response = getReportAttachmentsBySurveySQL(1);
 
