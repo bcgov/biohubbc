@@ -44,13 +44,16 @@ type EMLDBConstants = {
   EML_INTELLECTUAL_RIGHTS: string;
 };
 
+type SurveyObjectWithAttachments = SurveyObject & {
+  attachments?: GetSurveyAttachmentsData;
+  report_attachments?: GetSurveyReportAttachmentsData;
+};
+
 type Cache = {
   projectData?: IGetProject;
-  surveyData?: SurveyObject[];
+  surveyData?: SurveyObjectWithAttachments[];
   projectAttachmentData?: GetProjectAttachmentsData;
   projectReportAttachmentData?: GetProjectReportAttachmentsData;
-  surveyAttachmentData?: GetSurveyAttachmentsData;
-  surveyReportAttachmentData?: GetSurveyReportAttachmentsData;
   codes?: IAllCodeSets;
 };
 
@@ -208,14 +211,6 @@ export class EmlService extends DBService {
     return this.cache.projectReportAttachmentData;
   }
 
-  get surveyAttachmentData(): GetSurveyAttachmentsData | undefined {
-    return this.cache.surveyAttachmentData;
-  }
-
-  get surveyReportAttachmentData(): GetSurveyReportAttachmentsData | undefined {
-    return this.cache.surveyReportAttachmentData;
-  }
-
   async loadProjectData() {
     const projectData = await this.projectService.getProjectById(this.projectId);
     const attachmentData = await this.projectService.getAttachmentsData(this.projectId);
@@ -226,7 +221,7 @@ export class EmlService extends DBService {
     this.cache.projectReportAttachmentData = attachmentReportData;
   }
 
-  get surveyData(): SurveyObject[] {
+  get surveyData(): SurveyObjectWithAttachments[] {
     if (!this.cache.surveyData) {
       throw Error('Survey data was not loaded');
     }
@@ -244,15 +239,15 @@ export class EmlService extends DBService {
 
     const surveyData = await this.surveyService.getSurveysByIds(includedSurveyIds);
 
-    surveyData.forEach(
+    this.cache.surveyData = surveyData;
+
+    this.cache.surveyData.forEach(
       async (item) => (item.attachments = await this.surveyService.getAttachmentsData(item.survey_details.id))
     );
-    surveyData.forEach(
+    this.cache.surveyData.forEach(
       async (item) =>
         (item.report_attachments = await this.surveyService.getReportAttachmentsData(item.survey_details.id))
     );
-
-    this.cache.surveyData = surveyData;
   }
 
   buildEMLSection() {
@@ -618,11 +613,11 @@ export class EmlService extends DBService {
    * Get all contacts for the survey.
    *
    * @
-   * @param {SurveyObject} surveyData
+   * @param {SurveyObjectWithAttachments} surveyData
    * @return {*}  {Record<any, any>[]}
    * @memberof EmlService
    */
-  getSurveyPersonnel(surveyData: SurveyObject): Record<any, any>[] {
+  getSurveyPersonnel(surveyData: SurveyObjectWithAttachments): Record<any, any>[] {
     return [
       {
         individualName: {
@@ -658,7 +653,7 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyFundingSources(surveyData: SurveyObject): Record<any, any> {
+  getSurveyFundingSources(surveyData: SurveyObjectWithAttachments): Record<any, any> {
     if (!surveyData.funding.funding_sources.length) {
       return {};
     }
@@ -700,7 +695,7 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyTemporalCoverageEML(surveyData: SurveyObject): Record<any, any> {
+  getSurveyTemporalCoverageEML(surveyData: SurveyObjectWithAttachments): Record<any, any> {
     if (!surveyData.survey_details.end_date) {
       // no end date
       return {
@@ -767,7 +762,7 @@ export class EmlService extends DBService {
     };
   }
 
-  getSurveyGeographicCoverageEML(surveyData: SurveyObject): Record<any, any> {
+  getSurveyGeographicCoverageEML(surveyData: SurveyObjectWithAttachments): Record<any, any> {
     if (!surveyData.location.geometry?.length) {
       return {};
     }
@@ -816,7 +811,7 @@ export class EmlService extends DBService {
     };
   }
 
-  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyFocalTaxonomicCoverage(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
     const taxonomySearchService = new TaxonomyService();
 
     // TODO include ancillary_species alongside focal_species?
@@ -838,7 +833,7 @@ export class EmlService extends DBService {
     return { taxonomicClassification: taxonomicClassifications };
   }
 
-  async getSurveyDesignDescription(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyDesignDescription(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
     return {
       description: {
         section: [
@@ -881,7 +876,7 @@ export class EmlService extends DBService {
     return Promise.all(promises);
   }
 
-  async getSurveyEML(surveyData: SurveyObject): Promise<Record<any, any>> {
+  async getSurveyEML(surveyData: SurveyObjectWithAttachments): Promise<Record<any, any>> {
     return {
       $: { id: surveyData.survey_details.uuid, system: this.constants.EML_PROVIDER_URL },
       title: surveyData.survey_details.survey_name,
