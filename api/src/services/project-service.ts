@@ -356,10 +356,6 @@ export class ProjectService extends DBService {
     const getProjectSqlStatement = queries.project.getProjectSQL(projectId);
     const getProjectActivitiesSQLStatement = queries.project.getActivitiesByProjectSQL(projectId);
 
-    if (!getProjectSqlStatement || !getProjectActivitiesSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
     const [project, activity] = await Promise.all([
       this.connection.query(getProjectSqlStatement.text, getProjectSqlStatement.values),
       this.connection.query(getProjectActivitiesSQLStatement.text, getProjectActivitiesSQLStatement.values)
@@ -378,12 +374,7 @@ export class ProjectService extends DBService {
   async getObjectivesData(projectId: number): Promise<GetObjectivesData> {
     const sqlStatement = queries.project.getObjectivesByProjectSQL(projectId);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result) {
@@ -396,12 +387,7 @@ export class ProjectService extends DBService {
   async getCoordinatorData(projectId: number): Promise<GetCoordinatorData> {
     const sqlStatement = queries.project.getCoordinatorByProjectSQL(projectId);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
     const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result) {
@@ -414,12 +400,7 @@ export class ProjectService extends DBService {
   async getPermitData(projectId: number): Promise<GetPermitData> {
     const sqlStatement = queries.project.getProjectPermitsSQL(projectId);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL select statement');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
     const result = (response && response.rows) || null;
 
     if (!result) {
@@ -431,10 +412,6 @@ export class ProjectService extends DBService {
 
   async getLocationData(projectId: number): Promise<GetLocationData> {
     const sqlStatement = queries.project.getLocationByProjectSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
@@ -450,10 +427,6 @@ export class ProjectService extends DBService {
   async getIUCNClassificationData(projectId: number): Promise<GetIUCNClassificationData> {
     const sqlStatement = queries.project.getIUCNActionClassificationByProjectSQL(projectId);
 
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
     const result = (response && response.rows) || null;
@@ -467,10 +440,6 @@ export class ProjectService extends DBService {
 
   async getFundingData(projectId: number): Promise<GetFundingData> {
     const sqlStatement = queries.project.getFundingSourceByProjectSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 

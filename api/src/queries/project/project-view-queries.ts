@@ -6,11 +6,7 @@ import { SQL, SQLStatement } from 'sql-template-strings';
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       project.project_id as id,
@@ -174,11 +170,7 @@ export const getProjectListSQL = (
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getIUCNActionClassificationByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       ical1c.iucn_conservation_action_level_1_classification_id as classification,
@@ -290,29 +282,29 @@ export const getReportAttachmentsByProjectSQL = (projectId: number): SQLStatemen
   }
 
   return SQL`
-    SELECT 
-      pra.project_report_attachment_id 
-      , pra.project_id 
-      , pra.file_name 
-      , pra.title 
-      , pra.description 
+    SELECT
+      pra.project_report_attachment_id
+      , pra.project_id
+      , pra.file_name
+      , pra.title
+      , pra.description
       , pra.year
-      , pra."key" 
+      , pra."key"
       , pra.file_size
       , pra.security_token
 	    , array_remove(array_agg(pra2.first_name ||' '||pra2.last_name), null) authors
-    FROM 
+    FROM
     	project_report_attachment pra
     LEFT JOIN project_report_author pra2 ON pra2.project_report_attachment_id = pra.project_report_attachment_id
     WHERE pra.project_id = ${projectId}
-    GROUP BY 
+    GROUP BY
       pra.project_report_attachment_id
-      , pra.project_id 
-      , pra.file_name 
-      , pra.title 
-      , pra.description 
+      , pra.project_id
+      , pra.file_name
+      , pra.title
+      , pra.description
       , pra.year
-      , pra."key" 
+      , pra."key"
       , pra.file_size
       , pra.security_token;
   `;
@@ -324,11 +316,7 @@ export const getReportAttachmentsByProjectSQL = (projectId: number): SQLStatemen
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getProjectPermitsSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       number,
@@ -346,11 +334,7 @@ export const getProjectPermitsSQL = (projectId: number): SQLStatement | null => 
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getLocationByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getLocationByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       p.location_description,
@@ -374,11 +358,7 @@ export const getLocationByProjectSQL = (projectId: number): SQLStatement | null 
  * @returns {SQLStatement} sql query object
  */
 
-export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getActivitiesByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       activity_id
@@ -394,11 +374,7 @@ export const getActivitiesByProjectSQL = (projectId: number): SQLStatement | nul
  * @param {number} projectId
  * @returns {SQLStatement} sql query object
  */
-export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getFundingSourceByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       pfs.project_funding_source_id as id,
