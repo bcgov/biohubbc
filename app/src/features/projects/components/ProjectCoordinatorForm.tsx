@@ -11,6 +11,7 @@ import Typography from '@material-ui/core/Typography';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { useFormikContext } from 'formik';
+import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -62,14 +63,14 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const classes = useStyles();
-  const { values, touched, errors, handleChange, handleSubmit } = useFormikContext<IProjectCoordinatorForm>();
+  const { values, touched, errors, handleChange } = useFormikContext<ICreateProjectRequest>();
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <CustomTextField
-            name="first_name"
+            name="coordinator.first_name"
             label="First Name"
             other={{
               required: true
@@ -78,7 +79,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
         </Grid>
         <Grid item xs={12} md={6}>
           <CustomTextField
-            name="last_name"
+            name="coordinator.last_name"
             label="Last Name"
             other={{
               required: true
@@ -87,7 +88,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
         </Grid>
         <Grid item xs={12}>
           <CustomTextField
-            name="email_address"
+            name="coordinator.email_address"
             label="Business Email Address"
             other={{
               required: true
@@ -97,7 +98,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
         <Grid item xs={12}>
           <AutocompleteFreeSoloField
             id="coordinator_agency"
-            name="coordinator_agency"
+            name="coordinator.coordinator_agency"
             label="Contact Agency"
             options={props.coordinator_agency}
             required={true}
@@ -108,7 +109,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
         <FormControl
           required={true}
           component="fieldset"
-          error={touched.share_contact_details && Boolean(errors.share_contact_details)}>
+          error={touched.coordinator?.share_contact_details && Boolean(errors.coordinator?.share_contact_details)}>
           <Box component="legend" className={classes.legend}>
             Share Contact Details
           </Box>
@@ -117,9 +118,9 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           </Typography>
           <Box mt={2} pl={1}>
             <RadioGroup
-              name="share_contact_details"
+              name="coordinator.share_contact_details"
               aria-label="Share Contact Details"
-              value={values.share_contact_details}
+              value={values.coordinator.share_contact_details}
               onChange={handleChange}>
               <FormControlLabel
                 value="false"
@@ -131,12 +132,12 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
                 control={<Radio required={true} color="primary" size="small" />}
                 label="Yes"
               />
-              <FormHelperText>{errors.share_contact_details}</FormHelperText>
+              <FormHelperText>{errors.coordinator?.share_contact_details}</FormHelperText>
             </RadioGroup>
           </Box>
         </FormControl>
       </Box>
-    </form>
+    </>
   );
 };
 

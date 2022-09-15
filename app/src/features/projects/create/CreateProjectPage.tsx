@@ -10,58 +10,28 @@ import Typography from '@material-ui/core/Typography';
 import ArrowBack from '@material-ui/icons/ArrowBack';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
-import StepperWizard, { IStepperWizardStep } from 'components/stepper-wizard/StepperWizard';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
-import {
-  ProjectCoordinatorInitialValues,
-  ProjectCoordinatorYupSchema
-} from 'features/projects/components/ProjectCoordinatorForm';
-import {
-  ProjectDetailsFormInitialValues,
-  ProjectDetailsFormYupSchema
-} from 'features/projects/components/ProjectDetailsForm';
 import ProjectDraftForm, {
   IProjectDraftForm,
   ProjectDraftFormInitialValues,
   ProjectDraftFormYupSchema
 } from 'features/projects/components/ProjectDraftForm';
-import {
-  ProjectFundingFormInitialValues,
-  ProjectFundingFormYupSchema
-} from 'features/projects/components/ProjectFundingForm';
-import { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from 'features/projects/components/ProjectIUCNForm';
-import {
-  ProjectLocationFormInitialValues,
-  ProjectLocationFormYupSchema
-} from 'features/projects/components/ProjectLocationForm';
-import {
-  ProjectObjectivesFormInitialValues,
-  ProjectObjectivesFormYupSchema
-} from 'features/projects/components/ProjectObjectivesForm';
-import {
-  ProjectPartnershipsFormInitialValues,
-  ProjectPartnershipsFormYupSchema
-} from 'features/projects/components/ProjectPartnershipsForm';
-import ProjectPermitForm, {
-  ProjectPermitFormInitialValues,
-  ProjectPermitFormYupSchema
-} from 'features/projects/components/ProjectPermitForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
-import { validateFormFieldsAndReportCompletion } from 'utils/customValidation';
 import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { getFormattedDate } from 'utils/Utils';
+import CreateProjectForm from './CreateProjectForm';
+import { IProjectFormStep } from './ProjectStepForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -100,8 +70,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   stepperContent: {}
 }));
 
-const NUM_ALL_PROJECT_STEPS = 8;
-
 /**
  * Page for creating a new project.
  *
@@ -117,23 +85,15 @@ const CreateProjectPage: React.FC = () => {
   const queryParams = useQuery();
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [nonSamplingPermits, setNonSamplingPermits] = useState<IGetNonSamplingPermit[]>((null as unknown) as []);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [isLoadingNonSamplingPermits, setIsLoadingNonSamplingPermits] = useState(false);
   const [hasLoadedDraftData, setHasLoadedDraftData] = useState(!queryParams.draftId);
 
-  // Tracks the active step #
-  const [activeStep, setActiveStep] = useState(0);
-
-  // The number of steps listed in the project creation UI
-  const numberOfSteps = NUM_ALL_PROJECT_STEPS;
-
   // All possible step forms, and their current state
-  const [stepForms, setStepForms] = useState<IStepperWizardStep[]>([]);
+  const [stepForms, setStepForms] = useState<IProjectFormStep[]>([]);
 
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
-  const formikRef = useRef<FormikProps<any>>(null);
+  const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
 
   const [showFormFieldValidationErrors, setShowFormFieldValidationErrors] = useState<null | number>(null);
 
@@ -171,37 +131,6 @@ const CreateProjectPage: React.FC = () => {
   const [openDraftDialog, setOpenDraftDialog] = useState(false);
 
   const [draft, setDraft] = useState({ id: 0, date: '' });
-  const [initialProjectFieldData, setInitialProjectFieldData] = useState<ICreateProjectRequest>({
-    coordinator: ProjectCoordinatorInitialValues,
-    permit: ProjectPermitFormInitialValues,
-    project: ProjectDetailsFormInitialValues,
-    objectives: ProjectObjectivesFormInitialValues,
-    location: ProjectLocationFormInitialValues,
-    iucn: ProjectIUCNFormInitialValues,
-    funding: ProjectFundingFormInitialValues,
-    partnerships: ProjectPartnershipsFormInitialValues
-  });
-
-  // Get non-sampling permits that already exist in system
-  useEffect(() => {
-    const getNonSamplingPermits = async () => {
-      const response = await biohubApi.permit.getNonSamplingPermits();
-
-      if (!response) {
-        return;
-      }
-
-      setNonSamplingPermits(() => {
-        setIsLoadingNonSamplingPermits(false);
-        return response;
-      });
-    };
-
-    if (!isLoadingNonSamplingPermits && !nonSamplingPermits) {
-      getNonSamplingPermits();
-      setIsLoadingNonSamplingPermits(true);
-    }
-  }, [biohubApi, isLoadingNonSamplingPermits, nonSamplingPermits]);
 
   // Get draft project fields if draft id exists
   useEffect(() => {
@@ -213,8 +142,6 @@ const CreateProjectPage: React.FC = () => {
       if (!response || !response.data) {
         return;
       }
-
-      setInitialProjectFieldData(response.data);
     };
 
     if (hasLoadedDraftData) {
@@ -246,7 +173,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Initialize the forms for each step of the workflow
   useEffect(() => {
-    if (!codes || !hasLoadedDraftData || !nonSamplingPermits) {
+    if (!codes || !hasLoadedDraftData) {
       return;
     }
 
@@ -259,149 +186,46 @@ const CreateProjectPage: React.FC = () => {
         stepTitle: 'Project Contact',
         stepSubTitle:
           'Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.',
-        stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.coordinator,
-        stepYupSchema: ProjectCoordinatorYupSchema,
-        isValid: false,
-        isTouched: false
-      },
-      {
-        stepTitle: 'Project Permits',
-        stepSubTitle:
-          'Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).',
-        stepContent: (
-          <ProjectPermitForm
-            non_sampling_permits={
-              nonSamplingPermits?.map((item: IGetNonSamplingPermit) => {
-                return { value: item.permit_id, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
-          />
-        ),
-        stepInitialValues: initialProjectFieldData.permit,
-        stepYupSchema: ProjectPermitFormYupSchema,
-        isValid: true,
-        isTouched: false
+        stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />
       },
       {
         stepTitle: 'General Information',
         stepSubTitle: 'Enter general information and details about this project.',
-        stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.project,
-        stepYupSchema: ProjectDetailsFormYupSchema,
-        isValid: false,
-        isTouched: false
+        stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />
       },
       {
         stepTitle: 'Objectives',
         stepSubTitle:
           'Describe the objectives of the project and list any caveats, or cautionary detail to be considered when evaluating, or interpreting this project.',
-        stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.objectives,
-        stepYupSchema: ProjectObjectivesFormYupSchema,
-        isValid: false,
-        isTouched: false
-      },
-      {
-        stepTitle: 'Locations',
-        stepSubTitle: 'Specify a location description and spatial boundary information for the overall project area.',
-        stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.location,
-        stepYupSchema: ProjectLocationFormYupSchema,
-        isValid: false,
-        isTouched: false
-      },
-      {
-        stepTitle: 'IUCN Conservation Actions Classification',
-        stepSubTitle: `Conservation actions are specific actions or sets of tasks undertaken by project staff designed to reach each of the project's objectives.`,
-        stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.iucn,
-        stepYupSchema: ProjectIUCNFormYupSchema,
-        isValid: true,
-        isTouched: false
-      },
-      {
-        stepTitle: 'Funding',
-        stepSubTitle:
-          'Specify funding sources for the project. Dollar amounts are not intended to be exact, please round to the nearest 100.',
-        stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.funding,
-        stepYupSchema: ProjectFundingFormYupSchema,
-        isValid: true,
-        isTouched: false
-      },
-      {
-        stepTitle: 'Partnerships',
-        stepSubTitle:
-          'Specify any indigenous partnerships for the project and/or any other partnerships that have not been previously identified in the funding sources section above.',
-        stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />,
-        stepInitialValues: initialProjectFieldData.partnerships,
-        stepYupSchema: ProjectPartnershipsFormYupSchema,
-        isValid: true,
-        isTouched: false
+        stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />
       }
+      // {
+      //   stepTitle: 'Locations',
+      //   stepSubTitle: 'Specify a location description and spatial boundary information for the overall project area.',
+      //   stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />
+      // },
+      // {
+      //   stepTitle: 'IUCN Conservation Actions Classification',
+      //   stepSubTitle: `Conservation actions are specific actions or sets of tasks undertaken by project staff designed to reach each of the project's objectives.`,
+      //   stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />
+      // },
+      // {
+      //   stepTitle: 'Funding',
+      //   stepSubTitle:
+      //     'Specify funding sources for the project. Dollar amounts are not intended to be exact, please round to the nearest 100.',
+      //   stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />
+      // },
+      // {
+      //   stepTitle: 'Partnerships',
+      //   stepSubTitle:
+      //     'Specify any indigenous partnerships for the project and/or any other partnerships that have not been previously identified in the funding sources section above.',
+      //   stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />
+      // }
     ]);
-  }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData, nonSamplingPermits]);
-
-  /**
-   * Return true if the step form fields are valid, false otherwise.
-   *
-   * @return {*} {Promise<boolean>}
-   */
-  const isStepFormValid = useCallback(async (): Promise<boolean> => {
-    if (!formikRef.current) {
-      return false;
-    }
-
-    return validateFormFieldsAndReportCompletion(formikRef.current?.values, formikRef.current?.validateForm);
-  }, [formikRef]);
-
-  const updateSteps = useCallback(async () => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    const isValid = await isStepFormValid();
-
-    setStepForms((currentStepForms) => {
-      const updatedStepForms = [...currentStepForms];
-      updatedStepForms[activeStep].stepInitialValues = formikRef.current?.values;
-      updatedStepForms[activeStep].isValid = isValid;
-      updatedStepForms[activeStep].isTouched = true;
-      return updatedStepForms;
-    });
-  }, [activeStep, formikRef, isStepFormValid]);
-
-  const handleSaveAndChangeStep = async (stepIndex: number) => {
-    await updateSteps();
-    goToStep(stepIndex);
-  };
-
-  const handleSubmitProject = async () => {
-    await updateSteps();
-
-    const invalidStepIndex = getFirstInvalidFormStep();
-
-    // Check if any step is invalid in project workflow
-    const projectInvalid = invalidStepIndex >= 0;
-
-    if (projectInvalid) {
-      // Automatically change to the invalid step
-      setActiveStep(invalidStepIndex);
-      // Indicate that the invalid step show run its field validation, to highlight the invalid fields
-      setShowFormFieldValidationErrors(invalidStepIndex);
-      return;
-    }
-
-    await handleProjectCreation();
-  };
+  }, [codes, stepForms, hasLoadedDraftData]);
 
   useEffect(() => {
     if (!formikRef?.current) {
-      return;
-    }
-
-    if (showFormFieldValidationErrors !== activeStep) {
       return;
     }
 
@@ -409,45 +233,7 @@ const CreateProjectPage: React.FC = () => {
 
     // Submit the form, which will run the validation to indicate which fields are invalid
     formikRef.current.submitForm();
-
-    // Update the step form isValid/isTouched
-    setStepForms((currentStepForms) => {
-      const updatedStepForms = [...currentStepForms];
-      updatedStepForms[activeStep].isValid = false;
-      updatedStepForms[activeStep].isTouched = true;
-      return updatedStepForms;
-    });
-  }, [showFormFieldValidationErrors, setShowFormFieldValidationErrors, formikRef, activeStep, updateSteps]);
-
-  const handleSaveAndNext = async () => {
-    await updateSteps();
-    goToNextStep();
-  };
-
-  const handleSaveAndPrevious = async () => {
-    await updateSteps();
-    goToPreviousStep();
-  };
-
-  const goToNextStep = () => {
-    if (activeStep === numberOfSteps - 1) {
-      return;
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep + 1);
-  };
-
-  const goToPreviousStep = () => {
-    if (activeStep === 0) {
-      return;
-    }
-
-    setActiveStep((prevActiveStep) => prevActiveStep - 1);
-  };
-
-  const goToStep = (stepIndex: number) => {
-    setActiveStep(stepIndex);
-  };
+  }, [showFormFieldValidationErrors, setShowFormFieldValidationErrors, formikRef]);
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -456,29 +242,28 @@ const CreateProjectPage: React.FC = () => {
 
   const handleSubmitDraft = async (values: IProjectDraftForm) => {
     try {
-      let response;
+      let response = { id: 1, date: 'asd' };
 
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
-      const draftFormData = {
-        coordinator: (activeStep === 0 && formikRef?.current?.values) || stepForms[0].stepInitialValues,
-        permit: (activeStep === 1 && formikRef?.current?.values) || stepForms[1].stepInitialValues,
-        project: (activeStep === 2 && formikRef?.current?.values) || stepForms[2].stepInitialValues,
-        objectives: (activeStep === 3 && formikRef?.current?.values) || stepForms[3].stepInitialValues,
-        location: (activeStep === 4 && formikRef?.current?.values) || stepForms[4].stepInitialValues,
-        iucn: (activeStep === 5 && formikRef?.current?.values) || stepForms[5].stepInitialValues,
-        funding: (activeStep === 6 && formikRef?.current?.values) || stepForms[6].stepInitialValues,
-        partnerships: (activeStep === 7 && formikRef?.current?.values) || stepForms[7].stepInitialValues
-      };
+      // const draftFormData = {
+      //   coordinator: activeStep === 0 && formikRef?.current?.values,
+      //   project: activeStep === 2 && formikRef?.current?.values,
+      //   objectives: activeStep === 3 && formikRef?.current?.values,
+      //   location: activeStep === 4 && formikRef?.current?.values,
+      //   iucn: activeStep === 5 && formikRef?.current?.values,
+      //   funding: activeStep === 6 && formikRef?.current?.values,
+      //   partnerships: activeStep === 7 && formikRef?.current?.values
+      // };
 
-      const draftId = Number(queryParams.draftId) || draft?.id;
+      // const draftId = Number(queryParams.draftId) || draft?.id;
 
-      if (draftId) {
-        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
-      } else {
-        response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
-      }
+      // if (draftId) {
+      //   response = await biohubApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
+      // } else {
+      //   response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
+      // }
 
       setOpenDraftDialog(false);
 
@@ -505,86 +290,70 @@ const CreateProjectPage: React.FC = () => {
     }
   };
 
-  /**
-   * Returns the step index for the first invalid form step, or `-1` if all steps are valid
-   *
-   * @return {*} {number}
-   */
-  const getFirstInvalidFormStep = (): number => {
-    for (let i = 0; i < stepForms.length; i++) {
-      if (!stepForms[i].isValid) {
-        return i;
-      }
-    }
+  // /**
+  //  * Handle project creation.
+  //  */
+  // const handleProjectCreation = async () => {
+  //   try {
+  //     console.log('submit');
+  //     // await createProject({
+  //     //   coordinator: stepForms[0].stepInitialValues,
+  //     //   project: stepForms[2].stepInitialValues,
+  //     //   objectives: stepForms[3].stepInitialValues,
+  //     //   location: stepForms[4].stepInitialValues,
+  //     //   iucn: stepForms[5].stepInitialValues,
+  //     //   funding: stepForms[6].stepInitialValues,
+  //     //   partnerships: stepForms[7].stepInitialValues
+  //     // });
+  //   } catch (error) {
+  //     showCreateErrorDialog({
+  //       dialogTitle: 'Error Creating Project',
+  //       dialogError: (error as APIError)?.message,
+  //       dialogErrorDetails: (error as APIError)?.errors
+  //     });
+  //   }
+  // };
 
-    // All steps are valid
-    return -1;
-  };
+  // /**
+  //  * Deletes the draft record used when creating this project, if one exists.
+  //  *
+  //  * @param {number} draftId
+  //  * @returns {*}
+  //  */
+  // const deleteDraft = async () => {
+  //   const draftId = Number(queryParams.draftId);
 
-  /**
-   * Handle project creation.
-   */
-  const handleProjectCreation = async () => {
-    try {
-      await createProject({
-        coordinator: stepForms[0].stepInitialValues,
-        permit: stepForms[1].stepInitialValues,
-        project: stepForms[2].stepInitialValues,
-        objectives: stepForms[3].stepInitialValues,
-        location: stepForms[4].stepInitialValues,
-        iucn: stepForms[5].stepInitialValues,
-        funding: stepForms[6].stepInitialValues,
-        partnerships: stepForms[7].stepInitialValues
-      });
-    } catch (error) {
-      showCreateErrorDialog({
-        dialogTitle: 'Error Creating Project',
-        dialogError: (error as APIError)?.message,
-        dialogErrorDetails: (error as APIError)?.errors
-      });
-    }
-  };
+  //   if (!draftId) {
+  //     return;
+  //   }
 
-  /**
-   * Deletes the draft record used when creating this project, if one exists.
-   *
-   * @param {number} draftId
-   * @returns {*}
-   */
-  const deleteDraft = async () => {
-    const draftId = Number(queryParams.draftId);
+  //   try {
+  //     await biohubApi.draft.deleteDraft(draftId);
+  //   } catch (error) {
+  //     return error;
+  //   }
+  // };
 
-    if (!draftId) {
-      return;
-    }
+  // /**
+  //  * Creates a new project record
+  //  *
+  //  * @param {ICreateProjectRequest} projectPostObject
+  //  * @return {*}
+  //  */
+  // const createProject = async (projectPostObject: ICreateProjectRequest) => {
+  //   const response = await biohubApi.project.createProject(projectPostObject);
 
-    try {
-      await biohubApi.draft.deleteDraft(draftId);
-    } catch (error) {
-      return error;
-    }
-  };
+  //   if (!response?.id) {
+  //     showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+  //     return;
+  //   }
 
-  /**
-   * Creates a new project record
-   *
-   * @param {ICreateProjectRequest} projectPostObject
-   * @return {*}
-   */
-  const createProject = async (projectPostObject: ICreateProjectRequest) => {
-    const response = await biohubApi.project.createProject(projectPostObject);
+  //   await deleteDraft();
 
-    if (!response?.id) {
-      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
-      return;
-    }
+  //   setEnableCancelCheck(false);
 
-    await deleteDraft();
-
-    setEnableCancelCheck(false);
-
-    history.push(`/admin/projects/${response.id}`);
-  };
+  //   history.push(`/admin/projects/${response.id}`);
+  // };
 
   const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -606,7 +375,7 @@ const CreateProjectPage: React.FC = () => {
     });
   };
 
-  if (!stepForms.length) {
+  if (!codes || !stepForms.length) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -646,10 +415,7 @@ const CreateProjectPage: React.FC = () => {
         component={{
           element: <ProjectDraftForm />,
           initialValues: {
-            draft_name:
-              (activeStep === 2 && formikRef.current?.values.project_name) ||
-              stepForms[2].stepInitialValues.project_name ||
-              ProjectDraftFormInitialValues.draft_name
+            draft_name: ProjectDraftFormInitialValues.draft_name
           },
           validationSchema: ProjectDraftFormYupSchema
         }}
@@ -683,17 +449,8 @@ const CreateProjectPage: React.FC = () => {
               </Typography>
             </Box>
           </Box>
-          <StepperWizard
-            activeStep={activeStep}
-            steps={stepForms.slice(0, numberOfSteps)}
-            innerRef={formikRef}
-            onChangeStep={handleSaveAndChangeStep}
-            onPrevious={handleSaveAndPrevious}
-            onNext={handleSaveAndNext}
-            onSubmit={handleSubmitProject}
-            onSubmitLabel={'Create project and Exit'}
-            onCancel={handleCancel}
-          />
+
+          <CreateProjectForm codes={codes} />
         </Container>
       </Box>
     </>

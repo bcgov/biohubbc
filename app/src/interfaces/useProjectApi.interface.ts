@@ -5,7 +5,6 @@ import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
-import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
 import { Feature } from 'geojson';
 
 export interface IGetProjectAttachment {
@@ -83,7 +82,6 @@ export interface IGetProjectsListResponse {
  */
 export interface ICreateProjectRequest {
   coordinator: IProjectCoordinatorForm;
-  permit: IProjectPermitForm;
   project: IProjectDetailsForm;
   objectives: IProjectObjectivesForm;
   location: IProjectLocationForm;

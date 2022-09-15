@@ -10,6 +10,7 @@ import MultiAutocompleteFieldVariableSize, {
 } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import StartEndDateFields from 'components/fields/StartEndDateFields';
 import { useFormikContext } from 'formik';
+import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
@@ -47,16 +48,16 @@ export interface IProjectDetailsFormProps {
  * @return {*}
  */
 const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
-  const formikProps = useFormikContext<IProjectDetailsForm>();
+  const formikProps = useFormikContext<ICreateProjectRequest>();
 
-  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
+  const { values, touched, errors, handleChange } = formikProps;
 
   return (
-    <form onSubmit={handleSubmit}>
+    <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <CustomTextField
-            name="project_name"
+            name="project.project_name"
             label="Project Name"
             other={{
               required: true
@@ -68,13 +69,13 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             <InputLabel id="project_type-label">Project Type</InputLabel>
             <Select
               id="project_type"
-              name="project_type"
+              name="project.project_type"
               labelId="project_type-label"
               label="Project Type"
-              value={values.project_type}
+              value={values.project.project_type || ''}
               labelWidth={300}
               onChange={handleChange}
-              error={touched.project_type && Boolean(errors.project_type)}
+              error={touched.project?.project_type && Boolean(errors.project?.project_type)}
               displayEmpty
               inputProps={{ 'aria-label': 'Project Type' }}>
               {props.project_type.map((item) => (
@@ -83,12 +84,12 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>{touched.project_type && errors.project_type}</FormHelperText>
+            <FormHelperText>{touched.project?.project_type && errors.project?.project_type}</FormHelperText>
           </FormControl>
         </Grid>
         <Grid item xs={12}>
           <MultiAutocompleteFieldVariableSize
-            id={'project_activities'}
+            id={'project.project_activities'}
             label={'Project Activities'}
             options={props.activity}
             required={false}
@@ -96,13 +97,13 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
         </Grid>
         <StartEndDateFields
           formikProps={formikProps}
-          startName="start_date"
-          endName="end_date"
+          startName="project.start_date"
+          endName="project.end_date"
           startRequired={true}
           endRequired={false}
         />
       </Grid>
-    </form>
+    </>
   );
 };
 
