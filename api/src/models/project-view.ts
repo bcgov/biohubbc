@@ -14,19 +14,6 @@ export interface IGetProject {
   partnerships: GetPartnershipsData;
 }
 
-export interface IGetProjectAttachment {
-  project_attachment_id: number;
-  project_id: number;
-  file_name: string;
-  title: string;
-  description: string;
-  year: string;
-  key: string;
-  file_size: number;
-  security_token: string;
-  authors: string[];
-}
-
 /**
  * Pre-processes GET /projects/{id} project data
  *
