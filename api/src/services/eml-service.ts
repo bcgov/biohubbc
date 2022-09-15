@@ -488,7 +488,7 @@ export class EmlService extends DBService {
         metadata: {
           projectAttachments: {
             projectAttachment: this.projectAttachmentData.attachmentDetails.map((item) => {
-              return { file_name: item };
+              return item;
             })
           }
         }
@@ -501,7 +501,7 @@ export class EmlService extends DBService {
         metadata: {
           projectReportAttachments: {
             projectReportAttachment: this.projectReportAttachmentData.attachmentDetails.map((item) => {
-              return { file_name: item };
+              return item;
             })
           }
         }
@@ -515,7 +515,7 @@ export class EmlService extends DBService {
           metadata: {
             surveyAttachments: {
               surveyAttachment: item.attachments?.attachmentDetails.map((item) => {
-                return { file_name: item };
+                return item;
               })
             }
           }
@@ -530,7 +530,7 @@ export class EmlService extends DBService {
           metadata: {
             surveyReportAttachments: {
               surveyReportAttachment: item.report_attachments?.attachmentDetails.map((item) => {
-                return { file_name: item };
+                return item;
               })
             }
           }
