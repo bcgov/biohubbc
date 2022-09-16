@@ -48,18 +48,17 @@ export interface CustomFieldArrayProps<ValueType = unknown> {
    */
   name: string;
   /**
-   * Get a label for the raw array value. If not provided, the raw array value will be used as the label.
+   * Get a label for the raw array value.
    *
    * @memberof CustomFieldArrayProps
    */
-  getLabelForValue?: (value: ValueType) => string;
+  getLabelForValue: (value: ValueType) => string;
 }
 
 /**
  * Render a list of items (with a delete button) for each item in an array field control, identified by its `name`.
  *
  * @example
- * <CustomFieldArray<SomeValueType> name="array_field_name" />
  * <CustomFieldArray<SomeValueType> name="array_field_name" getLabelForValue={(value) => SomeLabelLookup(value)} />
  *
  * @param {*} props
@@ -83,7 +82,7 @@ const CustomFieldArray = <ValueType extends any>(props: CustomFieldArrayProps<Va
         <>
           <List disablePadding className={classes.list}>
             {values.map((value: ValueType, index: number) => {
-              const label = props.getLabelForValue?.(value) || value;
+              const label = props.getLabelForValue(value);
               return (
                 <ListItem key={`listItem-${label}`} className={classes.listItem}>
                   <ListItemText primary={label} className={classes.listItemText} />
