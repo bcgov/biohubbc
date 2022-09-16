@@ -80,15 +80,14 @@ export interface IGetProjectsListResponse {
  * @export
  * @interface ICreateProjectRequest
  */
-export interface ICreateProjectRequest {
-  coordinator: IProjectCoordinatorForm;
-  project: IProjectDetailsForm;
-  objectives: IProjectObjectivesForm;
-  location: IProjectLocationForm;
-  iucn: IProjectIUCNForm;
-  funding: IProjectFundingForm;
-  partnerships: IProjectPartnershipsForm;
-}
+export interface ICreateProjectRequest
+  extends IProjectCoordinatorForm,
+    IProjectDetailsForm,
+    IProjectObjectivesForm,
+    IProjectLocationForm,
+    IProjectIUCNForm,
+    IProjectFundingForm,
+    IProjectPartnershipsForm {}
 
 /**
  * Create project response object.

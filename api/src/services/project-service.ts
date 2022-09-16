@@ -554,24 +554,6 @@ export class ProjectService extends DBService {
       )
     );
 
-    // Handle new project permits
-    promises.push(
-      Promise.all(
-        postProjectData.permit.permits.map((permit: IPostPermit) =>
-          this.insertPermit(permit.permit_number, permit.permit_type, projectId)
-        )
-      )
-    );
-
-    // Handle existing non-sampling permits which are now being associated to a project
-    promises.push(
-      Promise.all(
-        postProjectData.permit.existing_permits.map((existing_permit: IPostExistingPermit) =>
-          this.associateExistingPermitToProject(existing_permit.permit_id, projectId)
-        )
-      )
-    );
-
     // Handle project IUCN classifications
     promises.push(
       Promise.all(

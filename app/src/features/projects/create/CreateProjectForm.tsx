@@ -5,15 +5,32 @@ import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
 import { Formik, FormikProps } from 'formik';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
-import React, { useRef } from 'react';
-import { useHistory } from 'react-router';
-import ProjectCoordinatorForm, { ProjectCoordinatorInitialValues } from '../components/ProjectCoordinatorForm';
-import ProjectDetailsForm, { ProjectDetailsFormInitialValues } from '../components/ProjectDetailsForm';
-import { ProjectFundingFormInitialValues } from '../components/ProjectFundingForm';
-import { ProjectIUCNFormInitialValues } from '../components/ProjectIUCNForm';
-import { ProjectLocationFormInitialValues } from '../components/ProjectLocationForm';
-import ProjectObjectivesForm, { ProjectObjectivesFormInitialValues } from '../components/ProjectObjectivesForm';
-import { ProjectPartnershipsFormInitialValues } from '../components/ProjectPartnershipsForm';
+import React from 'react';
+import ProjectCoordinatorForm, {
+  ProjectCoordinatorInitialValues,
+  ProjectCoordinatorYupSchema
+} from '../components/ProjectCoordinatorForm';
+import ProjectDetailsForm, {
+  ProjectDetailsFormInitialValues,
+  ProjectDetailsFormYupSchema
+} from '../components/ProjectDetailsForm';
+import ProjectFundingForm, {
+  ProjectFundingFormInitialValues,
+  ProjectFundingFormYupSchema
+} from '../components/ProjectFundingForm';
+import ProjectIUCNForm, { ProjectIUCNFormInitialValues, ProjectIUCNFormYupSchema } from '../components/ProjectIUCNForm';
+import ProjectLocationForm, {
+  ProjectLocationFormInitialValues,
+  ProjectLocationFormYupSchema
+} from '../components/ProjectLocationForm';
+import ProjectObjectivesForm, {
+  ProjectObjectivesFormInitialValues,
+  ProjectObjectivesFormYupSchema
+} from '../components/ProjectObjectivesForm';
+import ProjectPartnershipsForm, {
+  ProjectPartnershipsFormInitialValues,
+  ProjectPartnershipsFormYupSchema
+} from '../components/ProjectPartnershipsForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -37,7 +54,27 @@ const useStyles = makeStyles((theme: Theme) => ({
 
 export interface ICreateProjectForm {
   codes: IGetAllCodeSetsResponse;
+  handleSubmit: (formikData: ICreateProjectRequest) => void;
+  handleCancel: () => void;
+  formikRef: React.RefObject<FormikProps<ICreateProjectRequest>>;
 }
+
+export const initialProjectFieldData: ICreateProjectRequest = {
+  ...ProjectCoordinatorInitialValues,
+  ...ProjectDetailsFormInitialValues,
+  ...ProjectObjectivesFormInitialValues,
+  ...ProjectLocationFormInitialValues,
+  ...ProjectIUCNFormInitialValues,
+  ...ProjectFundingFormInitialValues,
+  ...ProjectPartnershipsFormInitialValues
+};
+
+export const validationProjectYupSchema = ProjectCoordinatorYupSchema.concat(ProjectDetailsFormYupSchema)
+  .concat(ProjectObjectivesFormYupSchema)
+  .concat(ProjectLocationFormYupSchema)
+  .concat(ProjectIUCNFormYupSchema)
+  .concat(ProjectFundingFormYupSchema)
+  .concat(ProjectPartnershipsFormYupSchema);
 
 /**
  * Form for creating a new project.
@@ -45,30 +82,16 @@ export interface ICreateProjectForm {
  * @return {*}
  */
 const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
-  const { codes } = props;
+  const { codes, formikRef } = props;
 
   const classes = useStyles();
-  const history = useHistory();
-  const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
 
-
-  const initialProjectFieldData: ICreateProjectRequest = {
-    coordinator: ProjectCoordinatorInitialValues,
-    project: ProjectDetailsFormInitialValues,
-    objectives: ProjectObjectivesFormInitialValues,
-    location: ProjectLocationFormInitialValues,
-    iucn: ProjectIUCNFormInitialValues,
-    funding: ProjectFundingFormInitialValues,
-    partnerships: ProjectPartnershipsFormInitialValues
-  };
-
-  const handleSubmit = async (formikData: any) => {
-    console.log('fromikData', formikData);
-    // await handleProjectCreation();
+  const handleSubmit = async (formikData: ICreateProjectRequest) => {
+    props.handleSubmit(formikData);
   };
 
   const handleCancel = () => {
-    history.push(`/admin/projects`);
+    props.handleCancel();
   };
 
   return (
@@ -79,7 +102,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
             <Formik
               innerRef={formikRef}
               initialValues={initialProjectFieldData}
-              // validationSchema={}
+              validationSchema={validationProjectYupSchema}
               validateOnBlur={true}
               validateOnChange={false}
               onSubmit={handleSubmit}>
@@ -127,15 +150,15 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   component={<ProjectObjectivesForm />}></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
-                {/*
+
                 <HorizontalSplitFormComponent
                   title="Location"
                   summary=""
                   component={<ProjectLocationForm />}></HorizontalSplitFormComponent>
 
-                <Divider className={classes.sectionDivider} /> */}
+                <Divider className={classes.sectionDivider} />
 
-                {/* <HorizontalSplitFormComponent
+                <HorizontalSplitFormComponent
                   title="IUCN"
                   summary=""
                   component={
@@ -157,9 +180,9 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                       }
                     />
                   }></HorizontalSplitFormComponent>
-                <Divider className={classes.sectionDivider} /> */}
+                <Divider className={classes.sectionDivider} />
 
-                {/* <HorizontalSplitFormComponent
+                <HorizontalSplitFormComponent
                   title="Funding"
                   summary=""
                   component={
@@ -177,8 +200,8 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     />
                   }></HorizontalSplitFormComponent>
 
-                <Divider className={classes.sectionDivider} /> */}
-                {/*
+                <Divider className={classes.sectionDivider} />
+
                 <HorizontalSplitFormComponent
                   title="Partnerships"
                   summary=""
@@ -197,7 +220,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                     />
                   }></HorizontalSplitFormComponent>
 
-                <Divider className={classes.sectionDivider} /> */}
+                <Divider className={classes.sectionDivider} />
               </>
             </Formik>
 

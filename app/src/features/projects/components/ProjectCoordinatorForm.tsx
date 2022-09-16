@@ -16,31 +16,37 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectCoordinatorForm {
-  first_name: string;
-  last_name: string;
-  email_address: string;
-  coordinator_agency: string;
-  share_contact_details: string;
+  coordinator: {
+    first_name: string;
+    last_name: string;
+    email_address: string;
+    coordinator_agency: string;
+    share_contact_details: string;
+  };
 }
 
 export const ProjectCoordinatorInitialValues: IProjectCoordinatorForm = {
-  first_name: '',
-  last_name: '',
-  email_address: '',
-  coordinator_agency: '',
-  share_contact_details: 'false'
+  coordinator: {
+    first_name: '',
+    last_name: '',
+    email_address: '',
+    coordinator_agency: '',
+    share_contact_details: 'false'
+  }
 };
 
 export const ProjectCoordinatorYupSchema = yup.object().shape({
-  first_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-  last_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-  email_address: yup
-    .string()
-    .max(500, 'Cannot exceed 500 characters')
-    .email('Must be a valid email address')
-    .required('Required'),
-  coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required').nullable(),
-  share_contact_details: yup.string().required('Required')
+  coordinator: yup.object().shape({
+    first_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
+    last_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
+    email_address: yup
+      .string()
+      .max(500, 'Cannot exceed 500 characters')
+      .email('Must be a valid email address')
+      .required('Required'),
+    coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required').nullable(),
+    share_contact_details: yup.string().required('Required')
+  })
 });
 
 export interface IProjectCoordinatorFormProps {
@@ -63,10 +69,10 @@ const useStyles = makeStyles((theme: Theme) => ({
  */
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
   const classes = useStyles();
-  const { values, touched, errors, handleChange } = useFormikContext<ICreateProjectRequest>();
+  const { values, touched, handleSubmit, errors, handleChange } = useFormikContext<ICreateProjectRequest>();
 
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12} md={6}>
           <CustomTextField
@@ -137,7 +143,7 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           </Box>
         </FormControl>
       </Box>
-    </>
+    </form>
   );
 };
 

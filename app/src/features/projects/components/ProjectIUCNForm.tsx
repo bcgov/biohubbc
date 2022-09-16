@@ -32,7 +32,9 @@ export interface IProjectIUCNFormArrayItem {
 }
 
 export interface IProjectIUCNForm {
-  classificationDetails: IProjectIUCNFormArrayItem[];
+  iucn: {
+    classificationDetails: IProjectIUCNFormArrayItem[];
+  };
 }
 
 export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = {
@@ -42,7 +44,9 @@ export const ProjectIUCNFormArrayItemInitialValues: IProjectIUCNFormArrayItem = 
 };
 
 export const ProjectIUCNFormInitialValues: IProjectIUCNForm = {
-  classificationDetails: []
+  iucn: {
+    classificationDetails: []
+  }
 };
 
 export interface IIUCNSubClassification1Option extends IMultiAutocompleteFieldOption {
@@ -54,16 +58,18 @@ export interface IIUCNSubClassification2Option extends IMultiAutocompleteFieldOp
 }
 
 export const ProjectIUCNFormYupSchema = yup.object().shape({
-  classificationDetails: yup
-    .array()
-    .of(
-      yup.object().shape({
-        classification: yup.number().required('You must specify a classification'),
-        subClassification1: yup.number().required('You must specify a sub-classification'),
-        subClassification2: yup.number().required('You must specify a sub-classification')
-      })
-    )
-    .isUniqueIUCNClassificationDetail('IUCN Classifications must be unique')
+  iucn: yup.object().shape({
+    classificationDetails: yup
+      .array()
+      .of(
+        yup.object().shape({
+          classification: yup.number().required('You must specify a classification'),
+          subClassification1: yup.number().required('You must specify a sub-classification'),
+          subClassification2: yup.number().required('You must specify a sub-classification')
+        })
+      )
+      .isUniqueIUCNClassificationDetail('IUCN Classifications must be unique')
+  })
 });
 
 export interface IProjectIUCNFormProps {
@@ -85,10 +91,10 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
   return (
     <form onSubmit={handleSubmit}>
       <FieldArray
-        name="classificationDetails"
+        name="iucn.classificationDetails"
         render={(arrayHelpers: any) => (
           <Box>
-            {values.classificationDetails.map((classificationDetail, index) => {
+            {values.iucn.classificationDetails.map((classificationDetail, index) => {
               const classificationMeta = getFieldMeta(`classificationDetails.[${index}].classification`);
               const subClassification1Meta = getFieldMeta(`classificationDetails.[${index}].subClassification1`);
               const subClassification2Meta = getFieldMeta(`classificationDetails.[${index}].subClassification2`);
@@ -107,7 +113,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                         <InputLabel id="classification">Classification</InputLabel>
                         <Select
                           id={`classificationDetails.[${index}].classification`}
-                          name={`classificationDetails.[${index}].classification`}
+                          name={`iucn.classificationDetails.[${index}].classification`}
                           labelId="classification"
                           label="Classification"
                           value={classificationDetail.classification}
@@ -137,7 +143,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                         <InputLabel id="subClassification1">Sub-classification</InputLabel>
                         <Select
                           id={`classificationDetails.[${index}].subClassification1`}
-                          name={`classificationDetails.[${index}].subClassification1`}
+                          name={`iucn.classificationDetails.[${index}].subClassification1`}
                           labelId="subClassification1"
                           label="Sub-classification"
                           value={classificationDetail.subClassification1}
@@ -172,7 +178,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                         <InputLabel id="subClassification2">Sub-classification</InputLabel>
                         <Select
                           id={`classificationDetails.[${index}].subClassification2`}
-                          name={`classificationDetails.[${index}].subClassification2`}
+                          name={`iucn.classificationDetails.[${index}].subClassification2`}
                           labelId="subClassification2"
                           label="Sub-classification"
                           value={classificationDetail.subClassification2}
@@ -209,9 +215,11 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
               );
             })}
 
-            {errors?.classificationDetails && !Array.isArray(errors?.classificationDetails) && (
+            {errors?.iucn?.classificationDetails && !Array.isArray(errors?.iucn?.classificationDetails) && (
               <Box pb={2}>
-                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.classificationDetails}</Typography>
+                <Typography style={{ fontSize: '12px', color: '#f44336' }}>
+                  {errors.iucn?.classificationDetails}
+                </Typography>
               </Box>
             )}
 

@@ -28,10 +28,8 @@ import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
-import ProjectStepComponents from 'utils/ProjectStepComponents';
 import { getFormattedDate } from 'utils/Utils';
 import CreateProjectForm from './CreateProjectForm';
-import { IProjectFormStep } from './ProjectStepForm';
 
 const useStyles = makeStyles((theme: Theme) => ({
   actionButton: {
@@ -88,14 +86,9 @@ const CreateProjectPage: React.FC = () => {
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [hasLoadedDraftData, setHasLoadedDraftData] = useState(!queryParams.draftId);
 
-  // All possible step forms, and their current state
-  const [stepForms, setStepForms] = useState<IProjectFormStep[]>([]);
-
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
   const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
-
-  const [showFormFieldValidationErrors, setShowFormFieldValidationErrors] = useState<null | number>(null);
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -142,6 +135,8 @@ const CreateProjectPage: React.FC = () => {
       if (!response || !response.data) {
         return;
       }
+
+      formikRef.current?.setValues(response.data);
     };
 
     if (hasLoadedDraftData) {
@@ -171,70 +166,6 @@ const CreateProjectPage: React.FC = () => {
     }
   }, [biohubApi, isLoadingCodes, codes]);
 
-  // Initialize the forms for each step of the workflow
-  useEffect(() => {
-    if (!codes || !hasLoadedDraftData) {
-      return;
-    }
-
-    if (stepForms.length) {
-      return;
-    }
-
-    setStepForms([
-      {
-        stepTitle: 'Project Contact',
-        stepSubTitle:
-          'Enter the contact information for the person directly responsible for the project. This information will be used as the primary contact should questions arise about this project.',
-        stepContent: <ProjectStepComponents component="ProjectCoordinator" codes={codes} />
-      },
-      {
-        stepTitle: 'General Information',
-        stepSubTitle: 'Enter general information and details about this project.',
-        stepContent: <ProjectStepComponents component="ProjectDetails" codes={codes} />
-      },
-      {
-        stepTitle: 'Objectives',
-        stepSubTitle:
-          'Describe the objectives of the project and list any caveats, or cautionary detail to be considered when evaluating, or interpreting this project.',
-        stepContent: <ProjectStepComponents component="ProjectObjectives" codes={codes} />
-      }
-      // {
-      //   stepTitle: 'Locations',
-      //   stepSubTitle: 'Specify a location description and spatial boundary information for the overall project area.',
-      //   stepContent: <ProjectStepComponents component="ProjectLocation" codes={codes} />
-      // },
-      // {
-      //   stepTitle: 'IUCN Conservation Actions Classification',
-      //   stepSubTitle: `Conservation actions are specific actions or sets of tasks undertaken by project staff designed to reach each of the project's objectives.`,
-      //   stepContent: <ProjectStepComponents component="ProjectIUCN" codes={codes} />
-      // },
-      // {
-      //   stepTitle: 'Funding',
-      //   stepSubTitle:
-      //     'Specify funding sources for the project. Dollar amounts are not intended to be exact, please round to the nearest 100.',
-      //   stepContent: <ProjectStepComponents component="ProjectFunding" codes={codes} />
-      // },
-      // {
-      //   stepTitle: 'Partnerships',
-      //   stepSubTitle:
-      //     'Specify any indigenous partnerships for the project and/or any other partnerships that have not been previously identified in the funding sources section above.',
-      //   stepContent: <ProjectStepComponents component="ProjectPartnerships" codes={codes} />
-      // }
-    ]);
-  }, [codes, stepForms, hasLoadedDraftData]);
-
-  useEffect(() => {
-    if (!formikRef?.current) {
-      return;
-    }
-
-    setShowFormFieldValidationErrors(null);
-
-    // Submit the form, which will run the validation to indicate which fields are invalid
-    formikRef.current.submitForm();
-  }, [showFormFieldValidationErrors, setShowFormFieldValidationErrors, formikRef]);
-
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
     history.push('/admin/projects');
@@ -242,28 +173,20 @@ const CreateProjectPage: React.FC = () => {
 
   const handleSubmitDraft = async (values: IProjectDraftForm) => {
     try {
-      let response = { id: 1, date: 'asd' };
+      let response;
 
       // Get the form data for all steps
       // Fetch the data from the formikRef for whichever step is the active step
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
-      // const draftFormData = {
-      //   coordinator: activeStep === 0 && formikRef?.current?.values,
-      //   project: activeStep === 2 && formikRef?.current?.values,
-      //   objectives: activeStep === 3 && formikRef?.current?.values,
-      //   location: activeStep === 4 && formikRef?.current?.values,
-      //   iucn: activeStep === 5 && formikRef?.current?.values,
-      //   funding: activeStep === 6 && formikRef?.current?.values,
-      //   partnerships: activeStep === 7 && formikRef?.current?.values
-      // };
+      const draftFormData = formikRef?.current?.values;
 
-      // const draftId = Number(queryParams.draftId) || draft?.id;
+      const draftId = Number(queryParams.draftId) || draft?.id;
 
-      // if (draftId) {
-      //   response = await biohubApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
-      // } else {
-      //   response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
-      // }
+      if (draftId) {
+        response = await biohubApi.draft.updateDraft(draftId, values.draft_name, draftFormData);
+      } else {
+        response = await biohubApi.draft.createDraft(values.draft_name, draftFormData);
+      }
 
       setOpenDraftDialog(false);
 
@@ -290,70 +213,46 @@ const CreateProjectPage: React.FC = () => {
     }
   };
 
-  // /**
-  //  * Handle project creation.
-  //  */
-  // const handleProjectCreation = async () => {
-  //   try {
-  //     console.log('submit');
-  //     // await createProject({
-  //     //   coordinator: stepForms[0].stepInitialValues,
-  //     //   project: stepForms[2].stepInitialValues,
-  //     //   objectives: stepForms[3].stepInitialValues,
-  //     //   location: stepForms[4].stepInitialValues,
-  //     //   iucn: stepForms[5].stepInitialValues,
-  //     //   funding: stepForms[6].stepInitialValues,
-  //     //   partnerships: stepForms[7].stepInitialValues
-  //     // });
-  //   } catch (error) {
-  //     showCreateErrorDialog({
-  //       dialogTitle: 'Error Creating Project',
-  //       dialogError: (error as APIError)?.message,
-  //       dialogErrorDetails: (error as APIError)?.errors
-  //     });
-  //   }
-  // };
+  /**
+   * Deletes the draft record used when creating this project, if one exists.
+   *
+   * @param {number} draftId
+   * @returns {*}
+   */
+  const deleteDraft = async () => {
+    const draftId = Number(queryParams.draftId);
 
-  // /**
-  //  * Deletes the draft record used when creating this project, if one exists.
-  //  *
-  //  * @param {number} draftId
-  //  * @returns {*}
-  //  */
-  // const deleteDraft = async () => {
-  //   const draftId = Number(queryParams.draftId);
+    if (!draftId) {
+      return;
+    }
 
-  //   if (!draftId) {
-  //     return;
-  //   }
+    try {
+      await biohubApi.draft.deleteDraft(draftId);
+    } catch (error) {
+      return error;
+    }
+  };
 
-  //   try {
-  //     await biohubApi.draft.deleteDraft(draftId);
-  //   } catch (error) {
-  //     return error;
-  //   }
-  // };
+  /**
+   * Creates a new project record
+   *
+   * @param {ICreateProjectRequest} projectPostObject
+   * @return {*}
+   */
+  const createProject = async (projectPostObject: ICreateProjectRequest) => {
+    const response = await biohubApi.project.createProject(projectPostObject);
 
-  // /**
-  //  * Creates a new project record
-  //  *
-  //  * @param {ICreateProjectRequest} projectPostObject
-  //  * @return {*}
-  //  */
-  // const createProject = async (projectPostObject: ICreateProjectRequest) => {
-  //   const response = await biohubApi.project.createProject(projectPostObject);
+    if (!response?.id) {
+      showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
+      return;
+    }
 
-  //   if (!response?.id) {
-  //     showCreateErrorDialog({ dialogError: 'The response from the server was null, or did not contain a project ID.' });
-  //     return;
-  //   }
+    await deleteDraft();
 
-  //   await deleteDraft();
+    setEnableCancelCheck(false);
 
-  //   setEnableCancelCheck(false);
-
-  //   history.push(`/admin/projects/${response.id}`);
-  // };
+    history.push(`/admin/projects/${response.id}`);
+  };
 
   const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
     dialogContext.setErrorDialog({
@@ -375,7 +274,7 @@ const CreateProjectPage: React.FC = () => {
     });
   };
 
-  if (!codes || !stepForms.length) {
+  if (!codes) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
@@ -450,7 +349,12 @@ const CreateProjectPage: React.FC = () => {
             </Box>
           </Box>
 
-          <CreateProjectForm codes={codes} />
+          <CreateProjectForm
+            handleSubmit={createProject}
+            handleCancel={handleCancel}
+            codes={codes}
+            formikRef={formikRef}
+          />
         </Container>
       </Box>
     </>

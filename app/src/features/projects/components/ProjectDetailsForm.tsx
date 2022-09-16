@@ -15,26 +15,32 @@ import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface IProjectDetailsForm {
-  project_name: string;
-  project_type: number;
-  project_activities: number[];
-  start_date: string;
-  end_date: string;
+  project: {
+    project_name: string;
+    project_type: number;
+    project_activities: number[];
+    start_date: string;
+    end_date: string;
+  };
 }
 
 export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
-  project_name: '',
-  project_type: ('' as unknown) as number,
-  project_activities: [],
-  start_date: '',
-  end_date: ''
+  project: {
+    project_name: '',
+    project_type: ('' as unknown) as number,
+    project_activities: [],
+    start_date: '',
+    end_date: ''
+  }
 };
 
 export const ProjectDetailsFormYupSchema = yup.object().shape({
-  project_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
-  project_type: yup.number().required('Required'),
-  start_date: yup.string().isValidDateString().required('Required'),
-  end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+  project: yup.object().shape({
+    project_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
+    project_type: yup.number().required('Required'),
+    start_date: yup.string().isValidDateString().required('Required'),
+    end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+  })
 });
 
 export interface IProjectDetailsFormProps {
@@ -50,10 +56,10 @@ export interface IProjectDetailsFormProps {
 const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
   const formikProps = useFormikContext<ICreateProjectRequest>();
 
-  const { values, touched, errors, handleChange } = formikProps;
+  const { values, touched, errors, handleChange, handleSubmit } = formikProps;
 
   return (
-    <>
+    <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <CustomTextField
@@ -103,7 +109,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
           endRequired={false}
         />
       </Grid>
-    </>
+    </form>
   );
 };
 
