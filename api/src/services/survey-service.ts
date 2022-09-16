@@ -181,10 +181,8 @@ export class SurveyService extends DBService {
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result) {
-      throw new ApiGeneralError('Failed to get survey proprietor data');
+    if (!response.rows?.[0]) {
+      return null;
     }
 
     return new GetSurveyProprietorData(response.rows?.[0]);

@@ -394,20 +394,6 @@ describe('SurveyService', () => {
 
       expect(response).to.eql(new GetSurveyProprietorData([{ id: 1 }]));
     });
-
-    it('throws error if response is invalid', async () => {
-      const mockQueryResponse = ({ rows: [] } as unknown) as QueryResult<any>;
-
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-      const surveyService = new SurveyService(mockDBConnection);
-
-      try {
-        await surveyService.getSurveyProprietorDataForView(1);
-        expect.fail();
-      } catch (actualError) {
-        expect((actualError as ApiGeneralError).message).to.equal('Failed to get survey proprietor data');
-      }
-    });
   });
 
   describe('getSurveyLocationData', () => {
