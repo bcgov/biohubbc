@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { PROJECT_ROLE } from '../../../../../constants/roles';

@@ -12,7 +12,6 @@ import {
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getObjectivesByProjectSQL,
-  getPermitsByProjectSQL,
   getProjectByProjectSQL,
   putProjectFundingSourceSQL,
   putProjectSQL
@@ -27,20 +26,6 @@ describe('getIndigenousPartnershipsByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getIndigenousPartnershipsByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getPermitsByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getPermitsByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getPermitsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

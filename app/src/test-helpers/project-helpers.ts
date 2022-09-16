@@ -10,14 +10,6 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     project_activities: [1],
     completion_status: 'Active'
   },
-  permit: {
-    permits: [
-      {
-        permit_number: '123',
-        permit_type: 'Permit type'
-      }
-    ]
-  },
   location: {
     location_description: 'Location description',
     geometry: []

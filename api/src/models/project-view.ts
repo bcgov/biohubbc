@@ -5,7 +5,6 @@ import { COMPLETION_STATUS } from '../constants/status';
 export interface IGetProject {
   id: number;
   coordinator: GetCoordinatorData;
-  permit: GetPermitData;
   project: GetProjectData;
   objectives: GetObjectivesData;
   location: GetLocationData;
@@ -88,33 +87,6 @@ export class GetCoordinatorData {
     this.coordinator_agency = coordinatorData?.coordinator_agency_name || '';
     this.share_contact_details = coordinatorData?.coordinator_public ? 'true' : 'false';
     this.revision_count = coordinatorData?.revision_count ?? null;
-  }
-}
-
-export interface IGetPermit {
-  permit_number: string;
-  permit_type: string;
-}
-
-/**
- * Pre-processes GET /projects/{id} permit data
- *
- * @export
- * @class GetPermitData
- */
-export class GetPermitData {
-  permits: IGetPermit[];
-
-  constructor(permitData?: any[]) {
-    this.permits =
-      (permitData?.length &&
-        permitData.map((item: any) => {
-          return {
-            permit_number: item.number,
-            permit_type: item.type
-          };
-        })) ||
-      [];
   }
 }
 

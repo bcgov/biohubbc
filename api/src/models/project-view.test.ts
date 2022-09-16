@@ -8,7 +8,6 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetPermitData,
   GetProjectData
 } from './project-view';
 
@@ -193,44 +192,6 @@ describe('GetCoordinatorData', () => {
   });
 });
 
-describe('GetPermitData', () => {
-  describe('No values provided', () => {
-    let projectPermitData: GetPermitData;
-
-    before(() => {
-      projectPermitData = new GetPermitData((null as unknown) as any[]);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided', () => {
-    let projectPermitData: GetPermitData;
-
-    const permits = [
-      {
-        number: '1',
-        type: 'permit type'
-      }
-    ];
-
-    before(() => {
-      projectPermitData = new GetPermitData(permits);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]);
-    });
-  });
-});
-
 describe('GetLocationData', () => {
   describe('No values provided', () => {
     let locationData: GetLocationData;
@@ -366,7 +327,7 @@ describe('GetFundingData', () => {
       projectFundingData = new GetFundingData((null as unknown) as any[]);
     });
 
-    it('sets permits', function () {
+    it('sets funding sources', function () {
       expect(projectFundingData.fundingSources).to.eql([]);
     });
   });
@@ -378,7 +339,7 @@ describe('GetFundingData', () => {
       projectFundingData = new GetFundingData([]);
     });
 
-    it('sets classification details', function () {
+    it('sets funding sources', function () {
       expect(projectFundingData.fundingSources).to.eql([]);
     });
   });
@@ -405,7 +366,7 @@ describe('GetFundingData', () => {
       projectFundingData = new GetFundingData(fundings);
     });
 
-    it('sets permits', function () {
+    it('sets funding sources', function () {
       expect(projectFundingData.fundingSources).to.eql(fundings);
     });
   });

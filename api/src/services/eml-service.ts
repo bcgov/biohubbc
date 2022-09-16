@@ -373,37 +373,39 @@ export class EmlService extends DBService {
       });
     }
 
-    if (this.includeSensitiveData) {
-      // only include permits if sensitive data is enabled
-      if (this.projectData.permit.permits?.length) {
-        data.push({
-          describes: this.projectData.project.uuid,
-          metadata: {
-            permits: {
-              permit: this.projectData.permit.permits.map((item) => {
-                return { permitType: item.permit_type, permitNumber: item.permit_number };
-              })
-            }
-          }
-        });
-      }
-    }
+    // TODO add back when survey supports permits
+    // if (this.includeSensitiveData) {
+    //   // only include permits if sensitive data is enabled
+    //   if (this.projectData.permit.permits?.length) {
+    //     data.push({
+    //       describes: this.projectData.project.uuid,
+    //       metadata: {
+    //         permits: {
+    //           permit: this.projectData.permit.permits.map((item) => {
+    //             return { permitType: item.permit_type, permitNumber: item.permit_number };
+    //           })
+    //         }
+    //       }
+    //     });
+    //   }
+    // }
 
-    if (this.includeSensitiveData) {
-      // only include permits if sensitive data is enabled
-      this.surveyData.forEach((item) => {
-        if (item.permit.permit_number && item.permit.permit_type) {
-          data.push({
-            describes: item.survey_details.uuid,
-            metadata: {
-              permits: {
-                permit: { permitType: item.permit.permit_type, permitNumber: item.permit.permit_number }
-              }
-            }
-          });
-        }
-      });
-    }
+    // TODO add back when survey supports permits
+    // if (this.includeSensitiveData) {
+    //   // only include permits if sensitive data is enabled
+    //   this.surveyData.forEach((item) => {
+    //     if (item.permit.permit_number && item.permit.permit_type) {
+    //       data.push({
+    //         describes: item.survey_details.uuid,
+    //         metadata: {
+    //           permits: {
+    //             permit: { permitType: item.permit.permit_type, permitNumber: item.permit.permit_number }
+    //           }
+    //         }
+    //       });
+    //     }
+    //   });
+    // }
 
     this.surveyData.forEach((item) => {
       if (item.proprietor) {

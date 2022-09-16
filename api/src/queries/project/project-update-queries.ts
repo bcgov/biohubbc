@@ -70,27 +70,6 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
 };
 
 /**
- * SQL query to get permits associated to a project.
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getPermitsByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
-  return SQL`
-    SELECT
-      number,
-      type
-    FROM
-      permit
-    WHERE
-      project_id = ${projectId};
-  `;
-};
-
-/**
  * SQL query to get coordinator information, for update purposes.
  *
  * @param {number} projectId

@@ -9,9 +9,6 @@
 # Apply the contents of the .env to the terminal, so that the docker-compose file can use them in its builds
 export $(shell sed 's/=.*//' .env)
 
-.DEFAULT : help
-.PHONY : setup close clean build-backend run-backend build-web run-web database app api db-setup db-migrate db-rollback n8n-setup n8n-export clamav install test cypress lint lint-fix format format-fix help
-
 ## ------------------------------------------------------------------------------
 ## Alias Commands
 ## - Performs logical groups of commands for your convenience
@@ -56,6 +53,13 @@ clean: ## Closes and cleans (removes) all project containers
 	@echo "Make: clean - closing and cleaning Docker containers"
 	@echo "==============================================="
 	@docker-compose -f docker-compose.yml down -v --rmi all --remove-orphans
+
+prune: ## Deletes ALL docker artifacts (even those not associated to this project)
+	@echo -n "Delete ALL docker artifacts? [y/n] " && read ans && [ $${ans:-n} = y ]
+	@echo "==============================================="
+	@echo "Make: prune - deleting all docker artifacts
+	@echo "==============================================="
+	@docker system prune --all --volumes
 
 ## ------------------------------------------------------------------------------
 ## Build/Run Postgres DB Commands

@@ -2,14 +2,7 @@ import moment from 'moment';
 import { PROJECT_ROLE } from '../constants/roles';
 import { COMPLETION_STATUS } from '../constants/status';
 import { HTTP400, HTTP409 } from '../errors/custom-error';
-import {
-  IPostExistingPermit,
-  IPostIUCN,
-  IPostPermit,
-  PostFundingSource,
-  PostPermitData,
-  PostProjectObject
-} from '../models/project-create';
+import { IPostIUCN, PostFundingSource, PostProjectObject } from '../models/project-create';
 import {
   IPutIUCN,
   PutCoordinatorData,
@@ -27,7 +20,6 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetPermitData,
   GetProjectData,
   IGetProject
 } from '../models/project-view';
@@ -164,8 +156,7 @@ export class ProjectService extends DBService {
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type,
-      permits_list: row.permits_list
+      project_type: row.project_type
     }));
   }
 
@@ -174,7 +165,6 @@ export class ProjectService extends DBService {
       projectData,
       objectiveData,
       coordinatorData,
-      permitData,
       locationData,
       iucnData,
       fundingData,
@@ -183,7 +173,6 @@ export class ProjectService extends DBService {
       this.getPublicProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getCoordinatorData(projectId),
-      this.getPermitData(projectId),
       this.getLocationData(projectId),
       this.getIUCNClassificationData(projectId),
       this.getFundingData(projectId),
@@ -195,7 +184,6 @@ export class ProjectService extends DBService {
       project: projectData,
       objectives: objectiveData,
       coordinator: coordinatorData,
-      permit: permitData,
       location: locationData,
       iucn: iucnData,
       funding: fundingData,
@@ -225,8 +213,7 @@ export class ProjectService extends DBService {
       completion_status:
         (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
         COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type,
-      permits_list: row.permits_list
+      project_type: row.project_type
     }));
   }
 
@@ -235,7 +222,6 @@ export class ProjectService extends DBService {
       projectData,
       objectiveData,
       coordinatorData,
-      permitData,
       locationData,
       iucnData,
       fundingData,
@@ -244,7 +230,6 @@ export class ProjectService extends DBService {
       this.getProjectData(projectId),
       this.getObjectivesData(projectId),
       this.getCoordinatorData(projectId),
-      this.getPermitData(projectId),
       this.getLocationData(projectId),
       this.getIUCNClassificationData(projectId),
       this.getFundingData(projectId),
@@ -256,7 +241,6 @@ export class ProjectService extends DBService {
       project: projectData,
       objectives: objectiveData,
       coordinator: coordinatorData,
-      permit: permitData,
       location: locationData,
       iucn: iucnData,
       funding: fundingData,
@@ -271,7 +255,6 @@ export class ProjectService extends DBService {
     const results: Pick<IGetProject, 'id'> & Partial<Omit<IGetProject, 'id'>> = {
       id: projectId,
       coordinator: undefined,
-      permit: undefined,
       project: undefined,
       objectives: undefined,
       location: undefined,
@@ -286,14 +269,6 @@ export class ProjectService extends DBService {
       promises.push(
         this.getCoordinatorData(projectId).then((value) => {
           results.coordinator = value;
-        })
-      );
-    }
-
-    if (entities.includes(GET_ENTITIES.permit)) {
-      promises.push(
-        this.getPermitData(projectId).then((value) => {
-          results.permit = value;
         })
       );
     }
@@ -407,24 +382,6 @@ export class ProjectService extends DBService {
     }
 
     return new GetCoordinatorData(result);
-  }
-
-  async getPermitData(projectId: number): Promise<GetPermitData> {
-    const sqlStatement = queries.project.getProjectPermitsSQL(projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL select statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows) || null;
-
-    if (!result) {
-      throw new HTTP400('Failed to get project permit data');
-    }
-
-    return new GetPermitData(result);
   }
 
   async getLocationData(projectId: number): Promise<GetLocationData> {
@@ -554,24 +511,6 @@ export class ProjectService extends DBService {
       )
     );
 
-    // Handle new project permits
-    promises.push(
-      Promise.all(
-        postProjectData.permit.permits.map((permit: IPostPermit) =>
-          this.insertPermit(permit.permit_number, permit.permit_type, projectId)
-        )
-      )
-    );
-
-    // Handle existing non-sampling permits which are now being associated to a project
-    promises.push(
-      Promise.all(
-        postProjectData.permit.existing_permits.map((existing_permit: IPostExistingPermit) =>
-          this.associateExistingPermitToProject(existing_permit.permit_id, projectId)
-        )
-      )
-    );
-
     // Handle project IUCN classifications
     promises.push(
       Promise.all(
@@ -675,46 +614,6 @@ export class ProjectService extends DBService {
     return result.id;
   }
 
-  async insertPermit(permitNumber: string, permitType: string, projectId: number): Promise<number> {
-    const systemUserId = this.connection.systemUserId();
-
-    if (!systemUserId) {
-      throw new HTTP400('Failed to identify system user ID');
-    }
-
-    const sqlStatement = queries.permit.postProjectPermitSQL(permitNumber, permitType, projectId, systemUserId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL insert statement');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    if (!result || !result.id) {
-      throw new HTTP400('Failed to insert project permit data');
-    }
-
-    return result.id;
-  }
-
-  async associateExistingPermitToProject(permitId: number, projectId: number): Promise<void> {
-    const sqlStatement = queries.permit.associatePermitToProjectSQL(permitId, projectId);
-
-    if (!sqlStatement) {
-      throw new HTTP400('Failed to build SQL update statement for associatePermitToProjectSQL');
-    }
-
-    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
-
-    const result = (response && response.rowCount) || null;
-
-    if (!result) {
-      throw new HTTP400('Failed to associate existing permit to project');
-    }
-  }
-
   async insertClassificationDetail(iucn3_id: number, project_id: number): Promise<number> {
     const sqlStatement = queries.project.postProjectIUCNSQL(iucn3_id, project_id);
 
@@ -786,10 +685,6 @@ export class ProjectService extends DBService {
       promises.push(this.updateProjectData(projectId, entities));
     }
 
-    if (entities?.permit && entities?.coordinator) {
-      promises.push(this.updatePermitData(projectId, entities));
-    }
-
     if (entities?.iucn) {
       promises.push(this.updateIUCNData(projectId, entities));
     }
@@ -799,39 +694,6 @@ export class ProjectService extends DBService {
     }
 
     await Promise.all(promises);
-  }
-
-  async updatePermitData(projectId: number, entities: IUpdateProject): Promise<void> {
-    if (!entities.permit) {
-      throw new HTTP400('Missing request body entity `permit`');
-    }
-
-    const putPermitData = new PostPermitData(entities.permit);
-
-    const sqlDeleteStatement = queries.project.deletePermitSQL(projectId);
-
-    if (!sqlDeleteStatement) {
-      throw new HTTP400('Failed to build SQL delete statement');
-    }
-
-    const deleteResult = await this.connection.query(sqlDeleteStatement.text, sqlDeleteStatement.values);
-
-    if (!deleteResult) {
-      throw new HTTP409('Failed to delete project permit data');
-    }
-
-    const insertPermitPromises =
-      putPermitData?.permits?.map((permit: IPostPermit) => {
-        return this.insertPermit(permit.permit_number, permit.permit_type, projectId);
-      }) || [];
-
-    // Handle existing non-sampling permits which are now being associated to a project
-    const updateExistingPermitPromises =
-      putPermitData?.existing_permits?.map((existing_permit: IPostExistingPermit) => {
-        return this.associateExistingPermitToProject(existing_permit.permit_id, projectId);
-      }) || [];
-
-    await Promise.all([insertPermitPromises, updateExistingPermitPromises]);
   }
 
   async updateIUCNData(projectId: number, entities: IUpdateProject): Promise<void> {

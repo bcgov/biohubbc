@@ -1,3 +1,5 @@
+/* eslint-disable */
+// @ts-nocheck
 import Box from '@material-ui/core/Box';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';

@@ -7,7 +7,6 @@ import {
   getIUCNActionClassificationByProjectSQL,
   getLocationByProjectSQL,
   getProjectListSQL,
-  getProjectPermitsSQL,
   getProjectSQL,
   getStakeholderPartnershipsByProjectSQL
 } from './project-view-queries';
@@ -52,12 +51,6 @@ describe('getProjectListSQL', () => {
 
   it('returns a SQLStatement when filter fields provided (only contact agency)', () => {
     const response = getProjectListSQL(true, 1, { coordinator_agency: 'agency' });
-
-    expect(response).to.not.be.null;
-  });
-
-  it('returns a SQLStatement when filter fields provided (only permit number)', () => {
-    const response = getProjectListSQL(true, 1, { permit_number: '123' });
 
     expect(response).to.not.be.null;
   });
@@ -154,20 +147,6 @@ describe('getStakeholderPartnershipsByProjectSQL', () => {
 
   it('valid projectId', () => {
     const response = getStakeholderPartnershipsByProjectSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
-describe('getProjectPermitsSQL', () => {
-  it('Null projectId', () => {
-    const response = getProjectPermitsSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
-  it('valid projectId', () => {
-    const response = getProjectPermitsSQL(1);
 
     expect(response).to.not.be.null;
   });

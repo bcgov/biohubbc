@@ -44,17 +44,12 @@ import {
   ProjectPartnershipsFormInitialValues,
   ProjectPartnershipsFormYupSchema
 } from 'features/projects/components/ProjectPartnershipsForm';
-import ProjectPermitForm, {
-  ProjectPermitFormInitialValues,
-  ProjectPermitFormYupSchema
-} from 'features/projects/components/ProjectPermitForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { useQuery } from 'hooks/useQuery';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
-import { IGetNonSamplingPermit } from 'interfaces/usePermitApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router';
@@ -117,9 +112,7 @@ const CreateProjectPage: React.FC = () => {
   const queryParams = useQuery();
 
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [nonSamplingPermits, setNonSamplingPermits] = useState<IGetNonSamplingPermit[]>((null as unknown) as []);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [isLoadingNonSamplingPermits, setIsLoadingNonSamplingPermits] = useState(false);
   const [hasLoadedDraftData, setHasLoadedDraftData] = useState(!queryParams.draftId);
 
   // Tracks the active step #
@@ -173,7 +166,6 @@ const CreateProjectPage: React.FC = () => {
   const [draft, setDraft] = useState({ id: 0, date: '' });
   const [initialProjectFieldData, setInitialProjectFieldData] = useState<ICreateProjectRequest>({
     coordinator: ProjectCoordinatorInitialValues,
-    permit: ProjectPermitFormInitialValues,
     project: ProjectDetailsFormInitialValues,
     objectives: ProjectObjectivesFormInitialValues,
     location: ProjectLocationFormInitialValues,
@@ -181,27 +173,6 @@ const CreateProjectPage: React.FC = () => {
     funding: ProjectFundingFormInitialValues,
     partnerships: ProjectPartnershipsFormInitialValues
   });
-
-  // Get non-sampling permits that already exist in system
-  useEffect(() => {
-    const getNonSamplingPermits = async () => {
-      const response = await biohubApi.permit.getNonSamplingPermits();
-
-      if (!response) {
-        return;
-      }
-
-      setNonSamplingPermits(() => {
-        setIsLoadingNonSamplingPermits(false);
-        return response;
-      });
-    };
-
-    if (!isLoadingNonSamplingPermits && !nonSamplingPermits) {
-      getNonSamplingPermits();
-      setIsLoadingNonSamplingPermits(true);
-    }
-  }, [biohubApi, isLoadingNonSamplingPermits, nonSamplingPermits]);
 
   // Get draft project fields if draft id exists
   useEffect(() => {
@@ -246,7 +217,7 @@ const CreateProjectPage: React.FC = () => {
 
   // Initialize the forms for each step of the workflow
   useEffect(() => {
-    if (!codes || !hasLoadedDraftData || !nonSamplingPermits) {
+    if (!codes || !hasLoadedDraftData) {
       return;
     }
 
@@ -263,24 +234,6 @@ const CreateProjectPage: React.FC = () => {
         stepInitialValues: initialProjectFieldData.coordinator,
         stepYupSchema: ProjectCoordinatorYupSchema,
         isValid: false,
-        isTouched: false
-      },
-      {
-        stepTitle: 'Project Permits',
-        stepSubTitle:
-          'Enter your scientific collection, wildlife act and/or park use permits associated with this project. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).',
-        stepContent: (
-          <ProjectPermitForm
-            non_sampling_permits={
-              nonSamplingPermits?.map((item: IGetNonSamplingPermit) => {
-                return { value: item.permit_id, label: `${item.number} - ${item.type}` };
-              }) || []
-            }
-          />
-        ),
-        stepInitialValues: initialProjectFieldData.permit,
-        stepYupSchema: ProjectPermitFormYupSchema,
-        isValid: true,
         isTouched: false
       },
       {
@@ -341,7 +294,7 @@ const CreateProjectPage: React.FC = () => {
         isTouched: false
       }
     ]);
-  }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData, nonSamplingPermits]);
+  }, [codes, stepForms, initialProjectFieldData, hasLoadedDraftData]);
 
   /**
    * Return true if the step form fields are valid, false otherwise.
@@ -463,13 +416,12 @@ const CreateProjectPage: React.FC = () => {
       // Why? WIP changes to the active step will not yet be updated into its respective stepForms[n].stepInitialValues
       const draftFormData = {
         coordinator: (activeStep === 0 && formikRef?.current?.values) || stepForms[0].stepInitialValues,
-        permit: (activeStep === 1 && formikRef?.current?.values) || stepForms[1].stepInitialValues,
-        project: (activeStep === 2 && formikRef?.current?.values) || stepForms[2].stepInitialValues,
-        objectives: (activeStep === 3 && formikRef?.current?.values) || stepForms[3].stepInitialValues,
-        location: (activeStep === 4 && formikRef?.current?.values) || stepForms[4].stepInitialValues,
-        iucn: (activeStep === 5 && formikRef?.current?.values) || stepForms[5].stepInitialValues,
-        funding: (activeStep === 6 && formikRef?.current?.values) || stepForms[6].stepInitialValues,
-        partnerships: (activeStep === 7 && formikRef?.current?.values) || stepForms[7].stepInitialValues
+        project: (activeStep === 2 && formikRef?.current?.values) || stepForms[1].stepInitialValues,
+        objectives: (activeStep === 3 && formikRef?.current?.values) || stepForms[2].stepInitialValues,
+        location: (activeStep === 4 && formikRef?.current?.values) || stepForms[3].stepInitialValues,
+        iucn: (activeStep === 5 && formikRef?.current?.values) || stepForms[4].stepInitialValues,
+        funding: (activeStep === 6 && formikRef?.current?.values) || stepForms[5].stepInitialValues,
+        partnerships: (activeStep === 7 && formikRef?.current?.values) || stepForms[6].stepInitialValues
       };
 
       const draftId = Number(queryParams.draftId) || draft?.id;
@@ -528,13 +480,12 @@ const CreateProjectPage: React.FC = () => {
     try {
       await createProject({
         coordinator: stepForms[0].stepInitialValues,
-        permit: stepForms[1].stepInitialValues,
-        project: stepForms[2].stepInitialValues,
-        objectives: stepForms[3].stepInitialValues,
-        location: stepForms[4].stepInitialValues,
-        iucn: stepForms[5].stepInitialValues,
-        funding: stepForms[6].stepInitialValues,
-        partnerships: stepForms[7].stepInitialValues
+        project: stepForms[1].stepInitialValues,
+        objectives: stepForms[2].stepInitialValues,
+        location: stepForms[3].stepInitialValues,
+        iucn: stepForms[4].stepInitialValues,
+        funding: stepForms[5].stepInitialValues,
+        partnerships: stepForms[6].stepInitialValues
       });
     } catch (error) {
       showCreateErrorDialog({
@@ -648,7 +599,7 @@ const CreateProjectPage: React.FC = () => {
           initialValues: {
             draft_name:
               (activeStep === 2 && formikRef.current?.values.project_name) ||
-              stepForms[2].stepInitialValues.project_name ||
+              stepForms[1].stepInitialValues.project_name ||
               ProjectDraftFormInitialValues.draft_name
           },
           validationSchema: ProjectDraftFormYupSchema

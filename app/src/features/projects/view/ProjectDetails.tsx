@@ -10,7 +10,6 @@ import ProjectObjectives from 'features/projects/view/components/ProjectObjectiv
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import React from 'react';
-import ProjectPermits from './components/ProjectPermits';
 
 export interface IProjectDetailsProps {
   projectForViewData: IGetProjectForViewResponse;
@@ -41,9 +40,6 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
         </Box>
         <Box component="section" mt={3}>
           <IUCNClassification projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
-        </Box>
-        <Box component="section" mt={3}>
-          <ProjectPermits projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>
         <Box component="section" mt={3}>
           <FundingSource projectForViewData={projectForViewData} codes={codes} refresh={refresh} />

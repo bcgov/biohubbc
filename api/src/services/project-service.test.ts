@@ -12,7 +12,6 @@ import {
   GetLocationData,
   GetObjectivesData,
   GetPartnershipsData,
-  GetPermitData,
   GetProjectData
 } from '../models/project-view';
 import { queries } from '../queries/queries';
@@ -338,7 +337,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2000-10-10',
           coordinator_agency: 'Agency 1',
-          permits_list: '3, 100',
           project_type: 'Aquatic Habitat'
         },
         {
@@ -347,7 +345,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2000-12-31',
           coordinator_agency: 'Agency 2',
-          permits_list: '1, 4',
           project_type: 'Terrestrial Habitat'
         }
       ];
@@ -412,7 +409,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2200-10-10',
           coordinator_agency: 'Agency 1',
-          permits_list: '3, 100',
           project_type: 'Aquatic Habitat'
         },
         {
@@ -421,7 +417,6 @@ describe('ProjectService', () => {
           start_date: '1900-01-01',
           end_date: '2000-12-31',
           coordinator_agency: 'Agency 2',
-          permits_list: '1, 4',
           project_type: 'Terrestrial Habitat'
         }
       ];
@@ -490,7 +485,6 @@ describe('ProjectService', () => {
     sinon.stub(ProjectService.prototype, 'getPublicProjectData').resolves(new GetProjectData());
     sinon.stub(ProjectService.prototype, 'getObjectivesData').resolves(new GetObjectivesData());
     sinon.stub(ProjectService.prototype, 'getCoordinatorData').resolves(new GetCoordinatorData());
-    sinon.stub(ProjectService.prototype, 'getPermitData').resolves(new GetPermitData());
     sinon.stub(ProjectService.prototype, 'getLocationData').resolves(new GetLocationData());
     sinon.stub(ProjectService.prototype, 'getPartnershipsData').resolves(new GetPartnershipsData());
     sinon.stub(ProjectService.prototype, 'getIUCNClassificationData').resolves(new GetIUCNClassificationData());
