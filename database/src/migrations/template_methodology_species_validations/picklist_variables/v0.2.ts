@@ -55,8 +55,8 @@ const ActivityObservation = [
   { name: 'Bedding' },
   { name: 'Running' },
   { name: 'Walking' },
-  { name: 'Not Moving' },
-  { name: 'Moving' }
+  { name: 'Moving' },
+  { name: 'Not Moving' }
 ];
 
 const SearchType = [{ name: 'Survey' }, { name: 'Telemetry' }];
@@ -64,29 +64,29 @@ const SearchType = [{ name: 'Survey' }, { name: 'Telemetry' }];
 const TargetType = [{ name: 'Targeted' }, { name: 'Non-Targeted' }];
 
 const MarkType = [
-  { name: 'GPS', description: '' },
-  { name: 'VHF', description: '' },
-  { name: 'Ear tag', description: '' },
   { name: 'Alternate Animal ID', description: '' },
-  { name: 'Neckband', description: '' },
-  { name: 'Branded', description: '' },
-  { name: 'Horn', description: '' },
-  { name: 'Mammals - Ear switches', description: '' },
   { name: 'Back tag', description: '' },
+  { name: 'Branded', description: '' },
+  { name: 'Clipped', description: '' },
+  { name: 'Description in Comments', description: '' },
+  { name: 'Dye or Paint', description: '' },
+  { name: 'Ear tag', description: '' },
+  { name: 'Fluorescence or radiation', description: '' },
+  { name: 'GPS', description: '' },
+  { name: 'Horn', description: '' },
   { name: 'Leg band', description: '' },
+  { name: 'Mammals - Ear switches', description: '' },
   { name: 'Nasal', description: '' },
-  { name: 'Streamer', description: '' },
+  { name: 'Neckband', description: '' },
   { name: 'Passive Integrated Transponder', description: '' },
-  { name: 'Vaginal Implant Transmitter', description: '' },
-  { name: 'Wing band', description: '' },
   { name: 'Scute Removal', description: '' },
   { name: 'Shell marking', description: '' },
-  { name: 'Clipped', description: '' },
-  { name: 'Dye or Paint', description: '' },
-  { name: 'Fluorescence or radiation', description: '' },
+  { name: 'Streamer', description: '' },
   { name: 'Tag', description: '' },
   { name: 'Tattoo', description: '' },
-  { name: 'Description in Comments', description: '' }
+  { name: 'Vaginal Implant Transmitter', description: '' },
+  { name: 'VHF', description: '' },
+  { name: 'Wing band', description: '' }
 ];
 
 const FrequencyUnits = [
@@ -242,6 +242,7 @@ const SignType = [
 const SignAge = [{ name: 'Fresh' }, { name: 'Old' }];
 
 const Habitat = [
+  { name: 'Agricultural ' },
   { name: 'Alpine' },
   { name: 'Alpine Barren' },
   { name: 'Alpine Heath Meadows' },
@@ -251,20 +252,31 @@ const Habitat = [
   { name: 'Burn' },
   { name: 'Caves' },
   { name: 'Clearcut' },
+  { name: 'Clearcut Herbaceous' },
   { name: 'Cliff' },
   { name: 'Cliff - open' },
   { name: 'Cliff in Forest' },
   { name: 'Coniferous' },
+  { name: 'Cultivated Field' },
+  { name: 'Cutblock - Free to Grow' },
+  { name: 'Cutblock - Matrue' },
+  { name: 'Cutblock - Not Sufficiently Restored' },
   { name: 'Deciduous' },
   { name: 'Dissected Cliffs' },
+  { name: 'Estuary' },
   { name: 'Flat or Open Slopes' },
   { name: 'Glacier' },
   { name: 'Grass' },
+  { name: 'Grassland' },
   { name: 'Krummholtz' },
+  { name: 'Mature Forest' },
+  { name: 'Mixed' },
   { name: 'Mixed Wood' },
   { name: 'Moraine' },
   { name: 'Ridge' },
   { name: 'Riparian' },
+  { name: 'Riparian Forest' },
+  { name: 'River' },
   { name: 'Rock/Talus' },
   { name: 'Scree' },
   { name: 'Shrub' },
@@ -274,7 +286,8 @@ const Habitat = [
   { name: 'Terraces' },
   { name: 'Timber' },
   { name: 'Wetland/Meadow' },
-  { name: 'Willow/Shrub' }
+  { name: 'Willow/Shrub' },
+  { name: 'Young Forest' }
 ];
 
 const HabitatSlope = [
@@ -404,7 +417,29 @@ const BestParameterFlag = [
   { name: 'Not Evaluated', description: '' }
 ];
 
+const Topography = [
+  { name: 'Flat', description: '' },
+  { name: 'Slope', description: '' },
+  { name: 'Steep', description: '' }
+];
+
 const GoatSpecies = [{ name: 'Mountain Goat' }, { name: 'Oreamnos americanus' }, { name: 'M-ORAM' }, { name: 'ORAM' }];
+
+const ElkSpecies = [
+  {
+    name: 'Elk',
+    description: ''
+  },
+  {
+    name: 'Rocky Mountain Elk',
+    description: ''
+  },
+  {
+    name: 'Roosevelt Elk',
+    description: ''
+  }
+]
+
 interface objectNameDescription {
   name: string;
   description?: string;
@@ -482,3 +517,9 @@ export const MooseItems = {
 export const MooseSummaryItems = {
   ...summaryPickList
 };
+
+export const ElkItems = {
+  ...defaultPicklist,
+  species: ElkSpecies,
+  topography: Topography
+}
