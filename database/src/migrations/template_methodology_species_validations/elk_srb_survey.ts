@@ -504,6 +504,134 @@ export const elkSRBJSON = {
                     }
                 }
             ]
+        },
+        {
+            name: 'Incidental Observations',
+            description: '',
+            columns: [
+                {
+                    name: 'UTM Zone',
+                    description: '',
+                    validations: basicCodeValidator(ElkItems.uTMZone)
+                },
+                {
+                    name: 'Easting',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Northing',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Datum',
+                    description: '',
+                    validations: basicCodeValidator(ElkItems.gPSDatum)
+                },
+                {
+                    name: 'Lat/Long Units',
+                    description: '',
+                    validations: basicCodeValidator(ElkItems.latLongUnits)
+                },
+                {
+                    name: 'Adult Males',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Adult Females',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Adults - Unclassified Sex',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Juvenile Males',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Juvenile Females',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Juveniles - Unclassified Sex',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Unknown Age/Sex',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Total Count',
+                    description: '',
+                    validations: basicNumericValidator()
+                },
+                {
+                    name: 'Species Occurrence Status',
+                    description: '',
+                    validations: basicCodeValidator(ElkItems.speciesOccurrenceStatus)
+                },
+                {
+                    name: 'Activity',
+                    description: '',
+                    validations: basicCodeValidator(ElkItems.activityIncidentalObservation)
+                },
+                {
+                    name: 'Feature Type',
+                    description: '',
+                    validations: basicCodeValidator(ElkItems.featureType)
+                },
+                {
+                    name: 'Sign Type',
+                    description: '',
+                    validations: basicCodeValidator(ElkItems.signType)
+                },
+            ],
+            validations: [
+                {
+                    file_duplicate_columns_validator: {}
+                },
+                {
+                    file_required_columns_validator: {
+                        required_columns: [
+                            'Study Area',
+                            'Block ID/SU ID',
+                            'Population Unit',
+                            'UTM Zone',
+                            'Easting',
+                            'Northing',
+                            'Datum',
+                            'Lat',
+                            'Long',
+                            'Lat/Long Units',
+                            'Date',
+                            'Species',
+                            'Adult Males',
+                            'Adult Females',
+                            'Adults - Unclassified Sex',
+                            'Juvenile Males',
+                            'Juvenile Females',
+                            'Juveniles - Unclassified Sex',
+                            'Unknown Age/Sex',
+                            'Total Count',
+                            'Species Occurrence Status',
+                            'Activity',
+                            'Feature Type',
+                            'Sign Type',
+                            'Photos',
+                            'Incidental Observation Comments'
+                        ]
+                    }
+                }
+            ]
         }
     ],
     validations: [
