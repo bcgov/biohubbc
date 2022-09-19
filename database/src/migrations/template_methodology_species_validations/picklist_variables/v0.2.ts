@@ -438,7 +438,7 @@ const ElkSpecies = [
     name: 'Roosevelt Elk',
     description: ''
   }
-]
+];
 
 interface objectNameDescription {
   name: string;
@@ -522,4 +522,4 @@ export const ElkItems = {
   ...defaultPicklist,
   species: ElkSpecies,
   topography: Topography
-}
+};

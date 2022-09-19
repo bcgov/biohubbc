@@ -1,18 +1,12 @@
 import { Knex } from 'knex';
+import { COMMON_SURVEY_METHODOLOGY } from './common/template.enum';
 import { elkNonSRBJSON } from './template_methodology_species_validations/elk_non_srb_survey';
 import { elkSRBJSON } from './template_methodology_species_validations/elk_srb_survey';
 
 const DB_SCHEMA = process.env.DB_SCHEMA;
 
-const elk_srb_validation = elkSRBJSON
-const elk_non_srb_validation = elkNonSRBJSON
-
-enum COMMON_SURVEY_METHODOLOGY {
-  COMPOSITION = 'Composition',
-  STRATIFIED_RANDOM_BLOCK = 'Stratified Random Block',
-  TRANSECT = 'Encounter Transects',
-  POPULATION_COUNT = 'Total Count'
-}
+const elk_srb_validation = elkSRBJSON;
+const elk_non_srb_validation = elkNonSRBJSON;
 
 enum TEMPLATE_NAME {
   ELK_SRB_SURVEY = 'Elk Arial SRB Recruit Composition Survey',
