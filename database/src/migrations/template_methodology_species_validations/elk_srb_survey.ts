@@ -1,29 +1,5 @@
 import { basicCodeValidator, basicNumericValidator, ElkItems } from './picklist_variables/v0.2';
 
-/*
-{
-    name: '',
-    description: '',
-    columns: [
-        {
-        name: '',
-        description: '',
-        validations: []
-        }
-    ],
-    validations: [
-        {
-        file_duplicate_columns_validator: {}
-        },
-        {
-        file_required_columns_validator: {
-            required_columns: []
-        }
-        }
-    ]
-}
-*/
-
 export const elkSRBJSON = {
     name: '',
     description: '',
@@ -238,12 +214,12 @@ export const elkSRBJSON = {
                     validations: basicNumericValidator()
                 },
                 {
-                    name: '3-4 Point Bulls',
+                    name: '3 - 4 Point Bulls',
                     description: '',
                     validations: basicNumericValidator()
                 },
                 {
-                    name: '3-5 Point Bulls',
+                    name: '3 - 5 Point Bulls',
                     description: '',
                     validations: basicNumericValidator()
                 },
@@ -376,11 +352,11 @@ export const elkSRBJSON = {
                             'Spike Bulls',
                             'Raghorn Bulls',
                             '<=3 Point Bulls',
-                            '3-4 Point Bulls',
-                            '3-5 Point Bulls',
+                            '3 - 4 Point Bulls',
+                            '3 - 5 Point Bulls',
                             '>=4 Point Bulls',
                             '>=5 Point Bulls',
-                            '>=3 Point Bulls',
+                            '>=6 Point Bulls',
                             'Adult Bulls - Unclassified',
                             'Unclassified Bulls',
                             'Cows',

@@ -1,30 +1,5 @@
 import { basicCodeValidator, basicNumericValidator, ElkItems } from './picklist_variables/v0.2';
 
-
-/*
-{
-    name: '',
-    description: '',
-    columns: [
-        {
-        name: '',
-        description: '',
-        validations: []
-        }
-    ],
-    validations: [
-        {
-        file_duplicate_columns_validator: {}
-        },
-        {
-        file_required_columns_validator: {
-            required_columns: []
-        }
-        }
-    ]
-}
-*/
-
 export const elkNonSRBJSON = {
     name: '',
     description: '',
@@ -84,7 +59,7 @@ export const elkNonSRBJSON = {
                             'Pilot',
                             'Navigator',
                             'Rear Left Observer',
-                            'Air Temprature (C)',
+                            'Air Temperature (C)',
                             'Visibility',
                             'Cloud Cover (%)',
                             'Wind Speed',
@@ -176,12 +151,12 @@ export const elkNonSRBJSON = {
                     validations: basicNumericValidator()
                 },
                 { 
-                    name: '3-4 Point Bulls', 
+                    name: '3 - 4 Point Bulls', 
                     desription: '', 
                     validations: basicNumericValidator()
                 },
                 { 
-                    name: '3-5 Point Bulls', 
+                    name: '3 - 5 Point Bulls', 
                     desription: '', 
                     validations: basicNumericValidator()
                 },
@@ -313,8 +288,8 @@ export const elkNonSRBJSON = {
                             'Spike Bulls',
                             'Raghorn Bulls',
                             '<=3 Point Bulls',
-                            '3-4 Point Bulls',
-                            '3-5 Point Bulls',
+                            '3 - 4 Point Bulls',
+                            '3 - 5 Point Bulls',
                             '>=4 Point Bulls',
                             '>=5 Point Bulls',
                             '>=6 Point Bulls',
@@ -333,7 +308,7 @@ export const elkNonSRBJSON = {
                             'Veg Cover (%)',
                             'Snow Cover (%)',
                             'Activity',
-                            'Number of Marked Anumals Observed',
+                            'Number of Marked Animals Observed',
                             'Survey or Telemetry Search',
                             'Photos',
                             'Observation Comments'

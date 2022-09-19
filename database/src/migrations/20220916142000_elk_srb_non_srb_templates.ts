@@ -29,7 +29,7 @@ const validationSchema = [
   {
     v_schema: JSON.stringify(elk_non_srb_validation),
     field_method: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
-    template: TEMPLATE_NAME.ELK_SRB_SURVEY
+    template: TEMPLATE_NAME.ELK_NON_SRB_SURVEY
   }
 ];
 
