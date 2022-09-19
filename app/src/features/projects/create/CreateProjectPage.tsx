@@ -45,27 +45,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   breadCrumbLinkIcon: {
     marginRight: '0.25rem'
-  },
-  finishContainer: {
-    padding: theme.spacing(3),
-    backgroundColor: 'transparent'
-  },
-  stepper: {
-    backgroundColor: 'transparent'
-  },
-  stepTitle: {
-    marginBottom: '0.45rem'
-  },
-  stepperContainer: {
-    display: 'flex',
-    flex: '1 1 auto',
-    overflowX: 'hidden'
-  },
-  stepperNav: {
-    flex: '0 0 auto',
-    width: '33.333%'
-  },
-  stepperContent: {}
+  }
 }));
 
 /**
@@ -352,6 +332,7 @@ const CreateProjectPage: React.FC = () => {
           <CreateProjectForm
             handleSubmit={createProject}
             handleCancel={handleCancel}
+            handleDraft={setOpenDraftDialog}
             codes={codes}
             formikRef={formikRef}
           />

@@ -40,13 +40,6 @@ const ProjectLocationForm = () => {
   return (
     <form onSubmit={handleSubmit}>
       <Grid container spacing={3}>
-        <Grid item xs={12}>
-          <CustomTextField
-            name="location.location_description"
-            label="Location Description"
-            other={{ multiline: true, rows: 4 }}
-          />
-        </Grid>
         <MapBoundary
           name="location.geometry"
           title="Project Boundary *"
@@ -54,6 +47,13 @@ const ProjectLocationForm = () => {
           bounds={[]}
           formikProps={formikProps}
         />
+        <Grid item xs={12}>
+          <CustomTextField
+            name="location.location_description"
+            label="Location Description"
+            other={{ multiline: true, rows: 4 }}
+          />
+        </Grid>
       </Grid>
     </form>
   );

@@ -1,4 +1,4 @@
-import { Box, Button, Container, Divider, Paper, Theme } from '@material-ui/core';
+import { Box, Button, Container, Divider, Paper, Theme, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/styles';
 import HorizontalSplitFormComponent from 'components/fields/HorizontalSplitFormComponent';
 import { ScrollToFormikError } from 'components/formik/ScrollToFormikError';
@@ -56,6 +56,7 @@ export interface ICreateProjectForm {
   codes: IGetAllCodeSetsResponse;
   handleSubmit: (formikData: ICreateProjectRequest) => void;
   handleCancel: () => void;
+  handleDraft: (value: React.SetStateAction<boolean>) => void;
   formikRef: React.RefObject<FormikProps<ICreateProjectRequest>>;
 }
 
@@ -94,6 +95,10 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
     props.handleCancel();
   };
 
+  const handleDraft = () => {
+    props.handleDraft(true);
+  };
+
   return (
     <>
       <Box my={3}>
@@ -110,8 +115,63 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                 <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} />
 
                 <HorizontalSplitFormComponent
-                  title="Coordinator"
-                  summary=""
+                  title="General Information"
+                  summary="Enter general information, objectives and additional details abou this project."
+                  component={
+                    <Box m={2}>
+                      <ProjectDetailsForm
+                        project_type={
+                          codes?.project_type?.map((item) => {
+                            return { value: item.id, label: item.name };
+                          }) || []
+                        }
+                        activity={
+                          codes?.activity?.map((item) => {
+                            return { value: item.id, label: item.name };
+                          }) || []
+                        }
+                      />
+                      <Box my={2}>
+                        <ProjectObjectivesForm />
+                      </Box>
+                      <Box my={4}>
+                        <Box width="100%">
+                          <Typography variant="h3">IUCN Conservation Actions Classification</Typography>
+                          <Box pt={1}>
+                            <Typography color="textSecondary" variant="body2">
+                              Conservation actions are specific actions or sets of tasks undertaken by project staff
+                              designed to reach each of the project's objectives.
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box my={2}>
+                          <ProjectIUCNForm
+                            classifications={
+                              codes?.iucn_conservation_action_level_1_classification?.map((item) => {
+                                return { value: item.id, label: item.name };
+                              }) || []
+                            }
+                            subClassifications1={
+                              codes?.iucn_conservation_action_level_2_subclassification?.map((item) => {
+                                return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
+                              }) || []
+                            }
+                            subClassifications2={
+                              codes?.iucn_conservation_action_level_3_subclassification?.map((item) => {
+                                return { value: item.id, iucn2_id: item.iucn2_id, label: item.name };
+                              }) || []
+                            }
+                          />
+                        </Box>
+                      </Box>
+                    </Box>
+                  }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+                <HorizontalSplitFormComponent
+                  title="Project Contact"
+                  summary="Enter the contact information for this project."
                   component={
                     <ProjectCoordinatorForm
                       coordinator_agency={
@@ -125,106 +185,78 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Details"
-                  summary=""
+                  title="Funding and Partnerships"
+                  summary="Information about funding sources and partnerships on this project."
                   component={
-                    <ProjectDetailsForm
-                      project_type={
-                        codes?.project_type?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      activity={
-                        codes?.activity?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                    />
+                    <Box my={2}>
+                      <Box my={2}>
+                        <Box my={2} width="100%">
+                          <Typography variant="h3">Funding</Typography>
+                          <Box pt={1}>
+                            <Typography color="textSecondary" variant="body2">
+                              Specify funding sources for the project. Dollar amounts are not intended to be exact,
+                              please round to the nearest 100.
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box my={2}>
+                          <ProjectFundingForm
+                            funding_sources={
+                              codes?.funding_source?.map((item) => {
+                                return { value: item.id, label: item.name };
+                              }) || []
+                            }
+                            investment_action_category={
+                              codes?.investment_action_category?.map((item) => {
+                                return { value: item.id, fs_id: item.fs_id, label: item.name };
+                              }) || []
+                            }
+                          />
+                        </Box>
+                      </Box>
+                      <Box mt={6}>
+                        <Box my={2} width="100%">
+                          <Typography variant="h3">Partnerships</Typography>
+                          <Box pt={1}>
+                            <Typography color="textSecondary" variant="body2">
+                              Specify additional partnerships not been previously identified in the funding sources
+                              section above.
+                            </Typography>
+                          </Box>
+                        </Box>
+                        <Box my={2}>
+                          <ProjectPartnershipsForm
+                            first_nations={
+                              codes?.first_nations?.map((item) => {
+                                return { value: item.id, label: item.name };
+                              }) || []
+                            }
+                            stakeholder_partnerships={
+                              codes?.funding_source?.map((item) => {
+                                return { value: item.name, label: item.name };
+                              }) || []
+                            }
+                          />
+                        </Box>
+                      </Box>
+                    </Box>
                   }></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
 
                 <HorizontalSplitFormComponent
-                  title="Objectives"
-                  summary=""
-                  component={<ProjectObjectivesForm />}></HorizontalSplitFormComponent>
-
-                <Divider className={classes.sectionDivider} />
-
-                <HorizontalSplitFormComponent
-                  title="Location"
-                  summary=""
+                  title="Location and Boundary"
+                  summary="Enter your scientific collection, wildlife act and/or park use permits for this project."
                   component={<ProjectLocationForm />}></HorizontalSplitFormComponent>
-
-                <Divider className={classes.sectionDivider} />
-
-                <HorizontalSplitFormComponent
-                  title="IUCN"
-                  summary=""
-                  component={
-                    <ProjectIUCNForm
-                      classifications={
-                        codes?.iucn_conservation_action_level_1_classification?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      subClassifications1={
-                        codes?.iucn_conservation_action_level_2_subclassification?.map((item) => {
-                          return { value: item.id, iucn1_id: item.iucn1_id, label: item.name };
-                        }) || []
-                      }
-                      subClassifications2={
-                        codes?.iucn_conservation_action_level_3_subclassification?.map((item) => {
-                          return { value: item.id, iucn2_id: item.iucn2_id, label: item.name };
-                        }) || []
-                      }
-                    />
-                  }></HorizontalSplitFormComponent>
-                <Divider className={classes.sectionDivider} />
-
-                <HorizontalSplitFormComponent
-                  title="Funding"
-                  summary=""
-                  component={
-                    <ProjectFundingForm
-                      funding_sources={
-                        codes?.funding_source?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      investment_action_category={
-                        codes?.investment_action_category?.map((item) => {
-                          return { value: item.id, fs_id: item.fs_id, label: item.name };
-                        }) || []
-                      }
-                    />
-                  }></HorizontalSplitFormComponent>
-
-                <Divider className={classes.sectionDivider} />
-
-                <HorizontalSplitFormComponent
-                  title="Partnerships"
-                  summary=""
-                  component={
-                    <ProjectPartnershipsForm
-                      first_nations={
-                        codes?.first_nations?.map((item) => {
-                          return { value: item.id, label: item.name };
-                        }) || []
-                      }
-                      stakeholder_partnerships={
-                        codes?.funding_source?.map((item) => {
-                          return { value: item.name, label: item.name };
-                        }) || []
-                      }
-                    />
-                  }></HorizontalSplitFormComponent>
 
                 <Divider className={classes.sectionDivider} />
               </>
             </Formik>
 
             <Box p={3} display="flex" justifyContent="flex-end">
+              <Button variant="contained" color="primary" onClick={handleDraft} className={classes.actionButton}>
+                Save Draft
+              </Button>
               <Button
                 type="submit"
                 variant="contained"
