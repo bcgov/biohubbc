@@ -17,7 +17,7 @@ const validationSchema = [
   //Common Survey Methodology: Composition, SRB, Transect, Population Recruitment
   {
     v_schema: JSON.stringify(elk_srb_validation),
-    field_method: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
+    field_method: COMMON_SURVEY_METHODOLOGY.STRATIFIED_RANDOM_BLOCK,
     template: TEMPLATE_NAME.ELK_SRB_SURVEY
   },
   {
