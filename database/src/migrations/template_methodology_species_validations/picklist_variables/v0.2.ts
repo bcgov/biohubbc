@@ -54,7 +54,8 @@ const ActivityObservation = [
   { name: 'Bedding' },
   { name: 'Running' },
   { name: 'Walking' },
-  { name: 'Moving' }
+  { name: 'Moving' },
+  { name: 'Not Moving' }
 ];
 
 const SearchType = [{ name: 'Survey' }, { name: 'Telemetry' }];
@@ -237,6 +238,10 @@ const SignType = [
   { name: 'Described in Comments' }
 ];
 
+const AgeOfSign = [{ name: 'Fresh' }, { name: 'Old' }];
+
+const Topography = [{ name: 'Flat' }, { name: 'Slope' }, { name: 'Steep' }];
+
 const SheepSpecies = [
   { name: 'Bighorn Sheep' },
   { name: 'Ovis canadensis' },
@@ -259,6 +264,23 @@ const MooseSpecies = [
 ];
 
 const ElkSpecies = [{ name: 'Elk' }, { name: 'Rocky Mountain Elk' }, { name: 'Roosevelt Elk' }];
+const ElkHabitat = [
+  { name: 'Agricultural' },
+  { name: 'Clearcut Herbaceous' },
+  { name: 'Cultivated Field' },
+  { name: 'Coniferous' },
+  { name: 'Cutblock - Free to Grow' },
+  { name: 'Cutblock - Matrue' },
+  { name: 'Cutblock - Not Sufficiently Restored' },
+  { name: 'Deciduous' },
+  { name: 'Estuary' },
+  { name: 'Grassland' },
+  { name: 'Mature Forest' },
+  { name: 'Mixed' },
+  { name: 'Riparian Forest' },
+  { name: 'River' },
+  { name: 'Young Forest' }
+];
 
 const GoatSpecies = [{ name: 'Mountain Goat' }, { name: 'Oreamnos americanus' }, { name: 'M-ORAM' }, { name: 'ORAM' }];
 interface objectNameDescription {
@@ -308,7 +330,9 @@ export const defaultPicklist = {
   speciesOccurrenceStatus: SpeciesOccurrenceStatus,
   activityIncidentalObservation: ActivityIncidentalObservation,
   featureType: FeatureType,
-  signType: SignType
+  signType: SignType,
+  ageOfSign: AgeOfSign,
+  topography: Topography
 };
 
 export const SheepItems = {
@@ -328,5 +352,6 @@ export const MooseItems = {
 
 export const ElkItems = {
   ...defaultPicklist,
-  species: ElkSpecies
+  species: ElkSpecies,
+  habitat: ElkHabitat
 };

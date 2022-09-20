@@ -6,7 +6,7 @@ const DB_SCHEMA = process.env.DB_SCHEMA;
 const elk_aerial_transect_validation = elkAerialTransectDistanceJSON;
 
 enum COMMON_SURVEY_METHODOLOGY {
-  AERIAL_TRANSECT = 'Aerial Transect'
+  ENCOUNTER_TRANSECTS = 'Encounter Transects'
 }
 
 enum TEMPLATE_NAME {
@@ -17,7 +17,7 @@ const validationSchema = [
   // Common Survey Methodology: Composition, SRB
   {
     v_schema: JSON.stringify(elk_aerial_transect_validation),
-    field_method: COMMON_SURVEY_METHODOLOGY.AERIAL_TRANSECT,
+    field_method: COMMON_SURVEY_METHODOLOGY.ENCOUNTER_TRANSECTS,
     template: TEMPLATE_NAME.ELK_AERIAL_TRANSECT_DISTANCE_SAMPLING_RECRUITMENT_COMPOSITION
   }
 ];
@@ -39,14 +39,6 @@ export async function up(knex: Knex): Promise<void> {
       ${DB_SCHEMA}.template (name, version, record_effective_date, description)
     values
       ('${TEMPLATE_NAME.ELK_AERIAL_TRANSECT_DISTANCE_SAMPLING_RECRUITMENT_COMPOSITION}', '1.0', now(), 'Elk Aerial Transect Distance Sampling Recruitment Composition Survey');
-
-
-
-    insert into
-      ${DB_SCHEMA}.field_method (record_effective_date, name, description)
-    values
-      (now(), '${COMMON_SURVEY_METHODOLOGY.AERIAL_TRANSECT}', 'To be filled.');
-
 
   `);
 

@@ -204,6 +204,21 @@ export const elkAerialTransectDistanceJSON = {
           name: 'Survey or Telemetry Search',
           description: '',
           validations: basicCodeValidator(ElkItems.searchType)
+        },
+        {
+          name: 'Habitat',
+          descrition: '',
+          validations: basicCodeValidator(ElkItems.habitat)
+        },
+        {
+          name: 'Topography',
+          description: '',
+          validations: basicCodeValidator(ElkItems.topography)
+        },
+        {
+          name: 'Age of Sign',
+          description: '',
+          validations: basicCodeValidator(ElkItems.ageOfSign)
         }
       ],
       validations: [
