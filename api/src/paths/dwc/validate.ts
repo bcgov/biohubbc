@@ -297,6 +297,8 @@ function validateDWCArchive(): RequestHandler {
       const dwcArchive: DWCArchive = req['dwcArchive'];
 
       const validationSchemaParser: ValidationSchemaParser = req['validationSchemaParser'];
+      console.log('******************* validation schema parser *****************');
+      console.log(validationSchemaParser);
 
       const mediaState: IMediaState = dwcArchive.isMediaValid(validationSchemaParser);
 
