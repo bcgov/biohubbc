@@ -36,9 +36,9 @@ export const ProjectDetailsFormInitialValues: IProjectDetailsForm = {
 
 export const ProjectDetailsFormYupSchema = yup.object().shape({
   project: yup.object().shape({
-    project_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Required'),
-    project_type: yup.number().required('Required'),
-    start_date: yup.string().isValidDateString().required('Required'),
+    project_name: yup.string().max(300, 'Cannot exceed 300 characters').required('Project Name is Required'),
+    project_type: yup.number().required('Project Type is Required'),
+    start_date: yup.string().isValidDateString().required('Start Date is Required'),
     end_date: yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
   })
 });
@@ -71,7 +71,7 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" required={true} style={{ width: '100%' }}>
+          <FormControl fullWidth variant="outlined" required={true} error={touched.project?.project_type && Boolean(errors.project?.project_type)}>
             <InputLabel id="project_type-label">Project Type</InputLabel>
             <Select
               id="project_type"
@@ -81,7 +81,6 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
               value={values.project.project_type || ''}
               labelWidth={300}
               onChange={handleChange}
-              error={touched.project?.project_type && Boolean(errors.project?.project_type)}
               displayEmpty
               inputProps={{ 'aria-label': 'Project Type' }}>
               {props.project_type.map((item) => (
@@ -90,7 +89,9 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
                 </MenuItem>
               ))}
             </Select>
-            <FormHelperText>{touched.project?.project_type && errors.project?.project_type}</FormHelperText>
+            {errors.project?.project_type && (
+              <FormHelperText>{touched.project?.project_type && errors.project?.project_type}</FormHelperText>
+            )}
           </FormControl>
         </Grid>
         <Grid item xs={12}>
@@ -101,13 +102,15 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
             required={false}
           />
         </Grid>
-        <StartEndDateFields
-          formikProps={formikProps}
-          startName="project.start_date"
-          endName="project.end_date"
-          startRequired={true}
-          endRequired={false}
-        />
+        <Grid item xs={12} md={6}>
+          <StartEndDateFields
+            formikProps={formikProps}
+            startName="project.start_date"
+            endName="project.end_date"
+            startRequired={true}
+            endRequired={false}
+          />
+        </Grid>
       </Grid>
     </form>
   );

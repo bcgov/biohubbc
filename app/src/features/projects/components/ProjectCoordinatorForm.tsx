@@ -5,8 +5,6 @@ import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
 import Radio from '@material-ui/core/Radio';
 import RadioGroup from '@material-ui/core/RadioGroup';
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
 import AutocompleteFreeSoloField from 'components/fields/AutocompleteFreeSoloField';
 import CustomTextField from 'components/fields/CustomTextField';
@@ -37,15 +35,15 @@ export const ProjectCoordinatorInitialValues: IProjectCoordinatorForm = {
 
 export const ProjectCoordinatorYupSchema = yup.object().shape({
   coordinator: yup.object().shape({
-    first_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
-    last_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Required'),
+    first_name: yup.string().max(50, 'Cannot exceed 50 characters').required('First Name is Required'),
+    last_name: yup.string().max(50, 'Cannot exceed 50 characters').required('Last Name is Required'),
     email_address: yup
       .string()
       .max(500, 'Cannot exceed 500 characters')
       .email('Must be a valid email address')
-      .required('Required'),
-    coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Required').nullable(),
-    share_contact_details: yup.string().required('Required')
+      .required('Business Email Address is Required'),
+    coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Coordinator Agency is Required').nullable(),
+    share_contact_details: yup.string().required('Please select an option')
   })
 });
 
@@ -53,14 +51,14 @@ export interface IProjectCoordinatorFormProps {
   coordinator_agency: string[];
 }
 
-const useStyles = makeStyles((theme: Theme) => ({
-  legend: {
-    marginTop: '1rem',
-    float: 'left',
-    marginBottom: '0.75rem',
-    letterSpacing: '-0.01rem'
-  }
-}));
+// const useStyles = makeStyles((theme: Theme) => ({
+//   legend: {
+//     marginTop: '1rem',
+//     float: 'left',
+//     marginBottom: '0.75rem',
+//     letterSpacing: '-0.01rem'
+//   }
+// }));
 
 /**
  * Create project - coordinator fields
@@ -68,7 +66,7 @@ const useStyles = makeStyles((theme: Theme) => ({
  * @return {*}
  */
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
-  const classes = useStyles();
+  // const classes = useStyles();
   const { values, touched, handleSubmit, errors, handleChange } = useFormikContext<ICreateProjectRequest>();
 
   return (
@@ -111,17 +109,17 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           />
         </Grid>
       </Grid>
-      <Box mt={4}>
+      <Box mt={5}>
         <FormControl
           required={true}
           component="fieldset"
           error={touched.coordinator?.share_contact_details && Boolean(errors.coordinator?.share_contact_details)}>
-          <Box component="legend" className={classes.legend}>
-            Share Contact Details
+          <Typography variant="h3" component="legend">Share Contact Details</Typography>
+          <Box mt={1.5}>
+            <Typography color="textSecondary">
+              Do you want the project contact's name and email address visible to the public?
+            </Typography>
           </Box>
-          <Typography color="textSecondary">
-            Do you want the project contact’s name and email address visible to the public?
-          </Typography>
           <Box mt={2} pl={1}>
             <RadioGroup
               name="coordinator.share_contact_details"

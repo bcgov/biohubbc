@@ -4,6 +4,7 @@ import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
 import Link from '@material-ui/core/Link';
+import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
@@ -45,6 +46,11 @@ const useStyles = makeStyles((theme: Theme) => ({
   },
   breadCrumbLinkIcon: {
     marginRight: '0.25rem'
+  },
+  pageTitleContainer: {
+    '& h1': {
+      marginBottom: theme.spacing(1)
+    }
   }
 }));
 
@@ -301,8 +307,9 @@ const CreateProjectPage: React.FC = () => {
         onCancel={() => setOpenDraftDialog(false)}
         onSave={(values) => handleSubmitDraft(values)}
       />
-      <Box my={3}>
-        <Container maxWidth="xl">
+
+      <Container maxWidth="xl">
+        <Box py={3}>
           <Box mb={3}>
             <Breadcrumbs>
               <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
@@ -311,8 +318,11 @@ const CreateProjectPage: React.FC = () => {
               </Link>
             </Breadcrumbs>
           </Box>
-          <Box mb={2} display="flex" justifyContent="space-between">
-            <Typography variant="h1">Create Project</Typography>
+          <Box mb={2} display="flex" justifyContent="space-between" alignItems="flex-start">
+            <Box className={classes.pageTitleContainer}>
+              <Typography variant="h1">Create Project</Typography>
+              <Typography variant="body1" color="textSecondary">Configure and submit a new species inventory project</Typography>
+            </Box>
             <Button
               variant="outlined"
               color="primary"
@@ -329,15 +339,18 @@ const CreateProjectPage: React.FC = () => {
             </Box>
           </Box>
 
-          <CreateProjectForm
-            handleSubmit={createProject}
-            handleCancel={handleCancel}
-            handleDraft={setOpenDraftDialog}
-            codes={codes}
-            formikRef={formikRef}
-          />
-        </Container>
-      </Box>
+          <Paper>
+            <CreateProjectForm
+              handleSubmit={createProject}
+              handleCancel={handleCancel}
+              handleDraft={setOpenDraftDialog}
+              codes={codes}
+              formikRef={formikRef}
+            />
+          </Paper>
+        </Box>
+      </Container>
+
     </>
   );
 };

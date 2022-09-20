@@ -77,8 +77,10 @@ const useStyles = makeStyles((theme: Theme) => ({
     }
   },
   sectionDivider: {
-    height: '1px'
-  }
+    height: '1px',
+    marginTop: theme.spacing(5),
+    marginBottom: theme.spacing(5)
+  },
 }));
 
 /**
@@ -316,7 +318,7 @@ const CreateSurveyPage = () => {
           <Box mb={5}>
             <Typography variant="h1">Create Survey</Typography>
           </Box>
-          <Box py="3" component={Paper} display="block">
+          <Box p={5} component={Paper} display="block">
             <Formik
               innerRef={formikRef}
               initialValues={surveyInitialValues}

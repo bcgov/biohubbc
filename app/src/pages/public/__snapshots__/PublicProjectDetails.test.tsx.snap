@@ -439,12 +439,6 @@ exports[`PublicProjectDetails renders correctly 1`] = `
             </div>
           </div>
         </div>
-        <div
-          class="MuiBox-root MuiBox-root-24"
-        />
-        <div
-          class="MuiBox-root MuiBox-root-25"
-        />
       </div>
     </section>
   </div>
