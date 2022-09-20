@@ -1,13 +1,13 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../../constants/roles';
-import { getDBConnection } from '../../../../../../database/db';
-import { IPermitModel } from '../../../../../../repositories/permit-repository';
-import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
-import { PermitService } from '../../../../../../services/permit-service';
-import { getLogger } from '../../../../../../utils/logger';
+import { PROJECT_ROLE } from '../../../../../constants/roles';
+import { getDBConnection } from '../../../../../database/db';
+import { IPermitModel } from '../../../../../repositories/permit-repository';
+import { authorizeRequestHandler } from '../../../../../request-handlers/security/authorization';
+import { PermitService } from '../../../../../services/permit-service';
+import { getLogger } from '../../../../../utils/logger';
 
-const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/permits/list');
+const defaultLog = getLogger('/api/project/{projectId}/survey/{surveyId}/permits');
 
 export const GET: Operation = [
   authorizeRequestHandler((req) => {
