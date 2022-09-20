@@ -11,7 +11,7 @@ jest.spyOn(console, 'debug').mockImplementation(() => {});
 
 describe('ProjectLocationForm', () => {
   it('renders correctly with default empty values', async () => {
-    const { asFragment } = render(
+    const { getByLabelText, getByText } = render(
       <Formik
         initialValues={ProjectLocationFormInitialValues}
         validationSchema={ProjectLocationFormYupSchema}
@@ -23,28 +23,31 @@ describe('ProjectLocationForm', () => {
     );
 
     await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('Project Boundary *', { exact: false })).toBeVisible();
+      expect(getByLabelText('Location Description', { exact: false })).toBeVisible();
     });
   });
 
   it('renders correctly with existing location values', async () => {
     const existingFormValues: IProjectLocationForm = {
-      location_description: 'a location description',
-      geometry: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [125.6, 10.1]
-          },
-          properties: {
-            name: 'Dinagat Islands'
+      location: {
+        location_description: 'a location description',
+        geometry: [
+          {
+            type: 'Feature',
+            geometry: {
+              type: 'Point',
+              coordinates: [125.6, 10.1]
+            },
+            properties: {
+              name: 'Dinagat Islands'
+            }
           }
-        }
-      ]
+        ]
+      }
     };
 
-    const { asFragment } = render(
+    const { getByLabelText, getByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectLocationFormYupSchema}
@@ -56,42 +59,9 @@ describe('ProjectLocationForm', () => {
     );
 
     await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
-    });
-  });
-
-  it('renders correctly with errors on fields', async () => {
-    const existingFormValues: IProjectLocationForm = {
-      location_description: 'a location description',
-      geometry: [
-        {
-          type: 'Feature',
-          geometry: {
-            type: 'Point',
-            coordinates: [125.6, 10.1]
-          },
-          properties: {
-            name: 'Dinagat Islands'
-          }
-        }
-      ]
-    };
-
-    const { asFragment } = render(
-      <Formik
-        initialValues={existingFormValues}
-        validationSchema={ProjectLocationFormYupSchema}
-        validateOnBlur={true}
-        validateOnChange={false}
-        initialErrors={{ location_description: 'error is here' }}
-        initialTouched={{ location_description: true }}
-        onSubmit={async () => {}}>
-        {() => <ProjectLocationForm />}
-      </Formik>
-    );
-
-    await waitFor(() => {
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('Project Boundary *', { exact: false })).toBeVisible();
+      expect(getByLabelText('Location Description', { exact: false })).toBeVisible();
+      expect(getByText('a location description')).toBeVisible();
     });
   });
 });
