@@ -490,7 +490,8 @@ export const defaultPicklist = {
   signType: SignType,
   signAge: SignAge,
   habitat: Habitat,
-  habitatSlope: HabitatSlope
+  habitatSlope: HabitatSlope,
+  topography: Topography
 };
 
 export const summaryPickList = {
@@ -520,6 +521,5 @@ export const MooseSummaryItems = {
 
 export const ElkItems = {
   ...defaultPicklist,
-  species: ElkSpecies,
-  topography: Topography
+  species: ElkSpecies
 };
