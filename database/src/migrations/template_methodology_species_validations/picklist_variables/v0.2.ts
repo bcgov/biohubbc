@@ -258,6 +258,8 @@ const MooseSpecies = [
   { name: 'M-ALAM' }
 ];
 
+const ElkSpecies = [{ name: 'Elk' }, { name: 'Rocky Mountain Elk' }, { name: 'Roosevelt Elk' }];
+
 const GoatSpecies = [{ name: 'Mountain Goat' }, { name: 'Oreamnos americanus' }, { name: 'M-ORAM' }, { name: 'ORAM' }];
 interface objectNameDescription {
   name: string;
@@ -322,4 +324,9 @@ export const GoatItems = {
 export const MooseItems = {
   ...defaultPicklist,
   species: MooseSpecies
+};
+
+export const ElkItems = {
+  ...defaultPicklist,
+  species: ElkSpecies
 };
