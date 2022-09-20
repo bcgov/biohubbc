@@ -218,7 +218,7 @@ export const elkAerialTransectDistanceJSON = {
         {
           name: 'Age of Sign',
           description: '',
-          validations: basicCodeValidator(ElkItems.ageOfSign)
+          validations: basicCodeValidator(ElkItems.signAge)
         }
       ],
       validations: [
