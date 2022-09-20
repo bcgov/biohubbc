@@ -95,6 +95,7 @@ const ResourcesPage: React.FC = () => {
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '24 KB'
+
     },
     {
       id: '10',
