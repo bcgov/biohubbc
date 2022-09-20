@@ -20,10 +20,7 @@ export const ProjectObjectivesFormInitialValues: IProjectObjectivesForm = {
 
 export const ProjectObjectivesFormYupSchema = yup.object().shape({
   objectives: yup.object().shape({
-    objectives: yup
-      .string()
-      .max(3000, 'Cannot exceed 3000 characters')
-      .required('Objectives are required'),
+    objectives: yup.string().max(3000, 'Cannot exceed 3000 characters').required('Objectives are required'),
     caveats: yup.string().max(3000, 'Cannot exceed 3000 characters')
   })
 });

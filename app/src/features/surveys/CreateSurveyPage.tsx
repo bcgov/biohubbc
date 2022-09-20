@@ -80,7 +80,7 @@ const useStyles = makeStyles((theme: Theme) => ({
     height: '1px',
     marginTop: theme.spacing(5),
     marginBottom: theme.spacing(5)
-  },
+  }
 }));
 
 /**

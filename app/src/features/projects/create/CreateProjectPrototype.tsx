@@ -6,12 +6,7 @@ import React from 'react';
  * @return {*}
  */
 const CreateProjectPrototype: React.FC = () => {
-
-  return (
-    <>
-      Test Page
-    </>
-  );
+  return <>Test Page</>;
 };
 
 export default CreateProjectPrototype;

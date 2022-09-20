@@ -40,7 +40,6 @@ const ProjectLocationForm = () => {
 
   return (
     <form onSubmit={handleSubmit}>
-
       <MapBoundary
         name="location.geometry"
         title="Define Project Boundary"
@@ -49,14 +48,15 @@ const ProjectLocationForm = () => {
         formikProps={formikProps}
       />
       <Box mt={4}>
-        <Typography variant="h3" style={{ marginBottom: '20px' }}>Describe the location of this project</Typography>
+        <Typography variant="h3" style={{ marginBottom: '20px' }}>
+          Describe the location of this project
+        </Typography>
         <CustomTextField
           name="location.location_description"
           label="Location Description"
           other={{ multiline: true, rows: 4 }}
         />
       </Box>
-
     </form>
   );
 };

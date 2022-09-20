@@ -2,10 +2,10 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import FormControl from '@material-ui/core/FormControl';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import IconButton from '@material-ui/core/IconButton';
 import InputLabel from '@material-ui/core/InputLabel';
 import MenuItem from '@material-ui/core/MenuItem';
+import Paper from '@material-ui/core/Paper';
 import Select from '@material-ui/core/Select';
 import { createStyles, makeStyles } from '@material-ui/core/styles';
 import Typography from '@material-ui/core/Typography';
@@ -123,7 +123,8 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         <Typography variant="h3">{title}</Typography>
         <Box mt={2} maxWidth="90ch">
           <Typography variant="body1" color="textSecondary">
-            Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
+            Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer
+            below and click a boundary on the map.
           </Typography>
         </Box>
         <Box mb={3}>
@@ -163,10 +164,7 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
             </Box>
             <Box ml={1}>
               {selectedLayer && (
-                <Button
-                  size="large"
-                  variant="outlined"
-                  onClick={() => setSelectedLayer('')}>
+                <Button size="large" variant="outlined" onClick={() => setSelectedLayer('')}>
                   Hide Layer
                 </Button>
               )}

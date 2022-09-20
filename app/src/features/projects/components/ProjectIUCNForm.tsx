@@ -89,7 +89,13 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
               const subClassification2Meta = getFieldMeta(`classificationDetails.[${index}].subClassification2`);
 
               return (
-                <Box display="flex" alignItems="center" mt={-1} mb={1} data-testid="iucn-classification-grid" key={index}>
+                <Box
+                  display="flex"
+                  alignItems="center"
+                  mt={-1}
+                  mb={1}
+                  data-testid="iucn-classification-grid"
+                  key={index}>
                   <Box display="flex" alignItems="center" py={1} width="250px">
                     <FormControl variant="outlined" fullWidth>
                       <InputLabel id="classification">Classification</InputLabel>
@@ -143,9 +149,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                             </MenuItem>
                           ))}
                       </Select>
-                      <FormHelperText>
-                        {subClassification1Meta.touched && subClassification1Meta.error}
-                      </FormHelperText>
+                      <FormHelperText>{subClassification1Meta.touched && subClassification1Meta.error}</FormHelperText>
                     </FormControl>
                     <Box flex="0 0 auto" width="40px" textAlign="center">
                       <Icon path={mdiArrowRight} size={0.75}></Icon>
@@ -173,9 +177,7 @@ const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
                             </MenuItem>
                           ))}
                       </Select>
-                      <FormHelperText>
-                        {subClassification2Meta.touched && subClassification2Meta.error}
-                      </FormHelperText>
+                      <FormHelperText>{subClassification2Meta.touched && subClassification2Meta.error}</FormHelperText>
                     </FormControl>
                   </Box>
                   <Box flex="0 0 auto" mx={1}>

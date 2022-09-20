@@ -1,6 +1,6 @@
-import { Theme } from '@material-ui/core/styles/createMuiTheme';
-import { makeStyles } from "@material-ui/core/styles";
 import Box from '@material-ui/core/Box';
+import { makeStyles } from '@material-ui/core/styles';
+import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
@@ -23,7 +23,7 @@ const useStyles = makeStyles((theme: Theme) => ({
       paddingBottom: 0,
       paddingRight: theme.spacing(4),
       width: '400px'
-    },
+    }
   }
 }));
 
@@ -42,12 +42,12 @@ const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps>
         <Box flex="0 0 auto" className={classes.sectionDetails}>
           <Typography variant="h2">{title}</Typography>
           <Box pt={2} maxWidth="72ch">
-            <Typography variant="body1" color="textSecondary">{summary}</Typography>
+            <Typography variant="body1" color="textSecondary">
+              {summary}
+            </Typography>
           </Box>
         </Box>
-        <Box flex="1 1 auto">
-          {component}
-        </Box>
+        <Box flex="1 1 auto">{component}</Box>
       </Box>
     </>
   );

@@ -42,7 +42,11 @@ export const ProjectCoordinatorYupSchema = yup.object().shape({
       .max(500, 'Cannot exceed 500 characters')
       .email('Must be a valid email address')
       .required('Business Email Address is Required'),
-    coordinator_agency: yup.string().max(300, 'Cannot exceed 300 characters').required('Coordinator Agency is Required').nullable(),
+    coordinator_agency: yup
+      .string()
+      .max(300, 'Cannot exceed 300 characters')
+      .required('Coordinator Agency is Required')
+      .nullable(),
     share_contact_details: yup.string().required('Please select an option')
   })
 });
@@ -114,7 +118,9 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           required={true}
           component="fieldset"
           error={touched.coordinator?.share_contact_details && Boolean(errors.coordinator?.share_contact_details)}>
-          <Typography variant="h3" component="legend">Share Contact Details</Typography>
+          <Typography variant="h3" component="legend">
+            Share Contact Details
+          </Typography>
           <Box mt={1.5}>
             <Typography color="textSecondary">
               Do you want the project contact's name and email address visible to the public?

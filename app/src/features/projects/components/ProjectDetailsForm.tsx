@@ -71,7 +71,11 @@ const ProjectDetailsForm: React.FC<IProjectDetailsFormProps> = (props) => {
           />
         </Grid>
         <Grid item xs={12}>
-          <FormControl fullWidth variant="outlined" required={true} error={touched.project?.project_type && Boolean(errors.project?.project_type)}>
+          <FormControl
+            fullWidth
+            variant="outlined"
+            required={true}
+            error={touched.project?.project_type && Boolean(errors.project?.project_type)}>
             <InputLabel id="project_type-label">Project Type</InputLabel>
             <Select
               id="project_type"

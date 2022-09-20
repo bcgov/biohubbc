@@ -321,7 +321,9 @@ const CreateProjectPage: React.FC = () => {
           <Box mb={2} display="flex" justifyContent="space-between" alignItems="flex-start">
             <Box className={classes.pageTitleContainer}>
               <Typography variant="h1">Create Project</Typography>
-              <Typography variant="body1" color="textSecondary">Configure and submit a new species inventory project</Typography>
+              <Typography variant="body1" color="textSecondary">
+                Configure and submit a new species inventory project
+              </Typography>
             </Box>
             <Button
               variant="outlined"
@@ -350,7 +352,6 @@ const CreateProjectPage: React.FC = () => {
           </Paper>
         </Box>
       </Container>
-
     </>
   );
 };

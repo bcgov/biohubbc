@@ -138,7 +138,8 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography variant="h3">IUCN Conservation Actions Classification</Typography>
                   <Box mt={1.5} maxWidth="90ch">
                     <Typography variant="body1" color="textSecondary">
-                      Conservation actions are specific actions or sets of tasks undertaken by project staff designed to reach each of the project's objectives.
+                      Conservation actions are specific actions or sets of tasks undertaken by project staff designed to
+                      reach each of the project's objectives.
                     </Typography>
                   </Box>
 
@@ -190,7 +191,8 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                 <Typography variant="h3">Funding</Typography>
                 <Box mt={1.5} maxWidth="90ch">
                   <Typography variant="body1" color="textSecondary">
-                    Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to be exact, please round to the nearest 100.
+                    Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
+                    be exact, please round to the nearest 100.
                   </Typography>
                 </Box>
                 <Box mt={3.5}>
@@ -259,7 +261,6 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
           Cancel
         </Button>
       </Box>
-
     </Box>
   );
 };

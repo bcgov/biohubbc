@@ -1,6 +1,6 @@
+import Box from '@material-ui/core/Box';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
-import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import React from 'react';
 
@@ -8,7 +8,7 @@ const useStyles = makeStyles((theme: Theme) => ({
   boundaryGroup: {
     clear: 'both',
     overflow: 'hidden',
-    "& + div": {
+    '& + div': {
       marginTop: theme.spacing(2)
     }
   },
