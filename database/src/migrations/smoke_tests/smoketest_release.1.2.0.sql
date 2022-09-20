@@ -94,6 +94,7 @@ begin
   insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'john', 'doe');
   insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'bob', 'dole');
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
+  insert into project_participation (project_id, system_user_id, project_role_id) values (_project_id, _system_user_id, (select project_role_id from project_role where name = 'Editor'));
 
   select count(1) into _count from stakeholder_partnership;
   assert _count = 1, 'FAIL stakeholder_partnership';
@@ -117,6 +118,8 @@ begin
   assert _count = 2, 'FAIL project_report_author';
   select count(1) into _count from project_first_nation;
   assert _count = 1, 'FAIL project_first_nation';
+  select count(1) into _count from project_participation;
+  assert _count = 1, 'FAIL project_participation';
 
   -- surveys
   insert into survey (project_id
@@ -154,6 +157,9 @@ begin
   insert into survey_vantage(survey_id, vantage_id) values (_survey_id, (select vantage_id from vantage where name = 'Aerial'));
   insert into permit (number, type, issue_date, end_date) values ('8377262', 'permit type', now(), now()+interval '1 day') returning permit_id into _permit_id;
   insert into survey_permit(survey_id, permit_id) values (_survey_id, _permit_id);
+  insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency') returning permit_id into _permit_id;
+  insert into survey_permit(survey_id, permit_id) values (_survey_id, _permit_id);
+
 
   select count(1) into _count from survey;
   assert _count = 1, 'FAIL survey';
@@ -172,9 +178,9 @@ begin
   select count(1) into _count from survey_vantage;
   assert _count = 1, 'FAIL survey_vantage';
   select count(1) into _count from permit;
-  assert _count = 1, 'FAIL permit';
+  assert _count = 2, 'FAIL permit';
   select count(1) into _count from survey_permit;
-  assert _count = 1, 'FAIL survey_permit';
+  assert _count = 2, 'FAIL survey_permit';
 
   -- occurrence
   -- occurrence submission 1
@@ -231,9 +237,7 @@ begin
   ;
   select count(1) into _count from administrative_activity;
   assert _count = 1, 'FAIL administrative_activity';
-
-  insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency');
-
+  
   -- delete project
   raise notice 'deleting data.';
   call api_delete_project(_project_id);
@@ -241,5 +245,3 @@ begin
   raise notice 'smoketest_release(2): PASS';
 end
 $$;
-
-delete from permit;
