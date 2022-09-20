@@ -7,7 +7,7 @@ import * as db from '../../../../../database/db';
 import { HTTPError } from '../../../../../errors/custom-error';
 import survey_queries from '../../../../../queries/survey';
 import { getMockDBConnection } from '../../../../../__mocks__/db';
-import * as list from './list';
+import * as list from './permits';
 
 chai.use(sinonChai);
 
