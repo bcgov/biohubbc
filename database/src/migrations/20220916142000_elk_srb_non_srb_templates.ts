@@ -9,8 +9,8 @@ const elk_srb_validation = elkSRBJSON;
 const elk_non_srb_validation = elkNonSRBJSON;
 
 enum TEMPLATE_NAME {
-  ELK_SRB_SURVEY = 'Elk Arial SRB Recruit Composition Survey',
-  ELK_NON_SRB_SURVEY = 'Elk Arial Non SRB Recruit Composition Survey'
+  ELK_SRB_SURVEY = 'Elk Aerial SRB Recruit Composition Survey',
+  ELK_NON_SRB_SURVEY = 'Elk Aerial Non SRB Recruit Composition Survey'
 }
 
 const validationSchema = [
@@ -22,7 +22,7 @@ const validationSchema = [
   },
   {
     v_schema: JSON.stringify(elk_non_srb_validation),
-    field_method: COMMON_SURVEY_METHODOLOGY.COMPOSITION,
+    field_method: COMMON_SURVEY_METHODOLOGY.ENCOUNTER_TRANSECTS,
     template: TEMPLATE_NAME.ELK_NON_SRB_SURVEY
   }
 ];
