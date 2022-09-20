@@ -1,16 +1,17 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
+//import Button from '@material-ui/core/Button';
+//import FormControl from '@material-ui/core/FormControl';
+//import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
+//import IconButton from '@material-ui/core/IconButton';
+//import InputLabel from '@material-ui/core/InputLabel';
+//import MenuItem from '@material-ui/core/MenuItem';
+//import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
+//import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
+//import Icon from '@mdi/react';
+//import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
+//import AutocompleteField from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -19,7 +20,8 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import React, { useCallback, useState } from 'react';
+//import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
 
@@ -35,10 +37,10 @@ export interface IGeneralInformationForm {
     focal_species: number[];
     ancillary_species: number[];
   };
-  permit: {
-    permit_number: string;
-    permit_type: string;
-  };
+  // permit: {
+  //   permit_number: string;
+  //   permit_type: string;
+  // };
   funding: {
     funding_sources: number[];
   };
@@ -56,10 +58,10 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     focal_species: [],
     ancillary_species: []
   },
-  permit: {
-    permit_number: '',
-    permit_type: ''
-  },
+  // permit: {
+  //   permit_number: '',
+  //   permit_type: ''
+  // },
   funding: {
     funding_sources: []
   }
@@ -77,15 +79,16 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
     species: yup.object().shape({
       focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
       ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
-    }),
-    permit: yup.object().shape({
-      permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
     })
+    // ,
+    // permit: yup.object().shape({
+    //   permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
+    // })
   });
 };
 
 export interface IGeneralInformationFormProps {
-  permit_numbers: IAutocompleteFieldOption<string>[];
+  //permit_numbers: IAutocompleteFieldOption<string>[];
   funding_sources: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
@@ -98,7 +101,7 @@ export interface IGeneralInformationFormProps {
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
   const formikProps = useFormikContext<IGeneralInformationForm>();
-  const [showAddPermitRow, setShowAddPermitRow] = useState<boolean>(false);
+  //const [showAddPermitRow, setShowAddPermitRow] = useState<boolean>(false);
 
   const biohubApi = useBiohubApi();
 
@@ -130,22 +133,22 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
     []
   );
 
-  const addNewPermitButton = () => {
-    return (
-      <Button
-        variant="outlined"
-        color="primary"
-        startIcon={<Icon path={mdiPlus} size={1} />}
-        aria-label="add-permit"
-        onClick={() => {
-          formikProps.setFieldValue('permit.permit_number', '');
-          formikProps.setFieldValue('permit.permit_type', '');
-          setShowAddPermitRow(true);
-        }}>
-        <strong>Add Permit</strong>
-      </Button>
-    );
-  };
+  // const addNewPermitButton = () => {
+  //   return (
+  //     <Button
+  //       variant="outlined"
+  //       color="primary"
+  //       startIcon={<Icon path={mdiPlus} size={1} />}
+  //       aria-label="add-permit"
+  //       onClick={() => {
+  //         formikProps.setFieldValue('permit.permit_number', '');
+  //         formikProps.setFieldValue('permit.permit_type', '');
+  //         setShowAddPermitRow(true);
+  //       }}>
+  //       <strong>Add Permit</strong>
+  //     </Button>
+  //   );
+  // };
 
   return (
     <form>
@@ -224,7 +227,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           </Grid>
         </Grid>
       </Box>
-
+      {/*
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Permits</Typography>
 
@@ -317,7 +320,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             </Box>
           </Box>
         )}
-      </Box>
+      </Box> */}
 
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Funding Sources</Typography>

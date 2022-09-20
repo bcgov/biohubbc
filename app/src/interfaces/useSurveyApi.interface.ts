@@ -79,7 +79,7 @@ export interface IGetSurveyForViewResponseProprietor {
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
-  permit: ISurveyPermits;
+  //permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
@@ -98,7 +98,7 @@ export interface SurveyUpdateObject {
     focal_species: number[];
     ancillary_species: number[];
   };
-  permit?: ISurveyPermits;
+  //permit?: ISurveyPermits;
   purpose_and_methodology?: {
     intended_outcome_id: number;
     additional_details: string;

@@ -5,7 +5,7 @@ import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetFocalSpeciesData,
-  GetPermitData,
+  //GetPermitData,
   GetSurveyData,
   GetSurveyFundingSources,
   GetSurveyLocationData,
@@ -31,7 +31,7 @@ export class SurveyService extends DBService {
     const [
       surveyData,
       speciesData,
-      permitData,
+      //permitData,
       fundingData,
       purposeAndMethodologyData,
       proprietorData,
@@ -39,7 +39,7 @@ export class SurveyService extends DBService {
     ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
-      this.getPermitData(surveyId),
+      //this.getPermitData(surveyId),
       this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
@@ -49,7 +49,7 @@ export class SurveyService extends DBService {
     return {
       survey_details: surveyData,
       species: speciesData,
-      permit: permitData,
+      //permit: permitData,
       purpose_and_methodology: purposeAndMethodologyData,
       funding: fundingData,
       proprietor: proprietorData,
@@ -125,26 +125,26 @@ export class SurveyService extends DBService {
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
 
-  async getPermitData(surveyId: number): Promise<GetPermitData> {
-    const sqlStatement = SQL`
-      SELECT
-        number,
-        type
-      FROM
-        permit
-      WHERE
-        survey_id = ${surveyId};
-      `;
+  // async getPermitData(surveyId: number): Promise<GetPermitData> {
+  //   const sqlStatement = SQL`
+  //     SELECT
+  //       number,
+  //       type
+  //     FROM
+  //       permit
+  //     WHERE
+  //       survey_id = ${surveyId};
+  //     `;
 
-    const response = await this.connection.query<{ number: string; type: string }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
+  //   const response = await this.connection.query<{ number: string; type: string }>(
+  //     sqlStatement.text,
+  //     sqlStatement.values
+  //   );
 
-    const result = response.rows?.[0];
+  //   const result = response.rows?.[0];
 
-    return new GetPermitData(result);
-  }
+  //   return new GetPermitData(result);
+  // }
 
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
@@ -287,17 +287,17 @@ export class SurveyService extends DBService {
     );
 
     // Handle inserting any permit associated to this survey
-    if (postSurveyData.permit.permit_number) {
-      promises.push(
-        this.insertOrAssociatePermitToSurvey(
-          this.connection.systemUserId() as number,
-          projectId,
-          surveyId,
-          postSurveyData.permit.permit_number,
-          postSurveyData.permit.permit_type
-        )
-      );
-    }
+    // if (postSurveyData.permit.permit_number) {
+    //   promises.push(
+    //     this.insertOrAssociatePermitToSurvey(
+    //       this.connection.systemUserId() as number,
+    //       projectId,
+    //       surveyId,
+    //       postSurveyData.permit.permit_number,
+    //       postSurveyData.permit.permit_type
+    //     )
+    //   );
+    // }
 
     // Handle inserting any funding sources associated to this survey
     promises.push(
@@ -413,27 +413,27 @@ export class SurveyService extends DBService {
     return result.id;
   }
 
-  async insertOrAssociatePermitToSurvey(
-    systemUserId: number,
-    projectId: number,
-    surveyId: number,
-    permitNumber: string,
-    permitType: string
-  ) {
-    let sqlStatement;
+  // async insertOrAssociatePermitToSurvey(
+  //   systemUserId: number,
+  //   projectId: number,
+  //   surveyId: number,
+  //   permitNumber: string,
+  //   permitType: string
+  // ) {
+  //   let sqlStatement;
 
-    if (!permitType) {
-      sqlStatement = queries.survey.associateSurveyToPermitSQL(projectId, surveyId, permitNumber);
-    } else {
-      sqlStatement = queries.survey.insertSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
-    }
+  //   if (!permitType) {
+  //     sqlStatement = queries.survey.associateSurveyToPermitSQL(projectId, surveyId, permitNumber);
+  //   } else {
+  //     sqlStatement = queries.survey.insertSurveyPermitSQL(systemUserId, projectId, surveyId, permitNumber, permitType);
+  //   }
 
-    const response = await this.connection.sql(sqlStatement);
+  //   const response = await this.connection.sql(sqlStatement);
 
-    if (!response.rowCount) {
-      throw new ApiGeneralError('Failed to upsert survey permit record');
-    }
-  }
+  //   if (!response.rowCount) {
+  //     throw new ApiGeneralError('Failed to upsert survey permit record');
+  //   }
+  // }
 
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
     const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, funding_source_id);
@@ -464,9 +464,9 @@ export class SurveyService extends DBService {
       promises.push(this.updateSurveySpeciesData(surveyId, putSurveyData));
     }
 
-    if (putSurveyData?.permit) {
-      promises.push(this.updateSurveyPermitData(projectId, surveyId, putSurveyData));
-    }
+    // if (putSurveyData?.permit) {
+    //   promises.push(this.updateSurveyPermitData(projectId, surveyId, putSurveyData));
+    // }
 
     if (putSurveyData?.funding) {
       promises.push(this.updateSurveyFundingData(surveyId, putSurveyData));
@@ -527,27 +527,27 @@ export class SurveyService extends DBService {
    * @return {*}
    * @memberof SurveyService
    */
-  async updateSurveyPermitData(projectId: number, surveyId: number, surveyData: PutSurveyObject) {
-    await this.unassociatePermitFromSurvey(surveyId);
+  // async updateSurveyPermitData(projectId: number, surveyId: number, surveyData: PutSurveyObject) {
+  //   await this.unassociatePermitFromSurvey(surveyId);
 
-    if (!surveyData.permit.permit_number) {
-      return;
-    }
+  //   if (!surveyData.permit.permit_number) {
+  //     return;
+  //   }
 
-    return this.insertOrAssociatePermitToSurvey(
-      this.connection.systemUserId() as number,
-      projectId,
-      surveyId,
-      surveyData.permit.permit_number,
-      surveyData.permit.permit_type
-    );
-  }
+  //   return this.insertOrAssociatePermitToSurvey(
+  //     this.connection.systemUserId() as number,
+  //     projectId,
+  //     surveyId,
+  //     surveyData.permit.permit_number,
+  //     surveyData.permit.permit_type
+  //   );
+  // }
 
-  async unassociatePermitFromSurvey(surveyId: number) {
-    const sqlStatement = queries.survey.unassociatePermitFromSurveySQL(surveyId);
+  // async unassociatePermitFromSurvey(surveyId: number) {
+  //   const sqlStatement = queries.survey.unassociatePermitFromSurveySQL(surveyId);
 
-    return this.connection.sql(sqlStatement);
-  }
+  //   return this.connection.sql(sqlStatement);
+  // }
 
   async updateSurveyFundingData(surveyId: number, surveyData: PutSurveyObject) {
     await this.deleteSurveyFundingSourcesData(surveyId);

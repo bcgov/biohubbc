@@ -62,10 +62,10 @@ export const surveyObject: SurveyViewObject = {
       }
     ]
   },
-  permit: {
-    permit_number: '123',
-    permit_type: 'Scientific'
-  },
+  // permit: {
+  //   permit_number: '123',
+  //   permit_type: 'Scientific'
+  // },
   species: {
     focal_species: [1],
     focal_species_names: ['focal species 1'],

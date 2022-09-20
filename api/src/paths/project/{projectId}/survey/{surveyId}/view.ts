@@ -67,7 +67,7 @@ GET.apiDoc = {
                 required: [
                   'survey_details',
                   'species',
-                  'permit',
+                  //'permit',
                   'funding',
                   'proprietor',
                   'purpose_and_methodology',
@@ -141,21 +141,21 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  permit: {
-                    description: 'Survey Permit',
-                    type: 'object',
-                    required: ['permit_number', 'permit_type'],
-                    properties: {
-                      permit_number: {
-                        type: 'string',
-                        nullable: true
-                      },
-                      permit_type: {
-                        type: 'string',
-                        nullable: true
-                      }
-                    }
-                  },
+                  // permit: {
+                  //   description: 'Survey Permit',
+                  //   type: 'object',
+                  //   required: ['permit_number', 'permit_type'],
+                  //   properties: {
+                  //     permit_number: {
+                  //       type: 'string',
+                  //       nullable: true
+                  //     },
+                  //     permit_type: {
+                  //       type: 'string',
+                  //       nullable: true
+                  //     }
+                  //   }
+                  // },
                   funding: {
                     description: 'Survey Funding Sources',
                     type: 'object',

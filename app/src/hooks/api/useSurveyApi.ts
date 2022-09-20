@@ -10,7 +10,7 @@ import {
   IGetSurveyAttachmentsResponse,
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
-  ISurveyPermits,
+  //ISurveyPermits,
   SurveyUpdateObject,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -260,11 +260,11 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @param {number} projectId
    * @returns {*} {Promise<SurveyPermits[]>}
    */
-  const getSurveyPermits = async (projectId: number): Promise<ISurveyPermits[]> => {
-    const { data } = await axios.get(`/api/project/${projectId}/survey/permits/list`);
+  // const getSurveyPermits = async (projectId: number): Promise<ISurveyPermits[]> => {
+  //   const { data } = await axios.get(`/api/project/${projectId}/survey/permits/list`);
 
-    return data;
-  };
+  //   return data;
+  // };
 
   /**
    * Get funding sources for a survey by project ID
@@ -522,7 +522,7 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachmentSignedURL,
     getObservationSubmissionSignedURL,
     deleteSurvey,
-    getSurveyPermits,
+    //getSurveyPermits,
     getAvailableSurveyFundingSources,
     getSubmissionCSVForView,
     makeAttachmentUnsecure,
