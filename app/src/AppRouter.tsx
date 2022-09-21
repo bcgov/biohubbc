@@ -1,13 +1,11 @@
 import {
   AuthenticatedRouteGuard,
-  SystemRoleRouteGuard,
-  UnAuthenticatedRouteGuard
+  SystemRoleRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import PermitsRouter from 'features/permits/PermitsRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
-import PublicProjectsRouter from 'features/projects/PublicProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
 import PublicLayout from 'layouts/PublicLayout';
@@ -22,6 +20,7 @@ import AppRoute from 'utils/AppRoute';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
+  // const { keycloakWrapper } = useContext(AuthStateContext);
 
   const getTitle = (page: string) => {
     return `SIMS - ${page}`;
@@ -31,23 +30,11 @@ const AppRouter: React.FC = () => {
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
 
-      <Redirect exact from="/" to="/projects" />
-
-      <AppRoute path="/projects" title={getTitle('Projects')} layout={PublicLayout}>
+      {/* <AppRoute path="*" title={getTitle('Search')} layout={PublicLayout}>
         <UnAuthenticatedRouteGuard>
-          <PublicProjectsRouter />
+          <Redirect exact from="*" to={`${keycloakWrapper?.keycloak?.login()}`} />
         </UnAuthenticatedRouteGuard>
-      </AppRoute>
-
-      <AppRoute path="/search" title={getTitle('Search')} layout={PublicLayout}>
-        <UnAuthenticatedRouteGuard>
-          <SearchPage />
-        </UnAuthenticatedRouteGuard>
-      </AppRoute>
-
-      <AppRoute path="/resources" title={getTitle('Resources')} layout={PublicLayout}>
-        <ResourcesPage />
-      </AppRoute>
+      </AppRoute> */}
 
       <AppRoute path="/page-not-found" title={getTitle('Page Not Found')} layout={PublicLayout}>
         <NotFoundPage />
@@ -94,6 +81,12 @@ const AppRouter: React.FC = () => {
       <AppRoute path="/admin/search" title={getTitle('Search')} layout={PublicLayout}>
         <AuthenticatedRouteGuard>
           <SearchPage />
+        </AuthenticatedRouteGuard>
+      </AppRoute>
+
+      <AppRoute path="/admin/resources" title={getTitle('Resources')} layout={PublicLayout}>
+        <AuthenticatedRouteGuard>
+          <ResourcesPage />
         </AuthenticatedRouteGuard>
       </AppRoute>
 
