@@ -82,6 +82,12 @@ export async function up(knex: Knex): Promise<void> {
   insert into survey_permit (permit_id, survey_id) select permit_id, survey_id from permit;
   
   alter table permit drop column survey_id;
+  alter table permit drop column coordinator_first_name;
+  alter table permit drop column coordinator_last_name;
+  alter table permit drop column coordinator_email_address;
+  alter table permit drop column coordinator_agency_name;
+  alter table permit drop column issue_date;
+  alter table permit drop column end_date;
   
   set search_path=biohub_dapi_v1;
   

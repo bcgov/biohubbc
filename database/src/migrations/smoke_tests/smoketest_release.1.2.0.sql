@@ -155,9 +155,9 @@ begin
   insert into study_species (survey_id, wldtaxonomic_units_id, is_focal) values (_survey_id, (select wldtaxonomic_units_id from wldtaxonomic_units where CODE = 'AMARALB'), true);
   insert into survey_funding_source (survey_id, project_funding_source_id) values (_survey_id, _project_funding_source_id);
   insert into survey_vantage(survey_id, vantage_id) values (_survey_id, (select vantage_id from vantage where name = 'Aerial'));
-  insert into permit (number, type, issue_date, end_date) values ('8377262', 'permit type', now(), now()+interval '1 day') returning permit_id into _permit_id;
+  insert into permit (number, type) values ('8377262', 'permit type') returning permit_id into _permit_id;
   insert into survey_permit(survey_id, permit_id) values (_survey_id, _permit_id);
-  insert into permit (number, type, issue_date, end_date, coordinator_first_name, coordinator_last_name, coordinator_email_address, coordinator_agency_name) values ('8377261', 'permit type', now(), now()+interval '1 day', 'first', 'last', 'nobody@nowhere.com', 'agency') returning permit_id into _permit_id;
+  insert into permit (number, type) values ('8377261', 'permit type') returning permit_id into _permit_id;
   insert into survey_permit(survey_id, permit_id) values (_survey_id, _permit_id);
 
 

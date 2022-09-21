@@ -46,12 +46,6 @@ GET.apiDoc = {
                 'permit_id',
                 'number',
                 'type',
-                'coordinator_first_name',
-                'coordinator_last_name',
-                'coordinator_email_address',
-                'coordinator_agency_name',
-                'issue_date',
-                'end_date',
                 'create_date',
                 'create_user',
                 'update_date',
@@ -68,26 +62,6 @@ GET.apiDoc = {
                 },
                 type: {
                   type: 'string'
-                },
-                coordinator_first_name: {
-                  type: 'string',
-                  nullable: true
-                },
-                coordinator_last_name: {
-                  type: 'string',
-                  nullable: true
-                },
-                coordinator_email_address: {
-                  type: 'string',
-                  nullable: true
-                },
-                coordinator_agency_name: {
-                  type: 'string',
-                  nullable: true
-                },
-                issue_date: {
-                  type: 'string',
-                  nullable: true
                 },
                 end_date: {
                   type: 'string',
