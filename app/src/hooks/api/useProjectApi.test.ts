@@ -225,7 +225,7 @@ describe('useProjectApi', () => {
 
     mock.onPost(`/api/project/${projectId}/attachments/upload`).reply(200, 'result 1');
 
-    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file, attachmentType, attachmentMeta);
+    const result = await useProjectApi(axios).uploadProjectAttachments(projectId, file);
 
     expect(result).toEqual('result 1');
   });
@@ -269,6 +269,7 @@ describe('useProjectApi', () => {
     const result = await useProjectApi(axios).updateProjectReportMetadata(
       projectId,
       attachmentId,
+      attachmentType,
       attachmentMetaForUpdate,
       attachmentMetaForUpdate.revision_count
     );
