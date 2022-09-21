@@ -11,19 +11,6 @@ import {
 } from './survey-create-queries';
 
 describe('postSurveySQL', () => {
-  it('returns null when null projectId param provided', () => {
-    const survey = new PostSurveyObject();
-    const response = postSurveySQL((null as unknown) as number, survey);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null survey data param provided', () => {
-    const response = postSurveySQL(1, (null as unknown) as PostSurveyObject);
-
-    expect(response).to.be.null;
-  });
-
   it('returns a sql statement when geometry array is empty', () => {
     const surveyData = {
       survey_details: {
@@ -113,18 +100,6 @@ describe('postSurveyProprietorSQL', () => {
 });
 
 describe('postFocalSpeciesSQL', () => {
-  it('returns null when null speciesId provided', () => {
-    const response = postFocalSpeciesSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null surveyId provided', () => {
-    const response = postFocalSpeciesSQL(1, (null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns sql statement when valid params provided', () => {
     const response = postFocalSpeciesSQL(1, 2);
 
@@ -133,18 +108,6 @@ describe('postFocalSpeciesSQL', () => {
 });
 
 describe('postAncillarySpeciesSQL', () => {
-  it('returns null when null speciesId provided', () => {
-    const response = postAncillarySpeciesSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null surveyId provided', () => {
-    const response = postAncillarySpeciesSQL(1, (null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns sql statement when valid params provided', () => {
     const response = postAncillarySpeciesSQL(1, 2);
 
@@ -153,36 +116,6 @@ describe('postAncillarySpeciesSQL', () => {
 });
 
 describe('postNewSurveyPermitSQL', () => {
-  it('returns null when null projectId provided', () => {
-    const response = postNewSurveyPermitSQL(1, (null as unknown) as number, 1, '123', 'scientific');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null surveyId provided', () => {
-    const response = postNewSurveyPermitSQL(1, 1, (null as unknown) as number, '123', 'scientific');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null permitNumber provided', () => {
-    const response = postNewSurveyPermitSQL(1, 1, 2, (null as unknown) as string, 'scientific');
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null permitType provided', () => {
-    const response = postNewSurveyPermitSQL(1, 1, 2, '123', (null as unknown) as string);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null systemUserId provided', () => {
-    const response = postNewSurveyPermitSQL(null, 1, 2, '123', 'scientific');
-
-    expect(response).to.be.null;
-  });
-
   it('returns sql statement when valid params provided', () => {
     const response = postNewSurveyPermitSQL(1, 1, 2, '123', 'scientific');
 
@@ -191,18 +124,6 @@ describe('postNewSurveyPermitSQL', () => {
 });
 
 describe('insertSurveyFundingSourceSQL', () => {
-  it('returns null when null surveyId provided', () => {
-    const response = insertSurveyFundingSourceSQL((null as unknown) as number, 1);
-
-    expect(response).to.be.null;
-  });
-
-  it('returns null when null fundingSourceId provided', () => {
-    const response = insertSurveyFundingSourceSQL(1, (null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns sql statement when valid params provided', () => {
     const response = insertSurveyFundingSourceSQL(1, 2);
 

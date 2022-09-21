@@ -1,5 +1,5 @@
 import { basicCodeValidator, basicNumericValidator, MooseItems } from './picklist_variables/v0.2';
-export const mooseCompositionJSON = {
+export const mooseTransectDistanceJSON = {
   name: '',
   description: '',
   files: [
@@ -18,7 +18,7 @@ export const mooseCompositionJSON = {
           validations: basicNumericValidator()
         },
         {
-          name: 'Time (mins)/block area (km2)',
+          name: 'Time (mins)/km',
           description: '',
           validations: basicNumericValidator()
         },
@@ -41,8 +41,7 @@ export const mooseCompositionJSON = {
           file_required_columns_validator: {
             required_columns: [
               'Study Area',
-              'Block ID/SU ID',
-              'Block Area (km2)',
+              'Total Distance Flown (km)',
               'Date',
               'Start Time 1 (24hrs)',
               'End Time 1 (24hrs)',
@@ -51,7 +50,7 @@ export const mooseCompositionJSON = {
               'Total Block Time',
               'Total Time (hours)',
               'Total Time (mins)',
-              'Time (mins)/block area (km2)',
+              'Time (mins)/km',
               'Aircraft Company',
               'Aircraft Type',
               'Pilot',
@@ -254,6 +253,8 @@ export const mooseCompositionJSON = {
             required_columns: [
               'Study Area',
               'Block ID/SU ID',
+              'Transect ID',
+              'Date',
               'UTM Zone',
               'Easting',
               'Northing',
@@ -261,6 +262,7 @@ export const mooseCompositionJSON = {
               'Lat',
               'Long',
               'Lat/Long Units',
+              'Perpendicular Distance From Transect Line (m)',
               'Species',
               'Yearling Bulls',
               'Sub-Prime Bulls',
@@ -368,7 +370,7 @@ export const mooseCompositionJSON = {
           file_required_columns_validator: {
             required_columns: [
               'Study Area',
-              'Block ID/SU ID',
+              'Transect ID',
               'Date',
               'UTM Zone',
               'Easting',
@@ -499,8 +501,8 @@ export const mooseCompositionJSON = {
               'Datum',
               'Lat',
               'Long',
-              'Date',
               'Lat/Long Units',
+              'Date',
               'Species',
               'Adult Males',
               'Adult Females',

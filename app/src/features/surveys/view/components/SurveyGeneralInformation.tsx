@@ -89,13 +89,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
     try {
       const [surveyResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
-
         biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details.id),
         biohubApi.survey.getSurveyPermits(projectForViewData.id),
         biohubApi.survey.getAvailableSurveyFundingSources(projectForViewData.id)
       ]);
       if (!surveyResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
-
         showErrorDialog({ open: true });
         return;
       }

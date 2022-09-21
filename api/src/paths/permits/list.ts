@@ -134,7 +134,7 @@ export function listUserPermits(): RequestHandler {
 
       const permits: IPermitModel[] = await userPermitService.getPermitByUser();
 
-      console.log('permits per user', permits)
+      console.log('permits per user', permits);
 
       await connection.commit();
 

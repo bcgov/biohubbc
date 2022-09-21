@@ -50,6 +50,7 @@ declare
   _project_funding_source_id project_funding_source.project_funding_source_id%type;
   _project_report_attachment_id project_report_attachment.project_report_attachment_id%type;
   _survey_report_attachment_id survey_report_attachment.survey_report_attachment_id%type;
+  _survey_attachment_id survey_attachment.survey_attachment_id%type;
 begin
   -- set security context
   select api_set_context('myIDIR', 'IDIR') into _system_user_id;
@@ -93,6 +94,7 @@ begin
   insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'john', 'doe');
   insert into project_report_author (project_report_attachment_id, first_name, last_name) values (_project_report_attachment_id, 'bob', 'dole');
   insert into project_first_nation (project_id, first_nations_id) values (_project_id, (select first_nations_id from first_nations where name = 'Kitselas Nation'));
+  update project_report_attachment set security_token = null where project_report_attachment_id = _project_report_attachment_id;
   insert into permit (system_user_id, project_id, number, type, issue_date, end_date) values (_system_user_id, _project_id, '8377262', 'permit type', now(), now()+interval '1 day');
 
   select count(1) into _count from stakeholder_partnership;
@@ -131,7 +133,8 @@ begin
     , lead_last_name
     , geography
     , ecological_season_id
-    , intended_outcome_id)
+    , intended_outcome_id
+    , field_method_id)
   values (_project_id
     , 'survey name'
     , 'survey objectives'
@@ -143,11 +146,13 @@ begin
     , _geography
     , (select ecological_season_id from ecological_season where name = 'Growing')
     , (select intended_outcome_id from intended_outcome where name = 'Survival')    
+    , (select field_method_id from field_method where name = 'Stratified Random Block')
     ) returning survey_id into _survey_id;
 
   insert into survey_proprietor (survey_id, first_nations_id, proprietor_type_id, rationale,disa_required)
     values (_survey_id, (select first_nations_id from first_nations where name = 'Squamish Nation'), (select proprietor_type_id from proprietor_type where name = 'First Nations Land'), 'proprietor rationale', true);  
-  insert into survey_attachment (survey_id, file_name, title, key, file_size, file_type) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text||'/surveys/'||_survey_id::text, 10000, 'video');
+  insert into survey_attachment (survey_id, file_name, title, key, file_size, file_type) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_project_id::text||'/surveys/'||_survey_id::text, 10000, 'video') returning survey_attachment_id into _survey_attachment_id;
+  update survey_attachment set security_token = null where survey_attachment_id = _survey_attachment_id;
   insert into survey_report_attachment (survey_id, file_name, title, key, file_size, year, description) values (_survey_id, 'test_filename.txt', 'test filename', 'projects/'||_survey_id::text, 10000, '2021', 'example abstract') returning survey_report_attachment_id into _survey_report_attachment_id;
   insert into survey_report_author (survey_report_attachment_id, first_name, last_name) values (_survey_report_attachment_id, 'john', 'doe');
   insert into survey_report_author (survey_report_attachment_id, first_name, last_name) values (_survey_report_attachment_id, 'bob', 'dole');
@@ -174,7 +179,7 @@ begin
 
   -- occurrence
   -- occurrence submission 1
-  insert into occurrence_submission (survey_id, source, event_timestamp) values (_survey_id, 'BIOHUB BATCH', now()-interval '1 day') returning occurrence_submission_id into _occurrence_submission_id;
+  insert into occurrence_submission (survey_id, source, event_timestamp, input_file_name) values (_survey_id, 'BIOHUB BATCH', now()-interval '1 day', 'filename1.xsl') returning occurrence_submission_id into _occurrence_submission_id;
   select count(1) into _count from occurrence_submission;
   assert _count = 1, 'FAIL occurrence_submission';
   insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate, sex) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '10 day', 'male');
@@ -187,7 +192,7 @@ begin
   --insert into system_user_role (system_user_id, system_role_id) values (_system_user_id, (select system_role_id from system_role where name = 'System Administrator'));
   
   -- occurrence submission 2
-  insert into occurrence_submission (survey_id, source, event_timestamp) values (_survey_id, 'BIOHUB BATCH', now()) returning occurrence_submission_id into _occurrence_submission_id;
+  insert into occurrence_submission (survey_id, source, event_timestamp, input_file_name) values (_survey_id, 'BIOHUB BATCH', now(), 'filename2.xsl') returning occurrence_submission_id into _occurrence_submission_id;
   select count(1) into _count from occurrence_submission;
   assert _count = 2, 'FAIL occurrence_submission';
   insert into occurrence (occurrence_submission_id, taxonid, lifestage, eventdate, sex) values (_occurrence_submission_id, 'M-ALAL', 'Adult', now()-interval '5 day', 'female');
@@ -232,10 +237,10 @@ begin
 
   -- delete project
   raise notice 'deleting data.';
-  call api_delete_project(_project_id);
+  --call api_delete_project(_project_id);
 
   raise notice 'smoketest_release(2): PASS';
 end
 $$;
 
-delete from permit;
+--delete from permit;

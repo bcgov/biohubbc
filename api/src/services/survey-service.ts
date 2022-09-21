@@ -4,8 +4,9 @@ import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
 import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
+  GetAttachmentsData,
   GetFocalSpeciesData,
-  //GetPermitData,
+  GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyFundingSources,
   GetSurveyLocationData,
@@ -162,7 +163,6 @@ export class SurveyService extends DBService {
 
   async getSurveyFundingSourcesData(surveyId: number): Promise<GetSurveyFundingSources> {
     const sqlStatement = queries.survey.getSurveyFundingSourcesDataForViewSQL(surveyId);
-
     if (!sqlStatement) {
       throw new ApiGeneralError('Failed to build SQL get statement');
     }
@@ -213,7 +213,6 @@ export class SurveyService extends DBService {
 
   async getOccurrenceSubmissionId(surveyId: number) {
     const sqlStatement = queries.survey.getLatestOccurrenceSubmissionIdSQL(surveyId);
-
     if (!sqlStatement) {
       throw new ApiGeneralError('Failed to build SQL get statement');
     }
@@ -232,7 +231,6 @@ export class SurveyService extends DBService {
    */
   async getLatestSurveyOccurrenceSubmission(surveyId: number) {
     const sqlStatement = queries.survey.getLatestSurveyOccurrenceSubmissionSQL(surveyId);
-
     if (!sqlStatement) {
       throw new ApiGeneralError('Failed to build SQL get statement');
     }
@@ -323,16 +321,29 @@ export class SurveyService extends DBService {
     return surveyId;
   }
 
+  async getAttachmentsData(surveyId: number): Promise<GetAttachmentsData> {
+    const sqlStatement = queries.survey.getAttachmentsBySurveySQL(surveyId);
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+
+    return new GetAttachmentsData(result);
+  }
+
+  async getReportAttachmentsData(surveyId: number): Promise<GetReportAttachmentsData> {
+    const sqlStatement = queries.survey.getReportAttachmentsBySurveySQL(surveyId);
+
+    const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
+    const result = (response && response.rows) || null;
+
+    return new GetReportAttachmentsData(result);
+  }
+
   async insertSurveyData(projectId: number, surveyData: PostSurveyObject): Promise<number> {
     const sqlStatement = queries.survey.postSurveySQL(projectId, surveyData);
 
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build survey SQL insert statement');
-    }
-
     const response = await this.connection.sql(sqlStatement);
-
-    const result = response.rows[0] || null;
+    const result = (response && response.rows && response.rows[0]) || null;
 
     if (!result) {
       throw new ApiGeneralError('Failed to insert survey data');
@@ -343,10 +354,6 @@ export class SurveyService extends DBService {
 
   async insertFocalSpecies(focal_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = queries.survey.postFocalSpeciesSQL(focal_species_id, surveyId);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
@@ -361,10 +368,6 @@ export class SurveyService extends DBService {
   async insertAncillarySpecies(ancillary_species_id: number, surveyId: number): Promise<number> {
     const sqlStatement = queries.survey.postAncillarySpeciesSQL(ancillary_species_id, surveyId);
 
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
-
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
 
@@ -377,10 +380,6 @@ export class SurveyService extends DBService {
 
   async insertVantageCodes(vantage_code_id: number, surveyId: number): Promise<number> {
     const sqlStatement = queries.survey.postVantageCodesSQL(vantage_code_id, surveyId);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
@@ -398,10 +397,6 @@ export class SurveyService extends DBService {
     }
 
     const sqlStatement = queries.survey.postSurveyProprietorSQL(surveyId, survey_proprietor);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL insert statement');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
     const result = (response && response.rows && response.rows[0]) || null;
@@ -437,10 +432,6 @@ export class SurveyService extends DBService {
 
   async insertSurveyFundingSource(funding_source_id: number, surveyId: number) {
     const sqlStatement = queries.survey.insertSurveyFundingSourceSQL(surveyId, funding_source_id);
-
-    if (!sqlStatement) {
-      throw new ApiGeneralError('Failed to build SQL statement for insertSurveyFundingSource');
-    }
 
     const response = await this.connection.query(sqlStatement.text, sqlStatement.values);
 
@@ -481,10 +472,6 @@ export class SurveyService extends DBService {
 
   async updateSurveyDetailsData(surveyId: number, surveyData: PutSurveyObject) {
     const updateSurveyQueryBuilder = queries.survey.putSurveyDetailsSQL(surveyId, surveyData);
-
-    if (!updateSurveyQueryBuilder) {
-      throw new ApiGeneralError('Failed to build SQL update statement');
-    }
 
     const result = await this.connection.knex(updateSurveyQueryBuilder);
 

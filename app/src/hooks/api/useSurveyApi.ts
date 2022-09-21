@@ -1,7 +1,6 @@
 import { AxiosInstance, CancelTokenSource } from 'axios';
 import { IEditReportMetaForm } from 'components/attachments/EditReportMetaForm';
 import { IReportMetaForm } from 'components/attachments/ReportMetaForm';
-import { IGetSubmissionCSVForViewResponse } from 'interfaces/useObservationApi.interface';
 import { IGetReportMetaData, IUploadAttachmentResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSummaryResultsResponse, IUploadSummaryResultsResponse } from 'interfaces/useSummaryResultsApi.interface';
 import {
@@ -448,25 +447,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get observation submission csv data/details by submission id.
-   * @param {number} projectId
-   * @param {number} surveyId
-   * @param {number} summaryId
-   * @return {*}  {Promise<IGetSubmissionCSVForViewResponse>}
-   */
-  const getSubmissionCSVForView = async (
-    projectId: number,
-    surveyId: number,
-    summaryId: number
-  ): Promise<IGetSubmissionCSVForViewResponse> => {
-    const { data } = await axios.get(
-      `/api/project/${projectId}/survey/${surveyId}/summary/submission/${summaryId}/view`
-    );
-
-    return data;
-  };
-
-  /**
    * Get survey report metadata based on project ID, surveyID, attachment ID, and attachmentType
    *
    * @param {number} projectId
@@ -524,7 +504,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     deleteSurvey,
     getSurveyPermits,
     getAvailableSurveyFundingSources,
-    getSubmissionCSVForView,
     makeAttachmentUnsecure,
     makeAttachmentSecure,
     getSummarySubmissionSignedURL,

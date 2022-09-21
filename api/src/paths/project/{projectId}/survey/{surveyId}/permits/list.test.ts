@@ -60,27 +60,6 @@ describe('getSurveyPermits', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for assignable survey permits', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(survey_queries, 'getAllAssignablePermitsForASurveySQL').returns(null);
-
-    try {
-      const result = list.getSurveyPermits();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
   it('should return the survey permits on success', async () => {
     const surveyPermits = [
       {

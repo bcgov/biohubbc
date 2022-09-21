@@ -2,25 +2,18 @@ import { expect } from 'chai';
 import { describe } from 'mocha';
 import {
   getActivitiesByProjectSQL,
+  getAttachmentsByProjectSQL,
   getFundingSourceByProjectSQL,
   getIndigenousPartnershipsByProjectSQL,
   getIUCNActionClassificationByProjectSQL,
   getLocationByProjectSQL,
   getProjectListSQL,
   getProjectSQL,
+  getReportAttachmentsByProjectSQL,
   getStakeholderPartnershipsByProjectSQL
 } from './project-view-queries';
 
 describe('getProjectSQL', () => {
-  describe('Null project id param provided', () => {
-    it('returns null', () => {
-      // force the function to accept a null value
-      const response = getProjectSQL((null as unknown) as number);
-
-      expect(response).to.be.null;
-    });
-  });
-
   describe('Valid project id param provided', () => {
     it('returns a SQLStatement', () => {
       const response = getProjectSQL(1);
@@ -111,12 +104,6 @@ describe('getProjectListSQL', () => {
 });
 
 describe('getIUCNActionClassificationByProjectSQL', () => {
-  it('returns null response when null projectId provided', () => {
-    const response = getIUCNActionClassificationByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('returns non null response when valid projectId provided', () => {
     const response = getIUCNActionClassificationByProjectSQL(1);
 
@@ -152,13 +139,15 @@ describe('getStakeholderPartnershipsByProjectSQL', () => {
   });
 });
 
-describe('getLocationByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getLocationByProjectSQL((null as unknown) as number);
+describe('getProjectPermitsSQL', () => {
+  it('valid projectId', () => {
+    const response = getProjectPermitsSQL(1);
 
-    expect(response).to.be.null;
+    expect(response).to.not.be.null;
   });
+});
 
+describe('getLocationByProjectSQL', () => {
   it('valid projectId', () => {
     const response = getLocationByProjectSQL(1);
 
@@ -167,12 +156,6 @@ describe('getLocationByProjectSQL', () => {
 });
 
 describe('getActivitiesByProjectSQL', () => {
-  it('Null projectId', () => {
-    const response = getActivitiesByProjectSQL((null as unknown) as number);
-
-    expect(response).to.be.null;
-  });
-
   it('valid projectId', () => {
     const response = getActivitiesByProjectSQL(1);
 
@@ -181,14 +164,36 @@ describe('getActivitiesByProjectSQL', () => {
 });
 
 describe('getFundingSourceByProjectSQL', () => {
+  it('valid projectId', () => {
+    const response = getFundingSourceByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getAttachmentsByProjectSQL', () => {
   it('Null projectId', () => {
-    const response = getFundingSourceByProjectSQL((null as unknown) as number);
+    const response = getAttachmentsByProjectSQL((null as unknown) as number);
 
     expect(response).to.be.null;
   });
 
   it('valid projectId', () => {
-    const response = getFundingSourceByProjectSQL(1);
+    const response = getAttachmentsByProjectSQL(1);
+
+    expect(response).to.not.be.null;
+  });
+});
+
+describe('getReportAttachmentsByProjectSQL', () => {
+  it('Null projectId', () => {
+    const response = getReportAttachmentsByProjectSQL((null as unknown) as number);
+
+    expect(response).to.be.null;
+  });
+
+  it('valid projectId', () => {
+    const response = getReportAttachmentsByProjectSQL(1);
 
     expect(response).to.not.be.null;
   });

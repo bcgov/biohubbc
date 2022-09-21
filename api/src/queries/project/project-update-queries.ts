@@ -75,11 +75,7 @@ export const getIndigenousPartnershipsByProjectSQL = (projectId: number): SQLSta
  * @param {number} projectId
  * @return {*}  {(SQLStatement | null)}
  */
-export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getCoordinatorByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       coordinator_first_name,
@@ -217,11 +213,7 @@ export const putProjectSQL = (
  * @param {number} projectId
  * @return {*}  {(SQLStatement | null)}
  */
-export const getObjectivesByProjectSQL = (projectId: number): SQLStatement | null => {
-  if (!projectId) {
-    return null;
-  }
-
+export const getObjectivesByProjectSQL = (projectId: number): SQLStatement => {
   return SQL`
     SELECT
       objectives,
