@@ -6,7 +6,6 @@ import occurrence from './occurrence';
 import permit from './permit';
 import project from './project';
 import projectParticipation from './project-participation';
-import publicQueries from './public';
 import search from './search';
 import security from './security';
 import spatial from './spatial';
@@ -22,7 +21,6 @@ export const queries = {
   permit,
   project,
   projectParticipation,
-  public: publicQueries,
   search,
   security,
   spatial,
