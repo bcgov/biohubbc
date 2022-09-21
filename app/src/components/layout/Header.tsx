@@ -226,14 +226,6 @@ const Header: React.FC = () => {
 
         <Box className={classes.mainNav}>
           <Toolbar variant="dense" className={classes.mainNavToolbar} role="navigation" aria-label="Main Navigation">
-            <UnAuthGuard>
-              <Link to="/" id="menu_projects">
-                Projects
-              </Link>
-              <Link to="/search" id="menu_search">
-                Map
-              </Link>
-            </UnAuthGuard>
             <AuthGuard>
               <Link to="/admin/projects" id="menu_projects">
                 Projects
@@ -244,10 +236,10 @@ const Header: React.FC = () => {
               <Link to="/admin/search" id="menu_search">
                 Map
               </Link>
+              <Link to="/admin/resources" id="menu_resources">
+                Resources
+              </Link>
             </AuthGuard>
-            <Link to="/resources" id="menu_resources">
-              Resources
-            </Link>
             <SystemRoleGuard validSystemRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
               <Link to="/admin/users" id="menu_admin_users">
                 Manage Users

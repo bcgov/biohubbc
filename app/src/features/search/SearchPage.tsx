@@ -11,7 +11,6 @@ import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React, { useCallback, useContext, useEffect, useState } from 'react';
-import { isAuthenticated } from 'utils/authUtils';
 import { generateValidGeometryCollection } from 'utils/mapBoundaryUploadHelpers';
 
 /**
@@ -46,9 +45,7 @@ const SearchPage: React.FC = () => {
 
   const getSearchResults = useCallback(async () => {
     try {
-      const response = isAuthenticated(keycloakWrapper)
-        ? await biohubApi.search.getSearchResults()
-        : await biohubApi.public.search.getSearchResults();
+      const response = await biohubApi.search.getSearchResults()
 
       if (!response) {
         setPerformSearch(false);
@@ -76,7 +73,7 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
-  }, [biohubApi.search, biohubApi.public.search, showFilterErrorDialog, keycloakWrapper]);
+  }, [biohubApi.search, showFilterErrorDialog, keycloakWrapper]);
 
   useEffect(() => {
     if (performSearch) {
