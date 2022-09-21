@@ -110,6 +110,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
         validationSchema={validationProjectYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
+        enableReinitialize={true}
         onSubmit={handleSubmit}>
         <>
           <ScrollToFormikError fieldOrder={Object.keys(initialProjectFieldData)} />

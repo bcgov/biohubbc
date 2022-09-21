@@ -4,7 +4,6 @@ import {
   fireEvent,
   getByText as rawGetByText,
   render,
-  screen,
   waitFor
 } from '@testing-library/react';
 import { DialogContextProvider } from 'contexts/dialogContext';
@@ -14,10 +13,10 @@ import { ProjectIUCNFormInitialValues } from 'features/projects/components/Proje
 import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
-import { ProjectPermitFormInitialValues } from 'features/projects/components/ProjectPermitForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import React from 'react';
 import { MemoryRouter, Router } from 'react-router';
 
@@ -26,15 +25,12 @@ const history = createMemoryHistory();
 jest.mock('../../../hooks/useBioHubApi');
 const mockUseBiohubApi = {
   codes: {
-    getAllCodeSets: jest.fn<Promise<object>, []>()
+    getAllCodeSets: jest.fn<Promise<IGetAllCodeSetsResponse>, []>()
   },
   draft: {
     createDraft: jest.fn<Promise<object>, []>(),
     updateDraft: jest.fn<Promise<object>, []>(),
     getDraft: jest.fn()
-  },
-  permit: {
-    getNonSamplingPermits: jest.fn<Promise<object>, []>()
   }
 };
 
@@ -59,7 +55,6 @@ describe('CreateProjectPage', () => {
     mockBiohubApi().draft.createDraft.mockClear();
     mockBiohubApi().draft.updateDraft.mockClear();
     mockBiohubApi().draft.getDraft.mockClear();
-    mockBiohubApi().permit.getNonSamplingPermits.mockClear();
 
     jest.spyOn(console, 'debug').mockImplementation(() => {});
   });
@@ -69,39 +64,29 @@ describe('CreateProjectPage', () => {
   });
 
   it('renders the initial default page correctly', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-    });
-    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    } as unknown) as IGetAllCodeSetsResponse);
 
-    const { getByText, getAllByText, asFragment } = renderContainer();
+    const { getByText } = renderContainer();
 
     await waitFor(() => {
-      expect(getAllByText('Project Contact').length).toEqual(2);
-
-      expect(getByText('Project Permits')).toBeVisible();
+      expect(getByText('Create Project')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
 
-      expect(getByText('Objectives')).toBeVisible();
+      expect(getByText('Project Coordinator')).toBeVisible();
 
-      expect(getByText('Locations')).toBeVisible();
+      expect(getByText('Funding and Partnerships')).toBeVisible();
 
-      expect(getByText('IUCN Conservation Actions Classification')).toBeVisible();
-
-      expect(getByText('Funding')).toBeVisible();
-
-      expect(getByText('Partnerships')).toBeVisible();
-
-      expect(asFragment()).toMatchSnapshot();
+      expect(getByText('Location and Boundary')).toBeVisible();
     });
   });
 
   it('shows the page title', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
       coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-    });
-    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    } as unknown) as IGetAllCodeSetsResponse);
 
     const { findByText } = renderContainer();
     const PageTitle = await findByText('Create Project');
@@ -109,40 +94,11 @@ describe('CreateProjectPage', () => {
     expect(PageTitle).toBeVisible();
   });
 
-  it('navigates to a different section on click of that section label', async () => {
-    mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-      coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-    });
-    mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
-
-    const { getByText, getAllByText, queryByLabelText } = renderContainer();
-
-    // wait for initial page to load
-    await waitFor(() => {
-      expect(getAllByText('Project Contact').length).toEqual(2);
-
-      expect(getByText('Project Permits')).toBeVisible();
-
-      expect(getByText('General Information')).toBeVisible();
-
-      expect(queryByLabelText('Project Type')).toBeNull();
-    });
-
-    fireEvent.click(getByText('General Information'));
-
-    await waitFor(() => {
-      expect(getAllByText('General Information').length).toEqual(2);
-
-      expect(queryByLabelText('Project Type')).toBeVisible();
-    });
-  });
-
   describe('Are you sure? Dialog', () => {
     it('shows warning dialog if the user clicks the `Cancel and Exit` button', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      } as unknown) as IGetAllCodeSetsResponse);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -161,10 +117,9 @@ describe('CreateProjectPage', () => {
     });
 
     it('calls history.push() if the user clicks `Yes`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      } as unknown) as IGetAllCodeSetsResponse);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -181,10 +136,9 @@ describe('CreateProjectPage', () => {
     });
 
     it('does nothing if the user clicks `No`', async () => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+      } as unknown) as IGetAllCodeSetsResponse);
 
       history.push('/home');
       history.push('/admin/projects/create');
@@ -202,14 +156,15 @@ describe('CreateProjectPage', () => {
   });
 
   describe('draft project', () => {
-    beforeEach(() => {
-      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue({
-        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
-      });
-      mockBiohubApi().permit.getNonSamplingPermits.mockResolvedValue([{ permit_id: 1, number: 1, type: 'Wildlife' }]);
+    afterEach(() => {
+      jest.restoreAllMocks();
     });
 
-    it('preloads draft data and populates on form fields', async () => {
+    it.only('preloads draft data and populates on form fields', async () => {
+      mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
+        coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
+      } as unknown) as IGetAllCodeSetsResponse);
+
       mockBiohubApi().draft.getDraft.mockResolvedValue({
         id: 1,
         name: 'My draft',
@@ -221,7 +176,6 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          permit: ProjectPermitFormInitialValues,
           project: ProjectDetailsFormInitialValues,
           objectives: ProjectObjectivesFormInitialValues,
           location: ProjectLocationFormInitialValues,
@@ -231,16 +185,16 @@ describe('CreateProjectPage', () => {
         }
       });
 
-      render(
+      const { getByText } = render(
         <MemoryRouter initialEntries={['?draftId=1']}>
           <CreateProjectPage />
         </MemoryRouter>
       );
 
       await waitFor(() => {
-        expect(screen.getByDisplayValue('Draft first name')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('Draft last name')).toBeInTheDocument();
-        expect(screen.getByDisplayValue('draftemail@example.com')).toBeInTheDocument();
+        expect(getByText('Draft first name')).toBeInTheDocument();
+        expect(getByText('Draft last name')).toBeInTheDocument();
+        expect(getByText('draftemail@example.com')).toBeInTheDocument();
       });
     });
 

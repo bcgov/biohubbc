@@ -16,18 +16,17 @@ import { CreateProjectDraftI18N, CreateProjectI18N } from 'constants/i18n';
 import { DialogContext } from 'contexts/dialogContext';
 import ProjectDraftForm, {
   IProjectDraftForm,
-  ProjectDraftFormInitialValues,
   ProjectDraftFormYupSchema
 } from 'features/projects/components/ProjectDraftForm';
 import { FormikProps } from 'formik';
 import * as History from 'history';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
+import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
-import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory } from 'react-router';
+import { useHistory, useLocation } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 import CreateProjectForm from './CreateProjectForm';
@@ -68,10 +67,6 @@ const CreateProjectPage: React.FC = () => {
 
   const queryParams = useQuery();
 
-  const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [isLoadingCodes, setIsLoadingCodes] = useState(false);
-  const [hasLoadedDraftData, setHasLoadedDraftData] = useState(!queryParams.draftId);
-
   // Reference to pass to the formik component in order to access its state at any time
   // Used by the draft logic to fetch the values of a step form that has not been validated/completed
   const formikRef = useRef<FormikProps<ICreateProjectRequest>>(null);
@@ -80,6 +75,38 @@ const CreateProjectPage: React.FC = () => {
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 
   const dialogContext = useContext(DialogContext);
+
+  const codesDataLoader = useDataLoader(() => biohubApi.codes.getAllCodeSets());
+  codesDataLoader.load();
+
+  const draftDataLoader = useDataLoader((draftId: number) => biohubApi.draft.getDraft(draftId));
+
+  const location = useLocation();
+
+  console.log('location.search', location.search);
+  console.log('queryParams', queryParams);
+  console.log('queryParams.draftId', queryParams.draftId);
+
+  if (queryParams.draftId) {
+    draftDataLoader.load(queryParams.draftId);
+  }
+
+  useEffect(() => {
+    const setFormikValues = (data: ICreateProjectRequest) => {
+      formikRef.current?.setValues(data);
+    };
+    console.log('draftDataLoader', draftDataLoader);
+
+    if (draftDataLoader.data?.data) {
+      console.log('draftDataLoader.data?.data', draftDataLoader.data?.data);
+      setFormikValues(draftDataLoader.data?.data);
+    }
+  }, [draftDataLoader]);
+
+  // Whether or not to show the 'Save as draft' dialog
+  const [openDraftDialog, setOpenDraftDialog] = useState(false);
+
+  const [draft, setDraft] = useState({ id: 0, date: '' });
 
   const defaultCancelDialogProps = {
     dialogTitle: CreateProjectI18N.cancelTitle,
@@ -106,51 +133,25 @@ const CreateProjectPage: React.FC = () => {
     }
   };
 
-  // Whether or not to show the 'Save as draft' dialog
-  const [openDraftDialog, setOpenDraftDialog] = useState(false);
+  const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
+      dialogText: CreateProjectDraftI18N.draftErrorText,
+      ...defaultErrorDialogProps,
+      ...textDialogProps,
+      open: true
+    });
+  };
 
-  const [draft, setDraft] = useState({ id: 0, date: '' });
-
-  // Get draft project fields if draft id exists
-  useEffect(() => {
-    const getDraftProjectFields = async () => {
-      const response = await biohubApi.draft.getDraft(queryParams.draftId);
-
-      setHasLoadedDraftData(true);
-
-      if (!response || !response.data) {
-        return;
-      }
-
-      formikRef.current?.setValues(response.data);
-    };
-
-    if (hasLoadedDraftData) {
-      return;
-    }
-
-    getDraftProjectFields();
-  }, [biohubApi.draft, hasLoadedDraftData, queryParams.draftId]);
-
-  // Get code sets
-  // TODO refine this call to only fetch code sets this form cares about? Or introduce caching so multiple calls is still fast?
-  useEffect(() => {
-    const getAllCodeSets = async () => {
-      const response = await biohubApi.codes.getAllCodeSets();
-
-      // TODO error handling/user messaging - Cant create a project if required code sets fail to fetch
-
-      setCodes(() => {
-        setIsLoadingCodes(false);
-        return response;
-      });
-    };
-
-    if (!isLoadingCodes && !codes) {
-      getAllCodeSets();
-      setIsLoadingCodes(true);
-    }
-  }, [biohubApi, isLoadingCodes, codes]);
+  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
+    dialogContext.setErrorDialog({
+      dialogTitle: CreateProjectI18N.createErrorTitle,
+      dialogText: CreateProjectI18N.createErrorText,
+      ...defaultErrorDialogProps,
+      ...textDialogProps,
+      open: true
+    });
+  };
 
   const handleCancel = () => {
     dialogContext.setYesNoDialog(defaultCancelDialogProps);
@@ -240,30 +241,6 @@ const CreateProjectPage: React.FC = () => {
     history.push(`/admin/projects/${response.id}`);
   };
 
-  const showDraftErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: CreateProjectDraftI18N.draftErrorTitle,
-      dialogText: CreateProjectDraftI18N.draftErrorText,
-      ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
-    });
-  };
-
-  const showCreateErrorDialog = (textDialogProps?: Partial<IErrorDialogProps>) => {
-    dialogContext.setErrorDialog({
-      dialogTitle: CreateProjectI18N.createErrorTitle,
-      dialogText: CreateProjectI18N.createErrorText,
-      ...defaultErrorDialogProps,
-      ...textDialogProps,
-      open: true
-    });
-  };
-
-  if (!codes) {
-    return <CircularProgress className="pageProgress" size={40} />;
-  }
-
   /**
    * Intercepts all navigation attempts (when used with a `Prompt`).
    *
@@ -290,6 +267,12 @@ const CreateProjectPage: React.FC = () => {
     return true;
   };
 
+  if (!codesDataLoader.data) {
+    return <CircularProgress className="pageProgress" size={40} />;
+  }
+
+  console.log('formikRef.current?.values', formikRef.current?.values);
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -300,7 +283,7 @@ const CreateProjectPage: React.FC = () => {
         component={{
           element: <ProjectDraftForm />,
           initialValues: {
-            draft_name: ProjectDraftFormInitialValues.draft_name
+            draft_name: formikRef.current?.values.project.project_name || ''
           },
           validationSchema: ProjectDraftFormYupSchema
         }}
@@ -346,7 +329,7 @@ const CreateProjectPage: React.FC = () => {
               handleSubmit={createProject}
               handleCancel={handleCancel}
               handleDraft={setOpenDraftDialog}
-              codes={codes}
+              codes={codesDataLoader.data}
               formikRef={formikRef}
             />
           </Paper>
