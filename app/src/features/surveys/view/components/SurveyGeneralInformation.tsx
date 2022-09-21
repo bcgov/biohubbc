@@ -27,8 +27,8 @@ import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import {
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
-  ISurveyFundingSourceForView
-  //,ISurveyPermits
+  ISurveyFundingSourceForView,
+  ISurveyPermits
 } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
@@ -63,7 +63,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
-  //const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
+  const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
   const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -84,24 +84,24 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const handleDialogEditOpen = async () => {
     let surveyResponseData;
-    //let surveyPermitsResponseData;
+    let surveyPermitsResponseData;
     let surveyFundingSourcesResponseData;
 
     try {
-      //const [surveyResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
-      const [surveyResponse, surveyFundingSourcesResponse] = await Promise.all([
+      const [surveyResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
+
         biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details.id),
-        //biohubApi.survey.getSurveyPermits(projectForViewData.id),
+        biohubApi.survey.getSurveyPermits(projectForViewData.id),
         biohubApi.survey.getAvailableSurveyFundingSources(projectForViewData.id)
       ]);
-      //if (!surveyResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
-      if (!surveyResponse || !surveyFundingSourcesResponse) {
+      if (!surveyResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
+
         showErrorDialog({ open: true });
         return;
       }
 
       surveyFundingSourcesResponseData = surveyFundingSourcesResponse;
-      //surveyPermitsResponseData = surveyPermitsResponse;
+      surveyPermitsResponseData = surveyPermitsResponse;
       surveyResponseData = surveyResponse;
     } catch (error) {
       const apiError = error as APIError;
@@ -113,17 +113,17 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
       If a permit number/type already exists for the record we are updating, we need to include it in the
       list of applicable permits for the survey to be associated with
     */
-    // if (surveyResponseData.surveyData.permit.permit_number && surveyResponseData.surveyData.permit.permit_type) {
-    //   setSurveyPermits([
-    //     {
-    //       permit_number: surveyResponseData.surveyData.permit.permit_number,
-    //       permit_type: surveyResponseData.surveyData.permit.permit_type
-    //     },
-    //     ...surveyPermitsResponseData
-    //   ]);
-    // } else {
-    //   setSurveyPermits(surveyPermitsResponseData);
-    // }
+    if (surveyResponseData.surveyData.permit.permit_number && surveyResponseData.surveyData.permit.permit_type) {
+      setSurveyPermits([
+        {
+          permit_number: surveyResponseData.surveyData.permit.permit_number,
+          permit_type: surveyResponseData.surveyData.permit.permit_type
+        },
+        ...surveyPermitsResponseData
+      ]);
+    } else {
+      setSurveyPermits(surveyPermitsResponseData);
+    }
 
     setSurveyFundingSources(surveyFundingSourcesResponseData);
 
@@ -139,7 +139,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         biologist_last_name: surveyResponseData.surveyData.survey_details.biologist_last_name
       },
       species: surveyResponseData.surveyData.species,
-      //permit: surveyResponseData.surveyData.permit,
+      permit: surveyResponseData.surveyData.permit,
       funding: {
         funding_sources: surveyResponseData.surveyData.funding.funding_sources.map((item) => item.pfs_id)
       }
@@ -177,11 +177,11 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         component={{
           element: (
             <GeneralInformationForm
-              // permit_numbers={
-              //   surveyPermits?.map((item) => {
-              //     return { value: item.permit_number, label: `${item.permit_number} - ${item.permit_type}` };
-              //   }) || []
-              // }
+              permit_numbers={
+                surveyPermits?.map((item) => {
+                  return { value: item.permit_number, label: `${item.permit_number} - ${item.permit_type}` };
+                }) || []
+              }
               funding_sources={
                 surveyFundingSources?.map((item) => {
                   return {

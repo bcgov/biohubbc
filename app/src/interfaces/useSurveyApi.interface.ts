@@ -79,7 +79,7 @@ export interface IGetSurveyForViewResponseProprietor {
 export interface SurveyViewObject {
   survey_details: IGetSurveyForViewResponseDetails;
   species: IGetSpecies;
-  //permit: ISurveyPermits;
+  permit: ISurveyPermits;
   purpose_and_methodology: IGetSurveyForViewResponsePurposeAndMethodology;
   funding: ISurveyFundingSources;
   proprietor: IGetSurveyForViewResponseProprietor | null;
