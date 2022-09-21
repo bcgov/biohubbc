@@ -5,7 +5,7 @@ import { PutSurveyObject } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetFocalSpeciesData,
-  GetPermitData,
+  //GetPermitData,
   GetSurveyData,
   GetSurveyFundingSources,
   GetSurveyLocationData,
@@ -31,7 +31,7 @@ export class SurveyService extends DBService {
     const [
       surveyData,
       speciesData,
-      permitData,
+      //permitData,
       fundingData,
       purposeAndMethodologyData,
       proprietorData,
@@ -39,7 +39,7 @@ export class SurveyService extends DBService {
     ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
-      this.getPermitData(surveyId),
+      //this.getPermitData(surveyId),
       this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
@@ -49,7 +49,7 @@ export class SurveyService extends DBService {
     return {
       survey_details: surveyData,
       species: speciesData,
-      permit: permitData,
+      //permit: permitData,
       purpose_and_methodology: purposeAndMethodologyData,
       funding: fundingData,
       proprietor: proprietorData,
@@ -125,26 +125,26 @@ export class SurveyService extends DBService {
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
 
-  async getPermitData(surveyId: number): Promise<GetPermitData> {
-    const sqlStatement = SQL`
-      SELECT
-        number,
-        type
-      FROM
-        permit
-      WHERE
-        survey_id = ${surveyId};
-      `;
+  // async getPermitData(surveyId: number): Promise<GetPermitData> {
+  //   const sqlStatement = SQL`
+  //     SELECT
+  //       number,
+  //       type
+  //     FROM
+  //       permit
+  //     WHERE
+  //       survey_id = ${surveyId};
+  //     `;
 
-    const response = await this.connection.query<{ number: string; type: string }>(
-      sqlStatement.text,
-      sqlStatement.values
-    );
+  //   const response = await this.connection.query<{ number: string; type: string }>(
+  //     sqlStatement.text,
+  //     sqlStatement.values
+  //   );
 
-    const result = response.rows?.[0];
+  //   const result = response.rows?.[0];
 
-    return new GetPermitData(result);
-  }
+  //   return new GetPermitData(result);
+  // }
 
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
@@ -286,7 +286,7 @@ export class SurveyService extends DBService {
       )
     );
 
-    // Handle inserting any permit associated to this survey
+    //Handle inserting any permit associated to this survey
     if (postSurveyData.permit.permit_number) {
       promises.push(
         this.insertOrAssociatePermitToSurvey(

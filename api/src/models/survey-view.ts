@@ -3,7 +3,7 @@ import { Feature } from 'geojson';
 export type SurveyObject = {
   survey_details: GetSurveyData;
   species: GetFocalSpeciesData & GetAncillarySpeciesData;
-  permit: GetPermitData;
+  //permit: GetPermitData;
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;

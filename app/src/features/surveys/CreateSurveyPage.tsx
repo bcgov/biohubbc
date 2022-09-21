@@ -100,6 +100,8 @@ const CreateSurveyPage = () => {
   const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
+  console.log(surveyPermits);
+
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
 

@@ -98,7 +98,7 @@ export interface SurveyUpdateObject {
     focal_species: number[];
     ancillary_species: number[];
   };
-  permit?: ISurveyPermits;
+  //permit?: ISurveyPermits;
   purpose_and_methodology?: {
     intended_outcome_id: number;
     additional_details: string;

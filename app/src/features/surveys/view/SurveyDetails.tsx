@@ -1,7 +1,7 @@
 import Box from '@material-ui/core/Box';
 import Paper from '@material-ui/core/Paper';
 import Typography from '@material-ui/core/Typography';
-import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGeneralInformation';
+//import SurveyGeneralInformation from 'features/surveys/view/components/SurveyGeneralInformation';
 import SurveyProprietaryData from 'features/surveys/view/components/SurveyProprietaryData';
 import SurveyPurposeAndMethodologyData from 'features/surveys/view/components/SurveyPurposeAndMethodologyData';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
@@ -28,14 +28,14 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
     <>
       <Box component={Paper} p={3}>
         <Typography variant="h2">Survey Details</Typography>
-        <Box component="section" mt={1}>
+        {/* <Box component="section" mt={1}>
           <SurveyGeneralInformation
             projectForViewData={projectForViewData}
             surveyForViewData={surveyForViewData}
             codes={codes}
             refresh={refresh}
           />
-        </Box>
+        </Box> */}
         {
           <Box component="section" mt={1}>
             <SurveyPurposeAndMethodologyData

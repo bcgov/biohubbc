@@ -53,7 +53,8 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const {
     projectForViewData,
     surveyForViewData: {
-      surveyData: { survey_details, species, permit, funding }
+      //surveyData: { survey_details, species, permit, funding }
+      surveyData: { survey_details, species, funding }
     },
     refresh
   } = props;
@@ -88,12 +89,13 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
     try {
       const [surveyResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
+
         biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details.id),
         biohubApi.survey.getSurveyPermits(projectForViewData.id),
         biohubApi.survey.getAvailableSurveyFundingSources(projectForViewData.id)
       ]);
-
       if (!surveyResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
+
         showErrorDialog({ open: true });
         return;
       }
@@ -336,7 +338,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
           buttonOnClick={() => handleDialogEditOpen()}
           toolbarProps={{ disableGutters: true }}
         />
-        <TableContainer>
+        {/* <TableContainer>
           <Table>
             <TableHead>
               <TableRow>
@@ -357,7 +359,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               )}
             </TableBody>
           </Table>
-        </TableContainer>
+        </TableContainer> */}
       </Box>
       <Box mt={2}>
         <H3ButtonToolbar
