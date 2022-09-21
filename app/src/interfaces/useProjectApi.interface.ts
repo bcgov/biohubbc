@@ -147,7 +147,6 @@ export interface IGetProjectForUpdateResponsePermit {
 
 export interface IGetProjectForUpdateResponseObjectives {
   objectives: string;
-  caveats: string;
   revision_count: number;
 }
 
@@ -244,7 +243,6 @@ export interface IGetProjectForViewResponsePermit {
 
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;
-  caveats: string;
 }
 
 export interface IGetProjectForViewResponseLocation {

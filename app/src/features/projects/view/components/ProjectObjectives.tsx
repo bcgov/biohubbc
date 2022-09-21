@@ -92,8 +92,7 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
 
     setObjectivesFormData({
       objectives: {
-        objectives: objectivesResponseData.objectives,
-        caveats: objectivesResponseData.caveats
+        objectives: objectivesResponseData.objectives
       }
     });
 
@@ -148,7 +147,6 @@ const ProjectObjectives: React.FC<IProjectObjectivesProps> = (props) => {
         <Divider></Divider>
         <Box mt={2}>
           <ReadMoreField text={objectives.objectives} maxCharLength={850} />
-          {objectives.caveats && <ReadMoreField text={objectives.caveats} maxCharLength={850} />}
         </Box>
       </Box>
     </>

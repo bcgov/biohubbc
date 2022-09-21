@@ -55,15 +55,6 @@ export interface IProjectCoordinatorFormProps {
   coordinator_agency: string[];
 }
 
-// const useStyles = makeStyles((theme: Theme) => ({
-//   legend: {
-//     marginTop: '1rem',
-//     float: 'left',
-//     marginBottom: '0.75rem',
-//     letterSpacing: '-0.01rem'
-//   }
-// }));
-
 /**
  * Create project - coordinator fields
  *
