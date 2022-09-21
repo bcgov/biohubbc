@@ -45,7 +45,7 @@ const SearchPage: React.FC = () => {
 
   const getSearchResults = useCallback(async () => {
     try {
-      const response = await biohubApi.search.getSearchResults()
+      const response = await biohubApi.search.getSearchResults();
 
       if (!response) {
         setPerformSearch(false);
