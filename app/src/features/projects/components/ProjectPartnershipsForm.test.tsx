@@ -1,4 +1,4 @@
-import { render, screen } from '@testing-library/react';
+import { render } from '@testing-library/react';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { Formik } from 'formik';
 import React from 'react';
@@ -70,7 +70,6 @@ describe('ProjectPartnershipsForm', () => {
       </Formik>
     );
 
-    screen.debug();
     expect(getByLabelText('Indigenous Partnerships', { exact: false })).toBeVisible();
     expect(getByLabelText('Other Partnerships', { exact: false })).toBeVisible();
     expect(getByText('nation 1')).toBeVisible();

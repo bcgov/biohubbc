@@ -288,12 +288,6 @@ exports[`SurveyStudyArea renders correctly 1`] = `
       </p>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-7"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-8"
-    />
-    <div
       class="MuiBox-root MuiBox-root-9"
     >
       <button

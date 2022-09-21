@@ -23,7 +23,7 @@ describe('ProjectLocationForm', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Project Boundary *', { exact: false })).toBeVisible();
+      expect(getByText('Define Project Boundary', { exact: false })).toBeVisible();
       expect(getByLabelText('Location Description', { exact: false })).toBeVisible();
     });
   });
@@ -59,7 +59,7 @@ describe('ProjectLocationForm', () => {
     );
 
     await waitFor(() => {
-      expect(getByText('Project Boundary *', { exact: false })).toBeVisible();
+      expect(getByText('Define Project Boundary', { exact: false })).toBeVisible();
       expect(getByLabelText('Location Description', { exact: false })).toBeVisible();
       expect(getByText('a location description')).toBeVisible();
     });

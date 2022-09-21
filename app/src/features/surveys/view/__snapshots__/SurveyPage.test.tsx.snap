@@ -1407,12 +1407,6 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
               </p>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-242"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-243"
-            />
-            <div
               class="MuiBox-root MuiBox-root-244"
             >
               <button
@@ -2785,12 +2779,6 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 study area
               </p>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-180"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-181"
-            />
             <div
               class="MuiBox-root MuiBox-root-182"
             >

@@ -1462,12 +1462,6 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 Location description
               </p>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-513"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-514"
-            />
             <button
               aria-label="Show Expanded Location"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
@@ -2941,12 +2935,6 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                 Location description
               </p>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-63"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-64"
-            />
             <button
               aria-label="Show Expanded Location"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
@@ -4420,12 +4408,6 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 Location description
               </p>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-127"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-128"
-            />
             <button
               aria-label="Show Expanded Location"
               class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"

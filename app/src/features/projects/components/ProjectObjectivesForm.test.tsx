@@ -21,14 +21,12 @@ describe('ProjectObjectivesForm', () => {
     );
 
     expect(getByLabelText('Objectives', { exact: false })).toBeVisible();
-    expect(getByLabelText('Caveats (Optional)', { exact: false })).toBeVisible();
   });
 
   it('renders correctly with existing objective/caveat values', () => {
     const existingFormValues: IProjectObjectivesForm = {
       objectives: {
-        objectives: 'a project objective',
-        caveats: 'a nice little caveat'
+        objectives: 'a project objective'
       }
     };
 
@@ -44,8 +42,6 @@ describe('ProjectObjectivesForm', () => {
     );
 
     expect(getByLabelText('Objectives', { exact: false })).toBeVisible();
-    expect(getByLabelText('Caveats (Optional)', { exact: false })).toBeVisible();
     expect(getByText('a project objective')).toBeVisible();
-    expect(getByText('a nice little caveat')).toBeVisible();
   });
 });

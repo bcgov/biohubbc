@@ -7,21 +7,18 @@ import yup from 'utils/YupSchema';
 export interface IProjectObjectivesForm {
   objectives: {
     objectives: string;
-    caveats: string;
   };
 }
 
 export const ProjectObjectivesFormInitialValues: IProjectObjectivesForm = {
   objectives: {
-    objectives: '',
-    caveats: ''
+    objectives: ''
   }
 };
 
 export const ProjectObjectivesFormYupSchema = yup.object().shape({
   objectives: yup.object().shape({
-    objectives: yup.string().max(3000, 'Cannot exceed 3000 characters').required('Objectives are required'),
-    caveats: yup.string().max(3000, 'Cannot exceed 3000 characters')
+    objectives: yup.string().max(3000, 'Cannot exceed 3000 characters').required('Objectives are required')
   })
 });
 
@@ -45,9 +42,6 @@ const ProjectObjectivesForm = () => {
             other={{ multiline: true, required: true, rows: 4 }}
           />
         </Grid>
-        {/* <Grid item xs={12}>
-          <CustomTextField name="objectives.caveats" label="Caveats (Optional)" other={{ multiline: true, rows: 4 }} />
-        </Grid> */}
       </Grid>
     </form>
   );
