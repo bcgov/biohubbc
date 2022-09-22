@@ -6,7 +6,7 @@ import { authorizeRequestHandler } from '../../../../../../../request-handlers/s
 import { PermitService } from '../../../../../../../services/permit-service';
 import { getLogger } from '../../../../../../../utils/logger';
 
-const defaultLog = getLogger('paths/project/{projectId}/survey/{projectId}/permit/create');
+const defaultLog = getLogger('paths/project/{projectId}/survey/{projectId}/permit/{permitId}/update');
 
 export const PUT: Operation = [
   authorizeRequestHandler((req) => {
