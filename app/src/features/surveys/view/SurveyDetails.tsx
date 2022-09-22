@@ -27,7 +27,9 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
   return (
     <>
       <Box component={Paper} p={3}>
-        <Typography variant="h2">Survey Details</Typography>
+        <Typography variant="h4" component="h2">
+          Survey Details
+        </Typography>
         <Box component="section" mt={1}>
           <SurveyGeneralInformation
             projectForViewData={projectForViewData}

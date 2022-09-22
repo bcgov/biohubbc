@@ -6,6 +6,19 @@ fieldset {
   min-width: 0;
 }
 
+legend.MuiTypography-root {
+  font-weight: 700;
+  + div {
+    margin-top: 1.25rem;
+  }
+  + div.MuiGrid-root {
+    margin-top: 0.5rem;
+  }
+  + p {
+    margin-top: 0.75rem;
+  }
+}
+
 .sectionHeaderButton {
   & + button {
     margin-left: 0.5rem;
@@ -63,8 +76,4 @@ dd {
 .componentProgress {
   margin-left: calc(50% - 20px);
   margin-right: calc(50% - 20px);
-}
-
-.mapLocations dd {
-  display: inline-block;
 }

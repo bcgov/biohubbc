@@ -10,7 +10,7 @@ exports[`ProjectPermits renders correctly with no permits 1`] = `
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Permits
       </h3>
@@ -109,7 +109,7 @@ exports[`ProjectPermits renders correctly with sampling conducted true 1`] = `
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Permits
       </h3>

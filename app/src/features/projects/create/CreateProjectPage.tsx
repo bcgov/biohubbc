@@ -1,14 +1,11 @@
 import Box from '@material-ui/core/Box';
-import Breadcrumbs from '@material-ui/core/Breadcrumbs';
 import Button from '@material-ui/core/Button';
 import CircularProgress from '@material-ui/core/CircularProgress';
 import Container from '@material-ui/core/Container';
-import Link from '@material-ui/core/Link';
 import Paper from '@material-ui/core/Paper';
 import { Theme } from '@material-ui/core/styles/createMuiTheme';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import Typography from '@material-ui/core/Typography';
-import ArrowBack from '@material-ui/icons/ArrowBack';
 import EditDialog from 'components/dialog/EditDialog';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import { DATE_FORMAT } from 'constants/dateTimeFormats';
@@ -37,14 +34,6 @@ const useStyles = makeStyles((theme: Theme) => ({
     '& + button': {
       marginLeft: '0.5rem'
     }
-  },
-  breadCrumbLink: {
-    display: 'flex',
-    alignItems: 'center',
-    cursor: 'pointer'
-  },
-  breadCrumbLinkIcon: {
-    marginRight: '0.25rem'
   },
   pageTitleContainer: {
     '& h1': {
@@ -277,7 +266,7 @@ const CreateProjectPage: React.FC = () => {
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
       <EditDialog
-        dialogTitle="Save Incomplete Project as a Draft"
+        dialogTitle="Save Draft"
         dialogSaveButtonLabel="Save"
         open={openDraftDialog}
         component={{
@@ -292,29 +281,32 @@ const CreateProjectPage: React.FC = () => {
       />
 
       <Container maxWidth="xl">
-        <Box py={3}>
-          <Box mb={3}>
-            <Breadcrumbs>
-              <Link color="primary" onClick={handleCancel} aria-current="page" className={classes.breadCrumbLink}>
-                <ArrowBack color="primary" fontSize="small" className={classes.breadCrumbLinkIcon} />
-                <Typography variant="body2">Cancel and Exit</Typography>
-              </Link>
-            </Breadcrumbs>
-          </Box>
-          <Box mb={2} display="flex" justifyContent="space-between" alignItems="flex-start">
+        <Box py={5}>
+          <Box mb={3} display="flex" justifyContent="space-between" alignItems="flex-start">
             <Box className={classes.pageTitleContainer}>
               <Typography variant="h1">Create Project</Typography>
               <Typography variant="body1" color="textSecondary">
                 Configure and submit a new species inventory project
               </Typography>
             </Box>
-            <Button
-              variant="outlined"
-              color="primary"
-              onClick={() => setOpenDraftDialog(true)}
-              className={classes.actionButton}>
-              Save as Draft and Exit
-            </Button>
+            <Box>
+              <Button
+                color="primary"
+                size="large"
+                variant="outlined"
+                onClick={() => setOpenDraftDialog(true)}
+                className={classes.actionButton}>
+                Save Draft
+              </Button>
+              <Button
+                color="primary"
+                size="large"
+                variant="outlined"
+                onClick={handleCancel}
+                className={classes.actionButton}>
+                Cancel
+              </Button>
+            </Box>
           </Box>
           <Box display="flex" justifyContent="flex-end">
             <Box visibility={(draft?.date && 'visible') || 'hidden'}>

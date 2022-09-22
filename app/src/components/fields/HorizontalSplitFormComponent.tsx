@@ -38,9 +38,11 @@ const HorizontalSplitFormComponent: React.FC<IHorizontalSplitFormComponentProps>
 
   return (
     <>
-      <Box className={classes.projectFormSection} width="100%" display="flex" flexWrap="nowrap">
+      <Box component="section" className={classes.projectFormSection} width="100%" display="flex" flexWrap="nowrap">
         <Box flex="0 0 auto" className={classes.sectionDetails}>
-          <Typography variant="h2">{title}</Typography>
+          <Typography variant="h3" component="h2">
+            {title}
+          </Typography>
           <Box pt={2} maxWidth="72ch">
             <Typography variant="body1" color="textSecondary">
               {summary}

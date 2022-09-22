@@ -75,7 +75,7 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
     }
 
     const fieldTitle = getFieldTitle(topFieldError);
-    showSnackBar(`Error Invalid Form Value: ${fieldTitle}`);
+    showSnackBar(`One or more fields are missing ${fieldTitle}`);
 
     const errorElement = document.getElementsByName(topFieldError);
 
@@ -96,9 +96,10 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
           horizontal: 'center'
         }}
         open={openSnackbar.open}
-        autoHideDuration={4000}
         onClose={() => setOpenSnackbar({ open: false, msg: '' })}>
-        <Alert severity="error">{openSnackbar.msg}</Alert>
+        <Alert elevation={4} severity="error" variant="filled" onClose={() => setOpenSnackbar({ open: false, msg: '' })}>
+          {openSnackbar.msg}
+        </Alert>
       </Snackbar>
     </>
   );

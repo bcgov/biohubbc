@@ -3,13 +3,13 @@
 exports[`CreateSurveyPage renders correctly when codes and project data are loaded 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-155"
+    class="MuiBox-root MuiBox-root-153"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl"
     >
       <div
-        class="MuiBox-root MuiBox-root-156"
+        class="MuiBox-root MuiBox-root-154"
       >
         <nav
           class="MuiTypography-root MuiBreadcrumbs-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -70,7 +70,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
         </nav>
       </div>
       <div
-        class="MuiBox-root MuiBox-root-157"
+        class="MuiBox-root MuiBox-root-155"
       >
         <h1
           class="MuiTypography-root MuiTypography-h1"
@@ -79,21 +79,21 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
         </h1>
       </div>
       <div
-        class="MuiPaper-root MuiBox-root MuiBox-root-158 MuiPaper-elevation1 MuiPaper-rounded"
+        class="MuiPaper-root MuiBox-root MuiBox-root-156 MuiPaper-elevation1 MuiPaper-rounded"
       >
-        <div
-          class="MuiBox-root MuiBox-root-161 makeStyles-projectFormSection-159"
+        <section
+          class="MuiBox-root MuiBox-root-159 makeStyles-projectFormSection-157"
         >
           <div
-            class="MuiBox-root MuiBox-root-162 makeStyles-sectionDetails-160"
+            class="MuiBox-root MuiBox-root-160 makeStyles-sectionDetails-158"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h3"
             >
               General Information
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-163"
+              class="MuiBox-root MuiBox-root-161"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -101,7 +101,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-164"
+            class="MuiBox-root MuiBox-root-162"
           >
             <form>
               <div
@@ -142,10 +142,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-167"
+                          class="PrivateNotchedOutline-legendLabelled-165"
                         >
                           <span>
                             Survey Name *
@@ -156,344 +156,356 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   </div>
                 </div>
                 <div
-                  class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
-                >
-                  <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
-                  >
-                    <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
-                        data-shrink="true"
-                        for="start_date"
-                        id="start_date-label"
-                      >
-                        Start Date
-                        <span
-                          aria-hidden="true"
-                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                        >
-                           *
-                        </span>
-                      </label>
-                      <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                      >
-                        <input
-                          aria-describedby="start_date-helper-text"
-                          aria-invalid="false"
-                          class="MuiInputBase-input MuiOutlinedInput-input"
-                          data-testid="start-date"
-                          id="start_date"
-                          max="2100-12-31"
-                          min="1900-01-01"
-                          name="survey_details.start_date"
-                          required=""
-                          type="date"
-                          value=""
-                        />
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
-                        >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-167 PrivateNotchedOutline-legendNotched-168"
-                          >
-                            <span>
-                              Start Date *
-                            </span>
-                          </legend>
-                        </fieldset>
-                      </div>
-                      <p
-                        class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
-                        id="start_date-helper-text"
-                      >
-                        Start date must be on or after project start date Oct 10, 1998
-                      </p>
-                    </div>
-                  </div>
-                  <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
-                  >
-                    <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-                        data-shrink="true"
-                        for="end_date"
-                        id="end_date-label"
-                      >
-                        End Date
-                      </label>
-                      <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-                      >
-                        <input
-                          aria-describedby="end_date-helper-text"
-                          aria-invalid="false"
-                          class="MuiInputBase-input MuiOutlinedInput-input"
-                          data-testid="end-date"
-                          id="end_date"
-                          max="2100-12-31"
-                          min="1900-01-01"
-                          name="survey_details.end_date"
-                          type="date"
-                          value=""
-                        />
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
-                        >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-167 PrivateNotchedOutline-legendNotched-168"
-                          >
-                            <span>
-                              End Date
-                            </span>
-                          </legend>
-                        </fieldset>
-                      </div>
-                      <p
-                        class="MuiFormHelperText-root MuiFormHelperText-contained"
-                        id="end_date-helper-text"
-                      >
-                        End date must be on or before project end date Feb 26, 2021
-                      </p>
-                    </div>
-                  </div>
-                </div>
-                <div
-                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                >
-                  <legend
-                    class="MuiTypography-root MuiTypography-body1"
-                  >
-                    Species
-                  </legend>
-                  <div
-                    aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                    data-testid="species.focal_species"
-                    role="combobox"
-                  >
-                    <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
-                        data-shrink="false"
-                        for="species.focal_species"
-                        id="species.focal_species-label"
-                      >
-                        Focal Species
-                        <span
-                          aria-hidden="true"
-                          class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                        >
-                           *
-                        </span>
-                      </label>
-                      <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-                      >
-                        <input
-                          aria-autocomplete="list"
-                          aria-invalid="false"
-                          autocapitalize="none"
-                          autocomplete="off"
-                          class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                          id="species.focal_species"
-                          name="species.focal_species"
-                          required=""
-                          spellcheck="false"
-                          type="text"
-                          value=""
-                        />
-                        <div
-                          class="MuiAutocomplete-endAdornment"
-                        >
-                          <button
-                            aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                            tabindex="-1"
-                            title="Clear"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                          <button
-                            aria-label="Open"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                            tabindex="-1"
-                            title="Open"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M7 10l5 5 5-5z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                        </div>
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
-                        >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-167"
-                          >
-                            <span>
-                              Focal Species *
-                            </span>
-                          </legend>
-                        </fieldset>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <div
-                    aria-expanded="false"
-                    class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-                    data-testid="species.ancillary_species"
-                    role="combobox"
+                    class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3 MuiGrid-item"
                   >
                     <div
-                      class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
                     >
-                      <label
-                        class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                        data-shrink="false"
-                        for="species.ancillary_species"
-                        id="species.ancillary_species-label"
-                      >
-                        Ancillary Species
-                      </label>
                       <div
-                        class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
                       >
-                        <input
-                          aria-autocomplete="list"
-                          aria-invalid="false"
-                          autocapitalize="none"
-                          autocomplete="off"
-                          class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                          id="species.ancillary_species"
-                          name="species.ancillary_species"
-                          spellcheck="false"
-                          type="text"
-                          value=""
-                        />
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined Mui-required Mui-required"
+                          data-shrink="true"
+                          for="start_date"
+                          id="start_date-label"
+                        >
+                          Start Date
+                          <span
+                            aria-hidden="true"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                          >
+                             *
+                          </span>
+                        </label>
                         <div
-                          class="MuiAutocomplete-endAdornment"
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
                         >
-                          <button
-                            aria-label="Clear"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                            tabindex="-1"
-                            title="Clear"
-                            type="button"
+                          <input
+                            aria-describedby="start_date-helper-text"
+                            aria-invalid="false"
+                            class="MuiInputBase-input MuiOutlinedInput-input"
+                            data-testid="start-date"
+                            id="start_date"
+                            max="2100-12-31"
+                            min="1900-01-01"
+                            name="survey_details.start_date"
+                            required=""
+                            type="date"
+                            value=""
+                          />
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                           >
-                            <span
-                              class="MuiIconButton-label"
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-165 PrivateNotchedOutline-legendNotched-166"
                             >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
-                          <button
-                            aria-label="Open"
-                            class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                            tabindex="-1"
-                            title="Open"
-                            type="button"
-                          >
-                            <span
-                              class="MuiIconButton-label"
-                            >
-                              <svg
-                                aria-hidden="true"
-                                class="MuiSvgIcon-root"
-                                focusable="false"
-                                viewBox="0 0 24 24"
-                              >
-                                <path
-                                  d="M7 10l5 5 5-5z"
-                                />
-                              </svg>
-                            </span>
-                            <span
-                              class="MuiTouchRipple-root"
-                            />
-                          </button>
+                              <span>
+                                Start Date *
+                              </span>
+                            </legend>
+                          </fieldset>
                         </div>
-                        <fieldset
-                          aria-hidden="true"
-                          class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                        <p
+                          class="MuiFormHelperText-root MuiFormHelperText-contained Mui-required"
+                          id="start_date-helper-text"
                         >
-                          <legend
-                            class="PrivateNotchedOutline-legendLabelled-167"
+                          Start Date cannot precede Oct 10, 1998
+                        </p>
+                      </div>
+                    </div>
+                    <div
+                      class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6"
+                    >
+                      <div
+                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      >
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+                          data-shrink="true"
+                          for="end_date"
+                          id="end_date-label"
+                        >
+                          End Date
+                        </label>
+                        <div
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                        >
+                          <input
+                            aria-describedby="end_date-helper-text"
+                            aria-invalid="false"
+                            class="MuiInputBase-input MuiOutlinedInput-input"
+                            data-testid="end-date"
+                            id="end_date"
+                            max="2100-12-31"
+                            min="1900-01-01"
+                            name="survey_details.end_date"
+                            type="date"
+                            value=""
+                          />
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                           >
-                            <span>
-                              Ancillary Species
-                            </span>
-                          </legend>
-                        </fieldset>
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-165 PrivateNotchedOutline-legendNotched-166"
+                            >
+                              <span>
+                                End Date
+                              </span>
+                            </legend>
+                          </fieldset>
+                        </div>
+                        <p
+                          class="MuiFormHelperText-root MuiFormHelperText-contained"
+                          id="end_date-helper-text"
+                        >
+                          End Date cannot come after the Project End Date Feb 26, 2021
+                        </p>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
               <fieldset
-                class="MuiBox-root MuiBox-root-170"
+                class="MuiBox-root MuiBox-root-167"
               >
                 <legend
-                  class="MuiTypography-root MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-h5"
+                >
+                  Species
+                </legend>
+                <div
+                  class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+                >
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                  >
+                    <div
+                      aria-expanded="false"
+                      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+                      data-testid="species.focal_species"
+                      role="combobox"
+                    >
+                      <div
+                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      >
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
+                          data-shrink="false"
+                          for="species.focal_species"
+                          id="species.focal_species-label"
+                        >
+                          Focal Species
+                          <span
+                            aria-hidden="true"
+                            class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                          >
+                             *
+                          </span>
+                        </label>
+                        <div
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            aria-invalid="false"
+                            autocapitalize="none"
+                            autocomplete="off"
+                            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                            id="species.focal_species"
+                            name="species.focal_species"
+                            required=""
+                            spellcheck="false"
+                            type="text"
+                            value=""
+                          />
+                          <div
+                            class="MuiAutocomplete-endAdornment"
+                          >
+                            <button
+                              aria-label="Clear"
+                              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                              tabindex="-1"
+                              title="Clear"
+                              type="button"
+                            >
+                              <span
+                                class="MuiIconButton-label"
+                              >
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                class="MuiTouchRipple-root"
+                              />
+                            </button>
+                            <button
+                              aria-label="Open"
+                              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                              tabindex="-1"
+                              title="Open"
+                              type="button"
+                            >
+                              <span
+                                class="MuiIconButton-label"
+                              >
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M7 10l5 5 5-5z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                class="MuiTouchRipple-root"
+                              />
+                            </button>
+                          </div>
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
+                          >
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-165"
+                            >
+                              <span>
+                                Focal Species *
+                              </span>
+                            </legend>
+                          </fieldset>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+                  >
+                    <div
+                      aria-expanded="false"
+                      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+                      data-testid="species.ancillary_species"
+                      role="combobox"
+                    >
+                      <div
+                        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                      >
+                        <label
+                          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+                          data-shrink="false"
+                          for="species.ancillary_species"
+                          id="species.ancillary_species-label"
+                        >
+                          Ancillary Species
+                        </label>
+                        <div
+                          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+                        >
+                          <input
+                            aria-autocomplete="list"
+                            aria-invalid="false"
+                            autocapitalize="none"
+                            autocomplete="off"
+                            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+                            id="species.ancillary_species"
+                            name="species.ancillary_species"
+                            spellcheck="false"
+                            type="text"
+                            value=""
+                          />
+                          <div
+                            class="MuiAutocomplete-endAdornment"
+                          >
+                            <button
+                              aria-label="Clear"
+                              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+                              tabindex="-1"
+                              title="Clear"
+                              type="button"
+                            >
+                              <span
+                                class="MuiIconButton-label"
+                              >
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                class="MuiTouchRipple-root"
+                              />
+                            </button>
+                            <button
+                              aria-label="Open"
+                              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+                              tabindex="-1"
+                              title="Open"
+                              type="button"
+                            >
+                              <span
+                                class="MuiIconButton-label"
+                              >
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M7 10l5 5 5-5z"
+                                  />
+                                </svg>
+                              </span>
+                              <span
+                                class="MuiTouchRipple-root"
+                              />
+                            </button>
+                          </div>
+                          <fieldset
+                            aria-hidden="true"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
+                          >
+                            <legend
+                              class="PrivateNotchedOutline-legendLabelled-165"
+                            >
+                              <span>
+                                Ancillary Species
+                              </span>
+                            </legend>
+                          </fieldset>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </fieldset>
+              <fieldset
+                class="MuiBox-root MuiBox-root-169"
+              >
+                <legend
+                  class="MuiTypography-root MuiTypography-h5"
                 >
                   Lead Biologist
                 </legend>
@@ -535,10 +547,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-167"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               First Name *
@@ -583,10 +595,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-167"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               Last Name *
@@ -599,10 +611,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 </div>
               </fieldset>
               <fieldset
-                class="MuiBox-root MuiBox-root-171"
+                class="MuiBox-root MuiBox-root-170"
               >
                 <legend
-                  class="MuiTypography-root MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-h5"
                 >
                   Permits
                 </legend>
@@ -612,10 +624,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   If a permit is required for this survey, select a permit or add new one.
                 </p>
                 <div
-                  class="MuiBox-root MuiBox-root-172"
+                  class="MuiBox-root MuiBox-root-171"
                 >
                   <div
-                    class="MuiBox-root MuiBox-root-173"
+                    class="MuiBox-root MuiBox-root-172"
                   >
                     <div
                       aria-expanded="false"
@@ -704,10 +716,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           </div>
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-167"
+                              class="PrivateNotchedOutline-legendLabelled-165"
                             >
                               <span>
                                 Select Permit
@@ -719,7 +731,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     </div>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-174"
+                    class="MuiBox-root MuiBox-root-173"
                   >
                     <p
                       class="MuiTypography-root MuiTypography-body1"
@@ -728,7 +740,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     </p>
                   </div>
                   <div
-                    class="MuiBox-root MuiBox-root-175"
+                    class="MuiBox-root MuiBox-root-174"
                   >
                     <button
                       aria-label="add-permit"
@@ -753,9 +765,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                             />
                           </svg>
                         </span>
-                        <strong>
-                          Add Permit
-                        </strong>
+                        Add Permit
                       </span>
                       <span
                         class="MuiTouchRipple-root"
@@ -765,10 +775,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 </div>
               </fieldset>
               <fieldset
-                class="MuiBox-root MuiBox-root-176"
+                class="MuiBox-root MuiBox-root-175"
               >
                 <legend
-                  class="MuiTypography-root MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-h5"
                 >
                   Funding Sources
                 </legend>
@@ -860,10 +870,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </div>
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-167"
+                          class="PrivateNotchedOutline-legendLabelled-165"
                         >
                           <span>
                             Select Funding Sources
@@ -876,23 +886,23 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </fieldset>
             </form>
           </div>
-        </div>
+        </section>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-154"
+          class="MuiDivider-root makeStyles-sectionDivider-152"
         />
-        <div
-          class="MuiBox-root MuiBox-root-177 makeStyles-projectFormSection-159"
+        <section
+          class="MuiBox-root MuiBox-root-176 makeStyles-projectFormSection-157"
         >
           <div
-            class="MuiBox-root MuiBox-root-178 makeStyles-sectionDetails-160"
+            class="MuiBox-root MuiBox-root-177 makeStyles-sectionDetails-158"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h3"
             >
               Purpose and Methodology
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-179"
+              class="MuiBox-root MuiBox-root-178"
             >
               <p
                 class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
@@ -900,14 +910,14 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-180"
+            class="MuiBox-root MuiBox-root-179"
           >
             <form>
               <fieldset
-                class="MuiBox-root MuiBox-root-181"
+                class="MuiBox-root MuiBox-root-180"
               >
                 <legend
-                  class="MuiTypography-root MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-h5"
                 >
                   Purpose of Survey
                 </legend>
@@ -925,7 +935,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         data-shrink="false"
                         id="purpose_and_methodology.intended_outcome_id-label"
                       >
-                        Intended Outcomes
+                        Intended Outcome
                         <span
                           aria-hidden="true"
                           class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -938,7 +948,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       >
                         <div
                           aria-haspopup="listbox"
-                          aria-label="Intended Outcomes"
+                          aria-label="Intended Outcome"
                           aria-labelledby="purpose_and_methodology.intended_outcome_id-label mui-component-select-purpose_and_methodology.intended_outcome_id"
                           class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
                           id="mui-component-select-purpose_and_methodology.intended_outcome_id"
@@ -966,13 +976,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-182 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-181 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-184"
+                            class="PrivateNotchedOutline-legendLabelled-183"
                           >
                             <span>
-                              Intended Outcomes
+                              Intended Outcome
                             </span>
                           </legend>
                         </fieldset>
@@ -1009,10 +1019,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         />
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-167"
+                            class="PrivateNotchedOutline-legendLabelled-165"
                           >
                             <span>
                               Additional Details
@@ -1025,10 +1035,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 </div>
               </fieldset>
               <fieldset
-                class="MuiBox-root MuiBox-root-186"
+                class="MuiBox-root MuiBox-root-185"
               >
                 <legend
-                  class="MuiTypography-root MuiTypography-body1"
+                  class="MuiTypography-root MuiTypography-h5"
                 >
                   Survey Methodology
                 </legend>
@@ -1087,10 +1097,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-182 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-181 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-184"
+                            class="PrivateNotchedOutline-legendLabelled-183"
                           >
                             <span>
                               Field Method
@@ -1155,10 +1165,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                         </svg>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-182 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-181 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-184"
+                            class="PrivateNotchedOutline-legendLabelled-183"
                           >
                             <span>
                               Ecological Season
@@ -1189,7 +1199,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           for="purpose_and_methodology.vantage_code_ids"
                           id="purpose_and_methodology.vantage_code_ids-label"
                         >
-                          Vantage Code
+                          Vantage Codes
                           <span
                             aria-hidden="true"
                             class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
@@ -1269,13 +1279,13 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           </div>
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-167"
+                              class="PrivateNotchedOutline-legendLabelled-165"
                             >
                               <span>
-                                Vantage Code *
+                                Vantage Codes *
                               </span>
                             </legend>
                           </fieldset>
@@ -1283,157 +1293,157 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                       </div>
                     </div>
                   </div>
-                  <div
-                    class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
-                  >
-                    <legend
-                      class="MuiTypography-root MuiTypography-body1"
-                    >
-                      Surveyed Areas *
-                    </legend>
-                    <fieldset
-                      class="MuiFormControl-root"
-                    >
-                      <p
-                        class="MuiTypography-root MuiTypography-body1"
-                      >
-                        Did you survey all areas that include your population of interest?
-                      </p>
-                      <div
-                        class="MuiBox-root MuiBox-root-187"
-                      >
-                        <div
-                          aria-label="Data and Information Sharing Agreement"
-                          class="MuiFormGroup-root"
-                          role="radiogroup"
-                        >
-                          <label
-                            class="MuiFormControlLabel-root"
-                          >
-                            <span
-                              aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-188 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
-                            >
-                              <span
-                                class="MuiIconButton-label"
-                              >
-                                <input
-                                  class="PrivateSwitchBase-input-191"
-                                  name="purpose_and_methodology.surveyed_all_areas"
-                                  required=""
-                                  type="radio"
-                                  value="true"
-                                />
-                                <div
-                                  class="PrivateRadioButtonIcon-root-192"
-                                >
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                    />
-                                  </svg>
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-193"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                    />
-                                  </svg>
-                                </div>
-                              </span>
-                              <span
-                                class="MuiTouchRipple-root"
-                              />
-                            </span>
-                            <span
-                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                            >
-                              Yes - all areas were surveyed
-                            </span>
-                          </label>
-                          <label
-                            class="MuiFormControlLabel-root"
-                          >
-                            <span
-                              aria-disabled="false"
-                              class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-188 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
-                            >
-                              <span
-                                class="MuiIconButton-label"
-                              >
-                                <input
-                                  class="PrivateSwitchBase-input-191"
-                                  name="purpose_and_methodology.surveyed_all_areas"
-                                  required=""
-                                  type="radio"
-                                  value="false"
-                                />
-                                <div
-                                  class="PrivateRadioButtonIcon-root-192"
-                                >
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
-                                    />
-                                  </svg>
-                                  <svg
-                                    aria-hidden="true"
-                                    class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-193"
-                                    focusable="false"
-                                    viewBox="0 0 24 24"
-                                  >
-                                    <path
-                                      d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
-                                    />
-                                  </svg>
-                                </div>
-                              </span>
-                              <span
-                                class="MuiTouchRipple-root"
-                              />
-                            </span>
-                            <span
-                              class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
-                            >
-                              No - only some areas were surveyed
-                            </span>
-                          </label>
-                          <p
-                            class="MuiFormHelperText-root Mui-required"
-                          />
-                        </div>
-                      </div>
-                    </fieldset>
-                  </div>
                 </div>
+                <fieldset
+                  class="MuiBox-root MuiBox-root-186"
+                >
+                  <legend
+                    class="MuiTypography-root MuiTypography-h5"
+                  >
+                    Surveyed Areas
+                  </legend>
+                  <p
+                    class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+                  >
+                    Did you survey all areas that include your population of interest?
+                  </p>
+                  <div
+                    class="MuiFormControl-root"
+                  >
+                    <div
+                      class="MuiBox-root MuiBox-root-187"
+                    >
+                      <div
+                        aria-label="Data and Information Sharing Agreement"
+                        class="MuiFormGroup-root"
+                        role="radiogroup"
+                      >
+                        <label
+                          class="MuiFormControlLabel-root"
+                        >
+                          <span
+                            aria-disabled="false"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-188 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                          >
+                            <span
+                              class="MuiIconButton-label"
+                            >
+                              <input
+                                class="PrivateSwitchBase-input-191"
+                                name="purpose_and_methodology.surveyed_all_areas"
+                                required=""
+                                type="radio"
+                                value="true"
+                              />
+                              <div
+                                class="PrivateRadioButtonIcon-root-192"
+                              >
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                  />
+                                </svg>
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-193"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                  />
+                                </svg>
+                              </div>
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </span>
+                          <span
+                            class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                          >
+                            Yes - all areas were surveyed
+                          </span>
+                        </label>
+                        <label
+                          class="MuiFormControlLabel-root"
+                        >
+                          <span
+                            aria-disabled="false"
+                            class="MuiButtonBase-root MuiIconButton-root PrivateSwitchBase-root-188 MuiRadio-root MuiRadio-colorPrimary MuiIconButton-colorPrimary"
+                          >
+                            <span
+                              class="MuiIconButton-label"
+                            >
+                              <input
+                                class="PrivateSwitchBase-input-191"
+                                name="purpose_and_methodology.surveyed_all_areas"
+                                required=""
+                                type="radio"
+                                value="false"
+                              />
+                              <div
+                                class="PrivateRadioButtonIcon-root-192"
+                              >
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z"
+                                  />
+                                </svg>
+                                <svg
+                                  aria-hidden="true"
+                                  class="MuiSvgIcon-root PrivateRadioButtonIcon-layer-193"
+                                  focusable="false"
+                                  viewBox="0 0 24 24"
+                                >
+                                  <path
+                                    d="M8.465 8.465C9.37 7.56 10.62 7 12 7C14.76 7 17 9.24 17 12C17 13.38 16.44 14.63 15.535 15.535C14.63 16.44 13.38 17 12 17C9.24 17 7 14.76 7 12C7 10.62 7.56 9.37 8.465 8.465Z"
+                                  />
+                                </svg>
+                              </div>
+                            </span>
+                            <span
+                              class="MuiTouchRipple-root"
+                            />
+                          </span>
+                          <span
+                            class="MuiTypography-root MuiFormControlLabel-label MuiTypography-body1"
+                          >
+                            No - only some areas were surveyed
+                          </span>
+                        </label>
+                        <p
+                          class="MuiFormHelperText-root Mui-required"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </fieldset>
               </fieldset>
             </form>
           </div>
-        </div>
+        </section>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-154"
+          class="MuiDivider-root makeStyles-sectionDivider-152"
         />
-        <div
-          class="MuiBox-root MuiBox-root-195 makeStyles-projectFormSection-159"
+        <section
+          class="MuiBox-root MuiBox-root-195 makeStyles-projectFormSection-157"
         >
           <div
-            class="MuiBox-root MuiBox-root-196 makeStyles-sectionDetails-160"
+            class="MuiBox-root MuiBox-root-196 makeStyles-sectionDetails-158"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h3"
             >
               Study Area
             </h2>
@@ -1484,10 +1494,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                     />
                     <fieldset
                       aria-hidden="true"
-                      class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                      class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                     >
                       <legend
-                        class="PrivateNotchedOutline-legendLabelled-167"
+                        class="PrivateNotchedOutline-legendLabelled-165"
                       >
                         <span>
                           Survey Area Name *
@@ -1501,7 +1511,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
               >
                 <h3
-                  class="MuiTypography-root MuiTypography-h3"
+                  class="MuiTypography-root MuiTypography-h5"
                 >
                   Study Area Boundary
                 </h3>
@@ -1597,10 +1607,10 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                           </svg>
                           <fieldset
                             aria-hidden="true"
-                            class="PrivateNotchedOutline-root-165 MuiOutlinedInput-notchedOutline"
+                            class="PrivateNotchedOutline-root-163 MuiOutlinedInput-notchedOutline"
                           >
                             <legend
-                              class="PrivateNotchedOutline-legendLabelled-167"
+                              class="PrivateNotchedOutline-legendLabelled-165"
                             >
                               <span>
                                 Map Layers
@@ -1854,18 +1864,18 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </div>
             </form>
           </div>
-        </div>
+        </section>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-154"
+          class="MuiDivider-root makeStyles-sectionDivider-152"
         />
-        <div
-          class="MuiBox-root MuiBox-root-208 makeStyles-projectFormSection-159"
+        <section
+          class="MuiBox-root MuiBox-root-208 makeStyles-projectFormSection-157"
         >
           <div
-            class="MuiBox-root MuiBox-root-209 makeStyles-sectionDetails-160"
+            class="MuiBox-root MuiBox-root-209 makeStyles-sectionDetails-158"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h3"
             >
               Proprietary Data
             </h2>
@@ -2039,18 +2049,18 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </div>
             </form>
           </div>
-        </div>
+        </section>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-154"
+          class="MuiDivider-root makeStyles-sectionDivider-152"
         />
-        <div
-          class="MuiBox-root MuiBox-root-216 makeStyles-projectFormSection-159"
+        <section
+          class="MuiBox-root MuiBox-root-216 makeStyles-projectFormSection-157"
         >
           <div
-            class="MuiBox-root MuiBox-root-217 makeStyles-sectionDetails-160"
+            class="MuiBox-root MuiBox-root-217 makeStyles-sectionDetails-158"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h3"
             >
               Agreements
             </h2>
@@ -2072,17 +2082,17 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
-                  <p
-                    class="MuiTypography-root makeStyles-bold-220 MuiTypography-body1"
+                  <h3
+                    class="MuiTypography-root MuiTypography-h5"
                   >
                     Species and Ecosystems Data and Information Security (SEDIS) Procedures
-                  </p>
+                  </h3>
                 </div>
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <fieldset
-                    class="MuiFormControl-root"
+                    class="MuiFormControl-root makeStyles-agreementInput-220"
                   >
                     <label
                       class="MuiFormControlLabel-root"
@@ -2133,18 +2143,18 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
                   <div
                     class="MuiBox-root MuiBox-root-221"
                   >
-                    <p
-                      class="MuiTypography-root makeStyles-bold-220 MuiTypography-body1"
+                    <h3
+                      class="MuiTypography-root MuiTypography-h5"
                     >
                       Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
-                    </p>
+                    </h3>
                   </div>
                 </div>
                 <div
                   class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
                 >
                   <fieldset
-                    class="MuiFormControl-root"
+                    class="MuiFormControl-root makeStyles-agreementInput-220"
                   >
                     <label
                       class="MuiFormControlLabel-root"
@@ -2192,15 +2202,15 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
               </div>
             </form>
           </div>
-        </div>
+        </section>
         <hr
-          class="MuiDivider-root makeStyles-sectionDivider-154"
+          class="MuiDivider-root makeStyles-sectionDivider-152"
         />
         <div
           class="MuiBox-root MuiBox-root-222"
         >
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-149 MuiButton-containedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained makeStyles-actionButton-149 MuiButton-containedPrimary MuiButton-containedSizeLarge MuiButton-sizeLarge"
             tabindex="0"
             type="submit"
           >
@@ -2214,7 +2224,7 @@ exports[`CreateSurveyPage renders correctly when codes and project data are load
             />
           </button>
           <button
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-149 MuiButton-outlinedPrimary"
+            class="MuiButtonBase-root MuiButton-root MuiButton-outlined makeStyles-actionButton-149 MuiButton-outlinedPrimary MuiButton-outlinedSizeLarge MuiButton-sizeLarge"
             tabindex="0"
             type="button"
           >

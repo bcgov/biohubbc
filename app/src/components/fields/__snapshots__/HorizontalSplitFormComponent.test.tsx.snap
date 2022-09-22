@@ -2,14 +2,14 @@
 
 exports[`HorizontalSplitFormComponent renders correctly 1`] = `
 <DocumentFragment>
-  <div
+  <section
     class="MuiBox-root MuiBox-root-3 makeStyles-projectFormSection-1"
   >
     <div
       class="MuiBox-root MuiBox-root-4 makeStyles-sectionDetails-2"
     >
       <h2
-        class="MuiTypography-root MuiTypography-h2"
+        class="MuiTypography-root MuiTypography-h3"
       >
         Section title
       </h2>
@@ -36,6 +36,6 @@ exports[`HorizontalSplitFormComponent renders correctly 1`] = `
         </p>
       </div>
     </div>
-  </div>
+  </section>
 </DocumentFragment>
 `;

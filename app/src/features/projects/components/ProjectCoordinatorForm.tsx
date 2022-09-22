@@ -109,14 +109,12 @@ const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) =
           required={true}
           component="fieldset"
           error={touched.coordinator?.share_contact_details && Boolean(errors.coordinator?.share_contact_details)}>
-          <Typography variant="h3" component="legend">
+          <Typography component="legend" variant="h5">
             Share Contact Details
           </Typography>
-          <Box mt={1.5}>
-            <Typography color="textSecondary">
-              Do you want the project contact's name and email address visible to the public?
-            </Typography>
-          </Box>
+          <Typography color="textSecondary">
+            Do you want the project contact's name and email address visible to the public?
+          </Typography>
           <Box mt={2} pl={1}>
             <RadioGroup
               name="coordinator.share_contact_details"

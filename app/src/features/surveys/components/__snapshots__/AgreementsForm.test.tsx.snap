@@ -9,17 +9,17 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        <p
-          class="MuiTypography-root makeStyles-bold-1 MuiTypography-body1"
+        <h3
+          class="MuiTypography-root MuiTypography-h5"
         >
           Species and Ecosystems Data and Information Security (SEDIS) Procedures
-        </p>
+        </h3>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root makeStyles-agreementInput-1"
         >
           <label
             class="MuiFormControlLabel-root"
@@ -70,18 +70,18 @@ exports[`Agreements Form renders correctly the empty component correctly 1`] = `
         <div
           class="MuiBox-root MuiBox-root-6"
         >
-          <p
-            class="MuiTypography-root makeStyles-bold-1 MuiTypography-body1"
+          <h3
+            class="MuiTypography-root MuiTypography-h5"
           >
             Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
-          </p>
+          </h3>
         </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root makeStyles-agreementInput-1"
         >
           <label
             class="MuiFormControlLabel-root"
@@ -140,17 +140,17 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        <p
-          class="MuiTypography-root makeStyles-bold-7 MuiTypography-body1"
+        <h3
+          class="MuiTypography-root MuiTypography-h5"
         >
           Species and Ecosystems Data and Information Security (SEDIS) Procedures
-        </p>
+        </h3>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root makeStyles-agreementInput-7"
         >
           <label
             class="MuiFormControlLabel-root"
@@ -202,18 +202,18 @@ exports[`Agreements Form renders correctly the filled component correctly 1`] = 
         <div
           class="MuiBox-root MuiBox-root-12"
         >
-          <p
-            class="MuiTypography-root makeStyles-bold-7 MuiTypography-body1"
+          <h3
+            class="MuiTypography-root MuiTypography-h5"
           >
             Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
-          </p>
+          </h3>
         </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root makeStyles-agreementInput-7"
         >
           <label
             class="MuiFormControlLabel-root"
@@ -273,17 +273,17 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
-        <p
-          class="MuiTypography-root makeStyles-bold-13 MuiTypography-body1"
+        <h3
+          class="MuiTypography-root MuiTypography-h5"
         >
           Species and Ecosystems Data and Information Security (SEDIS) Procedures
-        </p>
+        </h3>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root makeStyles-agreementInput-13"
         >
           <label
             class="MuiFormControlLabel-root"
@@ -337,18 +337,18 @@ exports[`Agreements Form renders correctly when errors exist 1`] = `
         <div
           class="MuiBox-root MuiBox-root-18"
         >
-          <p
-            class="MuiTypography-root makeStyles-bold-13 MuiTypography-body1"
+          <h3
+            class="MuiTypography-root MuiTypography-h5"
           >
             Freedom of Information and Protection of Privacy Act (FOIPPA) Requirements
-          </p>
+          </h3>
         </div>
       </div>
       <div
         class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
       >
         <fieldset
-          class="MuiFormControl-root"
+          class="MuiFormControl-root makeStyles-agreementInput-13"
         >
           <label
             class="MuiFormControlLabel-root"

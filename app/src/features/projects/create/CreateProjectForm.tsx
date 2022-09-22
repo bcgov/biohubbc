@@ -135,9 +135,11 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                 <Box mt={2}>
                   <ProjectObjectivesForm />
                 </Box>
-                <Box mt={5}>
-                  <Typography variant="h3">IUCN Conservation Actions Classification</Typography>
-                  <Box mt={1.5} maxWidth="90ch">
+                <Box component="fieldset" mt={5}>
+                  <Typography component="legend" variant="h5">
+                    IUCN Conservation Actions Classification
+                  </Typography>
+                  <Box maxWidth="90ch">
                     <Typography variant="body1" color="textSecondary">
                       Conservation actions are specific actions or sets of tasks undertaken by project staff designed to
                       reach each of the project's objectives.
@@ -189,30 +191,36 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
             summary="Specify project funding sources and additional partnerships."
             component={
               <>
-                <Typography variant="h3">Funding</Typography>
-                <Box mt={1.5} maxWidth="90ch">
-                  <Typography variant="body1" color="textSecondary">
-                    Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
-                    be exact, please round to the nearest 100.
+                <Box component="fieldset">
+                  <Typography component="legend" variant="h5">
+                    Funding Sources
                   </Typography>
+                  <Box maxWidth="90ch">
+                    <Typography variant="body1" color="textSecondary">
+                      Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
+                      be exact, please round to the nearest 100.
+                    </Typography>
+                  </Box>
+                  <Box mt={3.5}>
+                    <ProjectFundingForm
+                      funding_sources={
+                        codes?.funding_source?.map((item) => {
+                          return { value: item.id, label: item.name };
+                        }) || []
+                      }
+                      investment_action_category={
+                        codes?.investment_action_category?.map((item) => {
+                          return { value: item.id, fs_id: item.fs_id, label: item.name };
+                        }) || []
+                      }
+                    />
+                  </Box>
                 </Box>
-                <Box mt={3.5}>
-                  <ProjectFundingForm
-                    funding_sources={
-                      codes?.funding_source?.map((item) => {
-                        return { value: item.id, label: item.name };
-                      }) || []
-                    }
-                    investment_action_category={
-                      codes?.investment_action_category?.map((item) => {
-                        return { value: item.id, fs_id: item.fs_id, label: item.name };
-                      }) || []
-                    }
-                  />
-                </Box>
-                <Box mt={5}>
-                  <Typography variant="h3">Partnerships</Typography>
-                  <Box mt={1.5} maxWidth="90ch">
+                <Box component="fieldset" mt={5}>
+                  <Typography component="legend" variant="h5">
+                    Partnerships
+                  </Typography>
+                  <Box maxWidth="90ch">
                     <Typography variant="body1" color="textSecondary">
                       Additional partnerships that have not been previously identified as a funding sources.
                     </Typography>
@@ -249,16 +257,17 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
       <Box mt={4} display="flex" justifyContent="flex-end">
         <Button
           type="submit"
-          variant="contained"
           color="primary"
+          size="large"
+          variant="contained"
           onClick={() => formikRef.current?.submitForm()}
           className={classes.actionButton}>
           Submit Project
         </Button>
-        <Button variant="outlined" color="primary" onClick={handleDraft} className={classes.actionButton}>
+        <Button color="primary" size="large" variant="outlined" onClick={handleDraft} className={classes.actionButton}>
           Save Draft
         </Button>
-        <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
+        <Button color="primary" size="large" variant="outlined" onClick={handleCancel} className={classes.actionButton}>
           Cancel
         </Button>
       </Box>
