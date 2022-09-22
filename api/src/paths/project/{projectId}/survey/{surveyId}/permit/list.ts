@@ -1,6 +1,6 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { PROJECT_ROLE } from '../../../../../../constants/roles';
+import { PROJECT_ROLE, SYSTEM_ROLE } from '../../../../../../constants/roles';
 import { getDBConnection } from '../../../../../../database/db';
 import { IPermitModel } from '../../../../../../repositories/permit-repository';
 import { authorizeRequestHandler } from '../../../../../../request-handlers/security/authorization';
@@ -17,6 +17,10 @@ export const GET: Operation = [
           validProjectRoles: [PROJECT_ROLE.PROJECT_LEAD, PROJECT_ROLE.PROJECT_EDITOR, PROJECT_ROLE.PROJECT_VIEWER],
           projectId: Number(req.params.projectId),
           discriminator: 'ProjectRole'
+        },
+        {
+          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR],
+          discriminator: 'SystemRole'
         }
       ]
     };
@@ -30,6 +34,17 @@ GET.apiDoc = {
   security: [
     {
       Bearer: []
+    }
+  ],
+  parameters: [
+    {
+      in: 'path',
+      name: 'surveyId',
+      schema: {
+        type: 'number',
+        minimum: 1
+      },
+      required: true
     }
   ],
   responses: {
@@ -62,10 +77,6 @@ GET.apiDoc = {
                 },
                 type: {
                   type: 'string'
-                },
-                end_date: {
-                  type: 'string',
-                  nullable: true
                 },
                 create_date: {
                   oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -113,9 +124,9 @@ export function listSurveyPermits(): RequestHandler {
     try {
       await connection.open();
 
-      const surveyPermitService = new PermitService(connection);
+      const permitService = new PermitService(connection);
 
-      const permits: IPermitModel[] = await surveyPermitService.getPermitBySurveyId(surveyId);
+      const permits: IPermitModel[] = await permitService.getPermitBySurveyId(surveyId);
 
       await connection.commit();
 
