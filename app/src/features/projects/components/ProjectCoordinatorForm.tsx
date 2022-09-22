@@ -61,7 +61,6 @@ export interface IProjectCoordinatorFormProps {
  * @return {*}
  */
 const ProjectCoordinatorForm: React.FC<IProjectCoordinatorFormProps> = (props) => {
-  // const classes = useStyles();
   const { values, touched, handleSubmit, errors, handleChange } = useFormikContext<ICreateProjectRequest>();
 
   return (

@@ -73,8 +73,6 @@ export interface IProjectIUCNFormProps {
  * @return {*}
  */
 const ProjectIUCNForm: React.FC<IProjectIUCNFormProps> = (props) => {
-  // const classes = useStyles();
-
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectIUCNForm>();
 
   return (
