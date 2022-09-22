@@ -4,6 +4,7 @@ import {
   UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
+import { AuthStateContext } from 'contexts/authStateContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import PermitsRouter from 'features/permits/PermitsRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -15,9 +16,29 @@ import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
 import LogOutPage from 'pages/logout/LogOutPage';
-import React from 'react';
-import { Redirect, Switch, useLocation } from 'react-router-dom';
+import React, {useContext, useEffect} from 'react';
+import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
+interface ILandingPageProps {
+  originalPath: string
+}
+
+// not working...
+const LandingPage: React.FC<ILandingPageProps> = ({originalPath}) => {
+  console.log(`Landing Page Path: ${originalPath}`)
+  const history = useHistory()
+  const { keycloakWrapper } = useContext(AuthStateContext);
+
+  useEffect(() => {
+    // re rendering a bunch because of when this is getting called...
+    history.push(originalPath);
+    keycloakWrapper?.keycloak?.login();
+  }, [])
+  // console.log("")
+  console.log(history)
+  // console.log(keycloakWrapper)
+  return null;
+}
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -90,7 +111,7 @@ const AppRouter: React.FC = () => {
 
       <AppRoute title="*" path="*">
         <UnAuthenticatedRouteGuard>
-          <Redirect to="/forbidden" />
+          <LandingPage originalPath={location.pathname} />
         </UnAuthenticatedRouteGuard>
       </AppRoute>
 
