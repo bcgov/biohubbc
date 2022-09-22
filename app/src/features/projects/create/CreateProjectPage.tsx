@@ -23,7 +23,7 @@ import useDataLoader from 'hooks/useDataLoader';
 import { useQuery } from 'hooks/useQuery';
 import { ICreateProjectRequest } from 'interfaces/useProjectApi.interface';
 import React, { useContext, useEffect, useRef, useState } from 'react';
-import { useHistory, useLocation } from 'react-router';
+import { useHistory } from 'react-router';
 import { Prompt } from 'react-router-dom';
 import { getFormattedDate } from 'utils/Utils';
 import CreateProjectForm from './CreateProjectForm';
@@ -70,12 +70,6 @@ const CreateProjectPage: React.FC = () => {
 
   const draftDataLoader = useDataLoader((draftId: number) => biohubApi.draft.getDraft(draftId));
 
-  const location = useLocation();
-
-  console.log('location.search', location.search);
-  console.log('queryParams', queryParams);
-  console.log('queryParams.draftId', queryParams.draftId);
-
   if (queryParams.draftId) {
     draftDataLoader.load(queryParams.draftId);
   }
@@ -84,10 +78,8 @@ const CreateProjectPage: React.FC = () => {
     const setFormikValues = (data: ICreateProjectRequest) => {
       formikRef.current?.setValues(data);
     };
-    console.log('draftDataLoader', draftDataLoader);
 
     if (draftDataLoader.data?.data) {
-      console.log('draftDataLoader.data?.data', draftDataLoader.data?.data);
       setFormikValues(draftDataLoader.data?.data);
     }
   }, [draftDataLoader]);
@@ -259,8 +251,6 @@ const CreateProjectPage: React.FC = () => {
   if (!codesDataLoader.data) {
     return <CircularProgress className="pageProgress" size={40} />;
   }
-
-  console.log('formikRef.current?.values', formikRef.current?.values);
 
   return (
     <>

@@ -63,27 +63,6 @@ describe('deleteProject', () => {
     }
   });
 
-  it('should throw a 400 error when no sql statement returned for getProjectSQL', async () => {
-    sinon.stub(db, 'getDBConnection').returns({
-      ...dbConnectionObj,
-      systemUserId: () => {
-        return 20;
-      }
-    });
-
-    sinon.stub(project_queries, 'getProjectSQL').returns(null);
-
-    try {
-      const result = delete_project.deleteProject();
-
-      await result(sampleReq, (null as unknown) as any, (null as unknown) as any);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
-    }
-  });
-
   it('should throw a 400 error when fails to get the project cause no rows', async () => {
     sinon.stub(db, 'getDBConnection').returns({
       ...dbConnectionObj,

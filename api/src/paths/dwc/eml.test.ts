@@ -29,7 +29,7 @@ describe('getProjectEml', () => {
       expect.fail();
     } catch (actualError) {
       expect((actualError as HTTPError).status).to.equal(400);
-      expect((actualError as HTTPError).message).to.equal('Failed to build SQL get statement');
+      expect((actualError as HTTPError).message).to.equal('Failed to get project objectives data');
     }
   });
 

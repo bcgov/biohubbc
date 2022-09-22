@@ -160,7 +160,7 @@ describe('CreateProjectPage', () => {
       jest.restoreAllMocks();
     });
 
-    it.only('preloads draft data and populates on form fields', async () => {
+    it('preloads draft data and populates on form fields', async () => {
       mockBiohubApi().codes.getAllCodeSets.mockResolvedValue(({
         coordinator_agency: [{ id: 1, name: 'A Rocha Canada' }]
       } as unknown) as IGetAllCodeSetsResponse);
@@ -176,25 +176,25 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          project: ProjectDetailsFormInitialValues,
-          objectives: ProjectObjectivesFormInitialValues,
-          location: ProjectLocationFormInitialValues,
-          iucn: ProjectIUCNFormInitialValues,
-          funding: ProjectFundingFormInitialValues,
-          partnerships: ProjectPartnershipsFormInitialValues
+          project: ProjectDetailsFormInitialValues.project,
+          objectives: ProjectObjectivesFormInitialValues.objectives,
+          location: ProjectLocationFormInitialValues.location,
+          iucn: ProjectIUCNFormInitialValues.iucn,
+          funding: ProjectFundingFormInitialValues.funding,
+          partnerships: ProjectPartnershipsFormInitialValues.partnerships
         }
       });
 
-      const { getByText } = render(
+      const { getByDisplayValue } = render(
         <MemoryRouter initialEntries={['?draftId=1']}>
           <CreateProjectPage />
         </MemoryRouter>
       );
 
       await waitFor(() => {
-        expect(getByText('Draft first name')).toBeInTheDocument();
-        expect(getByText('Draft last name')).toBeInTheDocument();
-        expect(getByText('draftemail@example.com')).toBeInTheDocument();
+        expect(getByDisplayValue('Draft first name', { exact: false })).toBeInTheDocument();
+        expect(getByDisplayValue('Draft last name', { exact: false })).toBeInTheDocument();
+        expect(getByDisplayValue('draftemail@example.com', { exact: false })).toBeInTheDocument();
       });
     });
 
@@ -279,11 +279,11 @@ describe('CreateProjectPage', () => {
         date: '2021-01-20'
       });
 
-      const { getByText, getAllByText, findByText, queryByText, getByLabelText } = renderContainer();
+      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
 
       // wait for initial page to load
       await waitFor(() => {
-        expect(getAllByText('Project Contact').length).toEqual(2);
+        expect(getByText('General Information')).toBeVisible();
       });
 
       // update first name field
@@ -310,13 +310,18 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          permit: expect.any(Object),
-          project: expect.any(Object),
-          objectives: expect.any(Object),
-          location: expect.any(Object),
-          iucn: expect.any(Object),
-          funding: expect.any(Object),
-          partnerships: expect.any(Object)
+          project: {
+            project_name: '',
+            project_type: ('' as unknown) as number,
+            project_activities: [],
+            start_date: '',
+            end_date: ''
+          },
+          objectives: { objectives: '' },
+          location: { location_description: '', geometry: [] },
+          iucn: { classificationDetails: [] },
+          funding: { funding_sources: [] },
+          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
@@ -344,13 +349,18 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          permit: expect.any(Object),
-          project: expect.any(Object),
-          objectives: expect.any(Object),
-          location: expect.any(Object),
-          iucn: expect.any(Object),
-          funding: expect.any(Object),
-          partnerships: expect.any(Object)
+          project: {
+            project_name: '',
+            project_type: ('' as unknown) as number,
+            project_activities: [],
+            start_date: '',
+            end_date: ''
+          },
+          objectives: { objectives: '' },
+          location: { location_description: '', geometry: [] },
+          iucn: { classificationDetails: [] },
+          funding: { funding_sources: [] },
+          partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
         expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();

@@ -87,6 +87,14 @@ const ResourcesPage: React.FC = () => {
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '27 KB'
+    },
+    {
+      id: '9',
+      name: 'Elk Summary Results Template 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Summary_Results_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '24 KB'
     }
   ];
 
