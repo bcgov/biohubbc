@@ -145,11 +145,7 @@ export const updateSurveyOccurrenceSubmissionSQL = (data: {
  * @param {number} surveyId
  * @returns {SQLStatement} sql query object
  */
-export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLStatement | null => {
-  if (!surveyId) {
-    return null;
-  }
-
+export const getLatestSurveyOccurrenceSubmissionSQL = (surveyId: number): SQLStatement => {
   return SQL`
     SELECT
       os.occurrence_submission_id as id,
