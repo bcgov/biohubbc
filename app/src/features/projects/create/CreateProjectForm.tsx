@@ -64,9 +64,9 @@ export interface ICreateProjectForm {
 }
 
 export const initialProjectFieldData: ICreateProjectRequest = {
-  ...ProjectCoordinatorInitialValues,
   ...ProjectDetailsFormInitialValues,
   ...ProjectObjectivesFormInitialValues,
+  ...ProjectCoordinatorInitialValues,
   ...ProjectLocationFormInitialValues,
   ...ProjectIUCNFormInitialValues,
   ...ProjectFundingFormInitialValues,
@@ -139,12 +139,10 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     IUCN Conservation Actions Classification
                   </Typography>
-                  <Box maxWidth="90ch">
-                    <Typography variant="body1" color="textSecondary">
-                      Conservation actions are specific actions or sets of tasks undertaken by project staff designed to
-                      reach each of the project's objectives.
-                    </Typography>
-                  </Box>
+                  <Typography variant="body1" color="textSecondary" style={{maxWidth: '90ch'}}>
+                    Conservation actions are specific actions or sets of tasks undertaken by project staff designed to
+                    reach each of the project's objectives.
+                  </Typography>
 
                   <Box mt={4}>
                     <ProjectIUCNForm
@@ -195,12 +193,10 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Funding Sources
                   </Typography>
-                  <Box maxWidth="90ch">
-                    <Typography variant="body1" color="textSecondary">
-                      Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
-                      be exact, please round to the nearest 100.
-                    </Typography>
-                  </Box>
+                  <Typography variant="body1" color="textSecondary" style={{maxWidth: '90ch'}}>
+                    Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
+                    be exact, please round to the nearest 100.
+                  </Typography>
                   <Box mt={3.5}>
                     <ProjectFundingForm
                       funding_sources={
@@ -220,11 +216,9 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Partnerships
                   </Typography>
-                  <Box maxWidth="90ch">
-                    <Typography variant="body1" color="textSecondary">
-                      Additional partnerships that have not been previously identified as a funding sources.
-                    </Typography>
-                  </Box>
+                  <Typography variant="body1" color="textSecondary" style={{maxWidth: '90ch'}}>
+                    Additional partnerships that have not been previously identified as a funding sources.
+                  </Typography>
                   <Box mt={4}>
                     <ProjectPartnershipsForm
                       first_nations={

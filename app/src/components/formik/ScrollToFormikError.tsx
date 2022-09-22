@@ -56,16 +56,6 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
       }
     };
 
-    const getFieldTitle = (absoluteErrorName: string) => {
-      const fieldTitleArray = absoluteErrorName.split('.');
-      const fieldTitleSplit = fieldTitleArray[fieldTitleArray.length - 1].split('_');
-      let fieldTitleUpperCase = '';
-      fieldTitleSplit.forEach((item) => {
-        fieldTitleUpperCase += `${item.charAt(0).toUpperCase() + item.slice(1)} `;
-      });
-      return fieldTitleUpperCase;
-    };
-
     const fieldErrorNames = getAllFieldErrorNames(errors);
 
     const topFieldError = getFirstErrorField(fieldErrorNames);
@@ -74,8 +64,7 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
       return;
     }
 
-    const fieldTitle = getFieldTitle(topFieldError);
-    showSnackBar(`One or more fields are missing ${fieldTitle}`);
+    showSnackBar(`Missing one or more required fields.`);
 
     const errorElement = document.getElementsByName(topFieldError);
 
@@ -88,6 +77,8 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errors, submitCount]);
 
+  const closeSnackBar = () => setOpenSnackbar((currentState) => { return { open: false, msg: currentState.msg } })
+
   return (
     <>
       <Snackbar
@@ -96,8 +87,8 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
           horizontal: 'center'
         }}
         open={openSnackbar.open}
-        onClose={() => setOpenSnackbar({ open: false, msg: '' })}>
-        <Alert elevation={4} severity="error" variant="filled" onClose={() => setOpenSnackbar({ open: false, msg: '' })}>
+        onClose={closeSnackBar}>
+        <Alert elevation={4} severity="error" variant="filled" onClose={closeSnackBar}>
           {openSnackbar.msg}
         </Alert>
       </Snackbar>

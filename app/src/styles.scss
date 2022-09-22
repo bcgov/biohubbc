@@ -19,6 +19,10 @@ legend.MuiTypography-root {
   }
 }
 
+h3.MuiTypography-root + p {
+  margin-top: 0.75rem;
+}
+
 .sectionHeaderButton {
   & + button {
     margin-left: 0.5rem;

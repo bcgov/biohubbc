@@ -101,6 +101,7 @@ const YesNoDialog: React.FC<IYesNoDialogProps> = (props) => {
 
   return (
     <Dialog
+      fullWidth
       open={props.open}
       onClose={props.onClose}
       data-testid="yes-no-dialog"
