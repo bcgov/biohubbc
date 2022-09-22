@@ -6,7 +6,6 @@ import centerOfMass from '@turf/center-of-mass';
 import { IErrorDialogProps } from 'components/dialog/ErrorDialog';
 import MapContainer, { IClusteredPointGeometries } from 'components/map/MapContainer';
 import { SearchFeaturePopup } from 'components/map/SearchFeaturePopup';
-import { AuthStateContext } from 'contexts/authStateContext';
 import { DialogContext } from 'contexts/dialogContext';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -25,7 +24,6 @@ const SearchPage: React.FC = () => {
   const [geometries, setGeometries] = useState<IClusteredPointGeometries[]>([]);
 
   const dialogContext = useContext(DialogContext);
-  const { keycloakWrapper } = useContext(AuthStateContext);
 
   const showFilterErrorDialog = useCallback(
     (textDialogProps?: Partial<IErrorDialogProps>) => {
@@ -73,7 +71,7 @@ const SearchPage: React.FC = () => {
         dialogErrorDetails: apiError?.errors
       });
     }
-  }, [biohubApi.search, showFilterErrorDialog, keycloakWrapper]);
+  }, [biohubApi.search, showFilterErrorDialog]);
 
   useEffect(() => {
     if (performSearch) {
