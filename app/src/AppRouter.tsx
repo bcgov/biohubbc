@@ -1,6 +1,7 @@
 import {
   AuthenticatedRouteGuard,
-  SystemRoleRouteGuard
+  SystemRoleRouteGuard,
+  // UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
@@ -22,19 +23,21 @@ const AppRouter: React.FC = () => {
   const location = useLocation();
   // const { keycloakWrapper } = useContext(AuthStateContext);
 
+  /*
+    what am I trying to do here?
+    so like if the user is unauthenticated, maybe wrap that thing up differently...
+  
+    access request requires logged in to get access to an actual page/ project? current work flow doesn't make sense for new users, no log in prompt
+    so shoud access request then just prompt a login? or take you to a, please log me in page
+  */
+
   const getTitle = (page: string) => {
     return `SIMS - ${page}`;
   };
-
+  console.log(`Path: ${location.pathname}`)
   return (
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
-
-      {/* <AppRoute path="*" title={getTitle('Search')} layout={PublicLayout}>
-        <UnAuthenticatedRouteGuard>
-          <Redirect exact from="*" to={`${keycloakWrapper?.keycloak?.login()}`} />
-        </UnAuthenticatedRouteGuard>
-      </AppRoute> */}
 
       <AppRoute path="/page-not-found" title={getTitle('Page Not Found')} layout={PublicLayout}>
         <NotFoundPage />
@@ -45,9 +48,7 @@ const AppRouter: React.FC = () => {
       </AppRoute>
 
       <AppRoute path="/access-request" title={getTitle('Access Request')} layout={PublicLayout}>
-        <AuthenticatedRouteGuard>
-          <AccessRequestPage />
-        </AuthenticatedRouteGuard>
+        <AccessRequestPage />
       </AppRoute>
 
       <AppRoute path="/request-submitted" title={getTitle('Request submitted')} layout={PublicLayout}>
@@ -96,6 +97,18 @@ const AppRouter: React.FC = () => {
         </AuthenticatedRouteGuard>
       </AppRoute>
 
+      {/* <AuthenticatedRouteGuard>
+        <AppRoute title="*" path="*">
+          <Redirect to="/admin" />
+        </AppRoute>
+      </AuthenticatedRouteGuard> */}
+
+      {/* <UnAuthenticatedRouteGuard>
+        <AppRoute title="*" path="*">
+          <Redirect to="/forbidden" />
+        </AppRoute>
+      </UnAuthenticatedRouteGuard> */}
+      
       <AppRoute title="*" path="*">
         <Redirect to="/page-not-found" />
       </AppRoute>
