@@ -1,7 +1,7 @@
 import {
   AuthenticatedRouteGuard,
   SystemRoleRouteGuard,
-  // UnAuthenticatedRouteGuard
+  UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
@@ -21,20 +21,11 @@ import AppRoute from 'utils/AppRoute';
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
-  // const { keycloakWrapper } = useContext(AuthStateContext);
-
-  /*
-    what am I trying to do here?
-    so like if the user is unauthenticated, maybe wrap that thing up differently...
-  
-    access request requires logged in to get access to an actual page/ project? current work flow doesn't make sense for new users, no log in prompt
-    so shoud access request then just prompt a login? or take you to a, please log me in page
-  */
 
   const getTitle = (page: string) => {
     return `SIMS - ${page}`;
   };
-  console.log(`Path: ${location.pathname}`)
+  console.log(`Path: ${location.pathname}`);
   return (
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
@@ -97,18 +88,12 @@ const AppRouter: React.FC = () => {
         </AuthenticatedRouteGuard>
       </AppRoute>
 
-      {/* <AuthenticatedRouteGuard>
-        <AppRoute title="*" path="*">
-          <Redirect to="/admin" />
-        </AppRoute>
-      </AuthenticatedRouteGuard> */}
-
-      {/* <UnAuthenticatedRouteGuard>
-        <AppRoute title="*" path="*">
+      <AppRoute title="*" path="*">
+        <UnAuthenticatedRouteGuard>
           <Redirect to="/forbidden" />
-        </AppRoute>
-      </UnAuthenticatedRouteGuard> */}
-      
+        </UnAuthenticatedRouteGuard>
+      </AppRoute>
+
       <AppRoute title="*" path="*">
         <Redirect to="/page-not-found" />
       </AppRoute>
