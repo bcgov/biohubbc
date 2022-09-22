@@ -158,7 +158,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
               class="MuiPaper-root MuiBox-root MuiBox-root-460 MuiPaper-elevation1 MuiPaper-rounded"
             >
               <h2
-                class="MuiTypography-root MuiTypography-h2"
+                class="MuiTypography-root MuiTypography-h3"
               >
                 Project Details
               </h2>
@@ -173,7 +173,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       General Information
                     </h3>
@@ -295,7 +295,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Objectives
                     </h3>
@@ -367,7 +367,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Project Contact
                     </h3>
@@ -471,7 +471,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     IUCN Conservation Actions Classification
                   </h3>
@@ -567,7 +567,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Project Permits
                     </h3>
@@ -666,7 +666,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Funding Sources
                   </h3>
@@ -863,7 +863,7 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Partnerships
                   </h3>
@@ -961,11 +961,11 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Surveys
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-485"
                 >
@@ -1076,11 +1076,11 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Documents
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-493"
                 >
@@ -1221,11 +1221,11 @@ exports[`ProjectPage renders correctly with no end date 1`] = `
               class="MuiToolbar-root MuiToolbar-regular"
               style="justify-content: space-between;"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              <h3
+                class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
               >
                 Project Location
-              </h2>
+              </h3>
               <div
                 class="MuiBox-root MuiBox-root-502"
               >
@@ -1625,7 +1625,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
               class="MuiPaper-root MuiBox-root MuiBox-root-17 MuiPaper-elevation1 MuiPaper-rounded"
             >
               <h2
-                class="MuiTypography-root MuiTypography-h2"
+                class="MuiTypography-root MuiTypography-h3"
               >
                 Project Details
               </h2>
@@ -1640,7 +1640,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       General Information
                     </h3>
@@ -1759,7 +1759,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Objectives
                     </h3>
@@ -1831,7 +1831,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Project Contact
                     </h3>
@@ -1935,7 +1935,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     IUCN Conservation Actions Classification
                   </h3>
@@ -2031,7 +2031,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Project Permits
                     </h3>
@@ -2130,7 +2130,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Funding Sources
                   </h3>
@@ -2327,7 +2327,7 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Partnerships
                   </h3>
@@ -2425,11 +2425,11 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Surveys
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-42"
                 >
@@ -2540,11 +2540,11 @@ exports[`ProjectPage renders project page when project is loaded (project is act
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Documents
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-50"
                 >
@@ -2685,11 +2685,11 @@ exports[`ProjectPage renders project page when project is loaded (project is act
               class="MuiToolbar-root MuiToolbar-regular"
               style="justify-content: space-between;"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              <h3
+                class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
               >
                 Project Location
-              </h2>
+              </h3>
               <div
                 class="MuiBox-root MuiBox-root-59"
               >
@@ -3089,7 +3089,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
               class="MuiPaper-root MuiBox-root MuiBox-root-80 MuiPaper-elevation1 MuiPaper-rounded"
             >
               <h2
-                class="MuiTypography-root MuiTypography-h2"
+                class="MuiTypography-root MuiTypography-h3"
               >
                 Project Details
               </h2>
@@ -3104,7 +3104,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       General Information
                     </h3>
@@ -3223,7 +3223,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Objectives
                     </h3>
@@ -3295,7 +3295,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Project Contact
                     </h3>
@@ -3399,7 +3399,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     IUCN Conservation Actions Classification
                   </h3>
@@ -3495,7 +3495,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                     style="justify-content: space-between;"
                   >
                     <h3
-                      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                     >
                       Project Permits
                     </h3>
@@ -3594,7 +3594,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Funding Sources
                   </h3>
@@ -3791,7 +3791,7 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Partnerships
                   </h3>
@@ -3889,11 +3889,11 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Surveys
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-105"
                 >
@@ -4004,11 +4004,11 @@ exports[`ProjectPage renders project page when project is loaded (project is com
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Documents
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-113"
                 >
@@ -4149,11 +4149,11 @@ exports[`ProjectPage renders project page when project is loaded (project is com
               class="MuiToolbar-root MuiToolbar-regular"
               style="justify-content: space-between;"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              <h3
+                class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
               >
                 Project Location
-              </h2>
+              </h3>
               <div
                 class="MuiBox-root MuiBox-root-122"
               >

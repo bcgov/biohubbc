@@ -6,7 +6,7 @@ exports[`ProjectDetails renders correctly 1`] = `
     class="MuiPaper-root MuiBox-root MuiBox-root-1 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <h2
-      class="MuiTypography-root MuiTypography-h2"
+      class="MuiTypography-root MuiTypography-h3"
     >
       Project Details
     </h2>
@@ -21,7 +21,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             General Information
           </h3>
@@ -142,7 +142,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             Objectives
           </h3>
@@ -214,7 +214,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             Project Contact
           </h3>
@@ -318,7 +318,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         style="justify-content: space-between;"
       >
         <h3
-          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
         >
           IUCN Conservation Actions Classification
         </h3>
@@ -414,7 +414,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             Project Permits
           </h3>
@@ -513,7 +513,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         style="justify-content: space-between;"
       >
         <h3
-          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
         >
           Funding Sources
         </h3>
@@ -710,7 +710,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         style="justify-content: space-between;"
       >
         <h3
-          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
         >
           Partnerships
         </h3>

@@ -45,7 +45,7 @@ const useStyles = makeStyles(() =>
     mapLayerControl: {
       width: '300px',
       '& .MuiInputBase-root': {
-        height: '42.25px'
+        height: '44px'
       }
     }
   })
@@ -120,8 +120,10 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         </Box>
       </ComponentDialog>
       <Grid item xs={12}>
-        <Typography variant="h3">{title}</Typography>
-        <Box mt={2} maxWidth="90ch">
+        <Typography variant="h5" component="h3">
+          {title}
+        </Typography>
+        <Box mt={1.5} maxWidth="90ch">
           <Typography variant="body1" color="textSecondary">
             Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer
             below and click a boundary on the map.

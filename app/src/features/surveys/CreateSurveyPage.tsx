@@ -61,21 +61,6 @@ const useStyles = makeStyles((theme: Theme) => ({
   breadCrumbLinkIcon: {
     marginRight: '0.25rem'
   },
-  finishContainer: {
-    padding: theme.spacing(3),
-    backgroundColor: 'transparent'
-  },
-  surveySection: {
-    marginTop: theme.spacing(4),
-    marginBottom: theme.spacing(5),
-
-    '&:last-child': {
-      marginBottom: 0
-    },
-    '&:first-child': {
-      marginTop: 0
-    }
-  },
   sectionDivider: {
     height: '1px',
     marginTop: theme.spacing(5),
@@ -150,7 +135,7 @@ const CreateSurveyPage = () => {
         DATE_FORMAT.ShortDateFormat,
         `Survey start date cannot be before ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.min)}`
       )
-      .required('Required'),
+      .required('Start Data is Required'),
     end_date: yup
       .string()
       .isValidDateString()
@@ -425,16 +410,22 @@ const CreateSurveyPage = () => {
               </>
             </Formik>
 
-            <Box p={3} display="flex" justifyContent="flex-end">
+            <Box mt={4} display="flex" justifyContent="flex-end">
               <Button
                 type="submit"
+                size="large"
                 variant="contained"
                 color="primary"
                 onClick={() => formikRef.current?.submitForm()}
                 className={classes.actionButton}>
                 Save and Exit
               </Button>
-              <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
+              <Button
+                size="large"
+                variant="outlined"
+                color="primary"
+                onClick={handleCancel}
+                className={classes.actionButton}>
                 Cancel
               </Button>
             </Box>

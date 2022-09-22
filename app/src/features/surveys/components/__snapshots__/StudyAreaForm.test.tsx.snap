@@ -55,7 +55,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3"
+        class="MuiTypography-root MuiTypography-h5"
       >
         Study Area Boundary
       </h3>
@@ -465,7 +465,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3"
+        class="MuiTypography-root MuiTypography-h5"
       >
         Study Area Boundary
       </h3>
@@ -926,7 +926,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
       class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3"
+        class="MuiTypography-root MuiTypography-h5"
       >
         Study Area Boundary
       </h3>

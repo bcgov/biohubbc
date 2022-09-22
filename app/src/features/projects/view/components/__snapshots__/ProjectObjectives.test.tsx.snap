@@ -10,7 +10,7 @@ exports[`ProjectObjectives renders correctly when both objectives and caveats ha
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Objectives
       </h3>
@@ -144,7 +144,7 @@ exports[`ProjectObjectives renders correctly when objectives and caveats are < 8
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Objectives
       </h3>
@@ -228,7 +228,7 @@ exports[`ProjectObjectives renders correctly when objectives length is <= 850 ch
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Objectives
       </h3>
@@ -301,7 +301,7 @@ exports[`ProjectObjectives renders correctly when objectives length is > 850 cha
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Objectives
       </h3>
