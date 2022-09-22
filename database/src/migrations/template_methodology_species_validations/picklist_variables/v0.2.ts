@@ -259,7 +259,7 @@ const Habitat = [
   { name: 'Coniferous' },
   { name: 'Cultivated Field' },
   { name: 'Cutblock - Free to Grow' },
-  { name: 'Cutblock - Matrue' },
+  { name: 'Cutblock - Mature' },
   { name: 'Cutblock - Not Sufficiently Restored' },
   { name: 'Deciduous' },
   { name: 'Dissected Cliffs' },

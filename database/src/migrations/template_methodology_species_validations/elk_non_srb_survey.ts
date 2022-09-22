@@ -318,7 +318,7 @@ export const elkNonSRBJSON = {
       ]
     },
     {
-      name: 'MArked Animals',
+      name: 'Marked Animals',
       description: '',
       columns: [
         {
