@@ -103,12 +103,12 @@ describe('CreateProjectPage', () => {
       history.push('/home');
       history.push('/admin/projects/create');
 
-      const { findByText, getByRole } = renderContainer();
-      const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
+      const { findByText, getByRole, findAllByText } = renderContainer();
+      const BackToProjectsButton = await findAllByText('Cancel');
 
-      fireEvent.click(BackToProjectsButton);
-      const AreYouSureTitle = await findByText('Cancel Create Project');
-      const AreYouSureText = await findByText('Are you sure you want to cancel?');
+      fireEvent.click(BackToProjectsButton[0]);
+      const AreYouSureTitle = await findByText('Cancel Project Creation');
+      const AreYouSureText = await findByText('Are you sure you want to cancel?', { exact: false });
       const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(AreYouSureTitle).toBeVisible();
@@ -124,10 +124,10 @@ describe('CreateProjectPage', () => {
       history.push('/home');
       history.push('/admin/projects/create');
 
-      const { findByText, getByRole } = renderContainer();
-      const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
+      const { findAllByText, getByRole } = renderContainer();
+      const BackToProjectsButton = await findAllByText('Cancel');
 
-      fireEvent.click(BackToProjectsButton);
+      fireEvent.click(BackToProjectsButton[0]);
       const AreYouSureYesButton = await rawFindByText(getByRole('dialog'), 'Yes', { exact: false });
 
       expect(history.location.pathname).toEqual('/admin/projects/create');
@@ -143,11 +143,11 @@ describe('CreateProjectPage', () => {
       history.push('/home');
       history.push('/admin/projects/create');
 
-      const { findByText, getByRole } = renderContainer();
-      const BackToProjectsButton = await findByText('Cancel and Exit', { exact: false });
+      const { findAllByText, getByRole } = renderContainer();
+      const BackToProjectsButton = await findAllByText('Cancel');
 
-      fireEvent.click(BackToProjectsButton);
-      const AreYouSureNoButton = await rawFindByText(getByRole('dialog'), 'No', { exact: false });
+      fireEvent.click(BackToProjectsButton[0]);
+      const AreYouSureNoButton = await rawFindByText(getByRole('dialog'), 'No');
 
       expect(history.location.pathname).toEqual('/admin/projects/create');
       fireEvent.click(AreYouSureNoButton);
@@ -199,26 +199,26 @@ describe('CreateProjectPage', () => {
     });
 
     it('opens the save as draft and exit dialog', async () => {
-      const { getByText, findByText } = renderContainer();
+      const { getByLabelText, findAllByText } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft and Exit');
+      const saveAsDraftButton = await findAllByText('Save Draft');
 
-      fireEvent.click(saveAsDraftButton);
+      fireEvent.click(saveAsDraftButton[0]);
 
       await waitFor(() => {
-        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+        expect(getByLabelText('Draft Name *')).toBeVisible();
       });
     });
 
     it('closes the dialog on cancel button click', async () => {
-      const { getByText, findByText, queryByText, getByRole } = renderContainer();
+      const { getByLabelText, findAllByText, getByRole, queryByLabelText } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft and Exit');
+      const saveAsDraftButton = await findAllByText('Save Draft');
 
-      fireEvent.click(saveAsDraftButton);
+      fireEvent.click(saveAsDraftButton[1]);
 
       await waitFor(() => {
-        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+        expect(getByLabelText('Draft Name *')).toBeVisible();
       });
 
       const cancelButton = rawGetByText(getByRole('dialog'), 'Cancel');
@@ -226,7 +226,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(cancelButton);
 
       await waitFor(() => {
-        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
       });
     });
 
@@ -236,14 +236,14 @@ describe('CreateProjectPage', () => {
         date: '2021-01-20'
       });
 
-      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
+      const { getByText, findAllByText, queryByLabelText, getByLabelText } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft and Exit');
+      const saveAsDraftButton = await findAllByText('Save Draft');
 
-      fireEvent.click(saveAsDraftButton);
+      fireEvent.click(saveAsDraftButton[0]);
 
       await waitFor(() => {
-        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+        expect(getByLabelText('Draft Name *')).toBeVisible();
       });
 
       fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
@@ -253,13 +253,13 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(mockBiohubApi().draft.createDraft).toHaveBeenCalledWith('draft name', expect.any(Object));
 
-        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
       });
 
-      fireEvent.click(getByText('Save as Draft and Exit'));
+      fireEvent.click(saveAsDraftButton[0]);
 
       await waitFor(() => {
-        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+        expect(getByLabelText('Draft Name *')).toBeVisible();
       });
 
       fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
@@ -269,7 +269,7 @@ describe('CreateProjectPage', () => {
       await waitFor(() => {
         expect(mockBiohubApi().draft.updateDraft).toHaveBeenCalledWith(1, 'draft name', expect.any(Object));
 
-        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
       });
     });
 
@@ -279,7 +279,7 @@ describe('CreateProjectPage', () => {
         date: '2021-01-20'
       });
 
-      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
+      const { getByText, findAllByText, getByLabelText, queryByLabelText } = renderContainer();
 
       // wait for initial page to load
       await waitFor(() => {
@@ -289,12 +289,12 @@ describe('CreateProjectPage', () => {
       // update first name field
       fireEvent.change(getByLabelText('First Name *'), { target: { value: 'draft first name' } });
 
-      const saveAsDraftButton = await findByText('Save as Draft and Exit');
+      const saveAsDraftButton = await findAllByText('Save Draft');
 
-      fireEvent.click(saveAsDraftButton);
+      fireEvent.click(saveAsDraftButton[0]);
 
       await waitFor(() => {
-        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+        expect(getByLabelText('Draft Name *')).toBeVisible();
       });
 
       fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
@@ -324,16 +324,16 @@ describe('CreateProjectPage', () => {
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
-        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
       });
 
       // update last name field
       fireEvent.change(getByLabelText('Last Name *'), { target: { value: 'draft last name' } });
 
-      fireEvent.click(getByText('Save as Draft and Exit'));
+      fireEvent.click(saveAsDraftButton[0]);
 
       await waitFor(() => {
-        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+        expect(getByLabelText('Draft Name *')).toBeVisible();
       });
 
       fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
@@ -363,7 +363,7 @@ describe('CreateProjectPage', () => {
           partnerships: { indigenous_partnerships: [], stakeholder_partnerships: [] }
         });
 
-        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
       });
     });
 
@@ -372,14 +372,14 @@ describe('CreateProjectPage', () => {
         throw new Error('Draft failed exception!');
       });
 
-      const { getByText, findByText, queryByText, getByLabelText } = renderContainer();
+      const { getByText, findAllByText, getByLabelText, queryByLabelText } = renderContainer();
 
-      const saveAsDraftButton = await findByText('Save as Draft and Exit');
+      const saveAsDraftButton = await findAllByText('Save Draft');
 
-      fireEvent.click(saveAsDraftButton);
+      fireEvent.click(saveAsDraftButton[0]);
 
       await waitFor(() => {
-        expect(getByText('Save Incomplete Project as a Draft')).toBeVisible();
+        expect(getByLabelText('Draft Name *')).toBeVisible();
       });
 
       fireEvent.change(getByLabelText('Draft Name *'), { target: { value: 'draft name' } });
@@ -387,7 +387,7 @@ describe('CreateProjectPage', () => {
       fireEvent.click(getByText('Save'));
 
       await waitFor(() => {
-        expect(queryByText('Save Incomplete Project as a Draft')).not.toBeInTheDocument();
+        expect(queryByLabelText('Draft Name *')).not.toBeInTheDocument();
       });
     });
   });

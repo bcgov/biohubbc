@@ -1248,20 +1248,17 @@ exports[`ProjectStepComponents renders the project location 1`] = `
       >
         Define Project Boundary
       </h3>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        style="max-width: 90ch;"
+      >
+        Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
+      </p>
       <div
         class="MuiBox-root MuiBox-root-58"
       >
-        <p
-          class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-        >
-          Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
-        </p>
-      </div>
-      <div
-        class="MuiBox-root MuiBox-root-59"
-      >
         <div
-          class="MuiBox-root MuiBox-root-60"
+          class="MuiBox-root MuiBox-root-59"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeLarge MuiButton-sizeLarge"
@@ -1293,7 +1290,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-61"
+            class="MuiBox-root MuiBox-root-60"
           >
             <div
               class="MuiFormControl-root makeStyles-mapLayerControl-57"
@@ -1340,10 +1337,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-62 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-61 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-64"
+                    class="PrivateNotchedOutline-legendLabelled-63"
                   >
                     <span>
                       Map Layers
@@ -1354,7 +1351,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-66"
+            class="MuiBox-root MuiBox-root-65"
           />
         </div>
       </div>
@@ -1362,7 +1359,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
         class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-67"
+          class="MuiBox-root MuiBox-root-66"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1596,7 +1593,7 @@ exports[`ProjectStepComponents renders the project location 1`] = `
       </div>
     </div>
     <div
-      class="MuiBox-root MuiBox-root-68"
+      class="MuiBox-root MuiBox-root-67"
     >
       <h3
         class="MuiTypography-root MuiTypography-h5"
@@ -1628,10 +1625,10 @@ exports[`ProjectStepComponents renders the project location 1`] = `
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-62 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-61 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-64"
+              class="PrivateNotchedOutline-legendLabelled-63"
             >
               <span>
                 Location Description

@@ -59,20 +59,17 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
       >
         Study Area Boundary
       </h3>
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        style="max-width: 90ch;"
+      >
+        Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
+      </p>
       <div
         class="MuiBox-root MuiBox-root-8"
       >
-        <p
-          class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-        >
-          Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
-        </p>
-      </div>
-      <div
-        class="MuiBox-root MuiBox-root-9"
-      >
         <div
-          class="MuiBox-root MuiBox-root-10"
+          class="MuiBox-root MuiBox-root-9"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeLarge MuiButton-sizeLarge"
@@ -104,7 +101,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-11"
+            class="MuiBox-root MuiBox-root-10"
           >
             <div
               class="MuiFormControl-root makeStyles-mapLayerControl-7"
@@ -165,7 +162,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-12"
+            class="MuiBox-root MuiBox-root-11"
           />
         </div>
       </div>
@@ -173,7 +170,7 @@ exports[`Study Area Form renders correctly the empty component correctly 1`] = `
         class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-13"
+          class="MuiBox-root MuiBox-root-12"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -414,7 +411,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-14"
+      class="MuiBox-root MuiBox-root-13"
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -448,10 +445,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-17 PrivateNotchedOutline-legendNotched-18"
+              class="PrivateNotchedOutline-legendLabelled-16 PrivateNotchedOutline-legendNotched-17"
             >
               <span>
                 Survey Area Name *
@@ -469,20 +466,17 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
       >
         Study Area Boundary
       </h3>
-      <div
-        class="MuiBox-root MuiBox-root-21"
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        style="max-width: 90ch;"
       >
-        <p
-          class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-        >
-          Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
-        </p>
-      </div>
+        Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
+      </p>
       <div
-        class="MuiBox-root MuiBox-root-22"
+        class="MuiBox-root MuiBox-root-20"
       >
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-21"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeLarge MuiButton-sizeLarge"
@@ -514,10 +508,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-24"
+            class="MuiBox-root MuiBox-root-22"
           >
             <div
-              class="MuiFormControl-root makeStyles-mapLayerControl-20"
+              class="MuiFormControl-root makeStyles-mapLayerControl-19"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
@@ -561,10 +555,10 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-15 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-14 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-17"
+                    class="PrivateNotchedOutline-legendLabelled-16"
                   >
                     <span>
                       Map Layers
@@ -575,7 +569,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-25"
+            class="MuiBox-root MuiBox-root-23"
           />
         </div>
       </div>
@@ -583,7 +577,7 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
         class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-26"
+          class="MuiBox-root MuiBox-root-24"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -829,11 +823,11 @@ exports[`Study Area Form renders correctly the filled component correctly 1`] = 
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-27"
+            class="MuiBox-root MuiBox-root-25"
           >
             <button
               aria-label="zoom to initial extent"
-              class="MuiButtonBase-root MuiIconButton-root makeStyles-zoomToBoundaryExtentBtn-19"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-zoomToBoundaryExtentBtn-18"
               tabindex="0"
               title="Zoom to initial extent"
               type="button"
@@ -868,7 +862,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
 <DocumentFragment>
   <form>
     <div
-      class="MuiBox-root MuiBox-root-28"
+      class="MuiBox-root MuiBox-root-26"
     >
       <div
         class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
@@ -903,10 +897,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
           />
           <fieldset
             aria-hidden="true"
-            class="PrivateNotchedOutline-root-29 MuiOutlinedInput-notchedOutline"
+            class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
           >
             <legend
-              class="PrivateNotchedOutline-legendLabelled-31 PrivateNotchedOutline-legendNotched-32"
+              class="PrivateNotchedOutline-legendLabelled-29 PrivateNotchedOutline-legendNotched-30"
             >
               <span>
                 Survey Area Name *
@@ -930,20 +924,17 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
       >
         Study Area Boundary
       </h3>
-      <div
-        class="MuiBox-root MuiBox-root-35"
+      <p
+        class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
+        style="max-width: 90ch;"
       >
-        <p
-          class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
-        >
-          Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
-        </p>
-      </div>
+        Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below and click a boundary on the map.
+      </p>
       <div
-        class="MuiBox-root MuiBox-root-36"
+        class="MuiBox-root MuiBox-root-33"
       >
         <div
-          class="MuiBox-root MuiBox-root-37"
+          class="MuiBox-root MuiBox-root-34"
         >
           <button
             class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary MuiButton-outlinedSizeLarge MuiButton-sizeLarge"
@@ -975,10 +966,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             />
           </button>
           <div
-            class="MuiBox-root MuiBox-root-38"
+            class="MuiBox-root MuiBox-root-35"
           >
             <div
-              class="MuiFormControl-root makeStyles-mapLayerControl-34"
+              class="MuiFormControl-root makeStyles-mapLayerControl-32"
             >
               <label
                 class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-marginDense MuiInputLabel-outlined"
@@ -1022,10 +1013,10 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
                 </svg>
                 <fieldset
                   aria-hidden="true"
-                  class="PrivateNotchedOutline-root-29 MuiOutlinedInput-notchedOutline"
+                  class="PrivateNotchedOutline-root-27 MuiOutlinedInput-notchedOutline"
                 >
                   <legend
-                    class="PrivateNotchedOutline-legendLabelled-31"
+                    class="PrivateNotchedOutline-legendLabelled-29"
                   >
                     <span>
                       Map Layers
@@ -1036,7 +1027,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-39"
+            class="MuiBox-root MuiBox-root-36"
           />
         </div>
       </div>
@@ -1044,7 +1035,7 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
         class="MuiPaper-root MuiPaper-outlined MuiPaper-rounded"
       >
         <div
-          class="MuiBox-root MuiBox-root-40"
+          class="MuiBox-root MuiBox-root-37"
         >
           <div
             class="leaflet-container leaflet-grab leaflet-touch-drag"
@@ -1290,11 +1281,11 @@ exports[`Study Area Form renders correctly when errors exist 1`] = `
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-41"
+            class="MuiBox-root MuiBox-root-38"
           >
             <button
               aria-label="zoom to initial extent"
-              class="MuiButtonBase-root MuiIconButton-root makeStyles-zoomToBoundaryExtentBtn-33"
+              class="MuiButtonBase-root MuiIconButton-root makeStyles-zoomToBoundaryExtentBtn-31"
               tabindex="0"
               title="Zoom to initial extent"
               type="button"

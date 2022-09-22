@@ -35,7 +35,7 @@ exports[`EditDialog matches snapshot when open, with error message 1`] = `
       <div
         aria-describedby="alert-dialog-description"
         aria-labelledby="alert-dialog-title"
-        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded"
+        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiDialog-paperFullWidth MuiPaper-elevation24 MuiPaper-rounded"
         role="dialog"
       >
         <div
@@ -147,7 +147,7 @@ exports[`EditDialog matches the snapshot when open, with no error message 1`] = 
       <div
         aria-describedby="alert-dialog-description"
         aria-labelledby="alert-dialog-title"
-        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiPaper-elevation24 MuiPaper-rounded"
+        class="MuiPaper-root MuiDialog-paper MuiDialog-paperScrollPaper MuiDialog-paperWidthSm MuiDialog-paperFullWidth MuiPaper-elevation24 MuiPaper-rounded"
         role="dialog"
       >
         <div
