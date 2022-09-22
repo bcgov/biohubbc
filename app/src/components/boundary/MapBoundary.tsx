@@ -123,9 +123,9 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
         <Typography variant="h5" component="h3">
           {title}
         </Typography>
-        <Typography variant="body1" color="textSecondary" style={{maxWidth: '90ch'}}>
-          Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer
-          below and click a boundary on the map.
+        <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
+          Import or select a boundary from existing map layers. To select an existing boundary, choose a map layer below
+          and click a boundary on the map.
         </Typography>
         <Box mb={3}>
           <Box mt={4} display="flex" alignItems="flex-start">

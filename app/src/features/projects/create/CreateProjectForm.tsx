@@ -139,7 +139,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     IUCN Conservation Actions Classification
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{maxWidth: '90ch'}}>
+                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
                     Conservation actions are specific actions or sets of tasks undertaken by project staff designed to
                     reach each of the project's objectives.
                   </Typography>
@@ -193,7 +193,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Funding Sources
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{maxWidth: '90ch'}}>
+                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
                     Specify funding sources for the project. <strong>Note:</strong> Dollar amounts are not intended to
                     be exact, please round to the nearest 100.
                   </Typography>
@@ -216,7 +216,7 @@ const CreateProjectForm: React.FC<ICreateProjectForm> = (props) => {
                   <Typography component="legend" variant="h5">
                     Partnerships
                   </Typography>
-                  <Typography variant="body1" color="textSecondary" style={{maxWidth: '90ch'}}>
+                  <Typography variant="body1" color="textSecondary" style={{ maxWidth: '90ch' }}>
                     Additional partnerships that have not been previously identified as a funding sources.
                   </Typography>
                   <Box mt={4}>

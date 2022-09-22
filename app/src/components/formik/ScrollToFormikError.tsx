@@ -77,7 +77,10 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [errors, submitCount]);
 
-  const closeSnackBar = () => setOpenSnackbar((currentState) => { return { open: false, msg: currentState.msg } })
+  const closeSnackBar = () =>
+    setOpenSnackbar((currentState) => {
+      return { open: false, msg: currentState.msg };
+    });
 
   return (
     <>
