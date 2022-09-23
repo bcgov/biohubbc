@@ -16,6 +16,7 @@ import {
   SurveySupplementaryData
 } from '../models/survey-view';
 import { queries } from '../queries/queries';
+import { PermitService } from './permit-service';
 import { DBService } from './service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -284,18 +285,15 @@ export class SurveyService extends DBService {
       )
     );
 
-    //Handle inserting any permit associated to this survey
-    if (postSurveyData.permit.permit_number) {
-      promises.push(
-        this.insertOrAssociatePermitToSurvey(
-          this.connection.systemUserId() as number,
-          projectId,
-          surveyId,
-          postSurveyData.permit.permit_number,
-          postSurveyData.permit.permit_type
+    // Handle inserting any permit associated to this survey
+    const permitService = new PermitService(this.connection);
+    promises.push(
+      Promise.all(
+        postSurveyData.permit.permits.map((permit) =>
+          permitService.createSurveyPermit(surveyId, permit.permit_number, permit.permit_type)
         )
-      );
-    }
+      )
+    );
 
     // Handle inserting any funding sources associated to this survey
     promises.push(

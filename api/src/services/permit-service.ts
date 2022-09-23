@@ -37,18 +37,12 @@ export class PermitService extends DBService {
    * Create and associate permit for survey.
    *
    * @param {number} surveyId
-   * @param {number} permitId
    * @param {string} permitNumber
    * @param {string} permitType
    * @return {*}  {IPermitModel[]}
    * @memberof PermitService
    */
-  async createSurveyPermit(
-    surveyId: number,
-    permitId: number,
-    permitNumber: string,
-    permitType: string
-  ): Promise<number | null> {
+  async createSurveyPermit(surveyId: number, permitNumber: string, permitType: string): Promise<number | null> {
     const permit_id = await this.permitRepository.createSurveyPermit(surveyId, permitNumber, permitType);
 
     return permit_id;

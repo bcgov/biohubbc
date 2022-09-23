@@ -107,11 +107,17 @@ POST.apiDoc = {
             permit: {
               type: 'object',
               properties: {
-                permit_number: {
-                  type: 'string'
-                },
-                permit_type: {
-                  type: 'string'
+                permits: {
+                  type: 'object',
+                  required: ['permit_number', 'permit_type'],
+                  properties: {
+                    permit_number: {
+                      type: 'string'
+                    },
+                    permit_type: {
+                      type: 'string'
+                    }
+                  }
                 }
               }
             },
