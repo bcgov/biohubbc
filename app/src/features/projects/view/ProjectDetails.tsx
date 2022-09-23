@@ -29,7 +29,9 @@ const ProjectDetails: React.FC<IProjectDetailsProps> = (props) => {
   return (
     <>
       <Box component={Paper} p={3}>
-        <Typography variant="h2">Project Details</Typography>
+        <Typography variant="h3" component="h2">
+          Project Details
+        </Typography>
         <Box component="section" mt={1}>
           <GeneralInformation projectForViewData={projectForViewData} codes={codes} refresh={refresh} />
         </Box>

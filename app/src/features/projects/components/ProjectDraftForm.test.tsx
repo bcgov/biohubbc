@@ -1,5 +1,6 @@
-import { render } from '@testing-library/react';
+import { render, waitFor } from '@testing-library/react';
 import ProjectDraftForm, {
+  IProjectDraftForm,
   ProjectDraftFormInitialValues,
   ProjectDraftFormYupSchema
 } from 'features/projects/components/ProjectDraftForm';
@@ -8,13 +9,9 @@ import React from 'react';
 
 const handleSaveAndNext = jest.fn();
 
-const projectDraftFilledValues = {
-  draft_name: 'draft test name'
-};
-
 describe('Project Draft Form', () => {
-  it('renders correctly with empty initial values', () => {
-    const { asFragment } = render(
+  it('renders correctly with empty initial values', async () => {
+    const { getByLabelText } = render(
       <Formik
         initialValues={ProjectDraftFormInitialValues}
         validationSchema={ProjectDraftFormYupSchema}
@@ -27,28 +24,39 @@ describe('Project Draft Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByLabelText('Draft Name', { exact: false })).toBeVisible();
+    });
   });
 
-  it('renders correctly with populated initial values', () => {
-    const { asFragment } = render(
+  it('renders correctly with populated initial values', async () => {
+    const projectDraftFilledValues: IProjectDraftForm = {
+      draft_name: 'draft test name'
+    };
+
+    const { getByLabelText, getByDisplayValue } = render(
       <Formik
         initialValues={projectDraftFilledValues}
         validationSchema={ProjectDraftFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
-        onSubmit={async (values) => {
-          handleSaveAndNext(values);
-        }}>
+        onSubmit={async () => {}}>
         {() => <ProjectDraftForm />}
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByLabelText('Draft Name', { exact: false })).toBeVisible();
+      expect(getByDisplayValue('draft test name', { exact: false })).toBeVisible();
+    });
   });
 
-  it('renders correctly with errors', () => {
-    const { asFragment } = render(
+  it('renders correctly with errors', async () => {
+    const projectDraftFilledValues: IProjectDraftForm = {
+      draft_name: 'draft test name'
+    };
+
+    const { getByLabelText, getByText } = render(
       <Formik
         initialValues={projectDraftFilledValues}
         initialErrors={{
@@ -67,6 +75,9 @@ describe('Project Draft Form', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    await waitFor(() => {
+      expect(getByLabelText('Draft Name', { exact: false })).toBeVisible();
+      expect(getByText('Error this is a required field', { exact: false })).toBeVisible();
+    });
   });
 });

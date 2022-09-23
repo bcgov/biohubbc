@@ -6,7 +6,7 @@ exports[`ProjectDetails renders correctly 1`] = `
     class="MuiPaper-root MuiBox-root MuiBox-root-1 MuiPaper-elevation1 MuiPaper-rounded"
   >
     <h2
-      class="MuiTypography-root MuiTypography-h2"
+      class="MuiTypography-root MuiTypography-h3"
     >
       Project Details
     </h2>
@@ -21,7 +21,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             General Information
           </h3>
@@ -142,7 +142,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             Objectives
           </h3>
@@ -200,35 +200,26 @@ exports[`ProjectDetails renders correctly 1`] = `
               Et ad et in culpa si
             </p>
           </div>
-          <div
-            class="MuiBox-root MuiBox-root-10"
-          >
-            <p
-              class="MuiTypography-root MuiTypography-body1"
-            >
-              sjwer bds
-            </p>
-          </div>
         </div>
       </div>
     </section>
     <section
-      class="MuiBox-root MuiBox-root-11"
+      class="MuiBox-root MuiBox-root-10"
     >
       <div
-        class="MuiBox-root MuiBox-root-12"
+        class="MuiBox-root MuiBox-root-11"
       >
         <div
           class="MuiToolbar-root MuiToolbar-regular"
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             Project Contact
           </h3>
           <div
-            class="MuiBox-root MuiBox-root-13"
+            class="MuiBox-root MuiBox-root-12"
           >
             <button
               aria-label="Edit Project Contact Information"
@@ -320,19 +311,19 @@ exports[`ProjectDetails renders correctly 1`] = `
       </div>
     </section>
     <section
-      class="MuiBox-root MuiBox-root-14"
+      class="MuiBox-root MuiBox-root-13"
     >
       <div
         class="MuiToolbar-root MuiToolbar-regular"
         style="justify-content: space-between;"
       >
         <h3
-          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
         >
           IUCN Conservation Actions Classification
         </h3>
         <div
-          class="MuiBox-root MuiBox-root-16"
+          class="MuiBox-root MuiBox-root-15"
         >
           <button
             aria-label="Edit IUCN Classifications"
@@ -371,13 +362,13 @@ exports[`ProjectDetails renders correctly 1`] = `
         </div>
       </div>
       <hr
-        class="MuiDivider-root MuiBox-root MuiBox-root-17"
+        class="MuiDivider-root MuiBox-root MuiBox-root-16"
       />
       <ul
         class="MuiList-root"
       >
         <li
-          class="MuiListItem-root makeStyles-iucnListItem-15 MuiListItem-divider"
+          class="MuiListItem-root makeStyles-iucnListItem-14 MuiListItem-divider"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -394,7 +385,7 @@ exports[`ProjectDetails renders correctly 1`] = `
           </p>
         </li>
         <li
-          class="MuiListItem-root makeStyles-iucnListItem-15 MuiListItem-divider"
+          class="MuiListItem-root makeStyles-iucnListItem-14 MuiListItem-divider"
         >
           <p
             class="MuiTypography-root MuiTypography-body2"
@@ -413,22 +404,22 @@ exports[`ProjectDetails renders correctly 1`] = `
       </ul>
     </section>
     <section
-      class="MuiBox-root MuiBox-root-18"
+      class="MuiBox-root MuiBox-root-17"
     >
       <div
-        class="MuiBox-root MuiBox-root-19"
+        class="MuiBox-root MuiBox-root-18"
       >
         <div
           class="MuiToolbar-root MuiToolbar-regular"
           style="justify-content: space-between;"
         >
           <h3
-            class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+            class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
           >
             Project Permits
           </h3>
           <div
-            class="MuiBox-root MuiBox-root-20"
+            class="MuiBox-root MuiBox-root-19"
           >
             <button
               aria-label="Edit Permits"
@@ -515,19 +506,19 @@ exports[`ProjectDetails renders correctly 1`] = `
       </div>
     </section>
     <section
-      class="MuiBox-root MuiBox-root-21"
+      class="MuiBox-root MuiBox-root-20"
     >
       <div
         class="MuiToolbar-root MuiToolbar-regular"
         style="justify-content: space-between;"
       >
         <h3
-          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
         >
           Funding Sources
         </h3>
         <div
-          class="MuiBox-root MuiBox-root-23"
+          class="MuiBox-root MuiBox-root-22"
         >
           <button
             aria-label="Add Funding Source"
@@ -569,7 +560,7 @@ exports[`ProjectDetails renders correctly 1`] = `
         class="MuiTableContainer-root"
       >
         <table
-          class="MuiTable-root makeStyles-fundingSourceTable-22"
+          class="MuiTable-root makeStyles-fundingSourceTable-21"
         >
           <thead
             class="MuiTableHead-root"
@@ -712,19 +703,19 @@ exports[`ProjectDetails renders correctly 1`] = `
       </div>
     </section>
     <section
-      class="MuiBox-root MuiBox-root-24"
+      class="MuiBox-root MuiBox-root-23"
     >
       <div
         class="MuiToolbar-root MuiToolbar-regular"
         style="justify-content: space-between;"
       >
         <h3
-          class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+          class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
         >
           Partnerships
         </h3>
         <div
-          class="MuiBox-root MuiBox-root-25"
+          class="MuiBox-root MuiBox-root-24"
         >
           <button
             aria-label="Edit Partnerships"

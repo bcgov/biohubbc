@@ -89,20 +89,25 @@ const GeneralInformation: React.FC<IProjectDetailsProps> = (props) => {
     setDetailsDataForUpdate(detailsResponseData);
 
     setDetailsFormData({
-      project_name: detailsResponseData.project_name,
-      project_type: detailsResponseData.project_type,
-      project_activities: detailsResponseData.project_activities,
-      start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, detailsResponseData.start_date),
-      end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, detailsResponseData.end_date)
+      project: {
+        project_name: detailsResponseData.project_name,
+        project_type: detailsResponseData.project_type,
+        project_activities: detailsResponseData.project_activities,
+        start_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, detailsResponseData.start_date),
+        end_date: getFormattedDate(DATE_FORMAT.ShortDateFormat, detailsResponseData.end_date)
+      }
     } as any);
 
     setOpenEditDialog(true);
   };
 
   const handleDialogEditSave = async (values: IProjectDetailsForm) => {
-    const projectData = {
-      project: { ...values, revision_count: detailsDataForUpdate.revision_count }
+    const projectDetailsData = {
+      ...values.project,
+      revision_count: detailsDataForUpdate.revision_count
     };
+
+    const projectData = { project: projectDetailsData };
 
     try {
       await biohubApi.project.updateProject(id, projectData);

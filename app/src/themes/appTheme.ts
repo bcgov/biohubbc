@@ -35,27 +35,27 @@ const appTheme = createMuiTheme({
   },
   overrides: {
     MuiTypography: {
-      // https://material-ui.com/api/typography/
       h1: {
-        letterSpacing: '-0.02rem',
-        fontSize: '2rem',
+        fontSize: '2.25rem',
         fontWeight: 700
       },
       h2: {
-        letterSpacing: '-0.01rem',
-        fontSize: '1.25rem',
+        fontSize: '1.875rem',
         fontWeight: 700
       },
       h3: {
-        fontSize: '1rem',
+        fontSize: '1.5rem',
         fontWeight: 700
       },
       h4: {
-        fontSize: '1rem',
+        fontSize: '1.25rem',
+        fontWeight: 700
+      },
+      h5: {
+        fontSize: '1.125rem',
         fontWeight: 700
       },
       h6: {
-        letterSpacing: '-0.01rem',
         fontWeight: 700
       }
     },
@@ -69,15 +69,24 @@ const appTheme = createMuiTheme({
       root: {
         textTransform: 'none'
       },
+      sizeLarge: {
+        fontSize: '1rem'
+      },
+      containedPrimary: {
+        fontWeight: 700
+      },
       outlinedPrimary: {
-        background: '#ffffff'
+        backgroundColor: '#ffffff',
+        borderColor: '#003366',
+        '&:hover': {
+          backgroundColor: '#ffffff'
+        }
       },
       endIcon: {
         marginLeft: '4px'
       }
     },
     MuiContainer: {
-      // https://material-ui.com/api/container/
       root: {
         maxWidth: 'xl',
         margin: 'auto'
@@ -101,6 +110,11 @@ const appTheme = createMuiTheme({
         }
       }
     },
+    MuiFormHelperText: {
+      root: {
+        fontSize: '0.875rem'
+      }
+    },
     MuiLink: {
       root: {
         textAlign: 'left',
@@ -117,64 +131,6 @@ const appTheme = createMuiTheme({
     MuiListItemIcon: {
       root: {
         minWidth: '42px'
-      }
-    },
-    MuiOutlinedInput: {
-      root: {
-        background: '#ffffff'
-      }
-    },
-    MuiStepper: {
-      root: {
-        padding: 0
-      }
-    },
-    MuiStep: {
-      root: {
-        cursor: 'pointer'
-      }
-    },
-    MuiStepLabel: {
-      active: {
-        color: '#003366 !important'
-      }
-    },
-    MuiStepIcon: {
-      root: {
-        marginLeft: '1rem',
-        marginRight: '1rem',
-        zIndex: 999,
-        color: '#999999',
-        fontSize: '33px',
-        borderRadius: '50%',
-        '&.Mui-error': {
-          backgroundColor: '#ffffff',
-          border: '3px solid red',
-          color: 'red'
-        }
-      },
-      text: {
-        fontWeight: 700,
-        fontSize: '0.35em'
-      },
-      active: {
-        borderColor: '#003366',
-        color: '#ffffff'
-      },
-      completed: {
-        backgroundColor: '#ffffff',
-        border: '3px solid #003366',
-        padding: '2px',
-        color: '#003366'
-      }
-    },
-    MuiStepConnector: {
-      vertical: {
-        marginLeft: '32px',
-        paddingBottom: 0
-      },
-      lineVertical: {
-        borderLeftWidth: '2px'
       }
     },
     MuiTableCell: {

@@ -22,7 +22,7 @@ export const StudyAreaInitialValues: IStudyAreaForm = {
 
 export const StudyAreaYupSchema = yup.object().shape({
   location: yup.object().shape({
-    survey_area_name: yup.string().required('Required'),
+    survey_area_name: yup.string().required('Survey Area Name is Required'),
     geometry: yup.mixed()
   })
 });

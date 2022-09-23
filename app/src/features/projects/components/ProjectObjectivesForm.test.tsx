@@ -9,7 +9,7 @@ import ProjectObjectivesForm, {
 
 describe('ProjectObjectivesForm', () => {
   it('renders correctly with default empty values', () => {
-    const { asFragment } = render(
+    const { getByLabelText } = render(
       <Formik
         initialValues={ProjectObjectivesFormInitialValues}
         validationSchema={ProjectObjectivesFormYupSchema}
@@ -20,16 +20,17 @@ describe('ProjectObjectivesForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByLabelText('Objectives', { exact: false })).toBeVisible();
   });
 
   it('renders correctly with existing objective/caveat values', () => {
     const existingFormValues: IProjectObjectivesForm = {
-      objectives: 'a project objective',
-      caveats: 'a nice little caveat'
+      objectives: {
+        objectives: 'a project objective'
+      }
     };
 
-    const { asFragment } = render(
+    const { getByLabelText, getByText } = render(
       <Formik
         initialValues={existingFormValues}
         validationSchema={ProjectObjectivesFormYupSchema}
@@ -40,6 +41,7 @@ describe('ProjectObjectivesForm', () => {
       </Formik>
     );
 
-    expect(asFragment()).toMatchSnapshot();
+    expect(getByLabelText('Objectives', { exact: false })).toBeVisible();
+    expect(getByText('a project objective')).toBeVisible();
   });
 });

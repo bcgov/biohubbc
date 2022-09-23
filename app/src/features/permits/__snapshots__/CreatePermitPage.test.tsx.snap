@@ -29,29 +29,29 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
       <div
         class="MuiPaper-root MuiBox-root MuiBox-root-16 MuiPaper-elevation1 MuiPaper-rounded"
       >
-        <div
-          class="MuiBox-root MuiBox-root-17"
+        <section
+          class="MuiBox-root MuiBox-root-19 makeStyles-projectFormSection-17"
         >
           <div
-            class="MuiBox-root MuiBox-root-18"
+            class="MuiBox-root MuiBox-root-20 makeStyles-sectionDetails-18"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h3"
             >
               Coordinator Information
             </h2>
             <div
-              class="MuiBox-root MuiBox-root-19"
+              class="MuiBox-root MuiBox-root-21"
             >
               <p
-                class="MuiTypography-root MuiTypography-body2"
+                class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
               >
                 Enter the contact information for the person directly responsible for the permit. This information will be used as the primary contact should questions arise about this permit.
               </p>
             </div>
           </div>
           <div
-            class="MuiBox-root MuiBox-root-20"
+            class="MuiBox-root MuiBox-root-22"
           >
             <form>
               <div
@@ -62,13 +62,13 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="first_name"
+                    data-testid="coordinator.first_name"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                       data-shrink="false"
-                      for="first_name"
-                      id="first_name-label"
+                      for="coordinator.first_name"
+                      id="coordinator.first_name-label"
                     >
                       First Name
                       <span
@@ -84,18 +84,18 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
-                        id="first_name"
-                        name="first_name"
+                        id="coordinator.first_name"
+                        name="coordinator.first_name"
                         required=""
                         type="text"
                         value=""
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-24"
+                          class="PrivateNotchedOutline-legendLabelled-25"
                         >
                           <span>
                             First Name *
@@ -110,13 +110,13 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="last_name"
+                    data-testid="coordinator.last_name"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                       data-shrink="false"
-                      for="last_name"
-                      id="last_name-label"
+                      for="coordinator.last_name"
+                      id="coordinator.last_name-label"
                     >
                       Last Name
                       <span
@@ -132,18 +132,18 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
-                        id="last_name"
-                        name="last_name"
+                        id="coordinator.last_name"
+                        name="coordinator.last_name"
                         required=""
                         type="text"
                         value=""
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-24"
+                          class="PrivateNotchedOutline-legendLabelled-25"
                         >
                           <span>
                             Last Name *
@@ -158,13 +158,13 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                 >
                   <div
                     class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-                    data-testid="email_address"
+                    data-testid="coordinator.email_address"
                   >
                     <label
                       class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined Mui-required Mui-required"
                       data-shrink="false"
-                      for="email_address"
-                      id="email_address-label"
+                      for="coordinator.email_address"
+                      id="coordinator.email_address-label"
                     >
                       Business Email Address
                       <span
@@ -180,18 +180,18 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                       <input
                         aria-invalid="false"
                         class="MuiInputBase-input MuiOutlinedInput-input"
-                        id="email_address"
-                        name="email_address"
+                        id="coordinator.email_address"
+                        name="coordinator.email_address"
                         required=""
                         type="text"
                         value=""
                       />
                       <fieldset
                         aria-hidden="true"
-                        class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
+                        class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                       >
                         <legend
-                          class="PrivateNotchedOutline-legendLabelled-24"
+                          class="PrivateNotchedOutline-legendLabelled-25"
                         >
                           <span>
                             Business Email Address *
@@ -273,10 +273,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                         </div>
                         <fieldset
                           aria-hidden="true"
-                          class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
+                          class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                         >
                           <legend
-                            class="PrivateNotchedOutline-legendLabelled-24"
+                            class="PrivateNotchedOutline-legendLabelled-25"
                           >
                             <span>
                               Contact Agency *
@@ -289,20 +289,20 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                 </div>
               </div>
               <div
-                class="MuiBox-root MuiBox-root-26"
+                class="MuiBox-root MuiBox-root-27"
               >
                 <fieldset
                   class="MuiFormControl-root"
                 >
                   <legend
-                    class="MuiBox-root MuiBox-root-27 makeStyles-legend-21"
+                    class="MuiTypography-root MuiTypography-h5"
                   >
                     Share Contact Details
                   </legend>
                   <p
                     class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
                   >
-                    Do you want the project contact’s name and email address visible to the public?
+                    Do you want the project contact's name and email address visible to the public?
                   </p>
                   <div
                     class="MuiBox-root MuiBox-root-28"
@@ -325,7 +325,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                             <input
                               checked=""
                               class="PrivateSwitchBase-input-32"
-                              name="share_contact_details"
+                              name="coordinator.share_contact_details"
                               required=""
                               type="radio"
                               value="false"
@@ -377,7 +377,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                           >
                             <input
                               class="PrivateSwitchBase-input-32"
-                              name="share_contact_details"
+                              name="coordinator.share_contact_details"
                               required=""
                               type="radio"
                               value="true"
@@ -426,18 +426,18 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
               </div>
             </form>
           </div>
-        </div>
+        </section>
         <hr
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />
-        <div
-          class="MuiBox-root MuiBox-root-36"
+        <section
+          class="MuiBox-root MuiBox-root-36 makeStyles-projectFormSection-17"
         >
           <div
-            class="MuiBox-root MuiBox-root-37"
+            class="MuiBox-root MuiBox-root-37 makeStyles-sectionDetails-18"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h3"
             >
               Non-Sampling Permits
             </h2>
@@ -445,7 +445,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
               class="MuiBox-root MuiBox-root-38"
             >
               <p
-                class="MuiTypography-root MuiTypography-body2"
+                class="MuiTypography-root MuiTypography-body1 MuiTypography-colorTextSecondary"
               >
                 Enter any scientific collection, wildlife act and/or park use permits. Provide the last 6 digits of the permit number. The last 6 digits are those after the hyphen (e.g. for KA12-845782 enter 845782).
               </p>
@@ -502,10 +502,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                             />
                             <fieldset
                               aria-hidden="true"
-                              class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
+                              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                             >
                               <legend
-                                class="PrivateNotchedOutline-legendLabelled-24"
+                                class="PrivateNotchedOutline-legendLabelled-25"
                               >
                                 <span>
                                   Permit Number *
@@ -571,10 +571,10 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
                             </svg>
                             <fieldset
                               aria-hidden="true"
-                              class="PrivateNotchedOutline-root-22 MuiOutlinedInput-notchedOutline"
+                              class="PrivateNotchedOutline-root-23 MuiOutlinedInput-notchedOutline"
                             >
                               <legend
-                                class="PrivateNotchedOutline-legendLabelled-24"
+                                class="PrivateNotchedOutline-legendLabelled-25"
                               >
                                 <span>
                                   Permit Type
@@ -641,7 +641,7 @@ exports[`CreatePermitPage renders correctly when codes are loaded 1`] = `
               </div>
             </form>
           </div>
-        </div>
+        </section>
         <hr
           class="MuiDivider-root makeStyles-sectionDivider-12"
         />

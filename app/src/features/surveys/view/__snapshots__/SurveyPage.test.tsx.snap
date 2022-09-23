@@ -249,7 +249,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
             class="MuiPaper-root MuiBox-root MuiBox-root-203 MuiPaper-elevation1 MuiPaper-rounded"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h4"
             >
               Survey Details
             </h2>
@@ -264,7 +264,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     General Information
                   </h3>
@@ -398,7 +398,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Permits
                   </h3>
@@ -496,7 +496,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Funding Sources
                   </h3>
@@ -609,7 +609,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Purpose and Methodology Data
                   </h3>
@@ -756,7 +756,7 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Proprietary Data
                   </h3>
@@ -876,11 +876,11 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Observations
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-245"
                 >
@@ -977,11 +977,11 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Documents
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-229"
                 >
@@ -1122,11 +1122,11 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
               class="MuiToolbar-root MuiToolbar-regular"
               style="justify-content: space-between;"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              <h3
+                class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
               >
                 Study Area
-              </h2>
+              </h3>
               <div
                 class="MuiBox-root MuiBox-root-238"
               >
@@ -1407,12 +1407,6 @@ exports[`SurveyPage renders correctly with no end date 1`] = `
               </p>
             </div>
             <div
-              class="MuiBox-root MuiBox-root-242"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-243"
-            />
-            <div
               class="MuiBox-root MuiBox-root-244"
             >
               <button
@@ -1631,7 +1625,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
             class="MuiPaper-root MuiBox-root MuiBox-root-141 MuiPaper-elevation1 MuiPaper-rounded"
           >
             <h2
-              class="MuiTypography-root MuiTypography-h2"
+              class="MuiTypography-root MuiTypography-h4"
             >
               Survey Details
             </h2>
@@ -1646,7 +1640,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     General Information
                   </h3>
@@ -1777,7 +1771,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Permits
                   </h3>
@@ -1875,7 +1869,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Funding Sources
                   </h3>
@@ -1988,7 +1982,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Purpose and Methodology Data
                   </h3>
@@ -2135,7 +2129,7 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                   style="justify-content: space-between;"
                 >
                   <h3
-                    class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+                    class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                   >
                     Proprietary Data
                   </h3>
@@ -2255,11 +2249,11 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Observations
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-183"
                 >
@@ -2356,11 +2350,11 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 class="MuiToolbar-root MuiToolbar-regular MuiToolbar-gutters"
                 style="justify-content: space-between;"
               >
-                <h2
-                  class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+                <h3
+                  class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
                 >
                   Documents
-                </h2>
+                </h3>
                 <div
                   class="MuiBox-root MuiBox-root-167"
                 >
@@ -2501,11 +2495,11 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
               class="MuiToolbar-root MuiToolbar-regular"
               style="justify-content: space-between;"
             >
-              <h2
-                class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+              <h3
+                class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
               >
                 Study Area
-              </h2>
+              </h3>
               <div
                 class="MuiBox-root MuiBox-root-176"
               >
@@ -2785,12 +2779,6 @@ exports[`SurveyPage renders survey page when survey is loaded 1`] = `
                 study area
               </p>
             </div>
-            <div
-              class="MuiBox-root MuiBox-root-180"
-            />
-            <div
-              class="MuiBox-root MuiBox-root-181"
-            />
             <div
               class="MuiBox-root MuiBox-root-182"
             >
