@@ -2,17 +2,17 @@ import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Formik } from 'formik';
 import React from 'react';
 import ProjectPermitForm, {
-  IProjectPermitForm,
-  ProjectPermitFormInitialValues,
-  ProjectPermitFormYupSchema
-} from './ProjectPermitForm';
+  ISurveyPermitForm,
+  SurveyPermitFormInitialValues,
+  SurveyPermitFormYupSchema
+} from './SurveyPermitForm';
 
-describe('ProjectPermitForm', () => {
+describe('SurveyPermitForm', () => {
   it('renders correctly with default empty values', () => {
     const { asFragment } = render(
       <Formik
-        initialValues={ProjectPermitFormInitialValues}
-        validationSchema={ProjectPermitFormYupSchema}
+        initialValues={SurveyPermitFormInitialValues}
+        validationSchema={SurveyPermitFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
@@ -24,7 +24,7 @@ describe('ProjectPermitForm', () => {
   });
 
   it('renders correctly with existing permit values', () => {
-    const existingFormValues: IProjectPermitForm = {
+    const existingFormValues: ISurveyPermitForm = {
       permits: [
         {
           permit_number: '123',
@@ -40,7 +40,7 @@ describe('ProjectPermitForm', () => {
     const { asFragment } = render(
       <Formik
         initialValues={existingFormValues}
-        validationSchema={ProjectPermitFormYupSchema}
+        validationSchema={SurveyPermitFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
@@ -52,7 +52,7 @@ describe('ProjectPermitForm', () => {
   });
 
   it('renders correctly with errors on the permit_number and permit_type fields', () => {
-    const existingFormValues: IProjectPermitForm = {
+    const existingFormValues: ISurveyPermitForm = {
       permits: [
         {
           permit_number: '123',
@@ -64,7 +64,7 @@ describe('ProjectPermitForm', () => {
     const { asFragment } = render(
       <Formik
         initialValues={existingFormValues}
-        validationSchema={ProjectPermitFormYupSchema}
+        validationSchema={SurveyPermitFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         initialErrors={{
@@ -82,7 +82,7 @@ describe('ProjectPermitForm', () => {
   });
 
   it('renders correctly with error on the permits field due to duplicates', () => {
-    const existingFormValues: IProjectPermitForm = {
+    const existingFormValues: ISurveyPermitForm = {
       permits: [
         {
           permit_number: '123',
@@ -98,7 +98,7 @@ describe('ProjectPermitForm', () => {
     const { asFragment } = render(
       <Formik
         initialValues={existingFormValues}
-        validationSchema={ProjectPermitFormYupSchema}
+        validationSchema={SurveyPermitFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         initialErrors={{ permits: 'Error is here' }}
@@ -111,7 +111,7 @@ describe('ProjectPermitForm', () => {
   });
 
   it('deletes existing permits when delete icon is clicked', async () => {
-    const existingFormValues: IProjectPermitForm = {
+    const existingFormValues: ISurveyPermitForm = {
       permits: [
         {
           permit_number: '123',
@@ -123,7 +123,7 @@ describe('ProjectPermitForm', () => {
     const { getByTestId, queryByText } = render(
       <Formik
         initialValues={existingFormValues}
-        validationSchema={ProjectPermitFormYupSchema}
+        validationSchema={SurveyPermitFormYupSchema}
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>

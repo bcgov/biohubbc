@@ -5,7 +5,7 @@
  * @interface IGetPermitsListResponse
  */
 export interface IGetPermitsListResponse {
-  id: number;
+  id: number | string;
   number: string;
   type: string;
   coordinator_agency: string;

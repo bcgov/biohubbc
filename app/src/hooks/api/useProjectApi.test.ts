@@ -9,7 +9,7 @@ import { IProjectIUCNForm } from 'features/projects/components/ProjectIUCNForm';
 import { IProjectLocationForm } from 'features/projects/components/ProjectLocationForm';
 import { IProjectObjectivesForm } from 'features/projects/components/ProjectObjectivesForm';
 import { IProjectPartnershipsForm } from 'features/projects/components/ProjectPartnershipsForm';
-import { IProjectPermitForm } from 'features/projects/components/ProjectPermitForm';
+import { IProjectPermitForm } from 'features/surveys/SurveyPermitForm';
 import { UPDATE_GET_ENTITIES } from 'interfaces/useProjectApi.interface';
 import { getProjectForViewResponse } from 'test-helpers/project-helpers';
 import useProjectApi, { usePublicProjectApi } from './useProjectApi';

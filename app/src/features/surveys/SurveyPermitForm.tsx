@@ -16,31 +16,31 @@ import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
-export interface IProjectPermitFormArrayItem {
+export interface ISurveyPermitFormArrayItem {
   permit_number: string;
   permit_type: string;
 }
 
-export interface IProjectExistingPermitFormArrayItem {
+export interface ISurveyExistingPermitFormArrayItem {
   permit_id: number;
 }
 
-export interface IProjectPermitForm {
-  permits: IProjectPermitFormArrayItem[];
-  existing_permits?: IProjectExistingPermitFormArrayItem[];
+export interface ISurveyPermitForm {
+  permits: ISurveyPermitFormArrayItem[];
+  existing_permits?: ISurveyExistingPermitFormArrayItem[];
 }
 
-export const ProjectPermitFormArrayItemInitialValues: IProjectPermitFormArrayItem = {
+export const SurveyPermitFormArrayItemInitialValues: ISurveyPermitFormArrayItem = {
   permit_number: '',
   permit_type: ''
 };
 
-export const ProjectPermitFormInitialValues: IProjectPermitForm = {
+export const SurveyPermitFormInitialValues: ISurveyPermitForm = {
   permits: [],
   existing_permits: []
 };
 
-export const ProjectPermitFormYupSchema = yup.object().shape({
+export const SurveyPermitFormYupSchema = yup.object().shape({
   permits: yup
     .array()
     .of(
@@ -52,7 +52,7 @@ export const ProjectPermitFormYupSchema = yup.object().shape({
     .isUniquePermitNumber('Permit numbers must be unique')
 });
 
-export const ProjectPermitEditFormYupSchema = yup.object().shape({
+export const SurveyPermitEditFormYupSchema = yup.object().shape({
   permits: yup
     .array()
     .of(
@@ -64,17 +64,17 @@ export const ProjectPermitEditFormYupSchema = yup.object().shape({
     .isUniquePermitNumber('Permit numbers must be unique')
 });
 
-export interface IProjectPermitFormProps {
+export interface ISurveyPermitFormProps {
   non_sampling_permits?: IMultiAutocompleteFieldOption[];
 }
 
 /**
- * Create project - Permit section
+ * Create Survey - Permit section
  *
  * @return {*}
  */
-const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
-  const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<IProjectPermitForm>();
+const SurveyPermitForm: React.FC<ISurveyPermitFormProps> = (props) => {
+  const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<ISurveyPermitForm>();
 
   return (
     <form onSubmit={handleSubmit}>
@@ -153,7 +153,7 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
                 variant="outlined"
                 color="primary"
                 aria-label="add permit"
-                onClick={() => arrayHelpers.push(ProjectPermitFormArrayItemInitialValues)}>
+                onClick={() => arrayHelpers.push(SurveyPermitFormArrayItemInitialValues)}>
                 Add New Permit
               </Button>
             </Box>
@@ -164,4 +164,4 @@ const ProjectPermitForm: React.FC<IProjectPermitFormProps> = (props) => {
   );
 };
 
-export default ProjectPermitForm;
+export default SurveyPermitForm;

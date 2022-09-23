@@ -100,7 +100,7 @@ const CreateSurveyPage = () => {
   const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
-  console.log(surveyPermits);
+
 
   // Ability to bypass showing the 'Are you sure you want to cancel' dialog
   const [enableCancelCheck, setEnableCancelCheck] = useState(true);
@@ -294,6 +294,8 @@ const CreateSurveyPage = () => {
     return <CircularProgress className="pageProgress" size={40} />;
   }
 
+  console.log('surveyPermits from UseSurveyApi', surveyPermits);
+
   return (
     <>
       <Prompt when={enableCancelCheck} message={handleLocationChange} />
@@ -357,6 +359,10 @@ const CreateSurveyPage = () => {
                       projectEndDate={projectWithDetails.project.end_date}
                     />
                   }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
+
+
 
                 <Divider className={classes.sectionDivider} />
 

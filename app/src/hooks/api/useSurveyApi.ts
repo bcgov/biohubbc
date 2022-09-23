@@ -260,7 +260,13 @@ const useSurveyApi = (axios: AxiosInstance) => {
    * @returns {*} {Promise<SurveyPermits[]>}
    */
   const getSurveyPermits = async (projectId: number): Promise<ISurveyPermits[]> => {
-    const { data } = await axios.get(`/api/permits/list`);
+    //const { data } = await axios.get(`/api/permits/list`);
+
+    const data = [
+      { id: 1, permit_number: 'abc', permit_type: 'Scientific collection' },
+      { id: 2, permit_number: 'def', permit_type: 'Wildlife' },
+      { id: 3, permit_number: 'ghi', permit_type: 'Third type' }
+    ];
 
     return data;
   };

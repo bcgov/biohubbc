@@ -1,16 +1,7 @@
 import Box from '@material-ui/core/Box';
-import Button from '@material-ui/core/Button';
-import FormControl from '@material-ui/core/FormControl';
-import FormHelperText from '@material-ui/core/FormHelperText';
 import Grid from '@material-ui/core/Grid';
-import IconButton from '@material-ui/core/IconButton';
-import InputLabel from '@material-ui/core/InputLabel';
-import MenuItem from '@material-ui/core/MenuItem';
-import Select from '@material-ui/core/Select';
 import Typography from '@material-ui/core/Typography';
-import { mdiPlus, mdiTrashCanOutline } from '@mdi/js';
-import Icon from '@mdi/react';
-import AutocompleteField, { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
+import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -19,9 +10,28 @@ import { DATE_FORMAT } from 'constants/dateTimeFormats';
 import { useFormikContext } from 'formik';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { debounce } from 'lodash-es';
-import React, { useCallback, useState } from 'react';
+import React, { useCallback } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
+import SurveyPermitForm from '../SurveyPermitForm';
+
+export const AddPermitFormInitialValues = {
+  permits: [
+    {
+      permit_number: '',
+      permit_type: ''
+    }
+  ]
+};
+
+export const AddPermitsFormYupSchema = yup.object().shape({
+  permits: yup.array().of(
+    yup.object().shape({
+      permit_number: yup.string().required('Permit number is required'),
+      permit_type: yup.string().required('Permit type is required')
+    })
+  )
+});
 
 export interface IGeneralInformationForm {
   survey_details: {
@@ -97,8 +107,10 @@ export interface IGeneralInformationFormProps {
  * @return {*}
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
+  console.log('props in the General Information Form:', props);
   const formikProps = useFormikContext<IGeneralInformationForm>();
-  const [showAddPermitRow, setShowAddPermitRow] = useState<boolean>(false);
+
+  console.log('formikProps.values in General Information Form: ', formikProps.values);
 
   const biohubApi = useBiohubApi();
 
@@ -129,23 +141,6 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
     ),
     []
   );
-
-  const addNewPermitButton = () => {
-    return (
-      <Button
-        variant="outlined"
-        color="primary"
-        startIcon={<Icon path={mdiPlus} size={1} />}
-        aria-label="add-permit"
-        onClick={() => {
-          formikProps.setFieldValue('permit.permit_number', '');
-          formikProps.setFieldValue('permit.permit_type', '');
-          setShowAddPermitRow(true);
-        }}>
-        <strong>Add Permit</strong>
-      </Button>
-    );
-  };
 
   return (
     <form>
@@ -227,97 +222,14 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Permits</Typography>
-
-        {props.permit_numbers.length > 0 && !showAddPermitRow && (
-          <>
-            <Typography variant="body1">
-              If a permit is required for this survey, select a permit or add new one.
-            </Typography>
-            <Box mt={2} display="flex" alignItems="center">
-              <Box flex="1 1 auto">
-                <AutocompleteField
-                  id="permit_number"
-                  name="permit.permit_number"
-                  label="Select Permit"
-                  options={props.permit_numbers}
-                  onChange={(event, option) => {
-                    if (!option) {
-                      formikProps.setFieldValue('permit.permit_number', '');
-                    } else {
-                      formikProps.setFieldValue('permit.permit_number', option.value);
-                    }
-                  }}
-                />
-              </Box>
-              <Box mx={2}>
-                <Typography variant="body1">OR</Typography>
-              </Box>
-              <Box flex="0 0 auto">{addNewPermitButton()}</Box>
-            </Box>
-          </>
-        )}
-
-        {props.permit_numbers.length === 0 && !showAddPermitRow && (
-          <>
-            <Typography variant="body1">Add a permit if one is required for this survey.</Typography>
-            <Box mt={2}>{addNewPermitButton()}</Box>
-          </>
-        )}
-
-        {showAddPermitRow && (
-          <Box display="flex">
-            <Box flexBasis="50%" pr={1}>
-              <CustomTextField
-                name="permit.permit_number"
-                label="Permit Number"
-                other={{
-                  required: false,
-                  value: formikProps.values.permit.permit_number,
-                  error: formikProps.touched.permit?.permit_number && Boolean(formikProps.errors.permit?.permit_number),
-                  helperText: formikProps.touched.permit?.permit_number && formikProps.errors.permit?.permit_number
-                }}
-              />
-            </Box>
-            <Box flexBasis="50%" pl={1}>
-              <FormControl variant="outlined" required={false} style={{ width: '100%' }}>
-                <InputLabel id="permit_type">Permit Type</InputLabel>
-                <Select
-                  id="permit_type"
-                  name="permit.permit_type"
-                  labelId="permit_type"
-                  label="Permit Type"
-                  value={formikProps.values.permit.permit_type}
-                  onChange={formikProps.handleChange}
-                  error={formikProps.touched.permit?.permit_type && Boolean(formikProps.errors.permit?.permit_type)}
-                  displayEmpty
-                  inputProps={{ 'aria-label': 'Permit Type' }}>
-                  <MenuItem key={1} value="Park Use Permit">
-                    Park Use Permit
-                  </MenuItem>
-                  <MenuItem key={2} value="Wildlife Permit - General">
-                    Wildlife Permit - General
-                  </MenuItem>
-                  <MenuItem key={3} value="Scientific Fish Collection Permit">
-                    Scientific Fish Collection Permit
-                  </MenuItem>
-                </Select>
-                <FormHelperText>
-                  {formikProps.touched.permit?.permit_type && formikProps.errors.permit?.permit_type}
-                </FormHelperText>
-              </FormControl>
-            </Box>
-            <Box pt={0.5} pl={1}>
-              <IconButton
-                color="primary"
-                data-testid="delete-icon"
-                aria-label="remove-permit"
-                onClick={() => setShowAddPermitRow(false)}>
-                <Icon path={mdiTrashCanOutline} size={1} />
-              </IconButton>
-            </Box>
-          </Box>
-        )}
       </Box>
+      <SurveyPermitForm
+        non_sampling_permits={
+          props.permit_numbers?.map((item: any) => {
+            return { value: item.number, label: `${item.number} - ${item.type}` };
+          }) || []
+        }
+      />
 
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Funding Sources</Typography>

@@ -63,6 +63,7 @@ export const surveyObject: SurveyViewObject = {
     ]
   },
   permit: {
+    id: 1,
     permit_number: '123',
     permit_type: 'Scientific'
   },

@@ -8,6 +8,7 @@ import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
 import { IGetSurveyForViewResponse } from 'interfaces/useSurveyApi.interface';
 import React from 'react';
+import SurveyGeneralInformation from './components/SurveyGeneralInformation';
 
 export interface ISurveyDetailsProps {
   surveyForViewData: IGetSurveyForViewResponse;
@@ -28,14 +29,14 @@ const SurveyDetails: React.FC<ISurveyDetailsProps> = (props) => {
     <>
       <Box component={Paper} p={3}>
         <Typography variant="h2">Survey Details</Typography>
-        {/* <Box component="section" mt={1}>
+        <Box component="section" mt={1}>
           <SurveyGeneralInformation
             projectForViewData={projectForViewData}
             surveyForViewData={surveyForViewData}
             codes={codes}
             refresh={refresh}
           />
-        </Box> */}
+        </Box>
         {
           <Box component="section" mt={1}>
             <SurveyPurposeAndMethodologyData

@@ -19,7 +19,7 @@ import ProjectPermitForm, {
   ProjectPermitEditFormYupSchema,
   ProjectPermitFormArrayItemInitialValues,
   ProjectPermitFormInitialValues
-} from 'features/projects/components/ProjectPermitForm';
+} from 'features/surveys/SurveyPermitForm';
 import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';

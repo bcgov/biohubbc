@@ -14,7 +14,7 @@ import { ProjectIUCNFormInitialValues } from 'features/projects/components/Proje
 import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
-import { ProjectPermitFormInitialValues } from 'features/projects/components/ProjectPermitForm';
+import { SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
@@ -221,7 +221,7 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          permit: ProjectPermitFormInitialValues,
+          permit: SurveyPermitFormInitialValues,
           project: ProjectDetailsFormInitialValues,
           objectives: ProjectObjectivesFormInitialValues,
           location: ProjectLocationFormInitialValues,

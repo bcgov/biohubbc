@@ -114,6 +114,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
     if (surveyResponseData.surveyData.permit.permit_number && surveyResponseData.surveyData.permit.permit_type) {
       setSurveyPermits([
         {
+          id: surveyResponseData.surveyData.permit.id,
           permit_number: surveyResponseData.surveyData.permit.permit_number,
           permit_type: surveyResponseData.surveyData.permit.permit_type
         },

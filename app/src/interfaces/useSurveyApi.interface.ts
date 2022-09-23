@@ -178,6 +178,7 @@ export interface IGetSurveyAttachmentsResponse {
 }
 
 export interface ISurveyPermits {
+  id: number;
   permit_number: string;
   permit_type: string;
 }

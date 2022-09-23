@@ -52,7 +52,12 @@ export interface CustomFieldArrayProps<ValueType = unknown> {
    *
    * @memberof CustomFieldArrayProps
    */
-  getLabelForValue: (value: ValueType) => string;
+  getLabelForValue: (
+    value: ValueType
+  ) => {
+    primaryLabel: string;
+    secondaryLabel?: string;
+  };
 }
 
 /**
@@ -84,8 +89,12 @@ const CustomFieldArray = <ValueType extends any>(props: CustomFieldArrayProps<Va
             {values.map((value: ValueType, index: number) => {
               const label = props.getLabelForValue(value);
               return (
-                <ListItem key={`listItem-${label}`} className={classes.listItem}>
-                  <ListItemText primary={label} className={classes.listItemText} />
+                <ListItem key={`listItem-${label.primaryLabel}`} className={classes.listItem}>
+                  <ListItemText
+                    primary={label.primaryLabel}
+                    secondary={label.secondaryLabel}
+                    className={classes.listItemText}
+                  />
                   <ListItemSecondaryAction>
                     <IconButton
                       aria-label="Delete list item"
