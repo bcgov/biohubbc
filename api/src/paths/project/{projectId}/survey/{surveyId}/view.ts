@@ -67,7 +67,7 @@ GET.apiDoc = {
                 required: [
                   'survey_details',
                   'species',
-                  //'permit',
+                  'permit',
                   'funding',
                   'proprietor',
                   'purpose_and_methodology',
@@ -141,21 +141,31 @@ GET.apiDoc = {
                       }
                     }
                   },
-                  // permit: {
-                  //   description: 'Survey Permit',
-                  //   type: 'object',
-                  //   required: ['permit_number', 'permit_type'],
-                  //   properties: {
-                  //     permit_number: {
-                  //       type: 'string',
-                  //       nullable: true
-                  //     },
-                  //     permit_type: {
-                  //       type: 'string',
-                  //       nullable: true
-                  //     }
-                  //   }
-                  // },
+                  permit: {
+                    description: 'Survey Permit',
+                    type: 'object',
+                    properties: {
+                      permits: {
+                        type: 'array',
+                        items: {
+                          type: 'object',
+                          required: ['permit_id', 'permit_number', 'permit_type'],
+                          properties: {
+                            permit_id: {
+                              type: 'number',
+                              minimum: 1
+                            },
+                            permit_number: {
+                              type: 'string'
+                            },
+                            permit_type: {
+                              type: 'string'
+                            }
+                          }
+                        }
+                      }
+                    }
+                  },
                   funding: {
                     description: 'Survey Funding Sources',
                     type: 'object',

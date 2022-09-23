@@ -6,6 +6,7 @@ import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
   GetFocalSpeciesData,
+  GetPermitData,
   GetReportAttachmentsData,
   GetSurveyData,
   GetSurveyFundingSources,
@@ -33,7 +34,7 @@ export class SurveyService extends DBService {
     const [
       surveyData,
       speciesData,
-      //permitData,
+      permitData,
       fundingData,
       purposeAndMethodologyData,
       proprietorData,
@@ -41,7 +42,7 @@ export class SurveyService extends DBService {
     ] = await Promise.all([
       this.getSurveyData(surveyId),
       this.getSpeciesData(surveyId),
-      //this.getPermitData(surveyId),
+      this.getPermitData(surveyId),
       this.getSurveyFundingSourcesData(surveyId),
       this.getSurveyPurposeAndMethodology(surveyId),
       this.getSurveyProprietorDataForView(surveyId),
@@ -51,7 +52,7 @@ export class SurveyService extends DBService {
     return {
       survey_details: surveyData,
       species: speciesData,
-      //permit: permitData,
+      permit: permitData,
       purpose_and_methodology: purposeAndMethodologyData,
       funding: fundingData,
       proprietor: proprietorData,
@@ -127,26 +128,13 @@ export class SurveyService extends DBService {
     return { ...new GetFocalSpeciesData(focalSpecies), ...new GetAncillarySpeciesData(ancillarySpecies) };
   }
 
-  // async getPermitData(surveyId: number): Promise<GetPermitData> {
-  //   const sqlStatement = SQL`
-  //     SELECT
-  //       number,
-  //       type
-  //     FROM
-  //       permit
-  //     WHERE
-  //       survey_id = ${surveyId};
-  //     `;
+  async getPermitData(surveyId: number): Promise<GetPermitData> {
+    const permitService = new PermitService(this.connection);
 
-  //   const response = await this.connection.query<{ number: string; type: string }>(
-  //     sqlStatement.text,
-  //     sqlStatement.values
-  //   );
+    const result = await permitService.getPermitBySurveyId(surveyId);
 
-  //   const result = response.rows?.[0];
-
-  //   return new GetPermitData(result);
-  // }
+    return new GetPermitData(result);
+  }
 
   async getSurveyPurposeAndMethodology(surveyId: number): Promise<GetSurveyPurposeAndMethodologyData> {
     const sqlStatement = queries.survey.getSurveyPurposeAndMethodologyForUpdateSQL(surveyId);
@@ -438,7 +426,7 @@ export class SurveyService extends DBService {
     }
   }
 
-  async updateSurvey(projectId: number, surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
+  async updateSurvey(surveyId: number, putSurveyData: PutSurveyObject): Promise<void> {
     const promises: Promise<any>[] = [];
 
     if (putSurveyData?.survey_details || putSurveyData?.purpose_and_methodology || putSurveyData?.location) {
@@ -454,7 +442,7 @@ export class SurveyService extends DBService {
     }
 
     if (putSurveyData?.permit) {
-      promises.push(this.updateSurveyPermitData(projectId, surveyId, putSurveyData));
+      promises.push(this.updateSurveyPermitData(surveyId, putSurveyData));
     }
 
     if (putSurveyData?.funding) {
@@ -501,31 +489,52 @@ export class SurveyService extends DBService {
   }
 
   /**
-   * To update a survey permit, we need to unassociate (not delete) the old permit from the survey and then associate
-   * the new permit to the survey. Associating a new permit to the survey is done by either inserting a brand new
-   * permit record into the permit table and setting the survey id column OR updating an existing permit record by
-   * setting the survey id column.
+   * Compares incoming survey permit data against the existing survey permits, if any, and determines which need to be
+   * deleted, added, or updated.
    *
-   * @param {number} projectId
    * @param {number} surveyId
    * @param {PutSurveyObject} surveyData
-   * @return {*}
    * @memberof SurveyService
    */
-  async updateSurveyPermitData(projectId: number, surveyId: number, surveyData: PutSurveyObject) {
-    await this.unassociatePermitFromSurvey(surveyId);
+  async updateSurveyPermitData(surveyId: number, surveyData: PutSurveyObject) {
+    const permitService = new PermitService(this.connection);
 
-    if (!surveyData.permit.permit_number) {
-      return;
+    // Get existing permits
+    const existingPermits = await permitService.getPermitBySurveyId(surveyId);
+
+    // Determine if any existing permits need to be deleted (are not included in the incoming permits array)
+    const removedPermits = existingPermits.filter((existingPermit) => {
+      // Filter the existing permits to only include permits with no matching incoming permit id
+      return !surveyData.permit.permits.find((incomingPermit) => incomingPermit.permit_id === existingPermit.permit_id);
+    });
+
+    // Delete existing permits that have been removed, if any
+    if (removedPermits.length) {
+      const promises: Promise<any>[] = [];
+
+      removedPermits.forEach((permit) => {
+        promises.push(permitService.deleteSurveyPermit(surveyId, permit.permit_id));
+      });
+
+      await Promise.all(promises);
     }
 
-    return this.insertOrAssociatePermitToSurvey(
-      this.connection.systemUserId() as number,
-      projectId,
-      surveyId,
-      surveyData.permit.permit_number,
-      surveyData.permit.permit_type
-    );
+    // The remaining permits are either new, and can be created, or updates to existing permits
+    const promises: Promise<any>[] = [];
+
+    surveyData.permit.permits.forEach((permit) => {
+      if (permit.permit_id) {
+        // Has a permit_id, indicating this is an update to an existing permit
+        promises.push(
+          permitService.updateSurveyPermit(surveyId, permit.permit_id, permit.permit_number, permit.permit_type)
+        );
+      } else {
+        // No permit_id, indicating this is a new permit which needs to be created
+        promises.push(permitService.createSurveyPermit(surveyId, permit.permit_number, permit.permit_type));
+      }
+    });
+
+    return Promise.all(promises);
   }
 
   async unassociatePermitFromSurvey(surveyId: number) {

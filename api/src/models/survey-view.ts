@@ -1,9 +1,10 @@
 import { Feature } from 'geojson';
+import { IPermitModel } from '../repositories/permit-repository';
 
 export type SurveyObject = {
   survey_details: GetSurveyData;
   species: GetFocalSpeciesData & GetAncillarySpeciesData;
-  //permit: GetPermitData;
+  permit: GetPermitData;
   purpose_and_methodology: GetSurveyPurposeAndMethodologyData;
   funding: GetSurveyFundingSources;
   proprietor: GetSurveyProprietorData | null;
@@ -68,12 +69,19 @@ export class GetAncillarySpeciesData {
   }
 }
 export class GetPermitData {
-  permit_number: number;
-  permit_type: string;
+  permits: {
+    permit_id: IPermitModel['permit_id'];
+    permit_number: IPermitModel['number'];
+    permit_type: IPermitModel['type'];
+  }[];
 
-  constructor(obj?: any) {
-    this.permit_number = obj?.number || '';
-    this.permit_type = obj?.type || '';
+  constructor(obj: IPermitModel[]) {
+    this.permits =
+      obj?.map((item) => ({
+        permit_id: item.permit_id,
+        permit_number: item.number,
+        permit_type: item.type
+      })) || [];
   }
 }
 

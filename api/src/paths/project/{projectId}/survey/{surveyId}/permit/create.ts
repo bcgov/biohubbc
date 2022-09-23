@@ -111,7 +111,6 @@ POST.apiDoc = {
 export function createSurveyPermit(): RequestHandler {
   return async (req, res) => {
     const surveyId = Number(req.params.surveyId);
-    const permitId = Number(req.body.permit.permit_id);
     const permitNumber = String(req.body.permit.permit_number);
     const permitType = String(req.body.permit.permit_type);
 
@@ -122,7 +121,7 @@ export function createSurveyPermit(): RequestHandler {
 
       const permitService = new PermitService(connection);
 
-      const permit_id = await permitService.createSurveyPermit(surveyId, permitId, permitNumber, permitType);
+      const permit_id = await permitService.createSurveyPermit(surveyId, permitNumber, permitType);
 
       await connection.commit();
 
