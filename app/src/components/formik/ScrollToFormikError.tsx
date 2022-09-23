@@ -78,8 +78,8 @@ export const ScrollToFormikError: React.FC<IScrollToFormikErrorProps> = (props) 
   }, [errors, submitCount]);
 
   const closeSnackBar = () =>
-    setOpenSnackbar((currentState) => {
-      return { open: false, msg: currentState.msg };
+    setOpenSnackbar(() => {
+      return { open: false, msg: '' };
     });
 
   return (

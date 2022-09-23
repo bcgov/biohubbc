@@ -135,7 +135,7 @@ const CreateSurveyPage = () => {
         DATE_FORMAT.ShortDateFormat,
         `Survey start date cannot be before ${getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, DATE_LIMIT.min)}`
       )
-      .required('Start Data is Required'),
+      .required('Start Date is Required'),
     end_date: yup
       .string()
       .isValidDateString()
