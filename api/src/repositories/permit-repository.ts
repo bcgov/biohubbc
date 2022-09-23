@@ -31,9 +31,8 @@ export class PermitRepository extends BaseRepository {
    */
   async getPermitBySurveyId(surveyId: number): Promise<IPermitModel[]> {
     const sqlStatement = SQL`
-      select p.* from permit p, survey_permit sp 
-      where p.permit_id = sp.permit_id 
-        and sp.survey_id = ${surveyId}
+      select p.* from permit p
+      where p.survey_id = ${surveyId}
       ;
       `;
 
@@ -61,13 +60,12 @@ export class PermitRepository extends BaseRepository {
         `.api_get_context_user_id()
         and sr.name in ('${SYSTEM_ROLE.SYSTEM_ADMIN}','${SYSTEM_ROLE.DATA_ADMINISTRATOR}')
         group by su.user_identifier)
-      , user_permits as (select p.* from permit p, survey s, survey_permit sp, project_participation pp 
+      , user_permits as (select p.* from permit p, survey s, project_participation pp 
         where pp.system_user_id = `
       )
       .append(SCHEMAS.DATA).append(`.api_get_context_user_id()
         and s.project_id = pp.project_id 
-        and sp.survey_id = s.survey_id 
-        and p.permit_id = sp.permit_id
+        and p.survey_id = s.survey_id
         )
       select p.* from permit p
       where exists (select from user_roles) 
@@ -78,30 +76,6 @@ export class PermitRepository extends BaseRepository {
     const response = await this.connection.sql<IPermitModel>(sqlStatement);
 
     return response.rows;
-  }
-
-  /**
-   * Associate permit to survey.
-   *
-   * @param {number} surveyId
-   * @param {number} permitId
-   * @return {*}  number
-   * @memberof PermitRepository
-   */
-  async upsertPermitToSurvey(surveyId: number, permitId: number): Promise<number> {
-    const sqlStatement = SQL`
-      insert into survey_permit (survey_id, permit_id) 
-        values (${surveyId}, ${permitId}) 
-        on conflict do nothing
-        returning survey_permit_id
-      ;
-      `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    const result = (response && response.rows && response.rows[0]) || null;
-
-    return result.survey_permit_id;
   }
 
   /**
@@ -120,15 +94,12 @@ export class PermitRepository extends BaseRepository {
     permitNumber: string,
     permitType: string
   ): Promise<number> {
-    console.log(`permitNumber2: ${permitNumber}`);
     const sqlStatement = SQL`
       update permit 
         set "number" = ${permitNumber}
         , type = ${permitType}
       where permit_id = ${permitId}
-        and exists (select 1 from survey_permit 
-          where survey_id = ${surveyId}
-          and permit_id = ${permitId})
+        and survey_id = ${surveyId}
       returning permit_id
       ;
       `;
@@ -143,14 +114,15 @@ export class PermitRepository extends BaseRepository {
   /**
    * Create survey permit.
    *
+   * @param {number} surveyId
    * @param {string} permitNumber
    * @param {string} permitType
    * @return {*}  number
    * @memberof PermitRepository
    */
-  async createSurveyPermit(permitNumber: string, permitType: string): Promise<number> {
+  async createSurveyPermit(surveyId: number, permitNumber: string, permitType: string): Promise<number> {
     const sqlStatement = SQL`
-      insert into permit ("number", type) values (${permitNumber}, ${permitType})
+      insert into permit (survey_id, "number", type) values (${surveyId}, ${permitNumber}, ${permitType})
       returning permit_id
       ;
       `;
@@ -163,25 +135,6 @@ export class PermitRepository extends BaseRepository {
   }
 
   /**
-   * Delete permits not associated with surveys.
-   *
-   * @param {}
-   * @return {*}  number
-   * @memberof PermitRepository
-   */
-  async deleteUnassociatedPermits(): Promise<number> {
-    const sqlStatement = SQL`
-      delete from permit 
-      where permit_id not in (select permit_id from survey_permit);
-      ;
-      `;
-
-    const response = await this.connection.sql(sqlStatement);
-
-    return response.rowCount;
-  }
-
-  /**
    * Delete survey permit.
    *
    * @param {number} surveyId
@@ -191,7 +144,7 @@ export class PermitRepository extends BaseRepository {
    */
   async deleteSurveyPermit(surveyId: number, permitId: number): Promise<number> {
     const sqlStatement = SQL`
-      delete from survey_permit 
+      delete from permit 
       where permit_id = ${permitId}
       and survey_id =  ${surveyId}
       returning permit_id

@@ -51,7 +51,7 @@ export async function up(knex: Knex): Promise<void> {
        delete from survey_vantage where survey_id = p_survey_id;
        delete from survey_spatial_component where survey_id = p_survey_id;
  
-       delete from survey_permit where survey_id = p_survey_id;
+       delete from permit where survey_id = p_survey_id;
        delete from survey where survey_id = p_survey_id;
  
      exception

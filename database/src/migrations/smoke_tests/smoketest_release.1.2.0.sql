@@ -155,10 +155,8 @@ begin
   insert into study_species (survey_id, wldtaxonomic_units_id, is_focal) values (_survey_id, (select wldtaxonomic_units_id from wldtaxonomic_units where CODE = 'AMARALB'), true);
   insert into survey_funding_source (survey_id, project_funding_source_id) values (_survey_id, _project_funding_source_id);
   insert into survey_vantage(survey_id, vantage_id) values (_survey_id, (select vantage_id from vantage where name = 'Aerial'));
-  insert into permit (number, type) values ('8377262', 'permit type') returning permit_id into _permit_id;
-  insert into survey_permit(survey_id, permit_id) values (_survey_id, _permit_id);
-  insert into permit (number, type) values ('8377261', 'permit type') returning permit_id into _permit_id;
-  insert into survey_permit(survey_id, permit_id) values (_survey_id, _permit_id);
+  insert into permit (survey_id, number, type) values (_survey_id, '8377262', 'permit type') returning permit_id into _permit_id;
+  insert into permit (survey_id, number, type) values (_survey_id, '8377261', 'permit type') returning permit_id into _permit_id;
 
 
   select count(1) into _count from survey;
@@ -179,8 +177,6 @@ begin
   assert _count = 1, 'FAIL survey_vantage';
   select count(1) into _count from permit;
   assert _count = 2, 'FAIL permit';
-  select count(1) into _count from survey_permit;
-  assert _count = 2, 'FAIL survey_permit';
 
   -- occurrence
   -- occurrence submission 1
