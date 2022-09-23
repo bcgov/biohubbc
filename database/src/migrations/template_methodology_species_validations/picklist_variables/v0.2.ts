@@ -55,8 +55,8 @@ const ActivityObservation = [
   { name: 'Bedding' },
   { name: 'Running' },
   { name: 'Walking' },
-  { name: 'Not Moving' },
-  { name: 'Moving' }
+  { name: 'Moving' },
+  { name: 'Not Moving' }
 ];
 
 const SearchType = [{ name: 'Survey' }, { name: 'Telemetry' }];
@@ -64,29 +64,29 @@ const SearchType = [{ name: 'Survey' }, { name: 'Telemetry' }];
 const TargetType = [{ name: 'Targeted' }, { name: 'Non-Targeted' }];
 
 const MarkType = [
-  { name: 'GPS', description: '' },
-  { name: 'VHF', description: '' },
-  { name: 'Ear tag', description: '' },
   { name: 'Alternate Animal ID', description: '' },
-  { name: 'Neckband', description: '' },
-  { name: 'Branded', description: '' },
-  { name: 'Horn', description: '' },
-  { name: 'Mammals - Ear switches', description: '' },
   { name: 'Back tag', description: '' },
+  { name: 'Branded', description: '' },
+  { name: 'Clipped', description: '' },
+  { name: 'Description in Comments', description: '' },
+  { name: 'Dye or Paint', description: '' },
+  { name: 'Ear tag', description: '' },
+  { name: 'Fluorescence or radiation', description: '' },
+  { name: 'GPS', description: '' },
+  { name: 'Horn', description: '' },
   { name: 'Leg band', description: '' },
+  { name: 'Mammals - Ear switches', description: '' },
   { name: 'Nasal', description: '' },
-  { name: 'Streamer', description: '' },
+  { name: 'Neckband', description: '' },
   { name: 'Passive Integrated Transponder', description: '' },
-  { name: 'Vaginal Implant Transmitter', description: '' },
-  { name: 'Wing band', description: '' },
   { name: 'Scute Removal', description: '' },
   { name: 'Shell marking', description: '' },
-  { name: 'Clipped', description: '' },
-  { name: 'Dye or Paint', description: '' },
-  { name: 'Fluorescence or radiation', description: '' },
+  { name: 'Streamer', description: '' },
   { name: 'Tag', description: '' },
   { name: 'Tattoo', description: '' },
-  { name: 'Description in Comments', description: '' }
+  { name: 'Vaginal Implant Transmitter', description: '' },
+  { name: 'VHF', description: '' },
+  { name: 'Wing band', description: '' }
 ];
 
 const FrequencyUnits = [
@@ -242,6 +242,7 @@ const SignType = [
 const SignAge = [{ name: 'Fresh' }, { name: 'Old' }];
 
 const Habitat = [
+  { name: 'Agricultural ' },
   { name: 'Alpine' },
   { name: 'Alpine Barren' },
   { name: 'Alpine Heath Meadows' },
@@ -251,20 +252,31 @@ const Habitat = [
   { name: 'Burn' },
   { name: 'Caves' },
   { name: 'Clearcut' },
+  { name: 'Clearcut Herbaceous' },
   { name: 'Cliff' },
   { name: 'Cliff - open' },
   { name: 'Cliff in Forest' },
   { name: 'Coniferous' },
+  { name: 'Cultivated Field' },
+  { name: 'Cutblock - Free to Grow' },
+  { name: 'Cutblock - Mature' },
+  { name: 'Cutblock - Not Sufficiently Restored' },
   { name: 'Deciduous' },
   { name: 'Dissected Cliffs' },
+  { name: 'Estuary' },
   { name: 'Flat or Open Slopes' },
   { name: 'Glacier' },
   { name: 'Grass' },
+  { name: 'Grassland' },
   { name: 'Krummholtz' },
+  { name: 'Mature Forest' },
+  { name: 'Mixed' },
   { name: 'Mixed Wood' },
   { name: 'Moraine' },
   { name: 'Ridge' },
   { name: 'Riparian' },
+  { name: 'Riparian Forest' },
+  { name: 'River' },
   { name: 'Rock/Talus' },
   { name: 'Scree' },
   { name: 'Shrub' },
@@ -274,7 +286,8 @@ const Habitat = [
   { name: 'Terraces' },
   { name: 'Timber' },
   { name: 'Wetland/Meadow' },
-  { name: 'Willow/Shrub' }
+  { name: 'Willow/Shrub' },
+  { name: 'Young Forest' }
 ];
 
 const HabitatSlope = [
@@ -283,6 +296,8 @@ const HabitatSlope = [
   { name: 'Moderate (20-50%)', description: 'Moderate (20-50%)' },
   { name: 'Steep (>50%)', description: 'Steep (>50%)' }
 ];
+
+const Topography = [{ name: 'Flat' }, { name: 'Slope' }, { name: 'Steep' }];
 
 const SheepSpecies = [
   { name: 'Bighorn Sheep' },
@@ -307,104 +322,28 @@ const MooseSpecies = [
   { name: 'Elk' }
 ];
 
-const ParameterStatistic = [
-  { name: 'Population', description: '' },
-  { name: 'Individuals', description: '' },
-  { name: 'Adults', description: '' },
-  { name: 'Calves', description: '' },
-  { name: 'Bulls', description: '' },
-  { name: 'Sub-Prime Bulls', description: '' },
-  { name: 'Prime Bulls', description: '' },
-  { name: 'Senior Bulls', description: '' },
-  { name: 'RISC Class I Bulls', description: '' },
-  { name: 'RISC Class II Bulls', description: '' },
-  { name: 'RISC Class III Bulls', description: '' },
-  { name: 'Oswald (1997) Class I Bulls', description: '' },
-  { name: 'Oswald (1997) Class II Bulls', description: '' },
-  { name: 'Oswald (1997) Class III Bulls', description: '' },
-  { name: 'Adult Bulls', description: '' },
-  { name: 'Yearlings Bulls', description: '' },
-  { name: 'Cows', description: '' },
-  { name: 'Unclassified Age and Sex', description: '' },
-  { name: 'Calf:100 Adult Ratio', description: '' },
-  { name: 'Cow:100 Bull Ratio', description: '' },
-  { name: 'Calf:100 Cow Ratio', description: '' },
-  { name: 'Percent Calves', description: '' },
-  { name: 'Survival Adult', description: '' },
-  { name: 'Survival Cows', description: '' },
-  { name: 'Survival Bulls', description: '' },
-  { name: 'Survival Calves', description: '' },
-  { name: 'Survival Yearling', description: '' },
-  { name: 'Mortality Adults', description: '' },
-  { name: 'Mortality Bulls', description: '' },
-  { name: 'Mortality Cows', description: '' },
-  { name: 'Mortality Calves', description: '' },
-  { name: 'Mortality Yearlings', description: '' },
-  { name: 'Individuals/km2', description: '' },
-  { name: 'Individuals/m2', description: '' },
-  { name: 'Detections', description: '' },
-  { name: 'Detections/km', description: '' },
-  { name: 'Detections/100 m', description: '' },
-  { name: 'Detections/hour', description: '' },
-  { name: 'Detections/day', description: '' },
-  { name: 'Detections/100 days', description: '' }
-];
+const ElkSpecies = [{ name: 'Elk' }, { name: 'Rocky Mountain Elk' }, { name: 'Roosevelt Elk' }];
 
-const SightabilityModel = [
-  {
-    name: 'Model or Correction - Sightability Correct Factor',
-    description: `The parameter value is based on the sampled value but is adjusted via a sightability correction factor and/or detectability correction factor.`
-  },
-  {
-    name: 'Model or Correction - Joint Hypergeometric Estimator',
-    description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the Joint Hypergeometric Estimator. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-  },
-  {
-    name: 'Model or Correction - Lincoln-Peterson',
-    description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via Lincoln-Peterson formula. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-  },
-  {
-    name: 'Model or Correction - MoosePop - Kamloops',
-    description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Prince George sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-  },
-  {
-    name: 'Model or Correction - MoosePop - Prince George',
-    description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted via the MoosePop model, and Kamloops sight. model. The adjusted value represents an estimate of the true parameter value for the Study Area or Design Component of interest.`
-  },
-  {
-    name: 'Model or Correction - Recruitment-Mortality',
-    description: `The parameter value is based on the sampled value (i.e. based on the observations or detections) but is adjusted using the recruitment-mortality equation. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
-  },
-  {
-    name: 'Model or Correction & Expert Knowledge',
-    description: `The parameter value is based on the modelled or corrected  value but is adjusted via expert knowledge. The adjusted value represents an estimate of the true parameter value for the study area or design component of interest.`
-  },
-  {
-    name: 'Minimum Number Known Alive',
-    description: `"The value is based on the sampled value but is adjusted using additional information other than a model or SCF. The adjusted value represents the minimum number of individuals known to be alive in the area of interest.
-  Examples of situations in which MNKA may be used are:
-  (1) observed count is adjusted based on pre- or post-survey information.
-  (2) a Survey uses telemetry to locate additional collared individuals outside of the defined study area."`
-  },
-  {
-    name: 'Peak Count',
-    description: `The maximum number of individuals counted during the survey period. Usually used for deer spotlight counts, or carry-over counts.`
-  },
-  { name: 'None', description: `No sightability model/correction factor was applied.` },
-  {
-    name: 'Describe in Comments',
-    description: `The parameter method is described in comments. Note: Describing the data in comments rather than using a predefined code may reduce the clarity and accessibility of data.`
-  }
-];
-
-const BestParameterFlag = [
-  { name: 'Yes', description: '' },
-  { name: 'No', description: '' },
-  { name: 'Unknown', description: '' },
-  { name: 'Not Evaluated', description: '' }
+const ElkHabitat = [
+  { name: 'Agricultural' },
+  { name: 'Clearcut Herbaceous' },
+  { name: 'Cultivated Field' },
+  { name: 'Coniferous' },
+  { name: 'Cutblock - Free to Grow' },
+  { name: 'Cutblock - Matrue' },
+  { name: 'Cutblock - Not Sufficiently Restored' },
+  { name: 'Deciduous' },
+  { name: 'Estuary' },
+  { name: 'Grassland' },
+  { name: 'Mature Forest' },
+  { name: 'Mixed' },
+  { name: 'Riparian Forest' },
+  { name: 'River' },
+  { name: 'Young Forest' }
 ];
 
 const GoatSpecies = [{ name: 'Mountain Goat' }, { name: 'Oreamnos americanus' }, { name: 'M-ORAM' }, { name: 'ORAM' }];
+
 interface objectNameDescription {
   name: string;
   description?: string;
@@ -455,13 +394,8 @@ export const defaultPicklist = {
   signType: SignType,
   signAge: SignAge,
   habitat: Habitat,
-  habitatSlope: HabitatSlope
-};
-
-export const summaryPickList = {
-  parameter: ParameterStatistic,
-  sightabilityModel: SightabilityModel,
-  bestParameterValueFlag: BestParameterFlag
+  habitatSlope: HabitatSlope,
+  topography: Topography
 };
 
 export const SheepItems = {
@@ -479,6 +413,8 @@ export const MooseItems = {
   species: MooseSpecies
 };
 
-export const MooseSummaryItems = {
-  ...summaryPickList
+export const ElkItems = {
+  ...defaultPicklist,
+  species: ElkSpecies,
+  habitat: ElkHabitat
 };
