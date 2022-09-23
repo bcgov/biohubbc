@@ -65,24 +65,20 @@ export interface IPermitsArrayItem {
 }
 
 export interface ICreatePermitsForm {
-  coordinator: {
-    first_name: string;
-    last_name: string;
-    email_address: string;
-    coordinator_agency: string;
-    share_contact_details: string;
-  };
+  first_name: string;
+  last_name: string;
+  email_address: string;
+  coordinator_agency: string;
+  share_contact_details: string;
   permits: IPermitsArrayItem[];
 }
 
 export const PermitsInitialValues: ICreatePermitsForm = {
-  coordinator: {
-    first_name: '',
-    last_name: '',
-    email_address: '',
-    coordinator_agency: '',
-    share_contact_details: 'false'
-  },
+  first_name: '',
+  last_name: '',
+  email_address: '',
+  coordinator_agency: '',
+  share_contact_details: 'false',
   permits: [
     {
       permit_number: '',
