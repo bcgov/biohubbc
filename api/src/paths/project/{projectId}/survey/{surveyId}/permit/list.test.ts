@@ -46,7 +46,7 @@ describe('getSurveyPermits', () => {
     });
 
     try {
-      const result = list.getSurveyPermits();
+      const result = list.listSurveyPermits();
 
       await result(
         { ...sampleReq, params: { ...sampleReq.params, projectId: null } },
@@ -86,7 +86,7 @@ describe('getSurveyPermits', () => {
 
     sinon.stub(survey_queries, 'getAllAssignablePermitsForASurveySQL').returns(SQL`some query`);
 
-    const result = list.getSurveyPermits();
+    const result = list.listSurveyPermits();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 
@@ -117,7 +117,7 @@ describe('getSurveyPermits', () => {
 
     sinon.stub(survey_queries, 'getAllAssignablePermitsForASurveySQL').returns(SQL`some query`);
 
-    const result = list.getSurveyPermits();
+    const result = list.listSurveyPermits();
 
     await result(sampleReq, sampleRes as any, (null as unknown) as any);
 

@@ -594,38 +594,6 @@ describe('getCoordinatorData', () => {
   });
 });
 
-describe('getPermitData', () => {
-  afterEach(() => {
-    sinon.restore();
-  });
-
-  it('returns data if valid return', async () => {
-    const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
-
-    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-    const projectService = new ProjectService(mockDBConnection);
-
-    const response = await projectService.getPermitData(1);
-
-    expect(response).to.eql(new GetPermitData([{ id: 1 }]));
-  });
-
-  it('returns null if response is empty', async () => {
-    const mockQueryResponse = ({ rowCount: 0 } as unknown) as QueryResult<any>;
-
-    const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
-    const projectService = new ProjectService(mockDBConnection);
-
-    try {
-      await projectService.getPermitData(1);
-      expect.fail();
-    } catch (actualError) {
-      expect((actualError as HTTPError).message).to.equal('Failed to get project permit data');
-      expect((actualError as HTTPError).status).to.equal(400);
-    }
-  });
-});
-
 describe('getLocationData', () => {
   afterEach(() => {
     sinon.restore();

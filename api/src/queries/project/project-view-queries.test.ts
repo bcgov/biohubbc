@@ -139,14 +139,6 @@ describe('getStakeholderPartnershipsByProjectSQL', () => {
   });
 });
 
-describe('getProjectPermitsSQL', () => {
-  it('valid projectId', () => {
-    const response = getProjectPermitsSQL(1);
-
-    expect(response).to.not.be.null;
-  });
-});
-
 describe('getLocationByProjectSQL', () => {
   it('valid projectId', () => {
     const response = getLocationByProjectSQL(1);

@@ -53,8 +53,7 @@ GET.apiDoc = {
             items: {
               title: 'Survey get response object, for view purposes',
               type: 'object',
-              //required: ['survey_details', 'species', 'permit', 'funding', 'purpose_and_methodology', 'proprietor'],
-              required: ['survey_details', 'species', 'funding', 'purpose_and_methodology', 'proprietor'],
+              required: ['survey_details', 'species', 'permit', 'funding', 'purpose_and_methodology', 'proprietor'],
               properties: {
                 survey_details: {
                   description: 'Survey Details',
@@ -139,21 +138,31 @@ GET.apiDoc = {
                     }
                   }
                 },
-                // permit: {
-                //   description: 'Survey Permit',
-                //   type: 'object',
-                //   required: ['permit_number', 'permit_type'],
-                //   properties: {
-                //     permit_number: {
-                //       type: 'string',
-                //       nullable: true
-                //     },
-                //     permit_type: {
-                //       type: 'string',
-                //       nullable: true
-                //     }
-                //   }
-                // },
+                permit: {
+                  type: 'object',
+                  description: 'Survey Permit Information',
+                  properties: {
+                    permits: {
+                      description: 'Survey Permits',
+                      type: 'array',
+                      items: {
+                        required: ['permit_id', 'permit_number', 'permit_type'],
+                        properties: {
+                          permit_id: {
+                            type: 'number',
+                            minimum: 1
+                          },
+                          permit_number: {
+                            type: 'string'
+                          },
+                          permit_type: {
+                            type: 'string'
+                          }
+                        }
+                      }
+                    }
+                  }
+                },
                 funding: {
                   description: 'Survey Funding Sources',
                   type: 'object',
