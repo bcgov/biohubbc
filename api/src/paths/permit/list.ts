@@ -24,7 +24,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Fetches a list of permits for a user.',
+  description: 'Fetches a list of permits associated to a user.',
   tags: ['permits'],
   security: [
     {
@@ -33,16 +33,16 @@ GET.apiDoc = {
   ],
   responses: {
     200: {
-      description: 'Permits get response array.',
+      description: 'Permits list response.',
       content: {
         'application/json': {
           schema: {
             type: 'array',
             items: {
-              title: 'Survey permit Get Response Object',
               type: 'object',
               required: [
                 'permit_id',
+                'survey_id',
                 'number',
                 'type',
                 'create_date',
@@ -56,35 +56,16 @@ GET.apiDoc = {
                   type: 'integer',
                   minimum: 1
                 },
+                survey_id: {
+                  type: 'integer',
+                  minimum: 1,
+                  nullable: true
+                },
                 number: {
                   type: 'string'
                 },
                 type: {
                   type: 'string'
-                },
-                coordinator_first_name: {
-                  type: 'string',
-                  nullable: true
-                },
-                coordinator_last_name: {
-                  type: 'string',
-                  nullable: true
-                },
-                coordinator_email_address: {
-                  type: 'string',
-                  nullable: true
-                },
-                coordinator_agency_name: {
-                  type: 'string',
-                  nullable: true
-                },
-                issue_date: {
-                  type: 'string',
-                  nullable: true
-                },
-                end_date: {
-                  type: 'string',
-                  nullable: true
                 },
                 create_date: {
                   oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -92,7 +73,7 @@ GET.apiDoc = {
                 },
                 create_user: {
                   type: 'integer',
-                  nullable: true
+                  minimum: 1
                 },
                 update_date: {
                   oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
@@ -114,8 +95,17 @@ GET.apiDoc = {
         }
       }
     },
+    400: {
+      $ref: '#/components/responses/400'
+    },
     401: {
       $ref: '#/components/responses/401'
+    },
+    403: {
+      $ref: '#/components/responses/401'
+    },
+    500: {
+      $ref: '#/components/responses/500'
     },
     default: {
       $ref: '#/components/responses/default'
