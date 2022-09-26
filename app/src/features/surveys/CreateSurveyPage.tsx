@@ -410,22 +410,22 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={<AgreementsForm />}></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
+
+                <Box p={3} display="flex" justifyContent="flex-end">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => formikRef.current?.submitForm()}
+                    className={classes.actionButton}>
+                    Save and Exit
+                  </Button>
+                  <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
+                    Cancel
+                  </Button>
+                </Box>
               </>
             </Formik>
-
-            <Box p={3} display="flex" justifyContent="flex-end">
-              <Button
-                type="submit"
-                variant="contained"
-                color="primary"
-                onClick={() => formikRef.current?.submitForm()}
-                className={classes.actionButton}>
-                Save and Exit
-              </Button>
-              <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
-                Cancel
-              </Button>
-            </Box>
           </Box>
         </Container>
       </Box>
