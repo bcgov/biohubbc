@@ -505,275 +505,144 @@ exports[`General Information Form renders correctly the empty component correctl
       >
         Permits
       </legend>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        If a permit is required for this survey, select a permit or add new one.
-      </p>
+    </fieldset>
+    <div
+      class="MuiBox-root MuiBox-root-8"
+    >
       <div
-        class="MuiBox-root MuiBox-root-8"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-9"
       >
-        <div
-          class="MuiBox-root MuiBox-root-9"
+        <button
+          aria-label="add permit"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
         >
+          <span
+            class="MuiButton-label"
+          >
+            Add New Permit
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </form>
+  <fieldset
+    class="MuiBox-root MuiBox-root-10"
+  >
+    <legend
+      class="MuiTypography-root MuiTypography-body1"
+    >
+      Funding Sources
+    </legend>
+    <div
+      aria-expanded="false"
+      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+      data-testid="funding.funding_sources"
+      role="combobox"
+    >
+      <div
+        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+      >
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
+          data-shrink="false"
+          for="funding.funding_sources"
+          id="funding.funding_sources-label"
+        >
+          Select Funding Sources
+        </label>
+        <div
+          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
+        >
+          <input
+            aria-autocomplete="list"
+            aria-invalid="false"
+            autocapitalize="none"
+            autocomplete="off"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+            id="funding.funding_sources"
+            name="funding.funding_sources"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
           <div
-            aria-expanded="false"
-            class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-            data-testid="permit_number"
-            role="combobox"
+            class="MuiAutocomplete-endAdornment"
           >
-            <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-                data-shrink="false"
-                for="permit_number"
-                id="permit_number-label"
-              >
-                Select Permit
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-              >
-                <input
-                  aria-autocomplete="list"
-                  aria-invalid="false"
-                  autocapitalize="none"
-                  autocomplete="off"
-                  class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                  id="permit_number"
-                  spellcheck="false"
-                  type="text"
-                  value=""
-                />
-                <div
-                  class="MuiAutocomplete-endAdornment"
-                >
-                  <button
-                    aria-label="Clear"
-                    class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                    tabindex="-1"
-                    title="Clear"
-                    type="button"
-                  >
-                    <span
-                      class="MuiIconButton-label"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                  <button
-                    aria-label="Open"
-                    class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                    tabindex="-1"
-                    title="Open"
-                    type="button"
-                  >
-                    <span
-                      class="MuiIconButton-label"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M7 10l5 5 5-5z"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                </div>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-3"
-                  >
-                    <span>
-                      Select Permit
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-10"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            OR
-          </p>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-11"
-        >
-          <button
-            aria-label="add-permit"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-            tabindex="0"
-            type="button"
-          >
-            <span
-              class="MuiButton-label"
+            <button
+              aria-label="Clear"
+              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
+              tabindex="-1"
+              title="Clear"
+              type="button"
             >
               <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                class="MuiIconButton-label"
               >
                 <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                  focusable="false"
                   viewBox="0 0 24 24"
                 >
                   <path
-                    d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                    style="fill: currentColor;"
+                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
                   />
                 </svg>
               </span>
-              <strong>
-                Add Permit
-              </strong>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-    </fieldset>
-    <fieldset
-      class="MuiBox-root MuiBox-root-12"
-    >
-      <legend
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Funding Sources
-      </legend>
-      <div
-        aria-expanded="false"
-        class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-        data-testid="funding.funding_sources"
-        role="combobox"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-outlined"
-            data-shrink="false"
-            for="funding.funding_sources"
-            id="funding.funding_sources-label"
-          >
-            Select Funding Sources
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-          >
-            <input
-              aria-autocomplete="list"
-              aria-invalid="false"
-              autocapitalize="none"
-              autocomplete="off"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-              id="funding.funding_sources"
-              name="funding.funding_sources"
-              spellcheck="false"
-              type="text"
-              value=""
-            />
-            <div
-              class="MuiAutocomplete-endAdornment"
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+            <button
+              aria-label="Open"
+              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
+              tabindex="-1"
+              title="Open"
+              type="button"
             >
-              <button
-                aria-label="Clear"
-                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator"
-                tabindex="-1"
-                title="Clear"
-                type="button"
+              <span
+                class="MuiIconButton-label"
               >
-                <span
-                  class="MuiIconButton-label"
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
                 >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-              <button
-                aria-label="Open"
-                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                tabindex="-1"
-                title="Open"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-3"
-              >
-                <span>
-                  Select Funding Sources
-                </span>
-              </legend>
-            </fieldset>
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
+              </span>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
           </div>
+          <fieldset
+            aria-hidden="true"
+            class="PrivateNotchedOutline-root-1 MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="PrivateNotchedOutline-legendLabelled-3"
+            >
+              <span>
+                Select Funding Sources
+              </span>
+            </legend>
+          </fieldset>
         </div>
       </div>
-    </fieldset>
-  </form>
+    </div>
+  </fieldset>
 </DocumentFragment>
 `;
 
@@ -818,10 +687,10 @@ exports[`General Information Form renders correctly the filled component correct
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
               >
                 <span>
                   Survey Name *
@@ -872,10 +741,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     Start Date *
@@ -922,10 +791,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     End Date
@@ -1045,10 +914,10 @@ exports[`General Information Form renders correctly the filled component correct
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15"
+                  class="PrivateNotchedOutline-legendLabelled-13"
                 >
                   <span>
                     Focal Species *
@@ -1150,10 +1019,10 @@ exports[`General Information Form renders correctly the filled component correct
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15"
+                  class="PrivateNotchedOutline-legendLabelled-13"
                 >
                   <span>
                     Ancillary Species
@@ -1166,7 +1035,7 @@ exports[`General Information Form renders correctly the filled component correct
       </div>
     </div>
     <fieldset
-      class="MuiBox-root MuiBox-root-18"
+      class="MuiBox-root MuiBox-root-16"
     >
       <legend
         class="MuiTypography-root MuiTypography-body1"
@@ -1211,10 +1080,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     First Name *
@@ -1259,10 +1128,10 @@ exports[`General Information Form renders correctly the filled component correct
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                  class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
                 >
                   <span>
                     Last Name *
@@ -1275,304 +1144,173 @@ exports[`General Information Form renders correctly the filled component correct
       </div>
     </fieldset>
     <fieldset
-      class="MuiBox-root MuiBox-root-19"
+      class="MuiBox-root MuiBox-root-17"
     >
       <legend
         class="MuiTypography-root MuiTypography-body1"
       >
         Permits
       </legend>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        If a permit is required for this survey, select a permit or add new one.
-      </p>
+    </fieldset>
+    <div
+      class="MuiBox-root MuiBox-root-18"
+    >
       <div
-        class="MuiBox-root MuiBox-root-20"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-19"
       >
+        <button
+          aria-label="add permit"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Add New Permit
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </form>
+  <fieldset
+    class="MuiBox-root MuiBox-root-20"
+  >
+    <legend
+      class="MuiTypography-root MuiTypography-body1"
+    >
+      Funding Sources
+    </legend>
+    <div
+      aria-expanded="false"
+      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+      data-testid="funding.funding_sources"
+      role="combobox"
+    >
+      <div
+        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+      >
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+          data-shrink="true"
+          for="funding.funding_sources"
+          id="funding.funding_sources-label"
+        >
+          Select Funding Sources
+        </label>
         <div
-          class="MuiBox-root MuiBox-root-21"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
         >
           <div
-            aria-expanded="false"
-            class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-            data-testid="permit_number"
-            role="combobox"
-          >
-            <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                data-shrink="true"
-                for="permit_number"
-                id="permit_number-label"
-              >
-                Select Permit
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-              >
-                <input
-                  aria-autocomplete="list"
-                  aria-invalid="false"
-                  autocapitalize="none"
-                  autocomplete="off"
-                  class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                  id="permit_number"
-                  spellcheck="false"
-                  type="text"
-                  value="123 - Scientific"
-                />
-                <div
-                  class="MuiAutocomplete-endAdornment"
-                >
-                  <button
-                    aria-label="Clear"
-                    class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                    tabindex="-1"
-                    title="Clear"
-                    type="button"
-                  >
-                    <span
-                      class="MuiIconButton-label"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                  <button
-                    aria-label="Open"
-                    class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                    tabindex="-1"
-                    title="Open"
-                    type="button"
-                  >
-                    <span
-                      class="MuiIconButton-label"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M7 10l5 5 5-5z"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                </div>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-                  >
-                    <span>
-                      Select Permit
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-22"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            OR
-          </p>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-23"
-        >
-          <button
-            aria-label="add-permit"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-            tabindex="0"
-            type="button"
+            class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+            data-tag-index="0"
+            role="button"
+            tabindex="-1"
           >
             <span
-              class="MuiButton-label"
+              class="MuiChip-label"
+            >
+              agency | $ 100 | 2000/04/09 - 2000/05/10
+            </span>
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiChip-deleteIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+              />
+            </svg>
+          </div>
+          <input
+            aria-autocomplete="list"
+            aria-invalid="false"
+            autocapitalize="none"
+            autocomplete="off"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+            id="funding.funding_sources"
+            name="funding.funding_sources"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="MuiAutocomplete-endAdornment"
+          >
+            <button
+              aria-label="Clear"
+              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+              tabindex="-1"
+              title="Clear"
+              type="button"
             >
               <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                class="MuiIconButton-label"
               >
                 <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                  focusable="false"
                   viewBox="0 0 24 24"
                 >
                   <path
-                    d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                    style="fill: currentColor;"
+                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
                   />
                 </svg>
               </span>
-              <strong>
-                Add Permit
-              </strong>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-    </fieldset>
-    <fieldset
-      class="MuiBox-root MuiBox-root-24"
-    >
-      <legend
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Funding Sources
-      </legend>
-      <div
-        aria-expanded="false"
-        class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-        data-testid="funding.funding_sources"
-        role="combobox"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-            data-shrink="true"
-            for="funding.funding_sources"
-            id="funding.funding_sources-label"
-          >
-            Select Funding Sources
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-          >
-            <div
-              class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
-              data-tag-index="0"
-              role="button"
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+            <button
+              aria-label="Open"
+              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
               tabindex="-1"
+              title="Open"
+              type="button"
             >
               <span
-                class="MuiChip-label"
+                class="MuiIconButton-label"
               >
-                agency | $ 100 | 2000/04/09 - 2000/05/10
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
               </span>
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiChip-deleteIcon"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
-                />
-              </svg>
-            </div>
-            <input
-              aria-autocomplete="list"
-              aria-invalid="false"
-              autocapitalize="none"
-              autocomplete="off"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-              id="funding.funding_sources"
-              name="funding.funding_sources"
-              spellcheck="false"
-              type="text"
-              value=""
-            />
-            <div
-              class="MuiAutocomplete-endAdornment"
-            >
-              <button
-                aria-label="Clear"
-                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                tabindex="-1"
-                title="Clear"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-              <button
-                aria-label="Open"
-                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                tabindex="-1"
-                title="Open"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
-              >
-                <span>
-                  Select Funding Sources
-                </span>
-              </legend>
-            </fieldset>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
           </div>
+          <fieldset
+            aria-hidden="true"
+            class="PrivateNotchedOutline-root-11 MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="PrivateNotchedOutline-legendLabelled-13 PrivateNotchedOutline-legendNotched-14"
+            >
+              <span>
+                Select Funding Sources
+              </span>
+            </legend>
+          </fieldset>
         </div>
       </div>
-    </fieldset>
-  </form>
+    </div>
+  </fieldset>
 </DocumentFragment>
 `;
 
@@ -1618,10 +1356,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
             />
             <fieldset
               aria-hidden="true"
-              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+              class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
             >
               <legend
-                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
               >
                 <span>
                   Survey Name *
@@ -1678,10 +1416,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     Start Date *
@@ -1728,10 +1466,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     End Date
@@ -1852,10 +1590,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27"
+                  class="PrivateNotchedOutline-legendLabelled-23"
                 >
                   <span>
                     Focal Species *
@@ -1963,10 +1701,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               </div>
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27"
+                  class="PrivateNotchedOutline-legendLabelled-23"
                 >
                   <span>
                     Ancillary Species
@@ -1979,7 +1717,7 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
       </div>
     </div>
     <fieldset
-      class="MuiBox-root MuiBox-root-30"
+      class="MuiBox-root MuiBox-root-26"
     >
       <legend
         class="MuiTypography-root MuiTypography-body1"
@@ -2025,10 +1763,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     First Name *
@@ -2080,10 +1818,10 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
               />
               <fieldset
                 aria-hidden="true"
-                class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
+                class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
               >
                 <legend
-                  class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
+                  class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
                 >
                   <span>
                     Last Name *
@@ -2102,303 +1840,172 @@ exports[`General Information Form renders correctly when errors exist 1`] = `
       </div>
     </fieldset>
     <fieldset
-      class="MuiBox-root MuiBox-root-31"
+      class="MuiBox-root MuiBox-root-27"
     >
       <legend
         class="MuiTypography-root MuiTypography-body1"
       >
         Permits
       </legend>
-      <p
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        If a permit is required for this survey, select a permit or add new one.
-      </p>
+    </fieldset>
+    <div
+      class="MuiBox-root MuiBox-root-28"
+    >
       <div
-        class="MuiBox-root MuiBox-root-32"
+        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+      />
+      <div
+        class="MuiBox-root MuiBox-root-29"
       >
+        <button
+          aria-label="add permit"
+          class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiButton-label"
+          >
+            Add New Permit
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </div>
+  </form>
+  <fieldset
+    class="MuiBox-root MuiBox-root-30"
+  >
+    <legend
+      class="MuiTypography-root MuiTypography-body1"
+    >
+      Funding Sources
+    </legend>
+    <div
+      aria-expanded="false"
+      class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
+      data-testid="funding.funding_sources"
+      role="combobox"
+    >
+      <div
+        class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+      >
+        <label
+          class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
+          data-shrink="true"
+          for="funding.funding_sources"
+          id="funding.funding_sources-label"
+        >
+          Select Funding Sources
+        </label>
         <div
-          class="MuiBox-root MuiBox-root-33"
+          class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
         >
           <div
-            aria-expanded="false"
-            class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-            data-testid="permit_number"
-            role="combobox"
-          >
-            <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled"
-                data-shrink="true"
-                for="permit_number"
-                id="permit_number-label"
-              >
-                Select Permit
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-              >
-                <input
-                  aria-autocomplete="list"
-                  aria-invalid="false"
-                  autocapitalize="none"
-                  autocomplete="off"
-                  class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-                  id="permit_number"
-                  spellcheck="false"
-                  type="text"
-                  value="123 - Scientific"
-                />
-                <div
-                  class="MuiAutocomplete-endAdornment"
-                >
-                  <button
-                    aria-label="Clear"
-                    class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                    tabindex="-1"
-                    title="Clear"
-                    type="button"
-                  >
-                    <span
-                      class="MuiIconButton-label"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                  <button
-                    aria-label="Open"
-                    class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                    tabindex="-1"
-                    title="Open"
-                    type="button"
-                  >
-                    <span
-                      class="MuiIconButton-label"
-                    >
-                      <svg
-                        aria-hidden="true"
-                        class="MuiSvgIcon-root"
-                        focusable="false"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          d="M7 10l5 5 5-5z"
-                        />
-                      </svg>
-                    </span>
-                    <span
-                      class="MuiTouchRipple-root"
-                    />
-                  </button>
-                </div>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
-                  >
-                    <span>
-                      Select Permit
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-34"
-        >
-          <p
-            class="MuiTypography-root MuiTypography-body1"
-          >
-            OR
-          </p>
-        </div>
-        <div
-          class="MuiBox-root MuiBox-root-35"
-        >
-          <button
-            aria-label="add-permit"
-            class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-            tabindex="0"
-            type="button"
+            class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
+            data-tag-index="0"
+            role="button"
+            tabindex="-1"
           >
             <span
-              class="MuiButton-label"
+              class="MuiChip-label"
+            >
+              agency | $ 100 | 2000/04/09 - 2000/05/10
+            </span>
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiChip-deleteIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
+              />
+            </svg>
+          </div>
+          <input
+            aria-autocomplete="list"
+            aria-invalid="false"
+            autocapitalize="none"
+            autocomplete="off"
+            class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
+            id="funding.funding_sources"
+            name="funding.funding_sources"
+            spellcheck="false"
+            type="text"
+            value=""
+          />
+          <div
+            class="MuiAutocomplete-endAdornment"
+          >
+            <button
+              aria-label="Clear"
+              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
+              tabindex="-1"
+              title="Clear"
+              type="button"
             >
               <span
-                class="MuiButton-startIcon MuiButton-iconSizeMedium"
+                class="MuiIconButton-label"
               >
                 <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
+                  focusable="false"
                   viewBox="0 0 24 24"
                 >
                   <path
-                    d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
-                    style="fill: currentColor;"
+                    d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
                   />
                 </svg>
               </span>
-              <strong>
-                Add Permit
-              </strong>
-            </span>
-            <span
-              class="MuiTouchRipple-root"
-            />
-          </button>
-        </div>
-      </div>
-    </fieldset>
-    <fieldset
-      class="MuiBox-root MuiBox-root-36"
-    >
-      <legend
-        class="MuiTypography-root MuiTypography-body1"
-      >
-        Funding Sources
-      </legend>
-      <div
-        aria-expanded="false"
-        class="MuiAutocomplete-root MuiAutocomplete-hasClearIcon MuiAutocomplete-hasPopupIcon"
-        data-testid="funding.funding_sources"
-        role="combobox"
-      >
-        <div
-          class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-        >
-          <label
-            class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined"
-            data-shrink="true"
-            for="funding.funding_sources"
-            id="funding.funding_sources-label"
-          >
-            Select Funding Sources
-          </label>
-          <div
-            class="MuiInputBase-root MuiOutlinedInput-root MuiAutocomplete-inputRoot MuiInputBase-fullWidth MuiInputBase-formControl MuiInputBase-adornedStart MuiOutlinedInput-adornedStart MuiInputBase-adornedEnd MuiOutlinedInput-adornedEnd"
-          >
-            <div
-              class="MuiChip-root MuiAutocomplete-tag MuiChip-deletable"
-              data-tag-index="0"
-              role="button"
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
+            <button
+              aria-label="Open"
+              class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
               tabindex="-1"
+              title="Open"
+              type="button"
             >
               <span
-                class="MuiChip-label"
+                class="MuiIconButton-label"
               >
-                agency | $ 100 | 2000/04/09 - 2000/05/10
+                <svg
+                  aria-hidden="true"
+                  class="MuiSvgIcon-root"
+                  focusable="false"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    d="M7 10l5 5 5-5z"
+                  />
+                </svg>
               </span>
-              <svg
-                aria-hidden="true"
-                class="MuiSvgIcon-root MuiChip-deleteIcon"
-                focusable="false"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  d="M12 2C6.47 2 2 6.47 2 12s4.47 10 10 10 10-4.47 10-10S17.53 2 12 2zm5 13.59L15.59 17 12 13.41 8.41 17 7 15.59 10.59 12 7 8.41 8.41 7 12 10.59 15.59 7 17 8.41 13.41 12 17 15.59z"
-                />
-              </svg>
-            </div>
-            <input
-              aria-autocomplete="list"
-              aria-invalid="false"
-              autocapitalize="none"
-              autocomplete="off"
-              class="MuiInputBase-input MuiOutlinedInput-input MuiAutocomplete-input MuiAutocomplete-inputFocused MuiInputBase-inputAdornedStart MuiOutlinedInput-inputAdornedStart MuiInputBase-inputAdornedEnd MuiOutlinedInput-inputAdornedEnd"
-              id="funding.funding_sources"
-              name="funding.funding_sources"
-              spellcheck="false"
-              type="text"
-              value=""
-            />
-            <div
-              class="MuiAutocomplete-endAdornment"
-            >
-              <button
-                aria-label="Clear"
-                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-clearIndicator MuiAutocomplete-clearIndicatorDirty"
-                tabindex="-1"
-                title="Clear"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-              <button
-                aria-label="Open"
-                class="MuiButtonBase-root MuiIconButton-root MuiAutocomplete-popupIndicator"
-                tabindex="-1"
-                title="Open"
-                type="button"
-              >
-                <span
-                  class="MuiIconButton-label"
-                >
-                  <svg
-                    aria-hidden="true"
-                    class="MuiSvgIcon-root"
-                    focusable="false"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      d="M7 10l5 5 5-5z"
-                    />
-                  </svg>
-                </span>
-                <span
-                  class="MuiTouchRipple-root"
-                />
-              </button>
-            </div>
-            <fieldset
-              aria-hidden="true"
-              class="PrivateNotchedOutline-root-25 MuiOutlinedInput-notchedOutline"
-            >
-              <legend
-                class="PrivateNotchedOutline-legendLabelled-27 PrivateNotchedOutline-legendNotched-28"
-              >
-                <span>
-                  Select Funding Sources
-                </span>
-              </legend>
-            </fieldset>
+              <span
+                class="MuiTouchRipple-root"
+              />
+            </button>
           </div>
+          <fieldset
+            aria-hidden="true"
+            class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+          >
+            <legend
+              class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+            >
+              <span>
+                Select Funding Sources
+              </span>
+            </legend>
+          </fieldset>
         </div>
       </div>
-    </fieldset>
-  </form>
+    </div>
+  </fieldset>
 </DocumentFragment>
 `;

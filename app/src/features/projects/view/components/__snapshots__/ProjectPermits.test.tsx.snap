@@ -3,7 +3,7 @@
 exports[`ProjectPermits renders correctly with no permits 1`] = `
 <DocumentFragment>
   <div
-    class="MuiBox-root MuiBox-root-3"
+    class="MuiBox-root MuiBox-root-1"
   >
     <div
       class="MuiToolbar-root MuiToolbar-regular"
@@ -15,7 +15,7 @@ exports[`ProjectPermits renders correctly with no permits 1`] = `
         Project Permits
       </h3>
       <div
-        class="MuiBox-root MuiBox-root-4"
+        class="MuiBox-root MuiBox-root-2"
       >
         <button
           aria-label="Edit Permits"
