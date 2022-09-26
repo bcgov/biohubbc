@@ -20,6 +20,7 @@ import {
 } from '../models/survey-view';
 import { IPermitModel } from '../repositories/permit-repository';
 import { getMockDBConnection } from '../__mocks__/db';
+import { PermitService } from './permit-service';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
 
@@ -305,14 +306,31 @@ describe('SurveyService', () => {
     });
 
     it('returns data if valid return', async () => {
-      const mockQueryResponse = ({ rows: [{ id: 1 }], rowCount: 0 } as unknown) as QueryResult<any>;
+      const mockPermitResponse: IPermitModel[] = [
+        {
+          permit_id: 1,
+          survey_id: 1,
+          number: 'abc',
+          type: 'Fisheries',
+          create_date: '2022-02-02',
+          create_user: 4,
+          update_date: '2022-02-02',
+          update_user: 4,
+          revision_count: 1
+        }
+      ];
 
-      const mockDBConnection = getMockDBConnection({ query: async () => mockQueryResponse });
+      const mockDBConnection = getMockDBConnection();
       const surveyService = new SurveyService(mockDBConnection);
+
+      const getPermitBySurveyIdStub = sinon
+        .stub(PermitService.prototype, 'getPermitBySurveyId')
+        .resolves(mockPermitResponse);
 
       const response = await surveyService.getPermitData(1);
 
-      expect(response).to.eql(new GetPermitData(([{ id: 1 }] as unknown) as IPermitModel[]));
+      expect(getPermitBySurveyIdStub).to.be.calledOnceWith(1);
+      expect(response).to.eql({ permits: [{ permit_id: 1, permit_number: 'abc', permit_type: 'Fisheries' }] });
     });
   });
 

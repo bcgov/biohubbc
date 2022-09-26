@@ -52,7 +52,6 @@ describe('useSurveyApi', () => {
     expect(result).toEqual('www.signedurl.com');
   });
 
-
   it('getAvailableSurveyFundingSources works as expected', async () => {
     mock.onGet(`/api/project/${projectId}/survey/funding-sources/list`).reply(200, [
       {
