@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
-import { SYSTEM_ROLE } from '../../constants/roles';
 import { getDBConnection } from '../../database/db';
 import { IPermitModel } from '../../repositories/permit-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
@@ -14,8 +13,7 @@ export const GET: Operation = [
     return {
       and: [
         {
-          validSystemRoles: [SYSTEM_ROLE.SYSTEM_ADMIN, SYSTEM_ROLE.DATA_ADMINISTRATOR, SYSTEM_ROLE.PROJECT_CREATOR],
-          discriminator: 'SystemRole'
+          discriminator: 'SystemUser'
         }
       ]
     };
@@ -24,7 +22,7 @@ export const GET: Operation = [
 ];
 
 GET.apiDoc = {
-  description: 'Fetches a list of permits associated to a user.',
+  description: 'Fetches a list of permits that the logged in user is associated with.',
   tags: ['permits'],
   security: [
     {
@@ -37,60 +35,65 @@ GET.apiDoc = {
       content: {
         'application/json': {
           schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              required: [
-                'permit_id',
-                'survey_id',
-                'number',
-                'type',
-                'create_date',
-                'create_user',
-                'update_date',
-                'update_user',
-                'revision_count'
-              ],
-              properties: {
-                permit_id: {
-                  type: 'integer',
-                  minimum: 1
-                },
-                survey_id: {
-                  type: 'integer',
-                  minimum: 1,
-                  nullable: true
-                },
-                number: {
-                  type: 'string'
-                },
-                type: {
-                  type: 'string'
-                },
-                create_date: {
-                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                  description: 'ISO 8601 date string for the permit create_date'
-                },
-                create_user: {
-                  type: 'integer',
-                  minimum: 1
-                },
-                update_date: {
-                  oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
-                  description: 'ISO 8601 date string for the permit update_date',
-                  nullable: true
-                },
-                update_user: {
-                  type: 'integer',
-                  nullable: true
-                },
-                revision_count: {
-                  type: 'integer',
-                  nullable: true
+            type: 'object',
+            required: ['permits'],
+            properties: {
+              permits: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  required: [
+                    'permit_id',
+                    'survey_id',
+                    'number',
+                    'type',
+                    'create_date',
+                    'create_user',
+                    'update_date',
+                    'update_user',
+                    'revision_count'
+                  ],
+                  properties: {
+                    permit_id: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    survey_id: {
+                      type: 'integer',
+                      minimum: 1,
+                      nullable: true
+                    },
+                    number: {
+                      type: 'string'
+                    },
+                    type: {
+                      type: 'string'
+                    },
+                    create_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the permit create_date'
+                    },
+                    create_user: {
+                      type: 'integer',
+                      minimum: 1
+                    },
+                    update_date: {
+                      oneOf: [{ type: 'object' }, { type: 'string', format: 'date' }],
+                      description: 'ISO 8601 date string for the permit update_date',
+                      nullable: true
+                    },
+                    update_user: {
+                      type: 'integer',
+                      nullable: true
+                    },
+                    revision_count: {
+                      type: 'integer',
+                      minimum: 0
+                    }
+                  }
                 }
               }
-            },
-            description: 'Permits applicable for the survey'
+            }
           }
         }
       }
@@ -126,9 +129,9 @@ export function listUserPermits(): RequestHandler {
 
       await connection.commit();
 
-      res.status(200).json(permits);
+      res.status(200).json({ permits: permits });
     } catch (error) {
-      defaultLog.error({ label: 'listSurveyPermits', message: 'error', error });
+      defaultLog.error({ label: 'listUserPermits', message: 'error', error });
       await connection.rollback();
       throw error;
     } finally {
