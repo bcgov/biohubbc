@@ -15,7 +15,6 @@ import { ProjectLocationFormInitialValues } from 'features/projects/components/P
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
-import { SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
@@ -79,8 +78,6 @@ describe('CreateProjectPage', () => {
     await waitFor(() => {
       expect(getAllByText('Project Contact').length).toEqual(2);
 
-      expect(getByText('Project Permits')).toBeVisible();
-
       expect(getByText('General Information')).toBeVisible();
 
       expect(getByText('Objectives')).toBeVisible();
@@ -120,8 +117,6 @@ describe('CreateProjectPage', () => {
     // wait for initial page to load
     await waitFor(() => {
       expect(getAllByText('Project Contact').length).toEqual(2);
-
-      expect(getByText('Project Permits')).toBeVisible();
 
       expect(getByText('General Information')).toBeVisible();
 
@@ -221,7 +216,6 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          permit: SurveyPermitFormInitialValues,
           project: ProjectDetailsFormInitialValues,
           objectives: ProjectObjectivesFormInitialValues,
           location: ProjectLocationFormInitialValues,
@@ -356,7 +350,6 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          permit: expect.any(Object),
           project: expect.any(Object),
           objectives: expect.any(Object),
           location: expect.any(Object),
@@ -390,7 +383,7 @@ describe('CreateProjectPage', () => {
             coordinator_agency: '',
             share_contact_details: 'false'
           },
-          permit: expect.any(Object),
+
           project: expect.any(Object),
           objectives: expect.any(Object),
           location: expect.any(Object),
