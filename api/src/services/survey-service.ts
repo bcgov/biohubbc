@@ -503,16 +503,16 @@ export class SurveyService extends DBService {
     const existingPermits = await permitService.getPermitBySurveyId(surveyId);
 
     // Determine if any existing permits need to be deleted (are not included in the incoming permits array)
-    const removedPermits = existingPermits.filter((existingPermit) => {
+    const existingPermitsToDelete = existingPermits.filter((existingPermit) => {
       // Filter the existing permits to only include permits with no matching incoming permit id
       return !surveyData.permit.permits.find((incomingPermit) => incomingPermit.permit_id === existingPermit.permit_id);
     });
 
     // Delete existing permits that have been removed, if any
-    if (removedPermits.length) {
+    if (existingPermitsToDelete.length) {
       const promises: Promise<any>[] = [];
 
-      removedPermits.forEach((permit) => {
+      existingPermitsToDelete.forEach((permit) => {
         promises.push(permitService.deleteSurveyPermit(surveyId, permit.permit_id));
       });
 

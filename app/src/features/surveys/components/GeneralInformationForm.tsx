@@ -12,7 +12,7 @@ import { debounce } from 'lodash-es';
 import React, { useCallback } from 'react';
 import { getFormattedDate } from 'utils/Utils';
 import yup from 'utils/YupSchema';
-import SurveyPermitForm from '../SurveyPermitForm';
+import SurveyPermitForm, { SurveyPermitFormYupSchema } from '../SurveyPermitForm';
 
 export const AddPermitFormInitialValues = {
   permits: [
@@ -77,22 +77,23 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
 };
 
 export const GeneralInformationYupSchema = (customYupRules?: any) => {
-  return yup.object().shape({
-    survey_details: yup.object().shape({
-      survey_name: yup.string().required('Required'),
-      biologist_first_name: yup.string().required('Required'),
-      biologist_last_name: yup.string().required('Required'),
-      start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
-      end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
-    }),
-    species: yup.object().shape({
-      focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
-      ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
-    }),
-    permit: yup.object().shape({
-      permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
+  return yup
+    .object()
+    .shape({
+      survey_details: yup.object().shape({
+        survey_name: yup.string().required('Required'),
+        biologist_first_name: yup.string().required('Required'),
+        biologist_last_name: yup.string().required('Required'),
+        start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
+        end_date:
+          customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+      }),
+      species: yup.object().shape({
+        focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
+        ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
+      })
     })
-  });
+    .concat(SurveyPermitFormYupSchema);
 };
 
 export interface IGeneralInformationFormProps {

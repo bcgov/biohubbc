@@ -14,8 +14,8 @@ import { ProjectIUCNFormInitialValues } from 'features/projects/components/Proje
 import { ProjectLocationFormInitialValues } from 'features/projects/components/ProjectLocationForm';
 import { ProjectObjectivesFormInitialValues } from 'features/projects/components/ProjectObjectivesForm';
 import { ProjectPartnershipsFormInitialValues } from 'features/projects/components/ProjectPartnershipsForm';
-import { SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
 import CreateProjectPage from 'features/projects/create/CreateProjectPage';
+import { SurveyPermitFormInitialValues } from 'features/surveys/SurveyPermitForm';
 import { createMemoryHistory } from 'history';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import React from 'react';
