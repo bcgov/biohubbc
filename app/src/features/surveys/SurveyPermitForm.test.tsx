@@ -1,7 +1,7 @@
 import { fireEvent, render, waitFor } from '@testing-library/react';
 import { Formik } from 'formik';
 import React from 'react';
-import ProjectPermitForm, {
+import SurveyPermitForm, {
   ISurveyPermitForm,
   SurveyPermitFormInitialValues,
   SurveyPermitFormYupSchema
@@ -16,7 +16,7 @@ describe('SurveyPermitForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
+        {() => <SurveyPermitForm />}
       </Formik>
     );
 
@@ -25,16 +25,20 @@ describe('SurveyPermitForm', () => {
 
   it('renders correctly with existing permit values', () => {
     const existingFormValues: ISurveyPermitForm = {
-      permits: [
-        {
-          permit_number: '123',
-          permit_type: 'Park Use Permit'
-        },
-        {
-          permit_number: '3213123123',
-          permit_type: 'Scientific Fish Collection Permit'
-        }
-      ]
+      permit: {
+        permits: [
+          {
+            permit_id: 1,
+            permit_number: '123',
+            permit_type: 'Park Use Permit'
+          },
+          {
+            permit_id: 2,
+            permit_number: '3213123123',
+            permit_type: 'Scientific Fish Collection Permit'
+          }
+        ]
+      }
     };
 
     const { asFragment } = render(
@@ -44,7 +48,7 @@ describe('SurveyPermitForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
+        {() => <SurveyPermitForm />}
       </Formik>
     );
 
@@ -53,12 +57,20 @@ describe('SurveyPermitForm', () => {
 
   it('renders correctly with errors on the permit_number and permit_type fields', () => {
     const existingFormValues: ISurveyPermitForm = {
-      permits: [
-        {
-          permit_number: '123',
-          permit_type: 'Scientific Fish Collection Permit'
-        }
-      ]
+      permit: {
+        permits: [
+          {
+            permit_id: 1,
+            permit_number: '123',
+            permit_type: 'Scientific Fish Collection Permit'
+          },
+          {
+            permit_id: 2,
+            permit_number: '123',
+            permit_type: 'Scientific Fish Collection Permit'
+          }
+        ]
+      }
     };
 
     const { asFragment } = render(
@@ -74,7 +86,7 @@ describe('SurveyPermitForm', () => {
           permits: [{ permit_number: true, permit_type: true }]
         }}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
+        {() => <SurveyPermitForm />}
       </Formik>
     );
 
@@ -83,16 +95,20 @@ describe('SurveyPermitForm', () => {
 
   it('renders correctly with error on the permits field due to duplicates', () => {
     const existingFormValues: ISurveyPermitForm = {
-      permits: [
-        {
-          permit_number: '123',
-          permit_type: 'Park Use Permit'
-        },
-        {
-          permit_number: '123',
-          permit_type: 'Scientific Fish Collection Permit'
-        }
-      ]
+      permit: {
+        permits: [
+          {
+            permit_id: 1,
+            permit_number: '123',
+            permit_type: 'Scientific Fish Collection Permit'
+          },
+          {
+            permit_id: 2,
+            permit_number: '123',
+            permit_type: 'Scientific Fish Collection Permit'
+          }
+        ]
+      }
     };
 
     const { asFragment } = render(
@@ -103,7 +119,7 @@ describe('SurveyPermitForm', () => {
         validateOnChange={false}
         initialErrors={{ permits: 'Error is here' }}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
+        {() => <SurveyPermitForm />}
       </Formik>
     );
 
@@ -112,12 +128,15 @@ describe('SurveyPermitForm', () => {
 
   it('deletes existing permits when delete icon is clicked', async () => {
     const existingFormValues: ISurveyPermitForm = {
-      permits: [
-        {
-          permit_number: '123',
-          permit_type: 'Scientific Fish Collection Permit'
-        }
-      ]
+      permit: {
+        permits: [
+          {
+            permit_id: 1,
+            permit_number: '123',
+            permit_type: 'Scientific Fish Collection Permit'
+          }
+        ]
+      }
     };
 
     const { getByTestId, queryByText } = render(
@@ -127,7 +146,7 @@ describe('SurveyPermitForm', () => {
         validateOnBlur={true}
         validateOnChange={false}
         onSubmit={async () => {}}>
-        {() => <ProjectPermitForm non_sampling_permits={[{ value: 1, label: '1 - Wildlife' }]} />}
+        {() => <SurveyPermitForm />}
       </Formik>
     );
 
