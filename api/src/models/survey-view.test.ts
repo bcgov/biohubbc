@@ -1,5 +1,6 @@
 import { expect } from 'chai';
 import { describe } from 'mocha';
+import { IPermitModel } from '../repositories/permit-repository';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -176,36 +177,39 @@ describe('GetPermitData', () => {
     let data: GetPermitData;
 
     before(() => {
-      data = new GetPermitData(null);
+      data = new GetPermitData(undefined);
     });
 
-    it('sets permit_number', () => {
-      expect(data.permit_number).to.equal('');
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.permit_type).to.equal('');
+    it('sets permits', () => {
+      expect(data.permits).to.eql([]);
     });
   });
 
   describe('All values provided', () => {
     let data: GetPermitData;
 
-    const obj = {
-      number: '12345',
-      type: 'permit_type'
-    };
+    const obj = [
+      {
+        permit_id: 1,
+        number: '12345',
+        type: 'permit_type'
+      }
+    ] as IPermitModel[];
 
     before(() => {
       data = new GetPermitData(obj);
     });
 
+    it('sets permit_id', () => {
+      expect(data.permits[0].permit_id).to.equal(obj[0].permit_id);
+    });
+
     it('sets permit_number', () => {
-      expect(data.permit_number).to.equal(obj.number);
+      expect(data.permits[0].permit_number).to.equal(obj[0].number);
     });
 
     it('sets permit_type', () => {
-      expect(data.permit_type).to.equal(obj.type);
+      expect(data.permits[0].permit_type).to.equal(obj[0].type);
     });
   });
 });

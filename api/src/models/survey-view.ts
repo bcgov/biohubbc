@@ -75,7 +75,7 @@ export class GetPermitData {
     permit_type: IPermitModel['type'];
   }[];
 
-  constructor(obj: IPermitModel[]) {
+  constructor(obj?: IPermitModel[]) {
     this.permits =
       obj?.map((item) => ({
         permit_id: item.permit_id,
