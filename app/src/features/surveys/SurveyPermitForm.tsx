@@ -11,88 +11,74 @@ import Typography from '@material-ui/core/Typography';
 import { mdiTrashCanOutline } from '@mdi/js';
 import Icon from '@mdi/react';
 import CustomTextField from 'components/fields/CustomTextField';
-import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteFieldVariableSize';
 import { FieldArray, useFormikContext } from 'formik';
 import React from 'react';
 import yup from 'utils/YupSchema';
 
 export interface ISurveyPermitFormArrayItem {
+  permit_id: number;
   permit_number: string;
   permit_type: string;
 }
 
-export interface ISurveyExistingPermitFormArrayItem {
-  permit_id: number;
-}
-
 export interface ISurveyPermitForm {
-  permits: ISurveyPermitFormArrayItem[];
-  existing_permits?: ISurveyExistingPermitFormArrayItem[];
+  permit: {
+    permits: ISurveyPermitFormArrayItem[];
+  };
 }
 
 export const SurveyPermitFormArrayItemInitialValues: ISurveyPermitFormArrayItem = {
+  permit_id: (null as unknown) as number,
   permit_number: '',
   permit_type: ''
 };
 
 export const SurveyPermitFormInitialValues: ISurveyPermitForm = {
-  permits: [],
-  existing_permits: []
+  permit: {
+    permits: []
+  }
 };
 
 export const SurveyPermitFormYupSchema = yup.object().shape({
-  permits: yup
-    .array()
-    .of(
-      yup.object().shape({
-        permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
-        permit_type: yup.string().required('Required')
-      })
-    )
-    .isUniquePermitNumber('Permit numbers must be unique')
+  permit: yup.object().shape({
+    permits: yup
+      .array()
+      .of(
+        yup.object().shape({
+          permit_id: yup.number(),
+          permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
+          permit_type: yup.string().required('Required')
+        })
+      )
+      .isUniquePermitNumber('Permit numbers must be unique')
+  })
 });
-
-export const SurveyPermitEditFormYupSchema = yup.object().shape({
-  permits: yup
-    .array()
-    .of(
-      yup.object().shape({
-        permit_number: yup.string().max(100, 'Cannot exceed 100 characters').required('Required'),
-        permit_type: yup.string().required('Required')
-      })
-    )
-    .isUniquePermitNumber('Permit numbers must be unique')
-});
-
-export interface ISurveyPermitFormProps {
-  non_sampling_permits?: IMultiAutocompleteFieldOption[];
-}
 
 /**
  * Create Survey - Permit section
  *
  * @return {*}
  */
-const SurveyPermitForm: React.FC<ISurveyPermitFormProps> = (props) => {
+const SurveyPermitForm: React.FC = () => {
   const { values, handleChange, handleSubmit, getFieldMeta, errors } = useFormikContext<ISurveyPermitForm>();
 
   return (
     <form onSubmit={handleSubmit}>
       <FieldArray
-        name="permits"
+        name="permit.permits"
         render={(arrayHelpers) => (
           <Box>
             <Grid container direction="row" spacing={3}>
-              {values.permits?.map((permit, index) => {
-                const permitNumberMeta = getFieldMeta(`permits.[${index}].permit_number`);
-                const permitTypeMeta = getFieldMeta(`permits.[${index}].permit_type`);
+              {values.permit.permits?.map((permit, index) => {
+                const permitNumberMeta = getFieldMeta(`permit.permits.[${index}].permit_number`);
+                const permitTypeMeta = getFieldMeta(`permit.permits.[${index}].permit_type`);
 
                 return (
                   <Grid item xs={12} key={index}>
                     <Box display="flex">
                       <Box flexBasis="45%" pr={1}>
                         <CustomTextField
-                          name={`permits.[${index}].permit_number`}
+                          name={`permit.permits.[${index}].permit_number`}
                           label="Permit Number"
                           other={{
                             required: true,
@@ -106,8 +92,8 @@ const SurveyPermitForm: React.FC<ISurveyPermitFormProps> = (props) => {
                         <FormControl variant="outlined" required={true} style={{ width: '100%' }}>
                           <InputLabel id="permit_type">Permit Type</InputLabel>
                           <Select
-                            id={`permits.[${index}].permit_type`}
-                            name={`permits.[${index}].permit_type`}
+                            id={`permit.permits.[${index}].permit_type`}
+                            name={`permit.permits.[${index}].permit_type`}
                             labelId="permit_type"
                             label="Permit Type"
                             value={permit.permit_type}
@@ -142,9 +128,9 @@ const SurveyPermitForm: React.FC<ISurveyPermitFormProps> = (props) => {
                 );
               })}
             </Grid>
-            {errors?.permits && !Array.isArray(errors?.permits) && (
+            {errors.permit?.permits && !Array.isArray(errors?.permit.permits) && (
               <Box pt={2}>
-                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permits}</Typography>
+                <Typography style={{ fontSize: '12px', color: '#f44336' }}>{errors.permit.permits}</Typography>
               </Box>
             )}
             <Box pt={2}>

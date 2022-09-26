@@ -9,7 +9,6 @@ import {
   IGetSurveyAttachmentsResponse,
   IGetSurveyForViewResponse,
   ISurveyAvailableFundingSources,
-  ISurveyPermits,
   SurveyUpdateObject,
   SurveyViewObject
 } from 'interfaces/useSurveyApi.interface';
@@ -253,25 +252,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
   };
 
   /**
-   * Get permits that have not already been assigned to a survey, by project ID
-   * Note: This is because a survey can have exactly one permit assigned to it and permits cannot be used more than once
-   *
-   * @param {number} projectId
-   * @returns {*} {Promise<SurveyPermits[]>}
-   */
-  const getSurveyPermits = async (projectId: number): Promise<ISurveyPermits[]> => {
-    //const { data } = await axios.get(`/api/permits/list`);
-
-    const data = [
-      { id: 1, permit_number: 'abc', permit_type: 'Scientific collection' },
-      { id: 2, permit_number: 'def', permit_type: 'Wildlife' },
-      { id: 3, permit_number: 'ghi', permit_type: 'Third type' }
-    ];
-
-    return data;
-  };
-
-  /**
    * Get funding sources for a survey by project ID
    *
    * @param {number} projectId
@@ -508,7 +488,6 @@ const useSurveyApi = (axios: AxiosInstance) => {
     getSurveyAttachmentSignedURL,
     getObservationSubmissionSignedURL,
     deleteSurvey,
-    getSurveyPermits,
     getAvailableSurveyFundingSources,
     makeAttachmentUnsecure,
     makeAttachmentSecure,

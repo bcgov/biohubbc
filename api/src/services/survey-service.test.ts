@@ -18,6 +18,7 @@ import {
   GetSurveyProprietorData,
   GetSurveyPurposeAndMethodologyData
 } from '../models/survey-view';
+import { IPermitModel } from '../repositories/permit-repository';
 import { getMockDBConnection } from '../__mocks__/db';
 import { SurveyService } from './survey-service';
 import { TaxonomyService } from './taxonomy-service';
@@ -46,11 +47,10 @@ describe('SurveyService', () => {
 
       const surveyService = new SurveyService(dbConnectionObj);
 
-      const projectId = 1;
       const surveyId = 2;
       const putSurveyData = new PutSurveyObject(null);
 
-      await surveyService.updateSurvey(projectId, surveyId, putSurveyData);
+      await surveyService.updateSurvey(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).not.to.have.been.called;
       expect(updateSurveyVantageCodesDataStub).not.to.have.been.called;
@@ -76,7 +76,6 @@ describe('SurveyService', () => {
 
       const surveyService = new SurveyService(dbConnectionObj);
 
-      const projectId = 1;
       const surveyId = 2;
       const putSurveyData = new PutSurveyObject({
         survey_details: {},
@@ -88,7 +87,7 @@ describe('SurveyService', () => {
         location: {}
       });
 
-      await surveyService.updateSurvey(projectId, surveyId, putSurveyData);
+      await surveyService.updateSurvey(surveyId, putSurveyData);
 
       expect(updateSurveyDetailsDataStub).to.have.been.calledOnce;
       expect(updateSurveyVantageCodesDataStub).to.have.been.calledOnce;
@@ -313,7 +312,7 @@ describe('SurveyService', () => {
 
       const response = await surveyService.getPermitData(1);
 
-      expect(response).to.eql(new GetPermitData({ id: 1 }));
+      expect(response).to.eql(new GetPermitData(([{ id: 1 }] as unknown) as IPermitModel[]));
     });
   });
 
@@ -894,8 +893,8 @@ describe('SurveyService', () => {
       const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
       const surveyService = new SurveyService(mockDBConnection);
 
-      const response = await surveyService.updateSurveyPermitData(1, 1, ({
-        permit: {}
+      const response = await surveyService.updateSurveyPermitData(1, ({
+        permit: { permits: [] }
       } as unknown) as PutSurveyObject);
 
       expect(response).to.eql(undefined);
@@ -910,8 +909,8 @@ describe('SurveyService', () => {
       const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
       const surveyService = new SurveyService(mockDBConnection);
 
-      const response = await surveyService.updateSurveyPermitData(1, 1, ({
-        permit: { permit_number: '1', permit_type: 'type' }
+      const response = await surveyService.updateSurveyPermitData(1, ({
+        permit: { permits: [{ permit_number: '1', permit_type: 'type' }] }
       } as unknown) as PutSurveyObject);
 
       expect(response).to.eql(undefined);

@@ -106,7 +106,7 @@ export class PermitRepository extends BaseRepository {
       `;
 
     const response = await this.connection.sql(sqlStatement);
-    console.log(response);
+
     const result = (response && response.rows && response.rows[0]) || null;
 
     return result.permit_id;

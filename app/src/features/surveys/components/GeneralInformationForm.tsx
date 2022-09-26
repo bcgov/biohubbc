@@ -1,7 +1,6 @@
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
-import { IAutocompleteFieldOption } from 'components/fields/AutocompleteField';
 import CustomTextField from 'components/fields/CustomTextField';
 import { IMultiAutocompleteFieldOption } from 'components/fields/MultiAutocompleteField';
 import MultiAutocompleteFieldVariableSize from 'components/fields/MultiAutocompleteFieldVariableSize';
@@ -46,8 +45,11 @@ export interface IGeneralInformationForm {
     ancillary_species: number[];
   };
   permit: {
-    permit_number: string;
-    permit_type: string;
+    permits: {
+      permit_id?: number;
+      permit_number: string;
+      permit_type: string;
+    }[];
   };
   funding: {
     funding_sources: number[];
@@ -67,8 +69,7 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
     ancillary_species: []
   },
   permit: {
-    permit_number: '',
-    permit_type: ''
+    permits: []
   },
   funding: {
     funding_sources: []
@@ -95,7 +96,6 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
 };
 
 export interface IGeneralInformationFormProps {
-  permit_numbers: IAutocompleteFieldOption<string>[];
   funding_sources: IMultiAutocompleteFieldOption[];
   projectStartDate: string;
   projectEndDate: string;
@@ -107,10 +107,7 @@ export interface IGeneralInformationFormProps {
  * @return {*}
  */
 const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) => {
-  console.log('props in the General Information Form:', props);
   const formikProps = useFormikContext<IGeneralInformationForm>();
-
-  console.log('formikProps.values in General Information Form: ', formikProps.values);
 
   const biohubApi = useBiohubApi();
 
@@ -223,13 +220,8 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Permits</Typography>
       </Box>
-      <SurveyPermitForm
-        non_sampling_permits={
-          props.permit_numbers?.map((item: any) => {
-            return { value: item.number, label: `${item.number} - ${item.type}` };
-          }) || []
-        }
-      />
+
+      <SurveyPermitForm />
 
       <Box component="fieldset" mt={4}>
         <Typography component="legend">Funding Sources</Typography>
