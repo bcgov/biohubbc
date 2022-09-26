@@ -141,7 +141,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
   );
 
   return (
-    <form>
+    <>
       <Grid container spacing={3}>
         <Grid item xs={12}>
           <CustomTextField
@@ -233,7 +233,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           required={false}
         />
       </Box>
-    </form>
+    </>
   );
 };
 
