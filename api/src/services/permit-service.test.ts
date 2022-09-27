@@ -94,7 +94,9 @@ describe('PermitService', () => {
 
       const mockResponse = 2;
 
-      const deleteSurveyPermitStub = sinon.stub(PermitRepository.prototype, 'deleteSurveyPermit').resolves();
+      const deleteSurveyPermitStub = sinon
+        .stub(PermitRepository.prototype, 'deleteSurveyPermit')
+        .resolves(mockResponse);
 
       const permitService = new PermitService(mockDBConnection);
 
