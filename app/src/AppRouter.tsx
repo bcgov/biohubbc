@@ -91,7 +91,7 @@ const AppRouter: React.FC = () => {
 
       <AppRoute title="*" path="*">
         <UnAuthenticatedRouteGuard>
-          <LandingPage originalPath={""} />
+          <LandingPage originalPath={''} />
         </UnAuthenticatedRouteGuard>
       </AppRoute>
 
