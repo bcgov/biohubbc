@@ -85,7 +85,8 @@ export const GeneralInformationYupSchema = (customYupRules?: any) => {
         biologist_first_name: yup.string().required('First Name is Required'),
         biologist_last_name: yup.string().required('Last Name is Required'),
         start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Start Date is Required'),
-        end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
+        end_date:
+          customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
       }),
       species: yup.object().shape({
         focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
