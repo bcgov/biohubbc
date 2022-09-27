@@ -9,11 +9,11 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h2
-        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+      <h3
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Location
-      </h2>
+      </h3>
       <div
         class="MuiBox-root MuiBox-root-17"
       >
@@ -287,12 +287,6 @@ exports[`LocationBoundary matches the snapshot when the geometry is a single pol
         Location description
       </p>
     </div>
-    <div
-      class="MuiBox-root MuiBox-root-21"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-22"
-    />
     <button
       aria-label="Show Expanded Location"
       class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
@@ -336,11 +330,11 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h2
-        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+      <h3
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Location
-      </h2>
+      </h3>
       <div
         class="MuiBox-root MuiBox-root-10"
       >
@@ -562,12 +556,6 @@ exports[`LocationBoundary matches the snapshot when there is no geometry 1`] = `
         Location description
       </p>
     </div>
-    <div
-      class="MuiBox-root MuiBox-root-13"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-14"
-    />
     <button
       aria-label="Show Expanded Location"
       class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"
@@ -611,11 +599,11 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
       class="MuiToolbar-root MuiToolbar-regular"
       style="justify-content: space-between;"
     >
-      <h2
-        class="MuiTypography-root MuiTypography-h2 MuiTypography-colorInherit"
+      <h3
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Project Location
-      </h2>
+      </h3>
       <div
         class="MuiBox-root MuiBox-root-3"
       >
@@ -837,12 +825,6 @@ exports[`LocationBoundary matches the snapshot when there is no location descrip
         No Description
       </p>
     </div>
-    <div
-      class="MuiBox-root MuiBox-root-6"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-7"
-    />
     <button
       aria-label="Show Expanded Location"
       class="MuiButtonBase-root MuiButton-root MuiButton-text sectionHeaderButton MuiButton-textPrimary"

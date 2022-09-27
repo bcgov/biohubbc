@@ -7,7 +7,7 @@ exports[`FundingSource renders correctly 1`] = `
     style="justify-content: space-between;"
   >
     <h3
-      class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+      class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
     >
       Funding Sources
     </h3>

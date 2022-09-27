@@ -10,7 +10,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         General Information
       </h3>
@@ -141,7 +141,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Permits
       </h3>
@@ -239,7 +239,7 @@ exports[`SurveyGeneralInformation renders correctly with all fields 1`] = `
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Funding Sources
       </h3>
@@ -353,7 +353,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         General Information
       </h3>
@@ -487,7 +487,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Permits
       </h3>
@@ -585,7 +585,7 @@ exports[`SurveyGeneralInformation renders correctly with no end date (only start
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         Funding Sources
       </h3>

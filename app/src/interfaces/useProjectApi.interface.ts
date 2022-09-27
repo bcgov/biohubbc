@@ -78,15 +78,14 @@ export interface IGetProjectsListResponse {
  * @export
  * @interface ICreateProjectRequest
  */
-export interface ICreateProjectRequest {
-  coordinator: IProjectCoordinatorForm;
-  project: IProjectDetailsForm;
-  objectives: IProjectObjectivesForm;
-  location: IProjectLocationForm;
-  iucn: IProjectIUCNForm;
-  funding: IProjectFundingForm;
-  partnerships: IProjectPartnershipsForm;
-}
+export interface ICreateProjectRequest
+  extends IProjectCoordinatorForm,
+    IProjectDetailsForm,
+    IProjectObjectivesForm,
+    IProjectLocationForm,
+    IProjectIUCNForm,
+    IProjectFundingForm,
+    IProjectPartnershipsForm {}
 
 /**
  * Create project response object.
@@ -134,7 +133,6 @@ export interface IGetProjectForUpdateResponseDetails {
 }
 export interface IGetProjectForUpdateResponseObjectives {
   objectives: string;
-  caveats: string;
   revision_count: number;
 }
 
@@ -220,7 +218,6 @@ export interface IGetProjectForViewResponseDetails {
 }
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;
-  caveats: string;
 }
 
 export interface IGetProjectForViewResponseLocation {

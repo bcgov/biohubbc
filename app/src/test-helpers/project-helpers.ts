@@ -15,8 +15,7 @@ export const getProjectForViewResponse: IGetProjectForViewResponse = {
     geometry: []
   },
   objectives: {
-    objectives: 'Et ad et in culpa si',
-    caveats: 'sjwer bds'
+    objectives: 'Et ad et in culpa si'
   },
   coordinator: {
     first_name: 'Amanda',

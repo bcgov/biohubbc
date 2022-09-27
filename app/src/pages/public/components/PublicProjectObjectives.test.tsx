@@ -12,6 +12,5 @@ describe('PublicProjectObjectives', () => {
     );
 
     expect(getByText('Objectives')).toBeInTheDocument();
-    expect(getByText('Caveats')).toBeInTheDocument();
   });
 });
