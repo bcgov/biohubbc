@@ -232,9 +232,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         <Typography component="legend" variant="h5">
           Permits
         </Typography>
+        <Box>
+          <SurveyPermitForm />
+        </Box>
       </Box>
-
-      <SurveyPermitForm />
 
       <Box component="fieldset" mt={5}>
         <Typography component="legend" variant="h5">
