@@ -14,7 +14,7 @@ describe('listUserPermits', () => {
   });
 
   it('returns a list of permits', async () => {
-    const dbConnectionObj = getMockDBConnection();
+    const dbConnectionObj = getMockDBConnection({ systemUserId: () => 3 });
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);
 
@@ -44,11 +44,15 @@ describe('listUserPermits', () => {
       revision_count: 1
     };
 
-    sinon.stub(PermitService.prototype, 'getPermitByUser').resolves([mockPermit1, mockPermit2]);
+    const getPermitByUserStub = sinon
+      .stub(PermitService.prototype, 'getPermitByUser')
+      .resolves([mockPermit1, mockPermit2]);
 
     const requestHandler = list.listUserPermits();
 
     await requestHandler(mockReq, mockRes, mockNext);
+
+    expect(getPermitByUserStub).to.have.been.calledOnceWith(3);
 
     expect(mockRes.statusValue).to.equal(200);
     expect(mockRes.jsonValue).to.eql({ permits: [mockPermit1, mockPermit2] });
@@ -58,7 +62,8 @@ describe('listUserPermits', () => {
     const dbConnectionObj = getMockDBConnection({
       commit: sinon.stub(),
       rollback: sinon.stub(),
-      release: sinon.stub()
+      release: sinon.stub(),
+      systemUserId: () => 3
     });
 
     sinon.stub(db, 'getDBConnection').returns(dbConnectionObj);

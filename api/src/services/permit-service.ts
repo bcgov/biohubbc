@@ -59,9 +59,7 @@ export class PermitService extends DBService {
    * @memberof PermitService
    */
   async createSurveyPermit(surveyId: number, permitNumber: string, permitType: string): Promise<number | null> {
-    const permit_id = await this.permitRepository.createSurveyPermit(surveyId, permitNumber, permitType);
-
-    return permit_id;
+    return this.permitRepository.createSurveyPermit(surveyId, permitNumber, permitType);
   }
 
   /**
@@ -92,8 +90,6 @@ export class PermitService extends DBService {
    * @memberof PermitService
    */
   async deleteSurveyPermit(surveyId: number, permitId: number): Promise<number> {
-    const permit_id = await this.permitRepository.deleteSurveyPermit(surveyId, permitId);
-
-    return permit_id;
+    return this.permitRepository.deleteSurveyPermit(surveyId, permitId);
   }
 }
