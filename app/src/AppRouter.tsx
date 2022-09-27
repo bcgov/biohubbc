@@ -17,26 +17,21 @@ import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
 import LogOutPage from 'pages/logout/LogOutPage';
 import React, {useContext, useEffect} from 'react';
-import { Redirect, Switch, useHistory, useLocation } from 'react-router-dom';
+import { Redirect, Switch, useLocation } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
 interface ILandingPageProps {
   originalPath: string
 }
 
-// not working...
 const LandingPage: React.FC<ILandingPageProps> = ({originalPath}) => {
   console.log(`Landing Page Path: ${originalPath}`)
-  const history = useHistory()
   const { keycloakWrapper } = useContext(AuthStateContext);
 
   useEffect(() => {
-    // re rendering a bunch because of when this is getting called...
-    history.push(originalPath);
+    console.log(`Use EFFECT`)
     keycloakWrapper?.keycloak?.login();
-  }, [])
-  // console.log("")
-  console.log(history)
-  // console.log(keycloakWrapper)
+  }, [originalPath])
+
   return null;
 }
 
@@ -46,7 +41,7 @@ const AppRouter: React.FC = () => {
   const getTitle = (page: string) => {
     return `SIMS - ${page}`;
   };
-  console.log(`Path: ${location.pathname}`);
+  console.log(`Router Path: ${location.pathname}`);
   return (
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
