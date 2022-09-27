@@ -9,7 +9,7 @@ export const LandingPage: React.FC<ILandingPageProps> = ({ originalPath }) => {
 
     useEffect(() => {
         keycloakWrapper?.keycloak?.login();
-    }, [])
+    })
 
     return null;
 }
