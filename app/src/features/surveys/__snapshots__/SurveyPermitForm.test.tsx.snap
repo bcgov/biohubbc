@@ -2,1057 +2,1187 @@
 
 exports[`SurveyPermitForm renders correctly with default empty values 1`] = `
 <DocumentFragment>
+  <ul
+    class="MuiList-root makeStyles-permitList-1 MuiList-dense"
+  />
   <div
-    class="MuiBox-root MuiBox-root-1"
+    class="MuiBox-root MuiBox-root-2"
   >
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
-    />
-    <div
-      class="MuiBox-root MuiBox-root-2"
+    <button
+      aria-label="add permit"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      tabindex="0"
+      type="button"
     >
-      <button
-        aria-label="add permit"
-        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-        tabindex="0"
-        type="button"
+      <span
+        class="MuiButton-label"
       >
         <span
-          class="MuiButton-label"
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
-          Add New Permit
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
         </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
+        Add New Permit
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
 
 exports[`SurveyPermitForm renders correctly with error on the permits field due to duplicates 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-31"
+  <ul
+    class="MuiList-root makeStyles-permitList-19 MuiList-dense"
   >
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    <li
+      class="MuiListItem-container"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
       >
         <div
-          class="MuiBox-root MuiBox-root-32"
+          class="MuiListItemText-root MuiListItemText-dense"
         >
-          <div
-            class="MuiBox-root MuiBox-root-33"
+          <span
+            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
           >
             <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="permit.permits.[0].permit_number"
+              class="MuiBox-root MuiBox-root-20"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="permit.permits.[0].permit_number"
-                id="permit.permits.[0].permit_number-label"
-              >
-                Permit Number
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-              >
-                <input
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[0].permit_number"
-                  name="permit.permits.[0].permit_number"
-                  required=""
-                  type="text"
-                  value="123"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-34 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-36 PrivateNotchedOutline-legendNotched-37"
-                  >
-                    <span>
-                      Permit Number *
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-38"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                id="permit_type"
-              >
-                Permit Type
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
               >
                 <div
-                  aria-haspopup="listbox"
-                  aria-label="Permit Type"
-                  aria-labelledby="permit_type permit.permits.[0].permit_type"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[0].permit_type"
-                  role="button"
-                  tabindex="0"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  Scientific Fish Collection Permit
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="permit.permits.[0].permit_type"
-                  required=""
-                  tabindex="-1"
-                  value="Scientific Fish Collection Permit"
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-34 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-36 PrivateNotchedOutline-legendNotched-37"
+                  <div
+                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="permit.permits.[0].permit_number"
                   >
-                    <span>
-                      Permit Type
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-              <p
-                class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-              />
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-39"
-          >
-            <button
-              aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-              data-testid="delete-icon"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="permit.permits.[0].permit_number"
+                      id="permit.permits.[0].permit_number-label"
+                    >
+                      Permit Number
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[0].permit_number"
+                        name="permit.permits.[0].permit_number"
+                        required=""
+                        type="text"
+                        value="123"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                        >
+                          <span>
+                            Permit Number *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+                  <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      id="permit_type"
+                    >
+                      Permit Type
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Permit Type"
+                        aria-labelledby="permit_type permit.permits.[0].permit_type"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[0].permit_type"
+                        role="button"
+                        tabindex="0"
+                      >
+                        Scientific Fish Collection Permit
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="permit.permits.[0].permit_type"
+                        required=""
+                        tabindex="-1"
+                        value="Scientific Fish Collection Permit"
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                        >
+                          <span>
+                            Permit Type
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiListItemSecondaryAction-root"
+      >
+        <button
+          aria-label="remove permit"
+          class="MuiButtonBase-root MuiIconButton-root"
+          data-testid="delete-icon"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </li>
+    <li
+      class="MuiListItem-container"
+    >
+      <div
+        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
       >
         <div
-          class="MuiBox-root MuiBox-root-40"
+          class="MuiListItemText-root MuiListItemText-dense"
         >
-          <div
-            class="MuiBox-root MuiBox-root-41"
+          <span
+            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
           >
             <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="permit.permits.[1].permit_number"
+              class="MuiBox-root MuiBox-root-25"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="permit.permits.[1].permit_number"
-                id="permit.permits.[1].permit_number-label"
-              >
-                Permit Number
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-              >
-                <input
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[1].permit_number"
-                  name="permit.permits.[1].permit_number"
-                  required=""
-                  type="text"
-                  value="123"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-34 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-36 PrivateNotchedOutline-legendNotched-37"
-                  >
-                    <span>
-                      Permit Number *
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-42"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                id="permit_type"
-              >
-                Permit Type
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
               >
                 <div
-                  aria-haspopup="listbox"
-                  aria-label="Permit Type"
-                  aria-labelledby="permit_type permit.permits.[1].permit_type"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[1].permit_type"
-                  role="button"
-                  tabindex="0"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  Scientific Fish Collection Permit
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="permit.permits.[1].permit_type"
-                  required=""
-                  tabindex="-1"
-                  value="Scientific Fish Collection Permit"
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-34 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-36 PrivateNotchedOutline-legendNotched-37"
+                  <div
+                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="permit.permits.[1].permit_number"
                   >
-                    <span>
-                      Permit Type
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-              <p
-                class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-              />
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-43"
-          >
-            <button
-              aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-              data-testid="delete-icon"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="permit.permits.[1].permit_number"
+                      id="permit.permits.[1].permit_number-label"
+                    >
+                      Permit Number
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[1].permit_number"
+                        name="permit.permits.[1].permit_number"
+                        required=""
+                        type="text"
+                        value="123"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                        >
+                          <span>
+                            Permit Number *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+                  <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      id="permit_type"
+                    >
+                      Permit Type
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Permit Type"
+                        aria-labelledby="permit_type permit.permits.[1].permit_type"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[1].permit_type"
+                        role="button"
+                        tabindex="0"
+                      >
+                        Scientific Fish Collection Permit
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="permit.permits.[1].permit_type"
+                        required=""
+                        tabindex="-1"
+                        value="Scientific Fish Collection Permit"
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-21 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-23 PrivateNotchedOutline-legendNotched-24"
+                        >
+                          <span>
+                            Permit Type
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
         </div>
       </div>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-44"
+      <div
+        class="MuiListItemSecondaryAction-root"
+      >
+        <button
+          aria-label="remove permit"
+          class="MuiButtonBase-root MuiIconButton-root"
+          data-testid="delete-icon"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div
+    class="MuiBox-root MuiBox-root-26"
+  >
+    <button
+      aria-label="add permit"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      tabindex="0"
+      type="button"
     >
-      <button
-        aria-label="add permit"
-        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-        tabindex="0"
-        type="button"
+      <span
+        class="MuiButton-label"
       >
         <span
-          class="MuiButton-label"
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
-          Add New Permit
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
         </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
+        Add New Permit
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
 
 exports[`SurveyPermitForm renders correctly with errors on the permit_number and permit_type fields 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-17"
+  <ul
+    class="MuiList-root makeStyles-permitList-11 MuiList-dense"
   >
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    <li
+      class="MuiListItem-container"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
       >
         <div
-          class="MuiBox-root MuiBox-root-18"
+          class="MuiListItemText-root MuiListItemText-dense"
         >
-          <div
-            class="MuiBox-root MuiBox-root-19"
+          <span
+            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
           >
             <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="permit.permits.[0].permit_number"
+              class="MuiBox-root MuiBox-root-12"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="permit.permits.[0].permit_number"
-                id="permit.permits.[0].permit_number-label"
-              >
-                Permit Number
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-              >
-                <input
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[0].permit_number"
-                  name="permit.permits.[0].permit_number"
-                  required=""
-                  type="text"
-                  value="123"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
-                  >
-                    <span>
-                      Permit Number *
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-24"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                id="permit_type"
-              >
-                Permit Type
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
               >
                 <div
-                  aria-haspopup="listbox"
-                  aria-label="Permit Type"
-                  aria-labelledby="permit_type permit.permits.[0].permit_type"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[0].permit_type"
-                  role="button"
-                  tabindex="0"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  Scientific Fish Collection Permit
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="permit.permits.[0].permit_type"
-                  required=""
-                  tabindex="-1"
-                  value="Scientific Fish Collection Permit"
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
+                  <div
+                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="permit.permits.[0].permit_number"
                   >
-                    <span>
-                      Permit Type
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-              <p
-                class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-              />
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-25"
-          >
-            <button
-              aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-              data-testid="delete-icon"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="permit.permits.[0].permit_number"
+                      id="permit.permits.[0].permit_number-label"
+                    >
+                      Permit Number
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[0].permit_number"
+                        name="permit.permits.[0].permit_number"
+                        required=""
+                        type="text"
+                        value="123"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                        >
+                          <span>
+                            Permit Number *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+                  <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      id="permit_type"
+                    >
+                      Permit Type
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Permit Type"
+                        aria-labelledby="permit_type permit.permits.[0].permit_type"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[0].permit_type"
+                        role="button"
+                        tabindex="0"
+                      >
+                        Scientific Fish Collection Permit
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="permit.permits.[0].permit_type"
+                        required=""
+                        tabindex="-1"
+                        value="Scientific Fish Collection Permit"
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                        >
+                          <span>
+                            Permit Type
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiListItemSecondaryAction-root"
+      >
+        <button
+          aria-label="remove permit"
+          class="MuiButtonBase-root MuiIconButton-root"
+          data-testid="delete-icon"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </li>
+    <li
+      class="MuiListItem-container"
+    >
+      <div
+        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
       >
         <div
-          class="MuiBox-root MuiBox-root-26"
+          class="MuiListItemText-root MuiListItemText-dense"
         >
-          <div
-            class="MuiBox-root MuiBox-root-27"
+          <span
+            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
           >
             <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="permit.permits.[1].permit_number"
+              class="MuiBox-root MuiBox-root-17"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="permit.permits.[1].permit_number"
-                id="permit.permits.[1].permit_number-label"
-              >
-                Permit Number
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-              >
-                <input
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[1].permit_number"
-                  name="permit.permits.[1].permit_number"
-                  required=""
-                  type="text"
-                  value="123"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
-                  >
-                    <span>
-                      Permit Number *
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-28"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                id="permit_type"
-              >
-                Permit Type
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
               >
                 <div
-                  aria-haspopup="listbox"
-                  aria-label="Permit Type"
-                  aria-labelledby="permit_type permit.permits.[1].permit_type"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[1].permit_type"
-                  role="button"
-                  tabindex="0"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  Scientific Fish Collection Permit
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="permit.permits.[1].permit_type"
-                  required=""
-                  tabindex="-1"
-                  value="Scientific Fish Collection Permit"
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-20 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-22 PrivateNotchedOutline-legendNotched-23"
+                  <div
+                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="permit.permits.[1].permit_number"
                   >
-                    <span>
-                      Permit Type
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-              <p
-                class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-              />
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-29"
-          >
-            <button
-              aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-              data-testid="delete-icon"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="permit.permits.[1].permit_number"
+                      id="permit.permits.[1].permit_number-label"
+                    >
+                      Permit Number
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[1].permit_number"
+                        name="permit.permits.[1].permit_number"
+                        required=""
+                        type="text"
+                        value="123"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                        >
+                          <span>
+                            Permit Number *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+                  <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      id="permit_type"
+                    >
+                      Permit Type
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Permit Type"
+                        aria-labelledby="permit_type permit.permits.[1].permit_type"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[1].permit_type"
+                        role="button"
+                        tabindex="0"
+                      >
+                        Scientific Fish Collection Permit
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="permit.permits.[1].permit_type"
+                        required=""
+                        tabindex="-1"
+                        value="Scientific Fish Collection Permit"
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-13 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-15 PrivateNotchedOutline-legendNotched-16"
+                        >
+                          <span>
+                            Permit Type
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
         </div>
       </div>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-30"
+      <div
+        class="MuiListItemSecondaryAction-root"
+      >
+        <button
+          aria-label="remove permit"
+          class="MuiButtonBase-root MuiIconButton-root"
+          data-testid="delete-icon"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div
+    class="MuiBox-root MuiBox-root-18"
+  >
+    <button
+      aria-label="add permit"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      tabindex="0"
+      type="button"
     >
-      <button
-        aria-label="add permit"
-        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-        tabindex="0"
-        type="button"
+      <span
+        class="MuiButton-label"
       >
         <span
-          class="MuiButton-label"
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
-          Add New Permit
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
         </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
+        Add New Permit
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
 
 exports[`SurveyPermitForm renders correctly with existing permit values 1`] = `
 <DocumentFragment>
-  <div
-    class="MuiBox-root MuiBox-root-3"
+  <ul
+    class="MuiList-root makeStyles-permitList-3 MuiList-dense"
   >
-    <div
-      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-3"
+    <li
+      class="MuiListItem-container"
     >
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
       >
         <div
-          class="MuiBox-root MuiBox-root-4"
+          class="MuiListItemText-root MuiListItemText-dense"
         >
-          <div
-            class="MuiBox-root MuiBox-root-5"
+          <span
+            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
           >
             <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="permit.permits.[0].permit_number"
+              class="MuiBox-root MuiBox-root-4"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="permit.permits.[0].permit_number"
-                id="permit.permits.[0].permit_number-label"
-              >
-                Permit Number
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-              >
-                <input
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[0].permit_number"
-                  name="permit.permits.[0].permit_number"
-                  required=""
-                  type="text"
-                  value="123"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
-                  >
-                    <span>
-                      Permit Number *
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-10"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                id="permit_type"
-              >
-                Permit Type
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
               >
                 <div
-                  aria-haspopup="listbox"
-                  aria-label="Permit Type"
-                  aria-labelledby="permit_type permit.permits.[0].permit_type"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[0].permit_type"
-                  role="button"
-                  tabindex="0"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  Park Use Permit
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="permit.permits.[0].permit_type"
-                  required=""
-                  tabindex="-1"
-                  value="Park Use Permit"
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                  <div
+                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="permit.permits.[0].permit_number"
                   >
-                    <span>
-                      Permit Type
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-              <p
-                class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-              />
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-11"
-          >
-            <button
-              aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-              data-testid="delete-icon"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="permit.permits.[0].permit_number"
+                      id="permit.permits.[0].permit_number-label"
+                    >
+                      Permit Number
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[0].permit_number"
+                        name="permit.permits.[0].permit_number"
+                        required=""
+                        type="text"
+                        value="123"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                        >
+                          <span>
+                            Permit Number *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+                  <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      id="permit_type"
+                    >
+                      Permit Type
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Permit Type"
+                        aria-labelledby="permit_type permit.permits.[0].permit_type"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[0].permit_type"
+                        role="button"
+                        tabindex="0"
+                      >
+                        Park Use Permit
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="permit.permits.[0].permit_type"
+                        required=""
+                        tabindex="-1"
+                        value="Park Use Permit"
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                        >
+                          <span>
+                            Permit Type
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
         </div>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12"
+        class="MuiListItemSecondaryAction-root"
+      >
+        <button
+          aria-label="remove permit"
+          class="MuiButtonBase-root MuiIconButton-root"
+          data-testid="delete-icon"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </li>
+    <li
+      class="MuiListItem-container"
+    >
+      <div
+        class="MuiListItem-root MuiListItem-dense MuiListItem-secondaryAction"
       >
         <div
-          class="MuiBox-root MuiBox-root-12"
+          class="MuiListItemText-root MuiListItemText-dense"
         >
-          <div
-            class="MuiBox-root MuiBox-root-13"
+          <span
+            class="MuiTypography-root MuiListItemText-primary MuiTypography-body2 MuiTypography-displayBlock"
           >
             <div
-              class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
-              data-testid="permit.permits.[1].permit_number"
+              class="MuiBox-root MuiBox-root-9"
             >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                for="permit.permits.[1].permit_number"
-                id="permit.permits.[1].permit_number-label"
-              >
-                Permit Number
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
               <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
-              >
-                <input
-                  aria-invalid="false"
-                  class="MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[1].permit_number"
-                  name="permit.permits.[1].permit_number"
-                  required=""
-                  type="text"
-                  value="3213123123"
-                />
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
-                  >
-                    <span>
-                      Permit Number *
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-14"
-          >
-            <div
-              class="MuiFormControl-root"
-              style="width: 100%;"
-            >
-              <label
-                class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
-                data-shrink="true"
-                id="permit_type"
-              >
-                Permit Type
-                <span
-                  aria-hidden="true"
-                  class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
-                >
-                   *
-                </span>
-              </label>
-              <div
-                class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-2"
               >
                 <div
-                  aria-haspopup="listbox"
-                  aria-label="Permit Type"
-                  aria-labelledby="permit_type permit.permits.[1].permit_type"
-                  class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
-                  id="permit.permits.[1].permit_type"
-                  role="button"
-                  tabindex="0"
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  Scientific Fish Collection Permit
-                </div>
-                <input
-                  aria-hidden="true"
-                  class="MuiSelect-nativeInput"
-                  name="permit.permits.[1].permit_type"
-                  required=""
-                  tabindex="-1"
-                  value="Scientific Fish Collection Permit"
-                />
-                <svg
-                  aria-hidden="true"
-                  class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
-                  focusable="false"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    d="M7 10l5 5 5-5z"
-                  />
-                </svg>
-                <fieldset
-                  aria-hidden="true"
-                  class="PrivateNotchedOutline-root-6 MuiOutlinedInput-notchedOutline"
-                >
-                  <legend
-                    class="PrivateNotchedOutline-legendLabelled-8 PrivateNotchedOutline-legendNotched-9"
+                  <div
+                    class="MuiFormControl-root MuiTextField-root MuiFormControl-fullWidth"
+                    data-testid="permit.permits.[1].permit_number"
                   >
-                    <span>
-                      Permit Type
-                    </span>
-                  </legend>
-                </fieldset>
-              </div>
-              <p
-                class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
-              />
-            </div>
-          </div>
-          <div
-            class="MuiBox-root MuiBox-root-15"
-          >
-            <button
-              aria-label="remove permit"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-colorPrimary"
-              data-testid="delete-icon"
-              tabindex="0"
-              type="button"
-            >
-              <span
-                class="MuiIconButton-label"
-              >
-                <svg
-                  role="presentation"
-                  style="width: 1.5rem; height: 1.5rem;"
-                  viewBox="0 0 24 24"
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      for="permit.permits.[1].permit_number"
+                      id="permit.permits.[1].permit_number-label"
+                    >
+                      Permit Number
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-fullWidth MuiInputBase-formControl"
+                    >
+                      <input
+                        aria-invalid="false"
+                        class="MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[1].permit_number"
+                        name="permit.permits.[1].permit_number"
+                        required=""
+                        type="text"
+                        value="3213123123"
+                      />
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                        >
+                          <span>
+                            Permit Number *
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  class="MuiGrid-root MuiGrid-item MuiGrid-grid-sm-6"
                 >
-                  <path
-                    d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
-                    style="fill: currentColor;"
-                  />
-                </svg>
-              </span>
-              <span
-                class="MuiTouchRipple-root"
-              />
-            </button>
-          </div>
+                  <div
+                    class="MuiFormControl-root MuiFormControl-fullWidth"
+                  >
+                    <label
+                      class="MuiFormLabel-root MuiInputLabel-root MuiInputLabel-formControl MuiInputLabel-animated MuiInputLabel-shrink MuiInputLabel-outlined MuiFormLabel-filled Mui-required Mui-required"
+                      data-shrink="true"
+                      id="permit_type"
+                    >
+                      Permit Type
+                      <span
+                        aria-hidden="true"
+                        class="MuiFormLabel-asterisk MuiInputLabel-asterisk"
+                      >
+                         *
+                      </span>
+                    </label>
+                    <div
+                      class="MuiInputBase-root MuiOutlinedInput-root MuiInputBase-formControl"
+                    >
+                      <div
+                        aria-haspopup="listbox"
+                        aria-label="Permit Type"
+                        aria-labelledby="permit_type permit.permits.[1].permit_type"
+                        class="MuiSelect-root MuiSelect-select MuiSelect-selectMenu MuiSelect-outlined MuiInputBase-input MuiOutlinedInput-input"
+                        id="permit.permits.[1].permit_type"
+                        role="button"
+                        tabindex="0"
+                      >
+                        Scientific Fish Collection Permit
+                      </div>
+                      <input
+                        aria-hidden="true"
+                        class="MuiSelect-nativeInput"
+                        name="permit.permits.[1].permit_type"
+                        required=""
+                        tabindex="-1"
+                        value="Scientific Fish Collection Permit"
+                      />
+                      <svg
+                        aria-hidden="true"
+                        class="MuiSvgIcon-root MuiSelect-icon MuiSelect-iconOutlined"
+                        focusable="false"
+                        viewBox="0 0 24 24"
+                      >
+                        <path
+                          d="M7 10l5 5 5-5z"
+                        />
+                      </svg>
+                      <fieldset
+                        aria-hidden="true"
+                        class="PrivateNotchedOutline-root-5 MuiOutlinedInput-notchedOutline"
+                      >
+                        <legend
+                          class="PrivateNotchedOutline-legendLabelled-7 PrivateNotchedOutline-legendNotched-8"
+                        >
+                          <span>
+                            Permit Type
+                          </span>
+                        </legend>
+                      </fieldset>
+                    </div>
+                    <p
+                      class="MuiFormHelperText-root MuiFormHelperText-contained MuiFormHelperText-filled Mui-required"
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </span>
         </div>
       </div>
-    </div>
-    <div
-      class="MuiBox-root MuiBox-root-16"
+      <div
+        class="MuiListItemSecondaryAction-root"
+      >
+        <button
+          aria-label="remove permit"
+          class="MuiButtonBase-root MuiIconButton-root"
+          data-testid="delete-icon"
+          tabindex="0"
+          type="button"
+        >
+          <span
+            class="MuiIconButton-label"
+          >
+            <svg
+              role="presentation"
+              style="width: 1.5rem; height: 1.5rem;"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M9,3V4H4V6H5V19A2,2 0 0,0 7,21H17A2,2 0 0,0 19,19V6H20V4H15V3H9M7,6H17V19H7V6M9,8V17H11V8H9M13,8V17H15V8H13Z"
+                style="fill: currentColor;"
+              />
+            </svg>
+          </span>
+          <span
+            class="MuiTouchRipple-root"
+          />
+        </button>
+      </div>
+    </li>
+  </ul>
+  <div
+    class="MuiBox-root MuiBox-root-10"
+  >
+    <button
+      aria-label="add permit"
+      class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
+      tabindex="0"
+      type="button"
     >
-      <button
-        aria-label="add permit"
-        class="MuiButtonBase-root MuiButton-root MuiButton-outlined MuiButton-outlinedPrimary"
-        tabindex="0"
-        type="button"
+      <span
+        class="MuiButton-label"
       >
         <span
-          class="MuiButton-label"
+          class="MuiButton-startIcon MuiButton-iconSizeMedium"
         >
-          Add New Permit
+          <svg
+            role="presentation"
+            style="width: 1.5rem; height: 1.5rem;"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M19,13H13V19H11V13H5V11H11V5H13V11H19V13Z"
+              style="fill: currentColor;"
+            />
+          </svg>
         </span>
-        <span
-          class="MuiTouchRipple-root"
-        />
-      </button>
-    </div>
+        Add New Permit
+      </span>
+      <span
+        class="MuiTouchRipple-root"
+      />
+    </button>
   </div>
 </DocumentFragment>
 `;
