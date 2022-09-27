@@ -6,7 +6,7 @@ import sinonChai from 'sinon-chai';
 import { ApiGeneralError } from '../errors/custom-error';
 import { GetReportAttachmentsData } from '../models/project-view';
 import { PostProprietorData, PostSurveyObject } from '../models/survey-create';
-import { PutSurveyObject } from '../models/survey-update';
+import { PutSurveyObject, PutSurveyPermitData } from '../models/survey-update';
 import {
   GetAncillarySpeciesData,
   GetAttachmentsData,
@@ -902,36 +902,89 @@ describe('SurveyService', () => {
     afterEach(() => {
       sinon.restore();
     });
-    it('returns undefined if not permit number is given', async () => {
-      sinon.stub(SurveyService.prototype, 'unassociatePermitFromSurvey').resolves();
-      sinon.stub(SurveyService.prototype, 'insertOrAssociatePermitToSurvey').resolves(undefined);
 
-      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+    describe('with no existing permits', () => {
+      it('handles permit deletes/updates/creates', async () => {
+        const mockDBConnection = getMockDBConnection();
 
-      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
-      const surveyService = new SurveyService(mockDBConnection);
+        const getPermitBySurveyIdStub = sinon.stub(PermitService.prototype, 'getPermitBySurveyId').resolves([]);
+        const deleteSurveyPermitStub = sinon.stub(PermitService.prototype, 'deleteSurveyPermit').resolves();
+        const updateSurveyPermitStub = sinon.stub(PermitService.prototype, 'updateSurveyPermit').resolves();
+        const createSurveyPermitStub = sinon.stub(PermitService.prototype, 'createSurveyPermit').resolves();
 
-      const response = await surveyService.updateSurveyPermitData(1, ({
-        permit: { permits: [] }
-      } as unknown) as PutSurveyObject);
+        const mockPutSurveyObject = {
+          permit: {
+            permits: [
+              {
+                permit_id: 2,
+                permit_number: '1111',
+                permit_type: 'type1'
+              },
+              {
+                permit_number: '2222',
+                permit_type: 'type2'
+              }
+            ]
+          } as PutSurveyPermitData
+        } as PutSurveyObject;
 
-      expect(response).to.eql(undefined);
+        const surveyService = new SurveyService(mockDBConnection);
+
+        await surveyService.updateSurveyPermitData(1, mockPutSurveyObject);
+
+        expect(getPermitBySurveyIdStub).to.have.been.calledOnceWith(1);
+
+        expect(deleteSurveyPermitStub).not.to.have.been.called;
+
+        expect(updateSurveyPermitStub).to.have.been.calledOnceWith(1, 2, '1111', 'type1');
+
+        expect(createSurveyPermitStub).to.have.been.calledOnceWith(1, '2222', 'type2');
+      });
     });
 
-    it('returns data if response is not null', async () => {
-      sinon.stub(SurveyService.prototype, 'unassociatePermitFromSurvey').resolves();
-      sinon.stub(SurveyService.prototype, 'insertOrAssociatePermitToSurvey').resolves(undefined);
+    describe('with existing permits', () => {
+      it('handles permit deletes/updates/creates', async () => {
+        const mockDBConnection = getMockDBConnection();
 
-      const mockQueryResponse = (undefined as unknown) as QueryResult<any>;
+        const mockExistingPermits = [{ permit_id: 3 }, { permit_id: 4 }] as IPermitModel[];
 
-      const mockDBConnection = getMockDBConnection({ sql: async () => mockQueryResponse });
-      const surveyService = new SurveyService(mockDBConnection);
+        const getPermitBySurveyIdStub = sinon
+          .stub(PermitService.prototype, 'getPermitBySurveyId')
+          .resolves(mockExistingPermits);
+        const deleteSurveyPermitStub = sinon.stub(PermitService.prototype, 'deleteSurveyPermit').resolves();
+        const updateSurveyPermitStub = sinon.stub(PermitService.prototype, 'updateSurveyPermit').resolves();
+        const createSurveyPermitStub = sinon.stub(PermitService.prototype, 'createSurveyPermit').resolves();
 
-      const response = await surveyService.updateSurveyPermitData(1, ({
-        permit: { permits: [{ permit_number: '1', permit_type: 'type' }] }
-      } as unknown) as PutSurveyObject);
+        const mockPutSurveyObject = {
+          permit: {
+            permits: [
+              {
+                permit_id: 2,
+                permit_number: '1111',
+                permit_type: 'type1'
+              },
+              {
+                permit_number: '2222',
+                permit_type: 'type2'
+              }
+            ]
+          } as PutSurveyPermitData
+        } as PutSurveyObject;
 
-      expect(response).to.eql(undefined);
+        const surveyService = new SurveyService(mockDBConnection);
+
+        await surveyService.updateSurveyPermitData(1, mockPutSurveyObject);
+
+        expect(getPermitBySurveyIdStub).to.have.been.calledOnceWith(1);
+
+        expect(deleteSurveyPermitStub).to.have.callCount(2);
+        expect(deleteSurveyPermitStub).to.have.been.calledWith(1, 3);
+        expect(deleteSurveyPermitStub).to.have.been.calledWith(1, 4);
+
+        expect(updateSurveyPermitStub).to.have.been.calledOnceWith(1, 2, '1111', 'type1');
+
+        expect(createSurveyPermitStub).to.have.been.calledOnceWith(1, '2222', 'type2');
+      });
     });
   });
 
