@@ -1,7 +1,9 @@
+import { SYSTEM_ROLE } from '../constants/roles';
 import { IDBConnection } from '../database/db';
+import { ApiGeneralError } from '../errors/custom-error';
 import { IPermitModel, PermitRepository } from '../repositories/permit-repository';
 import { DBService } from './service';
-
+import { UserService } from './user-service';
 export class PermitService extends DBService {
   permitRepository: PermitRepository;
 
@@ -29,8 +31,22 @@ export class PermitService extends DBService {
    * @return {*}  {IPermitModel[]}
    * @memberof PermitService
    */
-  async getPermitByUser(): Promise<IPermitModel[]> {
-    return this.permitRepository.getPermitByUser();
+  async getPermitByUser(systemUserId: number): Promise<IPermitModel[]> {
+    const userService = new UserService(this.connection);
+    const user = await userService.getUserById(systemUserId);
+
+    if (!user) {
+      throw new ApiGeneralError('Failed to acquire user');
+    }
+
+    if (
+      user.role_names.includes(SYSTEM_ROLE.SYSTEM_ADMIN) ||
+      user.role_names.includes(SYSTEM_ROLE.DATA_ADMINISTRATOR)
+    ) {
+      return this.permitRepository.getAllPermits();
+    }
+
+    return this.permitRepository.getPermitByUser(systemUserId);
   }
 
   /**

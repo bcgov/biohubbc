@@ -1,6 +1,7 @@
 import { RequestHandler } from 'express';
 import { Operation } from 'express-openapi';
 import { getDBConnection } from '../../database/db';
+import { HTTP400 } from '../../errors/custom-error';
 import { IPermitModel } from '../../repositories/permit-repository';
 import { authorizeRequestHandler } from '../../request-handlers/security/authorization';
 import { PermitService } from '../../services/permit-service';
@@ -123,9 +124,15 @@ export function listUserPermits(): RequestHandler {
     try {
       await connection.open();
 
+      const systemUserId = connection.systemUserId();
+
+      if (!systemUserId) {
+        throw new HTTP400('Failed to identify system user ID');
+      }
+
       const userPermitService = new PermitService(connection);
 
-      const permits: IPermitModel[] = await userPermitService.getPermitByUser();
+      const permits: IPermitModel[] = await userPermitService.getPermitByUser(systemUserId);
 
       await connection.commit();
 

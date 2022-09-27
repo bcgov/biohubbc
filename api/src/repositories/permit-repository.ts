@@ -1,6 +1,5 @@
 import SQL from 'sql-template-strings';
-import { SCHEMAS } from '../constants/database';
-import { SYSTEM_ROLE } from '../constants/roles';
+import { PROJECT_ROLE } from '../constants/roles';
 import { BaseRepository } from './base-repository';
 
 export interface IPermitModel {
@@ -32,8 +31,12 @@ export class PermitRepository extends BaseRepository {
    */
   async getPermitBySurveyId(surveyId: number): Promise<IPermitModel[]> {
     const sqlStatement = SQL`
-      select p.* from permit p
-      where p.survey_id = ${surveyId}
+      SELECT 
+        p.* 
+      FROM 
+        permit p
+      WHERE 
+        p.survey_id = ${surveyId}
       ;
       `;
 
@@ -49,30 +52,49 @@ export class PermitRepository extends BaseRepository {
    * @return {*}  {Promise<IPermitModel>}
    * @memberof PermitRepository
    */
-  async getPermitByUser(): Promise<IPermitModel[]> {
+  async getPermitByUser(systemUserId: number): Promise<IPermitModel[]> {
     const sqlStatement = SQL`
-      with user_roles as (select true from system_user su, system_role sr, system_user_role sur
-        where sur.system_user_id = su.system_user_id
-        and sur.system_role_id = sr.system_role_id
-        and su.system_user_id = `;
-    sqlStatement
-      .append(SCHEMAS.DATA)
-      .append(
-        `.api_get_context_user_id()
-        and sr.name in ('${SYSTEM_ROLE.SYSTEM_ADMIN}','${SYSTEM_ROLE.DATA_ADMINISTRATOR}')
-        group by su.user_identifier)
-      , user_permits as (select p.* from permit p, survey s, project_participation pp
-        where pp.system_user_id = `
-      )
-      .append(SCHEMAS.DATA).append(`.api_get_context_user_id()
-        and s.project_id = pp.project_id
-        and p.survey_id = s.survey_id
-        )
-      select p.* from permit p
-      where exists (select from user_roles)
-      or p.permit_id in (select p.permit_id from user_permits)
-      ;
-      `);
+    SELECT 
+      p.* 
+    FROM 
+      permit p
+      , survey s
+      , project p2
+      , project_participation pp
+      , project_role pr  
+    WHERE 
+      p.survey_id = s.survey_id
+    AND 
+      s.project_id = p2.project_id 
+    AND 
+      p2.project_id = pp.project_id 
+    AND 
+      pr."name" in ('${PROJECT_ROLE.PROJECT_LEAD}', '${PROJECT_ROLE.PROJECT_EDITOR}')
+    AND 
+      pp.project_role_id = pr.project_role_id 
+    AND 
+      pp.system_user_id = ${systemUserId};
+      `;
+
+    const response = await this.connection.sql<IPermitModel>(sqlStatement);
+
+    return response.rows;
+  }
+
+  /**
+   * Fetch all permit records.
+   *
+   * @param
+   * @return {*}  {Promise<IPermitModel>}
+   * @memberof PermitRepository
+   */
+  async getAllPermits(): Promise<IPermitModel[]> {
+    const sqlStatement = SQL`
+      SELECT 
+        p.* 
+      FROM 
+        permit p;
+    `;
 
     const response = await this.connection.sql<IPermitModel>(sqlStatement);
 
@@ -96,12 +118,15 @@ export class PermitRepository extends BaseRepository {
     permitType: string
   ): Promise<number> {
     const sqlStatement = SQL`
-      update permit
-        set "number" = ${permitNumber}
+      UPDATE permit
+      SET 
+        "number" = ${permitNumber}
         , type = ${permitType}
-      where permit_id = ${permitId}
-        and survey_id = ${surveyId}
-      returning permit_id
+      WHERE 
+        permit_id = ${permitId}
+      AND 
+        survey_id = ${surveyId}
+      RETURNING permit_id
       ;
       `;
 
@@ -123,8 +148,11 @@ export class PermitRepository extends BaseRepository {
    */
   async createSurveyPermit(surveyId: number, permitNumber: string, permitType: string): Promise<number> {
     const sqlStatement = SQL`
-      insert into permit (survey_id, "number", type) values (${surveyId}, ${permitNumber}, ${permitType})
-      returning permit_id
+      INSERT INTO 
+        permit (survey_id, "number", type) 
+      VALUES 
+        (${surveyId}, ${permitNumber}, ${permitType})
+      RETURNING permit_id
       ;
       `;
 
@@ -145,10 +173,13 @@ export class PermitRepository extends BaseRepository {
    */
   async deleteSurveyPermit(surveyId: number, permitId: number): Promise<number> {
     const sqlStatement = SQL`
-      delete from permit
-      where permit_id = ${permitId}
-      and survey_id =  ${surveyId}
-      returning permit_id
+      DELETE FROM 
+        permit
+      WHERE 
+        permit_id = ${permitId}
+      AND 
+        survey_id =  ${surveyId}
+      RETURNING permit_id
       ;
       `;
 
