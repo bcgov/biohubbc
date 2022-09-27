@@ -4,7 +4,6 @@ import {
   UnAuthenticatedRouteGuard
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
-import { AuthStateContext } from 'contexts/authStateContext';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
 import PermitsRouter from 'features/permits/PermitsRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
@@ -15,25 +14,11 @@ import RequestSubmitted from 'pages/200/RequestSubmitted';
 import AccessDenied from 'pages/403/AccessDenied';
 import NotFoundPage from 'pages/404/NotFoundPage';
 import AccessRequestPage from 'pages/access/AccessRequestPage';
+import { LandingPage } from 'pages/landing/LandingPage';
 import LogOutPage from 'pages/logout/LogOutPage';
-import React, {useContext, useEffect} from 'react';
+import React from 'react';
 import { Redirect, Switch, useLocation } from 'react-router-dom';
 import AppRoute from 'utils/AppRoute';
-interface ILandingPageProps {
-  originalPath: string
-}
-
-const LandingPage: React.FC<ILandingPageProps> = ({originalPath}) => {
-  console.log(`Landing Page Path: ${originalPath}`)
-  const { keycloakWrapper } = useContext(AuthStateContext);
-
-  useEffect(() => {
-    console.log(`Use EFFECT`)
-    keycloakWrapper?.keycloak?.login();
-  }, [originalPath])
-
-  return null;
-}
 
 const AppRouter: React.FC = () => {
   const location = useLocation();
@@ -41,7 +26,7 @@ const AppRouter: React.FC = () => {
   const getTitle = (page: string) => {
     return `SIMS - ${page}`;
   };
-  console.log(`Router Path: ${location.pathname}`);
+
   return (
     <Switch>
       <Redirect from="/:url*(/+)" to={{ ...location, pathname: location.pathname.slice(0, -1) }} />
@@ -106,7 +91,7 @@ const AppRouter: React.FC = () => {
 
       <AppRoute title="*" path="*">
         <UnAuthenticatedRouteGuard>
-          <LandingPage originalPath={location.pathname} />
+          <LandingPage originalPath={""} />
         </UnAuthenticatedRouteGuard>
       </AppRoute>
 
