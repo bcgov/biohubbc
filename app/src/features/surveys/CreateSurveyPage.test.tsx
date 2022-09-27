@@ -195,8 +195,8 @@ describe('CreateSurveyPage', () => {
       });
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
-        expect(getByText('Cancel Create Survey')).toBeInTheDocument();
-        expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
+        expect(getByText('Cancel Survey Creation')).toBeInTheDocument();
+        expect(getByText('Are you sure you want to cancel?', { exact: false })).toBeInTheDocument();
       });
       fireEvent.click(getByTestId('yes-button'));
       await waitFor(() => {
@@ -245,8 +245,8 @@ describe('CreateSurveyPage', () => {
       });
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
-        expect(getByText('Cancel Create Survey')).toBeInTheDocument();
-        expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
+        expect(getByText('Cancel Survey Creation')).toBeInTheDocument();
+        expect(getByText('Are you sure you want to cancel?', { exact: false })).toBeInTheDocument();
       });
       fireEvent.click(getByTestId('no-button'));
       await waitFor(() => {
@@ -254,8 +254,8 @@ describe('CreateSurveyPage', () => {
       });
       fireEvent.click(getByText('Cancel'));
       await waitFor(() => {
-        expect(getByText('Cancel Create Survey')).toBeInTheDocument();
-        expect(getByText('Are you sure you want to cancel?')).toBeInTheDocument();
+        expect(getByText('Cancel Survey Creation')).toBeInTheDocument();
+        expect(getByText('Are you sure you want to cancel?', { exact: false })).toBeInTheDocument();
       });
       // Get the backdrop, then get the firstChild because this is where the event listener is attached
       //@ts-ignore

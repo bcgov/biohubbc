@@ -95,6 +95,30 @@ const ResourcesPage: React.FC = () => {
       type: mdiFileExcelOutline,
       lastModified: 'Today',
       fileSize: '24 KB'
+    },
+    {
+      id: '10',
+      name: 'Elk Aerial Stratified Random Block Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Aerial_StratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '122 KB'
+    },
+    {
+      id: '11',
+      name: 'Elk Aerial Non Stratified Random Block Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Aerial_NonStratifiedRandomBlock_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '120 KB'
+    },
+    {
+      id: '12',
+      name: 'Elk Aerial Transect Distance Sampling Recruit Composition Survey 1.0',
+      url: `${s3PublicHostURL}/templates/Elk_Aerial_Transect_DistanceSampling_Recruit_Comp_Survey_1.0.xlsx`,
+      type: mdiFileExcelOutline,
+      lastModified: 'Today',
+      fileSize: '114 KB'
     }
   ];
 

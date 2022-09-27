@@ -68,15 +68,15 @@ export const GeneralInformationInitialValues: IGeneralInformationForm = {
 export const GeneralInformationYupSchema = (customYupRules?: any) => {
   return yup.object().shape({
     survey_details: yup.object().shape({
-      survey_name: yup.string().required('Required'),
-      biologist_first_name: yup.string().required('Required'),
-      biologist_last_name: yup.string().required('Required'),
-      start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Required'),
+      survey_name: yup.string().required('Survey Name is Required'),
+      biologist_first_name: yup.string().required('First Name is Required'),
+      biologist_last_name: yup.string().required('Last Name is Required'),
+      start_date: customYupRules?.start_date || yup.string().isValidDateString().required('Start Date is Required'),
       end_date: customYupRules?.end_date || yup.string().isValidDateString().isEndDateSameOrAfterStartDate('start_date')
     }),
     species: yup.object().shape({
-      focal_species: yup.array().min(1, 'You must specify a focal species').required('Required'),
-      ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary species must be unique')
+      focal_species: yup.array().min(1, 'One or more Focal Species are Required').required('Required'),
+      ancillary_species: yup.array().isUniqueFocalAncillarySpecies('Focal and Ancillary Species Must be Unique')
     }),
     permit: yup.object().shape({
       permit_number: yup.string().max(100, 'Cannot exceed 100 characters')
@@ -142,7 +142,7 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
           formikProps.setFieldValue('permit.permit_type', '');
           setShowAddPermitRow(true);
         }}>
-        <strong>Add Permit</strong>
+        Add Permit
       </Button>
     );
   };
@@ -159,50 +159,60 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
             }}
           />
         </Grid>
-        <StartEndDateFields
-          formikProps={formikProps}
-          startName="survey_details.start_date"
-          endName="survey_details.end_date"
-          startRequired={true}
-          endRequired={false}
-          startDateHelperText={`Start date must be on or after project start date ${getFormattedDate(
-            DATE_FORMAT.ShortMediumDateFormat,
-            props.projectStartDate
-          )}`}
-          endDateHelperText={
-            props.projectEndDate &&
-            `End date must be on or before project end date ${getFormattedDate(
+        <Grid item xs={12}>
+          <StartEndDateFields
+            formikProps={formikProps}
+            startName="survey_details.start_date"
+            endName="survey_details.end_date"
+            startRequired={true}
+            endRequired={false}
+            startDateHelperText={`Start Date cannot precede ${getFormattedDate(
               DATE_FORMAT.ShortMediumDateFormat,
-              props.projectEndDate
-            )}`
-          }
-        />
-
-        <Grid item xs={12}>
-          <Typography component="legend">Species</Typography>
-          <MultiAutocompleteFieldVariableSize
-            id="species.focal_species"
-            label="Focal Species"
-            required={true}
-            type="api-search"
-            getInitList={handleGetInitList}
-            search={handleSearch}
-          />
-        </Grid>
-        <Grid item xs={12}>
-          <MultiAutocompleteFieldVariableSize
-            id="species.ancillary_species"
-            label="Ancillary Species"
-            required={false}
-            type="api-search"
-            getInitList={handleGetInitList}
-            search={handleSearch}
+              props.projectStartDate
+            )}`}
+            endDateHelperText={
+              props.projectEndDate &&
+              `End Date cannot come after the Project End Date ${getFormattedDate(
+                DATE_FORMAT.ShortMediumDateFormat,
+                props.projectEndDate
+              )}`
+            }
           />
         </Grid>
       </Grid>
 
-      <Box component="fieldset" mt={4}>
-        <Typography component="legend">Lead Biologist</Typography>
+      <Box component="fieldset" mt={5}>
+        <Typography component="legend" variant="h5">
+          Species
+        </Typography>
+        <Grid container spacing={3}>
+          <Grid item xs={12}>
+            <MultiAutocompleteFieldVariableSize
+              id="species.focal_species"
+              label="Focal Species"
+              required={true}
+              type="api-search"
+              getInitList={handleGetInitList}
+              search={handleSearch}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <MultiAutocompleteFieldVariableSize
+              id="species.ancillary_species"
+              label="Ancillary Species"
+              required={false}
+              type="api-search"
+              getInitList={handleGetInitList}
+              search={handleSearch}
+            />
+          </Grid>
+        </Grid>
+      </Box>
+
+      <Box component="fieldset" mt={5}>
+        <Typography component="legend" variant="h5">
+          Lead Biologist
+        </Typography>
         <Grid container spacing={2}>
           <Grid item xs={12} md={6}>
             <CustomTextField
@@ -225,8 +235,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         </Grid>
       </Box>
 
-      <Box component="fieldset" mt={4}>
-        <Typography component="legend">Permits</Typography>
+      <Box component="fieldset" mt={5}>
+        <Typography component="legend" variant="h5">
+          Permits
+        </Typography>
 
         {props.permit_numbers.length > 0 && !showAddPermitRow && (
           <>
@@ -259,8 +271,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
 
         {props.permit_numbers.length === 0 && !showAddPermitRow && (
           <>
-            <Typography variant="body1">Add a permit if one is required for this survey.</Typography>
-            <Box mt={2}>{addNewPermitButton()}</Box>
+            <Typography variant="body1" color="textSecondary">
+              Add a permit if one is required for this survey.
+            </Typography>
+            <Box mt={3}>{addNewPermitButton()}</Box>
           </>
         )}
 
@@ -319,8 +333,10 @@ const GeneralInformationForm: React.FC<IGeneralInformationFormProps> = (props) =
         )}
       </Box>
 
-      <Box component="fieldset" mt={4}>
-        <Typography component="legend">Funding Sources</Typography>
+      <Box component="fieldset" mt={5}>
+        <Typography component="legend" variant="h5">
+          Funding Sources
+        </Typography>
         <MultiAutocompleteFieldVariableSize
           id="funding.funding_sources"
           label="Select Funding Sources"

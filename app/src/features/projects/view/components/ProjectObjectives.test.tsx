@@ -64,7 +64,7 @@ describe('ProjectObjectives', () => {
       <ProjectObjectives
         projectForViewData={{
           ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: '' }
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -79,7 +79,7 @@ describe('ProjectObjectives', () => {
       <ProjectObjectives
         projectForViewData={{
           ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -91,7 +91,6 @@ describe('ProjectObjectives', () => {
 
   it('renders correctly when objectives and caveats are < 850 characters and in multiple paragraphs', () => {
     const multilineObjectives = 'Paragraph1\nParagraph2\n\nParagraph3';
-    const multilineCaveats = 'Paragraph1\nParagraph2\n\nParagraph3';
 
     const { asFragment } = render(
       <ProjectObjectives
@@ -99,8 +98,7 @@ describe('ProjectObjectives', () => {
           ...getProjectForViewResponse,
           objectives: {
             ...getProjectForViewResponse.objectives,
-            objectives: multilineObjectives,
-            caveats: multilineCaveats
+            objectives: multilineObjectives
           }
         }}
         codes={codes}
@@ -116,7 +114,7 @@ describe('ProjectObjectives', () => {
       <ProjectObjectives
         projectForViewData={{
           ...getProjectForViewResponse,
-          objectives: { ...getProjectForViewResponse.objectives, objectives: longData, caveats: longData }
+          objectives: { ...getProjectForViewResponse.objectives, objectives: longData }
         }}
         codes={codes}
         refresh={mockRefresh}
@@ -138,29 +136,12 @@ describe('ProjectObjectives', () => {
 
     //@ts-ignore
     expect(getAllByText(container, 'Read More')[0]).toBeInTheDocument();
-
-    // for finding 'project caveats'
-    //@ts-ignore
-    expect(getAllByText(container, 'Read More')[1]).toBeInTheDocument();
-
-    //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read More')[1]);
-
-    //@ts-ignore
-    expect(getAllByText(container, 'Read Less')[0]).toBeInTheDocument();
-
-    //@ts-ignore
-    fireEvent.click(getAllByText(container, 'Read Less')[0]);
-
-    //@ts-ignore
-    expect(getAllByText(container, 'Read More')[1]).toBeInTheDocument();
   });
 
   it('editing the project objectives works in the dialog', async () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       objectives: {
         objectives: 'initial objectives',
-        caveats: 'initial caveats',
         revision_count: 0
       }
     });
@@ -202,7 +183,6 @@ describe('ProjectObjectives', () => {
       expect(mockBiohubApi().project.updateProject).toBeCalledWith(getProjectForViewResponse.id, {
         objectives: {
           objectives: 'initial objectives',
-          caveats: 'initial caveats',
           revision_count: 0
         }
       });
@@ -260,7 +240,6 @@ describe('ProjectObjectives', () => {
     mockBiohubApi().project.getProjectForUpdate.mockResolvedValue({
       objectives: {
         objectives: 'initial objectives',
-        caveats: 'initial caveats',
         revision_count: 0
       }
     });

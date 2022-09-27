@@ -10,7 +10,7 @@ exports[`ProjectDetails renders correctly with activity data 1`] = `
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         General Information
       </h3>
@@ -132,7 +132,7 @@ exports[`ProjectDetails renders correctly with no activity data 1`] = `
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         General Information
       </h3>
@@ -254,7 +254,7 @@ exports[`ProjectDetails renders correctly with no end date (only start date) 1`]
       style="justify-content: space-between;"
     >
       <h3
-        class="MuiTypography-root MuiTypography-h3 MuiTypography-colorInherit"
+        class="MuiTypography-root MuiTypography-h5 MuiTypography-colorInherit"
       >
         General Information
       </h3>

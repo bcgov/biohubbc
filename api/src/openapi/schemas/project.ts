@@ -4,7 +4,7 @@
 export const projectCreatePostRequestObject = {
   title: 'Project post request object',
   type: 'object',
-  required: ['coordinator', 'permit', 'project', 'location', 'iucn', 'funding'],
+  required: ['coordinator', 'project', 'location', 'iucn', 'funding'],
   properties: {
     coordinator: {
       title: 'Project coordinator',
@@ -26,24 +26,6 @@ export const projectCreatePostRequestObject = {
         share_contact_details: {
           type: 'string',
           enum: ['true', 'false']
-        }
-      }
-    },
-    permit: {
-      title: 'Project permits',
-      type: 'object',
-      properties: {
-        permits: {
-          type: 'array',
-          items: {
-            title: 'Project permit',
-            type: 'object',
-            properties: {
-              permit_number: {
-                type: 'string'
-              }
-            }
-          }
         }
       }
     },
