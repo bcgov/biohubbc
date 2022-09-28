@@ -72,14 +72,11 @@ export const getPublicProjectListSQL = (): SQLStatement | null => {
       p.start_date,
       p.end_date,
       p.coordinator_agency_name as coordinator_agency,
-      pt.name as project_type,
-      string_agg(DISTINCT pp.number, ', ') as permits_list
+      pt.name as project_type
     from
       project as p
     left outer join project_type as pt
       on p.project_type_id = pt.project_type_id
-    left outer join permit as pp
-      on p.project_id = pp.project_id
     group by
       p.project_id,
       p.name,

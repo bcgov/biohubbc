@@ -40,10 +40,6 @@ GET.apiDoc = {
               type: 'string',
               nullable: true
             },
-            permit_number: {
-              type: 'string',
-              nullable: true
-            },
             project_type: {
               type: 'string',
               nullable: true

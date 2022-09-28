@@ -290,7 +290,6 @@ const ProjectsListPage: React.FC = () => {
                     </Link>
                   </TableCell>
                   <TableCell>{row.project_type}</TableCell>
-                  <TableCell>{row.permits_list}</TableCell>
                   <TableCell>{row.coordinator_agency}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.start_date)}</TableCell>
                   <TableCell>{getFormattedDate(DATE_FORMAT.ShortMediumDateFormat, row.end_date)}</TableCell>

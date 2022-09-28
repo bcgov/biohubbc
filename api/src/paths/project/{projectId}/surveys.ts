@@ -139,17 +139,27 @@ GET.apiDoc = {
                   }
                 },
                 permit: {
-                  description: 'Survey Permit',
                   type: 'object',
-                  required: ['permit_number', 'permit_type'],
+                  description: 'Survey Permit Information',
                   properties: {
-                    permit_number: {
-                      type: 'string',
-                      nullable: true
-                    },
-                    permit_type: {
-                      type: 'string',
-                      nullable: true
+                    permits: {
+                      description: 'Survey Permits',
+                      type: 'array',
+                      items: {
+                        required: ['permit_id', 'permit_number', 'permit_type'],
+                        properties: {
+                          permit_id: {
+                            type: 'number',
+                            minimum: 1
+                          },
+                          permit_number: {
+                            type: 'string'
+                          },
+                          permit_type: {
+                            type: 'string'
+                          }
+                        }
+                      }
                     }
                   }
                 },

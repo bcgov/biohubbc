@@ -22,7 +22,6 @@ export interface IGetProjectAttachment {
  */
 export interface IProjectAdvancedFilterRequest {
   coordinator_agency: string;
-  permit_number: string;
   project_type: string;
   start_date: string;
   end_date: string;
@@ -70,7 +69,6 @@ export interface IGetProjectsListResponse {
   end_date: string;
   coordinator_agency: string;
   project_type: string;
-  permits_list: string;
   completion_status: string;
 }
 
@@ -101,7 +99,6 @@ export interface ICreateProjectResponse {
 
 export enum UPDATE_GET_ENTITIES {
   coordinator = 'coordinator',
-  permit = 'permit',
   project = 'project',
   objectives = 'objectives',
   location = 'location',
@@ -118,7 +115,6 @@ export enum UPDATE_GET_ENTITIES {
  */
 export interface IGetProjectForUpdateResponse {
   project?: IGetProjectForUpdateResponseDetails;
-  permit?: IGetProjectForUpdateResponsePermit;
   objectives?: IGetProjectForUpdateResponseObjectives;
   location?: IGetProjectForUpdateResponseLocation;
   coordinator?: IGetProjectForUpdateResponseCoordinator;
@@ -135,16 +131,6 @@ export interface IGetProjectForUpdateResponseDetails {
   end_date: string;
   revision_count: number;
 }
-
-interface IGetProjectForUpdateResponsePermitArrayItem {
-  permit_number: string;
-  permit_type: string;
-}
-
-export interface IGetProjectForUpdateResponsePermit {
-  permits: IGetProjectForUpdateResponsePermitArrayItem[];
-}
-
 export interface IGetProjectForUpdateResponseObjectives {
   objectives: string;
   revision_count: number;
@@ -214,7 +200,6 @@ export type IUpdateProjectRequest = IGetProjectForUpdateResponse;
 export interface IGetProjectForViewResponse {
   id: number;
   project: IGetProjectForViewResponseDetails;
-  permit: IGetProjectForViewResponsePermit;
   objectives: IGetProjectForViewResponseObjectives;
   location: IGetProjectForViewResponseLocation;
   coordinator: IGetProjectForViewResponseCoordinator;
@@ -231,16 +216,6 @@ export interface IGetProjectForViewResponseDetails {
   end_date: string;
   completion_status: string;
 }
-
-interface IGetProjectForViewResponsePermitArrayItem {
-  permit_number: string;
-  permit_type: string;
-}
-
-export interface IGetProjectForViewResponsePermit {
-  permits: IGetProjectForViewResponsePermitArrayItem[];
-}
-
 export interface IGetProjectForViewResponseObjectives {
   objectives: string;
 }

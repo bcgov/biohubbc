@@ -63,8 +63,13 @@ export const surveyObject: SurveyViewObject = {
     ]
   },
   permit: {
-    permit_number: '123',
-    permit_type: 'Scientific'
+    permits: [
+      {
+        id: 1,
+        permit_number: '123',
+        permit_type: 'Scientific'
+      }
+    ]
   },
   species: {
     focal_species: [1],

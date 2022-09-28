@@ -157,7 +157,6 @@ const projectUpdateProperties = {
       revision_count: { type: 'number' }
     }
   },
-  permit: { type: 'object', properties: {} },
   project: { type: 'object', properties: {} },
   objectives: { type: 'object', properties: {} },
   location: { type: 'object', properties: {} },

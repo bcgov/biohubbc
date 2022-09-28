@@ -50,17 +50,7 @@ GET.apiDoc = {
           schema: {
             title: 'Project get response object, for view purposes',
             type: 'object',
-            required: [
-              'id',
-              'project',
-              'permit',
-              'coordinator',
-              'objectives',
-              'location',
-              'iucn',
-              'funding',
-              'partnerships'
-            ],
+            required: ['id', 'project', 'coordinator', 'objectives', 'location', 'iucn', 'funding', 'partnerships'],
             properties: {
               id: {
                 description: 'Project id',
@@ -108,27 +98,6 @@ GET.apiDoc = {
                   completion_status: {
                     description: 'Status of the project being active/completed',
                     type: 'string'
-                  }
-                }
-              },
-              permit: {
-                type: 'object',
-                required: ['permits'],
-                properties: {
-                  permits: {
-                    type: 'array',
-                    items: {
-                      title: 'Project permit',
-                      type: 'object',
-                      properties: {
-                        permit_number: {
-                          type: 'string'
-                        },
-                        permit_type: {
-                          type: 'string'
-                        }
-                      }
-                    }
                   }
                 }
               },

@@ -21,11 +21,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  ICreateSurveyRequest,
-  ISurveyAvailableFundingSources,
-  ISurveyPermits
-} from 'interfaces/useSurveyApi.interface';
+import { ICreateSurveyRequest, ISurveyAvailableFundingSources } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useCallback, useContext, useEffect, useRef, useState } from 'react';
 import { Prompt, useHistory, useParams } from 'react-router';
@@ -83,7 +79,6 @@ const CreateSurveyPage = () => {
   const [projectWithDetails, setProjectWithDetails] = useState<IGetProjectForViewResponse | null>(null);
   const [isLoadingCodes, setIsLoadingCodes] = useState(false);
   const [codes, setCodes] = useState<IGetAllCodeSetsResponse>();
-  const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
   const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
   const [formikRef] = useState(useRef<FormikProps<any>>(null));
 
@@ -177,18 +172,16 @@ const CreateSurveyPage = () => {
   }, [urlParams, biohubApi.codes, isLoadingCodes, codes]);
 
   const getProject = useCallback(async () => {
-    const [projectWithDetailsResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
+    const [projectWithDetailsResponse, surveyFundingSourcesResponse] = await Promise.all([
       biohubApi.project.getProjectForView(urlParams['id']),
-      biohubApi.survey.getSurveyPermits(urlParams['id']),
       biohubApi.survey.getAvailableSurveyFundingSources(urlParams['id'])
     ]);
 
-    if (!projectWithDetailsResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
+    if (!projectWithDetailsResponse || !surveyFundingSourcesResponse) {
       // TODO error handling/messaging
       return;
     }
 
-    setSurveyPermits(surveyPermitsResponse);
     setSurveyFundingSources(surveyFundingSourcesResponse);
     setProjectWithDetails(projectWithDetailsResponse);
   }, [biohubApi.project, biohubApi.survey, urlParams]);
@@ -319,11 +312,6 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={
                     <GeneralInformationForm
-                      permit_numbers={
-                        surveyPermits?.map((item) => {
-                          return { value: item.permit_number, label: `${item.permit_number} - ${item.permit_type}` };
-                        }) || []
-                      }
                       funding_sources={
                         surveyFundingSources?.map((item) => {
                           return {
@@ -342,6 +330,8 @@ const CreateSurveyPage = () => {
                       projectEndDate={projectWithDetails.project.end_date}
                     />
                   }></HorizontalSplitFormComponent>
+
+                <Divider className={classes.sectionDivider} />
 
                 <Divider className={classes.sectionDivider} />
 
@@ -407,28 +397,22 @@ const CreateSurveyPage = () => {
                   summary=""
                   component={<AgreementsForm />}></HorizontalSplitFormComponent>
                 <Divider className={classes.sectionDivider} />
+
+                <Box p={3} display="flex" justifyContent="flex-end">
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    color="primary"
+                    onClick={() => formikRef.current?.submitForm()}
+                    className={classes.actionButton}>
+                    Save and Exit
+                  </Button>
+                  <Button variant="outlined" color="primary" onClick={handleCancel} className={classes.actionButton}>
+                    Cancel
+                  </Button>
+                </Box>
               </>
             </Formik>
-
-            <Box mt={4} display="flex" justifyContent="flex-end">
-              <Button
-                type="submit"
-                size="large"
-                variant="contained"
-                color="primary"
-                onClick={() => formikRef.current?.submitForm()}
-                className={classes.actionButton}>
-                Save and Exit
-              </Button>
-              <Button
-                size="large"
-                variant="outlined"
-                color="primary"
-                onClick={handleCancel}
-                className={classes.actionButton}>
-                Cancel
-              </Button>
-            </Box>
           </Box>
         </Container>
       </Box>

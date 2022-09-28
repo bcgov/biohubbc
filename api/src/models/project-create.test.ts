@@ -8,7 +8,6 @@ import {
   PostLocationData,
   PostObjectivesData,
   PostPartnershipsData,
-  PostPermitData,
   PostProjectData,
   PostProjectObject
 } from './project-create';
@@ -23,10 +22,6 @@ describe('PostProjectObject', () => {
 
     it('sets coordinator', function () {
       expect(projectPostObject.coordinator).to.equal(null);
-    });
-
-    it('sets permit', function () {
-      expect(projectPostObject.permit).to.equal(null);
     });
 
     it('sets project', function () {
@@ -64,13 +59,6 @@ describe('PostProjectObject', () => {
         email_address: 'email@example.com',
         coordinator_agency: 'agency',
         share_contact_details: 'true'
-      },
-      permit: {
-        permits: [
-          {
-            permit_number: 1
-          }
-        ]
       },
       project: {
         project_name: 'name_test_data',
@@ -251,100 +239,6 @@ describe('PostObjectivesData', () => {
 
     it('sets caveats', function () {
       expect(projectObjectivesData.caveats).to.equal(obj.caveats);
-    });
-  });
-});
-
-describe('PostPermitData', () => {
-  describe('No values provided', () => {
-    let projectPermitData: PostPermitData;
-
-    before(() => {
-      projectPermitData = new PostPermitData(null);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided are null', () => {
-    let projectPermitData: PostPermitData;
-
-    before(() => {
-      projectPermitData = new PostPermitData({
-        permits: null
-      });
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided are empty arrays', () => {
-    let projectPermitData: PostPermitData;
-
-    before(() => {
-      projectPermitData = new PostPermitData({
-        permits: []
-      });
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as true', () => {
-    let projectPermitData: PostPermitData;
-
-    const obj = {
-      permits: [
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]
-    };
-
-    before(() => {
-      projectPermitData = new PostPermitData(obj);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]);
-    });
-  });
-
-  describe('All values provided with sampling conducted as false', () => {
-    let projectPermitData: PostPermitData;
-
-    const obj = {
-      permits: [
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]
-    };
-
-    before(() => {
-      projectPermitData = new PostPermitData(obj);
-    });
-
-    it('sets permits', function () {
-      expect(projectPermitData.permits).to.eql([
-        {
-          permit_number: '1',
-          permit_type: 'permit type'
-        }
-      ]);
     });
   });
 });

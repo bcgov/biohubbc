@@ -65,14 +65,11 @@ export const getProjectListSQL = (
       p.start_date,
       p.end_date,
       p.coordinator_agency_name as coordinator_agency,
-      pt.name as project_type,
-      string_agg(DISTINCT pp.number, ', ') as permits_list
+      pt.name as project_type
     from
       project as p
     left outer join project_type as pt
       on p.project_type_id = pt.project_type_id
-    left outer join permit as pp
-      on p.project_id = pp.project_id
     left outer join project_funding_source as pfs
       on pfs.project_id = p.project_id
     left outer join investment_action_category as iac
@@ -116,10 +113,6 @@ export const getProjectListSQL = (
       sqlStatement.append(
         SQL` AND p.start_date >= ${filterFields.start_date} AND p.end_date <= ${filterFields.end_date}`
       );
-    }
-
-    if (filterFields.permit_number) {
-      sqlStatement.append(SQL` AND pp.number = ${filterFields.permit_number}`);
     }
 
     if (filterFields.project_type) {
@@ -307,24 +300,6 @@ export const getReportAttachmentsByProjectSQL = (projectId: number): SQLStatemen
       , pra."key"
       , pra.file_size
       , pra.security_token;
-  `;
-};
-
-/**
- * SQL query to get permits associated to a project.
- *
- * @param {number} projectId
- * @returns {SQLStatement} sql query object
- */
-export const getProjectPermitsSQL = (projectId: number): SQLStatement => {
-  return SQL`
-    SELECT
-      number,
-      type
-    FROM
-      permit
-    WHERE
-      project_id = ${projectId}
   `;
 };
 
