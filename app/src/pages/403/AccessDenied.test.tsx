@@ -72,19 +72,19 @@ describe('AccessDenied', () => {
 
     history.push('/forbidden');
 
-    // const { asFragment } = render(
-    //   <AuthStateContext.Provider value={authState}>
-    //     <Router history={history}>
-    //       <AccessDenied />
-    //     </Router>
-    //   </AuthStateContext.Provider>
-    // );
+    const { asFragment } = render(
+      <AuthStateContext.Provider value={authState}>
+        <Router history={history}>
+          <AccessDenied />
+        </Router>
+      </AuthStateContext.Provider>
+    );
 
     // does not change location
     expect(history.location.pathname).toEqual('/forbidden');
 
     // renders a spinner
-    // expect(asFragment()).toMatchSnapshot();
+    expect(asFragment()).toMatchSnapshot();
   });
 
   it('redirects to `/request-submitted` when user is authenticated and has a pending access request', () => {
