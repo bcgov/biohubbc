@@ -136,63 +136,6 @@ export class ProjectService extends DBService {
     }
   }
 
-  async getPublicProjectsList(): Promise<any> {
-    const getProjectListSQLStatement = queries.public.getPublicProjectListSQL();
-
-    if (!getProjectListSQLStatement) {
-      throw new HTTP400('Failed to build SQL get statement');
-    }
-
-    const response = await this.connection.query(getProjectListSQLStatement.text, getProjectListSQLStatement.values);
-
-    if (!response || !response.rows || !response.rows.length) {
-      return [];
-    }
-
-    return response.rows.map((row) => ({
-      id: row.id,
-      name: row.name,
-      start_date: row.start_date,
-      end_date: row.end_date,
-      coordinator_agency: row.coordinator_agency,
-      completion_status:
-        (row.end_date && moment(row.end_date).endOf('day').isBefore(moment()) && COMPLETION_STATUS.COMPLETED) ||
-        COMPLETION_STATUS.ACTIVE,
-      project_type: row.project_type
-    }));
-  }
-
-  async getPublicProjectById(projectId: number): Promise<IGetProject> {
-    const [
-      projectData,
-      objectiveData,
-      coordinatorData,
-      locationData,
-      iucnData,
-      fundingData,
-      partnershipsData
-    ] = await Promise.all([
-      this.getPublicProjectData(projectId),
-      this.getObjectivesData(projectId),
-      this.getCoordinatorData(projectId),
-      this.getLocationData(projectId),
-      this.getIUCNClassificationData(projectId),
-      this.getFundingData(projectId),
-      this.getPartnershipsData(projectId)
-    ]);
-
-    return {
-      id: projectId,
-      project: projectData,
-      objectives: objectiveData,
-      coordinator: coordinatorData,
-      location: locationData,
-      iucn: iucnData,
-      funding: fundingData,
-      partnerships: partnershipsData
-    };
-  }
-
   async getProjectList(isUserAdmin: boolean, systemUserId: number | null, filterFields: any): Promise<any> {
     const sqlStatement = queries.project.getProjectListSQL(isUserAdmin, systemUserId, filterFields);
 
