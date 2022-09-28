@@ -29,7 +29,6 @@ export const GET: Operation = [
 
 export enum GET_ENTITIES {
   coordinator = 'coordinator',
-  permit = 'permit',
   project = 'project',
   objectives = 'objectives',
   location = 'location',
@@ -115,28 +114,6 @@ GET.apiDoc = {
                   },
                   revision_count: {
                     type: 'number'
-                  }
-                }
-              },
-              permit: {
-                type: 'object',
-                required: ['permits'],
-                nullable: true,
-                properties: {
-                  permits: {
-                    type: 'array',
-                    items: {
-                      title: 'Project permit',
-                      type: 'object',
-                      properties: {
-                        permit_number: {
-                          type: 'string'
-                        },
-                        permit_type: {
-                          type: 'string'
-                        }
-                      }
-                    }
                   }
                 }
               },
@@ -425,7 +402,6 @@ PUT.apiDoc = {
 
 export interface IUpdateProject {
   coordinator: object | null;
-  permit: object | null;
   project: object | null;
   objectives: object | null;
   location: object | null;

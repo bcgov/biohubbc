@@ -5,7 +5,6 @@ import {
 } from 'components/security/RouteGuards';
 import { SYSTEM_ROLE } from 'constants/roles';
 import AdminUsersRouter from 'features/admin/AdminUsersRouter';
-import PermitsRouter from 'features/permits/PermitsRouter';
 import ProjectsRouter from 'features/projects/ProjectsRouter';
 import ResourcesPage from 'features/resources/ResourcesPage';
 import SearchPage from 'features/search/SearchPage';
@@ -62,12 +61,6 @@ const AppRouter: React.FC = () => {
           <SystemRoleRouteGuard validRoles={[SYSTEM_ROLE.SYSTEM_ADMIN]}>
             <AdminUsersRouter />
           </SystemRoleRouteGuard>
-        </AuthenticatedRouteGuard>
-      </AppRoute>
-
-      <AppRoute path="/admin/permits" title={getTitle('Permits')} layout={PublicLayout}>
-        <AuthenticatedRouteGuard>
-          <PermitsRouter />
         </AuthenticatedRouteGuard>
       </AppRoute>
 

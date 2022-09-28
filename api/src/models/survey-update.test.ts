@@ -218,12 +218,8 @@ describe('PutPermitData', () => {
       data = new PutSurveyPermitData(null);
     });
 
-    it('sets permit_number', () => {
-      expect(data.permit_number).to.eql(null);
-    });
-
-    it('sets ancillary_species', () => {
-      expect(data.permit_type).to.eql(null);
+    it('sets permits', () => {
+      expect(data.permits).to.eql([]);
     });
   });
 
@@ -231,20 +227,29 @@ describe('PutPermitData', () => {
     let data: PutSurveyPermitData;
 
     const obj = {
-      permit_number: '12345',
-      permit_type: 'permit_type'
+      permits: [
+        {
+          permit_id: 1,
+          permit_number: '12345',
+          permit_type: 'permit_type'
+        }
+      ]
     };
 
     before(() => {
       data = new PutSurveyPermitData(obj);
     });
 
+    it('sets permit_id', () => {
+      expect(data.permits[0].permit_id).to.equal(obj.permits[0].permit_id);
+    });
+
     it('sets permit_number', () => {
-      expect(data.permit_number).to.equal('12345');
+      expect(data.permits[0].permit_number).to.equal(obj.permits[0].permit_number);
     });
 
     it('sets permit_type', () => {
-      expect(data.permit_type).to.equal('permit_type');
+      expect(data.permits[0].permit_type).to.equal(obj.permits[0].permit_type);
     });
   });
 });

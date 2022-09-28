@@ -24,12 +24,7 @@ import { APIError } from 'hooks/api/useAxios';
 import { useBiohubApi } from 'hooks/useBioHubApi';
 import { IGetAllCodeSetsResponse } from 'interfaces/useCodesApi.interface';
 import { IGetProjectForViewResponse } from 'interfaces/useProjectApi.interface';
-import {
-  IGetSurveyForViewResponse,
-  ISurveyAvailableFundingSources,
-  ISurveyFundingSourceForView,
-  ISurveyPermits
-} from 'interfaces/useSurveyApi.interface';
+import { IGetSurveyForViewResponse, ISurveyAvailableFundingSources } from 'interfaces/useSurveyApi.interface';
 import moment from 'moment';
 import React, { useState } from 'react';
 import { getFormattedAmount, getFormattedDate, getFormattedDateRangeString } from 'utils/Utils';
@@ -53,7 +48,7 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const {
     projectForViewData,
     surveyForViewData: {
-      surveyData: { survey_details, species, permit, funding }
+      surveyData: { survey_details, species, funding, permit }
     },
     refresh
   } = props;
@@ -62,7 +57,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
   const [generalInformationFormData, setGeneralInformationFormData] = useState<IGeneralInformationForm>(
     GeneralInformationInitialValues
   );
-  const [surveyPermits, setSurveyPermits] = useState<ISurveyPermits[]>([]);
   const [surveyFundingSources, setSurveyFundingSources] = useState<ISurveyAvailableFundingSources[]>([]);
 
   const [errorDialogProps, setErrorDialogProps] = useState<IErrorDialogProps>({
@@ -83,44 +77,24 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
 
   const handleDialogEditOpen = async () => {
     let surveyResponseData;
-    let surveyPermitsResponseData;
     let surveyFundingSourcesResponseData;
 
     try {
-      const [surveyResponse, surveyPermitsResponse, surveyFundingSourcesResponse] = await Promise.all([
+      const [surveyResponse, surveyFundingSourcesResponse] = await Promise.all([
         biohubApi.survey.getSurveyForView(projectForViewData.id, survey_details.id),
-        biohubApi.survey.getSurveyPermits(projectForViewData.id),
         biohubApi.survey.getAvailableSurveyFundingSources(projectForViewData.id)
       ]);
-
-      if (!surveyResponse || !surveyPermitsResponse || !surveyFundingSourcesResponse) {
+      if (!surveyResponse || !surveyFundingSourcesResponse) {
         showErrorDialog({ open: true });
         return;
       }
 
       surveyFundingSourcesResponseData = surveyFundingSourcesResponse;
-      surveyPermitsResponseData = surveyPermitsResponse;
       surveyResponseData = surveyResponse;
     } catch (error) {
       const apiError = error as APIError;
       showErrorDialog({ dialogText: apiError.message, open: true });
       return;
-    }
-
-    /*
-      If a permit number/type already exists for the record we are updating, we need to include it in the
-      list of applicable permits for the survey to be associated with
-    */
-    if (surveyResponseData.surveyData.permit.permit_number && surveyResponseData.surveyData.permit.permit_type) {
-      setSurveyPermits([
-        {
-          permit_number: surveyResponseData.surveyData.permit.permit_number,
-          permit_type: surveyResponseData.surveyData.permit.permit_type
-        },
-        ...surveyPermitsResponseData
-      ]);
-    } else {
-      setSurveyPermits(surveyPermitsResponseData);
     }
 
     setSurveyFundingSources(surveyFundingSourcesResponseData);
@@ -175,11 +149,6 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
         component={{
           element: (
             <GeneralInformationForm
-              permit_numbers={
-                surveyPermits?.map((item) => {
-                  return { value: item.permit_number, label: `${item.permit_number} - ${item.permit_type}` };
-                }) || []
-              }
               funding_sources={
                 surveyFundingSources?.map((item) => {
                   return {
@@ -345,16 +314,19 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
               </TableRow>
             </TableHead>
             <TableBody>
-              {(permit.permit_number && (
-                <TableRow>
-                  <TableCell>{permit.permit_number}</TableCell>
-                  <TableCell>{permit.permit_type}</TableCell>
-                </TableRow>
-              )) || (
+              {!permit.permits.length && (
                 <TableRow>
                   <TableCell colSpan={2}>No Permits</TableCell>
                 </TableRow>
               )}
+              {permit.permits?.map((item, index: number) => {
+                return (
+                  <TableRow key={index}>
+                    <TableCell>{item.permit_number}</TableCell>
+                    <TableCell>{item.permit_type}</TableCell>
+                  </TableRow>
+                );
+              })}
             </TableBody>
           </Table>
         </TableContainer>
@@ -384,16 +356,16 @@ const SurveyGeneralInformation: React.FC<ISurveyGeneralInformationProps> = (prop
                   <TableCell colSpan={3}>No Funding Sources</TableCell>
                 </TableRow>
               )}
-              {funding.funding_sources?.map((fundingSource: ISurveyFundingSourceForView, index: number) => {
+              {funding.funding_sources?.map((item, index: number) => {
                 return (
                   <TableRow key={index}>
-                    <TableCell>{fundingSource.agency_name}</TableCell>
-                    <TableCell>{getFormattedAmount(fundingSource.funding_amount)}</TableCell>
+                    <TableCell>{item.agency_name}</TableCell>
+                    <TableCell>{getFormattedAmount(item.funding_amount)}</TableCell>
                     <TableCell>
                       {getFormattedDateRangeString(
                         DATE_FORMAT.ShortMediumDateFormat,
-                        fundingSource.funding_start_date,
-                        fundingSource.funding_end_date
+                        item.funding_start_date,
+                        item.funding_end_date
                       )}
                     </TableCell>
                   </TableRow>
