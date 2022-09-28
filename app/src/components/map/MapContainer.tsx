@@ -1,5 +1,4 @@
 import { Feature } from 'geojson';
-import { useBiohubApi } from 'hooks/useBioHubApi';
 import L from 'leaflet';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
@@ -21,15 +20,18 @@ import {
 } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { ReProjector } from 'reproj-helper';
-import MapEditControls from 'utils/MapEditControls';
+import { v4 as uuidv4 } from 'uuid';
+
+import { useBiohubApi } from 'hooks/useBioHubApi';
 import {
   determineMapGeometries,
   getInferredLayersInfoByProjectedGeometry,
   getInferredLayersInfoByWFSFeature,
   getLayerTypesToSkipByProjectedGeometry
 } from 'utils/mapLayersHelpers';
-import { v4 as uuidv4 } from 'uuid';
 import WFSFeatureGroup, { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
+import { GetMapBounds, IMapBoundsOnChange, SetMapBounds } from './components/Bounds';
+import DrawControls, { IDrawControlsOnChange, IDrawControlsProps } from './components/DrawControls';
 
 /*
   Get leaflet icons working
@@ -57,6 +59,7 @@ export interface IClusteredPointGeometries {
   popupComponent?: JSX.Element;
 }
 
+/*
 export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
   const map = useMap();
   const { bounds } = props;
@@ -67,6 +70,7 @@ export const MapBounds: React.FC<IMapBoundsProps> = (props) => {
 
   return null;
 };
+*/
 
 /*
   Because different OpenMaps layers are identified using different keys
@@ -202,30 +206,33 @@ type DrawControls = {
 export interface IMapContainerProps {
   classes?: any;
   mapId: string;
+  drawControls?: IDrawControlsProps;
+  onDrawChange?: IDrawControlsOnChange;
   scrollWheelZoom?: boolean;
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: INonEditableGeometries[];
   clusteredPointGeometries?: IClusteredPointGeometries[];
   bounds?: any;
   zoom?: number;
-  showDrawControls?: Partial<DrawControls>;
-  hideDrawControls?: boolean;
+  
+  
   selectedLayer?: string;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   additionalLayers?: ReactElement[];
+  onBoundsChange?: IMapBoundsOnChange
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
   const {
     classes,
     mapId,
-    geometryState,
+    drawControls,
+    onDrawChange,
+    geometryState, // encodes `onDrawChange` (I think?)
     nonEditableGeometries,
     clusteredPointGeometries,
     bounds,
     zoom,
-    showDrawControls,
-    hideDrawControls,
     scrollWheelZoom,
     selectedLayer,
     setInferredLayersInfo,
@@ -261,27 +268,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     throttledGetFeatureDetails(layersToInfer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [geometryState?.geometry, nonEditableGeometries]);
-
-  const shownDrawControls: any = {
-    circle: false,
-    polyline: false,
-    circlemarker: false,
-    marker: false,
-    ...showDrawControls
-  };
-  const shownEditControls: any = {};
-
-  if (hideDrawControls) {
-    shownDrawControls.rectangle = false;
-    shownDrawControls.circle = false;
-    shownDrawControls.polygon = false;
-    shownDrawControls.polyline = false;
-    shownDrawControls.circlemarker = false;
-    shownDrawControls.marker = false;
-
-    shownEditControls.edit = false;
-    shownEditControls.remove = false;
-  }
 
   /**
    * Alter the projection of an array of features, from EPSG:4326 to EPSG:3005 (BC Albers).
@@ -461,17 +447,25 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       scrollWheelZoom={scrollWheelZoom || false}>
       <FullScreenEventHandler bounds={bounds} />
 
-      <MapBounds bounds={bounds} />
+      {/*<MapBounds bounds={bounds} />*/}
+      <SetMapBounds bounds={bounds} />
+      <GetMapBounds onChange={(newBounds, newZoom) => props.onBoundsChange?.(newBounds, newZoom)} />
 
-      <FeatureGroup>
-        <MapEditControls
-          position="topright"
-          draw={shownDrawControls}
-          edit={hideDrawControls ? shownEditControls : undefined}
-          geometry={geometryState?.geometry}
-          setGeometry={geometryState?.setGeometry}
-        />
-      </FeatureGroup>
+      {drawControls && (
+        <FeatureGroup key="draw-control-feature-group">
+          <DrawControls
+            {...props.drawControls}
+            options={{
+              ...props.drawControls?.options,
+              /**
+               * Open question: Do we want to disable circle markers?
+               */
+              draw: { ...props.drawControls?.options?.draw, circlemarker: false } // Always disable circlemarker
+            }}
+            onChange={onDrawChange}
+          />
+        </FeatureGroup>
+      )}
 
       {clusteredPointGeometries && clusteredPointGeometries.length > 0 && (
         <MarkerClusterGroup chunkedLoading>

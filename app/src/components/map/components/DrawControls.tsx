@@ -1,10 +1,11 @@
 import { useLeafletContext } from '@react-leaflet/core';
+import YesNoDialog from 'components/dialog/YesNoDialog';
 import { Feature } from 'geojson';
 import { useDeepCompareEffect } from 'hooks/useDeepCompareEffect';
 import * as L from 'leaflet';
 import 'leaflet-draw';
 import 'leaflet/dist/leaflet.css';
-import { useEffect, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 /*
  * Supported draw events.
@@ -71,10 +72,17 @@ export interface IDrawControlsProps {
    * @memberof IDrawControlsProps
    */
   clearOnDraw?: boolean;
+  /**
+   * If true, a modal will appear to confirm deletions.
+   */
+  useConfirmModal?: boolean;
 }
 
 const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (props) => {
   const context = useLeafletContext();
+  // const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleteEvent, setDeleteEvent] = useState<L.LeafletEvent | null>(null)
+  const showDeleteModal = Boolean(deleteEvent)
 
   /**
    * Fetch the layer used by the draw controls.
@@ -154,7 +162,7 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
   /**
    * Handle edit/delete events.
    */
-  const onDrawEditDelete = () => {
+  const onDrawEditDelete = (_event?: L.LeafletEvent) => {
     handleFeatureUpdate();
   };
 
@@ -200,7 +208,13 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
     // Register draw event handlers
     map.on(eventHandlers.onCreated, onDrawCreate as L.LeafletEventHandlerFn);
     map.on(eventHandlers.onEdited, onDrawEditDelete);
-    map.on(eventHandlers.onDeleted, onDrawEditDelete);
+    map.on(eventHandlers.onDeleted, (event) => {
+      if (props.useConfirmModal) {
+        setDeleteEvent(event)
+        return
+      }
+      onDrawEditDelete(event)
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.options, props.onChange, props.clearOnDraw]);
 
@@ -220,7 +234,29 @@ const DrawControls: React.FC<React.PropsWithChildren<IDrawControlsProps>> = (pro
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [props.options]);
 
-  return null;
+  if (!props.useConfirmModal) {
+    return null;
+  }
+
+  return (
+    <YesNoDialog
+      dialogTitle="Delete Geometries"
+      dialogText="Are you sure you want to delete the selected geometries?"
+      open={showDeleteModal}
+      onClose={() => {
+        setDeleteEvent(null);
+        // drawGeometries(props.geometry);
+      }}
+      onNo={() => {
+        setDeleteEvent(null);
+        // drawGeometries(props.geometry);
+      }}
+      onYes={() => {
+        onDrawEditDelete(deleteEvent || undefined);
+        setDeleteEvent(null);
+      }}
+    />
+  );
 };
 
 export default DrawControls;
