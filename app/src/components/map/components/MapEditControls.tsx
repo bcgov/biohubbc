@@ -1,3 +1,6 @@
+/**
+ * @TODO Delete this file (it is superceded by DrawControls.tsx.)
+ */
 // @ts-nocheck
 import { LeafletContextInterface, useLeafletContext } from '@react-leaflet/core';
 import YesNoDialog from 'components/dialog/YesNoDialog';

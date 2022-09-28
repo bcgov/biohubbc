@@ -1,3 +1,7 @@
+/**
+ * @TODO Delete this file (it is superceded by DrawControls.tsx.)
+ * @TODO Move any applicable tests to DrawControls.test.tsx
+ */
 import { getByText, queryByText, render } from '@testing-library/react';
 import { Feature } from 'geojson';
 import React from 'react';
