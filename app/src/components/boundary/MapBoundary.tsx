@@ -194,6 +194,10 @@ const MapBoundary: React.FC<IMapBoundaryProps> = (props) => {
               geometry: get(values, name),
               setGeometry: (newGeo: Feature[]) => setFieldValue(name, newGeo)
             }}
+            // Need to explicitly pass drawControls prop, since MapEditControls (which uses geomtryState prop to determine drawing controls) is no longer used.
+            drawControls={{
+              initialFeatures: get(values, name) && [get(values, name)],
+            }}
             bounds={(shouldUpdateBounds && updatedBounds) || bounds}
             selectedLayer={selectedLayer}
             setInferredLayersInfo={setInferredLayersInfo}

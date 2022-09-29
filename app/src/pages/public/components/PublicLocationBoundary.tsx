@@ -61,7 +61,7 @@ const PublicLocationBoundary: React.FC<IPublicLocationBoundaryProps> = (props) =
       <Box mt={4} mb={4} height={500}>
         <MapContainer
           mapId="project_location_form_map"
-          hideDrawControls={true}
+          // hideDrawControls={true}
           nonEditableGeometries={nonEditableGeometries}
           bounds={bounds}
           setInferredLayersInfo={setInferredLayersInfo}

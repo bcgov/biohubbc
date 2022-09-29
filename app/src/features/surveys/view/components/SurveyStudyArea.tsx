@@ -189,7 +189,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         map={
           <MapContainer
             mapId="project_location_form_map"
-            hideDrawControls={true}
+            // hideDrawControls={true}
             scrollWheelZoom={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
@@ -226,7 +226,7 @@ const SurveyStudyArea: React.FC<ISurveyStudyAreaProps> = (props) => {
         <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="survey_study_area_map"
-            hideDrawControls={true}
+            // hideDrawControls={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}

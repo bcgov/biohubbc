@@ -186,7 +186,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         map={
           <MapContainer
             mapId="project_location_form_map"
-            hideDrawControls={true}
+            // hideDrawControls={true} because drawControls is undefined, it should have the same effect
             scrollWheelZoom={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
@@ -213,7 +213,7 @@ const LocationBoundary: React.FC<ILocationBoundaryProps> = (props) => {
         <Box mt={2} height={350} position="relative">
           <MapContainer
             mapId="project_location_form_map"
-            hideDrawControls={true}
+            // hideDrawControls={true}
             nonEditableGeometries={nonEditableGeometries}
             bounds={bounds}
             setInferredLayersInfo={setInferredLayersInfo}

@@ -1,5 +1,5 @@
 import { Feature } from 'geojson';
-import L from 'leaflet';
+import L, { LatLngBoundsExpression, LeafletEventHandlerFnMap } from 'leaflet';
 import 'leaflet-draw/dist/leaflet.draw.css';
 import 'leaflet-fullscreen/dist/leaflet.fullscreen.css';
 import 'leaflet-fullscreen/dist/Leaflet.fullscreen.js';
@@ -14,9 +14,7 @@ import {
   GeoJSON,
   LayersControl,
   MapContainer as LeafletMapContainer,
-  Marker,
-  TileLayer,
-  useMap
+  Marker
 } from 'react-leaflet';
 import MarkerClusterGroup from 'react-leaflet-cluster';
 import { ReProjector } from 'reproj-helper';
@@ -32,6 +30,9 @@ import {
 import WFSFeatureGroup, { defaultWFSParams, IWFSParams } from './WFSFeatureGroup';
 import { GetMapBounds, IMapBoundsOnChange, SetMapBounds } from './components/Bounds';
 import DrawControls, { IDrawControlsOnChange, IDrawControlsProps } from './components/DrawControls';
+import FullScreenScrollingEventHandler from './components/FullScreenScrollingEventHandler';
+import EventHandler from './components/EventHandler';
+import BaseLayerControls from './components/BaseLayerControls';
 
 /*
   Get leaflet icons working
@@ -194,32 +195,23 @@ const buildWFSURL = (typeName: string, wfsParams: IWFSParams = defaultWFSParams)
   return `${params.url}?service=WFS&&version=${params.version}&request=${params.request}&typeName=${typeName}&outputFormat=${params.outputFormat}&srsName=${params.srsName}`;
 };
 
-type DrawControls = {
-  rectangle: boolean;
-  circle: boolean;
-  polygon: boolean;
-  polyline: boolean;
-  circlemarker: boolean;
-  marker: boolean;
-};
-
 export interface IMapContainerProps {
-  classes?: any;
   mapId: string;
   drawControls?: IDrawControlsProps;
   onDrawChange?: IDrawControlsOnChange;
   scrollWheelZoom?: boolean;
+  bounds?: LatLngBoundsExpression;
+  zoom?: number;
+  eventHandlers?: LeafletEventHandlerFnMap;
+  onBoundsChange?: IMapBoundsOnChange
+  
   geometryState?: { geometry: Feature[]; setGeometry: (geometry: Feature[]) => void };
   nonEditableGeometries?: INonEditableGeometries[];
   clusteredPointGeometries?: IClusteredPointGeometries[];
-  bounds?: any;
-  zoom?: number;
-  
-  
+  classes?: any;
   selectedLayer?: string;
   setInferredLayersInfo?: (inferredLayersInfo: any) => void;
   additionalLayers?: ReactElement[];
-  onBoundsChange?: IMapBoundsOnChange
 }
 
 const MapContainer: React.FC<IMapContainerProps> = (props) => {
@@ -235,6 +227,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     zoom,
     scrollWheelZoom,
     selectedLayer,
+    eventHandlers,
     setInferredLayersInfo,
     additionalLayers
   } = props;
@@ -410,31 +403,6 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
     [geometryState?.geometry, nonEditableGeometries]
   );
 
-  const FullScreenEventHandler: React.FC<{ bounds?: any[] }> = (props) => {
-    const map = useMap();
-
-    map.on('fullscreenchange', function () {
-      if (map.isFullscreen()) {
-        if (!scrollWheelZoom) {
-          // don't change scroll wheel zoom settings if it was enabled by default via props
-          map.scrollWheelZoom.enable();
-        }
-      } else {
-        if (!scrollWheelZoom) {
-          // don't change scroll wheel zoom settings if it was enabled by default via props
-          map.scrollWheelZoom.disable();
-        }
-
-        if (props.bounds && props.bounds.length) {
-          // reset bounds, if provided, on exit fullscreen
-          map.fitBounds(props.bounds);
-        }
-      }
-    });
-
-    return null;
-  };
-
   return (
     <LeafletMapContainer
       className={classes?.map}
@@ -445,9 +413,9 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
       maxZoom={17}
       fullscreenControl={true}
       scrollWheelZoom={scrollWheelZoom || false}>
-      <FullScreenEventHandler bounds={bounds} />
+      <FullScreenScrollingEventHandler bounds={bounds} scrollWheelZoom={Boolean(scrollWheelZoom)} />
 
-      {/*<MapBounds bounds={bounds} />*/}
+      {/*<MapBounds bounds={bounds} /> probably safe to remove?*/}
       <SetMapBounds bounds={bounds} />
       <GetMapBounds onChange={(newBounds, newZoom) => props.onBoundsChange?.(newBounds, newZoom)} />
 
@@ -458,7 +426,7 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
             options={{
               ...props.drawControls?.options,
               /**
-               * Open question: Do we want to disable circle markers?
+               * Open question: Do we want to disable circle markers like we do in backbone?
                */
               draw: { ...props.drawControls?.options?.draw, circlemarker: false } // Always disable circlemarker
             }}
@@ -466,6 +434,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
           />
         </FeatureGroup>
       )}
+
+      <EventHandler eventHandlers={eventHandlers} />
 
       {clusteredPointGeometries && clusteredPointGeometries.length > 0 && (
         <MarkerClusterGroup chunkedLoading>
@@ -501,15 +471,8 @@ const MapContainer: React.FC<IMapContainerProps> = (props) => {
         ))}
 
       <LayersControl position="bottomright">
-        <LayersControl.BaseLayer checked name="BC Government">
-          <TileLayer url="https://maps.gov.bc.ca/arcgis/rest/services/province/roads_wm/MapServer/tile/{z}/{y}/{x}" />
-        </LayersControl.BaseLayer>
-        <LayersControl.BaseLayer name="Esri Imagery">
-          <TileLayer
-            attribution='&copy; <a href="https://www.esri.com/en-us/arcgis/products/location-services/services/basemaps">ESRI Basemap</a>'
-            url="https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}"
-          />
-        </LayersControl.BaseLayer>
+        
+        <BaseLayerControls />
       </LayersControl>
     </LeafletMapContainer>
   );
